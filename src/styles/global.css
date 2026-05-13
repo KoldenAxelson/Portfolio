@@ -62,6 +62,16 @@ html {
   text-rendering: optimizeLegibility;
 }
 
+/* Smooth scroll for in-page anchor clicks (sidebar section nav on `/`,
+   `#archive` links on `/projects`, etc.). Gated by motion preference so
+   users with vestibular sensitivity get instant jumps. Sections already
+   have scroll-mt-24 so they land below the sticky top nav. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
 /* ---- Matte noise texturing ------------------------------------------
  * Two tileable noise PNGs, one per color scheme:
  *   public/textures/noise.png      — black grain  (light mode)
