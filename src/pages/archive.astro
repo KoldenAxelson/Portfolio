@@ -1,38 +1,26 @@
 ---
-import { getCollection } from 'astro:content';
-import BaseLayout from '@layouts/BaseLayout.astro';
+// Static redirect. Archive content moved into /work#archive. This page exists
+// so anyone with an old bookmark still lands in the right place.
+//
+// Forkers: safe to delete entirely if you've never published an /archive page.
+import { url } from '@lib/url';
 
-const entries = (await getCollection('archive')).sort((a, b) =>
-  b.data.year.localeCompare(a.data.year),
-);
+const target = url('/work') + '#archive';
 ---
 
-<BaseLayout
-  title="Archive"
-  description="Abandoned, superseded, and classified projects — listed honestly with brief post-mortems."
->
-  <header class="mb-8">
-    <h1 class="text-3xl font-medium">Archive</h1>
-    <p class="mt-3 max-w-prose text-muted">
-      Projects I started, shipped partway, then walked away from. Listed here for honesty. Each
-      entry has a one-sentence post-mortem so you can see what I learned.
-    </p>
-  </header>
-
-  <ul class="divide-y divide-border">
-    {
-      entries.map((e) => (
-        <li class="py-5">
-          <header class="flex items-baseline justify-between gap-3">
-            <h2 class="m-0 text-lg font-medium">{e.data.title}</h2>
-            <span class="font-mono text-xs text-muted">{e.data.year} · {e.data.reason}</span>
-          </header>
-          <p class="mt-2 text-muted">{e.data.postmortem}</p>
-          {e.data.stack.length > 0 && (
-            <p class="mt-2 font-mono text-xs text-muted">{e.data.stack.join(', ')}</p>
-          )}
-        </li>
-      ))
-    }
-  </ul>
-</BaseLayout>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Archive — moved</title>
+    <link rel="canonical" href={target} />
+    <meta http-equiv="refresh" content={`0; url=${target}`} />
+    <meta name="robots" content="noindex" />
+    <script is:inline define:vars={{ target }}>
+      window.location.replace(target);
+    </script>
+  </head>
+  <body>
+    <p>The archive has moved to <a href={target}>/work#archive</a>. Redirecting…</p>
+  </body>
+</html>
