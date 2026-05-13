@@ -96,7 +96,7 @@ const primaryIsExternal = primaryHref !== null && /^https?:/i.test(primaryHref);
     data.stack.length > 0 && (
       <ul class="relative z-10 mt-3 flex flex-wrap gap-1.5 pointer-events-none">
         {data.stack.map((s) => (
-          <li class="rounded bg-border/40 px-1.5 py-0.5 font-mono text-xs text-muted">{s}</li>
+          <li class="rounded bg-border/70 px-1.5 py-0.5 font-mono text-xs text-fg/85">{s}</li>
         ))}
       </ul>
     )
@@ -108,7 +108,7 @@ const primaryIsExternal = primaryHref !== null && /^https?:/i.test(primaryHref);
         <a
           href={data.metric.href}
           rel="noopener"
-          class="inline-flex items-center gap-1 font-mono text-xs text-muted no-underline hover:!text-accent"
+          class="-my-1 inline-flex items-center gap-1 py-1 font-mono text-sm text-accent underline underline-offset-2 decoration-1 hover:decoration-2"
           itemprop="codeRepository"
         >
           {data.metric.label}
