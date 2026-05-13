@@ -1,205 +1,116 @@
 # Customization
 
-Make Neofolio yours. Almost everything user-facing comes out of one of
-three files.
+Three files cover ~95% of what you'd want to change.
 
-## The three files that matter
-
-| File | Controls |
+| File | Owns |
 |---|---|
-| `src/config.ts` | Name, role, bio, social links, nav items, per-section bio messages |
+| `src/config.ts` | Name, role, bio, social links, nav, typewriter messages |
 | `src/styles/global.css` | Five color CSS variables (light + dark) |
-| `tailwind.config.mjs` | Font family, custom utilities |
+| `tailwind.config.mjs` | Font families |
 
-## Identity
-
-Edit `src/config.ts`. Everything below is driven from this object:
+## Identity (`src/config.ts`)
 
 ```ts
 export const SITE = {
-  url: 'https://example.com',          // Your canonical domain, no trailing slash
-  title: 'Neofolio',                   // <title>, OG site name, JSON-LD WebSite name
-  description: '...',                  // Meta description, OG, JSON-LD
-
+  url: 'https://example.com',
+  title: 'Neofolio',
+  description: '...',
+  locale: 'en-US',
   author: {
-    name: 'Your Name',
-    handle: '@yourhandle',
-    role: 'Software Engineer',
-    location: 'City, Country',
-    email: 'you@example.com',
-    bio: '...',                        // Short bio for the sidebar
-    longBio: '...',                    // Long bio for /cv and JSON-LD Person.description
+    name, handle, role, location, email, bio, longBio,
   },
-
-  bioMessages: {                       // Typewriter messages keyed by section ID
-    about: ['...'],
-    experience: ['...'],
-    projects: ['...'],
-    articles: ['...'],
-  },
-
-  links: {
-    github: 'https://...',
-    linkedin: 'https://...',
-    twitter: '',                       // Empty string = don't render
-    // ...
-  },
-
-  nav: [
-    { label: 'Projects', href: '/projects', icon: 'folder' as const },
-    // ...
-  ],
-
-  locale: 'en-US',                     // BCP-47 tag
+  bioMessages: { about: [...], experience: [...], projects: [...], articles: [...] },
+  links: { github, linkedin, twitter, mastodon, bluesky, rss },
+  nav: [ { label, href, icon } ],
 };
 ```
 
-This flows into:
-
-- `<title>`, `<meta description>` on every page
-- OpenGraph and Twitter Card meta
-- JSON-LD `Person` and `WebSite` schemas
-- The h-card microformat on the homepage sidebar
-- Footer copyright
-- Social icon row (only icons for non-empty link values render)
-- Top nav (label, route, icon)
-- Sidebar typewriter messages (one set per homepage section)
+Flows into: `<title>`, OG/Twitter cards, JSON-LD (`Person`, `WebSite`), h-card, footer, socials, top nav, sidebar typewriter.
 
 ## Colors
 
-Five CSS variables in `src/styles/global.css` drive the entire palette.
-Edit the `:root` block for light mode, the `prefers-color-scheme: dark`
-block for dark mode.
+Five CSS variables in `global.css`. Light mode is `:root`, dark mode is the `prefers-color-scheme: dark` block. Values are `R G B` (space-separated, no `rgb()`), so Tailwind's `<alpha-value>` indirection works.
 
 ```css
-:root {
-  --color-bg: 250 250 247;       /* warm paper white */
-  --color-fg: 24 24 27;          /* zinc-900 */
-  --color-muted: 82 82 91;       /* zinc-600 */
-  --color-accent: 154 52 18;     /* amber-800 */
-  --color-border: 228 228 231;   /* zinc-200 */
-}
+--color-bg --color-fg --color-muted --color-accent --color-border
 ```
 
-Values are `R G B` (no `rgb()`, no commas) — Tailwind treats them as
-channels so `rgb(var(--color-fg) / 0.5)` works for alpha.
+Contrast minimums to keep Accessibility = 100:
 
-**Contrast minimums to keep Lighthouse Accessibility happy:**
+| Token | Against `bg` | WCAG |
+|---|---|---|
+| `fg` | ≥7:1 | AAA |
+| `muted` | ≥4.5:1 | AA |
+| `accent` | ≥4.5:1 | AA |
 
-- `muted` against `bg`: ≥4.5:1 (AA normal text)
-- `accent` against `bg`: ≥4.5:1 if you use the accent as link text
-- `fg` against `bg`: ≥7:1 (AAA — typical zinc-900/zinc-100 is fine)
-
-Use the WebAIM Contrast Checker if you change colors.
+Use the WebAIM Contrast Checker before committing color changes.
 
 ## Typography
 
-Two places:
-
-1. **`tailwind.config.mjs`** — `fontFamily.sans` and `fontFamily.mono`
-   define the CSS font stacks.
-2. **`src/styles/global.css`** — `@font-face` declarations load the actual
-   font files from `/public/fonts/`.
-
 To swap Inter for another font:
 
-1. Drop the WOFF2 file(s) in `public/fonts/`.
-2. Update the `@font-face` `src:` URL in `global.css`.
+1. Drop the `.woff2` in `public/fonts/`.
+2. Update `@font-face src:` in `global.css`.
 3. Update `fontFamily.sans` in `tailwind.config.mjs`.
-4. Update the preload `<link>` in `src/layouts/BaseLayout.astro`.
+4. Update the preload `<link>` in `BaseLayout.astro`.
 
-**Why self-hosted?** External font stylesheets (rsms.me, Google Fonts) add
-a render-blocking third-party request to the critical path. Self-hosting
-eliminates that and gives the browser same-origin priority. See
-[performance.md](./performance.md).
+Self-hosting matters: external font stylesheets are render-blocking and cost Lighthouse Performance points. See [performance.md](./performance.md).
 
 ## Nav
 
-Edit `SITE.nav` in `src/config.ts`. Each item:
-
 ```ts
-{ label: 'Projects', href: '/projects', icon: 'folder' as const }
+nav: [
+  { label: 'Projects', href: '/projects', icon: 'folder' as const },
+];
 ```
 
-**Available icon keys:** `folder`, `newspaper`, `globe`, `desktop`,
-`briefcase`. The icon map lives in `src/components/TopNav.astro` — add new
-keys there by pasting Heroicons outline-style SVG paths into the `icons`
-object.
+Available `icon` keys: `folder`, `newspaper`, `globe`, `desktop`, `briefcase`. Add new keys in the `icons` map in `TopNav.astro` (Heroicons outline SVG paths).
 
-`label` shows on hover (desktop) or inline (mobile dropdown).
-`href` can mismatch its label — e.g. nav says "Projects" but route is
-`/projects` (in our case they match; they don't have to).
+Label and route can mismatch. The route just has to exist as an Astro page.
 
-## Sidebar typewriter
-
-The sidebar bio paragraph is replaced (post-hydration, desktop only) with
-typed-out messages from `SITE.bioMessages`. One array per homepage
-section ID:
+## Sidebar typewriter (homepage only)
 
 ```ts
 bioMessages: {
-  about: ['msg1', 'msg2', 'msg3'],
-  experience: ['msg1', 'msg2'],
-  projects: ['msg1'],
-  articles: ['msg1', 'msg2'],
+  about: ['…', '…'],
+  experience: ['…', '…'],
+  projects: ['…'],
+  articles: ['…'],
 }
 ```
 
-When the user scrolls into the About section, a random message from
-`bioMessages.about` is typed into the sidebar. Section change triggers
-backspace + retype.
+Scroll-spy in `SideBar.astro` types a random message from the matching array as the user scrolls into each section. Mobile (`<lg`) skips the typewriter entirely.
 
-Mobile (`<lg`) skips the typewriter entirely — the static `SITE.author.bio`
-shows instead.
+Section IDs are defined in `src/pages/index.astro` — adding a new section needs three changes: the `<section id="">`, the `sections` array, and a `bioMessages` key.
 
-Section IDs are defined in `src/pages/index.astro`. Adding a new homepage
-section means: add the `<section id="...">` AND a matching entry in the
-sidebar's `sections` array AND a `bioMessages` key.
+## Matte noise texture
 
-## Layout variations
+Black grain on light bg, white grain on dark bg. Generated by `make noise` from `scripts/_gen-noise.mjs` — edit `alphaMax`, `seed`, `W`, `H` there and re-run.
 
-Each page picks its own layout via `BaseLayout` props:
+Outputs: `public/textures/noise.png` and `noise-dark.png`. CSS picks via `prefers-color-scheme`.
+
+## Layout variants
 
 ```astro
-<BaseLayout split sections={[...]}>   <!-- Homepage: sticky sidebar -->
-<BaseLayout wide>                      <!-- Network: wider container -->
-<BaseLayout>                           <!-- Default: max-w-3xl centered -->
+<BaseLayout split sections={[...]}>  <!-- homepage only -->
+<BaseLayout wide>                    <!-- /network only -->
+<BaseLayout>                         <!-- everything else -->
 ```
-
-For most sub-pages, the default is right. Only `/network` needs `wide`.
-Only `/` uses `split`.
 
 ## Favicon
 
-Replace `public/favicon.svg`. The current one is an amber tile with the
-letter "N" — appropriate for the template, not for your fork.
-
-For browser support, you can also add a fallback `public/favicon.ico` and
-reference it from `BaseLayout.astro`.
+Replace `public/favicon.svg`. Current is an amber tile with letter "N".
 
 ## OG image
 
-Replace `public/og-default.png.txt` with a real PNG at `public/og-default.png`.
-Target: 1200×630, ≤100 KB. Used as the default OpenGraph and Twitter Card
-image for every page. Pages can override via the `image` prop on
-`BaseLayout`.
+When you have a 1200×630 PNG, drop it at `public/og-default.png` and set `DEFAULT_OG_IMAGE = '/og-default.png'` in `src/config.ts`. Until then `SEO.astro` skips emitting `og:image` meta (better than 404s).
 
-## Footer credit
+## Don't lightly change
 
-The footer says "Powered by Neofolio" with a link back to the template
-repo. Attribution is appreciated but not required (MIT). To remove or
-change it, edit `src/components/Footer.astro`.
-
-## What NOT to customize lightly
-
-These are load-bearing:
-
-- The Tailwind theme references CSS variables — keep that indirection
-- The h-card classes in `SideBar.astro` — AI scrapers parse them
-- `aria-label` attributes on icon-only buttons — accessibility
-- `aria-current="page"` on active nav — accessibility
-- `loading="lazy"` and explicit `width`/`height` on `<img>` — CLS prevention
-- The base-path-aware `url()` helper — GitHub Pages project sites
-- JSON-LD schemas in `SEO.astro` and individual pages — SEO + AI
-
-Change them only if you understand what they're for.
+- Tailwind theme indirection through CSS variables
+- h-card classes in `SideBar.astro`
+- `aria-label` on icon-only buttons
+- `aria-current="page"` on active nav
+- `loading="lazy"` + explicit `width`/`height` on `<img>`
+- `url()` helper for internal links (base-path safety)
+- JSON-LD schemas in `SEO.astro` and per page

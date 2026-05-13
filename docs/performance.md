@@ -1,201 +1,65 @@
 # Performance & Lighthouse
 
-What Neofolio does to hit Lighthouse 90+/100/100/100, and what you might
-need to tune in a fork.
+Targets: **90+ / 100 / 100 / 100**.
 
-## Targets
-
-| Category | Target | Why |
-|---|---|---|
-| Performance | ≥ 90 | The threshold that signals "fast enough" |
-| Accessibility | 100 | Anything less is a regression |
-| Best Practices | 100 | Same |
-| SEO | 100 | Same |
-
-## How to verify
+Verify:
 
 ```bash
-make lighthouse              # audits the root
+make lighthouse              # /
 make lighthouse / /projects /articles /cv /uses /network
 ```
 
-Reports land in `.lighthouse/`. This is a manual check, not a CI gate.
-Run it before significant pushes.
+Reports → `.lighthouse/`. Manual tool, not CI-gated.
 
 ## What's already optimized
 
-### Performance
+**Performance:**
+- Static HTML on first paint. Site works with JS disabled.
+- Self-hosted Inter (`public/fonts/InterVariable.woff2`) with `font-display: swap`.
+- Vue islands: `client:visible` (ProjectFilter), `client:load` (NetworkPanel — page content).
+- Zero JS above the fold anywhere.
+- Images: `loading="lazy"`, explicit `width`/`height`, SVG pass-through, raster expected pre-converted to WebP/AVIF.
+- Tailwind purges unused utilities at build.
+- No layout shift: typewriter has `min-h` reserve, images have explicit dims.
 
-- **Static HTML on first paint** — no JS required for the page to be
-  readable. Every page works with JS disabled (interactive parts
-  degrade — Network compose falls back to mailto link, project filter
-  shows all projects).
-- **Self-hosted Inter font** at `/public/fonts/`. No third-party request
-  in the critical path. `font-display: swap` so the page paints in the
-  fallback first.
-- **Vue islands hydrate lazily**:
-  - `ProjectFilter` → `client:visible` (only when scrolled to)
-  - `NetworkPanel` → `client:load` (it IS the page content on `/network`)
-- **Zero JS above the fold** anywhere. Hero is pure Astro HTML.
-- **Images**: `loading="lazy"`, explicit `width`/`height` to prevent CLS.
-  SVG passes through unchanged; raster covers should be pre-converted to
-  WebP/AVIF.
-- **Inline CSS critical path** handled by Astro's per-page CSS chunking.
-- **Tailwind purges** unused utilities at build.
-- **No layout shift**: sidebar bio has `min-h-[5.5rem]` reserved space,
-  images have explicit dimensions, the typewriter animates within a fixed
-  container.
+**Accessibility:**
+- AA contrast both modes (muted 6.5:1, accent 6.3:1).
+- All `<a>` underlined by default; `class="no-underline"` opt-out for nav/icon links.
+- Touch targets ≥36×36 (social icons use `-m-2 p-2` trick).
+- `aria-label` on icon-only buttons, `aria-current="page"` on active nav, `aria-hidden` on decorative SVGs.
+- Skip-to-content link.
+- `focus-visible` outlines.
+- `prefers-reduced-motion` honored throughout.
+- Semantic elements (`<article>`, `<section>`, `<nav>`, `<time datetime>`).
 
-### Accessibility
+**Best Practices / SEO:**
+- HTTPS enforced by host.
+- Unique `<title>` + `<meta description>` per page.
+- Canonical URL per page.
+- OG/Twitter Cards (when `DEFAULT_OG_IMAGE` is set).
+- JSON-LD: `WebSite`, `Person` site-wide; `BlogPosting`, `CreativeWork`, `ItemList` per page.
+- Sitemap + RSS + JSON Feed.
+- Permissive `robots.txt` (incl. GPTBot, ClaudeBot, PerplexityBot, CCBot).
 
-- **AA contrast** in both light and dark modes. Muted text at 6.5:1,
-  accent at 6.3:1 against the background.
-- **All links underlined by default** so they don't rely on color alone.
-  Nav and icon links opt out via `class="no-underline"`.
-- **Touch targets ≥36×36px** on all interactive elements. Social icons
-  use the `-m-2 p-2` trick to grow the click area without shifting layout.
-- **`aria-label`** on every icon-only button.
-- **`aria-current="page"`** on active nav items.
-- **`<time datetime>`** on every dated element.
-- **Semantic HTML**: `<article>`, `<section>`, `<nav>`, `<header>`,
-  `<main>`, `<footer>`, `<dl>`.
-- **Skip-to-content** link as the first focusable element.
-- **`focus-visible`** outlines using accent color.
-- **`prefers-reduced-motion`** honored throughout (`motion-reduce:transition-none`).
+## Known constraints
 
-### Best Practices
+**GitHub Pages CDN.** US-anchored Fastly. APAC/Oceania scores 5-8 points lower than US/Europe. Cloudflare Pages closes most of this gap (330+ POPs).
 
-- HTTPS enforced by the deploy targets (GitHub Pages, Cloudflare Pages).
-- No console errors expected.
-- No deprecated APIs used.
-- Modern Astro + Vue + Tailwind versions.
-- No mixed content (all assets same-origin or HTTPS).
+**Vue island on `/network`** ships ~32 KB gzipped (Vue runtime + component). If score dips below 90, swap `client:load` → `client:idle` in `src/pages/network.astro`. Other pages already lazy.
 
-### SEO
+## How scores drop
 
-- `<title>` and `<meta description>` unique per page.
-- Canonical URL on every page (`<link rel="canonical">`).
-- OpenGraph and Twitter Card meta everywhere.
-- JSON-LD schemas: `WebSite`, `Person` site-wide; `BlogPosting`,
-  `CreativeWork`, `ItemList` per page type.
-- `sitemap-index.xml` auto-generated by `@astrojs/sitemap`.
-- `robots.txt` dynamically derives Sitemap URL from `SITE.url`.
-- Permissive crawler policy (explicit allow for GPTBot, ClaudeBot,
-  PerplexityBot, Google-Extended, CCBot, anthropic-ai).
-- h-card microformat as a second identity layer.
-
-## Known performance constraints
-
-### GitHub Pages CDN
-
-GitHub Pages serves from Fastly's US-anchored network. Regional Lighthouse
-scores vary:
-
-- US/Europe: 92–98 (well-served by nearby POPs)
-- Asia-Pacific / Oceania: 81–88 (longer latency)
-
-Moving to Cloudflare Pages closes most of this gap — 330+ POPs vs Fastly's
-~100, with stronger APAC presence. Expect +5–8 Performance points in
-distant regions.
-
-### Vue island on `/network`
-
-The Network page uses `client:load` (immediate hydration) because the
-panel IS the page content. This ships ~32 KB gzipped of JS (Vue runtime +
-component).
-
-If `/network` Performance dips below 90:
-
-1. Try `client:idle` instead of `client:load` — defers hydration to the
-   next idle frame. Visitors won't notice; Lighthouse will.
-2. Or `client:visible` — only hydrates when scrolled into view. Works
-   here because the panel is right at the top.
-
-Other pages with islands (`/projects` → `ProjectFilter`) already use
-`client:visible`. Zero JS until the user scrolls.
-
-## Common reasons performance drops
-
-### Adding a third-party stylesheet
-
-The single fastest way to lose 5–10 Performance points is to add a
-`<link>` to an external CSS — Google Fonts, Font Awesome, anything on a
-CDN you don't control. Self-host everything in `/public/`. The Inter font
-is already self-hosted; don't undo that.
-
-### Heavy raster images
-
-Don't commit large PNG/JPG covers. Pre-convert to WebP (Q80) or AVIF.
-Target ≤30 KB per thumbnail. SVG is fine as-is.
-
-### Render-blocking inline scripts
-
-Any `<script is:inline>` that does synchronous work before paint will
-block rendering. The top nav autohide and sidebar typewriter scripts are
-inline but defer to `DOMContentLoaded` / `requestAnimationFrame`. Match
-that pattern.
-
-### Hydrating too eagerly
-
-`client:load` on a component that's below the fold is wasted bandwidth.
-Default to `client:visible` unless the component is critical and
-above-the-fold.
-
-## Common reasons accessibility drops
-
-### Insufficient contrast
-
-If you change `--color-muted` or `--color-accent` in `global.css`, check
-against `--color-bg` with the WebAIM Contrast Checker. Need ≥4.5:1 for
-body text, ≥3:1 for large text, ≥4.5:1 for UI components and graphics.
-
-### Links rely on color alone
-
-Adding a new component? Inline `<a>` tags inherit the default underlined
-style. Don't add `class="no-underline"` to a body-prose link — that's
-exactly what Lighthouse flags.
-
-### Touch targets too small
-
-Anything tappable should be ≥24×24px (Lighthouse threshold). The
-`-m-2 p-2` trick keeps the visible element small while growing the
-click target.
-
-### Missing `aria-label`
-
-Every icon-only button or link needs one. Without it, screen readers
-announce "button" with no context.
-
-## Common reasons best-practices drops
-
-### `console.error` at runtime
-
-Open DevTools, do a full nav cycle. Anything red is a Lighthouse hit.
-
-### Mixed content
-
-If any page references `http://` (not `https://`), Lighthouse flags it.
-External links should use HTTPS.
-
-### Outdated dependencies with known vulnerabilities
-
-`npm audit` regularly. Astro/Vue/Tailwind major updates usually drop more
-performance and accessibility wins.
-
-## Common reasons SEO drops
-
-### Page missing `<meta description>`
-
-Every page should pass `description` to `BaseLayout`. Default falls back
-to `SITE.description`.
-
-### `noindex` accidentally set
-
-Only `/404` and `/archive` (redirect) should have `noindex`. If you set
-it elsewhere, search engines stop crawling.
-
-### Sitemap is wrong
-
-`/sitemap-index.xml` is built automatically from `SITE.url`. If `SITE.url`
-is still `https://example.com`, the sitemap will be wrong — fix
-`src/config.ts`.
+| Category | Common culprit | Fix |
+|---|---|---|
+| Performance | Third-party stylesheet | Self-host everything in `/public` |
+| Performance | Heavy raster images | Pre-convert to WebP/AVIF, target ≤30 KB |
+| Performance | `client:load` below fold | Use `client:visible` |
+| Accessibility | Insufficient contrast on changed color | Re-check against `--color-bg` with WebAIM Contrast Checker |
+| Accessibility | New body-prose link without underline | Don't add `no-underline` — that's exactly what Lighthouse flags |
+| Accessibility | Icon-only button | Add `aria-label` |
+| Accessibility | New small interactive target | `-m-2 p-2` trick to grow click area without layout shift |
+| Best Practices | `console.error` at runtime | Open DevTools, find the source |
+| Best Practices | Mixed content (HTTP link) | Change to HTTPS |
+| SEO | Missing `<meta description>` | Pass `description` to `BaseLayout` |
+| SEO | `SITE.url` still `example.com` | Update in `src/config.ts` |
+| SEO | Page accidentally `noindex` | Only `/404` and `/archive` should have it |
