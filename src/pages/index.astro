@@ -67,7 +67,8 @@ const recentPosts = (await getCollection('posts', ({ data }) => !data.draft))
       </p>
       <p>
         I write about what I learn at <a href={url('/writing')}>/writing</a> and keep an honest
-        log of the projects I started and didn't finish at <a href={url('/archive')}>/archive</a>.
+        log of the projects I started and didn't finish in
+        the <a href={url('/work') + '#archive'}>archive</a> at the bottom of /work.
         Both feel like an essential counterweight to the highlight-reel version of a portfolio.
       </p>
     </div>

@@ -80,7 +80,6 @@ export const SITE = {
     { label: 'Writing', href: '/writing' },
     { label: 'Uses', href: '/uses' },
     { label: 'CV', href: '/cv' },
-    { label: 'Archive', href: '/archive' },
   ],
 
   /**
