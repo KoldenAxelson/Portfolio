@@ -1,43 +1,22 @@
 ---
-// SideBar — identity + in-page section nav + socials.
-//
-// The line-indicator nav links to anchors on the current page (#about,
-// #experience, …). Scroll-spy updates the active state as the user scrolls.
-// Cross-page navigation lives in the TopNav.
-//
-// Pages pass their sections via BaseLayout's `sections` prop:
-//   sections={[{ id: 'about', label: 'About' }, { id: 'work', label: 'Work' }]}
-//
-// If a page passes no sections, the nav is hidden and the sidebar shows
-// just identity + socials.
+// SideBar — identity + in-page section nav.
+// Only used on the homepage (BaseLayout split=true). Sub-pages don't render this.
+// Cross-page navigation lives in the TopNav. Social icons live in the Footer.
 import { SITE } from '@config';
-import { url, stripBase } from '@lib/url';
-import SocialIcons from '@components/SocialIcons.astro';
+import { url } from '@lib/url';
 
 interface Props {
   sections?: { id: string; label: string }[];
 }
 
 const { sections = [] } = Astro.props;
-const currentPath = stripBase(Astro.url.pathname).replace(/\/$/, '') || '/';
-const isHome = currentPath === '/';
 ---
 
-<aside
-  class="lg:sticky lg:top-0 lg:flex lg:max-h-screen lg:w-1/2 lg:flex-col lg:justify-between lg:py-24 py-12 lg:pr-8"
->
+<aside class="lg:sticky lg:top-16 lg:max-h-[calc(100vh-4rem)] lg:w-1/2 lg:py-24 py-12">
   <div>
-    {
-      isHome ? (
-        <h1 class="text-4xl font-bold tracking-tight text-fg sm:text-5xl">
-          <a href={url('/')} class="hover:!text-fg">{SITE.author.name}</a>
-        </h1>
-      ) : (
-        <p class="text-4xl font-bold tracking-tight text-fg sm:text-5xl">
-          <a href={url('/')} class="hover:!text-fg">{SITE.author.name}</a>
-        </p>
-      )
-    }
+    <h1 class="text-4xl font-bold tracking-tight text-fg sm:text-5xl">
+      <a href={url('/')} class="hover:!text-fg">{SITE.author.name}</a>
+    </h1>
     <p class="mt-3 text-lg font-medium tracking-tight text-fg sm:text-xl">{SITE.author.role}</p>
     <p class="mt-4 max-w-xs leading-normal text-muted">{SITE.author.bio}</p>
 
@@ -54,7 +33,6 @@ const isHome = currentPath === '/';
                 >
                   <span
                     aria-hidden="true"
-                    data-section-line
                     class="mr-4 inline-block h-px w-8 bg-muted transition-all duration-200 motion-reduce:transition-none group-hover:w-16 group-hover:bg-fg group-data-[active=true]:w-16 group-data-[active=true]:bg-fg"
                   />
                   <span class="font-mono text-xs uppercase tracking-widest group-data-[active=true]:font-semibold">
@@ -68,16 +46,11 @@ const isHome = currentPath === '/';
       )
     }
   </div>
-
-  <SocialIcons class="mt-12 lg:mt-0" />
 </aside>
 
 {
   sections.length > 0 && (
     <script is:inline>
-      // Scroll-spy: marks the sidebar link matching the section closest to the
-      // viewport's top-third as active. Falls back gracefully without JS — the
-      // nav still scrolls to anchors, just without an active highlight.
       (function () {
         const links = Array.from(document.querySelectorAll('[data-section-link]'));
         if (!links.length) return;
@@ -97,7 +70,6 @@ const isHome = currentPath === '/';
 
         const observer = new IntersectionObserver(
           (entries) => {
-            // Pick the entry closest to the top among those intersecting.
             const intersecting = entries.filter((e) => e.isIntersecting);
             if (!intersecting.length) return;
             intersecting.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
@@ -107,8 +79,6 @@ const isHome = currentPath === '/';
           { rootMargin: '-30% 0px -55% 0px', threshold: 0 },
         );
         sectionEls.forEach((el) => observer.observe(el));
-
-        // Initialize: mark the first section visible at load.
         setActive(sectionEls[0].id);
       })();
     </script>

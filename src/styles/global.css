@@ -4,32 +4,25 @@
 
 /* ------------------------------------------------------------------ */
 /* Theme tokens                                                        */
-/* Dark by default. Light mode kicks in for users with that preference.*/
+/* Light by default. Dark kicks in for users with that preference.     */
 /* Forkers: tweak these five values to rebrand.                        */
 /* ------------------------------------------------------------------ */
 
 :root {
-  /* Dark default — slate-based, Brittany-Chiang-inspired */
-  --color-bg: 15 23 42;          /* slate-900 */
-  --color-fg: 226 232 240;       /* slate-200 */
-  --color-muted: 148 163 184;    /* slate-400 */
-  --color-accent: 94 234 212;    /* teal-300 */
-  --color-border: 51 65 85;      /* slate-700 */
-
-  --gradient-1: 56 189 248;      /* sky-400 — top-left glow */
-  --gradient-2: 14 116 144;      /* cyan-700 — bottom-right glow */
+  --color-bg: 250 250 247;       /* warm paper white */
+  --color-fg: 24 24 27;          /* zinc-900 */
+  --color-muted: 113 113 122;    /* zinc-500 */
+  --color-accent: 180 83 9;      /* amber-700 — distinctive, warm */
+  --color-border: 228 228 231;   /* zinc-200 */
 }
 
-@media (prefers-color-scheme: light) {
+@media (prefers-color-scheme: dark) {
   :root {
-    --color-bg: 250 250 249;     /* warm white */
-    --color-fg: 24 24 27;        /* near-black */
-    --color-muted: 82 82 91;     /* zinc-600 */
-    --color-accent: 14 116 144;  /* teal-700 */
-    --color-border: 228 228 231; /* zinc-200 */
-
-    --gradient-1: 14 116 144;
-    --gradient-2: 56 189 248;
+    --color-bg: 9 9 11;          /* zinc-950 */
+    --color-fg: 244 244 245;     /* zinc-100 */
+    --color-muted: 161 161 170;  /* zinc-400 */
+    --color-accent: 252 211 77;  /* amber-300 */
+    --color-border: 39 39 42;    /* zinc-800 */
   }
 }
 
@@ -47,10 +40,6 @@ html {
 
 body {
   min-height: 100dvh;
-  background-image:
-    radial-gradient(circle 900px at 0% -10%, rgb(var(--gradient-1) / 0.10), transparent 70%),
-    radial-gradient(circle 700px at 100% 110%, rgb(var(--gradient-2) / 0.08), transparent 70%);
-  background-attachment: fixed;
 }
 
 a {
@@ -63,7 +52,7 @@ a:hover {
   color: rgb(var(--color-fg));
 }
 
-/* Prose links — markdown content keeps the underline for clarity. */
+/* Prose links keep the underline for readability inside long text. */
 .prose a {
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -120,7 +109,6 @@ img {
   padding: 0.5rem 1rem;
 }
 
-/* Hide scrollbar for the sticky sidebar nav, keep functionality. */
 .nav-scroll::-webkit-scrollbar {
   display: none;
 }

@@ -90,13 +90,6 @@ const skills = {
   Practices: ['Code review', 'Hiring', 'Mentorship', 'Incident response'],
 };
 
-const sections = [
-  { id: 'summary', label: 'Summary' },
-  { id: 'experience', label: 'Experience' },
-  { id: 'education', label: 'Education' },
-  { id: 'skills', label: 'Skills' },
-];
-
 const schema = [
   {
     '@context': 'https://schema.org',
@@ -116,7 +109,6 @@ const schema = [
   title="CV"
   description={`Full résumé and work history for ${SITE.author.name}.`}
   schema={schema}
-  sections={sections}
 >
   <header class="mb-8">
     <h1 class="text-3xl font-medium">CV</h1>

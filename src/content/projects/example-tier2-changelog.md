@@ -8,4 +8,7 @@ year: '2024'
 status: 'shipped'
 links:
   repo: 'https://github.com/example/changelog-bot'
+metric:
+  label: '↓ 24k installs'
+  href: 'https://github.com/marketplace/actions/changelog-bot'
 ---
