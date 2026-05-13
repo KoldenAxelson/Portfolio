@@ -1,0 +1,7 @@
+name: 'Dr. Anya Volkov'
+title: 'Researcher · Inventor'
+company: 'MIT Media Lab'
+blurb: 'Holds 11 patents on haptic interfaces. Papers cited over 800 times. Builds things that don''t exist yet for a living, and somehow still has time for office hours.'
+relationship: 'I mentored one of her thesis students through a particularly nasty embedded-systems debugging stretch. We do an annual catch-up every September.'
+link: 'https://example.com/anya-volkov'
+order: 3
