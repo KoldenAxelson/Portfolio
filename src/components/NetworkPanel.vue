@@ -238,10 +238,16 @@ watch(selectedId, () => {
           v-if="activeProfile.link"
           :href="activeProfile.link"
           rel="noopener"
-          class="shrink-0 font-mono text-xs uppercase tracking-widest text-muted hover:!text-accent"
+          class="group/verify shrink-0 font-mono text-xs uppercase tracking-widest text-muted no-underline hover:!text-accent"
           :aria-label="`${activeProfile.name} on the web`"
         >
-          Verify ↗
+          Verify
+          <span
+            aria-hidden="true"
+            class="inline-block transition-transform duration-200 ease-out motion-reduce:transition-none group-hover/verify:translate-x-0.5 group-hover/verify:-translate-y-0.5"
+          >
+            ↗
+          </span>
         </a>
       </header>
 
@@ -258,9 +264,13 @@ watch(selectedId, () => {
         <button
           type="button"
           @click="openCompose"
-          class="rounded border border-accent bg-accent/10 px-4 py-2 text-sm font-medium text-fg transition hover:bg-accent hover:!text-bg"
+          class="group/cta rounded border border-accent bg-accent/10 px-4 py-2 text-sm font-medium text-fg transition hover:bg-accent hover:!text-bg"
         >
-          {{ cta }} →
+          {{ cta }}
+          <span
+            aria-hidden="true"
+            class="ml-0.5 inline-block transition-transform duration-200 ease-out motion-reduce:transition-none group-hover/cta:translate-x-0.5"
+          >→</span>
         </button>
         <!-- Desktop-only quick switch back to owner profile -->
         <button
@@ -409,14 +419,18 @@ watch(selectedId, () => {
           :href="mailto"
           :aria-disabled="!composeReady"
           :tabindex="composeReady ? 0 : -1"
-          class="block w-full rounded border border-accent bg-accent/10 px-4 py-2 text-center text-sm font-medium transition"
+          class="group/cta block w-full rounded border border-accent bg-accent/10 px-4 py-2 text-center text-sm font-medium no-underline transition"
           :class="
             composeReady
               ? 'text-fg hover:bg-accent hover:!text-bg'
               : 'pointer-events-none text-muted opacity-60'
           "
         >
-          Open in mail client →
+          Open in mail client
+          <span
+            aria-hidden="true"
+            class="ml-0.5 inline-block transition-transform duration-200 ease-out motion-reduce:transition-none group-hover/cta:translate-x-0.5"
+          >→</span>
         </a>
 
         <p class="text-xs text-muted">

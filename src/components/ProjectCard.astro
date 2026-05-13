@@ -108,11 +108,18 @@ const primaryIsExternal = primaryHref !== null && /^https?:/i.test(primaryHref);
         <a
           href={data.metric.href}
           rel="noopener"
-          class="-my-1 inline-flex items-center gap-1 py-1 font-mono text-sm text-accent underline underline-offset-2 decoration-1 hover:decoration-2"
+          class="group/metric -my-1 inline-flex items-center gap-1 py-1 font-mono text-sm text-accent no-underline"
           itemprop="codeRepository"
         >
-          {data.metric.label}
-          <span aria-hidden="true">↗</span>
+          <span class="underline underline-offset-2 decoration-1 group-hover/metric:decoration-2">
+            {data.metric.label}
+          </span>
+          <span
+            aria-hidden="true"
+            class="inline-block transition-transform duration-200 ease-out motion-reduce:transition-none group-hover/metric:translate-x-0.5 group-hover/metric:-translate-y-0.5"
+          >
+            ↗
+          </span>
         </a>
       </p>
     )
