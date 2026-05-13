@@ -1,0 +1,109 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ------------------------------------------------------------------ */
+/* Theme tokens                                                        */
+/* Forkers: change these to rebrand. All Tailwind colors point here.   */
+/* ------------------------------------------------------------------ */
+
+:root {
+  --color-bg: 250 250 249;       /* warm white */
+  --color-fg: 24 24 27;          /* near-black */
+  --color-muted: 113 113 122;    /* zinc-500 */
+  --color-accent: 14 116 144;    /* teal-700 */
+  --color-border: 228 228 231;   /* zinc-200 */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: 9 9 11;          /* zinc-950 */
+    --color-fg: 244 244 245;     /* zinc-100 */
+    --color-muted: 161 161 170;  /* zinc-400 */
+    --color-accent: 56 189 248;  /* sky-400 */
+    --color-border: 39 39 42;    /* zinc-800 */
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Base                                                                */
+/* ------------------------------------------------------------------ */
+
+html {
+  font-family: theme('fontFamily.sans');
+  background-color: rgb(var(--color-bg));
+  color: rgb(var(--color-fg));
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+a {
+  color: rgb(var(--color-accent));
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+
+a:hover {
+  text-decoration-thickness: 2px;
+}
+
+code {
+  font-family: theme('fontFamily.mono');
+  font-size: 0.9em;
+  background-color: rgb(var(--color-border) / 0.5);
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+}
+
+pre {
+  font-family: theme('fontFamily.mono');
+  overflow-x: auto;
+  padding: 1rem;
+  border-radius: 6px;
+  background-color: rgb(var(--color-border) / 0.4);
+  border: 1px solid rgb(var(--color-border));
+}
+
+pre code {
+  background: transparent;
+  padding: 0;
+}
+
+/* No layout shift on images — the template enforces explicit dims everywhere,
+   but this is a safety net. */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Focus styles for keyboard users — accessibility target is 100. */
+:focus-visible {
+  outline: 2px solid rgb(var(--color-accent));
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Skip-link, shown only when focused. */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+}
+.skip-link:focus {
+  left: 1rem;
+  top: 1rem;
+  z-index: 100;
+  background: rgb(var(--color-bg));
+  border: 2px solid rgb(var(--color-accent));
+  padding: 0.5rem 1rem;
+}

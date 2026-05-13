@@ -1,0 +1,70 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import ProjectCard from '@components/ProjectCard.astro';
+import ProjectFilter from '@components/ProjectFilter.vue';
+
+const all = (await getCollection('projects', ({ data }) => !data.draft && data.tier !== 3)).sort(
+  (a, b) => a.data.tier - b.data.tier || b.data.year.localeCompare(a.data.year),
+);
+
+const tier1 = all.filter((p) => p.data.tier === 1);
+const tier2 = all.filter((p) => p.data.tier === 2);
+
+const allTags = [...new Set(all.flatMap((p) => p.data.tags))];
+---
+
+<BaseLayout
+  title="Work"
+  description="Featured projects and full project catalogue."
+>
+  <header class="mb-8">
+    <h1 class="text-3xl font-medium">Work</h1>
+    <p class="mt-3 max-w-prose text-muted">
+      A catalogue of the things I've built. Featured projects up top with full case studies; the
+      complete listing below.
+    </p>
+  </header>
+
+  {
+    allTags.length > 0 && (
+      <section class="mb-8" aria-label="Project filters">
+        <ProjectFilter client:visible tags={allTags} />
+      </section>
+    )
+  }
+
+  {
+    tier1.length > 0 && (
+      <section class="mb-12" aria-labelledby="featured-heading">
+        <h2 id="featured-heading" class="mb-4 text-xl font-medium">Featured</h2>
+        <div class="grid gap-4 sm:grid-cols-2">
+          {tier1.map((p) => (
+            <div data-project-tags={p.data.tags.join(',')}>
+              <ProjectCard project={p} />
+            </div>
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  {
+    tier2.length > 0 && (
+      <section class="mb-12" aria-labelledby="listed-heading">
+        <h2 id="listed-heading" class="mb-4 text-xl font-medium">All projects</h2>
+        <div class="grid gap-3 sm:grid-cols-2">
+          {tier2.map((p) => (
+            <div data-project-tags={p.data.tags.join(',')}>
+              <ProjectCard project={p} compact />
+            </div>
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  <p class="mt-12 text-sm text-muted">
+    Abandoned and post-mortem projects live in the <a href="/archive">archive</a>.
+  </p>
+</BaseLayout>

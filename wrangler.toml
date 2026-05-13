@@ -1,0 +1,19 @@
+# Wrangler config for Cloudflare Pages.
+#
+# Pages projects don't strictly require a wrangler.toml — the dashboard works
+# fine. This file is here so you can:
+#   - Run `wrangler pages dev dist` locally with the same env vars as prod
+#   - Define secrets reproducibly: `wrangler pages secret put RESEND_API_KEY`
+#   - Promote/preview from the CLI: `wrangler pages deploy dist`
+
+name = "neofolio"
+compatibility_date = "2025-01-15"
+pages_build_output_dir = "dist"
+
+# Plain-text vars are fine here. Secrets go through `wrangler pages secret put`.
+[vars]
+ENVIRONMENT = "production"
+# CONTACT_TO_EMAIL = "you@example.com"  # uncomment and edit
+
+[[env.preview.vars]]
+ENVIRONMENT = "preview"

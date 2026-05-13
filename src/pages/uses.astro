@@ -1,0 +1,38 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+
+// Text-heavy by design — highly indexable, AI-friendly.
+// Forkers: edit this list to match your actual setup.
+const stack = {
+  Editor: ['Neovim with LazyVim', 'VS Code for Live Share sessions'],
+  Terminal: ['Ghostty', 'fish shell', 'tmux'],
+  Languages: ['TypeScript', 'Go', 'Python', 'Rust (learning)'],
+  Frameworks: ['Astro', 'Vue', 'SvelteKit', 'FastAPI'],
+  Cloud: ['Cloudflare (Pages, Workers, R2)', 'AWS Lightsail for stateful workloads'],
+  Database: ['Postgres', 'SQLite for embedded use', 'Redis'],
+  CLI: ['gh', 'wrangler', 'aws-cli', 'jq', 'fzf', 'ripgrep'],
+  Hardware: ['MacBook Pro M3 Pro', 'LG 5K display', 'HHKB Professional Hybrid'],
+};
+---
+
+<BaseLayout title="Uses" description="The stack, tools, and hardware I actually use.">
+  <header class="mb-8">
+    <h1 class="text-3xl font-medium">Uses</h1>
+    <p class="mt-3 max-w-prose text-muted">
+      The things on my machine right now. Updated whenever something changes. Inspired by <a
+        href="https://uses.tech">uses.tech</a
+      >.
+    </p>
+  </header>
+
+  <dl class="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-[max-content_1fr]">
+    {
+      Object.entries(stack).map(([category, items]) => (
+        <>
+          <dt class="font-mono text-sm font-medium text-muted">{category}</dt>
+          <dd class="m-0">{items.join(', ')}</dd>
+        </>
+      ))
+    }
+  </dl>
+</BaseLayout>

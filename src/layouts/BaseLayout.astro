@@ -1,0 +1,73 @@
+---
+import { SITE } from '@config';
+import SEO from '@components/SEO.astro';
+import Nav from '@components/Nav.astro';
+import Footer from '@components/Footer.astro';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  type?: 'website' | 'article';
+  publishedTime?: Date;
+  modifiedTime?: Date;
+  noindex?: boolean;
+  schema?: Record<string, unknown>[];
+  /** Set on /writing/[slug] etc. to widen prose. */
+  wide?: boolean;
+}
+
+const {
+  title,
+  description,
+  image,
+  type,
+  publishedTime,
+  modifiedTime,
+  noindex,
+  schema,
+  wide = false,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang={SITE.locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- Preload primary font. Swap for your chosen typeface. -->
+    <link
+      rel="preload"
+      href="https://rsms.me/inter/font-files/Inter-roman.var.woff2?v=3.19"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate" type="application/rss+xml" title={SITE.title} href="/rss.xml" />
+
+    <SEO
+      title={title}
+      description={description}
+      image={image}
+      type={type}
+      publishedTime={publishedTime}
+      modifiedTime={modifiedTime}
+      noindex={noindex}
+      schema={schema}
+    />
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <Nav />
+    <main id="main" class:list={['mx-auto w-full px-4 py-10', wide ? 'max-w-4xl' : 'max-w-3xl']}>
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>
