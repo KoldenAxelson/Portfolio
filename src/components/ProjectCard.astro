@@ -11,6 +11,12 @@
 // Nested links work via the "absolute inset-0" overlay trick: a sibling
 // <a> covers the card; inner links get position:relative + z-10 to float
 // above it.
+//
+// Layout: the card is a plain block (NOT flex). The cover image, when
+// present, is floated left so the surrounding text flows around it
+// naturally — no awkward deadspace under a short image. Tags and the
+// metric link use `clear-both` so they always sit below the image
+// regardless of how much description text wraps next to it.
 
 import type { CollectionEntry } from 'astro:content';
 import { url } from '@lib/url';
@@ -37,7 +43,7 @@ const primaryIsExternal = primaryHref !== null && /^https?:/i.test(primaryHref);
 
 <article
   class:list={[
-    'group relative flex gap-4 rounded-lg border border-border bg-bg/30 p-5 transition hover:border-accent',
+    'group relative rounded-lg border border-border bg-bg/30 p-5 transition hover:border-accent',
     compact && 'p-4',
   ]}
   itemscope
@@ -57,44 +63,50 @@ const primaryIsExternal = primaryHref !== null && /^https?:/i.test(primaryHref);
 
   {
     /* Optional cover. Path is relative to /public (e.g. "/covers/foo.svg").
-       Forkers using raster covers should pre-convert to WebP or AVIF for
+       Floated left so the header, description, and tags flow around it.
+       Forkers using raster covers should pre-convert to WebP/AVIF for
        Lighthouse perf — see docs/content.md. */
     data.cover && (
-      <div class="relative z-10 shrink-0 pointer-events-none">
-        <img
-          src={url(data.cover)}
-          width={compact ? 64 : 96}
-          height={compact ? 64 : 96}
-          alt=""
-          loading="lazy"
-          decoding="async"
-          class:list={[
-            'rounded-md object-cover',
-            compact ? 'h-16 w-16' : 'h-20 w-20 sm:h-24 sm:w-24',
-          ]}
-        />
-      </div>
+      <img
+        src={url(data.cover)}
+        width={compact ? 64 : 96}
+        height={compact ? 64 : 96}
+        alt=""
+        loading="lazy"
+        decoding="async"
+        class:list={[
+          'pointer-events-none relative z-10 float-left mb-2 rounded-md object-cover',
+          compact ? 'mr-3 h-16 w-16' : 'mr-4 h-20 w-20 sm:h-24 sm:w-24',
+        ]}
+      />
     )
   }
 
-  <div class="min-w-0 flex-1">
-  <header class="relative z-10 flex items-baseline justify-between gap-3">
+  <header class="relative z-10 mb-2">
+    <span
+      class="float-right ml-2 font-mono text-xs text-muted"
+      itemprop="dateCreated"
+    >
+      {data.year}
+    </span>
     <h3
-      class:list={['m-0 font-medium transition-colors group-hover:text-accent', compact ? 'text-base' : 'text-lg']}
+      class:list={[
+        'm-0 font-medium transition-colors group-hover:text-accent',
+        compact ? 'text-base' : 'text-lg',
+      ]}
       itemprop="name"
     >
       {data.title}
     </h3>
-    <span class="font-mono text-xs text-muted" itemprop="dateCreated">{data.year}</span>
   </header>
 
-  <p class="relative z-10 mt-2 text-sm text-muted pointer-events-none" itemprop="abstract">
+  <p class="pointer-events-none relative z-10 text-sm text-muted" itemprop="abstract">
     {data.summary}
   </p>
 
   {
     data.stack.length > 0 && (
-      <ul class="relative z-10 mt-3 flex flex-wrap gap-1.5 pointer-events-none">
+      <ul class="pointer-events-none relative z-10 mt-3 flex flex-wrap gap-1.5 clear-both">
         {data.stack.map((s) => (
           <li class="rounded bg-border/70 px-1.5 py-0.5 font-mono text-xs text-fg/85">{s}</li>
         ))}
@@ -104,7 +116,7 @@ const primaryIsExternal = primaryHref !== null && /^https?:/i.test(primaryHref);
 
   {
     data.metric && (
-      <p class="relative z-10 mt-3">
+      <p class="relative z-10 mt-3 clear-both">
         <a
           href={data.metric.href}
           rel="noopener"
@@ -124,5 +136,4 @@ const primaryIsExternal = primaryHref !== null && /^https?:/i.test(primaryHref);
       </p>
     )
   }
-  </div>
 </article>
