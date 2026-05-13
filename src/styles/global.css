@@ -4,24 +4,32 @@
 
 /* ------------------------------------------------------------------ */
 /* Theme tokens                                                        */
-/* Forkers: change these to rebrand. All Tailwind colors point here.   */
+/* Dark by default. Light mode kicks in for users with that preference.*/
+/* Forkers: tweak these five values to rebrand.                        */
 /* ------------------------------------------------------------------ */
 
 :root {
-  --color-bg: 250 250 249;       /* warm white */
-  --color-fg: 24 24 27;          /* near-black */
-  --color-muted: 113 113 122;    /* zinc-500 */
-  --color-accent: 14 116 144;    /* teal-700 */
-  --color-border: 228 228 231;   /* zinc-200 */
+  /* Dark default — slate-based, Brittany-Chiang-inspired */
+  --color-bg: 15 23 42;          /* slate-900 */
+  --color-fg: 226 232 240;       /* slate-200 */
+  --color-muted: 148 163 184;    /* slate-400 */
+  --color-accent: 94 234 212;    /* teal-300 */
+  --color-border: 51 65 85;      /* slate-700 */
+
+  --gradient-1: 56 189 248;      /* sky-400 — top-left glow */
+  --gradient-2: 14 116 144;      /* cyan-700 — bottom-right glow */
 }
 
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: light) {
   :root {
-    --color-bg: 9 9 11;          /* zinc-950 */
-    --color-fg: 244 244 245;     /* zinc-100 */
-    --color-muted: 161 161 170;  /* zinc-400 */
-    --color-accent: 56 189 248;  /* sky-400 */
-    --color-border: 39 39 42;    /* zinc-800 */
+    --color-bg: 250 250 249;     /* warm white */
+    --color-fg: 24 24 27;        /* near-black */
+    --color-muted: 82 82 91;     /* zinc-600 */
+    --color-accent: 14 116 144;  /* teal-700 */
+    --color-border: 228 228 231; /* zinc-200 */
+
+    --gradient-1: 14 116 144;
+    --gradient-2: 56 189 248;
   }
 }
 
@@ -39,22 +47,30 @@ html {
 
 body {
   min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
-}
-
-main {
-  flex: 1 0 auto;
+  background-image:
+    radial-gradient(circle 900px at 0% -10%, rgb(var(--gradient-1) / 0.10), transparent 70%),
+    radial-gradient(circle 700px at 100% 110%, rgb(var(--gradient-2) / 0.08), transparent 70%);
+  background-attachment: fixed;
 }
 
 a {
   color: rgb(var(--color-accent));
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+
+a:hover {
+  color: rgb(var(--color-fg));
+}
+
+/* Prose links — markdown content keeps the underline for clarity. */
+.prose a {
   text-decoration: underline;
   text-underline-offset: 3px;
   text-decoration-thickness: 1px;
 }
 
-a:hover {
+.prose a:hover {
   text-decoration-thickness: 2px;
 }
 
@@ -80,21 +96,17 @@ pre code {
   padding: 0;
 }
 
-/* No layout shift on images — the template enforces explicit dims everywhere,
-   but this is a safety net. */
 img {
   max-width: 100%;
   height: auto;
 }
 
-/* Focus styles for keyboard users — accessibility target is 100. */
 :focus-visible {
   outline: 2px solid rgb(var(--color-accent));
   outline-offset: 2px;
   border-radius: 2px;
 }
 
-/* Skip-link, shown only when focused. */
 .skip-link {
   position: absolute;
   left: -9999px;
@@ -106,4 +118,12 @@ img {
   background: rgb(var(--color-bg));
   border: 2px solid rgb(var(--color-accent));
   padding: 0.5rem 1rem;
+}
+
+/* Hide scrollbar for the sticky sidebar nav, keep functionality. */
+.nav-scroll::-webkit-scrollbar {
+  display: none;
+}
+.nav-scroll {
+  scrollbar-width: none;
 }

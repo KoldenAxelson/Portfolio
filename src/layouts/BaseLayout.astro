@@ -2,7 +2,7 @@
 import { SITE } from '@config';
 import { url } from '@lib/url';
 import SEO from '@components/SEO.astro';
-import Nav from '@components/Nav.astro';
+import SideBar from '@components/SideBar.astro';
 import Footer from '@components/Footer.astro';
 import '../styles/global.css';
 
@@ -15,8 +15,6 @@ interface Props {
   modifiedTime?: Date;
   noindex?: boolean;
   schema?: Record<string, unknown>[];
-  /** Set on /writing/[slug] etc. to widen prose. */
-  wide?: boolean;
 }
 
 const {
@@ -28,7 +26,6 @@ const {
   modifiedTime,
   noindex,
   schema,
-  wide = false,
 } = Astro.props;
 ---
 
@@ -39,7 +36,6 @@ const {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
 
-    <!-- Preload primary font. Swap for your chosen typeface. -->
     <link
       rel="preload"
       href="https://rsms.me/inter/font-files/Inter-roman.var.woff2?v=3.19"
@@ -63,12 +59,19 @@ const {
       schema={schema}
     />
   </head>
-  <body>
+  <body class="leading-relaxed">
     <a href="#main" class="skip-link">Skip to content</a>
-    <Nav />
-    <main id="main" class:list={['mx-auto w-full px-4 py-10', wide ? 'max-w-4xl' : 'max-w-3xl']}>
-      <slot />
-    </main>
-    <Footer />
+
+    <div class="mx-auto min-h-screen max-w-screen-xl px-6 py-0 lg:flex lg:justify-between lg:gap-4 lg:px-12">
+      <SideBar />
+
+      <main
+        id="main"
+        class="pt-12 lg:w-1/2 lg:py-24"
+      >
+        <slot />
+        <Footer />
+      </main>
+    </div>
   </body>
 </html>

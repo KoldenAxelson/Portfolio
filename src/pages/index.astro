@@ -1,6 +1,6 @@
 ---
-// Homepage — pure Astro HTML, zero JS on initial paint.
-// STRATEGY rule: no Vue island above the fold.
+// Homepage right column. Identity lives in the SideBar.
+// Pure Astro HTML, zero JS on initial paint.
 import { getCollection } from 'astro:content';
 import BaseLayout from '@layouts/BaseLayout.astro';
 import ProjectCard from '@components/ProjectCard.astro';
@@ -18,47 +18,43 @@ const recentPosts = (await getCollection('posts', ({ data }) => !data.draft))
 ---
 
 <BaseLayout>
-  <!-- HERO — semantic, indexable, zero JS -->
-  <section class="mb-16">
-    <p class="font-mono text-sm text-muted">{SITE.author.role} · {SITE.author.location}</p>
-    <h1 class="mt-2 text-3xl font-medium leading-tight sm:text-4xl">
-      {SITE.author.name}
-    </h1>
-    <p class="mt-4 max-w-prose text-lg text-muted">{SITE.author.bio}</p>
-    <p class="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm">
-      <a href={url('/work')}>See my work →</a>
-      <a href={url('/cv')}>Read my CV →</a>
-      <a href={`mailto:${SITE.author.email}`}>Get in touch →</a>
-    </p>
+  <!-- ABOUT — long-form, follows the short bio in the sidebar -->
+  <section id="about" class="mb-20" aria-labelledby="about-heading">
+    <h2 id="about-heading" class="sr-only">About</h2>
+    <p class="text-base text-muted">{SITE.author.longBio}</p>
   </section>
 
   <!-- FEATURED WORK -->
   {
     featured.length > 0 && (
-      <section class="mb-16" aria-labelledby="featured-heading">
+      <section id="work" class="mb-20" aria-labelledby="featured-heading">
         <header class="mb-6 flex items-baseline justify-between">
-          <h2 id="featured-heading" class="text-xl font-medium">Featured work</h2>
+          <h2 id="featured-heading" class="font-mono text-xs uppercase tracking-widest text-fg">
+            Featured work
+          </h2>
           <a href={url('/work')} class="text-sm">All projects →</a>
         </header>
-        <div class="grid gap-4 sm:grid-cols-2">
+        <div class="space-y-4">
           {featured.map((p) => <ProjectCard project={p} />)}
         </div>
       </section>
     )
   }
 
-  <!-- RECENT WRITING — plain text, AI-readable -->
+  <!-- RECENT WRITING -->
   {
     recentPosts.length > 0 && (
-      <section class="mb-16" aria-labelledby="writing-heading">
+      <section id="writing" class="mb-20" aria-labelledby="writing-heading">
         <header class="mb-6 flex items-baseline justify-between">
-          <h2 id="writing-heading" class="text-xl font-medium">Recent writing</h2>
+          <h2 id="writing-heading" class="font-mono text-xs uppercase tracking-widest text-fg">
+            Recent writing
+          </h2>
           <a href={url('/writing')} class="text-sm">All posts →</a>
         </header>
         <ul class="divide-y divide-border">
           {recentPosts.map((post) => (
             <li class="flex flex-col gap-1 py-3 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
-              <a href={url(`/writing/${post.slug}`)} class="no-underline font-medium">
+              <a href={url(`/writing/${post.slug}`)} class="no-underline font-medium text-fg hover:!text-accent">
                 {post.data.title}
               </a>
               <span class="font-mono text-xs text-muted">
