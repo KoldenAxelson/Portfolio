@@ -1,11 +1,13 @@
 # build output
 dist/
 .astro/
+.astro-stale-*/
 .output/
 
 # dependencies
 node_modules/
 .nm-old-*/
+.vite-stale-*/
 .pnp/
 .pnp.js
 
