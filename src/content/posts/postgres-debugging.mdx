@@ -1,0 +1,83 @@
+---
+title: 'Postgres Slow-Query Debugging: A Field Guide'
+description: 'The set of commands and patterns I reach for when a Postgres query has gone bad in production. Most of this is not in the official docs.'
+pubDate: 2026-01-30
+tags: ['postgres', 'reliability', 'backend']
+---
+
+Postgres has the best documentation of any database I've used and yet, when something is
+on fire in production, the docs aren't where I look first. This is the actual sequence
+of things I run.
+
+## Step 1: What is currently running?
+
+```sql
+SELECT pid, age(clock_timestamp(), query_start), state, query
+FROM pg_stat_activity
+WHERE state != 'idle'
+ORDER BY query_start ASC;
+```
+
+The longest-running query that isn't idle is almost always the cause. If you see
+something stuck in `idle in transaction` for more than a few minutes, that's also a problem —
+it's probably holding a lock somewhere.
+
+## Step 2: Who's waiting on whom?
+
+```sql
+SELECT
+  blocked.pid AS blocked_pid,
+  blocked.query AS blocked_query,
+  blocking.pid AS blocking_pid,
+  blocking.query AS blocking_query
+FROM pg_stat_activity blocked
+JOIN pg_stat_activity blocking ON blocking.pid = ANY(pg_blocking_pids(blocked.pid));
+```
+
+This is the lock graph. If you've got cascading slowness, this query tells you which
+transaction is at the root.
+
+## Step 3: pg_stat_statements
+
+If `pg_stat_statements` is enabled (and it should be), this is the long-tail view:
+
+```sql
+SELECT query, calls, total_exec_time, mean_exec_time
+FROM pg_stat_statements
+ORDER BY total_exec_time DESC
+LIMIT 20;
+```
+
+Look at `total_exec_time`, not `mean_exec_time`. A query that runs in 30ms but executes
+10M times a day is a much bigger problem than a query that runs in 4s but happens once
+an hour.
+
+## Step 4: EXPLAIN ANALYZE BUFFERS
+
+When you've identified the bad query, EXPLAIN ANALYZE BUFFERS is the gold standard. The
+key thing most people miss is `BUFFERS` — without it, you can't tell if a slow seq scan is
+slow because it's CPU-bound or because it's pulling data off disk.
+
+```sql
+EXPLAIN (ANALYZE, BUFFERS, VERBOSE) SELECT ...;
+```
+
+If `shared read` numbers are huge, you need an index. If `shared hit` is huge and the query
+is still slow, you have a query plan problem.
+
+## Step 5: Indexes
+
+The two things to check before adding a new index:
+
+1. `pg_stat_user_indexes` — does an existing index serve this query and isn't being used?
+2. The plan you're seeing now — would the index *actually* be used? Postgres's planner
+   makes cost-based decisions; an index isn't free.
+
+Half the time the answer is "fix the query to use the existing index." The other half
+is "add the index but make it partial." Full-table indexes on huge tables are a footgun.
+
+---
+
+This is the shape of a Postgres debugging session in production. Every step takes 30
+seconds. The whole loop, when you're in flow, runs in under five minutes. Most "slow
+Postgres" stories I read could have been resolved in that time.

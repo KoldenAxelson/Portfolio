@@ -13,11 +13,17 @@ const tier1 = all.filter((p) => p.data.tier === 1);
 const tier2 = all.filter((p) => p.data.tier === 2);
 
 const allTags = [...new Set(all.flatMap((p) => p.data.tags))];
+
+const sections = [
+  ...(tier1.length > 0 ? [{ id: 'featured', label: 'Featured' }] : []),
+  ...(tier2.length > 0 ? [{ id: 'listed', label: 'All projects' }] : []),
+];
 ---
 
 <BaseLayout
   title="Work"
   description="Featured projects and full project catalogue."
+  sections={sections}
 >
   <header class="mb-8">
     <h1 class="text-3xl font-medium">Work</h1>
@@ -37,7 +43,7 @@ const allTags = [...new Set(all.flatMap((p) => p.data.tags))];
 
   {
     tier1.length > 0 && (
-      <section class="mb-12" aria-labelledby="featured-heading">
+      <section id="featured" class="mb-12 scroll-mt-24" aria-labelledby="featured-heading">
         <h2 id="featured-heading" class="mb-4 text-xl font-medium">Featured</h2>
         <div class="space-y-4">
           {tier1.map((p) => (
@@ -52,7 +58,7 @@ const allTags = [...new Set(all.flatMap((p) => p.data.tags))];
 
   {
     tier2.length > 0 && (
-      <section class="mb-12" aria-labelledby="listed-heading">
+      <section id="listed" class="mb-12 scroll-mt-24" aria-labelledby="listed-heading">
         <h2 id="listed-heading" class="mb-4 text-xl font-medium">All projects</h2>
         <div class="space-y-3">
           {tier2.map((p) => (

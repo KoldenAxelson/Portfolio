@@ -1,0 +1,48 @@
+---
+title: 'Incident Response Bot'
+tier: 1
+summary: 'A Slack bot that runs incident response on autopilot — paging, roles, comms templates, post-mortem scaffolding. Used for 280+ incidents across 4 teams.'
+tags: ['backend', 'slack', 'reliability', 'team-tools']
+stack: ['TypeScript', 'Slack Bolt', 'Postgres', 'PagerDuty API']
+role: 'Tech lead, 3-engineer team'
+year: '2023'
+status: 'shipped'
+featured: true
+links:
+  repo: 'https://github.com/example/incident-bot'
+---
+
+## Problem
+
+Incidents were tribal knowledge. Senior engineers ran them; everyone else watched. The
+incident-command training pipeline was "shadow three incidents, then you're on the rotation."
+Quality varied wildly by who was on call.
+
+## Constraints
+
+- Bot had to work inside Slack — that's where the team already lives.
+- Output had to feed our existing post-mortem template, not replace it.
+- Couldn't require new tools or training; it had to be obvious in the first incident.
+
+## What I did
+
+`/incident` opens a guided flow: pick severity, the bot creates a dedicated channel,
+pages the on-call IC, assigns roles (IC, comms, scribe), pins a status doc, and posts a
+running timeline. When the incident closes, it auto-drafts a post-mortem using the
+timeline as the skeleton.
+
+The non-obvious part was the role assignment logic. We tried "whoever's on call is IC"
+but that breaks when an incident escalates and the on-call becomes a subject matter
+expert. So roles can be reassigned mid-incident, and the bot tracks the chain of custody.
+
+## Outcome
+
+- 280+ incidents run through the bot in the first year
+- Median time-to-first-action: 14 min → 4 min
+- Post-mortem completion rate: ~50% → 94% (mostly because the bot pre-fills the doc)
+
+## What I'd do differently
+
+The first version had a 12-question setup wizard. Nobody filled it out under stress.
+v2 starts the channel in 5 seconds with the minimum info and fills in the rest async.
+Should have started there.
