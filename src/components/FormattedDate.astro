@@ -3,15 +3,17 @@ import { SITE } from '@config';
 
 interface Props {
   date: Date;
+  /** 'short' (default) = "Apr 8, 2026". 'long' = "April 8, 2026". */
+  format?: 'short' | 'long';
 }
 
-const { date } = Astro.props;
+const { date, format = 'short' } = Astro.props;
 const iso = date.toISOString();
 const human = date.toLocaleDateString(SITE.locale, {
-  year: 'numeric',
-  month: 'long',
+  month: format === 'short' ? 'short' : 'long',
   day: 'numeric',
+  year: 'numeric',
 });
 ---
 
-<time datetime={iso}>{human}</time>
+<time datetime={iso} class="whitespace-nowrap">{human}</time>

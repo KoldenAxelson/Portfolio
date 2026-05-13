@@ -1,28 +1,29 @@
 <script setup lang="ts">
-// NetworkPanel — interactive two-panel "social proof" widget.
+// NetworkPanel — interactive "social proof" widget.
 //
-// Right panel: contact selector (list of named connections, grouped by title).
-// Left panel:  active mini-profile (defaults to the site owner; switches to a
-//              contact when one is selected from the right panel).
+// Two visual modes depending on viewport:
 //
-// When the visitor clicks "Request an intro" / "Get in touch", the right
-// panel swaps from the selector into a compose form. Submitting the form
-// opens the visitor's mail client with a pre-filled mailto: link.
+// DESKTOP (lg+): two panels side-by-side.
+//   Left  = active mini-profile (owner by default, or selected contact)
+//   Right = sticky scrollable list of contacts; swaps to compose form
+//           when the visitor clicks Request Intro / Get in touch.
 //
-// Why mailto: instead of POSTing to an API? Portability. The Neofolio
-// template runs on GitHub Pages, Cloudflare Pages, or any static host.
-// mailto: works everywhere, surfaces in the visitor's actual sent folder,
-// and lets the conversation continue threaded after the first message.
-// Forkers who want an API-backed form can swap the submit handler for a
-// fetch to /api/contact in ~5 lines.
+// MOBILE (<lg): single-view drill-down. Exactly one of:
+//   - List   (default — owner pinned at top, contacts below)
+//   - Profile (after tapping a name; with "← All connections" back)
+//   - Compose (after tapping Request Intro / Get in touch; with "← back")
+//
+// Submitting the form opens the visitor's mail client via mailto:.
+// Works on any static host. Forkers wanting an API-backed form can swap
+// the submit href for a fetch() to /api/contact in ~5 lines.
 
-import { ref, computed, watch } from 'vue';
+import { ref, computed, nextTick, watch } from 'vue';
 
 interface Owner {
   name: string;
   title: string;
   email: string;
-  /** Short bio shown in the default left panel. */
+  /** Short bio shown when the visitor lands on the owner profile. */
   bio: string;
 }
 
@@ -45,15 +46,17 @@ interface Props {
 const props = defineProps<Props>();
 
 // ─────────── State ───────────
-// selectedId: null = owner profile, otherwise contact id
+// selectedId: null = owner, otherwise contact id
 const selectedId = ref<string | null>(null);
-// mode: 'select' = right shows the list; 'compose' = right shows the form
-const mode = ref<'select' | 'compose'>('select');
+// view drives mobile single-pane rendering. On desktop, the layout shows
+// list+profile side-by-side regardless of whether view is 'list' or 'profile'.
+const view = ref<'list' | 'profile' | 'compose'>('list');
 
-// Compose form fields
 const fromName = ref('');
 const fromEmail = ref('');
 const message = ref('');
+
+const sectionRef = ref<HTMLElement | null>(null);
 
 // ─────────── Derived ───────────
 const isContactSelected = computed(() => selectedId.value !== null);
@@ -88,8 +91,6 @@ const activeProfile = computed<{
   return { ...c, isOwner: false };
 });
 
-// Build the mailto link reactively so the "Open email" button is always
-// up to date with the latest form input.
 const mailto = computed(() => {
   const subject = isContactSelected.value
     ? `Intro request via your portfolio: ${activeProfile.value.name}`
@@ -127,64 +128,112 @@ const mailto = computed(() => {
 
 const composeReady = computed(() => message.value.trim().length > 0);
 
-// ─────────── Actions ───────────
-function selectContact(id: string) {
-  selectedId.value = id;
-  mode.value = 'select';
-}
-
-function selectOwner() {
-  selectedId.value = null;
-  mode.value = 'select';
-}
-
-function openCompose() {
-  mode.value = 'compose';
-}
-
-function cancelCompose() {
-  mode.value = 'select';
-}
-
-// When the active profile changes, reset the form so the visitor doesn't
-// accidentally send a message intended for someone else.
-watch(selectedId, () => {
-  fromName.value = '';
-  fromEmail.value = '';
-  message.value = '';
-});
-
 const cta = computed(() =>
-  isContactSelected.value ? `Request intro to ${activeProfile.value.name.split(' ')[0]}` : 'Get in touch',
+  isContactSelected.value
+    ? `Request intro to ${activeProfile.value.name.split(' ')[0]}`
+    : 'Get in touch',
 );
 
 const messagePlaceholder = computed(() => {
   if (isContactSelected.value) {
     const ownerFirst = props.owner.name.split(' ')[0];
     const contactFirst = activeProfile.value.name.split(' ')[0];
-    return `Tell ${ownerFirst} a little about the role and why ${contactFirst} would be a good fit.`;
+    return `Tell ${ownerFirst} about the role and why ${contactFirst} would be a good fit.`;
   }
   return 'A few lines about why you are reaching out.';
+});
+
+// ─────────── Mobile visibility ───────────
+// Tailwind classes that hide/show panels on small screens; on lg+ both panels are visible.
+const profilePaneClass = computed(() =>
+  view.value === 'profile' ? 'block' : 'hidden lg:block',
+);
+const rightPaneClass = computed(() =>
+  view.value === 'profile' ? 'hidden lg:block' : 'block',
+);
+
+// ─────────── Actions ───────────
+function isMobile(): boolean {
+  return typeof window !== 'undefined' && window.matchMedia('(max-width: 1023px)').matches;
+}
+
+function scrollToTopOfPanel() {
+  if (!isMobile()) return;
+  nextTick(() => {
+    sectionRef.value?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+}
+
+function selectContact(id: string) {
+  selectedId.value = id;
+  view.value = 'profile';
+  scrollToTopOfPanel();
+}
+
+function selectOwner() {
+  selectedId.value = null;
+  view.value = 'profile';
+  scrollToTopOfPanel();
+}
+
+function backToList() {
+  view.value = 'list';
+  scrollToTopOfPanel();
+}
+
+function openCompose() {
+  view.value = 'compose';
+  scrollToTopOfPanel();
+}
+
+function cancelCompose() {
+  // Return to profile if a profile was being viewed, otherwise the list.
+  view.value = isContactSelected.value ? 'profile' : 'list';
+  scrollToTopOfPanel();
+}
+
+// Reset the form when the active profile changes so a message intended for
+// one person doesn't accidentally get sent in another's context.
+watch(selectedId, () => {
+  fromName.value = '';
+  fromEmail.value = '';
+  message.value = '';
 });
 </script>
 
 <template>
-  <section class="grid gap-6 lg:grid-cols-[1fr_22rem] lg:gap-8">
-    <!-- LEFT: active profile -->
+  <section
+    ref="sectionRef"
+    class="scroll-mt-20 grid gap-6 lg:grid-cols-[1fr_22rem] lg:items-start lg:gap-8"
+  >
+    <!-- ─── LEFT: profile ─── -->
     <article
-      class="order-2 rounded-lg border border-border bg-bg/30 p-6 lg:order-1 lg:p-8"
+      :class="['rounded-lg border border-border bg-bg/30 p-6 lg:order-1 lg:p-8', profilePaneClass]"
       aria-labelledby="active-profile-name"
     >
+      <!-- Mobile-only back-to-list button -->
+      <button
+        type="button"
+        @click="backToList"
+        class="-mt-2 mb-4 inline-flex items-center font-mono text-xs uppercase tracking-widest text-muted hover:!text-fg lg:hidden"
+      >
+        ← All connections
+      </button>
+
       <header class="flex items-start justify-between gap-4">
         <div>
           <p class="font-mono text-xs uppercase tracking-widest text-muted">
             {{ activeProfile.isOwner ? 'About me' : 'Connection' }}
           </p>
-          <h2 id="active-profile-name" class="mt-2 text-2xl font-medium tracking-tight text-fg sm:text-3xl">
+          <h2
+            id="active-profile-name"
+            class="mt-2 text-2xl font-medium tracking-tight text-fg sm:text-3xl"
+          >
             {{ activeProfile.name }}
           </h2>
           <p class="mt-1 text-muted">
-            {{ activeProfile.title }}<span v-if="activeProfile.company"> · {{ activeProfile.company }}</span>
+            {{ activeProfile.title
+            }}<span v-if="activeProfile.company"> · {{ activeProfile.company }}</span>
           </p>
         </div>
         <a
@@ -211,33 +260,38 @@ const messagePlaceholder = computed(() => {
         <button
           type="button"
           @click="openCompose"
-          :aria-pressed="mode === 'compose'"
           class="rounded border border-accent bg-accent/10 px-4 py-2 text-sm font-medium text-fg transition hover:bg-accent hover:!text-bg"
         >
           {{ cta }} →
         </button>
+        <!-- Desktop-only quick switch back to owner profile -->
         <button
           v-if="!activeProfile.isOwner"
           type="button"
           @click="selectOwner"
-          class="text-sm text-muted hover:!text-fg"
+          class="hidden text-sm text-muted hover:!text-fg lg:inline"
         >
           ← back to {{ owner.name.split(' ')[0] }}'s profile
         </button>
       </div>
     </article>
 
-    <!-- RIGHT: selector OR compose form -->
-    <aside class="order-1 lg:order-2">
-      <!-- SELECTOR -->
-      <div v-if="mode === 'select'">
+    <!-- ─── RIGHT: list OR compose ─── -->
+    <!-- Sticky on desktop with internal scroll so 30+ contacts don't push the page tall. -->
+    <aside
+      :class="[
+        rightPaneClass,
+        'lg:order-2 lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto',
+      ]"
+    >
+      <!-- LIST -->
+      <div v-if="view !== 'compose'">
         <header class="mb-4 flex items-baseline justify-between">
           <h2 class="font-mono text-xs uppercase tracking-widest text-fg">My network</h2>
           <span class="font-mono text-xs text-muted">{{ contacts.length }} contacts</span>
         </header>
 
         <ul class="space-y-1">
-          <!-- Owner pinned at top, always selectable -->
           <li>
             <button
               type="button"
@@ -245,15 +299,13 @@ const messagePlaceholder = computed(() => {
               :aria-pressed="!isContactSelected"
               class="group flex w-full flex-col items-start rounded px-3 py-2 text-left transition"
               :class="
-                !isContactSelected
+                !isContactSelected && view !== 'list'
                   ? 'bg-accent/15 text-fg'
                   : 'text-muted hover:bg-border/40 hover:text-fg'
               "
             >
               <span class="text-sm font-medium">{{ owner.name }}</span>
-              <span class="font-mono text-xs uppercase tracking-widest text-muted">
-                {{ owner.title }}
-              </span>
+              <span class="font-mono text-xs uppercase tracking-widest text-muted">{{ owner.title }}</span>
             </button>
           </li>
 
@@ -299,7 +351,7 @@ const messagePlaceholder = computed(() => {
 
         <p class="text-xs text-muted">
           <template v-if="isContactSelected">
-            This message goes to {{ owner.name.split(' ')[0] }}. They'll decide whether to make the
+            This message goes to {{ owner.name.split(' ')[0] }}. They decide whether to make the
             introduction.
           </template>
           <template v-else>
