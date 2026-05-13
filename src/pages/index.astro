@@ -112,7 +112,10 @@ const recentPosts = (await getCollection('posts', ({ data }) => !data.draft))
       }
     </ol>
     <p class="mt-8 text-sm">
-      <a href={url('/cv')}>Full CV →</a>
+      <a href={url('/cv')} class="group/cta no-underline">
+        <span class="underline underline-offset-2 decoration-1 group-hover/cta:decoration-2">Full CV</span>
+        <span aria-hidden="true" class="ml-0.5 inline-block transition-transform duration-200 ease-out motion-reduce:transition-none group-hover/cta:translate-x-0.5">→</span>
+      </a>
     </p>
   </section>
 
@@ -130,7 +133,10 @@ const recentPosts = (await getCollection('posts', ({ data }) => !data.draft))
           {featured.map((p) => <ProjectCard project={p} />)}
         </div>
         <p class="mt-8 text-sm">
-          <a href={url('/projects')}>All projects →</a>
+          <a href={url('/projects')} class="group/cta no-underline">
+            <span class="underline underline-offset-2 decoration-1 group-hover/cta:decoration-2">All projects</span>
+            <span aria-hidden="true" class="ml-0.5 inline-block transition-transform duration-200 ease-out motion-reduce:transition-none group-hover/cta:translate-x-0.5">→</span>
+          </a>
         </p>
       </section>
     )
@@ -162,7 +168,10 @@ const recentPosts = (await getCollection('posts', ({ data }) => !data.draft))
           ))}
         </ul>
         <p class="mt-8 text-sm">
-          <a href={url('/articles')}>All articles →</a>
+          <a href={url('/articles')} class="group/cta no-underline">
+            <span class="underline underline-offset-2 decoration-1 group-hover/cta:decoration-2">All articles</span>
+            <span aria-hidden="true" class="ml-0.5 inline-block transition-transform duration-200 ease-out motion-reduce:transition-none group-hover/cta:translate-x-0.5">→</span>
+          </a>
         </p>
       </section>
     )
