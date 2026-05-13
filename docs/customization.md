@@ -171,8 +171,8 @@ Only `/` uses `split`.
 
 ## Favicon
 
-Replace `public/favicon.svg`. The current one is a teal-amber tile with
-the letter "N" — appropriate for the template, not for your fork.
+Replace `public/favicon.svg`. The current one is an amber tile with the
+letter "N" — appropriate for the template, not for your fork.
 
 For browser support, you can also add a fallback `public/favicon.ico` and
 reference it from `BaseLayout.astro`.

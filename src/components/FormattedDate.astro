@@ -3,14 +3,12 @@ import { SITE } from '@config';
 
 interface Props {
   date: Date;
-  /** 'short' (default) = "Apr 8, 2026". 'long' = "April 8, 2026". */
-  format?: 'short' | 'long';
 }
 
-const { date, format = 'short' } = Astro.props;
+const { date } = Astro.props;
 const iso = date.toISOString();
 const human = date.toLocaleDateString(SITE.locale, {
-  month: format === 'short' ? 'short' : 'long',
+  month: 'short',
   day: 'numeric',
   year: 'numeric',
 });

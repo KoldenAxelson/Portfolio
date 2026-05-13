@@ -6,8 +6,8 @@
 //
 // This file is ONLY active when deployed to Cloudflare Pages. On GitHub
 // Pages there's no server, so the contact form falls back to a mailto:
-// link (see src/components/Footer.astro for the link, and HUMAN.md for
-// the static-only contact strategy).
+// link (see the Email icon in src/components/SocialIcons.astro, and
+// docs/deploying.md for the static-only contact strategy).
 
 interface Env {
   RESEND_API_KEY?: string;

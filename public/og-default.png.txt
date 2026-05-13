@@ -1,2 +1,16 @@
-This is a placeholder. Replace public/og-default.png.txt with a real
-public/og-default.png (1200×630) before going live. See HUMAN.md.
+DELETE THIS FILE AND REPLACE WITH og-default.png
+
+This is a placeholder marker. To enable OpenGraph and Twitter Card
+previews:
+
+  1. Make a 1200×630 PNG (≤100 KB recommended).
+  2. Save it as public/og-default.png.
+  3. In src/config.ts, set DEFAULT_OG_IMAGE = '/og-default.png'.
+  4. Delete this .txt file.
+
+Until then, the SEO component skips emitting og:image / twitter:image
+meta tags entirely — better than shipping broken-image links to social
+platforms.
+
+Pages can also override per-page by passing the `image` prop to
+BaseLayout.

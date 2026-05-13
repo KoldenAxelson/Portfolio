@@ -14,7 +14,7 @@ const projects = defineCollection({
     /** Tier 1 = Featured (full case study). Tier 2 = Listed. Tier 3 = Archive. */
     tier: z.union([z.literal(1), z.literal(2), z.literal(3)]),
     summary: z.string(),
-    /** Tech tags. Standardize naming — see HUMAN.md tech tag vocabulary section. */
+    /** Tech tags. Standardize naming — see docs/content.md tech tag vocabulary section. */
     tags: z.array(z.string()).default([]),
     /** Stack used to build the thing. Plain text, shown as <code> chips. */
     stack: z.array(z.string()).default([]),
@@ -27,7 +27,6 @@ const projects = defineCollection({
       .object({
         live: z.string().url().optional(),
         repo: z.string().url().optional(),
-        case_study: z.string().url().optional(),
       })
       .default({}),
     /**
@@ -96,8 +95,6 @@ const network = defineCollection({
     relationship: z.string(),
     /** Website / LinkedIn / YouTube — wherever the recruiter can verify them. */
     link: z.string().url().optional(),
-    /** Optional avatar image path, relative to /public. */
-    avatar: z.string().optional(),
     /** Display order. Lower = higher in the selector list. */
     order: z.number().default(100),
   }),

@@ -1,0 +1,4 @@
+# This file is intentionally empty.
+# robots.txt is generated dynamically by src/pages/robots.txt.ts so the
+# Sitemap: directive always uses the deployed domain (from SITE.url).
+# The dynamic route takes precedence over this static file at build time.

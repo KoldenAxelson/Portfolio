@@ -52,7 +52,6 @@ draft: false                             # If true, excluded from build
 links:                                   # All optional
   live: 'https://...'
   repo: 'https://github.com/...'
-  case_study: 'https://...'              # External case study, overrides /projects/[slug]
 
 metric:                                  # Optional vanity metric on the card
   label: '★ 612 stars'

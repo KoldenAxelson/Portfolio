@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// ProjectFilter — Vue island for tag-based filtering on /work.
+// ProjectFilter — Vue island for tag-based filtering on /projects.
 //
 // Hydrated only on interaction or scroll (client:visible in the page),
 // so it never blocks initial paint. The static HTML lists all projects

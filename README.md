@@ -70,7 +70,7 @@ Full docs in [/docs](./docs/README.md):
 ```
 
 Plus: `/rss.xml`, `/feed.json`, `/sitemap-index.xml`, `/robots.txt`,
-`/humans.txt`, redirects from legacy `/work` and `/writing` paths.
+`/humans.txt`, plus a `/archive` redirect for any old bookmarks.
 
 ## Stack
 

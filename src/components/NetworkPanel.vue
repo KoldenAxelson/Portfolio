@@ -35,7 +35,6 @@ interface Contact {
   blurb: string;
   relationship: string;
   link?: string;
-  avatar?: string;
 }
 
 interface Props {
@@ -68,7 +67,6 @@ const activeProfile = computed<{
   blurb: string;
   relationship?: string;
   link?: string;
-  avatar?: string;
   isOwner: boolean;
 }>(() => {
   if (!selectedId.value) {
