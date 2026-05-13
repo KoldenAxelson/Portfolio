@@ -62,7 +62,7 @@ const email = SITE.author.email;
           href={item.href}
           aria-label={item.label}
           rel={item.href.startsWith('http') ? 'me noopener' : undefined}
-          class="block text-muted transition hover:text-fg"
+          class="-m-2 block rounded p-2 text-muted transition hover:bg-border/40 hover:text-fg"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -84,7 +84,7 @@ const email = SITE.author.email;
         <a
           href={`mailto:${email}`}
           aria-label="Email"
-          class="block text-muted transition hover:text-fg"
+          class="-m-2 block rounded p-2 text-muted transition hover:bg-border/40 hover:text-fg"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

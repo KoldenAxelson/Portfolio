@@ -3,6 +3,30 @@
 @tailwind utilities;
 
 /* ------------------------------------------------------------------ */
+/* Self-hosted Inter font                                              */
+/* Avoids a third-party (rsms.me) request in the critical path —       */
+/* eliminates the render-blocking external CSS and the DNS/TLS hop.    */
+/* font-display: swap so the page paints in the fallback first, then   */
+/* swaps to Inter when ready (prevents FOIT, accepts a small FOUT).    */
+/* ------------------------------------------------------------------ */
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/InterVariable.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/InterVariable-Italic.woff2') format('woff2');
+}
+
+/* ------------------------------------------------------------------ */
 /* Theme tokens                                                        */
 /* Light by default. Dark kicks in for users with that preference.     */
 /* Forkers: tweak these five values to rebrand.                        */
@@ -11,8 +35,8 @@
 :root {
   --color-bg: 250 250 247;       /* warm paper white */
   --color-fg: 24 24 27;          /* zinc-900 */
-  --color-muted: 113 113 122;    /* zinc-500 */
-  --color-accent: 180 83 9;      /* amber-700 — distinctive, warm */
+  --color-muted: 82 82 91;       /* zinc-600 — WCAG AA on warm-white (6.5:1) */
+  --color-accent: 154 52 18;     /* amber-800 — AA contrast against bg */
   --color-border: 228 228 231;   /* zinc-200 */
 }
 
@@ -42,25 +66,30 @@ body {
   min-height: 100dvh;
 }
 
+/*
+ * Links: default to underlined so users with color-blindness can identify
+ * them without relying on the amber accent alone (WCAG 1.4.1). Pages /
+ * components that want a no-underline look opt out explicitly via
+ * `class="no-underline"` — used on nav, icon links, card overlays, etc.
+ */
 a {
   color: rgb(var(--color-accent));
-  text-decoration: none;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
   transition: color 150ms ease;
 }
 
 a:hover {
   color: rgb(var(--color-fg));
-}
-
-/* Prose links keep the underline for readability inside long text. */
-.prose a {
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  text-decoration-thickness: 1px;
-}
-
-.prose a:hover {
   text-decoration-thickness: 2px;
+}
+
+.no-underline {
+  text-decoration: none;
+}
+.no-underline:hover {
+  text-decoration: none;
 }
 
 code {
