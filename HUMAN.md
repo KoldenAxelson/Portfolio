@@ -8,11 +8,10 @@ Punch list for Konrad. Not for forkers — they read README.
 
 - [ ] **Enable GitHub Pages.** `Settings → Pages → Source: GitHub Actions`.
       https://github.com/KoldenAxelson/neofolio/settings/pages
-- [ ] **Set `BASE_PATH = /neofolio`** as a repo variable.
-      `Settings → Secrets and variables → Actions → Variables → New`.
-      Required because this is a project site (`koldenaxelson.github.io/neofolio/`).
-- [ ] Re-run the failed Actions workflow.
-- [ ] Confirm demo loads at <https://koldenaxelson.github.io/neofolio/>.
+- [ ] Push the base-path fix (commit `fix: base-path aware internal links`).
+      The workflow now auto-detects `BASE_PATH=/neofolio` from the repo name —
+      no manual variable needed. If you already set one, you can leave or delete it.
+- [ ] Confirm demo loads styled at <https://koldenaxelson.github.io/neofolio/>.
 - [ ] `rm -rf .nm-old-2-stale` if it's still in the folder.
 
 ## Before forking to wf-site

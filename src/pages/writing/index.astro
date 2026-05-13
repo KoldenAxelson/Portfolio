@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '@layouts/BaseLayout.astro';
 import FormattedDate from '@components/FormattedDate.astro';
+import { url } from '@lib/url';
 
 const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
   (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
@@ -23,7 +24,7 @@ const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
         <li class="py-4">
           <article>
             <h2 class="m-0 text-lg font-medium">
-              <a href={`/writing/${post.slug}`} class="no-underline">
+              <a href={url(`/writing/${post.slug}`)} class="no-underline">
                 {post.data.title}
               </a>
             </h2>

@@ -1,6 +1,7 @@
 import rss from '@astrojs/rss';
 import { getCollection } from 'astro:content';
 import { SITE } from '@config';
+import { url } from '@lib/url';
 import type { APIRoute } from 'astro';
 
 export const GET: APIRoute = async (context) => {
@@ -16,7 +17,7 @@ export const GET: APIRoute = async (context) => {
       title: post.data.title,
       description: post.data.description,
       pubDate: post.data.pubDate,
-      link: `/writing/${post.slug}/`,
+      link: url(`/writing/${post.slug}/`),
     })),
   });
 };

@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '@layouts/BaseLayout.astro';
 import ProjectCard from '@components/ProjectCard.astro';
 import ProjectFilter from '@components/ProjectFilter.vue';
+import { url } from '@lib/url';
 
 const all = (await getCollection('projects', ({ data }) => !data.draft && data.tier !== 3)).sort(
   (a, b) => a.data.tier - b.data.tier || b.data.year.localeCompare(a.data.year),
@@ -65,6 +66,6 @@ const allTags = [...new Set(all.flatMap((p) => p.data.tags))];
   }
 
   <p class="mt-12 text-sm text-muted">
-    Abandoned and post-mortem projects live in the <a href="/archive">archive</a>.
+    Abandoned and post-mortem projects live in the <a href={url('/archive')}>archive</a>.
   </p>
 </BaseLayout>
