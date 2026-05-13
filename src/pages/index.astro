@@ -6,6 +6,7 @@ import BaseLayout from '@layouts/BaseLayout.astro';
 import ProjectCard from '@components/ProjectCard.astro';
 import FormattedDate from '@components/FormattedDate.astro';
 import { SITE } from '@config';
+import { url } from '@lib/url';
 
 const featured = (await getCollection('projects', ({ data }) => !data.draft && data.featured))
   .sort((a, b) => b.data.year.localeCompare(a.data.year))
@@ -25,8 +26,8 @@ const recentPosts = (await getCollection('posts', ({ data }) => !data.draft))
     </h1>
     <p class="mt-4 max-w-prose text-lg text-muted">{SITE.author.bio}</p>
     <p class="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm">
-      <a href="/work">See my work →</a>
-      <a href="/cv">Read my CV →</a>
+      <a href={url('/work')}>See my work →</a>
+      <a href={url('/cv')}>Read my CV →</a>
       <a href={`mailto:${SITE.author.email}`}>Get in touch →</a>
     </p>
   </section>
@@ -37,7 +38,7 @@ const recentPosts = (await getCollection('posts', ({ data }) => !data.draft))
       <section class="mb-16" aria-labelledby="featured-heading">
         <header class="mb-6 flex items-baseline justify-between">
           <h2 id="featured-heading" class="text-xl font-medium">Featured work</h2>
-          <a href="/work" class="text-sm">All projects →</a>
+          <a href={url('/work')} class="text-sm">All projects →</a>
         </header>
         <div class="grid gap-4 sm:grid-cols-2">
           {featured.map((p) => <ProjectCard project={p} />)}
@@ -52,12 +53,12 @@ const recentPosts = (await getCollection('posts', ({ data }) => !data.draft))
       <section class="mb-16" aria-labelledby="writing-heading">
         <header class="mb-6 flex items-baseline justify-between">
           <h2 id="writing-heading" class="text-xl font-medium">Recent writing</h2>
-          <a href="/writing" class="text-sm">All posts →</a>
+          <a href={url('/writing')} class="text-sm">All posts →</a>
         </header>
         <ul class="divide-y divide-border">
           {recentPosts.map((post) => (
             <li class="flex flex-col gap-1 py-3 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
-              <a href={`/writing/${post.slug}`} class="no-underline font-medium">
+              <a href={url(`/writing/${post.slug}`)} class="no-underline font-medium">
                 {post.data.title}
               </a>
               <span class="font-mono text-xs text-muted">

@@ -1,5 +1,6 @@
 ---
 import { SITE } from '@config';
+import { url } from '@lib/url';
 
 const year = new Date().getFullYear();
 
@@ -18,7 +19,7 @@ const stack = ['Astro', 'Vue islands', 'Tailwind', 'MDX'];
       {SITE.links.twitter && <li><a href={SITE.links.twitter} rel="me">Twitter</a></li>}
       {SITE.links.mastodon && <li><a href={SITE.links.mastodon} rel="me">Mastodon</a></li>}
       {SITE.links.bluesky && <li><a href={SITE.links.bluesky} rel="me">Bluesky</a></li>}
-      {SITE.links.rss && <li><a href={SITE.links.rss}>RSS</a></li>}
+      {SITE.links.rss && <li><a href={url(SITE.links.rss)}>RSS</a></li>}
       <li><a href={`mailto:${SITE.author.email}`}>Email</a></li>
     </ul>
   </div>

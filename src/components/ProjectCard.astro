@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
+import { url } from '@lib/url';
 
 interface Props {
   project: CollectionEntry<'projects'>;
@@ -23,7 +24,7 @@ const { data, slug } = project;
     <h3 class:list={['m-0 font-medium', compact ? 'text-base' : 'text-lg']} itemprop="name">
       {
         data.links.case_study || data.tier === 1 ? (
-          <a href={`/work/${slug}`} class="no-underline">
+          <a href={url(`/work/${slug}`)} class="no-underline">
             {data.title}
           </a>
         ) : (
