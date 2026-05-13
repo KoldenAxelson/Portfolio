@@ -19,7 +19,7 @@
 #   make clean      remove dist + .astro + lighthouse reports
 
 .PHONY: help setup dev build preview lighthouse clean \
-        contact post project archive
+        contact post project archive noise
 
 .DEFAULT_GOAL := help
 
@@ -65,3 +65,6 @@ project: ## Add a project (src/content/projects/)
 
 archive: ## Add an archive entry (src/content/archive/)
 	@node scripts/new-archive.mjs
+
+noise: ## Regenerate the matte noise texture (public/textures/noise.png)
+	@node scripts/_gen-noise.mjs

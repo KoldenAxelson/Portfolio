@@ -87,7 +87,10 @@ const {
       schema={schema}
     />
   </head>
-  <body class="leading-relaxed">
+  <body
+    class="leading-relaxed"
+    style={`--noise-bg-light: url('${url('/textures/noise.png')}'); --noise-bg-dark: url('${url('/textures/noise-dark.png')}')`}
+  >
     <a href="#main" class="skip-link">Skip to content</a>
 
     <TopNav />
