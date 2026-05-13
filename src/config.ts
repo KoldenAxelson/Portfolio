@@ -51,12 +51,12 @@ export const SITE = {
       "The cleared job was a SCIF — fancy way of saying 'a room where your phone is jealous'. Five years without a notification, and I lived.",
       "I once wrote a postmortem titled 'How My Confidence in Bash Cost Us 14 Minutes'. Got framed by the team. Still hangs in the kitchen at the old office.",
     ],
-    work: [
+    projects: [
       "Most of these started as 'I'll do this in a weekend' projects. Plot twist: they did not.",
       'The Postgres CLI got a star from someone at Crunchy Data and I haven’t stopped grinning since.',
       'Half my side projects exist because the proper tool cost $20/mo and I was annoyed about it.',
     ],
-    writing: [
+    articles: [
       'I keep notes in a paper journal too. Half my drafts live there until they survive long enough to type up.',
       "I edit posts out loud, walking the apartment. My neighbor probably thinks I'm in a constant phone call.",
       "If you read one of these and it changed your mind about something, email me. That's the entire reason I keep doing it.",
@@ -77,16 +77,12 @@ export const SITE = {
    * Top-nav items. Order matters. Each has an icon key that the TopNav
    * component knows how to render.
    *
-   * Labels and routes can differ — e.g. the nav says "Projects" but the
-   * URL stays /work because that's where the Astro page lives. Same for
-   * "Articles" → /writing.
-   *
    * Available icon keys: 'folder' | 'newspaper' | 'desktop' | 'globe' |
    * 'briefcase'. Add more in TopNav.astro.
    */
   nav: [
-    { label: 'Projects', href: '/work', icon: 'folder' as const },
-    { label: 'Articles', href: '/writing', icon: 'newspaper' as const },
+    { label: 'Projects', href: '/projects', icon: 'folder' as const },
+    { label: 'Articles', href: '/articles', icon: 'newspaper' as const },
     { label: 'Network', href: '/network', icon: 'globe' as const },
     { label: 'Uses', href: '/uses', icon: 'desktop' as const },
     { label: 'CV', href: '/cv', icon: 'briefcase' as const },

@@ -1,56 +1,31 @@
 ---
+// /writing/[slug] redirects to /articles/[slug]. Per-slug static redirect.
+// Safe to delete this directory once no inbound links use the old URL.
 import { getCollection } from 'astro:content';
-import BaseLayout from '@layouts/BaseLayout.astro';
-import FormattedDate from '@components/FormattedDate.astro';
-import { SITE } from '@config';
+import { url } from '@lib/url';
 
 export async function getStaticPaths() {
   const posts = await getCollection('posts', ({ data }) => !data.draft);
-  return posts.map((p) => ({ params: { slug: p.slug }, props: { post: p } }));
+  return posts.map((p) => ({ params: { slug: p.slug } }));
 }
 
-const { post } = Astro.props;
-const { Content } = await post.render();
-const { data } = post;
-
-const schema = [
-  {
-    '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
-    headline: data.title,
-    description: data.description,
-    datePublished: data.pubDate.toISOString(),
-    ...(data.updatedDate && { dateModified: data.updatedDate.toISOString() }),
-    author: { '@type': 'Person', name: SITE.author.name },
-    keywords: data.tags.join(', '),
-    mainEntityOfPage: new URL(`/writing/${post.slug}`, SITE.url).toString(),
-  },
-];
+const { slug } = Astro.params;
+const target = url(`/articles/${slug}`);
 ---
 
-<BaseLayout
-  title={data.title}
-  description={data.description}
-  type="article"
-  publishedTime={data.pubDate}
-  modifiedTime={data.updatedDate}
-  schema={schema}
->
-  <article class="prose prose-lg max-w-none">
-    <header class="not-prose mb-8">
-      <h1 class="text-3xl font-medium sm:text-4xl">{data.title}</h1>
-      <p class="mt-3 text-lg text-muted">{data.description}</p>
-      <p class="mt-3 flex flex-wrap items-center gap-x-3 font-mono text-sm text-muted">
-        <FormattedDate date={data.pubDate} />
-        {data.updatedDate && (
-          <>
-            <span>· updated <FormattedDate date={data.updatedDate} /></span>
-          </>
-        )}
-        {data.tags.length > 0 && <span>· {data.tags.join(', ')}</span>}
-      </p>
-    </header>
-
-    <Content />
-  </article>
-</BaseLayout>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Article — moved</title>
+    <link rel="canonical" href={target} />
+    <meta http-equiv="refresh" content={`0; url=${target}`} />
+    <meta name="robots" content="noindex" />
+    <script is:inline define:vars={{ target }}>
+      window.location.replace(target);
+    </script>
+  </head>
+  <body>
+    <p>This page has moved to <a href={target}>{target}</a>. Redirecting…</p>
+  </body>
+</html>

@@ -1,99 +1,25 @@
 ---
-import { getCollection } from 'astro:content';
-import BaseLayout from '@layouts/BaseLayout.astro';
-import ProjectCard from '@components/ProjectCard.astro';
-import ProjectFilter from '@components/ProjectFilter.vue';
-
-const all = (await getCollection('projects', ({ data }) => !data.draft && data.tier !== 3)).sort(
-  (a, b) => a.data.tier - b.data.tier || b.data.year.localeCompare(a.data.year),
-);
-
-const tier1 = all.filter((p) => p.data.tier === 1);
-const tier2 = all.filter((p) => p.data.tier === 2);
-
-const archive = (await getCollection('archive')).sort((a, b) =>
-  b.data.year.localeCompare(a.data.year),
-);
-
-const allTags = [...new Set(all.flatMap((p) => p.data.tags))];
+// /work has been renamed to /projects. This stub serves a static redirect so
+// any existing bookmark or external link still works. Safe to delete the
+// whole `src/pages/work/` directory once you're confident nobody's linking
+// to the old URL.
+import { url } from '@lib/url';
+const target = url('/projects');
 ---
 
-<BaseLayout
-  title="Work"
-  description="Featured projects, full project catalogue, and an honest archive of abandoned or superseded work."
->
-  <header class="mb-8">
-    <h1 class="text-3xl font-medium">Work</h1>
-    <p class="mt-3 max-w-prose text-muted">
-      A catalogue of the things I've built. Featured projects up top with full case studies; the
-      complete listing below; and an honest archive of the ones I started, shipped partway, then
-      walked away from.
-    </p>
-  </header>
-
-  {
-    allTags.length > 0 && (
-      <section class="mb-8" aria-label="Project filters">
-        <ProjectFilter client:visible tags={allTags} />
-      </section>
-    )
-  }
-
-  {
-    tier1.length > 0 && (
-      <section id="featured" class="mb-16 scroll-mt-24" aria-labelledby="featured-heading">
-        <h2 id="featured-heading" class="mb-4 text-xl font-medium">Featured</h2>
-        <div class="space-y-4">
-          {tier1.map((p) => (
-            <div data-project-tags={p.data.tags.join(',')}>
-              <ProjectCard project={p} />
-            </div>
-          ))}
-        </div>
-      </section>
-    )
-  }
-
-  {
-    tier2.length > 0 && (
-      <section id="listed" class="mb-16 scroll-mt-24" aria-labelledby="listed-heading">
-        <h2 id="listed-heading" class="mb-4 text-xl font-medium">All projects</h2>
-        <div class="space-y-3">
-          {tier2.map((p) => (
-            <div data-project-tags={p.data.tags.join(',')}>
-              <ProjectCard project={p} compact />
-            </div>
-          ))}
-        </div>
-      </section>
-    )
-  }
-
-  {
-    archive.length > 0 && (
-      <section id="archive" class="scroll-mt-24" aria-labelledby="archive-heading">
-        <h2 id="archive-heading" class="mb-2 text-xl font-medium">Archive</h2>
-        <p class="mb-6 max-w-prose text-sm text-muted">
-          Projects I started, shipped partway, then walked away from. Listed here for
-          honesty — each with a one-sentence post-mortem.
-        </p>
-        <ul class="divide-y divide-border">
-          {archive.map((e) => (
-            <li class="py-5">
-              <header class="flex flex-wrap items-baseline justify-between gap-3">
-                <h3 class="m-0 font-medium">{e.data.title}</h3>
-                <span class="font-mono text-xs text-muted">
-                  {e.data.year} · {e.data.reason}
-                </span>
-              </header>
-              <p class="mt-2 text-sm text-muted">{e.data.postmortem}</p>
-              {e.data.stack.length > 0 && (
-                <p class="mt-2 font-mono text-xs text-muted">{e.data.stack.join(', ')}</p>
-              )}
-            </li>
-          ))}
-        </ul>
-      </section>
-    )
-  }
-</BaseLayout>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Projects — moved</title>
+    <link rel="canonical" href={target} />
+    <meta http-equiv="refresh" content={`0; url=${target}`} />
+    <meta name="robots" content="noindex" />
+    <script is:inline define:vars={{ target }}>
+      window.location.replace(target);
+    </script>
+  </head>
+  <body>
+    <p>This page has moved to <a href={target}>/projects</a>. Redirecting…</p>
+  </body>
+</html>

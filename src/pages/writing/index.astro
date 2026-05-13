@@ -1,41 +1,23 @@
 ---
-import { getCollection } from 'astro:content';
-import BaseLayout from '@layouts/BaseLayout.astro';
-import FormattedDate from '@components/FormattedDate.astro';
+// /writing has been renamed to /articles. Static redirect.
+// Safe to delete this directory once no inbound links use the old URL.
 import { url } from '@lib/url';
-
-const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
-  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-);
+const target = url('/articles');
 ---
 
-<BaseLayout title="Writing" description="Essays on software, systems, and AI-age portfolio design.">
-  <header class="mb-8">
-    <h1 class="text-3xl font-medium">Writing</h1>
-    <p class="mt-3 max-w-prose text-muted">
-      Essays on software, systems, and AI-age portfolio design. Canonical home for everything I
-      publish — syndicated elsewhere with <code>rel="canonical"</code> back here.
-    </p>
-  </header>
-
-  <ul class="divide-y divide-border">
-    {
-      posts.map((post) => (
-        <li class="py-4">
-          <article>
-            <h2 class="m-0 text-lg font-medium">
-              <a href={url(`/writing/${post.slug}`)} class="no-underline">
-                {post.data.title}
-              </a>
-            </h2>
-            <p class="mt-1 text-muted">{post.data.description}</p>
-            <p class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs text-muted">
-              <span class="shrink-0"><FormattedDate date={post.data.pubDate} /></span>
-              {post.data.tags.length > 0 && <span>· {post.data.tags.join(', ')}</span>}
-            </p>
-          </article>
-        </li>
-      ))
-    }
-  </ul>
-</BaseLayout>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Articles — moved</title>
+    <link rel="canonical" href={target} />
+    <meta http-equiv="refresh" content={`0; url=${target}`} />
+    <meta name="robots" content="noindex" />
+    <script is:inline define:vars={{ target }}>
+      window.location.replace(target);
+    </script>
+  </head>
+  <body>
+    <p>This page has moved to <a href={target}>/articles</a>. Redirecting…</p>
+  </body>
+</html>

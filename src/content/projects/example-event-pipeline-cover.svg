@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" role="img" aria-label="Event Pipeline cover">
+  <rect width="200" height="200" fill="rgb(24 24 27)" />
+  <g stroke="rgb(252 211 77)" stroke-width="8" stroke-linecap="round" fill="none">
+    <path d="M30 60 H130" />
+    <path d="M30 100 H170" />
+    <path d="M30 140 H110" />
+  </g>
+  <g fill="rgb(252 211 77)">
+    <circle cx="145" cy="60" r="8" />
+    <circle cx="125" cy="140" r="8" />
+  </g>
+</svg>

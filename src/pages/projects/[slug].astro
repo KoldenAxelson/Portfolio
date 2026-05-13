@@ -1,0 +1,71 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { SITE } from '@config';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects', ({ data }) => !data.draft && data.tier === 1);
+  return projects.map((p) => ({ params: { slug: p.slug }, props: { project: p } }));
+}
+
+const { project } = Astro.props;
+const { Content } = await project.render();
+const { data } = project;
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWork',
+    name: data.title,
+    description: data.summary,
+    dateCreated: data.year,
+    author: { '@type': 'Person', name: SITE.author.name },
+    keywords: data.tags.join(', '),
+    ...(data.links.repo && { codeRepository: data.links.repo }),
+    ...(data.links.live && { url: data.links.live }),
+  },
+];
+---
+
+<BaseLayout
+  title={data.title}
+  description={data.summary}
+  type="article"
+  schema={schema}
+>
+  <article class="prose prose-lg max-w-none">
+    <header class="not-prose mb-8">
+      <p class="font-mono text-sm text-muted">{data.year} · {data.role ?? 'Project'}</p>
+      <h1 class="mt-2 text-3xl font-medium sm:text-4xl">{data.title}</h1>
+      <p class="mt-3 text-lg text-muted">{data.summary}</p>
+
+      {
+        data.stack.length > 0 && (
+          <dl class="mt-6 grid grid-cols-[max-content_1fr] gap-x-4 gap-y-2 text-sm">
+            <dt class="font-mono text-muted">stack</dt>
+            <dd>{data.stack.join(', ')}</dd>
+            {data.tags.length > 0 && (
+              <>
+                <dt class="font-mono text-muted">tags</dt>
+                <dd>{data.tags.join(', ')}</dd>
+              </>
+            )}
+            <dt class="font-mono text-muted">status</dt>
+            <dd>{data.status}</dd>
+          </dl>
+        )
+      }
+
+      {
+        (data.links.live || data.links.repo) && (
+          <p class="mt-4 flex gap-4 text-sm">
+            {data.links.live && <a href={data.links.live} rel="noopener">Live →</a>}
+            {data.links.repo && <a href={data.links.repo} rel="noopener">Code →</a>}
+          </p>
+        )
+      }
+    </header>
+
+    <Content />
+  </article>
+</BaseLayout>
