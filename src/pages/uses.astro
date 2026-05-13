@@ -4,33 +4,60 @@ import FormattedDate from '@components/FormattedDate.astro';
 
 // The things on my machine right now.
 //
-// Schema for each item: { name, note?, link? }
-//   name  — the tool/product, shown bold on the left
-//   note  — short factual context, shown muted on the right (omit if redundant)
-//   link  — canonical URL; turns the name into a link
+// Schema:
+//   caption  — short prose per category (1–3 sentences, always visible). Adds
+//              context to the list. Omit if the list is self-explanatory.
+//   items[].name   — required
+//   items[].note   — short factual context (e.g. "shell", "learning")
+//   items[].link   — canonical URL; turns the name into a link
+//   items[].detail — longer prose, hidden behind a native <details> accordion.
+//                    Content stays in the DOM regardless of open/closed state,
+//                    so AI scrapers index it normally. Use sparingly — only
+//                    when there's a genuine story or config worth sharing.
 //
-// Keep notes terse and factual. No jokes. Recruiters skim this page; the
-// AI scrapers index it as a list of tools. Editorial voice belongs on /writing.
+// Recruiters skim this page; AI scrapers index it as a list of tools. Keep
+// captions tight and details opt-in. Editorial voice belongs on /writing.
+
+type Item = { name: string; note?: string; link?: string; detail?: string };
+type Category = { id: string; label: string; caption?: string; items: Item[] };
+
 const updated = new Date('2026-04-15');
 
-const stack: {
-  id: string;
-  label: string;
-  items: { name: string; note?: string; link?: string }[];
-}[] = [
+const stack: Category[] = [
   {
     id: 'editor',
     label: 'Editor',
+    caption:
+      "Spent ten years bouncing between editors. Modal editing won; LazyVim's batteries-included setup spared me another six months of yak-shaving my own config.",
     items: [
-      { name: 'Neovim', note: 'LazyVim distribution', link: 'https://neovim.io' },
-      { name: 'VS Code', note: 'pair-programming only', link: 'https://code.visualstudio.com' },
+      {
+        name: 'Neovim',
+        note: 'LazyVim distribution',
+        link: 'https://neovim.io',
+        detail:
+          "Bound to caps lock. About 600 lines of Lua on top of LazyVim — mostly LSP wiring, a handful of keymaps that ate Vimium's lunch, and a treesitter playground I refuse to remove. Configs versioned in dotfiles.",
+      },
+      {
+        name: 'VS Code',
+        note: 'pair-programming only',
+        link: 'https://code.visualstudio.com',
+        detail:
+          'Stays installed because Live Share is unmatched for synchronous pair-programming. Otherwise dormant — open it maybe twice a month.',
+      },
     ],
   },
   {
     id: 'terminal',
     label: 'Terminal',
+    caption:
+      'Ghostty replaced Alacritty mid-2025 — same speed, less config friction. Everything else is rote: fish for ergonomics, tmux for sessions that outlive the SSH connection.',
     items: [
-      { name: 'Ghostty', link: 'https://ghostty.org' },
+      {
+        name: 'Ghostty',
+        link: 'https://ghostty.org',
+        detail:
+          "Switched from Alacritty when I needed proper accessibility support and tabs that don't lag. The Mitchell-Hashimoto pedigree helped, but it earned the slot on merit.",
+      },
       { name: 'fish', note: 'shell', link: 'https://fishshell.com' },
       { name: 'tmux', note: 'long-running sessions', link: 'https://github.com/tmux/tmux' },
       { name: 'starship', note: 'prompt', link: 'https://starship.rs' },
@@ -39,17 +66,26 @@ const stack: {
   {
     id: 'languages',
     label: 'Languages',
+    caption:
+      'Five years of Python, four of Go, three of TypeScript — in that order. Rust is the slow burn; reading more than writing for now.',
     items: [
       { name: 'TypeScript' },
       { name: 'Go' },
       { name: 'Python' },
-      { name: 'Rust', note: 'learning' },
+      {
+        name: 'Rust',
+        note: 'learning',
+        detail:
+          'Working through "Programming Rust" (2nd ed) on weekends. Borrow checker still wins more arguments than I do; the patterns are starting to feel less like fighting the compiler and more like a conversation.',
+      },
       { name: 'SQL', note: 'Postgres dialect' },
     ],
   },
   {
     id: 'frameworks',
     label: 'Frameworks',
+    caption:
+      'Astro for content-first sites, SvelteKit for app-shaped things, FastAPI for backend prototypes. The common thread is ship-by-default with an escape hatch when you need it.',
     items: [
       { name: 'Astro', link: 'https://astro.build' },
       { name: 'Vue', link: 'https://vuejs.org' },
@@ -61,17 +97,32 @@ const stack: {
   {
     id: 'cloud',
     label: 'Cloud',
+    caption:
+      'Cloudflare is the default for anything serverless. AWS Lightsail handles the few workloads that genuinely need a long-running process. Fly.io for the rare regional-edge case.',
     items: [
-      { name: 'Cloudflare', note: 'Pages, Workers, R2, D1', link: 'https://cloudflare.com' },
+      {
+        name: 'Cloudflare',
+        note: 'Pages, Workers, R2, D1',
+        link: 'https://cloudflare.com',
+        detail:
+          "Pages for static. Workers for the contact form and anything edge-y. R2 for blob storage that doesn't bleed me dry on egress. D1 for small projects where Postgres would be overkill.",
+      },
       { name: 'AWS Lightsail', note: 'stateful workloads' },
-      { name: 'Fly.io', note: 'when I need closer regions', link: 'https://fly.io' },
+      { name: 'Fly.io', note: 'regional edge', link: 'https://fly.io' },
     ],
   },
   {
     id: 'data',
     label: 'Database',
+    caption:
+      "Postgres unless there's a specific reason not to. SQLite for sidecars and embedded use. DuckDB has earned permanent residency in my analytics workflow.",
     items: [
-      { name: 'Postgres', link: 'https://postgresql.org' },
+      {
+        name: 'Postgres',
+        link: 'https://postgresql.org',
+        detail:
+          "Self-hosted on the bigger projects, Neon for prototypes, Supabase when I want auth bundled. The query planner is the single most useful thing to learn deeply if you do backend work — it's how I find the half of my mistakes that survive code review.",
+      },
       { name: 'SQLite', note: 'embedded' },
       { name: 'Redis' },
       { name: 'DuckDB', note: 'analytics', link: 'https://duckdb.org' },
@@ -80,11 +131,18 @@ const stack: {
   {
     id: 'cli',
     label: 'CLI',
+    caption:
+      "Most of these were brew installs from a Wes Bos talk in 2018 and never left. fzf is the best $0 upgrade most engineers haven't made yet.",
     items: [
       { name: 'gh', link: 'https://cli.github.com' },
       { name: 'wrangler', link: 'https://developers.cloudflare.com/workers/wrangler' },
       { name: 'jq', link: 'https://jqlang.github.io/jq' },
-      { name: 'fzf', link: 'https://github.com/junegunn/fzf' },
+      {
+        name: 'fzf',
+        link: 'https://github.com/junegunn/fzf',
+        detail:
+          'Bound to ctrl-r for shell history, ctrl-t for file search, and a custom binding that fuzz-finds across my projects directory. Saved me probably 200 hours of tab-completion fatigue.',
+      },
       { name: 'ripgrep', link: 'https://github.com/BurntSushi/ripgrep' },
       { name: 'fd', link: 'https://github.com/sharkdp/fd' },
       { name: 'eza', link: 'https://eza.rocks' },
@@ -93,10 +151,17 @@ const stack: {
   {
     id: 'hardware',
     label: 'Hardware',
+    caption:
+      "M3 Pro after years of x86. The HHKB is the only piece of gear I've owned for over five years; I'd buy three if my keyboard travel changed.",
     items: [
       { name: 'MacBook Pro', note: 'M3 Pro, 36 GB' },
       { name: 'LG UltraFine 5K', note: '27"' },
-      { name: 'HHKB Professional Hybrid', note: 'Type-S' },
+      {
+        name: 'HHKB Professional Hybrid',
+        note: 'Type-S',
+        detail:
+          "Type-S silenced sliders, 60% layout. Two USB modes paired with my work iMac and personal Mac. Sublimely consistent feel after seven years. I've stopped trying to convince other people.",
+      },
       { name: 'Logitech MX Master 3' },
     ],
   },
@@ -105,59 +170,84 @@ const stack: {
 
 <BaseLayout
   title="Uses"
-  description="The stack, tools, and hardware I actually use."
+  description="The stack, tools, and hardware I actually use, with notes on why."
 >
   <header class="mb-12">
     <h1 class="text-3xl font-medium">Uses</h1>
     <p class="mt-3 max-w-prose text-muted">
-      The things on my machine right now. Inspired by <a href="https://uses.tech">uses.tech</a>.
+      The things on my machine right now, and what I'd say about them if you asked. Inspired
+      by <a href="https://uses.tech">uses.tech</a>. Click any item with a chevron to see more.
     </p>
     <p class="mt-3 font-mono text-xs text-muted">
       Last updated <FormattedDate date={updated} />.
     </p>
   </header>
 
-  <div class="space-y-12">
+  <div class="space-y-14">
     {
       stack.map((category) => (
         <section id={category.id} class="scroll-mt-24" aria-labelledby={`${category.id}-heading`}>
           <h2
             id={`${category.id}-heading`}
-            class="mb-4 font-mono text-xs uppercase tracking-widest text-fg"
+            class="mb-3 font-mono text-xs uppercase tracking-widest text-fg"
           >
             {category.label}
           </h2>
 
-          {/* Definition list — name (term) → note (description). The CSS grid
-              aligns names and notes into two columns; empty notes render
-              as empty cells, which keeps long names from breaking alignment. */}
-          <dl class="grid grid-cols-[max-content_1fr] gap-x-6 gap-y-1.5">
-            {category.items.map((item) => (
-              <>
-                <dt class="font-medium text-fg">
+          {category.caption && (
+            <p class="mb-5 max-w-prose text-sm leading-relaxed text-muted">{category.caption}</p>
+          )}
+
+          <ul class="-mx-2 space-y-0.5">
+            {category.items.map((item) => {
+              const head = (
+                <span class="text-fg">
                   {item.link ? (
                     <a
                       href={item.link}
                       rel="noopener"
-                      class="no-underline hover:!text-accent"
+                      class="font-medium no-underline hover:!text-accent"
                     >
                       {item.name}
                     </a>
                   ) : (
-                    item.name
+                    <span class="font-medium">{item.name}</span>
                   )}
-                </dt>
-                <dd class="m-0 text-muted">{item.note ?? ''}</dd>
-              </>
-            ))}
-          </dl>
+                  {item.note && <span class="text-muted"> · {item.note}</span>}
+                </span>
+              );
+
+              return (
+                <li>
+                  {item.detail ? (
+                    <details class="uses-row group rounded px-2 py-1 transition-colors hover:bg-border/30">
+                      <summary class="flex cursor-pointer list-none items-baseline gap-3 [&::-webkit-details-marker]:hidden">
+                        {head}
+                        <span
+                          aria-hidden="true"
+                          class="ml-auto text-xs text-muted/70 transition-transform duration-200 group-open:rotate-90"
+                        >
+                          ▸
+                        </span>
+                      </summary>
+                      <p class="mt-2 max-w-prose text-sm leading-relaxed text-muted">
+                        {item.detail}
+                      </p>
+                    </details>
+                  ) : (
+                    <div class="px-2 py-1">{head}</div>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
         </section>
       ))
     }
   </div>
 
-  <p class="mt-16 text-sm text-muted">
-    Every line is something I actually touch in a normal week. If it stops being
-    true, it gets removed.
+  <p class="mt-20 max-w-prose text-sm text-muted">
+    Every line is something I actually touch in a normal week. If it stops being true, it
+    gets removed.
   </p>
 </BaseLayout>
