@@ -53,14 +53,15 @@ const {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
 
+    {/* Self-hosted Inter — preload the variable font so it's available for
+        first paint. @font-face declaration lives in src/styles/global.css. */}
     <link
       rel="preload"
-      href="https://rsms.me/inter/font-files/Inter-roman.var.woff2?v=3.19"
+      href={url('/fonts/InterVariable.woff2')}
       as="font"
       type="font/woff2"
       crossorigin
     />
-    <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
 
     <link rel="icon" type="image/svg+xml" href={url('/favicon.svg')} />
     <link rel="alternate" type="application/rss+xml" title={SITE.title} href={url('/rss.xml')} />
