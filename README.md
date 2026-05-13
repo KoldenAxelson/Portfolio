@@ -29,15 +29,30 @@ increasingly summarize you to those humans before they ever click through.
 ```bash
 git clone https://github.com/your-username/neofolio.git my-portfolio
 cd my-portfolio
-bash setup.sh
-npm run dev
+make setup
+make dev
 ```
 
 Open <http://localhost:4321>. You'll see a working demo populated with
 example content.
 
-Then read [HUMAN.md](./HUMAN.md) for the steps a script can't do for you
-(edit your name, pick a domain, hook up deploys).
+### Adding content
+
+Either edit files in `src/content/` directly, or use the interactive
+scaffolds — they prompt you for the fields and write the file:
+
+```bash
+make contact    # add a network contact
+make post       # add a writing post
+make project    # add a project (tier 1 = featured / tier 2 = listed)
+make archive    # add an archive entry
+```
+
+Run `make` (or `make help`) for the full list. Everything the scaffolds
+generate is also editable by hand afterward — they save typing, not flexibility.
+
+Then read [HUMAN.md](./HUMAN.md) for the things a script can't do (pick
+a domain, hook up deploys, etc.).
 
 ## Layout
 
