@@ -1,205 +1,118 @@
 # Architecture
 
-How the codebase is organized and why. Read this before making structural
-changes.
-
-## File layout
+## Layout
 
 ```
 neofolio/
-├── .github/workflows/      GitHub Actions for both deploy targets
-├── docs/                   You are here
-├── functions/api/          Cloudflare Pages Functions (server-side)
-├── public/                 Static assets shipped as-is
-│   ├── covers/             Project + article cover images (SVG/WebP/AVIF)
-│   ├── fonts/              Self-hosted Inter variable font
-│   ├── textures/           Matte noise PNGs (light + dark variants)
+├── .github/workflows/      GitHub Actions (deploy targets)
+├── docs/                   This directory
+├── functions/api/          Cloudflare Pages Functions
+├── public/                 Static assets, copied as-is
+│   ├── covers/             Project + article cover images
+│   ├── fonts/              Self-hosted Inter
+│   ├── textures/           Matte noise PNGs (light + dark)
 │   ├── favicon.svg
-│   └── humans.txt          humanstxt.org convention
+│   └── humans.txt
 ├── scripts/                Make-target helpers
-│   ├── _prompt.mjs         Shared readline helpers (no deps)
-│   ├── new-*.mjs           Interactive content scaffolds
-│   └── lighthouse.sh       Manual Lighthouse audit
+│   ├── _prompt.mjs         readline helpers
+│   ├── _gen-noise.mjs      noise PNG generator
+│   ├── new-*.mjs           interactive content scaffolds
+│   └── lighthouse.sh       manual audit
 ├── src/
-│   ├── components/         Astro + Vue components
-│   ├── content/            Content collections (MDX/MD/YAML/SVG)
-│   │   ├── archive/        Abandoned/superseded project entries
-│   │   ├── network/        Connection cards for /network
-│   │   ├── posts/          Articles (MDX)
-│   │   ├── projects/       Project entries (MDX for tier 1, MD for tier 2)
-│   │   └── config.ts       Collection schemas (zod)
-│   ├── layouts/            Page-level shells
-│   ├── lib/                Reusable utilities (url helper, etc.)
-│   ├── pages/              File-based routing
-│   ├── styles/             Global CSS + Tailwind entry
-│   └── config.ts           Site-wide identity, nav, bio messages
-├── astro.config.mjs
-├── tailwind.config.mjs
-├── tsconfig.json
-├── setup.sh                Idempotent first-time install
-├── Makefile                Friendly entry points (make help)
-├── HUMAN.md                Maintainer's personal punch list
-├── README.md
-└── CONTRIBUTING.md
+│   ├── components/         Astro + Vue
+│   ├── content/            Collections (MDX/MD/YAML)
+│   ├── layouts/            Page shells
+│   ├── lib/                Utilities (url helper)
+│   ├── pages/              File-based routes
+│   ├── styles/             global.css (Tailwind entry)
+│   └── config.ts           Site identity, nav, bio messages
+├── Makefile
+├── setup.sh
+└── HUMAN.md                Maintainer's punch list
 ```
 
-## Source of truth
+## Source-of-truth files
 
-Everything user-facing originates in **one file**:
+| File | Owns |
+|---|---|
+| `src/config.ts` | Identity, nav, bio messages |
+| `src/styles/global.css` | All theme variables, noise overlay |
+| `tailwind.config.mjs` | Font families |
+| `src/content/config.ts` | Collection schemas (zod) |
 
-- `src/config.ts` — name, role, bio, long bio, email, social links, nav,
-  per-section bio messages for the typewriter. Edit this first.
+## Layout props (BaseLayout)
 
-Style tokens live in **one file**:
-
-- `src/styles/global.css` — five CSS variables (`--color-bg`, `--color-fg`,
-  `--color-muted`, `--color-accent`, `--color-border`) drive everything.
-  Tailwind reads them through the config.
-
-## Layout system
-
-`BaseLayout.astro` is the shell every page uses. It accepts three layout-
-shaping props:
-
-| Prop | When | What it does |
+| Prop | Used by | Effect |
 |---|---|---|
-| `split` | Homepage only | Renders sticky `SideBar` (identity + section nav + typewriter) alongside a scrolling right column |
-| `wide` | `/network` only | Swaps `max-w-3xl` → `max-w-screen-xl` for app-like content |
-| (default) | Every other page | Centered single column at `max-w-3xl` |
+| `split` | `/` only | Sticky sidebar + scroll-spy + typewriter |
+| `wide` | `/network` only | `max-w-screen-xl` instead of `max-w-3xl` |
+| _(default)_ | Every other page | Centered single column |
 
-Visual chrome (top nav, footer) is the same on every page; only the
-content container changes.
-
-## Routing
-
-Astro maps `src/pages/` to URLs file-system-style:
+## Routes
 
 | Path | Source |
 |---|---|
 | `/` | `src/pages/index.astro` |
 | `/projects` | `src/pages/projects/index.astro` |
-| `/projects/[slug]` | `src/pages/projects/[slug].astro` (Tier-1 only) |
+| `/projects/[slug]` | `src/pages/projects/[slug].astro` (Tier 1 only) |
 | `/articles` | `src/pages/articles/index.astro` |
 | `/articles/[slug]` | `src/pages/articles/[slug].astro` |
 | `/cv` | `src/pages/cv.astro` |
 | `/uses` | `src/pages/uses.astro` |
 | `/now` | `src/pages/now.astro` |
 | `/network` | `src/pages/network.astro` |
-| `/archive` | `src/pages/archive.astro` (redirects to `/projects#archive`) |
-| `/rss.xml` | `src/pages/rss.xml.ts` |
-| `/feed.json` | `src/pages/feed.json.ts` |
-| `/robots.txt` | `src/pages/robots.txt.ts` (dynamic, reads `SITE.url`) |
-| `/404` | `src/pages/404.astro` |
+| `/archive` | redirect → `/projects#archive` |
+| `/rss.xml` | dynamic |
+| `/feed.json` | dynamic |
+| `/robots.txt` | dynamic (reads `SITE.url`) |
+| `/sitemap-index.xml` | auto via `@astrojs/sitemap` |
 
-The collection name `posts` is intentionally kept while the URL is
-`/articles` — renaming the folder would break existing slugs for forkers
-on a v0.x → v0.y upgrade.
+The `posts` collection is intentionally kept while the URL is `/articles` — renaming the folder would break existing slugs for forkers upgrading.
 
 ## Content collections
 
-Schemas live in `src/content/config.ts`. Four collections:
+All schemas in `src/content/config.ts` (zod, validated at build).
 
-- **`projects`** (`type: 'content'`) — MDX or MD. Schema requires title,
-  tier (1|2|3), summary, year. Optional: tags, stack, role, status, links,
-  metric, cover, featured, draft.
-- **`posts`** (`type: 'content'`) — MDX or MD. Articles. Schema requires
-  title, description, pubDate. Optional: updatedDate, tags, cover,
-  canonical, draft.
-- **`archive`** (`type: 'content'`) — MD. Schema requires title, year,
-  reason, postmortem, stack.
-- **`network`** (`type: 'data'`) — YAML. Schema requires name, title,
-  blurb, relationship. Optional: company, link, avatar, order.
-
-All schemas are validated at build time. Bad data fails the build.
+| Collection | Type | Required | Optional |
+|---|---|---|---|
+| `projects` | content | title, tier, summary, year | tags, stack, role, status, links, metric, cover, featured, draft |
+| `posts` | content | title, description, pubDate | updatedDate, tags, cover, canonical, draft |
+| `archive` | content | title, year, reason, postmortem | stack |
+| `network` | data | name, title, blurb, relationship | company, link, order |
 
 ## Components
 
-### Layout
+| Component | Purpose | Hydration |
+|---|---|---|
+| `BaseLayout` | Page shell | — |
+| `SideBar` | Identity + section nav + typewriter (homepage only) | — |
+| `TopNav` | Sticky autohide + mobile hamburger | inline JS |
+| `Footer` | Copyright + socials | — |
+| `SEO` | Meta + JSON-LD | — |
+| `ProjectCard` | Card with overlay link + floated cover | — |
+| `ProjectFilter.vue` | Tag filter on `/projects` | `client:visible` |
+| `NetworkPanel.vue` | `/network` two-panel | `client:load` |
+| `SocialIcons` | Inline SVG icons | — |
+| `FormattedDate` | `<time datetime>` with `nowrap` | — |
 
-- `BaseLayout.astro` — head, top nav, content container, footer
-- `SideBar.astro` — identity + section nav + typewriter (homepage only)
-- `TopNav.astro` — sticky autohide nav + mobile hamburger
-- `Footer.astro` — copyright, social row
+## Base-path
 
-### Content rendering
+GitHub Pages project sites need a `/repo` prefix on all internal URLs. The `url()` helper in `src/lib/url.ts` reads `import.meta.env.BASE_URL` and prepends it. Always use it for internal hrefs and asset paths.
 
-- `ProjectCard.astro` — used on home + `/projects`. Overlay link covers
-  the card. Optional cover image + metric link.
-- `ProjectFilter.vue` — Vue island for tag filtering on `/projects`.
-  Hydrates `client:visible`.
-- `NetworkPanel.vue` — Vue island for the contact selector. Hydrates
-  `client:load` (it IS the page content).
-- `SocialIcons.astro` — inline SVG icons, only renders configured links.
-- `FormattedDate.astro` — `<time datetime>` with short month, `nowrap`.
-
-### Meta
-
-- `SEO.astro` — title, description, canonical, OpenGraph, Twitter,
-  JSON-LD. Pages pass props; site-wide schemas inject automatically.
-
-## Data flow
-
-```
-src/config.ts
-     │
-     ├─→ SideBar.astro (identity + bio + section nav)
-     ├─→ TopNav.astro (nav items + icons)
-     ├─→ Footer.astro (name + year)
-     ├─→ SocialIcons.astro (link list)
-     └─→ SEO.astro (JSON-LD Person + WebSite)
-
-src/content/projects/*.mdx
-     │
-     ├─→ /projects/index.astro (list)
-     ├─→ /projects/[slug].astro (case study, tier 1 only)
-     └─→ /index.astro (featured slice)
-
-src/content/posts/*.mdx
-     │
-     ├─→ /articles/index.astro (list)
-     ├─→ /articles/[slug].astro (post)
-     ├─→ /index.astro (recent slice)
-     ├─→ /rss.xml.ts (feed)
-     └─→ /feed.json.ts (feed)
-
-src/content/network/*.yaml
-     │
-     └─→ /network.astro → NetworkPanel.vue
-
-src/content/archive/*.md
-     │
-     └─→ /projects/index.astro (archive section)
-```
-
-## Base-path handling
-
-GitHub Pages serves project sites at `/repo`, not `/`. All internal URLs
-must be base-aware.
-
-- `src/lib/url.ts` exports `url(path)` — prepends `import.meta.env.BASE_URL`
-  to internal paths, passes through external URLs (http/https/mailto/tel)
-  and same-page anchors.
-- Use `url()` for every internal href and asset path.
-- The workflow auto-detects the base from the repo name. Override with
-  the `BASE_PATH` repo variable.
+The deploy workflow auto-detects `BASE_PATH` from repo name; override with a repo variable if needed.
 
 ## Build pipeline
 
 ```
-make build
-  ↓
-astro build
-  ↓
-1. Content sync — read src/content/, validate schemas
-2. Type generation — emit .astro/types.d.ts
-3. Static entrypoint build — Vite SSR each page
-4. Client island build — Vite bundle Vue components
-5. Static route generation — write HTML to dist/
-6. @astrojs/sitemap — write sitemap-index.xml
+make build → astro build →
+  1. Content sync + schema validation
+  2. Type generation (.astro/types.d.ts)
+  3. Vite SSR build of pages
+  4. Vite bundle of client islands
+  5. Static route generation → dist/
+  6. @astrojs/sitemap → sitemap-index.xml
 ```
 
-Output: `dist/` is a self-contained static site. Drop it on any host.
+Output: self-contained `dist/`.
 
-## Why these choices
-
-See [design-philosophy.md](./design-philosophy.md) for the rationale.
+See [design-philosophy.md](./design-philosophy.md) for the why-not behind specific choices.

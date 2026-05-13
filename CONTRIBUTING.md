@@ -1,29 +1,13 @@
-# Contributing to Neofolio
+# Contributing
 
-Thanks for considering a contribution. Neofolio is an opinionated template
-— PRs that broaden it carefully are welcome; PRs that pull it toward a
-kitchen sink are not.
+PRs welcome. Six ground rules:
 
-## Ground rules
-
-These are load-bearing. If a PR violates one, the review will ask for a
-redesign rather than a merge.
-
-1. **No JavaScript above the fold.** Hero is HTML. Stays HTML. Vue
-   islands hydrate on interaction or visibility, never on load (unless
-   the island IS the page content — see NetworkPanel).
-2. **No third-party render-blocking resources.** No Google Fonts via CDN.
-   No Font Awesome stylesheet. Self-host or skip.
-3. **Static output stays static.** `make build` must produce a `dist/`
-   that works on a dumb static host. Cloudflare Functions in `/functions`
-   are opt-in.
-4. **Lighthouse targets aren't optional.** 90+/100/100/100. PRs that
-   drop any score need a justification or a fix.
-5. **Two audiences, one site.** Every change should consider both the
-   human visitor and the AI scraper. See [docs/seo.md](./docs/seo.md).
-6. **No platform-pinned binaries in `dependencies`.** Sharp, Rollup,
-   esbuild platform binaries belong in `optionalDependencies` if anywhere
-   at all. They break CI.
+1. **No JS above the fold.** Hero is HTML. Islands hydrate on interaction or visibility (except where the island IS the page content, e.g. NetworkPanel).
+2. **No third-party render-blocking resources.** No Google Fonts CDN, no Font Awesome stylesheet. Self-host or skip.
+3. **Static output stays static.** `make build` must produce a `dist/` that works on a dumb host. Cloudflare Functions are opt-in.
+4. **Lighthouse targets aren't optional.** 90+/100/100/100. PRs that drop any score need a justification.
+5. **Two audiences, one site.** Consider the AI scraper alongside the human visitor. See [docs/seo.md](./docs/seo.md).
+6. **No platform-pinned binaries in `dependencies`.** Sharp / Rollup native binaries belong in `optionalDependencies` if anywhere. They break CI.
 
 ## Local dev
 
@@ -34,63 +18,37 @@ make setup
 make dev
 ```
 
-Run on port 4321. Hot-reload works for content and components.
-
 ## Before opening a PR
 
 ```bash
 make build       # confirm it builds
-make lighthouse  # confirm it doesn't regress
+make lighthouse  # confirm no regressions
 ```
 
-If your change touches accessibility (contrast, link styling, ARIA, touch
-targets), audit at least `/` and `/projects` for Accessibility = 100.
+A11y-touching change → audit `/` and `/projects` for Accessibility = 100.
+Schema-touching change → confirm example content still validates.
 
-If your change touches content schemas (`src/content/config.ts`), make
-sure the example content in `src/content/` still validates.
+## Welcome
 
-If your change touches the build pipeline, verify on both Astro defaults
-and the auto-detected `BASE_PATH=/repo` path.
+- `/cv.json` (JSON Resume) generator
+- Keyboard-driven chip filter for `/projects`
+- `scripts/cv-pdf.sh` Puppeteer print of `/cv`
+- More pre-WebP demo covers
+- i18n layer
 
-## Reporting issues
+## Will be declined
 
-Include:
+- Search bar (Cmd-F works)
+- Comments (use webmentions)
+- Floating contact buttons (Network + footer suffice)
+- Per-page analytics
+- Astro View Transitions (marginal benefit on a portfolio)
+- Renaming "Articles" back to "Writing" (settled)
 
-- Node version (`node --version`)
-- OS
-- `git log -1` (commit you're on)
-- Steps to reproduce
-- What you expected vs what happened
+## Issue reports
 
-For Lighthouse regressions, include the Lighthouse report HTML or a
-screenshot of the categories panel.
-
-## Areas where contributions are especially welcome
-
-- **`/cv.json`** — JSON Resume format generator. Highest-value AI-
-  readability addition not yet shipped. See [roadmap](./docs/roadmap.md).
-- **`/projects` filter UX** — current ProjectFilter is functional but
-  not keyboard-driven. A real chip-pattern filter would be welcome.
-- **CV PDF export** — `scripts/cv-pdf.sh` that uses Puppeteer to print
-  `/cv` to a downloadable PDF.
-- **More demo cover images** — pre-converted WebP/AVIF in `public/covers/`
-  for the example projects + articles.
-- **Translations** — the template strings live in components and pages;
-  a small i18n layer would be a real contribution.
-
-## Areas where contributions will probably be declined
-
-- **A search bar.** Cmd-F works for static content.
-- **Comment systems.** Webmentions yes, comments no.
-- **Floating contact buttons.** The Network page and footer email link
-  are enough.
-- **Per-page analytics.** Add to your fork; not the template.
-- **Page transitions (Astro View Transitions).** Adds complexity for
-  marginal benefit on a portfolio.
-- **A "blog" → "writing" → "articles" rename war.** Already done.
-  Articles it is.
+Include: Node version, OS, `git log -1`, repro steps, expected vs actual. For Lighthouse regressions, include the report HTML or category screenshot.
 
 ## License
 
-By contributing, you agree your contribution is licensed under the MIT
-License (see [LICENSE](./LICENSE)).
+MIT. Contributions licensed under same.
