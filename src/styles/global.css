@@ -62,37 +62,43 @@ html {
   text-rendering: optimizeLegibility;
 }
 
+/* ---- Matte noise texturing ------------------------------------------
+ * Two tileable noise PNGs, one per color scheme:
+ *   public/textures/noise.png      — black grain  (light mode)
+ *   public/textures/noise-dark.png — white grain  (dark mode)
+ *
+ * Both are 128×128 RGBA with alpha varying per-pixel. They overlay
+ * non-destructively on the html background-color.
+ *
+ * Why two PNGs and not one + filter/blend-mode? Black grain is invisible
+ * on dark backgrounds; white grain is invisible on light. The eye picks
+ * up highlights on dark bg more readily than shadows on light bg, so the
+ * dark variant uses a lower alpha-max (45 vs 70).
+ *
+ * BaseLayout.astro injects both URLs (base-path-aware) onto <body>:
+ *   --noise-bg-light  → light-mode PNG
+ *   --noise-bg-dark   → dark-mode PNG
+ *
+ * To tune intensity or pattern, edit scripts/_gen-noise.mjs (alphaMax,
+ * seed, W/H) and run: `make noise`.
+ *
+ * To disable: comment out the background-image declarations below.
+ * -------------------------------------------------------------------- */
+
 body {
   min-height: 100dvh;
-
-  /* ---- Matte noise texturing (light mode) ---------------------------
-   * Subtle SVG noise overlay over the warm-white background. Adds a
-   * "paper-grain" feel without affecting text contrast. The pattern is
-   * inline as a data URI (no extra request), tiled at 240px, and pinned
-   * (background-attachment: fixed) so it doesn't shift on scroll.
-   *
-   * To tune (all in the SVG below):
-   *   baseFrequency: grain size. 0.65 = rougher  0.85 = default  1.4 = very fine
-   *   numOctaves:    detail depth. 1 = clean grain  2 = default  3 = complex
-   *   alpha column 1 of last feColorMatrix row: visibility.
-   *     0.15 = barely there  0.35 = default  0.55 = pronounced grain
-   *   background-size: tile size. Smaller tiles repeat more often.
-   *
-   * To disable entirely: comment out background-image (or set to none).
-   * ------------------------------------------------------------------ */
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0.35 0 0 0 0'/></filter><rect width='240' height='240' filter='url(%23n)'/></svg>");
-  background-attachment: fixed;
-  background-size: 240px 240px;
+  background-image: var(--noise-bg-light, none);
+  background-size: 128px 128px;
+  /* background-attachment: scroll (default) — fixed causes subpixel
+     jitter as Safari/Firefox repaint the layer against moving content.
+     Scrolling with the page is also more "matte paper"-like: grain
+     belongs ON the page, not floating behind it. */
   background-repeat: repeat;
 }
 
 @media (prefers-color-scheme: dark) {
-  /* Dark mode reads atmospheric already; skip the grain.
-     To enable in dark mode too, change `0.18 0 0 0 0` in the matrix above to
-     a higher-alpha matrix targeting white (`0 0 0 0 1` last row, then alpha
-     column 1 to e.g. 0.12). Trial and error from there. */
   body {
-    background-image: none;
+    background-image: var(--noise-bg-dark, none);
   }
 }
 
