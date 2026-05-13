@@ -1,140 +1,144 @@
 # Neofolio
 
 > An opinionated, AI-readable portfolio template for developers in the AI age.
-> Astro + Vue islands + Tailwind + MDX. Ships to GitHub Pages or Cloudflare
-> Pages with one push.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Built with Astro](https://img.shields.io/badge/built%20with-Astro-FF5D01.svg)](https://astro.build)
 
-Most portfolio templates are built for one audience: humans who land on your
-site. Neofolio is built for two — humans, and the AI systems that will
-increasingly summarize you to those humans before they ever click through.
+Most portfolio templates optimize for one audience: humans who land on the
+site. Neofolio is built for two — humans, and the AI systems that will,
+increasingly, summarize you to those humans before they ever click through.
 
-## What it gives you
-
-- **AI-readable by architecture.** Every meaningful sentence is in static HTML,
-  not rendered by JS. Schema.org JSON-LD on every page (`Person`, `WebSite`,
-  `BlogPosting`, `CreativeWork`). Semantic elements throughout.
-- **Fast by default.** Astro static-first build. No JavaScript above the fold.
-  Vue islands hydrate on interaction only. Targets: Lighthouse 90 / 100 / 100 / 100.
-- **Forkable in minutes.** All your identity lives in one file (`src/config.ts`).
-  Content lives in MDX you can edit anywhere. Theme is five CSS variables.
-- **Deploy anywhere.** Ships with GitHub Pages AND Cloudflare Pages workflows.
-  Pick one (or both).
-- **Full project catalogue.** Three-tier structure: Featured case studies,
-  Listed catalogue, Archive with honest post-mortems.
-
-## Quickstart
+**[Live demo →](https://koldenaxelson.github.io/neofolio/)**
 
 ```bash
-git clone https://github.com/your-username/neofolio.git my-portfolio
+git clone https://github.com/KoldenAxelson/neofolio.git my-portfolio
 cd my-portfolio
-make setup
-make dev
+make setup && make dev
 ```
 
-Open <http://localhost:4321>. You'll see a working demo populated with
-example content.
+## What you get
 
-### Adding content
+- **AI-readable by architecture.** Every meaningful sentence is in the
+  static HTML. JSON-LD on every page (`Person`, `WebSite`, `BlogPosting`,
+  `CreativeWork`, `ItemList`). Semantic elements throughout.
+- **Fast by default.** Static-first build. Self-hosted Inter font. Vue
+  islands hydrate on interaction only. Lighthouse 92+/100/100/100.
+- **Forkable in minutes.** Identity in one file (`src/config.ts`). Theme
+  in five CSS variables. Content in MDX.
+- **Deploys anywhere.** GitHub Pages and Cloudflare Pages workflows
+  shipped. Auto-detected base path. mailto: contact form works on any
+  static host.
+- **Pages, not just a profile.** Featured case studies, project catalogue,
+  honest archive, articles with optional covers, structured CV, "now"
+  page, **Network page** (your social-proof connections with mailto
+  intro requests), and `/uses`.
+- **Interactive without being heavy.** Tag filter, scroll-spy section
+  nav, autohide top nav, hamburger menu, sidebar typewriter, drill-down
+  mobile UX on the Network page.
+- **Idempotent tooling.** `make setup`, `make dev`, `make build`,
+  `make lighthouse` — plus interactive scaffolds (`make project`,
+  `make post`, `make contact`, `make archive`) that prompt for the
+  fields and write the file.
 
-Either edit files in `src/content/` directly, or use the interactive
-scaffolds — they prompt you for the fields and write the file:
+## Documentation
 
-```bash
-make contact    # add a network contact
-make post       # add a writing post
-make project    # add a project (tier 1 = featured / tier 2 = listed)
-make archive    # add an archive entry
+Full docs in [/docs](./docs/README.md):
+
+- **[Architecture](./docs/architecture.md)** — how the codebase is organized
+- **[Customization](./docs/customization.md)** — make it yours
+- **[Content](./docs/content.md)** — add projects, articles, contacts, archive
+- **[Deploying](./docs/deploying.md)** — GitHub Pages and Cloudflare Pages
+- **[Performance](./docs/performance.md)** — Lighthouse targets and optimization
+- **[SEO](./docs/seo.md)** — AI-readability, JSON-LD, directory submissions
+- **[Roadmap](./docs/roadmap.md)** — what's done, what's planned (read first)
+- **[Design philosophy](./docs/design-philosophy.md)** — why we made specific choices
+
+## Pages
+
 ```
-
-Run `make` (or `make help`) for the full list. Everything the scaffolds
-generate is also editable by hand afterward — they save typing, not flexibility.
-
-Then read [HUMAN.md](./HUMAN.md) for the things a script can't do (pick
-a domain, hook up deploys, etc.).
-
-## Layout
-
-```
-/                   Hero + About (pure HTML, no JS on initial paint)
-/work               Filterable project catalogue (Vue island, hydrates on scroll)
-/work/[slug]        Tier-1 case studies (MDX)
-/writing            Blog index (canonical home for all articles)
-/writing/[slug]     Individual posts (MDX)
-/uses               Stack, tools, hardware
-/archive            Abandoned and post-mortem projects
+/                   Hero + About + Experience + Featured + Recent articles
+                    (sticky sidebar with scroll-spy + typewriter bio)
+/projects           Filterable project catalogue + honest archive
+/projects/[slug]    Tier-1 case studies (MDX)
+/articles           Article index (optional cover thumbnails)
+/articles/[slug]    Individual posts (MDX)
+/network            Two-panel contact selector with mailto: intro compose
+/uses               Collapsible tool/stack/hardware accordions
 /cv                 Structured HTML résumé
-/api/contact        Cloudflare Worker (contact form — CF Pages only)
+/now                What I'm focused on this season
 ```
+
+Plus: `/rss.xml`, `/feed.json`, `/sitemap-index.xml`, `/robots.txt`,
+`/humans.txt`, redirects from legacy `/work` and `/writing` paths.
 
 ## Stack
 
-| Layer       | Tool                | Why                                            |
-| ----------- | ------------------- | ---------------------------------------------- |
-| Framework   | Astro 5             | Static-first, partial hydration, great Lighthouse |
-| Islands     | Vue 3.5             | For the few interactive components             |
-| Styling     | Tailwind 3          | Utility-first, purges unused CSS               |
-| Content     | MDX                 | Git-native, indexable, your canonical source   |
-| Deploy A    | GitHub Pages        | Free, simple, static                           |
-| Deploy B    | Cloudflare Pages    | First-class Astro adapter, Workers for API     |
-| Tooling     | TypeScript, Prettier | Standard stuff                                |
+| Layer | Tool | Why |
+|---|---|---|
+| Framework | Astro 5 | Static-first, island hydration, Lighthouse-friendly |
+| Islands | Vue 3.5 | Two components total — ProjectFilter, NetworkPanel |
+| Styling | Tailwind 3 | Utility-first, purges unused CSS |
+| Content | MDX + YAML | Git-native, indexable, authoritative |
+| Type system | TypeScript strict | Across components, content schemas, scripts |
+| Hosting A | GitHub Pages | Free, simple, static |
+| Hosting B | Cloudflare Pages | Workers for forms/API, global edge |
 
-## Deploy
-
-Both paths are ready to go. Pick one.
-
-### GitHub Pages
-
-Push to `main`. `.github/workflows/github-pages.yml` handles the rest. For
-project sites (`user.github.io/repo`), set the `BASE_PATH` repository
-variable to `/repo`.
-
-### Cloudflare Pages
-
-Either connect the repo in the Cloudflare dashboard (build command:
-`npm run build`, output: `dist`), or use the workflow at
-`.github/workflows/cloudflare-pages.yml` for CI-controlled deploys.
-The contact form at `/api/contact` only works on Cloudflare — on GitHub
-Pages, the template falls back to a `mailto:` link.
-
-Full deploy walkthrough in [HUMAN.md](./HUMAN.md#5-deploy--pick-one).
-
-## Sanity check
+## Commands
 
 ```bash
-npm run lighthouse              # audit the root
-npm run lighthouse /work /cv    # audit specific paths
+make             # show all commands
+make setup       # first-time install
+make dev         # dev server :4321
+make build       # production build to dist/
+make preview     # serve dist/ locally
+make lighthouse  # audit scores
+
+make contact     # add a network contact (interactive)
+make post        # add an article (interactive)
+make project     # add a project (interactive)
+make archive     # add an archive entry (interactive)
+
+make clean       # wipe dist/, .astro/, .lighthouse/
 ```
 
-Reports land in `.lighthouse/`. This is a manual tool — not a CI gate — so
-you can hammer the targets when you actually care about them and skip when
-you don't.
+Everything the scaffolds generate is editable by hand afterward —
+they save typing, not flexibility.
 
-## Customization
+## Quick customization
 
-| Want to change           | Edit                                          |
-| ------------------------ | --------------------------------------------- |
-| Name, bio, links         | `src/config.ts`                               |
-| Colors                   | `src/styles/global.css` (5 CSS variables)     |
-| Fonts                    | `tailwind.config.mjs` + `src/layouts/BaseLayout.astro` |
-| Experience / CV          | `src/pages/cv.astro`                          |
-| Tools & hardware         | `src/pages/uses.astro`                        |
-| Projects                 | Add `.mdx` to `src/content/projects/`         |
-| Blog posts               | Add `.mdx` to `src/content/posts/`            |
-| Archive entries          | Add `.md` to `src/content/archive/`           |
-| Nav items                | `src/config.ts` → `SITE.nav`                  |
+Three files to know:
 
-## Philosophy
+| File | Controls |
+|---|---|
+| `src/config.ts` | Name, role, bio, links, nav, typewriter messages |
+| `src/styles/global.css` | Five color CSS variables (light + dark) |
+| `tailwind.config.mjs` | Fonts, custom utilities |
 
-Read [STRATEGY.md](./STRATEGY.md) for the underlying thesis on what a
-developer portfolio needs to do in 2026. (Coming soon — currently lives in
-the reference implementation site, [wrightfunctions.com](https://wrightfunctions.com).)
+Three commands to know:
+
+```bash
+make dev          # see your changes live
+make build        # confirm it ships
+make lighthouse   # confirm it's fast + accessible
+```
+
+Three docs to read:
+
+1. [Customization](./docs/customization.md) — the rest of the surface
+2. [Content](./docs/content.md) — authoring patterns
+3. [Deploying](./docs/deploying.md) — getting it live
 
 ## Contributing
 
-PRs welcome. See [CONTRIBUTING.md](./CONTRIBUTING.md).
+PRs welcome. See [CONTRIBUTING.md](./CONTRIBUTING.md). Ground rules:
+
+- No JS above the fold
+- No third-party render-blocking resources
+- Static output stays static (functions are opt-in)
+- Lighthouse targets aren't optional
 
 ## License
 
-MIT. Attribution appreciated, not required.
+MIT. Attribution appreciated but not required. If Neofolio was useful to
+you, a link in your site footer keeps the open-source flywheel turning.
