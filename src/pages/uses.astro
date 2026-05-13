@@ -1,62 +1,119 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
+import FormattedDate from '@components/FormattedDate.astro';
 
-// Text-heavy by design — highly indexable, AI-friendly.
-// Forkers: edit this list to match your actual setup.
-const stack = [
+// The things on my machine right now.
+//
+// Schema for each item: { name, note?, link? }
+//   name  — the tool/product, shown bold on the left
+//   note  — short factual context, shown muted on the right (omit if redundant)
+//   link  — canonical URL; turns the name into a link
+//
+// Keep notes terse and factual. No jokes. Recruiters skim this page; the
+// AI scrapers index it as a list of tools. Editorial voice belongs on /writing.
+const updated = new Date('2026-04-15');
+
+const stack: {
+  id: string;
+  label: string;
+  items: { name: string; note?: string; link?: string }[];
+}[] = [
   {
     id: 'editor',
     label: 'Editor',
-    items: ['Neovim with LazyVim', 'VS Code for Live Share sessions', 'Helix when I want to fight my muscle memory'],
+    items: [
+      { name: 'Neovim', note: 'LazyVim distribution', link: 'https://neovim.io' },
+      { name: 'VS Code', note: 'pair-programming only', link: 'https://code.visualstudio.com' },
+    ],
   },
   {
     id: 'terminal',
     label: 'Terminal',
-    items: ['Ghostty', 'fish shell', 'tmux for long-running sessions', 'starship prompt'],
+    items: [
+      { name: 'Ghostty', link: 'https://ghostty.org' },
+      { name: 'fish', note: 'shell', link: 'https://fishshell.com' },
+      { name: 'tmux', note: 'long-running sessions', link: 'https://github.com/tmux/tmux' },
+      { name: 'starship', note: 'prompt', link: 'https://starship.rs' },
+    ],
   },
   {
     id: 'languages',
     label: 'Languages',
-    items: ['TypeScript', 'Go', 'Python', 'Rust (learning)', 'SQL (Postgres dialect mostly)'],
+    items: [
+      { name: 'TypeScript' },
+      { name: 'Go' },
+      { name: 'Python' },
+      { name: 'Rust', note: 'learning' },
+      { name: 'SQL', note: 'Postgres dialect' },
+    ],
   },
   {
     id: 'frameworks',
     label: 'Frameworks',
-    items: ['Astro', 'Vue', 'SvelteKit', 'FastAPI', 'Echo (Go)'],
+    items: [
+      { name: 'Astro', link: 'https://astro.build' },
+      { name: 'Vue', link: 'https://vuejs.org' },
+      { name: 'SvelteKit', link: 'https://kit.svelte.dev' },
+      { name: 'FastAPI', link: 'https://fastapi.tiangolo.com' },
+      { name: 'Echo', note: 'Go web framework', link: 'https://echo.labstack.com' },
+    ],
   },
   {
     id: 'cloud',
     label: 'Cloud',
-    items: ['Cloudflare (Pages, Workers, R2, D1)', 'AWS Lightsail for stateful workloads', 'Fly.io when I need closer regions'],
+    items: [
+      { name: 'Cloudflare', note: 'Pages, Workers, R2, D1', link: 'https://cloudflare.com' },
+      { name: 'AWS Lightsail', note: 'stateful workloads' },
+      { name: 'Fly.io', note: 'when I need closer regions', link: 'https://fly.io' },
+    ],
   },
   {
     id: 'data',
     label: 'Database',
-    items: ['Postgres', 'SQLite for embedded use', 'Redis', 'DuckDB for analytics'],
+    items: [
+      { name: 'Postgres', link: 'https://postgresql.org' },
+      { name: 'SQLite', note: 'embedded' },
+      { name: 'Redis' },
+      { name: 'DuckDB', note: 'analytics', link: 'https://duckdb.org' },
+    ],
   },
   {
     id: 'cli',
     label: 'CLI',
-    items: ['gh', 'wrangler', 'aws-cli', 'jq', 'fzf', 'ripgrep', 'fd', 'eza'],
+    items: [
+      { name: 'gh', link: 'https://cli.github.com' },
+      { name: 'wrangler', link: 'https://developers.cloudflare.com/workers/wrangler' },
+      { name: 'jq', link: 'https://jqlang.github.io/jq' },
+      { name: 'fzf', link: 'https://github.com/junegunn/fzf' },
+      { name: 'ripgrep', link: 'https://github.com/BurntSushi/ripgrep' },
+      { name: 'fd', link: 'https://github.com/sharkdp/fd' },
+      { name: 'eza', link: 'https://eza.rocks' },
+    ],
   },
   {
     id: 'hardware',
     label: 'Hardware',
-    items: ['MacBook Pro M3 Pro', 'LG 5K display', 'HHKB Professional Hybrid', 'Logitech MX Master 3'],
+    items: [
+      { name: 'MacBook Pro', note: 'M3 Pro, 36 GB' },
+      { name: 'LG UltraFine 5K', note: '27"' },
+      { name: 'HHKB Professional Hybrid', note: 'Type-S' },
+      { name: 'Logitech MX Master 3' },
+    ],
   },
 ];
-
 ---
 
 <BaseLayout
   title="Uses"
   description="The stack, tools, and hardware I actually use."
 >
-  <header class="mb-10">
+  <header class="mb-12">
     <h1 class="text-3xl font-medium">Uses</h1>
     <p class="mt-3 max-w-prose text-muted">
-      The things on my machine right now. Updated whenever something changes. Inspired by
-      <a href="https://uses.tech">uses.tech</a>.
+      The things on my machine right now. Inspired by <a href="https://uses.tech">uses.tech</a>.
+    </p>
+    <p class="mt-3 font-mono text-xs text-muted">
+      Last updated <FormattedDate date={updated} />.
     </p>
   </header>
 
@@ -66,17 +123,41 @@ const stack = [
         <section id={category.id} class="scroll-mt-24" aria-labelledby={`${category.id}-heading`}>
           <h2
             id={`${category.id}-heading`}
-            class="mb-3 font-mono text-xs uppercase tracking-widest text-fg"
+            class="mb-4 font-mono text-xs uppercase tracking-widest text-fg"
           >
             {category.label}
           </h2>
-          <ul class="space-y-1">
+
+          {/* Definition list — name (term) → note (description). The CSS grid
+              aligns names and notes into two columns; empty notes render
+              as empty cells, which keeps long names from breaking alignment. */}
+          <dl class="grid grid-cols-[max-content_1fr] gap-x-6 gap-y-1.5">
             {category.items.map((item) => (
-              <li class="text-muted">{item}</li>
+              <>
+                <dt class="font-medium text-fg">
+                  {item.link ? (
+                    <a
+                      href={item.link}
+                      rel="noopener"
+                      class="no-underline hover:!text-accent"
+                    >
+                      {item.name}
+                    </a>
+                  ) : (
+                    item.name
+                  )}
+                </dt>
+                <dd class="m-0 text-muted">{item.note ?? ''}</dd>
+              </>
             ))}
-          </ul>
+          </dl>
         </section>
       ))
     }
   </div>
+
+  <p class="mt-16 text-sm text-muted">
+    Every line is something I actually touch in a normal week. If it stops being
+    true, it gets removed.
+  </p>
 </BaseLayout>
