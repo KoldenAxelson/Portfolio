@@ -33,12 +33,23 @@ Punch list for Konrad. Not for forkers — they read README.
 - [ ] DNS: point `wrightfunctions.com` at the CF Pages project.
 - [ ] `wrangler pages secret put RESEND_API_KEY --project-name=wf-site`
 - [ ] `wrangler pages secret put CONTACT_TO_EMAIL --project-name=wf-site`
-- [ ] Edit `src/config.ts` with real identity.
+- [ ] Edit `src/config.ts` with real identity (auto-flows into JSON-LD, h-card,
+      robots.txt, sitemap, feed.json, RSS — single source of truth).
 - [ ] Edit `src/pages/cv.astro` with real history. DoD framing — careful pass.
+- [ ] Edit `src/pages/now.astro` with what you're actually focused on.
+- [ ] Edit `public/humans.txt` with your contact + thanks.
 - [ ] Delete all `example-*` files in `src/content/`.
 - [ ] Inventory the external hard drive → Tier 1 / 2 / 3 decisions.
 - [ ] Write the flagship article ("What a Developer Portfolio Needs to Do in 2026").
 - [ ] `bash scripts/lighthouse.sh / /work /writing /cv` — confirm 90/100/100/100.
+
+## Inbound-link directory submissions (once site is live)
+
+- [ ] Submit `/uses` to <https://uses.tech>
+- [ ] Submit `/now` to <https://nownownow.com>
+- [ ] PR yourself to <https://github.com/emmabostian/developer-portfolios>
+- [ ] Add `rel="me"` portfolio link to GitHub, LinkedIn, Bluesky bios (already
+      present here; reciprocal links complete the verified-identity graph)
 
 ## Open questions to resolve before launch
 
