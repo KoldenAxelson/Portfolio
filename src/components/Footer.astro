@@ -4,13 +4,14 @@ import SocialIcons from '@components/SocialIcons.astro';
 
 const year = new Date().getFullYear();
 // Plain-text stack disclosure — STRATEGY checklist item.
-const stack = ['Astro', 'Vue islands', 'Tailwind', 'MDX'];
+const stack = ['Astro', 'Vue', 'Tailwind', 'MDX'];
 ---
 
-<footer class="mt-24 border-t border-border pt-8 pb-12 text-sm text-muted">
+<footer class="mt-24 border-t border-border pb-12 pt-8 text-sm text-muted">
   <div class="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
     <p>
-      © {year} {SITE.author.name}. Built with {stack.join(', ')}. Powered by
+      © {year}
+      {SITE.author.name}. Built with {stack.join(', ')}. Powered by
       <a href="https://github.com/KoldenAxelson/neofolio" rel="noopener">Neofolio</a>.
     </p>
     <SocialIcons />
