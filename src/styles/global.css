@@ -75,12 +75,12 @@ body {
    *   baseFrequency: grain size. 0.65 = rougher  0.85 = default  1.4 = very fine
    *   numOctaves:    detail depth. 1 = clean grain  2 = default  3 = complex
    *   alpha column 1 of last feColorMatrix row: visibility.
-   *     0.10 = barely there  0.18 = default  0.30 = pronounced grain
+   *     0.15 = barely there  0.35 = default  0.55 = pronounced grain
    *   background-size: tile size. Smaller tiles repeat more often.
    *
    * To disable entirely: comment out background-image (or set to none).
    * ------------------------------------------------------------------ */
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0.18 0 0 0 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0.35 0 0 0 0'/></filter><rect width='240' height='240' filter='url(%23n)'/></svg>");
   background-attachment: fixed;
   background-size: 240px 240px;
   background-repeat: repeat;
