@@ -74,16 +74,22 @@ export const SITE = {
   },
 
   /**
-   * Top-nav items. Order matters. Each can have an icon key that the TopNav
-   * component knows how to render. Brittany-style minimal: only the pages
-   * that don't naturally appear on the homepage get a nav slot. Work,
-   * Writing, and CV are reachable via the "All X →" links on the homepage.
+   * Top-nav items. Order matters. Each has an icon key that the TopNav
+   * component knows how to render.
    *
-   * Available icon keys: 'globe' | 'desktop'. Add more in TopNav.astro.
+   * Labels and routes can differ — e.g. the nav says "Projects" but the
+   * URL stays /work because that's where the Astro page lives. Same for
+   * "Articles" → /writing.
+   *
+   * Available icon keys: 'folder' | 'newspaper' | 'desktop' | 'globe' |
+   * 'briefcase'. Add more in TopNav.astro.
    */
   nav: [
-    { label: 'Uses', href: '/uses', icon: 'desktop' as const },
+    { label: 'Projects', href: '/work', icon: 'folder' as const },
+    { label: 'Articles', href: '/writing', icon: 'newspaper' as const },
     { label: 'Network', href: '/network', icon: 'globe' as const },
+    { label: 'Uses', href: '/uses', icon: 'desktop' as const },
+    { label: 'CV', href: '/cv', icon: 'briefcase' as const },
   ],
 
   /**
