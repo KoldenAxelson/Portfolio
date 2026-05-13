@@ -64,6 +64,36 @@ html {
 
 body {
   min-height: 100dvh;
+
+  /* ---- Matte noise texturing (light mode) ---------------------------
+   * Subtle SVG noise overlay over the warm-white background. Adds a
+   * "paper-grain" feel without affecting text contrast. The pattern is
+   * inline as a data URI (no extra request), tiled at 240px, and pinned
+   * (background-attachment: fixed) so it doesn't shift on scroll.
+   *
+   * To tune (all in the SVG below):
+   *   baseFrequency: grain size. 0.65 = rougher  0.85 = default  1.4 = very fine
+   *   numOctaves:    detail depth. 1 = clean grain  2 = default  3 = complex
+   *   alpha column 1 of last feColorMatrix row: visibility.
+   *     0.10 = barely there  0.18 = default  0.30 = pronounced grain
+   *   background-size: tile size. Smaller tiles repeat more often.
+   *
+   * To disable entirely: comment out background-image (or set to none).
+   * ------------------------------------------------------------------ */
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0.18 0 0 0 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  background-attachment: fixed;
+  background-size: 240px 240px;
+  background-repeat: repeat;
+}
+
+@media (prefers-color-scheme: dark) {
+  /* Dark mode reads atmospheric already; skip the grain.
+     To enable in dark mode too, change `0.18 0 0 0 0` in the matrix above to
+     a higher-alpha matrix targeting white (`0 0 0 0 1` last row, then alpha
+     column 1 to e.g. 0.12). Trial and error from there. */
+  body {
+    background-image: none;
+  }
 }
 
 /*
