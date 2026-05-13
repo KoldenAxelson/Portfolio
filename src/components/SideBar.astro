@@ -61,7 +61,7 @@ const bioMessagesJSON = JSON.stringify(SITE.bioMessages ?? {});
 {
   sections.length > 0 && (
     <script is:inline define:vars={{ bioMessagesJSON }}>
-      (function () {
+      function neofolioSidebarInit() {
         const links = Array.from(document.querySelectorAll('[data-section-link]'));
         if (!links.length) return;
         const idToLink = new Map(
@@ -175,7 +175,15 @@ const bioMessagesJSON = JSON.stringify(SITE.bioMessages ?? {});
         );
         sectionEls.forEach((el) => observer.observe(el));
         setActive(sectionEls[0].id);
-      })();
+      }
+
+      // Defer until DOM is parsed — the section anchors live in <main>,
+      // which is rendered AFTER this script in the document.
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', neofolioSidebarInit);
+      } else {
+        neofolioSidebarInit();
+      }
     </script>
 
   )
