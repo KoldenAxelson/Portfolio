@@ -30,7 +30,7 @@ const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
             </h2>
             <p class="mt-1 text-muted">{post.data.description}</p>
             <p class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs text-muted">
-              <FormattedDate date={post.data.pubDate} />
+              <span class="shrink-0"><FormattedDate date={post.data.pubDate} /></span>
               {post.data.tags.length > 0 && <span>· {post.data.tags.join(', ')}</span>}
             </p>
           </article>
