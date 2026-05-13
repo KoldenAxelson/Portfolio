@@ -46,7 +46,7 @@ const projects = defineCollection({
         href: z.string().url(),
       })
       .optional(),
-    /** Cover image for the project card. Relative to /public. */
+    /** Cover image path, relative to /public. Optional. */
     cover: z.string().optional(),
     /** If true, projects show on the homepage hero strip. Tier 1 only. */
     featured: z.boolean().default(false),
@@ -62,6 +62,8 @@ const posts = defineCollection({
     pubDate: z.coerce.date(),
     updatedDate: z.coerce.date().optional(),
     tags: z.array(z.string()).default([]),
+    /** Optional cover image path, relative to /public. */
+    cover: z.string().optional(),
     /** If this post was syndicated, set the original canonical URL here. */
     canonical: z.string().url().optional(),
     draft: z.boolean().default(false),

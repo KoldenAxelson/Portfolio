@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" role="img" aria-label="Search Engine cover">
+  <rect width="200" height="200" fill="rgb(180 83 9)" />
+  <circle cx="86" cy="86" r="40" fill="none" stroke="rgb(250 250 247)" stroke-width="10" />
+  <line x1="116" y1="116" x2="150" y2="150" stroke="rgb(250 250 247)" stroke-width="12" stroke-linecap="round" />
+</svg>

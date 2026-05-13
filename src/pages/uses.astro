@@ -16,7 +16,7 @@ import FormattedDate from '@components/FormattedDate.astro';
 //                    when there's a genuine story or config worth sharing.
 //
 // Recruiters skim this page; AI scrapers index it as a list of tools. Keep
-// captions tight and details opt-in. Editorial voice belongs on /writing.
+// captions tight and details opt-in. Editorial voice belongs on /articles.
 
 type Item = { name: string; note?: string; link?: string; detail?: string };
 type Category = { id: string; label: string; caption?: string; items: Item[] };
@@ -187,7 +187,6 @@ const stack: Category[] = [
     {
       stack.map((category) => (
         <details
-          open
           id={category.id}
           class="group/cat scroll-mt-24 border-b border-border/60 pb-6 last:border-b-0"
         >
@@ -277,10 +276,6 @@ const stack: Category[] = [
     }
   </div>
 
-  <p class="mt-20 max-w-prose text-sm text-muted">
-    Every line is something I actually touch in a normal week. If it stops being true, it
-    gets removed.
-  </p>
 </BaseLayout>
 
 <script is:inline>

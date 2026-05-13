@@ -38,7 +38,13 @@ Punch list for Konrad. Not for forkers — they read README.
 - [ ] Edit `src/pages/cv.astro` with real history. DoD framing — careful pass.
 - [ ] Edit `src/pages/now.astro` with what you're actually focused on.
 - [ ] Edit `public/humans.txt` with your contact + thanks.
-- [ ] Delete all `example-*` files in `src/content/`.
+- [ ] Cover images: drop into `public/covers/`, reference via
+      `cover: /covers/foo.webp` in frontmatter. **Pre-convert raster sources
+      to WebP or AVIF** before committing — `cwebp -q 80 in.png -o out.webp`
+      or use squoosh.app. Don't ship PNG/JPG covers (Lighthouse penalty).
+      SVG passes through as-is (already optimal). The template ships demo
+      SVG covers at `public/covers/example-*.svg`.
+- [ ] Delete all `example-*` files in `src/content/` AND in `public/covers/`.
 - [ ] Inventory the external hard drive → Tier 1 / 2 / 3 decisions.
 - [ ] Write the flagship article ("What a Developer Portfolio Needs to Do in 2026").
 - [ ] `bash scripts/lighthouse.sh / /work /writing /cv` — confirm 90/100/100/100.

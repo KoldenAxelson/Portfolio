@@ -18,8 +18,8 @@ export const BASE_URL = BASE || '/';
 /**
  * Prepend the base path to an internal site path.
  *
- *   url('/work')                  → '/neofolio/work'   (base = /neofolio)
- *   url('/work')                  → '/work'            (base = /)
+ *   url('/projects')              → '/neofolio/projects'   (base = /neofolio)
+ *   url('/projects')              → '/projects'            (base = /)
  *   url('https://github.com/foo') → 'https://github.com/foo'
  *   url('mailto:me@example.com')  → 'mailto:me@example.com'
  *   url('#top')                   → '#top'

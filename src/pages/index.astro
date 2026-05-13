@@ -13,8 +13,8 @@ import { url } from '@lib/url';
 const sections = [
   { id: 'about', label: 'About' },
   { id: 'experience', label: 'Experience' },
-  { id: 'work', label: 'Work' },
-  { id: 'writing', label: 'Writing' },
+  { id: 'projects', label: 'Projects' },
+  { id: 'articles', label: 'Articles' },
 ];
 
 // Inline experience summary on home — full version lives on /cv.
@@ -66,9 +66,9 @@ const recentPosts = (await getCollection('posts', ({ data }) => !data.draft))
         infrastructure you only notice when something breaks elsewhere.
       </p>
       <p>
-        I write about what I learn at <a href={url('/writing')}>/writing</a> and keep an honest
-        log of the projects I started and didn't finish in
-        the <a href={url('/work') + '#archive'}>archive</a> at the bottom of /work.
+        I write about what I learn at <a href={url('/articles')}>/articles</a> and keep an
+        honest log of the projects I started and didn't finish in
+        the <a href={url('/projects') + '#archive'}>archive</a> at the bottom of /projects.
         Both feel like an essential counterweight to the highlight-reel version of a portfolio.
       </p>
       <p>
@@ -116,41 +116,41 @@ const recentPosts = (await getCollection('posts', ({ data }) => !data.draft))
     </p>
   </section>
 
-  <!-- FEATURED WORK -->
+  <!-- FEATURED PROJECTS -->
   {
     featured.length > 0 && (
-      <section id="work" class="mb-24 scroll-mt-24" aria-labelledby="work-heading">
+      <section id="projects" class="mb-24 scroll-mt-24" aria-labelledby="projects-heading">
         <h2
-          id="work-heading"
+          id="projects-heading"
           class="mb-6 font-mono text-xs uppercase tracking-widest text-fg lg:sr-only"
         >
-          Work
+          Projects
         </h2>
         <div class="space-y-4">
           {featured.map((p) => <ProjectCard project={p} />)}
         </div>
         <p class="mt-8 text-sm">
-          <a href={url('/work')}>All projects →</a>
+          <a href={url('/projects')}>All projects →</a>
         </p>
       </section>
     )
   }
 
-  <!-- RECENT WRITING -->
+  <!-- RECENT ARTICLES -->
   {
     recentPosts.length > 0 && (
-      <section id="writing" class="mb-24 scroll-mt-24" aria-labelledby="writing-heading">
+      <section id="articles" class="mb-24 scroll-mt-24" aria-labelledby="articles-heading">
         <h2
-          id="writing-heading"
+          id="articles-heading"
           class="mb-6 font-mono text-xs uppercase tracking-widest text-fg lg:sr-only"
         >
-          Writing
+          Articles
         </h2>
         <ul class="divide-y divide-border">
           {recentPosts.map((post) => (
             <li class="flex flex-col gap-1 py-3 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
               <a
-                href={url(`/writing/${post.slug}`)}
+                href={url(`/articles/${post.slug}`)}
                 class="no-underline font-medium text-fg hover:!text-accent"
               >
                 {post.data.title}
@@ -162,7 +162,7 @@ const recentPosts = (await getCollection('posts', ({ data }) => !data.draft))
           ))}
         </ul>
         <p class="mt-8 text-sm">
-          <a href={url('/writing')}>All posts →</a>
+          <a href={url('/articles')}>All articles →</a>
         </p>
       </section>
     )

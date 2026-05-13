@@ -1,0 +1,66 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import FormattedDate from '@components/FormattedDate.astro';
+import { url } from '@lib/url';
+
+const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
+---
+
+<BaseLayout title="Articles" description="Essays on software, systems, and AI-age portfolio design.">
+  <header class="mb-8">
+    <h1 class="text-3xl font-medium">Articles</h1>
+    <p class="mt-3 max-w-prose text-muted">
+      Essays on software, systems, and AI-age portfolio design. Canonical home for
+      everything I publish — syndicated elsewhere with <code>rel="canonical"</code> back here.
+    </p>
+  </header>
+
+  <ul class="divide-y divide-border">
+    {
+      posts.map((post) => (
+        <li class="py-5">
+          <article class="flex gap-4">
+            {/* Optional cover. Path is relative to /public. Pre-convert
+                raster sources to WebP/AVIF for Lighthouse perf — see
+                HUMAN.md. */}
+            {post.data.cover && (
+              <a
+                href={url(`/articles/${post.slug}`)}
+                class="shrink-0"
+                aria-hidden="true"
+                tabindex="-1"
+              >
+                <img
+                  src={url(post.data.cover)}
+                  width={96}
+                  height={96}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  class="h-[72px] w-[72px] rounded-md object-cover sm:h-24 sm:w-24"
+                />
+              </a>
+            )}
+            <div class="min-w-0 flex-1">
+              <h2 class="m-0 text-lg font-medium">
+                <a href={url(`/articles/${post.slug}`)} class="no-underline">
+                  {post.data.title}
+                </a>
+              </h2>
+              <p class="mt-1 text-muted">{post.data.description}</p>
+              <p class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs text-muted">
+                <span class="shrink-0">
+                  <FormattedDate date={post.data.pubDate} />
+                </span>
+                {post.data.tags.length > 0 && <span>· {post.data.tags.join(', ')}</span>}
+              </p>
+            </div>
+          </article>
+        </li>
+      ))
+    }
+  </ul>
+</BaseLayout>
