@@ -23,6 +23,12 @@ interface Props {
   split?: boolean;
   /** In-page section anchors for the sidebar nav. Only used when split=true. */
   sections?: { id: string; label: string }[];
+  /**
+   * Use a wider content container (max-w-screen-xl instead of max-w-3xl).
+   * Reserved for pages whose content is multi-column or app-like —
+   * e.g. /network. Ignored when split=true.
+   */
+  wide?: boolean;
 }
 
 const {
@@ -36,6 +42,7 @@ const {
   schema,
   split = false,
   sections,
+  wide = false,
 } = Astro.props;
 ---
 
@@ -86,7 +93,7 @@ const {
           <Footer />
         </div>
       ) : (
-        <div class="mx-auto max-w-3xl px-6 py-12 lg:py-16">
+        <div class:list={['mx-auto px-6 py-12 lg:py-16', wide ? 'max-w-screen-xl lg:px-12' : 'max-w-3xl']}>
           <main id="main">
             <slot />
           </main>
