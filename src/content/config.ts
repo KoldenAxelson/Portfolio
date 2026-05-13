@@ -81,4 +81,24 @@ const archive = defineCollection({
   }),
 });
 
-export const collections = { projects, posts, archive };
+const network = defineCollection({
+  type: 'data',
+  schema: z.object({
+    name: z.string(),
+    /** Job title or role. Used in the right-panel selector list. */
+    title: z.string(),
+    company: z.string().optional(),
+    /** One- to three-sentence bio. Shown in the mini-profile pane. */
+    blurb: z.string(),
+    /** How you know this person. Helps the recruiter understand the relationship. */
+    relationship: z.string(),
+    /** Website / LinkedIn / YouTube — wherever the recruiter can verify them. */
+    link: z.string().url().optional(),
+    /** Optional avatar image path, relative to /public. */
+    avatar: z.string().optional(),
+    /** Display order. Lower = higher in the selector list. */
+    order: z.number().default(100),
+  }),
+});
+
+export const collections = { projects, posts, archive, network };

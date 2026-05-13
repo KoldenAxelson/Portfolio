@@ -1,0 +1,7 @@
+name: 'Sarah Chen'
+title: 'Distinguished Engineer'
+company: 'Stripe'
+blurb: 'Leads the payment-systems group. Wrote the canonical blog post on production-grade rate limiting that every backend engineer references at least once.'
+relationship: 'Worked together at Previous Co for 18 months. Sarah was my staff engineer and the closest thing I had to a formal mentor.'
+link: 'https://example.com/sarah-chen'
+order: 1

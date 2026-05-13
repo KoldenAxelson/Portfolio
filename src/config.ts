@@ -78,6 +78,7 @@ export const SITE = {
   nav: [
     { label: 'Work', href: '/work' },
     { label: 'Writing', href: '/writing' },
+    { label: 'Network', href: '/network' },
     { label: 'Uses', href: '/uses' },
     { label: 'CV', href: '/cv' },
   ],
