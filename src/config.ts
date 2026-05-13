@@ -13,8 +13,7 @@ export const SITE = {
   title: 'Neofolio',
 
   /** Tagline / meta description. Keep under 160 chars. */
-  description:
-    'An AI-readable, opinionated portfolio template for developers in the AI age.',
+  description: 'An AI-readable, opinionated portfolio template for developers in the AI age.',
 
   /** Owner identity. Used in <Person> JSON-LD and across the site. */
   author: {
@@ -55,7 +54,7 @@ export const SITE = {
     work: [
       "Most of these started as 'I'll do this in a weekend' projects. Plot twist: they did not.",
       'The Postgres CLI got a star from someone at Crunchy Data and I haven’t stopped grinning since.',
-      "Half my side projects exist because the proper tool cost $20/mo and I was annoyed about it.",
+      'Half my side projects exist because the proper tool cost $20/mo and I was annoyed about it.',
     ],
     writing: [
       'I keep notes in a paper journal too. Half my drafts live there until they survive long enough to type up.',
@@ -74,13 +73,17 @@ export const SITE = {
     rss: '/rss.xml',
   },
 
-  /** Top-nav items. Order matters. */
+  /**
+   * Top-nav items. Order matters. Each can have an icon key that the TopNav
+   * component knows how to render. Brittany-style minimal: only the pages
+   * that don't naturally appear on the homepage get a nav slot. Work,
+   * Writing, and CV are reachable via the "All X →" links on the homepage.
+   *
+   * Available icon keys: 'globe' | 'desktop'. Add more in TopNav.astro.
+   */
   nav: [
-    { label: 'Work', href: '/work' },
-    { label: 'Writing', href: '/writing' },
-    { label: 'Network', href: '/network' },
-    { label: 'Uses', href: '/uses' },
-    { label: 'CV', href: '/cv' },
+    { label: 'Uses', href: '/uses', icon: 'desktop' as const },
+    { label: 'Network', href: '/network', icon: 'globe' as const },
   ],
 
   /**
