@@ -39,7 +39,7 @@ const allTags = [...new Set(all.flatMap((p) => p.data.tags))];
     tier1.length > 0 && (
       <section class="mb-12" aria-labelledby="featured-heading">
         <h2 id="featured-heading" class="mb-4 text-xl font-medium">Featured</h2>
-        <div class="grid gap-4 sm:grid-cols-2">
+        <div class="space-y-4">
           {tier1.map((p) => (
             <div data-project-tags={p.data.tags.join(',')}>
               <ProjectCard project={p} />
@@ -54,7 +54,7 @@ const allTags = [...new Set(all.flatMap((p) => p.data.tags))];
     tier2.length > 0 && (
       <section class="mb-12" aria-labelledby="listed-heading">
         <h2 id="listed-heading" class="mb-4 text-xl font-medium">All projects</h2>
-        <div class="grid gap-3 sm:grid-cols-2">
+        <div class="space-y-3">
           {tier2.map((p) => (
             <div data-project-tags={p.data.tags.join(',')}>
               <ProjectCard project={p} compact />
