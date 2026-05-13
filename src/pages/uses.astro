@@ -183,65 +183,96 @@ const stack: Category[] = [
     </p>
   </header>
 
-  <div class="space-y-14">
+  <div class="space-y-6">
     {
       stack.map((category) => (
-        <section id={category.id} class="scroll-mt-24" aria-labelledby={`${category.id}-heading`}>
-          <h2
-            id={`${category.id}-heading`}
-            class="mb-3 font-mono text-xs uppercase tracking-widest text-fg"
+        <details
+          open
+          id={category.id}
+          class="group/cat scroll-mt-24 border-b border-border/60 pb-6 last:border-b-0"
+        >
+          <summary
+            class="flex cursor-pointer list-none items-center justify-between gap-3 py-1 [&::-webkit-details-marker]:hidden"
+            aria-labelledby={`${category.id}-heading`}
           >
-            {category.label}
-          </h2>
+            <h2
+              id={`${category.id}-heading`}
+              class="font-mono text-xs uppercase tracking-widest text-fg transition-colors group-hover/cat:!text-accent"
+            >
+              {category.label}
+            </h2>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+              class="h-4 w-4 shrink-0 text-muted transition-transform duration-200 group-open/cat:rotate-90 group-hover/cat:!text-accent"
+            >
+              <path d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+            </svg>
+          </summary>
 
-          {category.caption && (
-            <p class="mb-5 max-w-prose text-sm leading-relaxed text-muted">{category.caption}</p>
-          )}
+          <div class="mt-4">
+            {category.caption && (
+              <p class="mb-5 max-w-prose text-sm leading-relaxed text-muted">{category.caption}</p>
+            )}
 
-          <ul class="-mx-2 space-y-0.5">
-            {category.items.map((item) => {
-              const head = (
-                <span class="text-fg">
-                  {item.link ? (
-                    <a
-                      href={item.link}
-                      rel="noopener"
-                      class="font-medium no-underline hover:!text-accent"
-                    >
-                      {item.name}
-                    </a>
-                  ) : (
-                    <span class="font-medium">{item.name}</span>
-                  )}
-                  {item.note && <span class="text-muted"> · {item.note}</span>}
-                </span>
-              );
+            <ul class="-mx-2 space-y-0.5">
+              {category.items.map((item) => {
+                const head = (
+                  <span class="text-fg">
+                    {item.link ? (
+                      <a
+                        href={item.link}
+                        rel="noopener"
+                        class="font-medium no-underline hover:!text-accent"
+                      >
+                        {item.name}
+                      </a>
+                    ) : (
+                      <span class="font-medium">{item.name}</span>
+                    )}
+                    {item.note && <span class="text-muted"> · {item.note}</span>}
+                  </span>
+                );
 
-              return (
-                <li>
-                  {item.detail ? (
-                    <details class="uses-row group rounded px-2 py-1 transition-colors hover:bg-border/30">
-                      <summary class="flex cursor-pointer list-none items-baseline gap-3 [&::-webkit-details-marker]:hidden">
-                        {head}
-                        <span
-                          aria-hidden="true"
-                          class="ml-auto text-xs text-muted/70 transition-transform duration-200 group-open:rotate-90"
-                        >
-                          ▸
-                        </span>
-                      </summary>
-                      <p class="mt-2 max-w-prose text-sm leading-relaxed text-muted">
-                        {item.detail}
-                      </p>
-                    </details>
-                  ) : (
-                    <div class="px-2 py-1">{head}</div>
-                  )}
-                </li>
-              );
-            })}
-          </ul>
-        </section>
+                return (
+                  <li>
+                    {item.detail ? (
+                      <details class="group/item rounded px-2 py-1 transition-colors hover:bg-border/30">
+                        <summary class="flex cursor-pointer list-none items-center gap-3 [&::-webkit-details-marker]:hidden">
+                          {head}
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            aria-hidden="true"
+                            class="ml-auto h-4 w-4 shrink-0 text-muted/70 transition-transform duration-200 group-open/item:rotate-90"
+                          >
+                            <path d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                          </svg>
+                        </summary>
+                        <p class="mt-2 max-w-prose text-sm leading-relaxed text-muted">
+                          {item.detail}
+                        </p>
+                      </details>
+                    ) : (
+                      <div class="px-2 py-1">{head}</div>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </details>
       ))
     }
   </div>
@@ -251,3 +282,26 @@ const stack: Category[] = [
     gets removed.
   </p>
 </BaseLayout>
+
+<script is:inline>
+  // When a visitor lands at /uses#hardware (or any category anchor), make
+  // sure that category's <details> is open so they see the content they
+  // came for. Without this, a collapsed category would silently hide
+  // anchor-targeted content.
+  (function () {
+    function openTargeted() {
+      const id = window.location.hash.slice(1);
+      if (!id) return;
+      const el = document.getElementById(id);
+      if (el && el.tagName.toLowerCase() === 'details') {
+        el.open = true;
+      }
+    }
+    window.addEventListener('hashchange', openTargeted);
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', openTargeted);
+    } else {
+      openTargeted();
+    }
+  })();
+</script>
