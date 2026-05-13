@@ -1,7 +1,6 @@
 ---
-// SideBar — identity + in-page section nav.
-// Only used on the homepage (BaseLayout split=true). Sub-pages don't render this.
-// Cross-page navigation lives in the TopNav. Social icons live in the Footer.
+// SideBar — identity + in-page section nav + typewriter bio.
+// Only rendered when BaseLayout's `split` prop is true (homepage).
 import { SITE } from '@config';
 import { url } from '@lib/url';
 
@@ -10,6 +9,12 @@ interface Props {
 }
 
 const { sections = [] } = Astro.props;
+
+// Serialize bioMessages to JSON for the inline script to consume.
+// The static HTML keeps SITE.author.bio so AI/no-JS clients still see a
+// truthful description. JSON-LD Person.description in <head> covers the
+// formal long bio. The typewriter is purely human flair.
+const bioMessagesJSON = JSON.stringify(SITE.bioMessages ?? {});
 ---
 
 <aside class="lg:sticky lg:top-16 lg:max-h-[calc(100vh-4rem)] lg:w-1/2 lg:py-24 py-12">
@@ -18,7 +23,12 @@ const { sections = [] } = Astro.props;
       <a href={url('/')} class="hover:!text-fg">{SITE.author.name}</a>
     </h1>
     <p class="mt-3 text-lg font-medium tracking-tight text-fg sm:text-xl">{SITE.author.role}</p>
-    <p class="mt-4 max-w-xs leading-normal text-muted">{SITE.author.bio}</p>
+
+    {/* Real bio in static HTML; JS swaps it for the typewriter post-hydration. */}
+    <p
+      data-bio-typer
+      class="mt-4 min-h-[5.5rem] max-w-xs leading-normal text-muted"
+    >{SITE.author.bio}<span data-bio-cursor aria-hidden="true" class="ml-0.5 inline-block w-[2px] h-[1.05em] translate-y-[3px] bg-current opacity-0 transition-opacity duration-300"></span></p>
 
     {
       sections.length > 0 && (
@@ -50,7 +60,7 @@ const { sections = [] } = Astro.props;
 
 {
   sections.length > 0 && (
-    <script is:inline>
+    <script is:inline define:vars={{ bioMessagesJSON }}>
       (function () {
         const links = Array.from(document.querySelectorAll('[data-section-link]'));
         if (!links.length) return;
@@ -62,9 +72,94 @@ const { sections = [] } = Astro.props;
           .filter(Boolean);
         if (!sectionEls.length) return;
 
+        // ---- Typewriter setup ----
+        const messages = JSON.parse(bioMessagesJSON);
+        const bioEl = document.querySelector('[data-bio-typer]');
+        const cursorEl = bioEl ? bioEl.querySelector('[data-bio-cursor]') : null;
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        let currentSection = null;
+        let typingToken = 0;
+
+        function sleep(ms) {
+          return new Promise((r) => setTimeout(r, ms));
+        }
+
+        function pickMessage(id) {
+          const pool = messages[id];
+          if (!pool || !pool.length) return null;
+          return pool[Math.floor(Math.random() * pool.length)];
+        }
+
+        function setText(text) {
+          if (!bioEl) return;
+          // Remove every text node before the cursor, then insert the new text.
+          const children = Array.from(bioEl.childNodes);
+          for (const node of children) {
+            if (node !== cursorEl) bioEl.removeChild(node);
+          }
+          bioEl.insertBefore(document.createTextNode(text), cursorEl);
+        }
+
+        function visibleText() {
+          if (!bioEl) return '';
+          let s = '';
+          for (const node of bioEl.childNodes) {
+            if (node !== cursorEl && node.nodeType === Node.TEXT_NODE) s += node.textContent;
+          }
+          return s;
+        }
+
+        async function typeMessage(sectionId, message) {
+          const myToken = ++typingToken;
+          if (!bioEl) return;
+
+          if (reduceMotion) {
+            setText(message);
+            return;
+          }
+
+          // Animate cursor while typing/backspacing.
+          if (cursorEl) cursorEl.style.opacity = '1';
+
+          // Backspace existing text.
+          let current = visibleText();
+          while (current.length > 0 && typingToken === myToken) {
+            current = current.slice(0, -1);
+            setText(current);
+            await sleep(12);
+          }
+          if (typingToken !== myToken) return;
+
+          // Pause briefly between messages.
+          await sleep(150);
+          if (typingToken !== myToken) return;
+
+          // Type new message.
+          let typed = '';
+          for (const ch of message) {
+            if (typingToken !== myToken) return;
+            typed += ch;
+            setText(typed);
+            const isPunct = /[.!?,;:]/.test(ch);
+            await sleep(isPunct ? 140 : 28 + Math.random() * 24);
+          }
+
+          // Fade cursor after a beat.
+          await sleep(800);
+          if (typingToken !== myToken) return;
+          if (cursorEl) cursorEl.style.opacity = '0';
+        }
+
         function setActive(id) {
           for (const [key, el] of idToLink) {
             el.setAttribute('data-active', key === id ? 'true' : 'false');
+          }
+          if (id !== currentSection) {
+            const msg = pickMessage(id);
+            if (msg) {
+              currentSection = id;
+              typeMessage(id, msg);
+            }
           }
         }
 
@@ -82,5 +177,6 @@ const { sections = [] } = Astro.props;
         setActive(sectionEls[0].id);
       })();
     </script>
+
   )
 }

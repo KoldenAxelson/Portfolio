@@ -30,6 +30,40 @@ export const SITE = {
       'A few sentences about who you are, what kinds of problems you take on, and what you care about. Be specific. Generic bios get skipped by humans and indexed flatly by AI.',
   },
 
+  /**
+   * Human asides typed into the sidebar bio slot — one set per homepage section.
+   *
+   * AI scrapers index the formal `bio` and `longBio` above; these are purely
+   * for human visitors. Each section has an array; a random message from that
+   * array is typed when the user scrolls into the section. Arrays so the
+   * second visit doesn't feel canned.
+   *
+   * Edit freely. Keep them short (one to three sentences), specific, and in
+   * a voice that isn't on your résumé. Two anecdotes per section is plenty.
+   */
+  bioMessages: {
+    about: [
+      "Real bio's in the metadata. This corner is where I'm allowed to be a person.",
+      'Coffee number three is reading this. Probably finding a typo. Coffee four will fix it.',
+      'If you scrolled here from search, hi. Stay a minute. The footer has the good links.',
+    ],
+    experience: [
+      'My favorite coworker at Previous Co was a golden retriever named Benny who could fetch USB-C cables on command. Real networking.',
+      "The cleared job was a SCIF — fancy way of saying 'a room where your phone is jealous'. Five years without a notification, and I lived.",
+      "I once wrote a postmortem titled 'How My Confidence in Bash Cost Us 14 Minutes'. Got framed by the team. Still hangs in the kitchen at the old office.",
+    ],
+    work: [
+      "Most of these started as 'I'll do this in a weekend' projects. Plot twist: they did not.",
+      'The Postgres CLI got a star from someone at Crunchy Data and I haven’t stopped grinning since.',
+      "Half my side projects exist because the proper tool cost $20/mo and I was annoyed about it.",
+    ],
+    writing: [
+      'I keep notes in a paper journal too. Half my drafts live there until they survive long enough to type up.',
+      "I edit posts out loud, walking the apartment. My neighbor probably thinks I'm in a constant phone call.",
+      "If you read one of these and it changed your mind about something, email me. That's the entire reason I keep doing it.",
+    ],
+  } as Record<string, readonly string[]>,
+
   /** Outbound social / professional links. Remove any you don't want shown. */
   links: {
     github: 'https://github.com/your-username',
