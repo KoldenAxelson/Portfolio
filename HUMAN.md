@@ -25,6 +25,9 @@ Punch list for Konrad. Not for forkers — they read README.
 ## wf-site fork
 
 - [ ] Fork (or `gh repo create wf-site --template KoldenAxelson/neofolio --private --clone`).
+- [ ] Re-enable the Cloudflare workflow: in `.github/workflows/cloudflare-pages.yml`,
+      replace `on: workflow_dispatch:` with the full `on:` block in the header comment.
+- [ ] Delete `.github/workflows/github-pages.yml` (wf-site doesn't need it).
 - [ ] Cloudflare Pages connect: dashboard → Pages → connect repo → build
       command `npm run build`, output `dist`, Node 22.
 - [ ] DNS: point `wrightfunctions.com` at the CF Pages project.

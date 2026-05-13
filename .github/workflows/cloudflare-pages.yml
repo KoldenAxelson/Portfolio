@@ -1,21 +1,30 @@
 name: Deploy to Cloudflare Pages
 
-# This workflow is OPTIONAL — Cloudflare Pages can also deploy directly from
-# your Git repo via its dashboard, which is simpler. Use this workflow if you
-# want CI control over the deploy step (e.g. linting before push, multiple
-# environments, custom build matrix).
+# DISABLED BY DEFAULT.
+# This workflow ships with Neofolio as a documented option but is configured
+# to run only on manual dispatch — so it doesn't fail-spam your inbox unless
+# you've actually wired up Cloudflare. To enable automatic deploys, replace
+# the `on:` block below with:
 #
-# Required GitHub Action secrets:
-#   CLOUDFLARE_API_TOKEN  — Pages:Edit + User Details:Read scopes
-#   CLOUDFLARE_ACCOUNT_ID — from the Cloudflare dashboard sidebar
+#   on:
+#     push:
+#       branches: [main]
+#     pull_request:
+#     workflow_dispatch:
 #
-# Required GitHub Action variable (under Settings → Variables):
-#   CLOUDFLARE_PROJECT_NAME — the Pages project slug
+# You also need to set these before the first run:
+#
+#   Secrets (Settings → Secrets and variables → Actions → Secrets):
+#     CLOUDFLARE_API_TOKEN   — Pages:Edit + User Details:Read scopes
+#     CLOUDFLARE_ACCOUNT_ID  — from the Cloudflare dashboard sidebar
+#   Variable (Settings → Secrets and variables → Actions → Variables):
+#     CLOUDFLARE_PROJECT_NAME — the Pages project slug
+#
+# Note: Cloudflare Pages can also deploy directly from its dashboard's Git
+# integration, which is simpler than this workflow. Use this workflow if you
+# want CI control (lint before push, multiple environments, custom matrix).
 
 on:
-  push:
-    branches: [main]
-  pull_request:
   workflow_dispatch:
 
 jobs:
