@@ -1,0 +1,93 @@
+---
+// Cross-page top navigation with autohide-on-scroll.
+//
+// Behavior:
+//   - Always visible within the first ~50px of scroll
+//   - Hides (translates up) when the user scrolls DOWN past the threshold
+//   - Reveals (translates back down) when the user scrolls UP
+//   - Translucent backdrop blur so it floats over the gradient bg
+//
+// The 'data-top-nav' attribute + tiny inline script keeps this JS-free
+// for forkers — no framework needed, ~25 lines of vanilla.
+
+import { SITE } from '@config';
+import { url, stripBase } from '@lib/url';
+
+const currentPath = stripBase(Astro.url.pathname).replace(/\/$/, '') || '/';
+---
+
+<header
+  data-top-nav
+  class="sticky top-0 z-40 -mx-6 transform-gpu transition-transform duration-200 ease-out motion-reduce:transition-none lg:-mx-12"
+>
+  <div
+    class="border-b border-border/70 bg-bg/70 px-6 backdrop-blur-md backdrop-saturate-150 supports-[backdrop-filter]:bg-bg/55 lg:px-12"
+  >
+    <nav class="mx-auto flex max-w-screen-xl items-center justify-between gap-4 py-4" aria-label="Site">
+      <a
+        href={url('/')}
+        class="font-mono text-xs uppercase tracking-widest text-fg no-underline hover:!text-accent"
+      >
+        {SITE.author.name.split(' ').map((p) => p[0]).join('').toUpperCase()}
+        <span class="ml-2 text-muted">{SITE.author.name}</span>
+      </a>
+      <ul class="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm">
+        {
+          SITE.nav.map((item) => {
+            const isActive =
+              currentPath === item.href || currentPath.startsWith(item.href + '/');
+            return (
+              <li>
+                <a
+                  href={url(item.href)}
+                  class:list={[
+                    'no-underline',
+                    isActive ? 'text-fg font-medium' : 'text-muted hover:!text-fg',
+                  ]}
+                  aria-current={isActive ? 'page' : undefined}
+                >
+                  {item.label}
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<script is:inline>
+  // Autohide on scroll-down, reveal on scroll-up.
+  (function () {
+    const nav = document.querySelector('[data-top-nav]');
+    if (!nav) return;
+    let lastY = window.scrollY;
+    let ticking = false;
+    const THRESHOLD = 50;
+
+    function onScroll() {
+      const y = window.scrollY;
+      if (y < THRESHOLD) {
+        nav.style.transform = '';
+      } else if (y > lastY + 4) {
+        nav.style.transform = 'translateY(-100%)';
+      } else if (y < lastY - 4) {
+        nav.style.transform = '';
+      }
+      lastY = y;
+      ticking = false;
+    }
+
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!ticking) {
+          requestAnimationFrame(onScroll);
+          ticking = true;
+        }
+      },
+      { passive: true },
+    );
+  })();
+</script>

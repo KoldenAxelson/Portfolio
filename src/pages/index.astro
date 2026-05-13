@@ -1,12 +1,49 @@
 ---
-// Homepage right column. Identity lives in the SideBar.
-// Pure Astro HTML, zero JS on initial paint.
+// Homepage — long-scroll, multi-section.
+// Identity lives in the sticky SideBar. Cross-page nav lives in the TopNav.
+// Sidebar in-page nav anchors to the section IDs below.
 import { getCollection } from 'astro:content';
 import BaseLayout from '@layouts/BaseLayout.astro';
 import ProjectCard from '@components/ProjectCard.astro';
 import FormattedDate from '@components/FormattedDate.astro';
 import { SITE } from '@config';
 import { url } from '@lib/url';
+
+// Sidebar in-page anchors — order matches the section order below.
+const sections = [
+  { id: 'about', label: 'About' },
+  { id: 'experience', label: 'Experience' },
+  { id: 'work', label: 'Work' },
+  { id: 'writing', label: 'Writing' },
+];
+
+// Inline experience summary on home — full version lives on /cv.
+const recentRoles = [
+  {
+    year: '2024 — Present',
+    role: 'Tech Lead',
+    employer: 'Example Corp',
+    summary:
+      'Lead engineer on the platform team. Designed and shipped the multi-region failover system handling 12M req/day.',
+    stack: ['Go', 'Kafka', 'Postgres', 'AWS'],
+  },
+  {
+    year: '2020 — 2023',
+    role: 'Senior Engineer',
+    employer: 'Previous Co',
+    summary:
+      'Owned the data-ingest schema-evolution layer. Built the customer-facing event-replay tooling.',
+    stack: ['Python', 'Postgres', 'Redis', 'Terraform'],
+  },
+  {
+    year: '2016 — 2020',
+    role: 'Systems Engineer (Cleared)',
+    employer: 'Defense contractor',
+    summary:
+      'Five years building auditable, failure-tolerant systems under formal constraints. Details on request.',
+    stack: ['Details on request'],
+  },
+];
 
 const featured = (await getCollection('projects', ({ data }) => !data.draft && data.featured))
   .sort((a, b) => b.data.year.localeCompare(a.data.year))
@@ -17,20 +54,72 @@ const recentPosts = (await getCollection('posts', ({ data }) => !data.draft))
   .slice(0, 5);
 ---
 
-<BaseLayout>
-  <!-- ABOUT — long-form, follows the short bio in the sidebar -->
-  <section id="about" class="mb-20" aria-labelledby="about-heading">
+<BaseLayout sections={sections}>
+  <!-- ABOUT -->
+  <section id="about" class="mb-24 scroll-mt-24" aria-labelledby="about-heading">
     <h2 id="about-heading" class="sr-only">About</h2>
-    <p class="text-base text-muted">{SITE.author.longBio}</p>
+    <div class="space-y-4 text-base text-muted">
+      <p>{SITE.author.longBio}</p>
+      <p>
+        Most of my career has been at the seam between resilient backend systems and the people
+        who depend on them not falling over. The work I'm proudest of is invisible —
+        infrastructure you only notice when something breaks elsewhere.
+      </p>
+      <p>
+        I write about what I learn at <a href={url('/writing')}>/writing</a> and keep an honest
+        log of the projects I started and didn't finish at <a href={url('/archive')}>/archive</a>.
+        Both feel like an essential counterweight to the highlight-reel version of a portfolio.
+      </p>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section id="experience" class="mb-24 scroll-mt-24" aria-labelledby="experience-heading">
+    <h2
+      id="experience-heading"
+      class="mb-6 font-mono text-xs uppercase tracking-widest text-fg lg:sr-only"
+    >
+      Experience
+    </h2>
+    <ol class="space-y-10">
+      {
+        recentRoles.map((job) => (
+          <li class="group relative grid grid-cols-1 gap-3 sm:grid-cols-[max-content_1fr]">
+            <span class="font-mono text-xs uppercase tracking-widest text-muted sm:pt-1">
+              {job.year}
+            </span>
+            <div>
+              <h3 class="font-medium text-fg">
+                {job.role} · <span class="text-muted">{job.employer}</span>
+              </h3>
+              <p class="mt-2 text-sm text-muted">{job.summary}</p>
+              <ul class="mt-3 flex flex-wrap gap-1.5">
+                {job.stack.map((s) => (
+                  <li class="rounded bg-border/40 px-2 py-0.5 font-mono text-xs text-muted">
+                    {s}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+    <p class="mt-8 text-sm">
+      <a href={url('/cv')}>Full CV →</a>
+    </p>
   </section>
 
   <!-- FEATURED WORK -->
   {
     featured.length > 0 && (
-      <section id="work" class="mb-20" aria-labelledby="featured-heading">
+      <section id="work" class="mb-24 scroll-mt-24" aria-labelledby="work-heading">
         <header class="mb-6 flex items-baseline justify-between">
-          <h2 id="featured-heading" class="font-mono text-xs uppercase tracking-widest text-fg">
-            Featured work
+          <h2
+            id="work-heading"
+            class="font-mono text-xs uppercase tracking-widest text-fg lg:sr-only"
+          >
+            Work
           </h2>
           <a href={url('/work')} class="text-sm">All projects →</a>
         </header>
@@ -44,17 +133,23 @@ const recentPosts = (await getCollection('posts', ({ data }) => !data.draft))
   <!-- RECENT WRITING -->
   {
     recentPosts.length > 0 && (
-      <section id="writing" class="mb-20" aria-labelledby="writing-heading">
+      <section id="writing" class="mb-24 scroll-mt-24" aria-labelledby="writing-heading">
         <header class="mb-6 flex items-baseline justify-between">
-          <h2 id="writing-heading" class="font-mono text-xs uppercase tracking-widest text-fg">
-            Recent writing
+          <h2
+            id="writing-heading"
+            class="font-mono text-xs uppercase tracking-widest text-fg lg:sr-only"
+          >
+            Writing
           </h2>
           <a href={url('/writing')} class="text-sm">All posts →</a>
         </header>
         <ul class="divide-y divide-border">
           {recentPosts.map((post) => (
             <li class="flex flex-col gap-1 py-3 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
-              <a href={url(`/writing/${post.slug}`)} class="no-underline font-medium text-fg hover:!text-accent">
+              <a
+                href={url(`/writing/${post.slug}`)}
+                class="no-underline font-medium text-fg hover:!text-accent"
+              >
                 {post.data.title}
               </a>
               <span class="font-mono text-xs text-muted">

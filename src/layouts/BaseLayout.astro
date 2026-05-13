@@ -3,6 +3,7 @@ import { SITE } from '@config';
 import { url } from '@lib/url';
 import SEO from '@components/SEO.astro';
 import SideBar from '@components/SideBar.astro';
+import TopNav from '@components/TopNav.astro';
 import Footer from '@components/Footer.astro';
 import '../styles/global.css';
 
@@ -15,6 +16,8 @@ interface Props {
   modifiedTime?: Date;
   noindex?: boolean;
   schema?: Record<string, unknown>[];
+  /** In-page sections for the sidebar nav. Omit to hide sidebar nav entirely. */
+  sections?: { id: string; label: string }[];
 }
 
 const {
@@ -26,6 +29,7 @@ const {
   modifiedTime,
   noindex,
   schema,
+  sections,
 } = Astro.props;
 ---
 
@@ -62,16 +66,15 @@ const {
   <body class="leading-relaxed">
     <a href="#main" class="skip-link">Skip to content</a>
 
-    <div class="mx-auto min-h-screen max-w-screen-xl px-6 py-0 lg:flex lg:justify-between lg:gap-4 lg:px-12">
-      <SideBar />
-
-      <main
-        id="main"
-        class="pt-12 lg:w-1/2 lg:py-24"
-      >
-        <slot />
-        <Footer />
-      </main>
+    <div class="mx-auto min-h-screen max-w-screen-xl px-6 lg:px-12">
+      <TopNav />
+      <div class="lg:flex lg:justify-between lg:gap-4">
+        <SideBar sections={sections} />
+        <main id="main" class="pt-8 lg:w-1/2 lg:py-24 scroll-mt-24">
+          <slot />
+          <Footer />
+        </main>
+      </div>
     </div>
   </body>
 </html>

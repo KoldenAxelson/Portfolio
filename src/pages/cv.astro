@@ -7,18 +7,34 @@ import { SITE } from '@config';
 
 const experience = [
   {
-    role: 'Senior Software Engineer',
+    role: 'Tech Lead, Platform Team',
     employer: 'Example Corp',
     location: 'Remote',
-    start: '2023',
+    start: '2024',
     end: 'present',
     summary:
       'Lead engineer on the platform team. Designed the multi-region failover system that now handles 12M requests/day.',
     highlights: [
       'Migrated billing pipeline from monolith to event-driven Kafka topology — cut p99 latency 70%.',
       'Owned hiring for the team; closed 4 engineers in 9 months.',
+      'Authored the on-call playbook adopted by 3 other platform-adjacent teams.',
+      'Designed the schema-registry contract-test pattern used across 14 services.',
     ],
-    stack: ['Go', 'Kafka', 'Postgres', 'AWS'],
+    stack: ['Go', 'Kafka', 'Postgres', 'AWS', 'Terraform'],
+  },
+  {
+    role: 'Senior Software Engineer',
+    employer: 'Example Corp',
+    location: 'Remote',
+    start: '2023',
+    end: '2024',
+    summary:
+      'Joined as a senior IC, promoted to tech lead after the platform reorg. Shipped the v2 event-replay system.',
+    highlights: [
+      'Owned the design and rollout of customer-facing event-replay tooling — 280+ enterprise customers.',
+      'Mentored two junior engineers through their first production incident postmortems.',
+    ],
+    stack: ['Go', 'TypeScript', 'Postgres'],
   },
   {
     role: 'Software Engineer',
@@ -31,23 +47,25 @@ const experience = [
     highlights: [
       'Designed schema-registry-backed contract testing system that prevented 6 production incidents.',
       'Rewrote ingest worker pool — 3× throughput on same hardware.',
+      'Reduced incident MTTR from 47min to 14min across the team after introducing the incident-response bot.',
     ],
     stack: ['Python', 'Postgres', 'Redis', 'Terraform'],
   },
-  // Add a DoD / classified entry if applicable. Carefully framed per STRATEGY.
-  // {
-  //   role: 'Systems Engineer (Cleared)',
-  //   employer: 'Defense contractor',
-  //   location: 'On-site, SCIF',
-  //   start: '2016',
-  //   end: '2020',
-  //   summary: 'Five years building auditable, failure-tolerant systems under formal constraints. Details on request.',
-  //   highlights: [
-  //     'Order-of-magnitude scale: <X> users, <Y> requests/day, <Z>-nines uptime requirement.',
-  //     'Worked under formal change-control and security-classification regimes.',
-  //   ],
-  //   stack: ['(details on request)'],
-  // },
+  {
+    role: 'Systems Engineer (Cleared)',
+    employer: 'Defense contractor (details on request)',
+    location: 'On-site, SCIF',
+    start: '2016',
+    end: '2020',
+    summary:
+      'Four years building auditable, failure-tolerant systems under formal change-control and security-classification regimes. Specifics under NDA.',
+    highlights: [
+      'Order-of-magnitude scale: hundreds of users, millions of requests/day, four-nines uptime requirement.',
+      'Worked under formal change-control with multi-stakeholder code review.',
+      'Cleared for work in environments where bugs have downstream consequences far beyond the system.',
+    ],
+    stack: ['Details on request'],
+  },
 ];
 
 const education = [
@@ -72,6 +90,13 @@ const skills = {
   Practices: ['Code review', 'Hiring', 'Mentorship', 'Incident response'],
 };
 
+const sections = [
+  { id: 'summary', label: 'Summary' },
+  { id: 'experience', label: 'Experience' },
+  { id: 'education', label: 'Education' },
+  { id: 'skills', label: 'Skills' },
+];
+
 const schema = [
   {
     '@context': 'https://schema.org',
@@ -91,6 +116,7 @@ const schema = [
   title="CV"
   description={`Full résumé and work history for ${SITE.author.name}.`}
   schema={schema}
+  sections={sections}
 >
   <header class="mb-8">
     <h1 class="text-3xl font-medium">CV</h1>
@@ -100,13 +126,13 @@ const schema = [
     </p>
   </header>
 
-  <section class="mb-10" aria-labelledby="summary">
-    <h2 id="summary" class="mb-2 text-xl font-medium">Summary</h2>
+  <section id="summary" class="mb-10 scroll-mt-24" aria-labelledby="summary-heading">
+    <h2 id="summary-heading" class="mb-2 text-xl font-medium">Summary</h2>
     <p class="text-muted">{SITE.author.longBio}</p>
   </section>
 
-  <section class="mb-10" aria-labelledby="exp">
-    <h2 id="exp" class="mb-4 text-xl font-medium">Experience</h2>
+  <section id="experience" class="mb-10 scroll-mt-24" aria-labelledby="experience-heading">
+    <h2 id="experience-heading" class="mb-4 text-xl font-medium">Experience</h2>
     <ol class="space-y-8">
       {
         experience.map((job) => (
@@ -136,8 +162,8 @@ const schema = [
     </ol>
   </section>
 
-  <section class="mb-10" aria-labelledby="edu">
-    <h2 id="edu" class="mb-4 text-xl font-medium">Education</h2>
+  <section id="education" class="mb-10 scroll-mt-24" aria-labelledby="education-heading">
+    <h2 id="education-heading" class="mb-4 text-xl font-medium">Education</h2>
     <ul class="space-y-3">
       {
         education.map((e) => (
@@ -153,8 +179,8 @@ const schema = [
     </ul>
   </section>
 
-  <section class="mb-10" aria-labelledby="skills">
-    <h2 id="skills" class="mb-4 text-xl font-medium">Skills</h2>
+  <section id="skills" class="mb-10 scroll-mt-24" aria-labelledby="skills-heading">
+    <h2 id="skills-heading" class="mb-4 text-xl font-medium">Skills</h2>
     <dl class="grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-[max-content_1fr]">
       {
         Object.entries(skills).map(([cat, items]) => (

@@ -3,36 +3,82 @@ import BaseLayout from '@layouts/BaseLayout.astro';
 
 // Text-heavy by design — highly indexable, AI-friendly.
 // Forkers: edit this list to match your actual setup.
-const stack = {
-  Editor: ['Neovim with LazyVim', 'VS Code for Live Share sessions'],
-  Terminal: ['Ghostty', 'fish shell', 'tmux'],
-  Languages: ['TypeScript', 'Go', 'Python', 'Rust (learning)'],
-  Frameworks: ['Astro', 'Vue', 'SvelteKit', 'FastAPI'],
-  Cloud: ['Cloudflare (Pages, Workers, R2)', 'AWS Lightsail for stateful workloads'],
-  Database: ['Postgres', 'SQLite for embedded use', 'Redis'],
-  CLI: ['gh', 'wrangler', 'aws-cli', 'jq', 'fzf', 'ripgrep'],
-  Hardware: ['MacBook Pro M3 Pro', 'LG 5K display', 'HHKB Professional Hybrid'],
-};
+const stack = [
+  {
+    id: 'editor',
+    label: 'Editor',
+    items: ['Neovim with LazyVim', 'VS Code for Live Share sessions', 'Helix when I want to fight my muscle memory'],
+  },
+  {
+    id: 'terminal',
+    label: 'Terminal',
+    items: ['Ghostty', 'fish shell', 'tmux for long-running sessions', 'starship prompt'],
+  },
+  {
+    id: 'languages',
+    label: 'Languages',
+    items: ['TypeScript', 'Go', 'Python', 'Rust (learning)', 'SQL (Postgres dialect mostly)'],
+  },
+  {
+    id: 'frameworks',
+    label: 'Frameworks',
+    items: ['Astro', 'Vue', 'SvelteKit', 'FastAPI', 'Echo (Go)'],
+  },
+  {
+    id: 'cloud',
+    label: 'Cloud',
+    items: ['Cloudflare (Pages, Workers, R2, D1)', 'AWS Lightsail for stateful workloads', 'Fly.io when I need closer regions'],
+  },
+  {
+    id: 'data',
+    label: 'Database',
+    items: ['Postgres', 'SQLite for embedded use', 'Redis', 'DuckDB for analytics'],
+  },
+  {
+    id: 'cli',
+    label: 'CLI',
+    items: ['gh', 'wrangler', 'aws-cli', 'jq', 'fzf', 'ripgrep', 'fd', 'eza'],
+  },
+  {
+    id: 'hardware',
+    label: 'Hardware',
+    items: ['MacBook Pro M3 Pro', 'LG 5K display', 'HHKB Professional Hybrid', 'Logitech MX Master 3'],
+  },
+];
+
+const sections = stack.map((s) => ({ id: s.id, label: s.label }));
 ---
 
-<BaseLayout title="Uses" description="The stack, tools, and hardware I actually use.">
-  <header class="mb-8">
+<BaseLayout
+  title="Uses"
+  description="The stack, tools, and hardware I actually use."
+  sections={sections}
+>
+  <header class="mb-10">
     <h1 class="text-3xl font-medium">Uses</h1>
     <p class="mt-3 max-w-prose text-muted">
-      The things on my machine right now. Updated whenever something changes. Inspired by <a
-        href="https://uses.tech">uses.tech</a
-      >.
+      The things on my machine right now. Updated whenever something changes. Inspired by
+      <a href="https://uses.tech">uses.tech</a>.
     </p>
   </header>
 
-  <dl class="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-[max-content_1fr]">
+  <div class="space-y-12">
     {
-      Object.entries(stack).map(([category, items]) => (
-        <>
-          <dt class="font-mono text-sm font-medium text-muted">{category}</dt>
-          <dd class="m-0">{items.join(', ')}</dd>
-        </>
+      stack.map((category) => (
+        <section id={category.id} class="scroll-mt-24" aria-labelledby={`${category.id}-heading`}>
+          <h2
+            id={`${category.id}-heading`}
+            class="mb-3 font-mono text-xs uppercase tracking-widest text-fg"
+          >
+            {category.label}
+          </h2>
+          <ul class="space-y-1">
+            {category.items.map((item) => (
+              <li class="text-muted">{item}</li>
+            ))}
+          </ul>
+        </section>
       ))
     }
-  </dl>
+  </div>
 </BaseLayout>
