@@ -62,6 +62,12 @@ const bioMessagesJSON = JSON.stringify(SITE.bioMessages ?? {});
   sections.length > 0 && (
     <script is:inline define:vars={{ bioMessagesJSON }}>
       function neofolioSidebarInit() {
+        // Bail on mobile: the sidebar isn't sticky there, the section nav is
+        // hidden, and the typing animation would just type into a paragraph
+        // that scrolls past before anyone reads it. The static bio stays put.
+        const isLargeScreen = window.matchMedia('(min-width: 1024px)').matches;
+        if (!isLargeScreen) return;
+
         const links = Array.from(document.querySelectorAll('[data-section-link]'));
         if (!links.length) return;
         const idToLink = new Map(
