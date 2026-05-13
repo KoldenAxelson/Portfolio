@@ -13,6 +13,7 @@ neofolio/
 ├── public/                 Static assets shipped as-is
 │   ├── covers/             Project + article cover images (SVG/WebP/AVIF)
 │   ├── fonts/              Self-hosted Inter variable font
+│   ├── textures/           Matte noise PNGs (light + dark variants)
 │   ├── favicon.svg
 │   └── humans.txt          humanstxt.org convention
 ├── scripts/                Make-target helpers
@@ -85,15 +86,14 @@ Astro maps `src/pages/` to URLs file-system-style:
 | `/now` | `src/pages/now.astro` |
 | `/network` | `src/pages/network.astro` |
 | `/archive` | `src/pages/archive.astro` (redirects to `/projects#archive`) |
-| `/work/*` | `src/pages/work/*` (meta-refresh to `/projects/*`) |
-| `/writing/*` | `src/pages/writing/*` (meta-refresh to `/articles/*`) |
 | `/rss.xml` | `src/pages/rss.xml.ts` |
 | `/feed.json` | `src/pages/feed.json.ts` |
 | `/robots.txt` | `src/pages/robots.txt.ts` (dynamic, reads `SITE.url`) |
 | `/404` | `src/pages/404.astro` |
 
-Old routes (`/work`, `/writing`) are preserved as redirects so existing
-bookmarks survive. Safe to delete in the wf-site fork.
+The collection name `posts` is intentionally kept while the URL is
+`/articles` — renaming the folder would break existing slugs for forkers
+on a v0.x → v0.y upgrade.
 
 ## Content collections
 

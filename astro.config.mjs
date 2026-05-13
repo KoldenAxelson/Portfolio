@@ -39,6 +39,12 @@ export default defineConfig({
     tailwind({
       applyBaseStyles: false, // we manage base styles in src/styles/global.css
     }),
-    sitemap(),
+    sitemap({
+      // Exclude pages marked noindex from the sitemap so search engines
+      // don't get conflicting signals (sitemap says "index me" while the
+      // page says "noindex"). /archive is a redirect stub; /404 isn't
+      // meant for indexing either.
+      filter: (page) => !/\/(archive|404)\/?$/.test(page),
+    }),
   ],
 });

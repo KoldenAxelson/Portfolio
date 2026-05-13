@@ -58,7 +58,7 @@ const primaryIsExternal = primaryHref !== null && /^https?:/i.test(primaryHref);
   {
     /* Optional cover. Path is relative to /public (e.g. "/covers/foo.svg").
        Forkers using raster covers should pre-convert to WebP or AVIF for
-       Lighthouse perf — see HUMAN.md. */
+       Lighthouse perf — see docs/content.md. */
     data.cover && (
       <div class="relative z-10 shrink-0 pointer-events-none">
         <img

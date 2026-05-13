@@ -73,7 +73,8 @@ html {
  * Why two PNGs and not one + filter/blend-mode? Black grain is invisible
  * on dark backgrounds; white grain is invisible on light. The eye picks
  * up highlights on dark bg more readily than shadows on light bg, so the
- * dark variant uses a lower alpha-max (45 vs 70).
+ * dark variant uses a slightly lower alpha-max — see the two generate()
+ * calls in scripts/_gen-noise.mjs for the current values.
  *
  * BaseLayout.astro injects both URLs (base-path-aware) onto <body>:
  *   --noise-bg-light  → light-mode PNG

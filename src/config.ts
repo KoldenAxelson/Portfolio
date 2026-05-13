@@ -95,5 +95,13 @@ export const SITE = {
   locale: 'en-US',
 } as const;
 
-/** Default OpenGraph image, served from /public. */
-export const DEFAULT_OG_IMAGE = '/og-default.png';
+/**
+ * Default OpenGraph image (served from /public, no domain prefix).
+ *
+ * Leave as `undefined` to skip emitting og:image / twitter:image meta tags
+ * entirely — better than shipping broken-image links to social platforms.
+ * Once you have a real 1200×630 PNG at `public/og-default.png`, set this
+ * to `'/og-default.png'`. Pages can also override per-page by passing the
+ * `image` prop to `BaseLayout`.
+ */
+export const DEFAULT_OG_IMAGE: string | undefined = undefined;

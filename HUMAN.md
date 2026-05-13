@@ -61,8 +61,8 @@ git push
 - [ ] Inventory the external hard drive → Tier 1/2/3 project decisions
 - [ ] Write the flagship article: "What a Developer Portfolio Needs to
       Do in 2026" — syndicate to dev.to with `rel=canonical` back
-- [ ] Optional: delete `src/pages/work/` and `src/pages/writing/`
-      (the legacy redirect stubs)
+- [ ] (Old `/work` and `/writing` directories were already cleaned up;
+      no action needed unless you want to add redirects from them)
 
 ## Inbound-link directory submissions (once site is live)
 

@@ -66,5 +66,5 @@ project: ## Add a project (src/content/projects/)
 archive: ## Add an archive entry (src/content/archive/)
 	@node scripts/new-archive.mjs
 
-noise: ## Regenerate the matte noise texture (public/textures/noise.png)
+noise: ## Regenerate the matte noise textures (public/textures/noise.png + noise-dark.png)
 	@node scripts/_gen-noise.mjs

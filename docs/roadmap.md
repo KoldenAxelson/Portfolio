@@ -55,7 +55,7 @@ production-ready.
 - [x] `/now` — what-I'm-focused-on page (nownownow.com convention)
 - [x] `/network` — interactive two-panel contact selector (Vue island)
 - [x] `/archive` — static redirect to `/projects#archive`
-- [x] `/work` and `/writing` — meta-refresh redirects to new URLs (legacy bookmarks)
+- [x] Old `/work` and `/writing` routes removed entirely (post-rename cleanup; no longer needed)
 - [x] `/404` — soft not-found page
 - [x] `/feed.json` — JSON Feed 1.1 (modern alt to RSS)
 - [x] `/rss.xml` — RSS 2.0 (canonical)
@@ -356,9 +356,10 @@ automatically. CI passes when:
   scrolled-past paragraph is invisible.
 - **Network mobile is drill-down.** List → profile → compose, with back
   buttons. Desktop is side-by-side.
-- **Old `/work` and `/writing` URLs still resolve** — they redirect via
-  meta refresh. Safe to delete `src/pages/work/` and `src/pages/writing/`
-  in the wf-site fork.
+- **Old `/work` and `/writing` URLs return 404.** The earlier
+  meta-refresh stubs were dropped; if you need to preserve those URLs
+  in your fork, add `src/pages/work/index.astro` etc. with whatever
+  redirect semantics suit your host.
 - **Sandbox builds are slow.** Local Mac builds in ~5s. CI in ~30s. The
   Cowork sandbox can take 40s+ because of FUSE + Sharp init quirks.
 

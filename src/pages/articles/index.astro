@@ -25,7 +25,7 @@ const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
           <article class="flex gap-4">
             {/* Optional cover. Path is relative to /public. Pre-convert
                 raster sources to WebP/AVIF for Lighthouse perf — see
-                HUMAN.md. */}
+                docs/content.md. */}
             {post.data.cover && (
               <a
                 href={url(`/articles/${post.slug}`)}

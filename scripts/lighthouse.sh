@@ -11,8 +11,8 @@
 #
 # Usage:
 #   bash scripts/lighthouse.sh                   # full report against /
-#   bash scripts/lighthouse.sh /work             # specific path
-#   bash scripts/lighthouse.sh / /work /cv       # multiple paths
+#   bash scripts/lighthouse.sh /projects         # specific path
+#   bash scripts/lighthouse.sh / /projects /cv   # multiple paths
 
 set -euo pipefail
 
