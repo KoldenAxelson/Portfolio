@@ -8,4 +8,7 @@ year: '2024'
 status: 'shipped'
 links:
   repo: 'https://github.com/example/readme-gen'
+metric:
+  label: '↓ 8.1k downloads'
+  href: 'https://crates.io/crates/readme-gen'
 ---

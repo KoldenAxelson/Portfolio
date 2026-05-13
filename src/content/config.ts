@@ -30,6 +30,22 @@ const projects = defineCollection({
         case_study: z.string().url().optional(),
       })
       .default({}),
+    /**
+     * Vanity metric. Shown as a small linked label on the project card.
+     * Examples:
+     *   { label: '★ 612 stars', href: 'https://github.com/.../stargazers' }
+     *   { label: '↓ 12k downloads', href: 'https://npmjs.com/...' }
+     *   { label: '4.8 ★ on Marketplace', href: 'https://marketplace...' }
+     * The card itself is a link to the project — the metric is a SEPARATE
+     * link that typically points at source code, a stats page, or reviews.
+     * Omit entirely if there's nothing worth measuring.
+     */
+    metric: z
+      .object({
+        label: z.string(),
+        href: z.string().url(),
+      })
+      .optional(),
     /** Cover image for the project card. Relative to /public. */
     cover: z.string().optional(),
     /** If true, projects show on the homepage hero strip. Tier 1 only. */

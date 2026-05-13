@@ -14,16 +14,11 @@ const tier2 = all.filter((p) => p.data.tier === 2);
 
 const allTags = [...new Set(all.flatMap((p) => p.data.tags))];
 
-const sections = [
-  ...(tier1.length > 0 ? [{ id: 'featured', label: 'Featured' }] : []),
-  ...(tier2.length > 0 ? [{ id: 'listed', label: 'All projects' }] : []),
-];
 ---
 
 <BaseLayout
   title="Work"
   description="Featured projects and full project catalogue."
-  sections={sections}
 >
   <header class="mb-8">
     <h1 class="text-3xl font-medium">Work</h1>

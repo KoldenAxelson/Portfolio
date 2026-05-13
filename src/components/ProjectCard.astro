@@ -1,4 +1,17 @@
 ---
+// ProjectCard with overlay-link pattern.
+//
+// The card itself is a single link to the "primary" target:
+//   Tier 1 → /work/[slug]    (the case study page)
+//   Tier 2 → links.live or links.repo, whichever is set
+//   No primary target → card is not a link (rare; still renders fine)
+//
+// Inside the card, the optional `metric` field renders as a separate
+// inline link that points at source code, a downloads page, reviews, etc.
+// Nested links work via the "absolute inset-0" overlay trick: a sibling
+// <a> covers the card; inner links get position:relative + z-10 to float
+// above it.
+
 import type { CollectionEntry } from 'astro:content';
 import { url } from '@lib/url';
 
@@ -10,36 +23,55 @@ interface Props {
 
 const { project, compact = false } = Astro.props;
 const { data, slug } = project;
+
+// Decide where the card itself navigates.
+const primaryHref: string | null = (() => {
+  if (data.tier === 1) return url(`/work/${slug}`);
+  if (data.links.live) return data.links.live;
+  if (data.links.repo) return data.links.repo;
+  return null;
+})();
+
+const primaryIsExternal = primaryHref !== null && /^https?:/i.test(primaryHref);
 ---
 
 <article
   class:list={[
-    'rounded-lg border border-border p-5 transition hover:border-accent',
+    'group relative rounded-lg border border-border bg-bg/30 p-5 transition hover:border-accent',
     compact && 'p-4',
   ]}
   itemscope
   itemtype="https://schema.org/CreativeWork"
 >
-  <header class="flex items-baseline justify-between gap-3">
-    <h3 class:list={['m-0 font-medium', compact ? 'text-base' : 'text-lg']} itemprop="name">
-      {
-        data.links.case_study || data.tier === 1 ? (
-          <a href={url(`/work/${slug}`)} class="no-underline">
-            {data.title}
-          </a>
-        ) : (
-          data.title
-        )
-      }
+  {
+    /* Overlay link covering the whole card. Inner links sit above this. */
+    primaryHref && (
+      <a
+        href={primaryHref}
+        rel={primaryIsExternal ? 'noopener' : undefined}
+        aria-label={data.title}
+        class="absolute inset-0 z-0 rounded-lg"
+      />
+    )
+  }
+
+  <header class="relative z-10 flex items-baseline justify-between gap-3">
+    <h3
+      class:list={['m-0 font-medium transition-colors group-hover:text-accent', compact ? 'text-base' : 'text-lg']}
+      itemprop="name"
+    >
+      {data.title}
     </h3>
     <span class="font-mono text-xs text-muted" itemprop="dateCreated">{data.year}</span>
   </header>
 
-  <p class="mt-2 text-sm text-muted" itemprop="abstract">{data.summary}</p>
+  <p class="relative z-10 mt-2 text-sm text-muted pointer-events-none" itemprop="abstract">
+    {data.summary}
+  </p>
 
   {
     data.stack.length > 0 && (
-      <ul class="mt-3 flex flex-wrap gap-1.5">
+      <ul class="relative z-10 mt-3 flex flex-wrap gap-1.5 pointer-events-none">
         {data.stack.map((s) => (
           <li class="rounded bg-border/40 px-1.5 py-0.5 font-mono text-xs text-muted">{s}</li>
         ))}
@@ -48,18 +80,17 @@ const { data, slug } = project;
   }
 
   {
-    (data.links.live || data.links.repo) && (
-      <p class="mt-3 flex gap-4 text-sm">
-        {data.links.live && (
-          <a href={data.links.live} rel="noopener" itemprop="url">
-            Live →
-          </a>
-        )}
-        {data.links.repo && (
-          <a href={data.links.repo} rel="noopener" itemprop="codeRepository">
-            Code →
-          </a>
-        )}
+    data.metric && (
+      <p class="relative z-10 mt-3">
+        <a
+          href={data.metric.href}
+          rel="noopener"
+          class="inline-flex items-center gap-1 font-mono text-xs text-muted no-underline hover:!text-accent"
+          itemprop="codeRepository"
+        >
+          {data.metric.label}
+          <span aria-hidden="true">↗</span>
+        </a>
       </p>
     )
   }

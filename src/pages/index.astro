@@ -54,7 +54,7 @@ const recentPosts = (await getCollection('posts', ({ data }) => !data.draft))
   .slice(0, 5);
 ---
 
-<BaseLayout sections={sections}>
+<BaseLayout split sections={sections}>
   <!-- ABOUT -->
   <section id="about" class="mb-24 scroll-mt-24" aria-labelledby="about-heading">
     <h2 id="about-heading" class="sr-only">About</h2>

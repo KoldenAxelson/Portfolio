@@ -16,7 +16,12 @@ interface Props {
   modifiedTime?: Date;
   noindex?: boolean;
   schema?: Record<string, unknown>[];
-  /** In-page sections for the sidebar nav. Omit to hide sidebar nav entirely. */
+  /**
+   * Two-column layout with sticky sidebar (identity + in-page section nav).
+   * Reserved for the homepage. Sub-pages should leave this false.
+   */
+  split?: boolean;
+  /** In-page section anchors for the sidebar nav. Only used when split=true. */
   sections?: { id: string; label: string }[];
 }
 
@@ -29,6 +34,7 @@ const {
   modifiedTime,
   noindex,
   schema,
+  split = false,
   sections,
 } = Astro.props;
 ---
@@ -66,15 +72,27 @@ const {
   <body class="leading-relaxed">
     <a href="#main" class="skip-link">Skip to content</a>
 
-    <div class="mx-auto min-h-screen max-w-screen-xl px-6 lg:px-12">
-      <TopNav />
-      <div class="lg:flex lg:justify-between lg:gap-4">
-        <SideBar sections={sections} />
-        <main id="main" class="pt-8 lg:w-1/2 lg:py-24 scroll-mt-24">
-          <slot />
+    <TopNav />
+
+    {
+      split ? (
+        <div class="mx-auto max-w-screen-xl px-6 lg:px-12">
+          <div class="lg:flex lg:justify-between lg:gap-12">
+            <SideBar sections={sections} />
+            <main id="main" class="pt-8 lg:w-1/2 lg:py-24">
+              <slot />
+            </main>
+          </div>
           <Footer />
-        </main>
-      </div>
-    </div>
+        </div>
+      ) : (
+        <div class="mx-auto max-w-3xl px-6 py-12 lg:py-16">
+          <main id="main">
+            <slot />
+          </main>
+          <Footer />
+        </div>
+      )
+    }
   </body>
 </html>
