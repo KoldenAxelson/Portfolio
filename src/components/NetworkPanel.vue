@@ -291,24 +291,32 @@ watch(selectedId, () => {
           <span class="font-mono text-xs text-muted">{{ contacts.length }} contacts</span>
         </header>
 
-        <ul class="space-y-1">
-          <li>
-            <button
-              type="button"
-              @click="selectOwner"
-              :aria-pressed="!isContactSelected"
-              class="group flex w-full flex-col items-start rounded px-3 py-2 text-left transition"
-              :class="
-                !isContactSelected && view !== 'list'
-                  ? 'bg-accent/15 text-fg'
-                  : 'text-muted hover:bg-border/40 hover:text-fg'
-              "
-            >
-              <span class="text-sm font-medium">{{ owner.name }}</span>
-              <span class="font-mono text-xs uppercase tracking-widest text-muted">{{ owner.title }}</span>
-            </button>
-          </li>
+        <!-- Owner pinned above the scrollable contact list. Always visible. -->
+        <button
+          type="button"
+          @click="selectOwner"
+          :aria-pressed="!isContactSelected"
+          class="group flex w-full flex-col items-start rounded px-3 py-2 text-left transition"
+          :class="
+            !isContactSelected && view !== 'list'
+              ? 'bg-accent/15 text-fg'
+              : 'text-muted hover:bg-border/40 hover:text-fg'
+          "
+        >
+          <span class="text-sm font-medium">{{ owner.name }}</span>
+          <span class="font-mono text-xs uppercase tracking-widest text-muted">{{ owner.title }}</span>
+        </button>
 
+        <!-- Divider between "me" and "my contacts" — only when there are contacts. -->
+        <div v-if="contacts.length > 0" class="my-2 border-t border-border/40" aria-hidden="true" />
+
+        <!-- Contact list. Caps at ~6 visible; scrolls when 7+. -->
+        <ul
+          :class="[
+            'space-y-1',
+            contacts.length > 6 ? 'scroll-slim max-h-[22rem] overflow-y-auto pr-1' : '',
+          ]"
+        >
           <li v-for="c in contacts" :key="c.id">
             <button
               type="button"
@@ -329,8 +337,9 @@ watch(selectedId, () => {
           </li>
         </ul>
 
-        <p class="mt-6 text-xs text-muted">
-          Tap a name to see how we know each other. Then request an introduction.
+        <p class="mt-4 text-xs text-muted">
+          <template v-if="contacts.length > 6">Scroll for more. </template>Tap a name to see how
+          we know each other.
         </p>
       </div>
 

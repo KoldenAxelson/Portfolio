@@ -1,0 +1,7 @@
+name: 'Dr. Emiko Nakamura'
+title: 'Associate Professor of Computer Science'
+company: 'Carnegie Mellon University'
+blurb: 'Works on programming-language theory and developer tools. Her group ships actual tools, not just papers — a rare combination. Three of her former students now run engineering at companies you''ve heard of.'
+relationship: 'I gave a guest lecture in her grad seminar on production systems. She liked it enough to invite me back twice. We stayed in touch over coffee whenever I''m in Pittsburgh.'
+link: 'https://example.com/emiko-nakamura'
+order: 8
