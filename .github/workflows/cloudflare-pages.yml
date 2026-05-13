@@ -1,0 +1,45 @@
+name: Deploy to Cloudflare Pages
+
+# This workflow is OPTIONAL — Cloudflare Pages can also deploy directly from
+# your Git repo via its dashboard, which is simpler. Use this workflow if you
+# want CI control over the deploy step (e.g. linting before push, multiple
+# environments, custom build matrix).
+#
+# Required GitHub Action secrets:
+#   CLOUDFLARE_API_TOKEN  — Pages:Edit + User Details:Read scopes
+#   CLOUDFLARE_ACCOUNT_ID — from the Cloudflare dashboard sidebar
+#
+# Required GitHub Action variable (under Settings → Variables):
+#   CLOUDFLARE_PROJECT_NAME — the Pages project slug
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - run: npm ci
+      - run: npm run build
+
+      - name: Deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=${{ vars.CLOUDFLARE_PROJECT_NAME }}
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}

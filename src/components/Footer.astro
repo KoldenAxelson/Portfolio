@@ -1,0 +1,25 @@
+---
+import { SITE } from '@config';
+
+const year = new Date().getFullYear();
+
+// Plain-text stack disclosure — STRATEGY checklist item.
+const stack = ['Astro', 'Vue islands', 'Tailwind', 'MDX'];
+---
+
+<footer class="mt-16 border-t border-border text-sm text-muted">
+  <div class="mx-auto flex max-w-3xl flex-col gap-3 px-4 py-8 sm:flex-row sm:items-center sm:justify-between">
+    <p>
+      © {year} {SITE.author.name}. Built with {stack.join(', ')}.
+    </p>
+    <ul class="flex flex-wrap gap-x-4">
+      {SITE.links.github && <li><a href={SITE.links.github} rel="me">GitHub</a></li>}
+      {SITE.links.linkedin && <li><a href={SITE.links.linkedin} rel="me">LinkedIn</a></li>}
+      {SITE.links.twitter && <li><a href={SITE.links.twitter} rel="me">Twitter</a></li>}
+      {SITE.links.mastodon && <li><a href={SITE.links.mastodon} rel="me">Mastodon</a></li>}
+      {SITE.links.bluesky && <li><a href={SITE.links.bluesky} rel="me">Bluesky</a></li>}
+      {SITE.links.rss && <li><a href={SITE.links.rss}>RSS</a></li>}
+      <li><a href={`mailto:${SITE.author.email}`}>Email</a></li>
+    </ul>
+  </div>
+</footer>

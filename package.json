@@ -1,0 +1,50 @@
+{
+  "name": "neofolio",
+  "version": "0.1.0",
+  "description": "An AI-readable, opinionated portfolio template for developers in the AI age. Astro + Vue islands + Tailwind + MDX.",
+  "type": "module",
+  "private": false,
+  "license": "MIT",
+  "homepage": "https://github.com/your-username/neofolio",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "check": "astro check",
+    "format": "prettier --write \"**/*.{astro,ts,tsx,js,jsx,vue,md,mdx,json,css}\"",
+    "lighthouse": "bash scripts/lighthouse.sh"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@astrojs/mdx": "^4.0.3",
+    "@astrojs/rss": "^4.0.10",
+    "@astrojs/sitemap": "^3.2.1",
+    "@astrojs/tailwind": "^5.1.4",
+    "@astrojs/vue": "^5.0.5",
+    "astro": "^5.1.1",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.2",
+    "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "prettier": "^3.4.2",
+    "prettier-plugin-astro": "^0.14.1",
+    "prettier-plugin-tailwindcss": "^0.6.9"
+  },
+  "engines": {
+    "node": ">=18.17.0"
+  },
+  "keywords": [
+    "portfolio",
+    "astro",
+    "vue",
+    "tailwind",
+    "developer-portfolio",
+    "template",
+    "ai-readable",
+    "static-site"
+  ]
+}

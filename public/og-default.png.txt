@@ -1,0 +1,2 @@
+This is a placeholder. Replace public/og-default.png.txt with a real
+public/og-default.png (1200×630) before going live. See HUMAN.md.

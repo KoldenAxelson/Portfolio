@@ -1,0 +1,72 @@
+---
+// Homepage — pure Astro HTML, zero JS on initial paint.
+// STRATEGY rule: no Vue island above the fold.
+import { getCollection } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import ProjectCard from '@components/ProjectCard.astro';
+import FormattedDate from '@components/FormattedDate.astro';
+import { SITE } from '@config';
+
+const featured = (await getCollection('projects', ({ data }) => !data.draft && data.featured))
+  .sort((a, b) => b.data.year.localeCompare(a.data.year))
+  .slice(0, 4);
+
+const recentPosts = (await getCollection('posts', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 5);
+---
+
+<BaseLayout>
+  <!-- HERO — semantic, indexable, zero JS -->
+  <section class="mb-16">
+    <p class="font-mono text-sm text-muted">{SITE.author.role} · {SITE.author.location}</p>
+    <h1 class="mt-2 text-3xl font-medium leading-tight sm:text-4xl">
+      {SITE.author.name}
+    </h1>
+    <p class="mt-4 max-w-prose text-lg text-muted">{SITE.author.bio}</p>
+    <p class="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm">
+      <a href="/work">See my work →</a>
+      <a href="/cv">Read my CV →</a>
+      <a href={`mailto:${SITE.author.email}`}>Get in touch →</a>
+    </p>
+  </section>
+
+  <!-- FEATURED WORK -->
+  {
+    featured.length > 0 && (
+      <section class="mb-16" aria-labelledby="featured-heading">
+        <header class="mb-6 flex items-baseline justify-between">
+          <h2 id="featured-heading" class="text-xl font-medium">Featured work</h2>
+          <a href="/work" class="text-sm">All projects →</a>
+        </header>
+        <div class="grid gap-4 sm:grid-cols-2">
+          {featured.map((p) => <ProjectCard project={p} />)}
+        </div>
+      </section>
+    )
+  }
+
+  <!-- RECENT WRITING — plain text, AI-readable -->
+  {
+    recentPosts.length > 0 && (
+      <section class="mb-16" aria-labelledby="writing-heading">
+        <header class="mb-6 flex items-baseline justify-between">
+          <h2 id="writing-heading" class="text-xl font-medium">Recent writing</h2>
+          <a href="/writing" class="text-sm">All posts →</a>
+        </header>
+        <ul class="divide-y divide-border">
+          {recentPosts.map((post) => (
+            <li class="flex flex-col gap-1 py-3 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
+              <a href={`/writing/${post.slug}`} class="no-underline font-medium">
+                {post.data.title}
+              </a>
+              <span class="font-mono text-xs text-muted">
+                <FormattedDate date={post.data.pubDate} />
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+</BaseLayout>

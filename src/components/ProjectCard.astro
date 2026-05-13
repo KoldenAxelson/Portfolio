@@ -1,0 +1,65 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+  /** Compact mode for Tier 2 listings. */
+  compact?: boolean;
+}
+
+const { project, compact = false } = Astro.props;
+const { data, slug } = project;
+---
+
+<article
+  class:list={[
+    'rounded-lg border border-border p-5 transition hover:border-accent',
+    compact && 'p-4',
+  ]}
+  itemscope
+  itemtype="https://schema.org/CreativeWork"
+>
+  <header class="flex items-baseline justify-between gap-3">
+    <h3 class:list={['m-0 font-medium', compact ? 'text-base' : 'text-lg']} itemprop="name">
+      {
+        data.links.case_study || data.tier === 1 ? (
+          <a href={`/work/${slug}`} class="no-underline">
+            {data.title}
+          </a>
+        ) : (
+          data.title
+        )
+      }
+    </h3>
+    <span class="font-mono text-xs text-muted" itemprop="dateCreated">{data.year}</span>
+  </header>
+
+  <p class="mt-2 text-sm text-muted" itemprop="abstract">{data.summary}</p>
+
+  {
+    data.stack.length > 0 && (
+      <ul class="mt-3 flex flex-wrap gap-1.5">
+        {data.stack.map((s) => (
+          <li class="rounded bg-border/40 px-1.5 py-0.5 font-mono text-xs text-muted">{s}</li>
+        ))}
+      </ul>
+    )
+  }
+
+  {
+    (data.links.live || data.links.repo) && (
+      <p class="mt-3 flex gap-4 text-sm">
+        {data.links.live && (
+          <a href={data.links.live} rel="noopener" itemprop="url">
+            Live →
+          </a>
+        )}
+        {data.links.repo && (
+          <a href={data.links.repo} rel="noopener" itemprop="codeRepository">
+            Code →
+          </a>
+        )}
+      </p>
+    )
+  }
+</article>

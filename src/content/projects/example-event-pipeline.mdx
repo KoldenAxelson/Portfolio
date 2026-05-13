@@ -1,0 +1,61 @@
+---
+title: 'Real-Time Event Pipeline'
+tier: 1
+summary: 'A 12M-req/day event ingest and replay system built on Kafka and Postgres, with per-tenant schema evolution and deterministic replay.'
+tags: ['backend', 'distributed-systems', 'data']
+stack: ['Go', 'Kafka', 'Postgres', 'Terraform', 'AWS']
+role: 'Tech lead'
+year: '2024'
+status: 'shipped'
+featured: true
+links:
+  repo: 'https://github.com/example/event-pipeline'
+---
+
+## Problem
+
+The legacy ingest path was a synchronous monolith. Every customer onboarding required a deploy
+because the schema lived in code. p99 latency was 1.4s on a good day. Schema mistakes leaked
+into production roughly every six weeks.
+
+## Constraints
+
+- Zero downtime cutover — customers were live the whole time.
+- Schemas had to be customer-editable but contract-tested before activation.
+- Replay had to be deterministic for compliance audit.
+
+## What I did
+
+Designed a Kafka-backed pipeline with a schema-registry layer that enforces contract tests
+on every schema change. Each tenant gets a logical topic; partitioning keeps replay
+deterministic. The Postgres write path uses logical replication slots to power the
+audit-replay tool.
+
+```go
+// Excerpt from the contract-test runner. Real version handles
+// schema evolution graphs; this is the inner loop.
+func runContractTests(prev, next *Schema, fixtures []Event) error {
+    for _, ev := range fixtures {
+        if err := validate(prev, ev); err != nil {
+            continue // expected: this fixture is for the new shape
+        }
+        if err := validate(next, ev); err != nil {
+            return fmt.Errorf("regression on fixture %s: %w", ev.ID, err)
+        }
+    }
+    return nil
+}
+```
+
+[See the full validator on GitHub →](https://github.com/example/event-pipeline/blob/main/internal/contract/runner.go)
+
+## Outcome
+
+- p99 latency: 1.4s → 220ms
+- Schema-related incidents: ~9/year → 0 in the last 12 months
+- Onboarding new customer schemas: 3-day deploy cycle → 20-minute self-serve
+
+## What I'd do differently
+
+I underestimated how much operational tooling we'd need around replay. If I were doing it
+again I'd build the replay UI in parallel with the ingest path, not six months later.
