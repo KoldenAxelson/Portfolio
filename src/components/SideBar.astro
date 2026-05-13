@@ -17,18 +17,28 @@ const { sections = [] } = Astro.props;
 const bioMessagesJSON = JSON.stringify(SITE.bioMessages ?? {});
 ---
 
-<aside class="lg:sticky lg:top-16 lg:max-h-[calc(100vh-4rem)] lg:w-1/2 lg:py-24 py-12">
+<aside class="h-card lg:sticky lg:top-16 lg:max-h-[calc(100vh-4rem)] lg:w-1/2 lg:py-24 py-12">
+  {/* h-card microformat: a machine-readable identity layer that stacks with
+      JSON-LD. IndieWeb parsers, some search engines, and AI scrapers all
+      pick it up. Classes are invisible to users; structure is unchanged. */}
   <div>
     <h1 class="text-4xl font-bold tracking-tight text-fg sm:text-5xl">
-      <a href={url('/')} class="hover:!text-fg">{SITE.author.name}</a>
+      <a href={url('/')} class="u-url hover:!text-fg">
+        <span class="p-name">{SITE.author.name}</span>
+      </a>
     </h1>
-    <p class="mt-3 text-lg font-medium tracking-tight text-fg sm:text-xl">{SITE.author.role}</p>
+    <p class="p-job-title mt-3 text-lg font-medium tracking-tight text-fg sm:text-xl">{SITE.author.role}</p>
 
     {/* Real bio in static HTML; JS swaps it for the typewriter post-hydration. */}
     <p
       data-bio-typer
-      class="mt-4 min-h-[5.5rem] max-w-xs leading-normal text-muted"
+      class="p-note mt-4 min-h-[5.5rem] max-w-xs leading-normal text-muted"
     >{SITE.author.bio}<span data-bio-cursor aria-hidden="true" class="ml-0.5 inline-block w-[2px] h-[1.05em] translate-y-[3px] bg-current opacity-0 transition-opacity duration-300"></span></p>
+
+    {/* Hidden h-card properties — picked up by parsers, invisible to users.
+        The visible identity layer is above; these add machine fields the UI
+        doesn't surface. */}
+    <data class="u-email" value={SITE.author.email} hidden>{SITE.author.email}</data>
 
     {
       sections.length > 0 && (

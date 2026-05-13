@@ -1,0 +1,99 @@
+---
+import BaseLayout from '@layouts/BaseLayout.astro';
+import { SITE } from '@config';
+import FormattedDate from '@components/FormattedDate.astro';
+
+// What I'm focused on right now.
+//
+// This is a "now page" — see nownownow.com for the convention. Updated
+// whenever it stops being true; otherwise left alone. The point is to
+// snapshot the season, not the day.
+//
+// Forkers: edit the date below + the sections. Two to four items per
+// section is the sweet spot. Be specific. Generic answers get skipped.
+const updated = new Date('2026-04-15');
+
+const sections = [
+  {
+    label: 'Building',
+    items: [
+      'Neofolio — the portfolio template this site runs on. Currently sanding the rough edges around the Network page.',
+      'A small CLI for managing AWS Lightsail snapshots, because the official tools forget snapshots older than 90 days exist.',
+    ],
+  },
+  {
+    label: 'Learning',
+    items: [
+      'Rust — slow going. Currently working through "Programming Rust" (2nd ed) on the side.',
+      'Distributed transaction patterns. The Sagas chapter of "Microservices Patterns" has earned its dog-ears.',
+    ],
+  },
+  {
+    label: 'Reading',
+    items: [
+      '"The Idea Factory" by Jon Gertner — Bell Labs history. The chapter on the discovery of the transistor is the best engineering writing I have read this year.',
+      '"A Philosophy of Software Design" — second pass. Different highlights than the first time.',
+    ],
+  },
+  {
+    label: 'Life',
+    items: [
+      'Moved to a smaller town in late 2025. Still adjusting to having a yard.',
+      'Trying to play guitar 15 minutes a day. Mostly failing. Some days succeeding.',
+    ],
+  },
+];
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWork',
+    name: `What ${SITE.author.name} is focused on right now`,
+    dateModified: updated.toISOString(),
+    author: { '@type': 'Person', name: SITE.author.name },
+    description: `A snapshot of ${SITE.author.name}'s current focus — building, learning, reading, and life.`,
+  },
+];
+---
+
+<BaseLayout
+  title="Now"
+  description={`What ${SITE.author.name} is currently focused on — building, learning, reading, and life.`}
+  schema={schema}
+>
+  <header class="mb-10">
+    <h1 class="text-3xl font-medium">What I'm doing now</h1>
+    <p class="mt-3 max-w-prose text-muted">
+      A snapshot of where my attention is this season. Inspired by Derek Sivers'
+      <a href="https://nownownow.com/about" rel="noopener">/now page convention</a> — updated
+      whenever it stops being true.
+    </p>
+    <p class="mt-2 font-mono text-xs text-muted">
+      Last updated <FormattedDate date={updated} />.
+    </p>
+  </header>
+
+  <div class="space-y-12">
+    {
+      sections.map((section) => (
+        <section aria-labelledby={`${section.label.toLowerCase()}-heading`}>
+          <h2
+            id={`${section.label.toLowerCase()}-heading`}
+            class="mb-3 font-mono text-xs uppercase tracking-widest text-fg"
+          >
+            {section.label}
+          </h2>
+          <ul class="space-y-3">
+            {section.items.map((item) => (
+              <li class="text-muted">{item}</li>
+            ))}
+          </ul>
+        </section>
+      ))
+    }
+  </div>
+
+  <p class="mt-16 text-sm text-muted">
+    Other "now" pages in the directory at <a href="https://nownownow.com" rel="noopener">nownownow.com</a>.
+  </p>
+</BaseLayout>

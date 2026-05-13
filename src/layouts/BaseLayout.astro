@@ -64,6 +64,16 @@ const {
 
     <link rel="icon" type="image/svg+xml" href={url('/favicon.svg')} />
     <link rel="alternate" type="application/rss+xml" title={SITE.title} href={url('/rss.xml')} />
+    <link
+      rel="alternate"
+      type="application/feed+json"
+      title={`${SITE.title} (JSON Feed)`}
+      href={url('/feed.json')}
+    />
+
+    {/* Browser chrome tint. Matches the paper-white / zinc-950 palette. */}
+    <meta name="theme-color" content="#fafaf7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#09090b" media="(prefers-color-scheme: dark)" />
 
     <SEO
       title={title}

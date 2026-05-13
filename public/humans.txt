@@ -1,0 +1,27 @@
+/* TEAM */
+
+  Owner:    Your Name
+  Site:     https://example.com
+  Contact:  you [at] example.com
+  Twitter:  @yourhandle
+  Location: City, Country
+
+/* THANKS */
+
+  Astro          — astro.build
+  Vue            — vuejs.org
+  Tailwind CSS   — tailwindcss.com
+  MDX            — mdxjs.com
+  Heroicons      — heroicons.com
+  Inter font     — rsms.me/inter
+  Neofolio       — github.com/KoldenAxelson/neofolio
+
+/* SITE */
+
+  Last update:   2026-05-01
+  Standards:     HTML5, CSS3, ES2022
+  Components:    Astro, Vue islands, MDX content collections
+  Software:      Neovim, fish shell, Ghostty
+  Built for:     Humans, screen readers, and AI scrapers — equally.
+
+  Edit me. Drop your own values in /public/humans.txt before deploying.
