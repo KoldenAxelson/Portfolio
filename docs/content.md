@@ -47,7 +47,7 @@ cover: /covers/event-pipeline.svg        # relative to /public
 
 Tier-1 body convention: Problem / Constraints / What I did / Outcome / What I'd do differently.
 
-**Metric label format** — `'★ <metric> [@ <venue>]'`. Leading `★` (Unicode literal) renders as an inline Heroicons solid-star SVG outside the underlined text. Optional ` @ <venue>` portion is italicized inside the underline. Examples: `'★ 612 stars'`, `'★ 1.2k stars'`, `'★ 4.8 @ Slack Marketplace'`, `'Read the case study'` (no star — plain link).
+**Metric label format** — `'★ <metric> [@<venue>]'`. Leading `★` (Unicode literal) renders as an inline Heroicons solid-star SVG outside the underlined text. Optional `@<venue>` reads like a handle — no space after `@` — and is italicized inside the underline. Examples: `'★ 612 stars'`, `'★ 1.2k stars'`, `'★ 4.8 @SlackMarketplace'`, `'Read the case study'` (no star — plain link). Legacy `@ Venue` (with a space) auto-normalizes at render time.
 
 **Cover images** — relative to `/public`. SVG passes through unchanged. **Pre-convert raster sources to WebP/AVIF** before committing:
 
