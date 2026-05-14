@@ -239,18 +239,19 @@ const featuredCertBadges = new Map<string, BadgeImage | null>(
             const href = c.data.verifyUrl ?? `${url('/certificates')}#${c.id}`;
             const isExternal = c.data.verifyUrl != null;
             return (
-              <li class="flex items-center gap-3 py-3">
+              <li class="relative py-3 pr-10">
                 <a
                   href={href}
                   rel={isExternal ? 'noopener' : undefined}
-                  class="group/cert flex flex-1 items-center gap-3 no-underline"
+                  class="group/cert flex items-start gap-3 no-underline"
                 >
                   <CertBadge badge={badge} alt={`${c.data.name} badge`} size="sm" />
                   <div class="min-w-0 flex-1">
-                    <p class="m-0 truncate font-medium text-fg group-hover/cert:!text-accent">
+                    {/* Title wraps naturally — no truncate ellipsis. */}
+                    <p class="m-0 font-medium leading-snug text-fg group-hover/cert:!text-accent">
                       {c.data.name}
                     </p>
-                    <p class="m-0 text-xs text-muted">
+                    <p class="m-0 mt-0.5 text-xs text-muted">
                       {c.data.issuer}
                       <span class="ml-1 font-mono">
                         · <FormattedDate date={c.data.issueDate} />
@@ -264,11 +265,16 @@ const featuredCertBadges = new Map<string, BadgeImage | null>(
                     </p>
                   </div>
                 </a>
-                {/* Per-cert thoughts indicator. Visible on all viewports. */}
-                <BioIndicator
-                  messages={c.data.thoughts}
-                  label={`${c.data.name} from ${c.data.issuer}`}
-                />
+                {/* Per-cert thoughts indicator. Absolutely positioned at the
+                    row's top-right so it sits at the same y across all
+                    rows regardless of how many lines the title wraps to.
+                    `pr-10` on the <li> reserves the space. */}
+                <div class="absolute right-0 top-3">
+                  <BioIndicator
+                    messages={c.data.thoughts}
+                    label={`${c.data.name} from ${c.data.issuer}`}
+                  />
+                </div>
               </li>
             );
           })}
