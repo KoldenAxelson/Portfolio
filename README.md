@@ -20,8 +20,12 @@ make setup && make dev
 ## What you get
 
 - **AI-readable by architecture.** Every meaningful sentence is in the
-  static HTML. JSON-LD on every page (`Person`, `WebSite`, `BlogPosting`,
-  `CreativeWork`, `ItemList`). Semantic elements throughout.
+  static HTML. JSON-LD entity graph on every page — `Person` and `WebSite`
+  carry stable `@id`s so per-page schemas (`BlogPosting`,
+  `SoftwareApplication`/`SoftwareSourceCode`, `Person.hasOccupation` on
+  `/cv`) merge into one entity instead of declaring duplicate records.
+  `/llms.txt` (llmstxt.org spec) generated at build time. Semantic
+  elements throughout.
 - **Fast by default.** Static-first build. Self-hosted Inter font. Vue
   islands hydrate on interaction only. Lighthouse 92+/100/100/100.
 - **Forkable in minutes.** Identity in one file (`src/config.ts`). Theme
@@ -70,7 +74,7 @@ Full docs in [/docs](./docs/README.md):
 ```
 
 Plus: `/rss.xml`, `/feed.json`, `/sitemap-index.xml`, `/robots.txt`,
-`/humans.txt`, plus a `/archive` redirect for any old bookmarks.
+`/llms.txt`, `/humans.txt`, plus a `/archive` redirect for any old bookmarks.
 
 ## Stack
 
@@ -107,13 +111,19 @@ they save typing, not flexibility.
 
 ## Quick customization
 
-Three files to know:
+Four files to know:
 
 | File | Controls |
 |---|---|
 | `src/config.ts` | Name, role, bio, links, nav, typewriter messages |
+| `src/data/cv.ts` | Work history, education, skills (drives `/cv` + homepage Experience + `Person.hasOccupation` JSON-LD) |
 | `src/styles/global.css` | Five color CSS variables (light + dark) |
 | `tailwind.config.mjs` | Fonts, custom utilities |
+
+For agent-driven setup, see [`SETUP_AGENT.md`](./SETUP_AGENT.md) — an 11-phase
+runbook an AI assistant can follow to walk a user through customization
+after `make setup`. Deferred AI-readability work (post-launch directory
+submissions, optional schema enrichments) is tracked in [`TODO_AI.md`](./TODO_AI.md).
 
 Three commands to know:
 

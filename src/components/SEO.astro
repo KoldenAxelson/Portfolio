@@ -2,6 +2,7 @@
 // SEO + OpenGraph + JSON-LD all in one place.
 // Pages pass in title/description/og; we handle the rest from src/config.
 import { SITE, DEFAULT_OG_IMAGE } from '@config';
+import { personId, websiteId } from '@lib/schema';
 
 interface Props {
   title?: string;
@@ -38,22 +39,33 @@ const ogImage = image
     : new URL(image, SITE.url).toString()
   : undefined;
 
+// Per-page schemas (BlogPosting, CreativeWork, hasOccupation Person on /cv)
+// reference the canonical site Person and WebSite by @id via @lib/schema —
+// that's what turns a pile of disconnected JSON-LD blobs into a graph that
+// knowledge bases can resolve. Do not redeclare these entities elsewhere;
+// reference them with `{ '@id': personId }` instead.
+
 // Always inject a WebSite + Person JSON-LD block site-wide.
 const baseSchema: Record<string, unknown>[] = [
   {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
+    '@id': websiteId,
     name: SITE.title,
     url: SITE.url,
     description: SITE.description,
+    inLanguage: SITE.locale,
+    author: { '@id': personId },
   },
   {
     '@context': 'https://schema.org',
     '@type': 'Person',
+    '@id': personId,
     name: SITE.author.name,
     jobTitle: SITE.author.role,
     description: SITE.author.longBio,
     url: SITE.url,
+    ...(SITE.author.email && { email: `mailto:${SITE.author.email}` }),
     ...(SITE.author.location && {
       address: { '@type': 'PostalAddress', addressLocality: SITE.author.location },
     }),

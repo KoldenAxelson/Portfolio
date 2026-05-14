@@ -1,7 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '@layouts/BaseLayout.astro';
-import { SITE } from '@config';
+import { SITE, DEFAULT_OG_IMAGE } from '@config';
+import { personId, projectUrl, absoluteImage } from '@lib/schema';
 
 export async function getStaticPaths() {
   const projects = await getCollection('projects', ({ data }) => !data.draft && data.tier === 1);
@@ -12,17 +13,37 @@ const { project } = Astro.props;
 const { Content } = await project.render();
 const { data } = project;
 
+// Pick the most specific schema.org type the data supports:
+//   - has a live URL  → SoftwareApplication (LLM/dev-tool indexes key off this)
+//   - has a repo only → SoftwareSourceCode
+//   - otherwise       → CreativeWork (safe fallback for non-code work)
+const schemaType: 'SoftwareApplication' | 'SoftwareSourceCode' | 'CreativeWork' = data.links.live
+  ? 'SoftwareApplication'
+  : data.links.repo
+    ? 'SoftwareSourceCode'
+    : 'CreativeWork';
+
+const projectImage = absoluteImage(data.cover ?? DEFAULT_OG_IMAGE);
+
 const schema = [
   {
     '@context': 'https://schema.org',
-    '@type': 'CreativeWork',
+    '@type': schemaType,
+    '@id': projectUrl(project.slug) + '#project',
     name: data.title,
     description: data.summary,
     dateCreated: data.year,
-    author: { '@type': 'Person', name: SITE.author.name },
+    // Reference the canonical Person — do NOT redeclare it.
+    author: { '@id': personId },
+    creator: { '@id': personId },
     keywords: data.tags.join(', '),
+    ...(data.stack.length > 0 && { programmingLanguage: data.stack }),
     ...(data.links.repo && { codeRepository: data.links.repo }),
     ...(data.links.live && { url: data.links.live }),
+    ...(projectImage && { image: projectImage }),
+    ...(schemaType === 'SoftwareApplication' && {
+      applicationCategory: 'DeveloperApplication',
+    }),
   },
 ];
 ---

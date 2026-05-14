@@ -2,7 +2,8 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '@layouts/BaseLayout.astro';
 import FormattedDate from '@components/FormattedDate.astro';
-import { SITE } from '@config';
+import { SITE, DEFAULT_OG_IMAGE } from '@config';
+import { personId, websiteId, articleUrl, absoluteImage } from '@lib/schema';
 
 export async function getStaticPaths() {
   const posts = await getCollection('posts', ({ data }) => !data.draft);
@@ -13,17 +14,25 @@ const { post } = Astro.props;
 const { Content } = await post.render();
 const { data } = post;
 
+const articleImage = absoluteImage(data.cover ?? DEFAULT_OG_IMAGE);
+
 const schema = [
   {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
+    '@id': articleUrl(post.slug) + '#article',
     headline: data.title,
     description: data.description,
     datePublished: data.pubDate.toISOString(),
     ...(data.updatedDate && { dateModified: data.updatedDate.toISOString() }),
-    author: { '@type': 'Person', name: SITE.author.name },
+    // Reference the canonical Person — do NOT redeclare it.
+    author: { '@id': personId },
+    publisher: { '@id': personId },
     keywords: data.tags.join(', '),
-    mainEntityOfPage: new URL(`/articles/${post.slug}`, SITE.url).toString(),
+    inLanguage: SITE.locale,
+    ...(articleImage && { image: articleImage }),
+    isPartOf: { '@id': websiteId },
+    mainEntityOfPage: articleUrl(post.slug),
   },
 ];
 ---

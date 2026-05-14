@@ -1,10 +1,11 @@
 # Customization
 
-Three files cover ~95% of what you'd want to change.
+Four files cover ~95% of what you'd want to change.
 
 | File | Owns |
 |---|---|
 | `src/config.ts` | Name, role, bio, social links, nav, typewriter messages |
+| `src/data/cv.ts` | Work history, education, skills (drives `/cv`, homepage Experience block, and `Person.hasOccupation` JSON-LD) |
 | `src/styles/global.css` | Five color CSS variables (light + dark) |
 | `tailwind.config.mjs` | Font families |
 
@@ -105,6 +106,24 @@ Replace `public/favicon.svg`. Current is an amber tile with letter "N".
 
 When you have a 1200×630 PNG, drop it at `public/og-default.png` and set `DEFAULT_OG_IMAGE = '/og-default.png'` in `src/config.ts`. Until then `SEO.astro` skips emitting `og:image` meta (better than 404s).
 
+## Work history (`src/data/cv.ts`)
+
+Single source of truth. Imported by `src/pages/cv.astro` (full résumé) and `src/pages/index.astro` (homepage Experience block, sliced to 3 most-recent). Also drives the `Person.hasOccupation` JSON-LD on `/cv`.
+
+```ts
+export const experience: Role[] = [
+  {
+    role, employer, location, start, end,
+    startDate?, endDate?,         // ISO YYYY-MM-DD — improves schema quality
+    summary, highlights[], stack[],
+  },
+];
+export const education: Degree[] = [{ school, degree, year, notes? }];
+export const skills: Record<string, string[]> = { Languages: [...], ... };
+```
+
+Edit this file, not the page files.
+
 ## Don't lightly change
 
 - Tailwind theme indirection through CSS variables
@@ -113,4 +132,4 @@ When you have a 1200×630 PNG, drop it at `public/og-default.png` and set `DEFAU
 - `aria-current="page"` on active nav
 - `loading="lazy"` + explicit `width`/`height` on `<img>`
 - `url()` helper for internal links (base-path safety)
-- JSON-LD schemas in `SEO.astro` and per page
+- JSON-LD schemas in `SEO.astro` and per page (entity `@id`s in `src/lib/schema.ts` — keep them stable)
