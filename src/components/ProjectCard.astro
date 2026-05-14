@@ -115,25 +115,74 @@ const primaryIsExternal = primaryHref !== null && /^https?:/i.test(primaryHref);
   }
 
   {
-    data.metric && (
-      <p class="relative z-10 mt-3 clear-both">
-        <a
-          href={data.metric.href}
-          rel="noopener"
-          class="group/metric -my-1 inline-flex items-center gap-1 py-1 font-mono text-sm text-accent no-underline"
-          itemprop="codeRepository"
-        >
-          <span class="underline underline-offset-2 decoration-1 group-hover/metric:decoration-2">
-            {data.metric.label}
-          </span>
-          <span
-            aria-hidden="true"
-            class="inline-block transition-transform duration-200 ease-out motion-reduce:transition-none group-hover/metric:translate-x-0.5 group-hover/metric:-translate-y-0.5"
+    /*
+     * Metric label rendering — standardized format is:
+     *
+     *   '★ <metric> [@ <venue>]'
+     *
+     *   ★ 1.2k stars
+     *   ★ 612 stars
+     *   ★ 4.8 @ Slack Marketplace
+     *   Read the case study              (no star, no venue — also valid)
+     *
+     * Render structure:
+     *
+     *   [SVG star][underlined: "<metric>" [italic: "@ <venue>"]] [↗]
+     *
+     * The SVG sits OUTSIDE the underlined span so the underline doesn't
+     * span the gap between icon and text. The optional " @ <venue>"
+     * portion is italicized inside the underline.
+     *
+     * Path: Heroicons 2.0 solid star (24x24 viewBox).
+     */
+    data.metric && (() => {
+      const raw = data.metric.label;
+      const hasStar = raw.includes('★');
+      const cleaned = raw.replace(/★/g, '').replace(/\s+/g, ' ').trim();
+      const atIdx = cleaned.indexOf(' @ ');
+      const beforeVenue = atIdx >= 0 ? cleaned.slice(0, atIdx) : cleaned;
+      const venue = atIdx >= 0 ? cleaned.slice(atIdx + 1) : null; // "@ X"
+      return (
+        <p class="relative z-10 mt-3 clear-both">
+          <a
+            href={data.metric.href}
+            rel="noopener"
+            class="group/metric -my-1 inline-flex items-center gap-1.5 py-1 font-mono text-sm text-accent no-underline"
+            itemprop="codeRepository"
           >
-            ↗
-          </span>
-        </a>
-      </p>
-    )
+            {hasStar && (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden="true"
+                class="h-4 w-4 shrink-0"
+              >
+                <path
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006Z"
+                />
+              </svg>
+            )}
+            <span class="underline underline-offset-2 decoration-1 group-hover/metric:decoration-2">
+              {beforeVenue}
+              {venue && (
+                <>
+                  {' '}
+                  <em class="italic">{venue}</em>
+                </>
+              )}
+            </span>
+            <span
+              aria-hidden="true"
+              class="inline-block transition-transform duration-200 ease-out motion-reduce:transition-none group-hover/metric:translate-x-0.5 group-hover/metric:-translate-y-0.5"
+            >
+              ↗
+            </span>
+          </a>
+        </p>
+      );
+    })()
   }
 </article>

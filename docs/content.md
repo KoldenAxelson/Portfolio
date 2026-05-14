@@ -33,7 +33,7 @@ links:                                   # all optional
   live: 'https://...'
   repo: 'https://github.com/...'
 metric:                                  # vanity metric on the card
-  label: '★ 612 stars'
+  label: '★ 612 stars'                   # see "Metric label format" below
   href: 'https://github.com/.../stargazers'
 cover: /covers/event-pipeline.svg        # relative to /public
 ---
@@ -46,6 +46,8 @@ cover: /covers/event-pipeline.svg        # relative to /public
 - **2** — listed only. No body. Card links to `live` or `repo` directly.
 
 Tier-1 body convention: Problem / Constraints / What I did / Outcome / What I'd do differently.
+
+**Metric label format** — `'★ <metric> [@ <venue>]'`. Leading `★` (Unicode literal) renders as an inline Heroicons solid-star SVG outside the underlined text. Optional ` @ <venue>` portion is italicized inside the underline. Examples: `'★ 612 stars'`, `'★ 1.2k stars'`, `'★ 4.8 @ Slack Marketplace'`, `'Read the case study'` (no star — plain link).
 
 **Cover images** — relative to `/public`. SVG passes through unchanged. **Pre-convert raster sources to WebP/AVIF** before committing:
 
