@@ -1,0 +1,17 @@
+name: 'CompTIA Security+ (SY0-701)'
+issuer: 'CompTIA'
+issuerUrl: 'https://www.comptia.org/certifications/security'
+issueDate: 2024-02-12
+expirationDate: 2027-02-12
+credentialId: 'COMP-EXAMPLE-2024'
+verifyUrl: 'https://www.certmetrics.com/comptia/public/verification.aspx'
+description: 'Vendor-neutral baseline for security operations, threat detection, and risk management. The cert most cleared positions actually verify.'
+skills:
+  - Threat detection + response
+  - Network security fundamentals
+  - Cryptography concepts
+  - Risk management
+  - Compliance frameworks
+featured: false
+thoughts:
+  - "Required for the work I can't talk about. Renewing it kept the door open after I left that environment."

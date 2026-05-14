@@ -8,6 +8,7 @@ Two paths, same output:
 | `make post` | `src/content/posts/<slug>.mdx` |
 | `make contact` | `src/content/network/<slug>.yaml` |
 | `make archive` | `src/content/archive/<slug>.md` |
+| _by hand_ | `src/content/certificates/<slug>.yaml` |
 
 **Work history is NOT a content collection.** Edit `src/data/cv.ts` directly — see [customization.md](./customization.md#work-history-srcdatacvts).
 
@@ -122,6 +123,30 @@ Aim for 1–3 thoughts per element. The pool is sampled at random, so two are en
 
 The About section has no indicator — the sidebar shows the static `author.bio` from `src/config.ts` while you're scrolled there.
 
+## Certificates
+
+```yaml
+name: 'AWS Certified Solutions Architect – Associate'
+issuer: 'Amazon Web Services'
+issuerUrl: 'https://aws.amazon.com/certification/'      # optional, improves entity resolution
+issueDate: 2025-04-15                                    # required, ISO date
+expirationDate: 2028-04-15                               # optional
+credentialId: 'AWS-SAA-C03-XXXXX'                       # optional, public ID
+verifyUrl: 'https://www.credly.com/badges/...'          # optional but recommended
+badge: '/badges/aws-saa.png'                            # optional, relative to /public
+description: 'Designs distributed systems on AWS...'    # optional, one line
+skills:
+  - VPC design
+  - IAM least-privilege
+  - Multi-region failover
+featured: true                                           # appears on homepage
+draft: false
+thoughts:
+  - "Personal aside #1 about earning this certificate."
+```
+
+Each certificate emits as a `EducationalOccupationalCredential` JSON-LD on `/certificates` (inside an `ItemList`) AND on `/cv` (as an entry in `Person.hasCredential`). The two share an `@id` so an AI graph walker resolves them to the same entity. Expired credentials still render on `/certificates#expired` for an honest history.
+
 ## Drafts
 
 Set `draft: true` on any project, article, or archive entry. Build skips it.
@@ -145,5 +170,8 @@ postgres  slack  monitoring
 | Article | `/`, `/articles`, `/articles/[slug]`, `/rss.xml`, `/feed.json` |
 | Network contact | `/network` |
 | Archive entry | `/projects#archive` |
+| Certificate (active, featured) | `/`, `/certificates#active`, `/cv#certifications` |
+| Certificate (active, not featured) | `/certificates#active`, `/cv#certifications` |
+| Certificate (expired) | `/certificates#expired` |
 
 Homepage slices: 4 featured projects, 5 recent articles. Adjust in `src/pages/index.astro`.

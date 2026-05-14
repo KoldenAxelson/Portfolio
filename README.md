@@ -61,12 +61,13 @@ Full docs in [/docs](./docs/README.md):
 ## Pages
 
 ```
-/                   Hero + About + Experience + Featured + Recent articles
+/                   Hero + About + Experience + Featured projects + Certifications + Recent articles
                     (sticky sidebar with scroll-spy + typewriter bio)
 /projects           Filterable project catalogue + honest archive
 /projects/[slug]    Tier-1 case studies (MDX)
 /articles           Article index (optional cover thumbnails)
 /articles/[slug]    Individual posts (MDX)
+/certificates       Active + expired professional credentials, with verify links
 /network            Two-panel contact selector with mailto: intro compose
 /uses               Collapsible tool/stack/hardware accordions
 /cv                 Structured HTML résumé

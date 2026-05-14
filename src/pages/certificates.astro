@@ -1,0 +1,183 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import FormattedDate from '@components/FormattedDate.astro';
+import { SITE } from '@config';
+import { url } from '@lib/url';
+import { personId } from '@lib/schema';
+
+// Most-recent first. Drafts excluded from the build.
+const all = (await getCollection('certificates', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.issueDate.valueOf() - a.data.issueDate.valueOf(),
+);
+
+const now = new Date();
+const active = all.filter((c) => !c.data.expirationDate || c.data.expirationDate > now);
+const expired = all.filter((c) => c.data.expirationDate && c.data.expirationDate <= now);
+
+// ---------------------------------------------------------------------------
+// JSON-LD: emit each credential as a schema.org EducationalOccupationalCredential,
+// wrapped in an ItemList so a crawler can iterate the page as a structured set.
+// Also tied back to the site's Person via `recognizedBy` (issuer Organization)
+// and the credential's relationship is reasserted on /cv via `Person.hasCredential`.
+// ---------------------------------------------------------------------------
+
+function credentialSchema(c: (typeof all)[number]) {
+  const d = c.data;
+  return {
+    '@type': 'EducationalOccupationalCredential',
+    '@id': new URL(`/certificates#${c.slug}`, SITE.url).toString(),
+    name: d.name,
+    ...(d.description && { description: d.description }),
+    credentialCategory: 'Professional Certification',
+    recognizedBy: {
+      '@type': 'Organization',
+      name: d.issuer,
+      ...(d.issuerUrl && { url: d.issuerUrl }),
+    },
+    validFrom: d.issueDate.toISOString().slice(0, 10),
+    ...(d.expirationDate && { validUntil: d.expirationDate.toISOString().slice(0, 10) }),
+    ...(d.credentialId && { identifier: d.credentialId }),
+    ...(d.verifyUrl && { url: d.verifyUrl }),
+    ...(d.badge && { image: new URL(d.badge, SITE.url).toString() }),
+    ...(d.skills.length > 0 && { competencyRequired: d.skills }),
+    // Holder reference — closes the entity loop back to the site Person.
+    about: { '@id': personId },
+  };
+}
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    '@id': new URL('/certificates#list', SITE.url).toString(),
+    name: 'Certifications',
+    numberOfItems: all.length,
+    itemListOrder: 'https://schema.org/ItemListOrderDescending',
+    itemListElement: all.map((c, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      item: credentialSchema(c),
+    })),
+  },
+];
+
+function fmtSkills(skills: string[]) {
+  return skills.length > 0 ? skills.join(' · ') : null;
+}
+---
+
+<BaseLayout
+  title="Certifications"
+  description={`Professional certifications and credentials held by ${SITE.author.name}, with verification links and skills covered.`}
+  schema={schema}
+>
+  <header class="mb-8 print:hidden">
+    <h1 class="text-3xl font-medium">Certifications</h1>
+    <p class="mt-3 max-w-prose text-muted">
+      Professional credentials I hold or have held. Each one links to its issuer's verification
+      page so anyone can confirm authenticity directly. Expired credentials are kept on the page
+      — letting them roll off without acknowledgement is a small dishonesty I'd rather not commit.
+    </p>
+  </header>
+
+  {
+    active.length > 0 && (
+      <section id="active" class="mb-12 scroll-mt-24" aria-labelledby="active-heading">
+        <h2 id="active-heading" class="mb-4 text-xl font-medium">Active</h2>
+        <ul class="space-y-4">
+          {active.map((c) => (
+            <li class="rounded-lg border border-border bg-bg/30 p-5 transition hover:border-accent print:break-inside-avoid">
+              <header class="flex flex-wrap items-baseline justify-between gap-2">
+                <h3 class="m-0 font-medium text-fg">{c.data.name}</h3>
+                <span class="font-mono text-xs text-muted">
+                  <FormattedDate date={c.data.issueDate} />
+                  {c.data.expirationDate && (
+                    <>
+                      {' · expires '}
+                      <FormattedDate date={c.data.expirationDate} />
+                    </>
+                  )}
+                </span>
+              </header>
+              <p class="mt-1 text-sm text-muted">
+                {c.data.issuer}
+                {c.data.credentialId && (
+                  <span class="ml-2 font-mono text-xs">· {c.data.credentialId}</span>
+                )}
+              </p>
+              {c.data.description && (
+                <p class="mt-3 text-sm text-muted">{c.data.description}</p>
+              )}
+              {c.data.skills.length > 0 && (
+                <p class="mt-3 font-mono text-xs text-muted">{fmtSkills(c.data.skills)}</p>
+              )}
+              {c.data.verifyUrl && (
+                <p class="mt-3 text-sm">
+                  <a
+                    href={c.data.verifyUrl}
+                    rel="noopener"
+                    class="group/cta no-underline"
+                  >
+                    <span class="underline underline-offset-2 decoration-1 group-hover/cta:decoration-2">
+                      Verify credential
+                    </span>
+                    <span
+                      aria-hidden="true"
+                      class="ml-0.5 inline-block transition-transform duration-200 ease-out motion-reduce:transition-none group-hover/cta:translate-x-0.5 group-hover/cta:-translate-y-0.5"
+                    >
+                      ↗
+                    </span>
+                  </a>
+                </p>
+              )}
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  {
+    expired.length > 0 && (
+      <section id="expired" class="scroll-mt-24" aria-labelledby="expired-heading">
+        <h2 id="expired-heading" class="mb-2 text-xl font-medium">Expired</h2>
+        <p class="mb-6 max-w-prose text-sm text-muted">
+          Credentials that have lapsed. Kept here for an honest record — what I learned for them
+          didn't expire even if the badge did.
+        </p>
+        <ul class="divide-y divide-border">
+          {expired.map((c) => (
+            <li class="py-5 print:break-inside-avoid">
+              <header class="flex flex-wrap items-baseline justify-between gap-3">
+                <h3 class="m-0 font-medium">{c.data.name}</h3>
+                <span class="font-mono text-xs text-muted">
+                  <FormattedDate date={c.data.issueDate} />
+                  {c.data.expirationDate && (
+                    <>
+                      {' – '}
+                      <FormattedDate date={c.data.expirationDate} />
+                    </>
+                  )}
+                </span>
+              </header>
+              <p class="mt-1 text-sm text-muted">{c.data.issuer}</p>
+              {c.data.skills.length > 0 && (
+                <p class="mt-2 font-mono text-xs text-muted">{fmtSkills(c.data.skills)}</p>
+              )}
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  {
+    all.length === 0 && (
+      <p class="text-muted">
+        No certifications listed yet. Add one by dropping a YAML file into
+        <code>src/content/certificates/</code> — see <a href={url('/articles')}>docs</a>.
+      </p>
+    )
+  }
+</BaseLayout>

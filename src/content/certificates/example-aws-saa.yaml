@@ -1,0 +1,18 @@
+name: 'AWS Certified Solutions Architect – Associate'
+issuer: 'Amazon Web Services'
+issuerUrl: 'https://aws.amazon.com/certification/'
+issueDate: 2025-04-15
+expirationDate: 2028-04-15
+credentialId: 'AWS-SAA-C03-EXAMPLE'
+verifyUrl: 'https://www.credly.com/badges/example-aws-saa'
+description: 'Designs distributed systems on AWS — VPC, IAM, multi-region failover, cost optimization, observability.'
+skills:
+  - VPC design
+  - IAM least-privilege
+  - Multi-region failover
+  - Cost optimization
+  - CloudWatch + observability
+featured: true
+thoughts:
+  - "Studied for this on flights to a customer for a month. The IAM section finally made the access patterns at work click."
+  - "Pretty sure the failover question was almost word-for-word something I'd designed in production six months earlier."
