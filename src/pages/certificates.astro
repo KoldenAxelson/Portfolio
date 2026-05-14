@@ -4,7 +4,6 @@ import BaseLayout from '@layouts/BaseLayout.astro';
 import FormattedDate from '@components/FormattedDate.astro';
 import { SITE } from '@config';
 import { url } from '@lib/url';
-import { personId } from '@lib/schema';
 
 // Most-recent first. Drafts excluded from the build.
 const all = (await getCollection('certificates', ({ data }) => !data.draft)).sort(
@@ -18,8 +17,10 @@ const expired = all.filter((c) => c.data.expirationDate && c.data.expirationDate
 // ---------------------------------------------------------------------------
 // JSON-LD: emit each credential as a schema.org EducationalOccupationalCredential,
 // wrapped in an ItemList so a crawler can iterate the page as a structured set.
-// Also tied back to the site's Person via `recognizedBy` (issuer Organization)
-// and the credential's relationship is reasserted on /cv via `Person.hasCredential`.
+// Each credential's `@id` matches the one used on /cv (in Person.hasCredential),
+// so JSON-LD parsers merge the two records into a single graph entity. The
+// Person→Credential relationship lives on /cv (via hasCredential) — we don't
+// need a back-reference from the credential here; @id sharing handles that.
 // ---------------------------------------------------------------------------
 
 function credentialSchema(c: (typeof all)[number]) {
@@ -41,8 +42,6 @@ function credentialSchema(c: (typeof all)[number]) {
     ...(d.verifyUrl && { url: d.verifyUrl }),
     ...(d.badge && { image: new URL(d.badge, SITE.url).toString() }),
     ...(d.skills.length > 0 && { competencyRequired: d.skills }),
-    // Holder reference — closes the entity loop back to the site Person.
-    about: { '@id': personId },
   };
 }
 
