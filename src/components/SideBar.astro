@@ -78,13 +78,16 @@ const { sections = [] } = Astro.props;
   sections.length > 0 && (
     <script is:inline>
       function neofolioSidebarInit() {
-        // Desktop only: the sidebar typewriter + scroll auto-fire +
+        // Desktop behavior: sidebar typewriter + scroll auto-fire +
         // click-to-drive. Mobile BioIndicator clicks are handled in
-        // TopNav.astro — they open the navbar's mobile panel in "bio
-        // mode" with the typewriter content there. The two scripts are
-        // viewport-disjoint by design.
-        const isLargeScreen = window.matchMedia('(min-width: 1024px)').matches;
-        if (!isLargeScreen) return;
+        // TopNav.astro instead (open the navbar's mobile panel in "bio
+        // mode" with the typewriter content there).
+        //
+        // The script handles VIEWPORT TRANSITIONS at runtime — when the
+        // user resizes from desktop to mobile mid-session, the
+        // IntersectionObserver gets torn down so it doesn't keep
+        // randomly highlighting indicators on scroll while the sidebar
+        // typewriter is hidden. Resizing back to desktop re-attaches it.
 
         const links = Array.from(document.querySelectorAll('[data-section-link]'));
         if (!links.length) return;
@@ -248,11 +251,6 @@ const { sections = [] } = Astro.props;
           if (defaultBio) typeMessage(defaultBio);
         }
 
-        // Clicking an indicator types one of ITS messages and highlights it.
-        for (const indicator of indicators) {
-          indicator.addEventListener('click', () => driveFrom(indicator));
-        }
-
         // Scroll-into-section: pick a random indicator within that section
         // and drive the typewriter from it. Section nav highlight tracks
         // section change separately so it always reflects the user's
@@ -272,18 +270,69 @@ const { sections = [] } = Astro.props;
           }
         }
 
-        const observer = new IntersectionObserver(
-          (entries) => {
-            const intersecting = entries.filter((e) => e.isIntersecting);
-            if (!intersecting.length) return;
-            intersecting.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-            const top = intersecting[0];
-            if (top && top.target.id) onSectionEnter(top.target.id);
-          },
-          { rootMargin: '-30% 0px -55% 0px', threshold: 0 },
-        );
-        sectionEls.forEach((el) => observer.observe(el));
-        onSectionEnter(sectionEls[0].id);
+        // ─── Viewport-aware setup ──────────────────────────────────
+        // The IntersectionObserver lives only while we're in desktop
+        // mode. On a desktop→mobile resize we tear it down so it stops
+        // auto-highlighting indicators on scroll (the sidebar typewriter
+        // it would drive isn't visible on mobile, so the highlight is
+        // confusing without an accompanying message — TopNav owns the
+        // mobile bio behavior, click-only).
+        const mq = window.matchMedia('(min-width: 1024px)');
+        let observer = null;
+
+        function setupObserver() {
+          if (observer) return;
+          observer = new IntersectionObserver(
+            (entries) => {
+              const intersecting = entries.filter((e) => e.isIntersecting);
+              if (!intersecting.length) return;
+              intersecting.sort(
+                (a, b) => a.boundingClientRect.top - b.boundingClientRect.top,
+              );
+              const top = intersecting[0];
+              if (top && top.target.id) onSectionEnter(top.target.id);
+            },
+            { rootMargin: '-30% 0px -55% 0px', threshold: 0 },
+          );
+          sectionEls.forEach((el) => observer.observe(el));
+          // Prime with the current section.
+          onSectionEnter(sectionEls[0].id);
+        }
+
+        function teardownObserver() {
+          if (observer) {
+            observer.disconnect();
+            observer = null;
+          }
+          // Clear all desktop-driven visual state so nothing stale
+          // (highlighted indicator, leftover typed thought) leaks into
+          // the mobile experience after resize.
+          setIndicatorActive(null);
+          setSectionActive(null);
+          currentSection = null;
+        }
+
+        function applyMode() {
+          if (mq.matches) {
+            setupObserver();
+          } else {
+            teardownObserver();
+          }
+        }
+
+        // Click-to-drive: only fires in desktop mode. On mobile the
+        // TopNav script intercepts these clicks for the navbar panel
+        // (and our handler here would set state that's invisible
+        // anyway since the sidebar typewriter is hidden).
+        for (const indicator of indicators) {
+          indicator.addEventListener('click', () => {
+            if (!mq.matches) return;
+            driveFrom(indicator);
+          });
+        }
+
+        applyMode();
+        mq.addEventListener('change', applyMode);
       }
 
       // Defer until DOM is parsed — the section anchors live in <main>,
