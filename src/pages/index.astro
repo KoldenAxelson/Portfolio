@@ -137,12 +137,11 @@ const featuredCertBadges = new Map<string, BadgeImage | null>(
                     </li>
                   ))}
                 </ul>
-                {/* Per-role indicator — bottom-right of the role's content
-                    cell. Wrapper hides on `<lg` so the empty flex slot
-                    doesn't even exist on the mobile single-column layout. */}
-                <div class="hidden lg:block">
-                  <BioIndicator messages={job.thoughts} label={`${job.role} at ${job.employer}`} />
-                </div>
+                {/* Per-role indicator. Visible on every viewport — on lg+
+                    it drives the sidebar typewriter; on mobile it opens an
+                    inline dropdown directly below the indicator with the
+                    same typewriter animation. */}
+                <BioIndicator messages={job.thoughts} label={`${job.role} at ${job.employer}`} />
               </div>
             </div>
           </li>
@@ -185,7 +184,11 @@ const featuredCertBadges = new Map<string, BadgeImage | null>(
                run there — matches the layout's single-column transition. */
             <div class="relative">
               <ProjectCard project={p} />
-              <div class="pointer-events-none absolute bottom-3 right-3 z-20 hidden lg:block">
+              {/* Indicator visible on all viewports. The pointer-events
+                  trick keeps card hover from being blocked by the
+                  positioned wrapper while still letting the indicator
+                  itself receive taps/clicks. */}
+              <div class="pointer-events-none absolute bottom-3 right-3 z-20">
                 <div class="pointer-events-auto">
                   <BioIndicator messages={p.data.thoughts} label={p.data.title} />
                 </div>
@@ -261,13 +264,11 @@ const featuredCertBadges = new Map<string, BadgeImage | null>(
                     </p>
                   </div>
                 </a>
-                {/* Per-cert thoughts indicator (hidden on mobile, like the others). */}
-                <div class="hidden lg:block">
-                  <BioIndicator
-                    messages={c.data.thoughts}
-                    label={`${c.data.name} from ${c.data.issuer}`}
-                  />
-                </div>
+                {/* Per-cert thoughts indicator. Visible on all viewports. */}
+                <BioIndicator
+                  messages={c.data.thoughts}
+                  label={`${c.data.name} from ${c.data.issuer}`}
+                />
               </li>
             );
           })}
@@ -316,11 +317,8 @@ const featuredCertBadges = new Map<string, BadgeImage | null>(
                 <span class="font-mono text-xs text-muted">
                   <FormattedDate date={post.data.pubDate} />
                 </span>
-                {/* Per-article indicator. Wrapper hides on `<lg`, matching
-                    the layout's single-column transition. */}
-                <div class="hidden lg:block">
-                  <BioIndicator messages={post.data.thoughts} label={post.data.title} />
-                </div>
+                {/* Per-article indicator. Visible on all viewports. */}
+                <BioIndicator messages={post.data.thoughts} label={post.data.title} />
               </div>
             </li>
           ))}

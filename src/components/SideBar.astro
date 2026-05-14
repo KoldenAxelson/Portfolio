@@ -78,9 +78,11 @@ const { sections = [] } = Astro.props;
   sections.length > 0 && (
     <script is:inline>
       function neofolioSidebarInit() {
-        // Bail on mobile: the sidebar isn't sticky there, the section nav is
-        // hidden, and the typing animation would just type into a paragraph
-        // that scrolls past before anyone reads it. The static bio stays put.
+        // Desktop only: the sidebar typewriter + scroll auto-fire +
+        // click-to-drive. Mobile BioIndicator clicks are handled in
+        // TopNav.astro — they open the navbar's mobile panel in "bio
+        // mode" with the typewriter content there. The two scripts are
+        // viewport-disjoint by design.
         const isLargeScreen = window.matchMedia('(min-width: 1024px)').matches;
         if (!isLargeScreen) return;
 
