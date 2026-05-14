@@ -49,25 +49,56 @@ const { sections = [] } = Astro.props;
     {
       sections.length > 0 && (
         <nav class="nav-scroll mt-12 hidden lg:block lg:mt-16" aria-label="On this page">
-          <ul class="space-y-3">
-            {sections.map((section) => (
+          {/*
+            Vertical dot-line progression. Each section is a clickable
+            row with a dot in the gutter; lines between dots show
+            visit/highlight state. Per-state styling is driven by JS
+            setting `data-state` on each dot and line — the script lives
+            in the inline <script> at the bottom of this file.
+
+            Dot states:
+              • future      — small grey (default)
+              • passed      — small accent
+              • current     — big accent
+              • highlighted — accent ring (donut), for hover/focus on
+                              non-current sections
+            Line states:
+              • grey            — between unvisited dots (default)
+              • primary         — between visited dots
+              • dashed-primary  — between current and a hovered future
+                                  section, indicating the "jump path"
+          */}
+          <ol class="space-y-0">
+            {sections.map((section, i) => (
               <li>
                 <a
                   href={`#${section.id}`}
                   data-section-link={section.id}
-                  class="group inline-flex items-center py-1 pr-1 text-muted no-underline transition-colors hover:!text-fg data-[active=true]:!text-fg"
+                  class="group/nav-link flex items-center gap-3 py-1.5 text-muted no-underline transition-colors hover:!text-fg data-[active=true]:!text-fg"
                 >
-                  <span
-                    aria-hidden="true"
-                    class="mr-4 inline-block h-px w-8 bg-muted transition-all duration-200 motion-reduce:transition-none group-hover:w-16 group-hover:bg-fg group-data-[active=true]:w-16 group-data-[active=true]:bg-fg"
-                  />
+                  {/* Dot column — fixed 12px wide so big-current dots
+                      align center with smaller passed/future dots. */}
+                  <span class="flex h-3 w-3 shrink-0 items-center justify-center" aria-hidden="true">
+                    <span
+                      data-nav-dot
+                      class="block h-1.5 w-1.5 rounded-full bg-border transition-all duration-200 motion-reduce:transition-none data-[state=passed]:bg-accent data-[state=current]:h-3 data-[state=current]:w-3 data-[state=current]:bg-accent data-[state=highlighted]:h-2.5 data-[state=highlighted]:w-2.5 data-[state=highlighted]:border-2 data-[state=highlighted]:border-accent data-[state=highlighted]:bg-transparent"
+                    />
+                  </span>
                   <span class="font-mono text-xs uppercase tracking-widest group-data-[active=true]:font-semibold">
                     {section.label}
                   </span>
                 </a>
+                {i < sections.length - 1 && (
+                  <div class="flex w-3 justify-center" aria-hidden="true">
+                    <span
+                      data-nav-line
+                      class="block h-3 w-px bg-border transition-all duration-200 motion-reduce:transition-none data-[state=primary]:bg-accent data-[state=dashed-primary]:w-0 data-[state=dashed-primary]:border-l data-[state=dashed-primary]:border-dashed data-[state=dashed-primary]:border-accent data-[state=dashed-primary]:bg-transparent"
+                    />
+                  </div>
+                )}
               </li>
             ))}
-          </ul>
+          </ol>
         </nav>
       )
     }
@@ -218,11 +249,77 @@ const { sections = [] } = Astro.props;
           if (cursorEl) cursorEl.style.opacity = '0';
         }
 
+        // Track section indices for the dot/line state computation. The
+        // dot/line visuals depend on BOTH the current section (set by the
+        // scroll observer) AND the hovered section (set by mouseenter /
+        // focus listeners below). Either change re-runs updateNavStates.
+        let currentIndex = -1;
+        let hoverIndex = null;
+
         function setSectionActive(id) {
           for (const [key, el] of idToLink) {
             el.setAttribute('data-active', key === id ? 'true' : 'false');
           }
+          currentIndex = id == null
+            ? -1
+            : links.findIndex((l) => l.getAttribute('data-section-link') === id);
+          updateNavStates();
         }
+
+        const navLines = Array.from(document.querySelectorAll('[data-nav-line]'));
+
+        function updateNavStates() {
+          // Dots: each section gets one of four states. Current always
+          // wins over highlighted so the user's actual location stays
+          // visible even if they hover over their current section.
+          for (let i = 0; i < links.length; i++) {
+            const dot = links[i].querySelector('[data-nav-dot]');
+            if (!dot) continue;
+            let state = 'future';
+            if (i === currentIndex) state = 'current';
+            else if (i === hoverIndex) state = 'highlighted';
+            else if (i < currentIndex) state = 'passed';
+            dot.setAttribute('data-state', state);
+          }
+          // Lines: each line is between section i and i+1.
+          //   • Hovering a future section dashes the path from current
+          //     all the way through the hovered section's preceding line.
+          //   • Otherwise: primary if both endpoints are visited, grey
+          //     if both are unvisited.
+          for (let i = 0; i < navLines.length; i++) {
+            let state = 'grey';
+            const inDashedPath =
+              hoverIndex != null &&
+              hoverIndex > currentIndex &&
+              i + 1 > currentIndex &&
+              i + 1 <= hoverIndex;
+            if (inDashedPath) {
+              state = 'dashed-primary';
+            } else if (i + 1 <= currentIndex) {
+              state = 'primary';
+            }
+            navLines[i].setAttribute('data-state', state);
+          }
+        }
+
+        // Hover/focus on any nav link → highlight that section. Works
+        // for keyboard (focus) and mouse (mouseenter).
+        links.forEach((link, i) => {
+          const enter = () => {
+            hoverIndex = i;
+            updateNavStates();
+          };
+          const leave = () => {
+            if (hoverIndex === i) {
+              hoverIndex = null;
+              updateNavStates();
+            }
+          };
+          link.addEventListener('mouseenter', enter);
+          link.addEventListener('focus', enter);
+          link.addEventListener('mouseleave', leave);
+          link.addEventListener('blur', leave);
+        });
 
         function setIndicatorActive(indicator) {
           activeIndicator = indicator;
