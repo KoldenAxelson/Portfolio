@@ -46,7 +46,10 @@ const schema = [
   description={`Full résumé and work history for ${SITE.author.name}.`}
   schema={schema}
 >
-  <header class="mb-8">
+  {/* On-screen only: the "CV" page title and the meta-instruction about
+      printing are both hidden in print output. The page leads with the
+      Summary section in print, which is the right thing for a printed CV. */}
+  <header class="mb-8 print:hidden">
     <h1 class="text-3xl font-medium">CV</h1>
     <p class="mt-3 max-w-prose text-muted">
       Full work history, plain text. Print-friendly — Cmd-P from this page
@@ -63,8 +66,10 @@ const schema = [
     <h2 id="experience-heading" class="mb-4 text-xl font-medium">Experience</h2>
     <ol class="space-y-8">
       {
+        /* `print:break-inside-avoid` on each role keeps a job from being
+           split across two printed pages — much cleaner Cmd-P output. */
         experience.map((job) => (
-          <li>
+          <li class="print:break-inside-avoid">
             <header class="flex flex-wrap items-baseline justify-between gap-2">
               <h3 class="m-0 font-medium">
                 {job.role} · <span class="text-muted">{job.employer}</span>
