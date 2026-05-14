@@ -46,29 +46,35 @@ const recentPosts = (await getCollection('posts', ({ data }) => !data.draft))
     <div class="space-y-4 text-base text-muted">
       <p>{SITE.author.longBio}</p>
       <p>
-        Most of my career has been at the seam between resilient backend systems and the people
-        who depend on them not falling over. The work I'm proudest of is invisible —
-        infrastructure you only notice when something breaks elsewhere.
+        Most of my career has been at the seam between resilient backend systems and the people who
+        depend on them not falling over. The work I'm proudest of is invisible — infrastructure you
+        only notice when something breaks elsewhere.
       </p>
       <p>
-        I write about what I learn at <a href={url('/articles')}>/articles</a> and keep an
-        honest log of the projects I started and didn't finish in
-        the <a href={url('/projects') + '#archive'}>archive</a> at the bottom of /projects.
-        Both feel like an essential counterweight to the highlight-reel version of a portfolio.
+        I write about what I learn at <a href={url('/articles')}>/articles</a> and keep an honest log
+        of the projects I started and didn't finish in the <a href={url('/projects') + '#archive'}
+          >archive</a
+        > at the bottom of /projects. Both feel like an essential counterweight to the highlight-reel
+        version of a portfolio.
       </p>
       <p>
-        If you want the snapshot of what I'm focused on this season — what I'm building,
-        reading, learning — that's at <a href={url('/now')}>/now</a>. Updated whenever it
-        stops being true.
+        If you want the snapshot of what I'm focused on this season — what I'm building, reading,
+        learning — that's at <a href={url('/now')}>/now</a>. Updated whenever it stops being true.
       </p>
     </div>
-    {/* No indicator here: the About section is already deeply personal —
+    {
+      /* No indicator here: the About section is already deeply personal —
         the sidebar restores the static `SITE.author.bio` while you're
-        viewing it, instead of typing a thought-of-the-day. */}
+        viewing it, instead of typing a thought-of-the-day. */
+    }
   </section>
 
   <!-- EXPERIENCE -->
-  <section id="experience" class="mb-24 scroll-mt-24 last:mb-0" aria-labelledby="experience-heading">
+  <section
+    id="experience"
+    class="mb-24 scroll-mt-24 last:mb-0"
+    aria-labelledby="experience-heading"
+  >
     <h2
       id="experience-heading"
       class="mb-6 font-mono text-xs uppercase tracking-widest text-fg lg:sr-only"
@@ -117,8 +123,14 @@ const recentPosts = (await getCollection('posts', ({ data }) => !data.draft))
     </ol>
     <p class="mt-8 text-sm">
       <a href={url('/cv')} class="group/cta no-underline">
-        <span class="underline underline-offset-2 decoration-1 group-hover/cta:decoration-2">Full CV</span>
-        <span aria-hidden="true" class="ml-0.5 inline-block transition-transform duration-200 ease-out motion-reduce:transition-none group-hover/cta:translate-x-0.5">→</span>
+        <span class="underline decoration-1 underline-offset-2 group-hover/cta:decoration-2"
+          >Full CV</span
+        >
+        <span
+          aria-hidden="true"
+          class="ml-0.5 inline-block transition-transform duration-200 ease-out group-hover/cta:translate-x-0.5 motion-reduce:transition-none"
+          >→</span
+        >
       </a>
     </p>
   </section>
@@ -126,7 +138,11 @@ const recentPosts = (await getCollection('posts', ({ data }) => !data.draft))
   <!-- FEATURED PROJECTS -->
   {
     featured.length > 0 && (
-      <section id="projects" class="mb-24 scroll-mt-24 last:mb-0" aria-labelledby="projects-heading">
+      <section
+        id="projects"
+        class="mb-24 scroll-mt-24 last:mb-0"
+        aria-labelledby="projects-heading"
+      >
         <h2
           id="projects-heading"
           class="mb-6 font-mono text-xs uppercase tracking-widest text-fg lg:sr-only"
@@ -151,8 +167,15 @@ const recentPosts = (await getCollection('posts', ({ data }) => !data.draft))
         </div>
         <p class="mt-8 text-sm">
           <a href={url('/projects')} class="group/cta no-underline">
-            <span class="underline underline-offset-2 decoration-1 group-hover/cta:decoration-2">All projects</span>
-            <span aria-hidden="true" class="ml-0.5 inline-block transition-transform duration-200 ease-out motion-reduce:transition-none group-hover/cta:translate-x-0.5">→</span>
+            <span class="underline decoration-1 underline-offset-2 group-hover/cta:decoration-2">
+              All projects
+            </span>
+            <span
+              aria-hidden="true"
+              class="ml-0.5 inline-block transition-transform duration-200 ease-out group-hover/cta:translate-x-0.5 motion-reduce:transition-none"
+            >
+              →
+            </span>
           </a>
         </p>
       </section>
@@ -162,7 +185,11 @@ const recentPosts = (await getCollection('posts', ({ data }) => !data.draft))
   <!-- RECENT ARTICLES -->
   {
     recentPosts.length > 0 && (
-      <section id="articles" class="mb-24 scroll-mt-24 last:mb-0" aria-labelledby="articles-heading">
+      <section
+        id="articles"
+        class="mb-24 scroll-mt-24 last:mb-0"
+        aria-labelledby="articles-heading"
+      >
         <h2
           id="articles-heading"
           class="mb-6 font-mono text-xs uppercase tracking-widest text-fg lg:sr-only"
@@ -174,7 +201,7 @@ const recentPosts = (await getCollection('posts', ({ data }) => !data.draft))
             <li class="flex flex-col gap-1 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
               <a
                 href={url(`/articles/${post.slug}`)}
-                class="no-underline font-medium text-fg hover:!text-accent"
+                class="font-medium text-fg no-underline hover:!text-accent"
               >
                 {post.data.title}
               </a>
@@ -193,8 +220,15 @@ const recentPosts = (await getCollection('posts', ({ data }) => !data.draft))
         </ul>
         <p class="mt-8 text-sm">
           <a href={url('/articles')} class="group/cta no-underline">
-            <span class="underline underline-offset-2 decoration-1 group-hover/cta:decoration-2">All articles</span>
-            <span aria-hidden="true" class="ml-0.5 inline-block transition-transform duration-200 ease-out motion-reduce:transition-none group-hover/cta:translate-x-0.5">→</span>
+            <span class="underline decoration-1 underline-offset-2 group-hover/cta:decoration-2">
+              All articles
+            </span>
+            <span
+              aria-hidden="true"
+              class="ml-0.5 inline-block transition-transform duration-200 ease-out group-hover/cta:translate-x-0.5 motion-reduce:transition-none"
+            >
+              →
+            </span>
           </a>
         </p>
       </section>
