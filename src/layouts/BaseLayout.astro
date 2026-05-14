@@ -100,7 +100,11 @@ const {
         <div class="mx-auto max-w-screen-xl px-6 lg:px-12">
           <div class="lg:flex lg:justify-between lg:gap-12">
             <SideBar sections={sections} />
-            <main id="main" class="pt-8 lg:w-1/2 lg:py-24">
+            {/* Asymmetric vertical padding: sections inside <slot /> use
+                `last:mb-0` so the final section has no bottom margin. We keep
+                a moderate pb here for breathing room before the footer
+                without piling 6rem on top of an already-zero section margin. */}
+            <main id="main" class="pt-8 lg:w-1/2 lg:pt-24 lg:pb-12">
               <slot />
             </main>
           </div>
