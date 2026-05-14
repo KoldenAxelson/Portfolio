@@ -90,10 +90,12 @@ export const GET: APIRoute = async (context) => {
       const expires = c.data.expirationDate
         ? `, valid until ${c.data.expirationDate.toISOString().slice(0, 10)}`
         : '';
-      const verify = c.data.verifyUrl ? ` (verify: ${c.data.verifyUrl})` : '';
-      body.push(
-        `- ${c.data.name} — ${c.data.issuer}, issued ${issued}${expires}${verify}`,
-      );
+      // Markdown link to the verifier when present (matches the format used
+      // for projects and articles above), falling back to plain name.
+      const titleLink = c.data.verifyUrl
+        ? `[${c.data.name}](${c.data.verifyUrl})`
+        : c.data.name;
+      body.push(`- ${titleLink} — ${c.data.issuer}, issued ${issued}${expires}`);
     }
     body.push('');
   }
