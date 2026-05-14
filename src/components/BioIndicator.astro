@@ -1,27 +1,31 @@
 ---
 // BioIndicator — small chat-bubble button placed next to a single homepage
-// element (a role, a project card, an article entry, or the About block).
-// Carries that element's `thoughts` array; clicking the button drives the
-// SideBar typewriter to type one of those thoughts and highlights this
-// indicator. As you scroll through a section, the script picks a random
-// indicator inside that section and triggers it the same way.
+// element (a role, a project card, an article entry, or a credential).
+// Carries that element's `thoughts` array.
 //
-// Render this ONLY on the homepage. The SideBar typewriter is gated behind
-// `<BaseLayout split>` (homepage-only) — indicators on other pages would
-// have nothing to drive. The button is CSS-hidden on `<lg` viewports where
-// the typewriter doesn't run at all.
+// Behaves differently per viewport, but the button itself is identical:
 //
-// Empty `messages` array → the button is rendered DISABLED and faded
-// (cursor: not-allowed, no hover effect, excluded from scroll-picking).
-// This keeps every element's bottom-right corner visually consistent;
-// recruiters see at a glance which elements have a personal note attached
+//   • Desktop (lg+): clicking drives the SIDEBAR typewriter to type one
+//     of the thoughts and lights up the indicator. Scrolling into the
+//     element's section can also auto-fire (random pick within section).
+//     Wired by SideBar.astro's inline script.
+//
+//   • Mobile (<lg): the sidebar is hidden, so clicking instead opens the
+//     navbar's mobile panel in "bio mode" — the same expand-from-the-bar
+//     animation the hamburger uses, but with the typewriter content
+//     instead of nav links. Wired by TopNav.astro's inline script. The
+//     hamburger flips to X while the bio panel is open; tapping the X
+//     closes it.
+//
+// Empty `messages` array → button is rendered DISABLED and faded.
+// Recruiters see at a glance which elements have a personal note attached
 // and which don't.
 //
-// Wiring contract (consumed by SideBar.astro's inline script):
-//   • data-bio-indicator              — marker attribute
-//   • data-bio-messages='["...","…"]' — JSON-encoded thoughts pool
-//   • data-active="true"|"false"      — set by the script when active
-//   • disabled                        — set on empty pools; script skips it
+// Wiring contract:
+//   • [data-bio-indicator]      — the button
+//   • data-bio-messages='[…]'   — JSON-encoded thoughts pool
+//   • data-active="true|false"  — set by the script when active
+//   • disabled                  — set on empty pools; scripts skip it
 
 interface Props {
   /** The pool of thoughts to type when this indicator fires. */
@@ -49,7 +53,7 @@ const hasMessages = messages.length > 0;
       ? `Show a personal note about ${label}`
       : `No personal note attached to ${label}`
   }
-  class="group/bio hidden h-8 w-8 shrink-0 items-center justify-center rounded-full text-muted transition-colors hover:!text-accent focus-visible:!text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 data-[active=true]:!text-accent disabled:cursor-not-allowed disabled:!text-fg/20 disabled:hover:!text-fg/20 lg:inline-flex"
+  class="group/bio inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-muted transition-colors hover:!text-accent focus-visible:!text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 data-[active=true]:!text-accent disabled:cursor-not-allowed disabled:!text-fg/20 disabled:hover:!text-fg/20"
 >
   <svg
     xmlns="http://www.w3.org/2000/svg"

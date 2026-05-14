@@ -180,51 +180,69 @@ const icons: Record<string, string> = {
   */}
   <div
     data-mobile-panel
+    data-mode="nav"
     class="absolute inset-x-0 top-full z-40 grid grid-rows-[0fr] transition-[grid-template-rows] duration-300 ease-out motion-reduce:transition-none lg:hidden"
   >
-    <nav
-      aria-label="Site (mobile)"
-      class="overflow-hidden border-b border-border bg-bg/85 backdrop-blur supports-[backdrop-filter]:bg-bg/70"
-    >
-      <ul class="mx-auto flex max-w-screen-xl flex-col gap-1 px-6 py-4 opacity-0 transition-opacity duration-200 ease-out motion-reduce:transition-none">
-        {
-          SITE.nav.map((item) => {
-            const isActive =
-              currentPath === item.href || currentPath.startsWith(item.href + '/');
-            const path = icons[item.icon as keyof typeof icons];
-            return (
-              <li>
-                <a
-                  href={url(item.href)}
-                  aria-current={isActive ? 'page' : undefined}
-                  class:list={[
-                    'flex items-center gap-4 rounded-md px-3 py-3 text-lg no-underline transition-colors',
-                    isActive
-                      ? 'bg-border/60 font-medium text-fg'
-                      : 'text-fg/85 hover:bg-border/40 hover:!text-accent',
-                  ]}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.6"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    aria-hidden="true"
-                    class="h-6 w-6 shrink-0"
+    {/*
+      Single overflow container that clips both modes during the
+      height transition. The two children (nav vs bio) swap visibility
+      via the parent's `data-mode` attribute — see <style> below.
+    */}
+    <div class="overflow-hidden border-b border-border bg-bg/85 backdrop-blur supports-[backdrop-filter]:bg-bg/70">
+      {/* ─── Nav mode (default) — site navigation links ─── */}
+      <nav data-mobile-panel-nav aria-label="Site (mobile)">
+        <ul class="mx-auto flex max-w-screen-xl flex-col gap-1 px-6 py-4 opacity-0 transition-opacity duration-200 ease-out motion-reduce:transition-none">
+          {
+            SITE.nav.map((item) => {
+              const isActive =
+                currentPath === item.href || currentPath.startsWith(item.href + '/');
+              const path = icons[item.icon as keyof typeof icons];
+              return (
+                <li>
+                  <a
+                    href={url(item.href)}
+                    aria-current={isActive ? 'page' : undefined}
+                    class:list={[
+                      'flex items-center gap-4 rounded-md px-3 py-3 text-lg no-underline transition-colors',
+                      isActive
+                        ? 'bg-border/60 font-medium text-fg'
+                        : 'text-fg/85 hover:bg-border/40 hover:!text-accent',
+                    ]}
                   >
-                    <path d={path} />
-                  </svg>
-                  <span>{item.label}</span>
-                </a>
-              </li>
-            );
-          })
-        }
-      </ul>
-    </nav>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.6"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                      class="h-6 w-6 shrink-0"
+                    >
+                      <path d={path} />
+                    </svg>
+                    <span>{item.label}</span>
+                  </a>
+                </li>
+              );
+            })
+          }
+        </ul>
+      </nav>
+
+      {/* ─── Bio mode — typewriter content for tapped BioIndicators ───
+          The hamburger flips to X when this is open (driven by the same
+          [data-mobile-nav][open] state as nav mode), and the X closes it.
+          Switching from nav→bio (or bio→bio) re-types the new message. */}
+      <div data-mobile-panel-bio class="mx-auto max-w-screen-xl px-6 py-5">
+        <p
+          data-bio-mobile-typer
+          aria-live="polite"
+          class="m-0 min-h-[3rem] text-base leading-snug text-fg/90 opacity-0 transition-opacity duration-200 ease-out motion-reduce:transition-none"
+        />
+      </div>
+    </div>
   </div>
 </header>
 
@@ -252,7 +270,18 @@ const icons: Record<string, string> = {
   [data-mobile-panel].is-open {
     grid-template-rows: 1fr;
   }
-  [data-mobile-panel].is-open ul {
+  /* Two modes share the same panel container — only one is visible
+     at a time, controlled by the parent's data-mode attribute.
+     `nav` is the default (hamburger menu); `bio` swaps in when a
+     BioIndicator on the page is tapped. */
+  [data-mobile-panel][data-mode='bio'] [data-mobile-panel-nav] {
+    display: none;
+  }
+  [data-mobile-panel][data-mode='nav'] [data-mobile-panel-bio] {
+    display: none;
+  }
+  [data-mobile-panel].is-open [data-mobile-panel-nav] ul,
+  [data-mobile-panel].is-open [data-mobile-panel-bio] p {
     opacity: 1;
     transition-delay: 200ms;
   }
@@ -262,6 +291,11 @@ const icons: Record<string, string> = {
   (function () {
     // ─── Autohide on scroll-down, reveal on scroll-up ───
     const nav = document.querySelector('[data-top-nav]');
+    // Queried up here (rather than further down) so the autohide handler
+    // can check `mobileNav.open` and skip hiding the navbar while the
+    // mobile panel is expanded — otherwise scrolling-to-read inside the
+    // bio panel (or just opened nav menu) yanks the whole thing off-screen.
+    const mobileNav = document.querySelector('[data-mobile-nav]');
     if (nav) {
       let lastY = window.scrollY;
       let ticking = false;
@@ -269,6 +303,14 @@ const icons: Record<string, string> = {
 
       function onScroll() {
         const y = window.scrollY;
+        // Skip the autohide entirely while the mobile panel is open in
+        // either mode (nav links or bio typewriter). Track lastY anyway
+        // so we don't fire a false hide the moment the panel closes.
+        if (mobileNav && mobileNav.open) {
+          lastY = y;
+          ticking = false;
+          return;
+        }
         if (y < THRESHOLD) {
           nav.style.transform = '';
         } else if (y > lastY + 4) {
@@ -297,20 +339,140 @@ const icons: Record<string, string> = {
     // The panel lives OUTSIDE <details> (so its `backdrop-filter` isn't
     // isolated by the bar's backdrop root), which means it can't piggyback
     // on the native <details> show/hide. We sync via the `toggle` event.
-    const mobileNav = document.querySelector('[data-mobile-nav]');
+    //
+    // The same panel container hosts TWO modes:
+    //   • `data-mode="nav"` — site nav links (default, hamburger-driven)
+    //   • `data-mode="bio"` — typewriter for a tapped BioIndicator
+    // The hamburger flips to X whenever the panel is open in either mode.
+    // Tapping the X (native <summary> click → details closes) collapses
+    // the panel regardless of which mode it's in.
+    // (mobileNav already declared above for the autohide guard)
     const mobilePanel = document.querySelector('[data-mobile-panel]');
+    const bioTyper = document.querySelector('[data-bio-mobile-typer]');
+    // Bio indicators live in main content, which renders AFTER this script.
+    // Query lazily inside the wireBioIndicators() call, deferred to
+    // DOMContentLoaded so the selector actually finds them.
+    let bioIndicators = [];
+
     if (mobileNav) {
+      const summary = mobileNav.querySelector('summary');
+
       const syncPanel = () => {
         if (mobilePanel) mobilePanel.classList.toggle('is-open', mobileNav.open);
+        // On close, clear the active highlight on every BioIndicator.
+        if (!mobileNav.open) {
+          bioIndicators.forEach((i) => i.setAttribute('data-active', 'false'));
+        }
       };
       mobileNav.addEventListener('toggle', syncPanel);
       syncPanel();
+
+      // Tapping the hamburger summary (native click) toggles the details.
+      // When opening, default to nav mode. (Bio mode is set explicitly
+      // by the BioIndicator click handler below.)
+      if (summary) {
+        summary.addEventListener('click', () => {
+          if (!mobileNav.open && mobilePanel) mobilePanel.dataset.mode = 'nav';
+        });
+      }
+
+      // ─── BioIndicator clicks → open panel in bio mode + type message ───
+      // The mobile sidebar typewriter is hidden, so per-element thoughts
+      // get surfaced through the navbar panel instead. One indicator's
+      // panel at a time; tapping another swaps the message in place.
+      //
+      // Deferred to DOMContentLoaded because bio indicators live in main
+      // content, which renders AFTER this script tag — querying at script
+      // parse time would find an empty list.
+      function wireBioIndicators() {
+        if (!mobilePanel || !bioTyper) return;
+        bioIndicators = Array.from(document.querySelectorAll('[data-bio-indicator]'));
+        if (!bioIndicators.length) return;
+
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        let typingToken = 0;
+
+        function pickRandom(arr) {
+          if (!arr || !arr.length) return null;
+          return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function readMessages(indicator) {
+          try {
+            const parsed = JSON.parse(indicator.getAttribute('data-bio-messages') || '[]');
+            return Array.isArray(parsed) ? parsed : [];
+          } catch (_) {
+            return [];
+          }
+        }
+
+        function sleep(ms) {
+          return new Promise((r) => setTimeout(r, ms));
+        }
+
+        async function typeInto(element, message) {
+          const myToken = ++typingToken;
+          if (reduceMotion) {
+            element.textContent = message;
+            return;
+          }
+          element.textContent = '';
+          let typed = '';
+          for (const ch of message) {
+            if (typingToken !== myToken) return;
+            typed += ch;
+            element.textContent = typed;
+            const isPunct = /[.!?,;:]/.test(ch);
+            await sleep(isPunct ? 140 : 28 + Math.random() * 24);
+          }
+        }
+
+        for (const indicator of bioIndicators) {
+          if (indicator.disabled) continue;
+          indicator.addEventListener('click', (e) => {
+            // Only intercept on mobile — desktop's SideBar script handles
+            // these clicks differently (drives the sidebar typewriter).
+            if (window.matchMedia('(min-width: 1024px)').matches) return;
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            const msg = pickRandom(readMessages(indicator));
+            if (!msg) return;
+
+            const wasOpen = mobileNav.open;
+            mobilePanel.dataset.mode = 'bio';
+            bioIndicators.forEach((i) =>
+              i.setAttribute('data-active', i === indicator ? 'true' : 'false'),
+            );
+            // If the navbar was hidden by the scroll-down autohide
+            // (transform: translateY(-100%)), reveal it — otherwise the
+            // expanded bio panel attaches to an off-screen navbar and
+            // the user sees nothing. Once mobileNav.open flips to true,
+            // the autohide guard above keeps it visible until close.
+            if (nav) nav.style.transform = '';
+            if (!wasOpen) mobileNav.open = true;
+
+            // If the panel was closed, wait for the open animation before
+            // typing so the text isn't visually clipped during expansion.
+            const delay = wasOpen || reduceMotion ? 0 : 280;
+            setTimeout(() => typeInto(bioTyper, msg), delay);
+          });
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', wireBioIndicators);
+      } else {
+        wireBioIndicators();
+      }
 
       document.addEventListener('click', (e) => {
         if (!mobileNav.open) return;
         const insideNav = mobileNav.contains(e.target);
         const insidePanel = mobilePanel && mobilePanel.contains(e.target);
-        if (!insideNav && !insidePanel) {
+        const onBioIndicator = e.target.closest && e.target.closest('[data-bio-indicator]');
+        if (!insideNav && !insidePanel && !onBioIndicator) {
           mobileNav.open = false;
         }
       });
