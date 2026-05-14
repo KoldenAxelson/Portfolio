@@ -48,6 +48,13 @@ This is the single most important file. Everything user-facing reads from it.
    - Email (real, monitored — this is the contact endpoint)
    - **Short bio** (one or two sentences, hero section)
    - **Long bio** (a paragraph, used for `/cv` summary and `Person` schema)
+   - **`resume.pdf`** and **`resume.docx`** — public URLs to downloadable
+     résumé files. Both render as separate "Download PDF" / "Download
+     DOCX" buttons on `/cv`. PDF for human review; DOCX for ATS pipelines
+     that prefer editable formats. Defaults: `/resume.pdf` and
+     `/resume.docx` — drop the actual files in `/public/` (or update
+     paths). Set either to `''` to hide that button; both empty hides
+     the row entirely.
 5. **Social links.** Ask for GitHub, LinkedIn, Twitter/X, Mastodon, Bluesky.
    **Empty string out anything they don't use** — do not invent placeholders.
 6. **Locale.** Default `en-US`. Ask only if they're not in the US.

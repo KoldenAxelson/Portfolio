@@ -27,6 +27,22 @@ export const SITE = {
     /** Longer bio for /cv and JSON-LD. */
     longBio:
       'A few sentences about who you are, what kinds of problems you take on, and what you care about. Be specific. Generic bios get skipped by humans and indexed flatly by AI.',
+    /**
+     * Public links to downloadable résumé files. Renders as one or two
+     * download buttons on /cv. PDF for human review, DOCX for ATS
+     * pipelines (which sometimes prefer editable formats). Recruiters
+     * almost always want a real file rather than a printed-from-browser
+     * version, so even with the print-friendly /cv page it's worth
+     * offering at least one.
+     *
+     * Drop the files in `/public/` (e.g. `/public/resume.pdf`) and
+     * reference them here. Set either to '' (empty string) to hide that
+     * button. If both are empty, no download row renders at all.
+     */
+    resume: {
+      pdf: '/resume.pdf',
+      docx: '/resume.docx',
+    },
   },
 
   /**

@@ -99,21 +99,37 @@ const now = new Date();
 const activeCertificates = certificates.filter(
   (c) => !c.data.expirationDate || c.data.expirationDate > now,
 );
+
+// Per-page toolbar — Print, PDF download, DOCX download. Rendered by
+// TopNav as a center-justified row on lg+; behind the arrow-down-circle
+// button next to the hamburger on mobile.
+const cvTools = [
+  { icon: 'printer', label: 'Print', action: 'print' as const },
+  ...(SITE.author.resume.pdf
+    ? [{ icon: 'pdf', label: 'PDF', href: SITE.author.resume.pdf, download: true }]
+    : []),
+  ...(SITE.author.resume.docx
+    ? [{ icon: 'docx', label: 'DOCX', href: SITE.author.resume.docx, download: true }]
+    : []),
+];
 ---
 
 <BaseLayout
   title="CV"
   description={`Full résumé and work history for ${SITE.author.name}.`}
   schema={schema}
+  tools={cvTools}
 >
   {/* On-screen only: the "CV" page title and the meta-instruction about
-      printing are both hidden in print output. The page leads with the
-      Summary section in print, which is the right thing for a printed CV. */}
+      printing are hidden in print output. The print version leads with
+      the Summary section, which is the right thing for a printed CV.
+      Print / Download PDF / Download DOCX live in TopNav's toolbar
+      (declared via the `tools` prop above). */}
   <header class="mb-8 print:hidden">
     <h1 class="text-3xl font-medium">CV</h1>
     <p class="mt-3 max-w-prose text-muted">
-      Full work history, plain text. Print-friendly — Cmd-P from this page
-      gives you a clean PDF.
+      Full work history, plain text. Use the toolbar above to print or download
+      a PDF / DOCX copy.
     </p>
   </header>
 

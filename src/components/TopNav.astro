@@ -13,34 +13,62 @@
 //      keyboard accessible, works without JS. We add a sliver of JS for
 //      "click outside" and "Escape" to close.
 //
-// Adding a new icon: drop the SVG path into the `icons` map below keyed on
-// the string you put in SITE.nav[i].icon. Use 24×24 viewBox.
+// Adding a new icon: drop the inner SVG content (one or more <path>s, etc.)
+// into the `icons` map below, keyed by the string you put in
+// SITE.nav[i].icon or in a tool item's `icon` field. Use 24×24 viewBox.
 
 import { SITE } from '@config';
 import { url, stripBase } from '@lib/url';
 
+export interface Tool {
+  /** Key in the `icons` map below. */
+  icon: string;
+  /** Visible label (hover-expand on lg+, full row on mobile). */
+  label: string;
+  /** Link target. Mutually exclusive with `action`. */
+  href?: string;
+  /** Native HTML download attribute when href points at a file. */
+  download?: boolean;
+  /** Built-in action. Currently only 'print' is implemented. */
+  action?: 'print';
+}
+
+interface Props {
+  /**
+   * Per-page toolbar items. Renders inline-centered in the navbar bar on
+   * lg+; behind an arrow-down-circle button next to the hamburger on
+   * mobile (opens the panel in 'tools' mode). Empty array = no toolbar.
+   */
+  tools?: Tool[];
+}
+
+const { tools = [] } = Astro.props;
+const hasTools = tools.length > 0;
+
 const currentPath = stripBase(Astro.url.pathname).replace(/\/$/, '') || '/';
 
-// Heroicons 2.0 outline-style SVG paths.
+// Inner SVG content per icon (set:html'd into a 24×24 <svg>). Most are
+// Heroicons 2.0 outline; the file-extension icons (pdf, docx) are custom
+// document outlines with the format label baked in.
 const icons: Record<string, string> = {
-  globe:
-    'M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418',
-  'user-group':
-    'M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z',
-  desktop:
-    'M9 17.25v1.007a3 3 0 0 1-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0 1 15 18.257V17.25m6-12V15a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 15V5.25m18 0A2.25 2.25 0 0 0 18.75 3H5.25A2.25 2.25 0 0 0 3 5.25m18 0V12a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 12V5.25',
-  briefcase:
-    'M20.25 14.15v4.073a2.25 2.25 0 0 1-2.25 2.25h-12a2.25 2.25 0 0 1-2.25-2.25V14.15M16.5 4.5a2.25 2.25 0 0 0-2.25-2.25h-4.5A2.25 2.25 0 0 0 7.5 4.5v.75h9V4.5ZM3 7.5h18v6.75a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V7.5Z',
-  folder:
-    'M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z',
-  newspaper:
-    'M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25M16.5 7.5V18a2.25 2.25 0 0 0 2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 0 0 2.25 2.25h13.5M6 7.5h3v3H6v-3Z',
-  fire:
-    'M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 0 3 2.48ZM12 18a3.75 3.75 0 0 0 .495-7.467 5.99 5.99 0 0 0-1.925 3.546 5.974 5.974 0 0 1-2.133-1.001A3.75 3.75 0 0 0 12 18Z',
-  'academic-cap':
-    'M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5',
-  trophy:
-    'M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 0 1-.982-3.172M9.497 14.25a7.454 7.454 0 0 0 .981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 0 0 7.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 0 0 2.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 0 1 2.916.52 6.003 6.003 0 0 1-5.395 4.972m0 0a6.726 6.726 0 0 1-2.749 1.35m0 0a6.772 6.772 0 0 1-3.044 0',
+  globe: `<path d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418" />`,
+  'user-group': `<path d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />`,
+  desktop: `<path d="M9 17.25v1.007a3 3 0 0 1-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0 1 15 18.257V17.25m6-12V15a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 15V5.25m18 0A2.25 2.25 0 0 0 18.75 3H5.25A2.25 2.25 0 0 0 3 5.25m18 0V12a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 12V5.25" />`,
+  briefcase: `<path d="M20.25 14.15v4.073a2.25 2.25 0 0 1-2.25 2.25h-12a2.25 2.25 0 0 1-2.25-2.25V14.15M16.5 4.5a2.25 2.25 0 0 0-2.25-2.25h-4.5A2.25 2.25 0 0 0 7.5 4.5v.75h9V4.5ZM3 7.5h18v6.75a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V7.5Z" />`,
+  folder: `<path d="M2.25 12.75V12A2.25 2.25 0 0 1 4.5 9.75h15A2.25 2.25 0 0 1 21.75 12v.75m-8.69-6.44-2.12-2.12a1.5 1.5 0 0 0-1.061-.44H4.5A2.25 2.25 0 0 0 2.25 6v12a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9a2.25 2.25 0 0 0-2.25-2.25h-5.379a1.5 1.5 0 0 1-1.06-.44Z" />`,
+  newspaper: `<path d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 0 1-2.25 2.25M16.5 7.5V18a2.25 2.25 0 0 0 2.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 0 0 2.25 2.25h13.5M6 7.5h3v3H6v-3Z" />`,
+  fire: `<path d="M15.362 5.214A8.252 8.252 0 0 1 12 21 8.25 8.25 0 0 1 6.038 7.047 8.287 8.287 0 0 0 9 9.601a8.983 8.983 0 0 1 3.361-6.867 8.21 8.21 0 0 0 3 2.48ZM12 18a3.75 3.75 0 0 0 .495-7.467 5.99 5.99 0 0 0-1.925 3.546 5.974 5.974 0 0 1-2.133-1.001A3.75 3.75 0 0 0 12 18Z" />`,
+  'academic-cap': `<path d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />`,
+  trophy: `<path d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 0 1-.982-3.172M9.497 14.25a7.454 7.454 0 0 0 .981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 0 0 7.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 0 0 2.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 0 1 2.916.52 6.003 6.003 0 0 1-5.395 4.972m0 0a6.726 6.726 0 0 1-2.749 1.35m0 0a6.772 6.772 0 0 1-3.044 0" />`,
+  // ─── Toolbar icons ─────────────────────────────────────────────
+  // Heroicons 2.0 outline · printer
+  printer: `<path d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0 1 10.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0 .229 2.523a1.125 1.125 0 0 1-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0 0 21 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 0 0-1.913-.247M6.34 18H5.25A2.25 2.25 0 0 1 3 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 0 1 1.913-.247m10.5 0a48.536 48.536 0 0 0-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5Zm-3 0h.008v.008H15V10.5Z" />`,
+  // Custom: document outline with folded corner + "PDF" label baked in
+  pdf: `<path d="M14.5 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.5L14.5 3Z" /><path d="M14 3v5.5h5.5" /><text x="11.7" y="17.5" text-anchor="middle" font-size="6" font-weight="700" fill="currentColor" stroke="none" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">PDF</text>`,
+  // Custom: same document outline, "DOC" label
+  docx: `<path d="M14.5 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8.5L14.5 3Z" /><path d="M14 3v5.5h5.5" /><text x="11.7" y="17.5" text-anchor="middle" font-size="6" font-weight="700" fill="currentColor" stroke="none" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">DOC</text>`,
+  // Heroicons 2.0 outline · arrow-down-circle (mobile toolbar trigger)
+  'arrow-down-circle': `<path d="m9 12.75 3 3m0 0 3-3m-3 3v-7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />`,
 };
 ---
 
@@ -48,7 +76,8 @@ const icons: Record<string, string> = {
   data-top-nav
   class="sticky top-0 z-40 w-full transition-transform duration-200 ease-out motion-reduce:transition-none print:hidden"
 >
-  {/*
+  {
+    /*
     Bar wrapper carries the visual chrome (bg + border + backdrop-blur).
     The <header> itself has no backdrop-filter, which is critical: an
     element with backdrop-filter becomes a "backdrop root" that isolates
@@ -57,114 +86,204 @@ const icons: Record<string, string> = {
     a SIBLING of this div, not a descendant) also use backdrop-filter
     against the actual page content rather than an empty isolated layer.
     See: https://drafts.csswg.org/filter-effects-2/#BackdropRoot
-  */}
-  <div class="border-b border-border bg-bg/85 backdrop-blur supports-[backdrop-filter]:bg-bg/70">
+  */
+  }
+  <div
+    class="relative border-b border-border bg-bg/85 backdrop-blur supports-[backdrop-filter]:bg-bg/70"
+  >
     <div class="mx-auto flex max-w-screen-xl items-center justify-between gap-4 px-6 py-3 lg:px-12">
-    <a
-      href={url('/')}
-      class="font-mono text-sm font-medium text-fg no-underline hover:!text-accent"
-    >
-      {SITE.author.name}
-    </a>
+      <a
+        href={url('/')}
+        class="font-mono text-sm font-medium text-fg no-underline hover:!text-accent"
+      >
+        {SITE.author.name}
+      </a>
 
-    <!-- ─── Desktop nav: inline icon row with hover-expand ─── -->
-    <nav aria-label="Site" class="hidden lg:block">
-      <ul class="flex items-center gap-2">
-        {
-          SITE.nav.map((item) => {
-            const isActive =
-              currentPath === item.href || currentPath.startsWith(item.href + '/');
-            const path = icons[item.icon as keyof typeof icons];
-            return (
-              <li>
-                <a
-                  href={url(item.href)}
-                  aria-label={item.label}
-                  aria-current={isActive ? 'page' : undefined}
-                  class:list={[
-                    'group inline-flex items-center rounded-full px-2 py-2 no-underline transition-colors duration-200',
-                    isActive
-                      ? 'bg-border/60 text-fg'
-                      : 'text-muted hover:!text-fg hover:bg-border/40',
-                  ]}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.6"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    aria-hidden="true"
-                    class="h-5 w-5 shrink-0 transition-transform duration-300 ease-out group-hover:scale-110 group-hover:rotate-[-3deg]"
-                  >
-                    <path d={path} />
-                  </svg>
-                  <span
+      {
+        /* ─── Desktop toolbar — center-justified per-page actions ───
+        Absolutely positioned so it stays centered in the bar regardless
+        of the brand or nav widths. Same icon-with-hover-expand-label
+        pattern as the site nav, just keyed to per-page tools instead
+        of global links. */
+      }
+      {
+        hasTools && (
+          <ul class="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-2 lg:flex">
+            {tools.map((tool) => {
+              const isPrint = tool.action === 'print';
+              const linkClass =
+                'group inline-flex items-center rounded-full px-2 py-2 no-underline text-muted transition-colors duration-200 hover:!text-fg hover:bg-border/40';
+              const labelClass =
+                'ml-0 max-w-0 overflow-hidden whitespace-nowrap text-sm opacity-0 transition-all duration-300 ease-out motion-reduce:transition-none group-hover:ml-2 group-hover:max-w-[8rem] group-hover:opacity-100 group-focus-within:ml-2 group-focus-within:max-w-[8rem] group-focus-within:opacity-100';
+              return (
+                <li>
+                  {isPrint ? (
+                    <button
+                      type="button"
+                      onclick="window.print()"
+                      aria-label={tool.label}
+                      class:list={[linkClass, 'border-0 bg-transparent']}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.6"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                        class="h-5 w-5 shrink-0 transition-transform duration-300 ease-out group-hover:rotate-[-3deg] group-hover:scale-110"
+                        set:html={icons[tool.icon as keyof typeof icons]}
+                      />
+                      <span class:list={[labelClass]}>{tool.label}</span>
+                    </button>
+                  ) : (
+                    <a
+                      href={tool.href}
+                      download={tool.download ? '' : undefined}
+                      rel={tool.href && /^https?:/i.test(tool.href) ? 'noopener' : undefined}
+                      aria-label={tool.label}
+                      class:list={[linkClass]}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.6"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                        class="h-5 w-5 shrink-0 transition-transform duration-300 ease-out group-hover:rotate-[-3deg] group-hover:scale-110"
+                        set:html={icons[tool.icon as keyof typeof icons]}
+                      />
+                      <span class:list={[labelClass]}>{tool.label}</span>
+                    </a>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        )
+      }
+
+      <!-- ─── Desktop nav: inline icon row with hover-expand ─── -->
+      <nav aria-label="Site" class="hidden lg:block">
+        <ul class="flex items-center gap-2">
+          {
+            SITE.nav.map((item) => {
+              const isActive = currentPath === item.href || currentPath.startsWith(item.href + '/');
+              return (
+                <li>
+                  <a
+                    href={url(item.href)}
+                    aria-label={item.label}
+                    aria-current={isActive ? 'page' : undefined}
                     class:list={[
-                      'whitespace-nowrap text-sm',
+                      'group inline-flex items-center rounded-full px-2 py-2 no-underline transition-colors duration-200',
                       isActive
-                        ? 'ml-2'
-                        : 'ml-0 max-w-0 overflow-hidden opacity-0 transition-all duration-300 ease-out motion-reduce:transition-none group-hover:ml-2 group-hover:max-w-[8rem] group-hover:opacity-100 group-focus-within:ml-2 group-focus-within:max-w-[8rem] group-focus-within:opacity-100',
+                        ? 'bg-border/60 text-fg'
+                        : 'text-muted hover:bg-border/40 hover:!text-fg',
                     ]}
                   >
-                    {item.label}
-                  </span>
-                </a>
-              </li>
-            );
-          })
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.6"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                      class="h-5 w-5 shrink-0 transition-transform duration-300 ease-out group-hover:rotate-[-3deg] group-hover:scale-110"
+                      set:html={icons[item.icon as keyof typeof icons]}
+                    />
+                    <span
+                      class:list={[
+                        'whitespace-nowrap text-sm',
+                        isActive
+                          ? 'ml-2'
+                          : 'ml-0 max-w-0 overflow-hidden opacity-0 transition-all duration-300 ease-out group-focus-within:ml-2 group-focus-within:max-w-[8rem] group-focus-within:opacity-100 group-hover:ml-2 group-hover:max-w-[8rem] group-hover:opacity-100 motion-reduce:transition-none',
+                      ]}
+                    >
+                      {item.label}
+                    </span>
+                  </a>
+                </li>
+              );
+            })
+          }
+        </ul>
+      </nav>
+
+      {/* ─── Mobile right-side: tools trigger + hamburger ─── */}
+      <div class="flex items-center gap-1 lg:hidden">
+        {
+          hasTools && (
+            <button
+              type="button"
+              data-mobile-tools-trigger
+              aria-label="Open page actions"
+              class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-md text-muted transition-colors hover:bg-border/40 hover:text-fg focus-visible:bg-border/40 focus-visible:text-fg"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+                class="h-7 w-7"
+                set:html={icons['arrow-down-circle']}
+              />
+            </button>
+          )
         }
-      </ul>
-    </nav>
 
-    <!-- ─── Mobile nav: hamburger → header expands ───
-         Tesla-style: tapping the hamburger expands the header bar downward
-         into a full-width panel of large stacked links. The panel is
-         absolutely positioned beneath the header bar (the sticky <header>
-         is its containing block — that's why <details> doesn't carry
-         `relative` here), so it slides under the bar's existing border
-         and matches its background for visual continuity. -->
-    <details data-mobile-nav class="lg:hidden">
-      <summary
-        aria-label="Open menu"
-        class="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-md text-muted transition-colors hover:bg-border/40 hover:text-fg focus-visible:bg-border/40 focus-visible:text-fg"
-      >
-        <span class="sr-only">Menu</span>
-        <svg
-          class="icon-bars h-7 w-7"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.75"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-        </svg>
-        <svg
-          class="icon-close h-7 w-7"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.75"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </summary>
-
-    </details>
+        <!-- Hamburger / X — opens the panel in nav mode (default) -->
+        <details data-mobile-nav>
+          <summary
+            aria-label="Open menu"
+            class="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-md text-muted transition-colors hover:bg-border/40 hover:text-fg focus-visible:bg-border/40 focus-visible:text-fg"
+          >
+            <span class="sr-only">Menu</span>
+            <svg
+              class="icon-bars h-7 w-7"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.75"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"></path>
+            </svg>
+            <svg
+              class="icon-close h-7 w-7"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.75"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </summary>
+        </details>
+      </div>
     </div>
   </div>
 
-  {/*
+  {
+    /*
     Mobile dropdown panel — SIBLING of the bar wrapper (not a descendant),
     so it doesn't inherit the bar's backdrop-root isolation. This is the
     sole reason the panel's `backdrop-filter` actually blurs page content
@@ -177,26 +296,31 @@ const icons: Record<string, string> = {
     (<ul>) fade in with a delay so they don't pop in mid-expansion.
     Visibility is driven by the <details>'s `[open]` state via the
     `.is-open` class toggled by the script at the bottom of this file.
-  */}
+  */
+  }
   <div
     data-mobile-panel
     data-mode="nav"
     class="absolute inset-x-0 top-full z-40 grid grid-rows-[0fr] transition-[grid-template-rows] duration-300 ease-out motion-reduce:transition-none lg:hidden"
   >
-    {/*
+    {
+      /*
       Single overflow container that clips both modes during the
       height transition. The two children (nav vs bio) swap visibility
       via the parent's `data-mode` attribute — see <style> below.
-    */}
-    <div class="overflow-hidden border-b border-border bg-bg/85 backdrop-blur supports-[backdrop-filter]:bg-bg/70">
+    */
+    }
+    <div
+      class="overflow-hidden border-b border-border bg-bg/85 backdrop-blur supports-[backdrop-filter]:bg-bg/70"
+    >
       {/* ─── Nav mode (default) — site navigation links ─── */}
       <nav data-mobile-panel-nav aria-label="Site (mobile)">
-        <ul class="mx-auto flex max-w-screen-xl flex-col gap-1 px-6 py-4 opacity-0 transition-opacity duration-200 ease-out motion-reduce:transition-none">
+        <ul
+          class="mx-auto flex max-w-screen-xl flex-col gap-1 px-6 py-4 opacity-0 transition-opacity duration-200 ease-out motion-reduce:transition-none"
+        >
           {
             SITE.nav.map((item) => {
-              const isActive =
-                currentPath === item.href || currentPath.startsWith(item.href + '/');
-              const path = icons[item.icon as keyof typeof icons];
+              const isActive = currentPath === item.href || currentPath.startsWith(item.href + '/');
               return (
                 <li>
                   <a
@@ -219,9 +343,8 @@ const icons: Record<string, string> = {
                       stroke-linejoin="round"
                       aria-hidden="true"
                       class="h-6 w-6 shrink-0"
-                    >
-                      <path d={path} />
-                    </svg>
+                      set:html={icons[item.icon as keyof typeof icons]}
+                    />
                     <span>{item.label}</span>
                   </a>
                 </li>
@@ -231,17 +354,87 @@ const icons: Record<string, string> = {
         </ul>
       </nav>
 
-      {/* ─── Bio mode — typewriter content for tapped BioIndicators ───
+      {
+        /* ─── Bio mode — typewriter content for tapped BioIndicators ───
           The hamburger flips to X when this is open (driven by the same
           [data-mobile-nav][open] state as nav mode), and the X closes it.
-          Switching from nav→bio (or bio→bio) re-types the new message. */}
+          Switching from nav→bio (or bio→bio) re-types the new message. */
+      }
       <div data-mobile-panel-bio class="mx-auto max-w-screen-xl px-6 py-5">
         <p
           data-bio-mobile-typer
           aria-live="polite"
           class="m-0 min-h-[3rem] text-base leading-snug text-fg/90 opacity-0 transition-opacity duration-200 ease-out motion-reduce:transition-none"
-        />
+        >
+        </p>
       </div>
+
+      {
+        /* ─── Tools mode — per-page action items, opened by the
+          arrow-down-circle button next to the hamburger. */
+      }
+      {
+        hasTools && (
+          <ul
+            data-mobile-panel-tools
+            class="mx-auto flex max-w-screen-xl flex-col gap-1 px-6 py-4 opacity-0 transition-opacity duration-200 ease-out motion-reduce:transition-none"
+          >
+            {tools.map((tool) => {
+              const isPrint = tool.action === 'print';
+              const itemClass =
+                'flex w-full items-center gap-4 rounded-md px-3 py-3 text-lg text-fg/85 no-underline transition-colors hover:bg-border/40 hover:!text-accent';
+              return (
+                <li>
+                  {isPrint ? (
+                    <button
+                      type="button"
+                      onclick="window.print()"
+                      aria-label={tool.label}
+                      class:list={[itemClass, 'border-0 bg-transparent text-left']}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.6"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                        class="h-6 w-6 shrink-0"
+                        set:html={icons[tool.icon as keyof typeof icons]}
+                      />
+                      <span>{tool.label}</span>
+                    </button>
+                  ) : (
+                    <a
+                      href={tool.href}
+                      download={tool.download ? '' : undefined}
+                      rel={tool.href && /^https?:/i.test(tool.href) ? 'noopener' : undefined}
+                      aria-label={tool.label}
+                      class:list={[itemClass]}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.6"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                        class="h-6 w-6 shrink-0"
+                        set:html={icons[tool.icon as keyof typeof icons]}
+                      />
+                      <span>{tool.label}</span>
+                    </a>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        )
+      }
     </div>
   </div>
 </header>
@@ -270,20 +463,40 @@ const icons: Record<string, string> = {
   [data-mobile-panel].is-open {
     grid-template-rows: 1fr;
   }
-  /* Two modes share the same panel container — only one is visible
+  /* Three modes share the same panel container — only one is visible
      at a time, controlled by the parent's data-mode attribute.
      `nav` is the default (hamburger menu); `bio` swaps in when a
-     BioIndicator on the page is tapped. */
-  [data-mobile-panel][data-mode='bio'] [data-mobile-panel-nav] {
+     BioIndicator on the page is tapped; `tools` swaps in when the
+     arrow-down-circle button next to the hamburger is tapped. */
+  [data-mobile-panel-nav],
+  [data-mobile-panel-bio],
+  [data-mobile-panel-tools] {
     display: none;
   }
-  [data-mobile-panel][data-mode='nav'] [data-mobile-panel-bio] {
-    display: none;
+  [data-mobile-panel][data-mode='nav'] [data-mobile-panel-nav],
+  [data-mobile-panel][data-mode='bio'] [data-mobile-panel-bio],
+  [data-mobile-panel][data-mode='tools'] [data-mobile-panel-tools] {
+    display: block;
   }
   [data-mobile-panel].is-open [data-mobile-panel-nav] ul,
-  [data-mobile-panel].is-open [data-mobile-panel-bio] p {
+  [data-mobile-panel].is-open [data-mobile-panel-bio] p,
+  [data-mobile-panel].is-open [data-mobile-panel-tools] {
     opacity: 1;
     transition-delay: 200ms;
+  }
+  /* Tools trigger fades out while the tools panel is open — the
+     hamburger flips to X and is the only close affordance needed.
+     Keeping the slot width (no `display: none`) prevents the X from
+     hopping sideways when the trigger disappears/reappears. */
+  [data-mobile-tools-trigger] {
+    transition:
+      opacity 200ms ease,
+      transform 200ms ease;
+  }
+  [data-mobile-tools-trigger][data-hidden='true'] {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.85);
   }
 </style>
 
@@ -361,9 +574,22 @@ const icons: Record<string, string> = {
 
     if (mobileNav) {
       const summary = mobileNav.querySelector('summary');
+      // Hoisted above syncPanel so the panel-state sync can fade the
+      // trigger in/out without an extra forward declaration.
+      const toolsTrigger = document.querySelector('[data-mobile-tools-trigger]');
+
+      // Fade the arrow-down trigger out while we're showing the tools
+      // panel — the hamburger has already flipped to X and serves as
+      // the close affordance, so a second visible button is noise.
+      const syncToolsTriggerVisibility = () => {
+        if (!toolsTrigger || !mobilePanel) return;
+        const toolsActive = mobileNav.open && mobilePanel.dataset.mode === 'tools';
+        toolsTrigger.dataset.hidden = String(toolsActive);
+      };
 
       const syncPanel = () => {
         if (mobilePanel) mobilePanel.classList.toggle('is-open', mobileNav.open);
+        syncToolsTriggerVisibility();
         // On close, clear the active highlight on every BioIndicator.
         if (!mobileNav.open) {
           bioIndicators.forEach((i) => i.setAttribute('data-active', 'false'));
@@ -380,11 +606,43 @@ const icons: Record<string, string> = {
       syncPanel();
 
       // Tapping the hamburger summary (native click) toggles the details.
-      // When opening, default to nav mode. (Bio mode is set explicitly
-      // by the BioIndicator click handler below.)
+      // When opening, default to nav mode. (Bio and tools modes are set
+      // explicitly by their respective triggers below.)
       if (summary) {
         summary.addEventListener('click', () => {
           if (!mobileNav.open && mobilePanel) mobilePanel.dataset.mode = 'nav';
+        });
+      }
+
+      // ─── Tools trigger (arrow-down-circle, next to hamburger) ─────
+      // Always opens the panel in tools mode. Tapping again while
+      // already in tools mode closes (toggle behavior). The hamburger
+      // X also closes from any mode.
+      //
+      // CRITICAL: stopPropagation is required. The trigger lives OUTSIDE
+      // the <details> element and OUTSIDE the panel, so without it the
+      // document-level click-outside handler below would fire on the same
+      // event, see the click as "outside", and immediately close the
+      // panel we just opened — the panel would never visibly appear.
+      // (toolsTrigger declared above — referenced by syncToolsTriggerVisibility)
+      if (toolsTrigger && mobilePanel) {
+        toolsTrigger.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const alreadyToolsOpen = mobileNav.open && mobilePanel.dataset.mode === 'tools';
+          if (alreadyToolsOpen) {
+            mobileNav.open = false;
+            return;
+          }
+          mobilePanel.dataset.mode = 'tools';
+          if (nav) nav.style.transform = ''; // reveal navbar if autohidden
+          if (!mobileNav.open) {
+            mobileNav.open = true; // toggle event will sync the trigger fade
+          } else {
+            // Panel was already open in nav/bio mode; we just swapped to
+            // tools without changing `open`, so no toggle event fires —
+            // sync the trigger's fade state manually.
+            syncToolsTriggerVisibility();
+          }
         });
       }
 
@@ -458,6 +716,10 @@ const icons: Record<string, string> = {
             bioIndicators.forEach((i) =>
               i.setAttribute('data-active', i === indicator ? 'true' : 'false'),
             );
+            // Mode swap may not be paired with a toggle (if the panel
+            // was already open in tools mode). Manually sync the tools
+            // trigger so it fades back in when leaving tools mode.
+            syncToolsTriggerVisibility();
             // If the navbar was hidden by the scroll-down autohide
             // (transform: translateY(-100%)), reveal it — otherwise the
             // expanded bio panel attaches to an off-screen navbar and

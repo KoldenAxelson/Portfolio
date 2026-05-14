@@ -3,7 +3,7 @@ import { SITE } from '@config';
 import { url } from '@lib/url';
 import SEO from '@components/SEO.astro';
 import SideBar from '@components/SideBar.astro';
-import TopNav from '@components/TopNav.astro';
+import TopNav, { type Tool } from '@components/TopNav.astro';
 import Footer from '@components/Footer.astro';
 import ScrollToTop from '@components/ScrollToTop.astro';
 import '../styles/global.css';
@@ -30,6 +30,12 @@ interface Props {
    * e.g. /network. Ignored when split=true.
    */
   wide?: boolean;
+  /**
+   * Per-page toolbar items rendered in TopNav. Examples on /cv: print,
+   * download PDF, download DOCX. Center-justified on lg+; behind an
+   * arrow-down-circle button next to the hamburger on mobile.
+   */
+  tools?: Tool[];
 }
 
 const {
@@ -44,6 +50,7 @@ const {
   split = false,
   sections,
   wide = false,
+  tools,
 } = Astro.props;
 ---
 
@@ -94,7 +101,7 @@ const {
   >
     <a href="#main" class="skip-link">Skip to content</a>
 
-    <TopNav />
+    <TopNav tools={tools} />
 
     {
       split ? (
