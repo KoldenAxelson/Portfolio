@@ -1,17 +1,31 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseLayout from '@layouts/BaseLayout.astro';
+import FormattedDate from '@components/FormattedDate.astro';
 import { SITE } from '@config';
 import { personId } from '@lib/schema';
 import { experience, education, skills } from '@data/cv';
 
+// Pull every non-draft certificate so we can both render them on this page
+// AND attach them to the Person schema as `hasCredential`. Most-recent first.
+const certificates = (await getCollection('certificates', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.issueDate.valueOf() - a.data.issueDate.valueOf(),
+);
+
 // Build a Person SUPPLEMENT — same @id as the canonical Person emitted by
 // SEO.astro, so JSON-LD parsers merge the two records into a single entity.
 // This block adds the heavy résumé-shaped properties (hasOccupation,
-// alumniOf, knowsAbout) that we don't want on every page.
+// alumniOf, knowsAbout, hasCredential) that we don't want on every page.
 //
 // hasOccupation is the property an AI looking at "what does this person do?"
 // will key off of. Each role becomes an Occupation node with its own date
 // range, so career history is structurally walkable, not buried in prose.
+//
+// hasCredential closes the loop with the /certificates page: each entry is
+// the same EducationalOccupationalCredential @id used there, so an AI graph
+// walking from the Person can follow `hasCredential` to the credentials,
+// and walking from the credentials page can follow `about` back to the
+// Person — without duplicate or conflicting records.
 const schema = [
   {
     '@context': 'https://schema.org',
@@ -37,8 +51,32 @@ const schema = [
       .filter((e) => e.end === 'present')
       .map((e) => ({ '@type': 'Organization', name: e.employer })),
     knowsAbout: Object.values(skills).flat(),
+    ...(certificates.length > 0 && {
+      hasCredential: certificates.map((c) => ({
+        '@type': 'EducationalOccupationalCredential',
+        // Same @id as on /certificates so the two records merge.
+        '@id': new URL(`/certificates#${c.slug}`, SITE.url).toString(),
+        name: c.data.name,
+        credentialCategory: 'Professional Certification',
+        recognizedBy: {
+          '@type': 'Organization',
+          name: c.data.issuer,
+          ...(c.data.issuerUrl && { url: c.data.issuerUrl }),
+        },
+        validFrom: c.data.issueDate.toISOString().slice(0, 10),
+        ...(c.data.expirationDate && {
+          validUntil: c.data.expirationDate.toISOString().slice(0, 10),
+        }),
+        ...(c.data.verifyUrl && { url: c.data.verifyUrl }),
+      })),
+    }),
   },
 ];
+
+const now = new Date();
+const activeCertificates = certificates.filter(
+  (c) => !c.data.expirationDate || c.data.expirationDate > now,
+);
 ---
 
 <BaseLayout
@@ -111,6 +149,40 @@ const schema = [
       }
     </ul>
   </section>
+
+  {
+    activeCertificates.length > 0 && (
+      <section
+        id="certifications"
+        class="mb-10 scroll-mt-24"
+        aria-labelledby="certifications-heading"
+      >
+        <h2 id="certifications-heading" class="mb-4 text-xl font-medium">Certifications</h2>
+        <ul class="space-y-3">
+          {activeCertificates.map((c) => (
+            <li class="print:break-inside-avoid">
+              <p class="font-medium">
+                {c.data.name} · <span class="text-muted">{c.data.issuer}</span>{' '}
+                <span class="font-mono text-xs text-muted">
+                  (<FormattedDate date={c.data.issueDate} />
+                  {c.data.expirationDate && (
+                    <>
+                      {' – '}
+                      <FormattedDate date={c.data.expirationDate} />
+                    </>
+                  )}
+                  )
+                </span>
+              </p>
+              {c.data.skills.length > 0 && (
+                <p class="text-sm text-muted">{c.data.skills.join(' · ')}</p>
+              )}
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
 
   <section id="skills" class="mb-10 scroll-mt-24" aria-labelledby="skills-heading">
     <h2 id="skills-heading" class="mb-4 text-xl font-medium">Skills</h2>

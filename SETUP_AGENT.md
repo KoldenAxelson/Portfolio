@@ -157,7 +157,35 @@ the homepage's recent-articles list. Empty array or omitted = no indicator.
 
 ---
 
-## Phase 5 — Network contacts (`src/content/network/`) — optional
+## Phase 5 — Certifications (`src/content/certificates/`)
+
+**Delete every `example-*.yaml`** in `src/content/certificates/`.
+
+Then for every credential the user holds (or has held — expired ones still
+matter), create a YAML file with:
+
+- `name` — exact title as on the credential
+- `issuer` — issuing organization (AWS, HashiCorp, Coursera, etc.)
+- `issuerUrl` — issuer's homepage (improves AI entity resolution)
+- `issueDate` — ISO date when awarded (`YYYY-MM-DD`)
+- `expirationDate` — only if applicable; omit for perpetual credentials
+- `credentialId` — public ID/serial if the issuer provides one
+- `verifyUrl` — public verification page (recruiters click this)
+- `description` — one line on what the credential covers
+- `skills` — 3–6 competency tags
+- `featured: true` — to surface on the homepage Certificates strip
+- `thoughts` — 1–3 personal asides for the homepage typewriter
+
+If the user has nothing yet, leave `src/content/certificates/` empty — the
+homepage section and `/cv#certifications` will silently skip. The
+`/certificates` page will display a stub message.
+
+If the user doesn't want a Certificates page at all, also remove the `Certs`
+entry from `nav` in `src/config.ts` and delete `src/pages/certificates.astro`.
+
+---
+
+## Phase 6 — Network contacts (`src/content/network/`) — optional
 
 **Delete every `example-*.yaml`** in `src/content/network/`.
 
@@ -176,7 +204,7 @@ If they DO want it, ask for 4–10 entries and push for specificity in
 
 ---
 
-## Phase 6 — `/uses` and `/now`
+## Phase 7 — `/uses` and `/now`
 
 These are short, opinionated pages.
 
@@ -188,7 +216,7 @@ These are short, opinionated pages.
 
 ---
 
-## Phase 7 — `humans.txt`, favicon, OG image
+## Phase 8 — `humans.txt`, favicon, OG image
 
 - **`public/humans.txt`** — small credit page for the curious. Edit to
   reflect the user's name, role, and any thanks they want to include.
@@ -201,7 +229,7 @@ These are short, opinionated pages.
 
 ---
 
-## Phase 8 — Deployment
+## Phase 9 — Deployment
 
 Ask: **GitHub Pages or Cloudflare Pages?**
 
@@ -219,7 +247,7 @@ final URL — canonicals, JSON-LD, sitemap, llms.txt all derive from it.
 
 ---
 
-## Phase 9 — Verification (do not skip)
+## Phase 10 — Verification (do not skip)
 
 Run these and surface results to the user:
 
@@ -249,7 +277,7 @@ all four scores are ≥ 90/100/100/100.
 
 ---
 
-## Phase 10 — Final hand-off checklist
+## Phase 11 — Final hand-off checklist
 
 Confirm with the user, point by point:
 

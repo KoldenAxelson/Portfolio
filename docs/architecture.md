@@ -61,6 +61,7 @@ neofolio/
 | `/articles` | `src/pages/articles/index.astro` |
 | `/articles/[slug]` | `src/pages/articles/[slug].astro` |
 | `/cv` | `src/pages/cv.astro` |
+| `/certificates` | `src/pages/certificates.astro` |
 | `/uses` | `src/pages/uses.astro` |
 | `/now` | `src/pages/now.astro` |
 | `/network` | `src/pages/network.astro` |
@@ -79,10 +80,11 @@ All schemas in `src/content/config.ts` (zod, validated at build).
 
 | Collection | Type | Required | Optional |
 |---|---|---|---|
-| `projects` | content | title, tier, summary, year | tags, stack, role, status, links, metric, cover, featured, draft |
-| `posts` | content | title, description, pubDate | updatedDate, tags, cover, canonical, draft |
+| `projects` | content | title, tier, summary, year | tags, stack, role, status, links, metric, cover, thoughts, featured, draft |
+| `posts` | content | title, description, pubDate | updatedDate, tags, cover, canonical, thoughts, draft |
 | `archive` | content | title, year, reason, postmortem | stack |
 | `network` | data | name, title, blurb, relationship | company, link, order |
+| `certificates` | data | name, issuer, issueDate | issuerUrl, expirationDate, credentialId, verifyUrl, badge, description, skills, thoughts, featured, draft |
 
 ## Components
 

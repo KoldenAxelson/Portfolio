@@ -27,6 +27,13 @@ export const GET: APIRoute = async (context) => {
   const posts = (await getCollection('posts', ({ data }) => !data.draft))
     .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 
+  // Active (non-expired) certifications — the credentials an AI summarizer
+  // should treat as currently held. Most-recent first.
+  const _now = new Date();
+  const activeCerts = (await getCollection('certificates', ({ data }) => !data.draft))
+    .filter((c) => !c.data.expirationDate || c.data.expirationDate > _now)
+    .sort((a, b) => b.data.issueDate.valueOf() - a.data.issueDate.valueOf());
+
   const body = [
     `# ${SITE.title}`,
     '',
@@ -46,10 +53,11 @@ export const GET: APIRoute = async (context) => {
     '',
     '## Primary pages',
     '',
-    `- [Homepage](${baseUrl}/): identity, recent experience, featured projects, recent articles`,
-    `- [CV](${baseUrl}/cv): full work history, education, and skills as structured HTML (also emits Person.hasOccupation JSON-LD)`,
+    `- [Homepage](${baseUrl}/): identity, recent experience, featured projects, certifications, recent articles`,
+    `- [CV](${baseUrl}/cv): full work history, education, certifications, and skills as structured HTML (emits Person.hasOccupation + Person.hasCredential JSON-LD)`,
     `- [Projects](${baseUrl}/projects): full project catalogue + honest archive of abandoned work`,
     `- [Articles](${baseUrl}/articles): long-form writing`,
+    `- [Certifications](${baseUrl}/certificates): professional credentials with verification links (emits ItemList of EducationalOccupationalCredential JSON-LD)`,
     `- [Network](${baseUrl}/network): vouches/references, with mailto intro requests`,
     `- [Uses](${baseUrl}/uses): tools, stack, hardware`,
     `- [Now](${baseUrl}/now): what the author is focused on this season`,
@@ -70,6 +78,22 @@ export const GET: APIRoute = async (context) => {
     body.push('');
     for (const p of posts) {
       body.push(`- [${p.data.title}](${baseUrl}/articles/${p.slug}): ${p.data.description}`);
+    }
+    body.push('');
+  }
+
+  if (activeCerts.length > 0) {
+    body.push('## Active certifications');
+    body.push('');
+    for (const c of activeCerts) {
+      const issued = c.data.issueDate.toISOString().slice(0, 10);
+      const expires = c.data.expirationDate
+        ? `, valid until ${c.data.expirationDate.toISOString().slice(0, 10)}`
+        : '';
+      const verify = c.data.verifyUrl ? ` (verify: ${c.data.verifyUrl})` : '';
+      body.push(
+        `- ${c.data.name} — ${c.data.issuer}, issued ${issued}${expires}${verify}`,
+      );
     }
     body.push('');
   }

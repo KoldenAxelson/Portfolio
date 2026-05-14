@@ -1,0 +1,17 @@
+name: 'Google Cloud Professional Cloud Architect'
+issuer: 'Google Cloud'
+issuerUrl: 'https://cloud.google.com/learn/certification/cloud-architect'
+issueDate: 2023-11-30
+expirationDate: 2025-11-30
+credentialId: 'GCP-PCA-EXAMPLE'
+verifyUrl: 'https://www.credential.net/example-gcp-pca'
+description: 'Designs and manages secure, scalable Google Cloud solutions across compute, networking, data, and IAM.'
+skills:
+  - GCP IAM + service accounts
+  - VPC peering + Shared VPC
+  - GKE production patterns
+  - BigQuery cost control
+  - Multi-cloud architecture
+featured: false
+thoughts:
+  - "Letting this one lapse — work moved off GCP last year. Honest CV beats one with a dead cert at the top."

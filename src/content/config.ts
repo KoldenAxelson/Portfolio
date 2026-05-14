@@ -1,8 +1,9 @@
 // ---------------------------------------------------------------------------
-// Astro Content Collections — typed schemas for projects, posts, archive
+// Astro Content Collections — typed schemas for projects, posts, archive,
+// network, and certificates.
 //
-// Drop new MDX/MD files into the matching subfolder and they'll show up
-// automatically. Schemas are zod-validated at build time.
+// Drop new MDX/MD/YAML files into the matching subfolder and they'll show
+// up automatically. Schemas are zod-validated at build time.
 // ---------------------------------------------------------------------------
 
 import { defineCollection, z } from 'astro:content';
@@ -114,4 +115,56 @@ const network = defineCollection({
   }),
 });
 
-export const collections = { projects, posts, archive, network };
+/**
+ * Certificates / professional credentials.
+ *
+ * Each entry is emitted as a schema.org `EducationalOccupationalCredential`
+ * on the /certificates page (as items in an `ItemList`) AND as an entry in
+ * `Person.hasCredential` on /cv — so an AI walking your CV's structured
+ * data can reach the credential, and an AI walking the credentials page
+ * can resolve back to you via the `recognizedBy` Organization graph.
+ *
+ * One YAML file per certificate. Sort order on the page is by issueDate
+ * descending (most recent first).
+ */
+const certificates = defineCollection({
+  type: 'data',
+  schema: z.object({
+    /** Full credential name as it appears on the issued certificate. */
+    name: z.string(),
+    /** Issuing organization — e.g. "Amazon Web Services", "HashiCorp", "Google". */
+    issuer: z.string(),
+    /** Issuer's homepage. Used in the JSON-LD Organization for entity resolution. */
+    issuerUrl: z.string().url().optional(),
+    /** Date the credential was awarded (ISO date in YAML — e.g. 2025-04-15). */
+    issueDate: z.coerce.date(),
+    /** Optional expiration date. Omit for credentials that don't expire. */
+    expirationDate: z.coerce.date().optional(),
+    /** Credential ID / serial number, if the issuer provides one. */
+    credentialId: z.string().optional(),
+    /** Public verification URL. Recruiter clicks this to confirm authenticity. */
+    verifyUrl: z.string().url().optional(),
+    /** Path to badge image, relative to /public. Optional. */
+    badge: z.string().optional(),
+    /** One-line description of what the credential covers. Optional. */
+    description: z.string().optional(),
+    /**
+     * Skills / competencies this credential demonstrates. Emitted as
+     * `competencyRequired` on the credential schema and as a small text
+     * list on the card. 3–6 items reads cleanly.
+     */
+    skills: z.array(z.string()).default([]),
+    /**
+     * Personal asides for the homepage typewriter — surfaced when this
+     * certificate's BioIndicator is the active one. Voice should be human,
+     * off-resume. One to three sentences each. Add 1–3 entries.
+     * Empty array = no indicator on this card.
+     */
+    thoughts: z.array(z.string()).default([]),
+    /** If true, shown on the homepage Certificates section. */
+    featured: z.boolean().default(false),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { projects, posts, archive, network, certificates };
