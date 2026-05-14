@@ -163,53 +163,63 @@ const icons: Record<string, string> = {
     so it doesn't inherit the bar's backdrop-root isolation. This is the
     sole reason the panel's `backdrop-filter` actually blurs page content
     instead of an empty layer. See the bar wrapper's comment above.
-    Visibility is driven by the <details>'s `[open]` state via the script
-    at the bottom of this file (a `.show` class, JS-toggled).
+
+    Animation: the outer <div> uses the `grid-template-rows: 0fr → 1fr`
+    trick to transition the panel's height to its natural content size
+    without any JS measurement. The inner <nav> needs `overflow: hidden`
+    so the content is clipped while the row is collapsed. The items
+    (<ul>) fade in with a delay so they don't pop in mid-expansion.
+    Visibility is driven by the <details>'s `[open]` state via the
+    `.is-open` class toggled by the script at the bottom of this file.
   */}
-  <nav
+  <div
     data-mobile-panel
-    aria-label="Site (mobile)"
-    class="absolute inset-x-0 top-full z-40 hidden border-b border-border bg-bg/85 backdrop-blur supports-[backdrop-filter]:bg-bg/70 lg:hidden"
+    class="absolute inset-x-0 top-full z-40 grid grid-rows-[0fr] transition-[grid-template-rows] duration-300 ease-out motion-reduce:transition-none lg:hidden"
   >
-    <ul class="mx-auto flex max-w-screen-xl flex-col gap-1 px-6 py-4">
-      {
-        SITE.nav.map((item) => {
-          const isActive =
-            currentPath === item.href || currentPath.startsWith(item.href + '/');
-          const path = icons[item.icon as keyof typeof icons];
-          return (
-            <li>
-              <a
-                href={url(item.href)}
-                aria-current={isActive ? 'page' : undefined}
-                class:list={[
-                  'flex items-center gap-4 rounded-md px-3 py-3 text-lg no-underline transition-colors',
-                  isActive
-                    ? 'bg-border/60 font-medium text-fg'
-                    : 'text-fg/85 hover:bg-border/40 hover:!text-accent',
-                ]}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.6"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  aria-hidden="true"
-                  class="h-6 w-6 shrink-0"
+    <nav
+      aria-label="Site (mobile)"
+      class="overflow-hidden border-b border-border bg-bg/85 backdrop-blur supports-[backdrop-filter]:bg-bg/70"
+    >
+      <ul class="mx-auto flex max-w-screen-xl flex-col gap-1 px-6 py-4 opacity-0 transition-opacity duration-200 ease-out motion-reduce:transition-none">
+        {
+          SITE.nav.map((item) => {
+            const isActive =
+              currentPath === item.href || currentPath.startsWith(item.href + '/');
+            const path = icons[item.icon as keyof typeof icons];
+            return (
+              <li>
+                <a
+                  href={url(item.href)}
+                  aria-current={isActive ? 'page' : undefined}
+                  class:list={[
+                    'flex items-center gap-4 rounded-md px-3 py-3 text-lg no-underline transition-colors',
+                    isActive
+                      ? 'bg-border/60 font-medium text-fg'
+                      : 'text-fg/85 hover:bg-border/40 hover:!text-accent',
+                  ]}
                 >
-                  <path d={path} />
-                </svg>
-                <span>{item.label}</span>
-              </a>
-            </li>
-          );
-        })
-      }
-    </ul>
-  </nav>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                    class="h-6 w-6 shrink-0"
+                  >
+                    <path d={path} />
+                  </svg>
+                  <span>{item.label}</span>
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </nav>
+  </div>
 </header>
 
 <!-- Icon swap based on open state. Pure CSS, no JS. -->
@@ -226,12 +236,19 @@ const icons: Record<string, string> = {
   [data-mobile-nav]:not([open]) .icon-close {
     display: none;
   }
-  /* Mobile dropdown panel visibility — driven by the JS toggle below
-     instead of a `:has()` selector, so older browsers that lack `:has()`
-     still get the menu (the JS path runs in any modern browser that
-     supports <details>, which is universal). */
+  /* Mobile dropdown panel — animated by JS toggling `.is-open` (instead
+     of `:has()`) so older browsers without `:has()` still get the menu
+     reliably. The panel's height transitions via the grid-rows trick:
+     the outer wrapper is a 1-row grid, with the row interpolating from
+     0fr to 1fr. Items fade in with a delay only on opening so the panel
+     finishes expanding before the labels appear; on closing the items
+     fade out simultaneously with the collapse for snappier dismissal. */
   [data-mobile-panel].is-open {
-    display: block;
+    grid-template-rows: 1fr;
+  }
+  [data-mobile-panel].is-open ul {
+    opacity: 1;
+    transition-delay: 200ms;
   }
 </style>
 
