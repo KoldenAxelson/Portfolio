@@ -4,8 +4,10 @@ dist/
 .astro-stale-*/
 .output/
 
-# build input
-badges/
+# build input — staging folder for `make badges` at the project root.
+# Leading slash anchors the rule so it doesn't also match `public/badges/`,
+# which is the FINAL processed location and MUST be committed.
+/badges/
 
 # dependencies
 node_modules/
