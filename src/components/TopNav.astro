@@ -353,6 +353,11 @@ const icons: Record<string, string> = {
     // Query lazily inside the wireBioIndicators() call, deferred to
     // DOMContentLoaded so the selector actually finds them.
     let bioIndicators = [];
+    // Hoisted to the IIFE scope so syncPanel can bump it on close — that
+    // cancels any in-flight typing, otherwise it'd keep writing into the
+    // typer after dismissal and a stale message would re-appear briefly
+    // when the next indicator was tapped.
+    let bioTypingToken = 0;
 
     if (mobileNav) {
       const summary = mobileNav.querySelector('summary');
@@ -362,6 +367,13 @@ const icons: Record<string, string> = {
         // On close, clear the active highlight on every BioIndicator.
         if (!mobileNav.open) {
           bioIndicators.forEach((i) => i.setAttribute('data-active', 'false'));
+          // Wipe leftover bio context so the next open starts clean —
+          // bumping the token cancels any still-typing animation, and
+          // clearing textContent removes a fully-typed message that
+          // would otherwise flash for ~280ms before the new typing
+          // catches up to the panel-open animation.
+          bioTypingToken += 1;
+          if (bioTyper) bioTyper.textContent = '';
         }
       };
       mobileNav.addEventListener('toggle', syncPanel);
@@ -390,7 +402,6 @@ const icons: Record<string, string> = {
         if (!bioIndicators.length) return;
 
         const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        let typingToken = 0;
 
         function pickRandom(arr) {
           if (!arr || !arr.length) return null;
@@ -411,7 +422,9 @@ const icons: Record<string, string> = {
         }
 
         async function typeInto(element, message) {
-          const myToken = ++typingToken;
+          // Token lives at the IIFE scope (bioTypingToken) so syncPanel can
+          // bump it on dismiss to cancel any in-flight typing.
+          const myToken = ++bioTypingToken;
           if (reduceMotion) {
             element.textContent = message;
             return;
@@ -419,7 +432,7 @@ const icons: Record<string, string> = {
           element.textContent = '';
           let typed = '';
           for (const ch of message) {
-            if (typingToken !== myToken) return;
+            if (bioTypingToken !== myToken) return;
             typed += ch;
             element.textContent = typed;
             const isPunct = /[.!?,;:]/.test(ch);
