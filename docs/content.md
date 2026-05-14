@@ -116,11 +116,11 @@ Body unused. Appears in `/projects#archive`.
 
 ## `thoughts` — personal asides for the homepage typewriter
 
-Optional `thoughts: string[]` on **roles** (`src/data/cv.ts`), **projects**, and **articles**. Each entry is a one- to three-sentence personal aside in your own voice — off-resume, the kind of thing you'd say in person but not put in a bullet point. The homepage renders a small chat-bubble indicator next to every element that has thoughts; clicking it types one of those thoughts into the sidebar typewriter, scrolling into the section types a random thought from a random element. Empty array (or omitted) = no indicator on that element.
+Optional `thoughts: string[]` on **roles** (`src/data/cv.ts`), **projects**, and **articles**. Each entry is a one- to three-sentence personal aside in your own voice — off-resume, the kind of thing you'd say in person but not put in a bullet point. The homepage renders a small chat-bubble indicator next to every element; elements with thoughts get an interactive (accent-colored on hover) indicator, elements without get a faded disabled one. Clicking an enabled indicator types one of its thoughts into the sidebar typewriter; scrolling into a section types a random thought from a random element with thoughts in that section.
 
 Aim for 1–3 thoughts per element. The pool is sampled at random, so two are enough for variety.
 
-The About section's single indicator pulls from `SITE.bioMessages.about` in `src/config.ts` (the only `bioMessages` key still in use — the others are no longer read).
+The About section has no indicator — the sidebar shows the static `author.bio` from `src/config.ts` while you're scrolled there.
 
 ## Drafts
 

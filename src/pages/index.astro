@@ -62,10 +62,9 @@ const recentPosts = (await getCollection('posts', ({ data }) => !data.draft))
         stops being true.
       </p>
     </div>
-    {/* About has a single element, so one indicator at the bottom-right. */}
-    <div class="mt-8 flex justify-end">
-      <BioIndicator messages={SITE.bioMessages?.about ?? []} label="About" />
-    </div>
+    {/* No indicator here: the About section is already deeply personal —
+        the sidebar restores the static `SITE.author.bio` while you're
+        viewing it, instead of typing a thought-of-the-day. */}
   </section>
 
   <!-- EXPERIENCE -->

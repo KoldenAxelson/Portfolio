@@ -30,27 +30,15 @@ export const SITE = {
   },
 
   /**
-   * Human asides for the sidebar typewriter.
-   *
-   * Only `about` is read here — it powers the single indicator on the
-   * About section (which has just one element). Per-element thoughts for
-   * Experience / Projects / Articles live colocated with the data:
+   * Per-element typewriter thoughts live colocated with the data they're
+   * about — so this config object doesn't carry them:
    *   • Roles    → `thoughts: string[]` in src/data/cv.ts
    *   • Projects → `thoughts: string[]` in each MDX frontmatter
    *   • Articles → `thoughts: string[]` in each MDX frontmatter
    *
-   * AI scrapers index the formal `bio` and `longBio` above; these asides
-   * are purely for human visitors. Keep them short (one to three sentences),
-   * specific, and in a voice that isn't on your résumé. Two or three
-   * messages is plenty — the pool is sampled at random.
+   * The About section has no indicator — the sidebar shows the static
+   * `author.bio` above when you're scrolled there.
    */
-  bioMessages: {
-    about: [
-      "Real bio's in the metadata. This corner is where I'm allowed to be a person.",
-      'Coffee number three is reading this. Probably finding a typo. Coffee four will fix it.',
-      'If you scrolled here from search, hi. Stay a minute. The footer has the good links.',
-    ],
-  } as Record<string, readonly string[]>,
 
   /** Outbound social / professional links. Remove any you don't want shown. */
   links: {

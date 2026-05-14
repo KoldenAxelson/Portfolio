@@ -116,6 +116,19 @@ const { sections = [] } = Astro.props;
         let activeIndicator = null;
         let typingToken = 0;
 
+        // Capture the static bio text rendered server-side. This is what we
+        // restore when the user scrolls into a section that has no
+        // indicators (e.g. About) — the "neutral state" of the typewriter.
+        function getInitialBio() {
+          if (!bioEl) return '';
+          let s = '';
+          for (const node of bioEl.childNodes) {
+            if (node !== cursorEl && node.nodeType === Node.TEXT_NODE) s += node.textContent;
+          }
+          return s;
+        }
+        const defaultBio = getInitialBio();
+
         function sleep(ms) {
           return new Promise((r) => setTimeout(r, ms));
         }
@@ -218,6 +231,16 @@ const { sections = [] } = Astro.props;
           typeMessage(msg);
         }
 
+        // Restore the typewriter to its neutral state — the static bio that
+        // was rendered server-side. Animated through the same typeMessage
+        // path so it backspaces whatever thought was up and types the bio
+        // back in. typeMessage bumps typingToken itself, which cancels any
+        // in-flight typing from a previous section.
+        function restoreDefault() {
+          setIndicatorActive(null);
+          if (defaultBio) typeMessage(defaultBio);
+        }
+
         // Clicking an indicator types one of ITS messages and highlights it.
         for (const indicator of indicators) {
           indicator.addEventListener('click', () => driveFrom(indicator));
@@ -226,14 +249,20 @@ const { sections = [] } = Astro.props;
         // Scroll-into-section: pick a random indicator within that section
         // and drive the typewriter from it. Section nav highlight tracks
         // section change separately so it always reflects the user's
-        // scroll position even if there are no indicators in that section.
+        // scroll position. If a section has no indicators (e.g. About),
+        // restore the static default bio rather than leaving whatever
+        // thought was last typed for the previous section.
         function onSectionEnter(id) {
           if (id === currentSection) return;
           currentSection = id;
           setSectionActive(id);
           const pool = sectionIdToIndicators.get(id);
           const pick = pickRandom(pool);
-          if (pick) driveFrom(pick);
+          if (pick) {
+            driveFrom(pick);
+          } else {
+            restoreDefault();
+          }
         }
 
         const observer = new IntersectionObserver(

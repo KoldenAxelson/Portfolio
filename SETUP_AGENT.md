@@ -59,27 +59,7 @@ Articles / Network / Uses / CV`. Some users skip Network or Uses; ask.
 
 ---
 
-## Phase 2 — About-section asides (`src/config.ts` `bioMessages.about`)
-
-The About section has a single chat-bubble indicator on the homepage that
-types one of these asides into the sidebar. Asides for Experience /
-Projects / Articles live PER-ELEMENT (covered in later phases) — not here.
-
-Ask the user for **2–3 short messages about themselves** (one to three
-sentences each). These are not a résumé bio — they're personality:
-
-- "What's something true about how you work that wouldn't go on a résumé?"
-- "What's the weird thing about your taste in tools?"
-- "What's the line you say to recruiters who reach the bottom of the page?"
-
-If they say "I don't know, just keep the defaults" — push back gently once.
-The defaults are obviously fake. If they still don't want to write, leave
-`bioMessages.about` empty (`[]`) and the indicator will self-hide. Do not
-ship the example messages.
-
----
-
-## Phase 3 — Work history (`src/data/cv.ts`)
+## Phase 2 — Work history (`src/data/cv.ts`)
 
 This file is the single source of truth for the CV page AND the homepage
 experience block. It also drives the `Person.hasOccupation` JSON-LD on /cv.
@@ -116,7 +96,7 @@ Do not also edit `src/pages/cv.astro` or `src/pages/index.astro`.
 
 ---
 
-## Phase 4 — Projects (`src/content/projects/`)
+## Phase 3 — Projects (`src/content/projects/`)
 
 **Delete every `example-*` file** in `src/content/projects/` and
 `src/content/archive/` first. Same for `public/covers/example-*`.
@@ -152,7 +132,7 @@ or omitted = no indicator on that card.
 
 ---
 
-## Phase 5 — Articles (`src/content/posts/`)
+## Phase 4 — Articles (`src/content/posts/`)
 
 **Delete every `example-*` and the placeholder `welcome-to-neofolio` post.**
 
@@ -177,7 +157,7 @@ the homepage's recent-articles list. Empty array or omitted = no indicator.
 
 ---
 
-## Phase 6 — Network contacts (`src/content/network/`) — optional
+## Phase 5 — Network contacts (`src/content/network/`) — optional
 
 **Delete every `example-*.yaml`** in `src/content/network/`.
 
@@ -196,7 +176,7 @@ If they DO want it, ask for 4–10 entries and push for specificity in
 
 ---
 
-## Phase 7 — `/uses` and `/now`
+## Phase 6 — `/uses` and `/now`
 
 These are short, opinionated pages.
 
@@ -208,7 +188,7 @@ These are short, opinionated pages.
 
 ---
 
-## Phase 8 — `humans.txt`, favicon, OG image
+## Phase 7 — `humans.txt`, favicon, OG image
 
 - **`public/humans.txt`** — small credit page for the curious. Edit to
   reflect the user's name, role, and any thanks they want to include.
@@ -221,7 +201,7 @@ These are short, opinionated pages.
 
 ---
 
-## Phase 9 — Deployment
+## Phase 8 — Deployment
 
 Ask: **GitHub Pages or Cloudflare Pages?**
 
@@ -239,7 +219,7 @@ final URL — canonicals, JSON-LD, sitemap, llms.txt all derive from it.
 
 ---
 
-## Phase 10 — Verification (do not skip)
+## Phase 9 — Verification (do not skip)
 
 Run these and surface results to the user:
 
@@ -269,7 +249,7 @@ all four scores are ≥ 90/100/100/100.
 
 ---
 
-## Phase 11 — Final hand-off checklist
+## Phase 10 — Final hand-off checklist
 
 Confirm with the user, point by point:
 
