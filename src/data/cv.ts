@@ -34,6 +34,13 @@ export interface Role {
   stack: string[];
   /** Salary range string for hasOccupation.estimatedSalary. Optional. */
   estimatedSalary?: string;
+  /**
+   * Personal asides for the homepage typewriter — surfaced when this role's
+   * BioIndicator is the active one. Voice should be human, off-resume.
+   * Keep each entry to one to three sentences. Add 1–3 per role.
+   * Omit (or empty array) to skip the indicator on this role.
+   */
+  thoughts?: string[];
 }
 
 export interface Degree {
@@ -67,6 +74,11 @@ export const experience: Role[] = [
       'Designed the schema-registry contract-test pattern used across 14 services.',
     ],
     stack: ['Go', 'Kafka', 'Postgres', 'AWS', 'Terraform'],
+    thoughts: [
+      "The 12M req/day number is real, but it'd be more honest as 12M-and-occasionally-7M. Seasonal traffic.",
+      "Hiring four people in nine months is what aged me, not the failover system.",
+      "The on-call playbook started as a Google Doc I wrote at 3am during my first incident here.",
+    ],
   },
   {
     role: 'Senior Software Engineer',
@@ -83,6 +95,10 @@ export const experience: Role[] = [
       'Mentored two junior engineers through their first production incident postmortems.',
     ],
     stack: ['Go', 'TypeScript', 'Postgres'],
+    thoughts: [
+      "I learned more from those mentee postmortems than they did. They asked the questions I'd stopped asking.",
+      "Event-replay was the project where I finally understood what 'idempotent' really means in production.",
+    ],
   },
   {
     role: 'Software Engineer',
@@ -100,6 +116,10 @@ export const experience: Role[] = [
       'Reduced incident MTTR from 47min to 14min across the team after introducing the incident-response bot.',
     ],
     stack: ['Python', 'Postgres', 'Redis', 'Terraform'],
+    thoughts: [
+      "The 3× throughput rewrite was a one-night thing that I spent six weeks reviewing before merging. Worth it.",
+      "We had a cake when MTTR crossed under 20 minutes. We did not have a cake when it crossed under 14.",
+    ],
   },
   {
     role: 'Systems Engineer (Cleared)',
@@ -117,6 +137,10 @@ export const experience: Role[] = [
       'Cleared for work in environments where bugs have downstream consequences far beyond the system.',
     ],
     stack: ['Details on request'],
+    thoughts: [
+      "Four years without a phone notification rewires you. I still flinch when something dings at the wrong time.",
+      "I can talk about systems design from this era. I cannot talk about much else. The line is bright and I respect it.",
+    ],
   },
 ];
 

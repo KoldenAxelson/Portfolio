@@ -1,0 +1,68 @@
+---
+// BioIndicator — small chat-bubble button placed next to a single homepage
+// element (a role, a project card, an article entry, or the About block).
+// Carries that element's `thoughts` array; clicking the button drives the
+// SideBar typewriter to type one of those thoughts and highlights this
+// indicator. As you scroll through a section, the script picks a random
+// indicator inside that section and triggers it the same way.
+//
+// Render this ONLY on the homepage. The SideBar typewriter is gated behind
+// `<BaseLayout split>` (homepage-only) — indicators on other pages would
+// have nothing to drive. The button is CSS-hidden on `<lg` viewports where
+// the typewriter doesn't run at all.
+//
+// Empty `messages` array → the button is rendered DISABLED and faded
+// (cursor: not-allowed, no hover effect, excluded from scroll-picking).
+// This keeps every element's bottom-right corner visually consistent;
+// recruiters see at a glance which elements have a personal note attached
+// and which don't.
+//
+// Wiring contract (consumed by SideBar.astro's inline script):
+//   • data-bio-indicator              — marker attribute
+//   • data-bio-messages='["...","…"]' — JSON-encoded thoughts pool
+//   • data-active="true"|"false"      — set by the script when active
+//   • disabled                        — set on empty pools; script skips it
+
+interface Props {
+  /** The pool of thoughts to type when this indicator fires. */
+  messages: readonly string[];
+  /** Human-readable name used for the aria-label (e.g. "About", "pgwatch"). */
+  label: string;
+}
+
+const { messages, label } = Astro.props;
+const hasMessages = messages.length > 0;
+---
+
+<button
+  type="button"
+  data-bio-indicator
+  data-bio-messages={JSON.stringify(messages)}
+  disabled={!hasMessages}
+  aria-label={
+    hasMessages
+      ? `Show a personal note about ${label}`
+      : `No personal note attached to ${label}`
+  }
+  title={
+    hasMessages
+      ? `Show a personal note about ${label}`
+      : `No personal note attached to ${label}`
+  }
+  class="group/bio hidden h-8 w-8 shrink-0 items-center justify-center rounded-full text-muted transition-colors hover:!text-accent focus-visible:!text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 data-[active=true]:!text-accent disabled:cursor-not-allowed disabled:!text-fg/20 disabled:hover:!text-fg/20 lg:inline-flex"
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    aria-hidden="true"
+    class="h-5 w-5 transition-transform duration-200 ease-out group-hover/bio:scale-110 group-disabled/bio:!scale-100 motion-reduce:transition-none"
+  >
+    {/* Heroicons 2.0 solid · chat-bubble-oval-left-ellipsis */}
+    <path
+      fill-rule="evenodd"
+      clip-rule="evenodd"
+      d="M4.804 21.644A6.707 6.707 0 0 0 6 21.75a6.721 6.721 0 0 0 3.583-1.029c.774.182 1.584.279 2.417.279 5.322 0 9.75-3.97 9.75-9 0-5.03-4.428-9-9.75-9s-9.75 3.97-9.75 9c0 2.409 1.025 4.587 2.674 6.192.232.226.277.428.254.543a3.73 3.73 0 0 1-.814 1.686.75.75 0 0 0 .44 1.223ZM8.25 10.875a1.125 1.125 0 1 0 0 2.25 1.125 1.125 0 0 0 0-2.25ZM10.875 12a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Zm4.875-1.125a1.125 1.125 0 1 0 0 2.25 1.125 1.125 0 0 0 0-2.25Z"
+    />
+  </svg>
+</button>

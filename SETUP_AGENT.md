@@ -59,24 +59,23 @@ Articles / Network / Uses / CV`. Some users skip Network or Uses; ask.
 
 ---
 
-## Phase 2 — Sidebar bio messages (`src/config.ts` `bioMessages`)
+## Phase 2 — About-section asides (`src/config.ts` `bioMessages.about`)
 
-These are the typed asides that appear in the sidebar as the user scrolls
-through homepage sections. AI scrapers index the formal bios from Phase 1;
-these are for human visitors and should sound like a person, not a brand.
+The About section has a single chat-bubble indicator on the homepage that
+types one of these asides into the sidebar. Asides for Experience /
+Projects / Articles live PER-ELEMENT (covered in later phases) — not here.
 
-For each of `about`, `experience`, `projects`, `articles`, prompt the user
-for **2–3 short messages** (one to three sentences each). Push for specifics:
+Ask the user for **2–3 short messages about themselves** (one to three
+sentences each). These are not a résumé bio — they're personality:
 
 - "What's something true about how you work that wouldn't go on a résumé?"
-- "Any small story from a job that you tell people IRL?"
-- "What's a weird reason a side project exists?"
-- "What's your editing process for a post?"
+- "What's the weird thing about your taste in tools?"
+- "What's the line you say to recruiters who reach the bottom of the page?"
 
 If they say "I don't know, just keep the defaults" — push back gently once.
 The defaults are obviously fake. If they still don't want to write, leave
-the `bioMessages` arrays empty (`[]`) and the typewriter will silently
-no-op for that section. Do not ship the example messages.
+`bioMessages.about` empty (`[]`) and the indicator will self-hide. Do not
+ship the example messages.
 
 ---
 
@@ -98,6 +97,9 @@ experience block. It also drives the `Person.hasOccupation` JSON-LD on /cv.
   "improved performance" → "cut p99 latency 70%". Push back on
   "led a team" → "owned hiring; closed 4 engineers in 9 months".
 - Tech stack (3–6 items, plain names)
+- **`thoughts: string[]`** — 1–3 personal asides about this role. Off-resume
+  voice: things you'd say in person but not put in a bullet point. Drives
+  the chat-bubble indicator on the homepage. Empty array = no indicator.
 
 Most-recent role first. Replace the entire `experience` array — do not
 leave any of the example entries in place.
@@ -142,6 +144,12 @@ For Tier-1 projects, also ask for the `metric` field (vanity stat —
 "★ 612 stars", "↓ 12k downloads") and a link to the source page for that
 metric. Skip the field entirely if there's nothing real to point at.
 
+For every project you keep (any tier), ask for **`thoughts: string[]`** —
+1–3 personal asides about that specific project. Drives the chat-bubble
+indicator on the homepage so a visitor can hear your one-sentence take on
+*this exact project*, not a generic projects-section message. Empty array
+or omitted = no indicator on that card.
+
 ---
 
 ## Phase 5 — Articles (`src/content/posts/`)
@@ -161,6 +169,11 @@ The user can either:
 
 If the user has a half-written draft, set `draft: true` in the frontmatter
 and it'll be excluded from the build until they're ready.
+
+For every published article, ask for **`thoughts: string[]`** — 1–3
+personal asides about that specific article (why you wrote it, what
+surprised you, what reaction it got). Drives the chat-bubble indicator on
+the homepage's recent-articles list. Empty array or omitted = no indicator.
 
 ---
 

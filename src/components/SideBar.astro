@@ -1,6 +1,13 @@
 ---
 // SideBar — identity + in-page section nav + typewriter bio.
 // Only rendered when BaseLayout's `split` prop is true (homepage).
+//
+// Typewriter data flow: the messages live on per-element BioIndicator
+// buttons rendered by the page (each carrying a `data-bio-messages` JSON
+// payload). This script doesn't import the message pool — it discovers
+// indicators in the DOM and drives the typewriter from whichever one is
+// currently "active" (clicked, or auto-picked when its section scrolls
+// into view).
 import { SITE } from '@config';
 import { url } from '@lib/url';
 
@@ -9,12 +16,6 @@ interface Props {
 }
 
 const { sections = [] } = Astro.props;
-
-// Serialize bioMessages to JSON for the inline script to consume.
-// The static HTML keeps SITE.author.bio so AI/no-JS clients still see a
-// truthful description. JSON-LD Person.description in <head> covers the
-// formal long bio. The typewriter is purely human flair.
-const bioMessagesJSON = JSON.stringify(SITE.bioMessages ?? {});
 ---
 
 <aside class="h-card lg:sticky lg:top-16 lg:max-h-[calc(100vh-4rem)] lg:w-1/2 lg:py-24 py-12">
@@ -70,7 +71,7 @@ const bioMessagesJSON = JSON.stringify(SITE.bioMessages ?? {});
 
 {
   sections.length > 0 && (
-    <script is:inline define:vars={{ bioMessagesJSON }}>
+    <script is:inline>
       function neofolioSidebarInit() {
         // Bail on mobile: the sidebar isn't sticky there, the section nav is
         // hidden, and the typing animation would just type into a paragraph
@@ -88,22 +89,50 @@ const bioMessagesJSON = JSON.stringify(SITE.bioMessages ?? {});
           .filter(Boolean);
         if (!sectionEls.length) return;
 
+        // Per-element indicators (BioIndicator.astro). Each carries its own
+        // `data-bio-messages` JSON pool. Disabled indicators (no messages)
+        // get filtered out of the scroll-pick pool so we never try to drive
+        // the typewriter from an empty pool. Click handlers attached to all
+        // indicators are harmless on disabled ones — the browser ignores
+        // clicks on disabled buttons natively.
+        const indicators = Array.from(
+          document.querySelectorAll('[data-bio-indicator]'),
+        );
+        const sectionIdToIndicators = new Map();
+        for (const indicator of indicators) {
+          if (indicator.disabled) continue;
+          const sectionEl = indicator.closest('section[id]');
+          if (!sectionEl) continue;
+          const id = sectionEl.id;
+          if (!sectionIdToIndicators.has(id)) sectionIdToIndicators.set(id, []);
+          sectionIdToIndicators.get(id).push(indicator);
+        }
+
         // ---- Typewriter setup ----
-        const messages = JSON.parse(bioMessagesJSON);
         const bioEl = document.querySelector('[data-bio-typer]');
         const cursorEl = bioEl ? bioEl.querySelector('[data-bio-cursor]') : null;
         const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         let currentSection = null;
+        let activeIndicator = null;
         let typingToken = 0;
 
         function sleep(ms) {
           return new Promise((r) => setTimeout(r, ms));
         }
 
-        function pickMessage(id) {
-          const pool = messages[id];
-          if (!pool || !pool.length) return null;
-          return pool[Math.floor(Math.random() * pool.length)];
+        function pickRandom(arr) {
+          if (!arr || !arr.length) return null;
+          return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function readMessages(indicator) {
+          if (!indicator) return [];
+          try {
+            const parsed = JSON.parse(indicator.getAttribute('data-bio-messages') || '[]');
+            return Array.isArray(parsed) ? parsed : [];
+          } catch (e) {
+            return [];
+          }
         }
 
         function setText(text) {
@@ -125,7 +154,7 @@ const bioMessagesJSON = JSON.stringify(SITE.bioMessages ?? {});
           return s;
         }
 
-        async function typeMessage(sectionId, message) {
+        async function typeMessage(message) {
           const myToken = ++typingToken;
           if (!bioEl) return;
 
@@ -166,17 +195,45 @@ const bioMessagesJSON = JSON.stringify(SITE.bioMessages ?? {});
           if (cursorEl) cursorEl.style.opacity = '0';
         }
 
-        function setActive(id) {
+        function setSectionActive(id) {
           for (const [key, el] of idToLink) {
             el.setAttribute('data-active', key === id ? 'true' : 'false');
           }
-          if (id !== currentSection) {
-            const msg = pickMessage(id);
-            if (msg) {
-              currentSection = id;
-              typeMessage(id, msg);
-            }
+        }
+
+        function setIndicatorActive(indicator) {
+          activeIndicator = indicator;
+          for (const ind of indicators) {
+            ind.setAttribute('data-active', ind === indicator ? 'true' : 'false');
           }
+        }
+
+        // Drive the typewriter from a specific indicator. Picks a random
+        // message from its pool, types it, and lights up the indicator.
+        function driveFrom(indicator) {
+          if (!indicator) return;
+          const msg = pickRandom(readMessages(indicator));
+          if (!msg) return;
+          setIndicatorActive(indicator);
+          typeMessage(msg);
+        }
+
+        // Clicking an indicator types one of ITS messages and highlights it.
+        for (const indicator of indicators) {
+          indicator.addEventListener('click', () => driveFrom(indicator));
+        }
+
+        // Scroll-into-section: pick a random indicator within that section
+        // and drive the typewriter from it. Section nav highlight tracks
+        // section change separately so it always reflects the user's
+        // scroll position even if there are no indicators in that section.
+        function onSectionEnter(id) {
+          if (id === currentSection) return;
+          currentSection = id;
+          setSectionActive(id);
+          const pool = sectionIdToIndicators.get(id);
+          const pick = pickRandom(pool);
+          if (pick) driveFrom(pick);
         }
 
         const observer = new IntersectionObserver(
@@ -185,12 +242,12 @@ const bioMessagesJSON = JSON.stringify(SITE.bioMessages ?? {});
             if (!intersecting.length) return;
             intersecting.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
             const top = intersecting[0];
-            if (top && top.target.id) setActive(top.target.id);
+            if (top && top.target.id) onSectionEnter(top.target.id);
           },
           { rootMargin: '-30% 0px -55% 0px', threshold: 0 },
         );
         sectionEls.forEach((el) => observer.observe(el));
-        setActive(sectionEls[0].id);
+        onSectionEnter(sectionEls[0].id);
       }
 
       // Defer until DOM is parsed — the section anchors live in <main>,
