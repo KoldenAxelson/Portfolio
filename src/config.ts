@@ -78,13 +78,14 @@ export const SITE = {
    * component knows how to render.
    *
    * Available icon keys: 'folder' | 'newspaper' | 'desktop' | 'globe' |
-   * 'briefcase'. Add more in TopNav.astro.
+   * 'briefcase' | 'fire'. Add more in TopNav.astro.
    */
   nav: [
     { label: 'Projects', href: '/projects', icon: 'folder' as const },
     { label: 'Articles', href: '/articles', icon: 'newspaper' as const },
     { label: 'Network', href: '/network', icon: 'globe' as const },
     { label: 'Uses', href: '/uses', icon: 'desktop' as const },
+    { label: 'Now', href: '/now', icon: 'fire' as const },
     { label: 'CV', href: '/cv', icon: 'briefcase' as const },
   ],
 
