@@ -1,0 +1,89 @@
+---
+// ScrollToTop — fixed bottom-right button that smoothly returns the user
+// to the top of the page after they've scrolled past a threshold.
+//
+// Mobile-only (`lg:!hidden`) by design: on the homepage's wide layout the
+// sticky sidebar already provides scroll-spy "chapter" navigation, so a
+// jump-to-top button would be redundant chrome. On the narrow layout
+// there's no sidebar nav, and pages get long enough that a quick way back
+// up matters.
+//
+// Always rendered to the DOM (so the entrance/exit transitions can actually
+// fire — display: none → display: block doesn't transition). Visibility is
+// driven by the `.is-visible` class toggled by the script below.
+---
+
+<button
+  data-scroll-top
+  type="button"
+  aria-label="Scroll to top"
+  title="Scroll to top"
+  class="pointer-events-none fixed bottom-6 right-6 z-30 inline-flex h-12 w-12 -translate-y-2 scale-90 items-center justify-center rounded-full border border-border bg-bg/85 text-fg opacity-0 shadow-lg backdrop-blur transition-all duration-200 ease-out hover:bg-border/40 hover:!text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 supports-[backdrop-filter]:bg-bg/70 motion-reduce:transition-none lg:!hidden"
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.75"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+    class="h-6 w-6"
+  >
+    {/* Heroicons 2.0 outline · arrow-up */}
+    <path d="M12 19.5v-15m0 0-6.75 6.75M12 4.5l6.75 6.75" />
+  </svg>
+</button>
+
+<style>
+  /* Visibility driven by JS toggling `.is-visible`. The base button stays
+     pointer-events:none + opacity:0 + scale-down so it can't intercept
+     taps when not shown, and so the entrance animation reads naturally. */
+  [data-scroll-top].is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    const btn = document.querySelector('[data-scroll-top]');
+    if (!btn) return;
+
+    const THRESHOLD = 400; // px scrolled before showing
+    let visible = false;
+    let ticking = false;
+
+    function update() {
+      const shouldShow = window.scrollY > THRESHOLD;
+      if (shouldShow !== visible) {
+        visible = shouldShow;
+        btn.classList.toggle('is-visible', visible);
+      }
+      ticking = false;
+    }
+
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (!ticking) {
+          requestAnimationFrame(update);
+          ticking = true;
+        }
+      },
+      { passive: true },
+    );
+
+    btn.addEventListener('click', () => {
+      // Respect `prefers-reduced-motion` — instant scroll if motion is reduced.
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+    });
+
+    // Initial state — handle the case where the page loads already scrolled
+    // (e.g. back-forward navigation restoring a scroll position).
+    update();
+  })();
+</script>
