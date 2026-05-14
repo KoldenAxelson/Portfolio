@@ -72,8 +72,16 @@ const recentPosts = (await getCollection('posts', ({ data }) => !data.draft))
     </h2>
     <ol class="space-y-10">
       {
+        /*
+         * Each <li> is its own grid container, so a `max-content` column would
+         * be re-measured per row — rows with "2024 — Present" would push their
+         * content further right than rows with "2023 — 2024". Pin the year
+         * column to a fixed width so every row's content starts at the same x.
+         * 9rem comfortably fits the widest reasonable label at text-xs +
+         * tracking-widest with margin to spare.
+         */
         recentRoles.map((job) => (
-          <li class="group relative grid grid-cols-1 gap-3 sm:grid-cols-[max-content_1fr]">
+          <li class="group relative grid grid-cols-1 gap-3 sm:grid-cols-[9rem_1fr]">
             <span class="font-mono text-xs uppercase tracking-widest text-muted sm:pt-1">
               {job.year}
             </span>
