@@ -15,11 +15,12 @@
 #   make post       add a writing post
 #   make project    add a project
 #   make archive    add an archive entry
+#   make badges     optimize ./badges/*.png and move to public/badges/
 #
 #   make clean      remove dist + .astro + lighthouse reports
 
 .PHONY: help setup dev build preview lighthouse clean \
-        contact post project archive noise
+        contact post project archive noise badges
 
 .DEFAULT_GOAL := help
 
@@ -65,6 +66,9 @@ project: ## Add a project (src/content/projects/)
 
 archive: ## Add an archive entry (src/content/archive/)
 	@node scripts/new-archive.mjs
+
+badges: ## Optimize images in ./badges/ → public/badges/ (Sharp; resize, recompress, move)
+	@node scripts/optimize-badges.mjs
 
 noise: ## Regenerate the matte noise textures (public/textures/noise.png + noise-dark.png)
 	@node scripts/_gen-noise.mjs

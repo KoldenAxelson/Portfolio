@@ -144,7 +144,15 @@ const certificates = defineCollection({
     credentialId: z.string().optional(),
     /** Public verification URL. Recruiter clicks this to confirm authenticity. */
     verifyUrl: z.string().url().optional(),
-    /** Path to badge image, relative to /public. Optional. */
+    /**
+     * Path to the credential's badge image (relative to /public, e.g.
+     * `/badges/security-plus.png`) or an absolute URL. Recommended:
+     * 600×600 minimum, square preferred, PNG / WebP / SVG.
+     *
+     * Read at build time via Sharp (`src/lib/cert.ts`) so the JSON-LD
+     * emits a fully-typed `ImageObject` with pixel dimensions — better for
+     * Google rich results, AI knowledge-graph ingestion, and CLS.
+     */
     badge: z.string().optional(),
     /** One-line description of what the credential covers. Optional. */
     description: z.string().optional(),

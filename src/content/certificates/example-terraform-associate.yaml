@@ -5,6 +5,7 @@ issueDate: 2024-06-08
 expirationDate: 2026-06-08
 credentialId: 'HC-TF-EXAMPLE-2024'
 verifyUrl: 'https://www.credly.com/badges/example-terraform'
+badge: '/badges/terraform-associate.png'
 description: 'Demonstrates working knowledge of Terraform core workflow, state management, modules, and provider authentication.'
 skills:
   - Terraform core workflow
@@ -12,7 +13,7 @@ skills:
   - Module design
   - Provider authentication
   - HCL functions + expressions
-featured: true
+featured: false
 thoughts:
   - "The state-management section is the part most teams skip in real projects. The exam doesn't let you."
   - "Took it the week after we migrated 14 services to a remote backend at work. Convenient timing."

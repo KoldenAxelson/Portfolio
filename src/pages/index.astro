@@ -7,8 +7,10 @@ import BaseLayout from '@layouts/BaseLayout.astro';
 import ProjectCard from '@components/ProjectCard.astro';
 import FormattedDate from '@components/FormattedDate.astro';
 import BioIndicator from '@components/BioIndicator.astro';
+import CertBadge from '@components/CertBadge.astro';
 import { SITE } from '@config';
 import { url } from '@lib/url';
+import { getBadgeImage, type BadgeImage } from '@lib/cert';
 import { experience } from '@data/cv';
 
 // Sidebar in-page anchors — order matches the section order below.
@@ -46,14 +48,23 @@ const allCerts = (await getCollection('certificates', ({ data }) => !data.draft)
   (a, b) => b.data.issueDate.valueOf() - a.data.issueDate.valueOf(),
 );
 const _now = new Date();
-const activeCerts = allCerts.filter(
-  (c) => !c.data.expirationDate || c.data.expirationDate > _now,
-);
+const activeCerts = allCerts.filter((c) => !c.data.expirationDate || c.data.expirationDate > _now);
 const featuredCerts = (
   activeCerts.some((c) => c.data.featured)
     ? activeCerts.filter((c) => c.data.featured)
     : activeCerts
 ).slice(0, 4);
+
+// Pre-resolve each featured cert's badge so we get pixel dimensions for the
+// rendered <img> (no CLS) without doing async work in the JSX.
+//
+// NOTE: data collections (YAML) expose `id` not `slug` — using `slug` here
+// returns undefined and silently collapses every entry to the same Map key.
+const featuredCertBadges = new Map<string, BadgeImage | null>(
+  await Promise.all(
+    featuredCerts.map(async (c) => [c.id, await getBadgeImage(c.data.badge)] as const),
+  ),
+);
 ---
 
 <BaseLayout split sections={sections}>
@@ -213,39 +224,43 @@ const featuredCerts = (
         >
           Certifications
         </h2>
-        <ul class="space-y-3">
-          {featuredCerts.map((c) => (
-            <li class="rounded-lg border border-border bg-bg/30 p-4 transition hover:border-accent">
-              <header class="flex flex-wrap items-baseline justify-between gap-2">
-                <h3 class="m-0 font-medium text-fg">{c.data.name}</h3>
-                <span class="font-mono text-xs text-muted">
-                  <FormattedDate date={c.data.issueDate} />
-                </span>
-              </header>
-              <p class="mt-1 text-sm text-muted">{c.data.issuer}</p>
-              {c.data.skills.length > 0 && (
-                <p class="mt-2 font-mono text-xs text-muted">{c.data.skills.join(' · ')}</p>
-              )}
-              <div class="mt-3 flex items-center justify-between gap-3">
-                {c.data.verifyUrl ? (
-                  <a
-                    href={c.data.verifyUrl}
-                    rel="noopener"
-                    class="group/cta text-sm no-underline"
-                  >
-                    <span class="underline underline-offset-2 decoration-1 group-hover/cta:decoration-2">
-                      Verify
-                    </span>
-                    <span
-                      aria-hidden="true"
-                      class="ml-0.5 inline-block transition-transform duration-200 ease-out motion-reduce:transition-none group-hover/cta:translate-x-0.5 group-hover/cta:-translate-y-0.5"
-                    >
-                      ↗
-                    </span>
-                  </a>
-                ) : (
-                  <span />
-                )}
+        {/*
+          Checklist-row layout (NOT cards) so credentials don't read as just
+          another flavor of project. Logo + name + issuer + dates is the whole
+          payload here. Skills, description, and verify links live on the
+          /certificates page where the visitor has signaled they want depth.
+        */}
+        <ul class="divide-y divide-border">
+          {featuredCerts.map((c) => {
+            const badge = featuredCertBadges.get(c.id) ?? null;
+            const href = c.data.verifyUrl ?? `${url('/certificates')}#${c.id}`;
+            const isExternal = c.data.verifyUrl != null;
+            return (
+              <li class="flex items-center gap-3 py-3">
+                <a
+                  href={href}
+                  rel={isExternal ? 'noopener' : undefined}
+                  class="group/cert flex flex-1 items-center gap-3 no-underline"
+                >
+                  <CertBadge badge={badge} alt={`${c.data.name} badge`} size="sm" />
+                  <div class="min-w-0 flex-1">
+                    <p class="m-0 truncate font-medium text-fg group-hover/cert:!text-accent">
+                      {c.data.name}
+                    </p>
+                    <p class="m-0 text-xs text-muted">
+                      {c.data.issuer}
+                      <span class="ml-1 font-mono">
+                        · <FormattedDate date={c.data.issueDate} />
+                        {c.data.expirationDate && (
+                          <>
+                            {' – '}
+                            <FormattedDate date={c.data.expirationDate} />
+                          </>
+                        )}
+                      </span>
+                    </p>
+                  </div>
+                </a>
                 {/* Per-cert thoughts indicator (hidden on mobile, like the others). */}
                 <div class="hidden lg:block">
                   <BioIndicator
@@ -253,17 +268,21 @@ const featuredCerts = (
                     label={`${c.data.name} from ${c.data.issuer}`}
                   />
                 </div>
-              </div>
-            </li>
-          ))}
+              </li>
+            );
+          })}
         </ul>
         <p class="mt-8 text-sm">
           <a href={url('/certificates')} class="group/cta no-underline">
-            <span class="underline underline-offset-2 decoration-1 group-hover/cta:decoration-2">All certifications</span>
+            <span class="underline decoration-1 underline-offset-2 group-hover/cta:decoration-2">
+              All certifications
+            </span>
             <span
               aria-hidden="true"
-              class="ml-0.5 inline-block transition-transform duration-200 ease-out motion-reduce:transition-none group-hover/cta:translate-x-0.5"
-            >→</span>
+              class="ml-0.5 inline-block transition-transform duration-200 ease-out group-hover/cta:translate-x-0.5 motion-reduce:transition-none"
+            >
+              →
+            </span>
           </a>
         </p>
       </section>

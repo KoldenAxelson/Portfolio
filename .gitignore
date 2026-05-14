@@ -4,6 +4,9 @@ dist/
 .astro-stale-*/
 .output/
 
+# build input
+badges/
+
 # dependencies
 node_modules/
 .nm-old-*/
@@ -38,4 +41,4 @@ lighthouse-report.*.json
 
 # wrangler / cloudflare
 .wrangler/
-.dev.vars
+.dev.varsi
