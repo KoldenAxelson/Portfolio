@@ -133,7 +133,7 @@ issueDate: 2025-04-15                                    # required, ISO date
 expirationDate: 2028-04-15                               # optional
 credentialId: 'AWS-SAA-C03-XXXXX'                       # optional, public ID
 verifyUrl: 'https://www.credly.com/badges/...'          # optional but recommended
-badge: '/badges/aws-saa.png'                            # optional, relative to /public
+badge: '/badges/aws-saa.png'                            # the credential's actual badge image, see "Badges" below
 description: 'Designs distributed systems on AWS...'    # optional, one line
 skills:
   - VPC design
@@ -146,6 +146,21 @@ thoughts:
 ```
 
 Each certificate emits as a `EducationalOccupationalCredential` JSON-LD on `/certificates` (inside an `ItemList`) AND on `/cv` (as an entry in `Person.hasCredential`). The two share an `@id` so an AI graph walker resolves them to the same entity. Expired credentials still render on `/certificates#expired` for an honest history.
+
+### Badges
+
+The `badge` field is the credential's actual badge image (the colored mark issuers give you to display — e.g. the CompTIA Security+ circle, the AWS Certified Solutions Architect tile, the Credly artwork). Drop the file into `/public/badges/<slug>.png` and reference it as `/badges/<slug>.png`.
+
+| Property | Recommendation |
+|---|---|
+| Min dimensions | 600×600 pixels |
+| Aspect ratio | Square preferred (most issuers ship square badges) |
+| Formats | PNG, WebP, JPEG, SVG |
+| Source | Download from the issuer (Credly, Microsoft Learn, AWS Certification dashboard, etc.) |
+
+At build time, Sharp reads the actual pixel dimensions of every badge under `/public/` and emits them as part of the JSON-LD `image` value (a full `ImageObject` with `url`, `width`, `height`). This is what gets a credential properly indexed by Google's Knowledge Graph and surfaces correctly in AI summarizers. It also eliminates Cumulative Layout Shift on the rendered `<img>` tags. No manual width/height needed in YAML.
+
+Absolute URLs (e.g. `https://images.credly.com/...`) also work as badge values — they pass through without local introspection, so dimensions won't be in the JSON-LD for those. Self-hosting under `/public/badges/` gives the best SEO result.
 
 ## Drafts
 

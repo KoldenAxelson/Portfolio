@@ -5,6 +5,7 @@ issueDate: 2024-09-22
 expirationDate: 2027-09-22
 credentialId: 'CKAD-EXAMPLE-001'
 verifyUrl: 'https://training.linuxfoundation.org/certification/verify/'
+badge: '/badges/k8s-app-dev.png'
 description: 'Hands-on, performance-based exam covering pod lifecycle, services, configuration, observability, and multi-container patterns in Kubernetes.'
 skills:
   - Pod lifecycle + probes

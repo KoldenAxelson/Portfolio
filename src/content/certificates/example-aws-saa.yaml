@@ -5,6 +5,7 @@ issueDate: 2025-04-15
 expirationDate: 2028-04-15
 credentialId: 'AWS-SAA-C03-EXAMPLE'
 verifyUrl: 'https://www.credly.com/badges/example-aws-saa'
+badge: '/badges/aws-solutions-architect.png'
 description: 'Designs distributed systems on AWS — VPC, IAM, multi-region failover, cost optimization, observability.'
 skills:
   - VPC design

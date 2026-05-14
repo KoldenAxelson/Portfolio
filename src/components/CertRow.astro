@@ -1,0 +1,71 @@
+---
+// CertRow — single-row presentation of a credential, used on /certificates
+// (in both the Active and Expired sections). Matches the homepage's row
+// format so the visual idiom is consistent.
+//
+// Wraps in an <a> when the credential has a verifyUrl (whole row clickable
+// to the issuer's verification page); otherwise plain text.
+//
+// Renders ONLY: badge (or trophy fallback) + name + issuer + dates. Other
+// fields (description, skills, credentialId) intentionally omitted from
+// the visible UI per design feedback — they remain in the JSON-LD for AI
+// / SEO ingestion, where structured data lives.
+
+import type { CollectionEntry } from 'astro:content';
+import FormattedDate from '@components/FormattedDate.astro';
+import CertBadge from '@components/CertBadge.astro';
+import type { BadgeImage } from '@lib/cert';
+
+interface Props {
+  c: CollectionEntry<'certificates'>;
+  badge: BadgeImage | null;
+}
+
+const { c, badge } = Astro.props;
+const isLinked = !!c.data.verifyUrl;
+const rowClasses = isLinked
+  ? 'group/cert flex items-center gap-4 py-4 no-underline'
+  : 'flex items-center gap-4 py-4';
+---
+
+{
+  isLinked ? (
+    <a href={c.data.verifyUrl} rel="noopener" class={rowClasses}>
+      <CertBadge badge={badge} alt={`${c.data.name} badge`} size="md" />
+      <div class="min-w-0 flex-1">
+        <p class="m-0 truncate font-medium text-fg group-hover/cert:!text-accent">{c.data.name}</p>
+        <p class="m-0 text-xs text-muted">
+          {c.data.issuer}
+          <span class="ml-1 font-mono">
+            · <FormattedDate date={c.data.issueDate} />
+            {c.data.expirationDate && (
+              <>
+                {' – '}
+                <FormattedDate date={c.data.expirationDate} />
+              </>
+            )}
+          </span>
+        </p>
+      </div>
+    </a>
+  ) : (
+    <div class={rowClasses}>
+      <CertBadge badge={badge} alt={`${c.data.name} badge`} size="md" />
+      <div class="min-w-0 flex-1">
+        <p class="m-0 truncate font-medium text-fg">{c.data.name}</p>
+        <p class="m-0 text-xs text-muted">
+          {c.data.issuer}
+          <span class="ml-1 font-mono">
+            · <FormattedDate date={c.data.issueDate} />
+            {c.data.expirationDate && (
+              <>
+                {' – '}
+                <FormattedDate date={c.data.expirationDate} />
+              </>
+            )}
+          </span>
+        </p>
+      </div>
+    </div>
+  )
+}
