@@ -6,6 +6,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '@layouts/BaseLayout.astro';
 import ProjectCard from '@components/ProjectCard.astro';
 import FormattedDate from '@components/FormattedDate.astro';
+import BioIndicator from '@components/BioIndicator.astro';
 import { SITE } from '@config';
 import { url } from '@lib/url';
 import { experience } from '@data/cv';
@@ -26,6 +27,7 @@ const recentRoles = experience.slice(0, 3).map((job) => ({
   employer: job.employer,
   summary: job.summary,
   stack: job.stack,
+  thoughts: job.thoughts ?? [],
 }));
 
 const featured = (await getCollection('projects', ({ data }) => !data.draft && data.featured))
@@ -60,6 +62,10 @@ const recentPosts = (await getCollection('posts', ({ data }) => !data.draft))
         stops being true.
       </p>
     </div>
+    {/* About has a single element, so one indicator at the bottom-right. */}
+    <div class="mt-8 flex justify-end">
+      <BioIndicator messages={SITE.bioMessages?.about ?? []} label="About" />
+    </div>
   </section>
 
   <!-- EXPERIENCE -->
@@ -90,13 +96,17 @@ const recentPosts = (await getCollection('posts', ({ data }) => !data.draft))
                 {job.role} · <span class="text-muted">{job.employer}</span>
               </h3>
               <p class="mt-2 text-sm text-muted">{job.summary}</p>
-              <ul class="mt-3 flex flex-wrap gap-1.5">
-                {job.stack.map((s) => (
-                  <li class="rounded bg-border/70 px-2 py-0.5 font-mono text-xs text-fg/85">
-                    {s}
-                  </li>
-                ))}
-              </ul>
+              <div class="mt-3 flex items-end justify-between gap-3">
+                <ul class="flex flex-wrap gap-1.5">
+                  {job.stack.map((s) => (
+                    <li class="rounded bg-border/70 px-2 py-0.5 font-mono text-xs text-fg/85">
+                      {s}
+                    </li>
+                  ))}
+                </ul>
+                {/* Per-role indicator — bottom-right of the role's content cell. */}
+                <BioIndicator messages={job.thoughts} label={`${job.role} at ${job.employer}`} />
+              </div>
             </div>
           </li>
         ))
@@ -121,7 +131,18 @@ const recentPosts = (await getCollection('posts', ({ data }) => !data.draft))
           Projects
         </h2>
         <div class="space-y-4">
-          {featured.map((p) => <ProjectCard project={p} />)}
+          {featured.map((p) => (
+            /* Wrap each card so the indicator can sit at its bottom-right.
+               z-20 keeps the button above the card's z-0 overlay link. */
+            <div class="relative">
+              <ProjectCard project={p} />
+              <div class="pointer-events-none absolute bottom-3 right-3 z-20">
+                <div class="pointer-events-auto">
+                  <BioIndicator messages={p.data.thoughts} label={p.data.title} />
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
         <p class="mt-8 text-sm">
           <a href={url('/projects')} class="group/cta no-underline">
@@ -145,16 +166,20 @@ const recentPosts = (await getCollection('posts', ({ data }) => !data.draft))
         </h2>
         <ul class="divide-y divide-border">
           {recentPosts.map((post) => (
-            <li class="flex flex-col gap-1 py-3 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
+            <li class="flex flex-col gap-1 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
               <a
                 href={url(`/articles/${post.slug}`)}
                 class="no-underline font-medium text-fg hover:!text-accent"
               >
                 {post.data.title}
               </a>
-              <span class="shrink-0 font-mono text-xs text-muted">
-                <FormattedDate date={post.data.pubDate} />
-              </span>
+              <div class="flex shrink-0 items-center gap-3">
+                <span class="font-mono text-xs text-muted">
+                  <FormattedDate date={post.data.pubDate} />
+                </span>
+                {/* Per-article indicator. */}
+                <BioIndicator messages={post.data.thoughts} label={post.data.title} />
+              </div>
             </li>
           ))}
         </ul>

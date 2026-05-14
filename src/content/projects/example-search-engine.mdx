@@ -14,6 +14,9 @@ links:
 metric:
   label: 'Read the case study'
   href: 'https://github.com/example/internal-search'
+thoughts:
+  - "p95 under 80ms over 2.4M docs sounds heroic until you realize most of the work is the embedding pipeline, not the search."
+  - "I spent two weeks tuning HNSW parameters before realizing the bottleneck was elsewhere. Classic."
 ---
 
 ## Problem

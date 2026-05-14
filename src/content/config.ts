@@ -47,6 +47,13 @@ const projects = defineCollection({
       .optional(),
     /** Cover image path, relative to /public. Optional. */
     cover: z.string().optional(),
+    /**
+     * Personal asides for the homepage typewriter — surfaced when this
+     * project's BioIndicator is the active one. Voice should be human,
+     * off-resume. One to three sentences each. Add 1–3 entries.
+     * Empty array = no indicator on this card.
+     */
+    thoughts: z.array(z.string()).default([]),
     /** If true, projects show on the homepage hero strip. Tier 1 only. */
     featured: z.boolean().default(false),
     draft: z.boolean().default(false),
@@ -65,6 +72,13 @@ const posts = defineCollection({
     cover: z.string().optional(),
     /** If this post was syndicated, set the original canonical URL here. */
     canonical: z.string().url().optional(),
+    /**
+     * Personal asides for the homepage typewriter — surfaced when this
+     * post's BioIndicator is the active one. Voice should be human,
+     * off-resume. One to three sentences each. Add 1–3 entries.
+     * Empty array = no indicator on this article entry.
+     */
+    thoughts: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
   }),
 });

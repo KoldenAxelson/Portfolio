@@ -36,6 +36,9 @@ metric:                                  # vanity metric on the card
   label: '★ 612 stars'                   # see "Metric label format" below
   href: 'https://github.com/.../stargazers'
 cover: /covers/event-pipeline.svg        # relative to /public
+thoughts:                                # personal asides, see "thoughts" below
+  - "Off-resume thought #1 about this project."
+  - "Off-resume thought #2 about this project."
 ---
 
 (MDX body, Tier 1 only)
@@ -69,6 +72,8 @@ updatedDate: 2026-04-15                  # optional
 tags: ['portfolio', 'ai']
 cover: /covers/foo.svg                   # optional
 canonical: 'https://...'                 # if originally syndicated elsewhere
+thoughts:                                # personal asides, see "thoughts" below
+  - "Off-resume thought #1 about this article."
 draft: false
 ---
 
@@ -108,6 +113,14 @@ stack: ['React', 'WebRTC', 'Yjs']
 ```
 
 Body unused. Appears in `/projects#archive`.
+
+## `thoughts` — personal asides for the homepage typewriter
+
+Optional `thoughts: string[]` on **roles** (`src/data/cv.ts`), **projects**, and **articles**. Each entry is a one- to three-sentence personal aside in your own voice — off-resume, the kind of thing you'd say in person but not put in a bullet point. The homepage renders a small chat-bubble indicator next to every element that has thoughts; clicking it types one of those thoughts into the sidebar typewriter, scrolling into the section types a random thought from a random element. Empty array (or omitted) = no indicator on that element.
+
+Aim for 1–3 thoughts per element. The pool is sampled at random, so two are enough for variety.
+
+The About section's single indicator pulls from `SITE.bioMessages.about` in `src/config.ts` (the only `bioMessages` key still in use — the others are no longer read).
 
 ## Drafts
 
