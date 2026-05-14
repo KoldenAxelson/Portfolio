@@ -39,7 +39,7 @@ const recentPosts = (await getCollection('posts', ({ data }) => !data.draft))
 
 <BaseLayout split sections={sections}>
   <!-- ABOUT -->
-  <section id="about" class="mb-24 scroll-mt-24" aria-labelledby="about-heading">
+  <section id="about" class="mb-24 scroll-mt-24 last:mb-0" aria-labelledby="about-heading">
     <h2 id="about-heading" class="sr-only">About</h2>
     <div class="space-y-4 text-base text-muted">
       <p>{SITE.author.longBio}</p>
@@ -63,7 +63,7 @@ const recentPosts = (await getCollection('posts', ({ data }) => !data.draft))
   </section>
 
   <!-- EXPERIENCE -->
-  <section id="experience" class="mb-24 scroll-mt-24" aria-labelledby="experience-heading">
+  <section id="experience" class="mb-24 scroll-mt-24 last:mb-0" aria-labelledby="experience-heading">
     <h2
       id="experience-heading"
       class="mb-6 font-mono text-xs uppercase tracking-widest text-fg lg:sr-only"
@@ -113,7 +113,7 @@ const recentPosts = (await getCollection('posts', ({ data }) => !data.draft))
   <!-- FEATURED PROJECTS -->
   {
     featured.length > 0 && (
-      <section id="projects" class="mb-24 scroll-mt-24" aria-labelledby="projects-heading">
+      <section id="projects" class="mb-24 scroll-mt-24 last:mb-0" aria-labelledby="projects-heading">
         <h2
           id="projects-heading"
           class="mb-6 font-mono text-xs uppercase tracking-widest text-fg lg:sr-only"
@@ -136,7 +136,7 @@ const recentPosts = (await getCollection('posts', ({ data }) => !data.draft))
   <!-- RECENT ARTICLES -->
   {
     recentPosts.length > 0 && (
-      <section id="articles" class="mb-24 scroll-mt-24" aria-labelledby="articles-heading">
+      <section id="articles" class="mb-24 scroll-mt-24 last:mb-0" aria-labelledby="articles-heading">
         <h2
           id="articles-heading"
           class="mb-6 font-mono text-xs uppercase tracking-widest text-fg lg:sr-only"
