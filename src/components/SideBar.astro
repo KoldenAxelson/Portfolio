@@ -30,10 +30,15 @@ const { sections = [] } = Astro.props;
     </h1>
     <p class="p-job-title mt-3 text-lg font-medium tracking-tight text-fg sm:text-xl">{SITE.author.role}</p>
 
-    {/* Real bio in static HTML; JS swaps it for the typewriter post-hydration. */}
+    {/* Real bio in static HTML; JS swaps it for the typewriter post-hydration.
+        Hidden below `lg` to match the layout's single-column transition —
+        the typewriter script bails on mobile anyway, and mobile visitors
+        still get the full long-form bio when they scroll into the About
+        section. The element stays in the DOM (display:none, not removed)
+        so the h-card microformat and JSON-LD coverage are unaffected. */}
     <p
       data-bio-typer
-      class="p-note mt-4 min-h-[5.5rem] max-w-xs leading-normal text-muted"
+      class="p-note mt-4 hidden min-h-[5.5rem] max-w-xs leading-normal text-muted lg:block"
     >{SITE.author.bio}<span data-bio-cursor aria-hidden="true" class="ml-0.5 inline-block w-[2px] h-[1.05em] translate-y-[3px] bg-current opacity-0 transition-opacity duration-300"></span></p>
 
     {/* Hidden h-card properties — picked up by parsers, invisible to users.

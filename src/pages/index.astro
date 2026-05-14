@@ -103,8 +103,12 @@ const recentPosts = (await getCollection('posts', ({ data }) => !data.draft))
                     </li>
                   ))}
                 </ul>
-                {/* Per-role indicator — bottom-right of the role's content cell. */}
-                <BioIndicator messages={job.thoughts} label={`${job.role} at ${job.employer}`} />
+                {/* Per-role indicator — bottom-right of the role's content
+                    cell. Wrapper hides on `<lg` so the empty flex slot
+                    doesn't even exist on the mobile single-column layout. */}
+                <div class="hidden lg:block">
+                  <BioIndicator messages={job.thoughts} label={`${job.role} at ${job.employer}`} />
+                </div>
               </div>
             </div>
           </li>
@@ -132,10 +136,12 @@ const recentPosts = (await getCollection('posts', ({ data }) => !data.draft))
         <div class="space-y-4">
           {featured.map((p) => (
             /* Wrap each card so the indicator can sit at its bottom-right.
-               z-20 keeps the button above the card's z-0 overlay link. */
+               z-20 keeps the button above the card's z-0 overlay link.
+               Indicator wrapper hides on `<lg` since the typewriter doesn't
+               run there — matches the layout's single-column transition. */
             <div class="relative">
               <ProjectCard project={p} />
-              <div class="pointer-events-none absolute bottom-3 right-3 z-20">
+              <div class="pointer-events-none absolute bottom-3 right-3 z-20 hidden lg:block">
                 <div class="pointer-events-auto">
                   <BioIndicator messages={p.data.thoughts} label={p.data.title} />
                 </div>
@@ -176,8 +182,11 @@ const recentPosts = (await getCollection('posts', ({ data }) => !data.draft))
                 <span class="font-mono text-xs text-muted">
                   <FormattedDate date={post.data.pubDate} />
                 </span>
-                {/* Per-article indicator. */}
-                <BioIndicator messages={post.data.thoughts} label={post.data.title} />
+                {/* Per-article indicator. Wrapper hides on `<lg`, matching
+                    the layout's single-column transition. */}
+                <div class="hidden lg:block">
+                  <BioIndicator messages={post.data.thoughts} label={post.data.title} />
+                </div>
               </div>
             </li>
           ))}
