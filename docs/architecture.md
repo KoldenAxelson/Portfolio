@@ -21,8 +21,9 @@ neofolio/
 ├── src/
 │   ├── components/         Astro + Vue
 │   ├── content/            Collections (MDX/MD/YAML)
+│   ├── data/               Typed data files (cv.ts — work history)
 │   ├── layouts/            Page shells
-│   ├── lib/                Utilities (url helper)
+│   ├── lib/                Utilities (url, schema entity @ids)
 │   ├── pages/              File-based routes
 │   ├── styles/             global.css (Tailwind entry)
 │   └── config.ts           Site identity, nav, bio messages
@@ -36,9 +37,11 @@ neofolio/
 | File | Owns |
 |---|---|
 | `src/config.ts` | Identity, nav, bio messages |
+| `src/data/cv.ts` | Work history, education, skills (drives `/cv`, homepage Experience, `Person.hasOccupation` JSON-LD) |
 | `src/styles/global.css` | All theme variables, noise overlay |
 | `tailwind.config.mjs` | Font families |
 | `src/content/config.ts` | Collection schemas (zod) |
+| `src/lib/schema.ts` | Canonical entity `@id`s (`personId`, `websiteId`) — referenced by every per-page JSON-LD block so parsers merge into one entity |
 
 ## Layout props (BaseLayout)
 
@@ -65,6 +68,7 @@ neofolio/
 | `/rss.xml` | dynamic |
 | `/feed.json` | dynamic |
 | `/robots.txt` | dynamic (reads `SITE.url`) |
+| `/llms.txt` | dynamic (llmstxt.org spec — identity + featured projects + articles) |
 | `/sitemap-index.xml` | auto via `@astrojs/sitemap` |
 
 The `posts` collection is intentionally kept while the URL is `/articles` — renaming the folder would break existing slugs for forkers upgrading.

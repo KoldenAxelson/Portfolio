@@ -10,15 +10,15 @@ Two audiences per page: the human visitor and the AI that will summarize you to 
 curl -A "Mozilla/5.0" https://yoursite.com/projects | htmlq -t
 ```
 
-**JSON-LD** on every page. Site-wide: `WebSite` + `Person`. Per page:
+**JSON-LD entity graph.** Site-wide `WebSite` + `Person` carry stable `@id`s (`SITE.url#website`, `SITE.url#person`, exported from `src/lib/schema.ts`). Per-page schemas reference these via `{ '@id': personId }` instead of redeclaring — parsers merge into one entity. Per page:
 
-| Page type | Schema |
-|---|---|
-| `/articles/[slug]` | `BlogPosting` |
-| `/projects/[slug]` | `CreativeWork` |
-| `/network` | `ItemList` of `Person` |
-| `/cv` | expanded `Person` |
-| `/now` | `CreativeWork` with `dateModified` |
+| Page type | Schema | Notes |
+|---|---|---|
+| `/articles/[slug]` | `BlogPosting` | `image` (cover or default OG), `inLanguage`, `isPartOf` → WebSite, `author`/`publisher` → Person by `@id` |
+| `/projects/[slug]` | `SoftwareApplication` (live URL) / `SoftwareSourceCode` (repo only) / `CreativeWork` (fallback) | `programmingLanguage` from `stack`, `applicationCategory`, `author`/`creator` → Person by `@id` |
+| `/cv` | `Person` supplement (same `@id`) | `hasOccupation` (one Occupation per role from `src/data/cv.ts`), `alumniOf`, `worksFor`, `knowsAbout` |
+| `/network` | `ItemList` of `Person` | _planned, see TODO_AI.md_ |
+| `/now` | `CreativeWork` with `dateModified` | _planned, see TODO_AI.md_ |
 
 **Semantic HTML** — `<article>`, `<section>`, `<nav>`, `<time datetime>`.
 
@@ -28,6 +28,8 @@ curl -A "Mozilla/5.0" https://yoursite.com/projects | htmlq -t
 
 **Permissive `robots.txt`** generated dynamically from `SITE.url`. Explicit allow for GPTBot, ClaudeBot, anthropic-ai, Google-Extended, PerplexityBot, CCBot. To opt out of AI training, flip the named user-agents to `Disallow: /` in `src/pages/robots.txt.ts`.
 
+**`/llms.txt`** generated at build time from `SITE` + content collections (llmstxt.org spec). Curated map for LLM consumption: identity, primary pages, featured projects, articles, feeds. Source: `src/pages/llms.txt.ts`.
+
 **Sitemap.** `/sitemap-index.xml`, auto-generated, excludes `/archive` and `/404`.
 
 **RSS + JSON Feed.** Both at `/rss.xml` and `/feed.json`. Discoverable via `<link rel="alternate">` in `<head>`.
@@ -35,6 +37,8 @@ curl -A "Mozilla/5.0" https://yoursite.com/projects | htmlq -t
 **`humans.txt`**, `theme-color` meta, OG + Twitter Card meta — all in.
 
 ## To do once site is live
+
+See [`TODO_AI.md`](../TODO_AI.md) for the full deferred-work ledger. Highlights:
 
 | Task | Where |
 |---|---|
@@ -70,6 +74,9 @@ curl https://yoursite.com/rss.xml | head -20
 
 # 5. robots.txt
 curl https://yoursite.com/robots.txt
+
+# 6. llms.txt has real URLs + featured/articles populated
+curl https://yoursite.com/llms.txt
 ```
 
 ## The longer game

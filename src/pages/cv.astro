@@ -1,105 +1,41 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
 import { SITE } from '@config';
+import { personId } from '@lib/schema';
+import { experience, education, skills } from '@data/cv';
 
-// Forkers: edit this data. Keep it as plain TypeScript objects — that way
-// AI scrapers index it as structured text, not opaque rendered HTML.
-
-const experience = [
-  {
-    role: 'Tech Lead, Platform Team',
-    employer: 'Example Corp',
-    location: 'Remote',
-    start: '2024',
-    end: 'present',
-    summary:
-      'Lead engineer on the platform team. Designed the multi-region failover system that now handles 12M requests/day.',
-    highlights: [
-      'Migrated billing pipeline from monolith to event-driven Kafka topology — cut p99 latency 70%.',
-      'Owned hiring for the team; closed 4 engineers in 9 months.',
-      'Authored the on-call playbook adopted by 3 other platform-adjacent teams.',
-      'Designed the schema-registry contract-test pattern used across 14 services.',
-    ],
-    stack: ['Go', 'Kafka', 'Postgres', 'AWS', 'Terraform'],
-  },
-  {
-    role: 'Senior Software Engineer',
-    employer: 'Example Corp',
-    location: 'Remote',
-    start: '2023',
-    end: '2024',
-    summary:
-      'Joined as a senior IC, promoted to tech lead after the platform reorg. Shipped the v2 event-replay system.',
-    highlights: [
-      'Owned the design and rollout of customer-facing event-replay tooling — 280+ enterprise customers.',
-      'Mentored two junior engineers through their first production incident postmortems.',
-    ],
-    stack: ['Go', 'TypeScript', 'Postgres'],
-  },
-  {
-    role: 'Software Engineer',
-    employer: 'Previous Co',
-    location: 'Hybrid · Boston, MA',
-    start: '2020',
-    end: '2023',
-    summary:
-      'Backend engineer on the data ingest team. Owned the schema-evolution layer and the customer-facing event-replay tooling.',
-    highlights: [
-      'Designed schema-registry-backed contract testing system that prevented 6 production incidents.',
-      'Rewrote ingest worker pool — 3× throughput on same hardware.',
-      'Reduced incident MTTR from 47min to 14min across the team after introducing the incident-response bot.',
-    ],
-    stack: ['Python', 'Postgres', 'Redis', 'Terraform'],
-  },
-  {
-    role: 'Systems Engineer (Cleared)',
-    employer: 'Defense contractor (details on request)',
-    location: 'On-site, SCIF',
-    start: '2016',
-    end: '2020',
-    summary:
-      'Four years building auditable, failure-tolerant systems under formal change-control and security-classification regimes. Specifics under NDA.',
-    highlights: [
-      'Order-of-magnitude scale: hundreds of users, millions of requests/day, four-nines uptime requirement.',
-      'Worked under formal change-control with multi-stakeholder code review.',
-      'Cleared for work in environments where bugs have downstream consequences far beyond the system.',
-    ],
-    stack: ['Details on request'],
-  },
-];
-
-const education = [
-  {
-    school: 'State University',
-    degree: 'B.S. Computer Science',
-    year: '2016',
-    notes: 'Honors thesis on distributed consensus protocols.',
-  },
-];
-
-const skills = {
-  Languages: ['TypeScript', 'Go', 'Python', 'SQL', 'Bash'],
-  'Systems & Infra': [
-    'Distributed systems',
-    'Event-driven architecture',
-    'Postgres internals',
-    'Kafka',
-    'Kubernetes',
-  ],
-  Cloud: ['AWS', 'Cloudflare', 'Terraform'],
-  Practices: ['Code review', 'Hiring', 'Mentorship', 'Incident response'],
-};
-
+// Build a Person SUPPLEMENT — same @id as the canonical Person emitted by
+// SEO.astro, so JSON-LD parsers merge the two records into a single entity.
+// This block adds the heavy résumé-shaped properties (hasOccupation,
+// alumniOf, knowsAbout) that we don't want on every page.
+//
+// hasOccupation is the property an AI looking at "what does this person do?"
+// will key off of. Each role becomes an Occupation node with its own date
+// range, so career history is structurally walkable, not buried in prose.
 const schema = [
   {
     '@context': 'https://schema.org',
     '@type': 'Person',
-    name: SITE.author.name,
-    jobTitle: experience[0]?.role ?? SITE.author.role,
-    email: `mailto:${SITE.author.email}`,
-    url: SITE.url,
-    alumniOf: education.map((e) => ({ '@type': 'EducationalOrganization', name: e.school })),
-    worksFor: experience.slice(0, 1).map((e) => ({ '@type': 'Organization', name: e.employer })),
+    '@id': personId,
+    hasOccupation: experience.map((job) => ({
+      '@type': 'Occupation',
+      name: job.role,
+      occupationLocation: { '@type': 'Place', name: job.location },
+      hiringOrganization: { '@type': 'Organization', name: job.employer },
+      description: job.summary,
+      ...(job.startDate && { startDate: job.startDate }),
+      ...(job.endDate && { endDate: job.endDate }),
+      skills: job.stack.join(', '),
+      responsibilities: job.highlights,
+    })),
+    alumniOf: education.map((e) => ({
+      '@type': 'EducationalOrganization',
+      name: e.school,
+      ...(e.notes && { description: `${e.degree} (${e.year}). ${e.notes}` }),
+    })),
+    worksFor: experience
+      .filter((e) => e.end === 'present')
+      .map((e) => ({ '@type': 'Organization', name: e.employer })),
     knowsAbout: Object.values(skills).flat(),
   },
 ];

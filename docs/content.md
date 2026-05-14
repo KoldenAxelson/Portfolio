@@ -9,6 +9,8 @@ Two paths, same output:
 | `make contact` | `src/content/network/<slug>.yaml` |
 | `make archive` | `src/content/archive/<slug>.md` |
 
+**Work history is NOT a content collection.** Edit `src/data/cv.ts` directly — see [customization.md](./customization.md#work-history-srcdatacvts).
+
 Scaffolds prompt for fields, slugify, write the file. Output is editable plain text.
 
 Schemas live in `src/content/config.ts`. Build fails on invalid frontmatter.

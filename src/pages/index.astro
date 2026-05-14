@@ -8,6 +8,7 @@ import ProjectCard from '@components/ProjectCard.astro';
 import FormattedDate from '@components/FormattedDate.astro';
 import { SITE } from '@config';
 import { url } from '@lib/url';
+import { experience } from '@data/cv';
 
 // Sidebar in-page anchors — order matches the section order below.
 const sections = [
@@ -17,33 +18,15 @@ const sections = [
   { id: 'articles', label: 'Articles' },
 ];
 
-// Inline experience summary on home — full version lives on /cv.
-const recentRoles = [
-  {
-    year: '2024 — Present',
-    role: 'Tech Lead',
-    employer: 'Example Corp',
-    summary:
-      'Lead engineer on the platform team. Designed and shipped the multi-region failover system handling 12M req/day.',
-    stack: ['Go', 'Kafka', 'Postgres', 'AWS'],
-  },
-  {
-    year: '2020 — 2023',
-    role: 'Senior Engineer',
-    employer: 'Previous Co',
-    summary:
-      'Owned the data-ingest schema-evolution layer. Built the customer-facing event-replay tooling.',
-    stack: ['Python', 'Postgres', 'Redis', 'Terraform'],
-  },
-  {
-    year: '2016 — 2020',
-    role: 'Systems Engineer (Cleared)',
-    employer: 'Defense contractor',
-    summary:
-      'Five years building auditable, failure-tolerant systems under formal constraints. Details on request.',
-    stack: ['Details on request'],
-  },
-];
+// Show the three most-recent roles on the homepage. Full history lives on /cv.
+// Pulled from the same source so they never drift apart.
+const recentRoles = experience.slice(0, 3).map((job) => ({
+  year: `${job.start} — ${job.end === 'present' ? 'Present' : job.end}`,
+  role: job.role,
+  employer: job.employer,
+  summary: job.summary,
+  stack: job.stack,
+}));
 
 const featured = (await getCollection('projects', ({ data }) => !data.draft && data.featured))
   .sort((a, b) => b.data.year.localeCompare(a.data.year))
