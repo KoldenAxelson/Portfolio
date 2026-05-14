@@ -40,9 +40,20 @@ const icons: Record<string, string> = {
 
 <header
   data-top-nav
-  class="sticky top-0 z-40 w-full transform-gpu border-b border-border bg-bg/85 backdrop-blur transition-transform duration-200 ease-out supports-[backdrop-filter]:bg-bg/70 motion-reduce:transition-none"
+  class="sticky top-0 z-40 w-full transition-transform duration-200 ease-out motion-reduce:transition-none"
 >
-  <div class="mx-auto flex max-w-screen-xl items-center justify-between gap-4 px-6 py-3 lg:px-12">
+  {/*
+    Bar wrapper carries the visual chrome (bg + border + backdrop-blur).
+    The <header> itself has no backdrop-filter, which is critical: an
+    element with backdrop-filter becomes a "backdrop root" that isolates
+    backdrop-filter on any descendant. Putting the blur on this inner div
+    instead of the header lets the mobile dropdown panel below (which is
+    a SIBLING of this div, not a descendant) also use backdrop-filter
+    against the actual page content rather than an empty isolated layer.
+    See: https://drafts.csswg.org/filter-effects-2/#BackdropRoot
+  */}
+  <div class="border-b border-border bg-bg/85 backdrop-blur supports-[backdrop-filter]:bg-bg/70">
+    <div class="mx-auto flex max-w-screen-xl items-center justify-between gap-4 px-6 py-3 lg:px-12">
     <a
       href={url('/')}
       class="font-mono text-sm font-medium text-fg no-underline hover:!text-accent"
@@ -102,8 +113,14 @@ const icons: Record<string, string> = {
       </ul>
     </nav>
 
-    <!-- ─── Mobile nav: hamburger → dropdown ─── -->
-    <details data-mobile-nav class="relative lg:hidden">
+    <!-- ─── Mobile nav: hamburger → header expands ───
+         Tesla-style: tapping the hamburger expands the header bar downward
+         into a full-width panel of large stacked links. The panel is
+         absolutely positioned beneath the header bar (the sticky <header>
+         is its containing block — that's why <details> doesn't carry
+         `relative` here), so it slides under the bar's existing border
+         and matches its background for visual continuity. -->
+    <details data-mobile-nav class="lg:hidden">
       <summary
         aria-label="Open menu"
         class="flex h-9 w-9 cursor-pointer list-none items-center justify-center rounded-md text-muted transition-colors hover:bg-border/40 hover:text-fg focus-visible:bg-border/40 focus-visible:text-fg"
@@ -137,51 +154,62 @@ const icons: Record<string, string> = {
         </svg>
       </summary>
 
-      <nav
-        aria-label="Site (mobile)"
-        class="absolute right-0 top-full z-50 mt-2 w-56 origin-top-right overflow-hidden rounded-md border border-border bg-bg shadow-lg"
-      >
-        <ul class="p-1">
-          {
-            SITE.nav.map((item) => {
-              const isActive =
-                currentPath === item.href || currentPath.startsWith(item.href + '/');
-              const path = icons[item.icon as keyof typeof icons];
-              return (
-                <li>
-                  <a
-                    href={url(item.href)}
-                    aria-current={isActive ? 'page' : undefined}
-                    class:list={[
-                      'flex items-center gap-3 rounded px-3 py-2 text-sm no-underline transition-colors',
-                      isActive
-                        ? 'bg-border/60 font-medium text-fg'
-                        : 'text-muted hover:bg-border/40 hover:!text-fg',
-                    ]}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="1.6"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      aria-hidden="true"
-                      class="h-5 w-5 shrink-0"
-                    >
-                      <path d={path} />
-                    </svg>
-                    <span>{item.label}</span>
-                  </a>
-                </li>
-              );
-            })
-          }
-        </ul>
-      </nav>
     </details>
+    </div>
   </div>
+
+  {/*
+    Mobile dropdown panel — SIBLING of the bar wrapper (not a descendant),
+    so it doesn't inherit the bar's backdrop-root isolation. This is the
+    sole reason the panel's `backdrop-filter` actually blurs page content
+    instead of an empty layer. See the bar wrapper's comment above.
+    Visibility is driven by the <details>'s `[open]` state via the script
+    at the bottom of this file (a `.show` class, JS-toggled).
+  */}
+  <nav
+    data-mobile-panel
+    aria-label="Site (mobile)"
+    class="absolute inset-x-0 top-full z-40 hidden border-b border-border bg-bg/85 backdrop-blur supports-[backdrop-filter]:bg-bg/70 lg:hidden"
+  >
+    <ul class="mx-auto flex max-w-screen-xl flex-col gap-1 px-6 py-4">
+      {
+        SITE.nav.map((item) => {
+          const isActive =
+            currentPath === item.href || currentPath.startsWith(item.href + '/');
+          const path = icons[item.icon as keyof typeof icons];
+          return (
+            <li>
+              <a
+                href={url(item.href)}
+                aria-current={isActive ? 'page' : undefined}
+                class:list={[
+                  'flex items-center gap-4 rounded-md px-3 py-3 text-lg no-underline transition-colors',
+                  isActive
+                    ? 'bg-border/60 font-medium text-fg'
+                    : 'text-fg/85 hover:bg-border/40 hover:!text-accent',
+                ]}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  aria-hidden="true"
+                  class="h-6 w-6 shrink-0"
+                >
+                  <path d={path} />
+                </svg>
+                <span>{item.label}</span>
+              </a>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </nav>
 </header>
 
 <!-- Icon swap based on open state. Pure CSS, no JS. -->
@@ -197,6 +225,13 @@ const icons: Record<string, string> = {
   }
   [data-mobile-nav]:not([open]) .icon-close {
     display: none;
+  }
+  /* Mobile dropdown panel visibility — driven by the JS toggle below
+     instead of a `:has()` selector, so older browsers that lack `:has()`
+     still get the menu (the JS path runs in any modern browser that
+     supports <details>, which is universal). */
+  [data-mobile-panel].is-open {
+    display: block;
   }
 </style>
 
@@ -235,10 +270,24 @@ const icons: Record<string, string> = {
     }
 
     // ─── Mobile menu: close on click-outside or Escape ───
+    // Also: sync the panel's `.is-open` class with the <details> open state.
+    // The panel lives OUTSIDE <details> (so its `backdrop-filter` isn't
+    // isolated by the bar's backdrop root), which means it can't piggyback
+    // on the native <details> show/hide. We sync via the `toggle` event.
     const mobileNav = document.querySelector('[data-mobile-nav]');
+    const mobilePanel = document.querySelector('[data-mobile-panel]');
     if (mobileNav) {
+      const syncPanel = () => {
+        if (mobilePanel) mobilePanel.classList.toggle('is-open', mobileNav.open);
+      };
+      mobileNav.addEventListener('toggle', syncPanel);
+      syncPanel();
+
       document.addEventListener('click', (e) => {
-        if (mobileNav.open && !mobileNav.contains(e.target)) {
+        if (!mobileNav.open) return;
+        const insideNav = mobileNav.contains(e.target);
+        const insidePanel = mobilePanel && mobilePanel.contains(e.target);
+        if (!insideNav && !insidePanel) {
           mobileNav.open = false;
         }
       });
