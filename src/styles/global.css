@@ -45,7 +45,7 @@
     --color-bg: 9 9 11;          /* zinc-950 */
     --color-fg: 244 244 245;     /* zinc-100 */
     --color-muted: 161 161 170;  /* zinc-400 */
-    --color-accent: 74 222 128;  /* green-400 — brighter for dark-bg visibility */
+    --color-accent: 252 211 77;  /* amber-300 — ties back to the logo's gold gradient */
     --color-border: 39 39 42;    /* zinc-800 */
   }
 }
