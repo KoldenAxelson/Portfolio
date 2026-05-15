@@ -1,8 +1,10 @@
 name: Deploy to GitHub Pages
 
+# Disabled (manual-dispatch only). This site deploys via Cloudflare Pages —
+# see .github/workflows/cloudflare-pages.yml. Kept as a fallback option:
+# re-add `push:` triggers if you ever want to publish a mirror to GH Pages.
+
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
