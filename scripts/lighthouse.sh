@@ -50,8 +50,10 @@ for path in "${PATHS[@]}"; do
   slug="${path//\//_}"
   slug="${slug:-_root}"
   url="http://localhost:${PORT}${path}"
-  report="${OUT_DIR}/report${slug}.html"
-  json="${OUT_DIR}/report${slug}.json"
+  # Lighthouse appends `.report.<ext>` to --output-path when multiple
+  # --output formats are requested. Match its actual filename emission.
+  report="${OUT_DIR}/report${slug}.report.html"
+  json="${OUT_DIR}/report${slug}.report.json"
 
   echo ""
   echo "→ Auditing ${url}"

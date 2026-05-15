@@ -85,7 +85,26 @@ Suggested fix: bump to versions that support Node 24 when they ship, or set `FOR
 
 `setup.sh`'s `npm ci` reports 10 vulnerabilities. The wrangler-action's later install reports 14. All in dev deps, but the count is loud enough that a fresh forker may worry. Worth a brief note in `setup.sh` or the README saying "these are dev deps, audited periodically, none reachable at runtime" — or actually running `npm audit fix` and committing the result.
 
-### 8. SETUP_AGENT.md could mention the all-CLI alternative
+### 8. `scripts/lighthouse.sh` is broken — filename mismatch
+
+`make lighthouse` exits with `Error: Cannot find module './.lighthouse/report_.json'` on a clean repo.
+
+Cause: Lighthouse CLI appends `.report.<ext>` to `--output-path` when multiple `--output` formats are requested. So `--output-path=.lighthouse/report_` with `--output=html --output=json` writes `.lighthouse/report_.report.html` and `.lighthouse/report_.report.json`. The script's `json` and `report` variables use the bare extensions (`.html` / `.json`), so the subsequent `require('./${json}')` finds nothing.
+
+Fix is one diff:
+
+```diff
+-  report="${OUT_DIR}/report${slug}.html"
+-  json="${OUT_DIR}/report${slug}.json"
++  report="${OUT_DIR}/report${slug}.report.html"
++  json="${OUT_DIR}/report${slug}.report.json"
+```
+
+Applied in this fork; should be backported to Neofolio upstream. The bug is silent until someone actually runs `make lighthouse`, which the agent runbook (Phase 10) instructs the user to do — so every fresh fork hits this.
+
+Worth adding a small Lighthouse smoke test to CI so future regressions don't sit hidden. The CF Pages workflow could run `make lighthouse / /projects /cv` as a non-blocking step.
+
+### 9. SETUP_AGENT.md could mention the all-CLI alternative
 
 The runbook walks the user through GitHub Pages or Cloudflare Pages via the dashboard or the workflow. For users with `wrangler` locally, the simplest path is actually:
 
@@ -108,10 +127,11 @@ Worth mentioning as an option, even if the runbook still recommends CI.
 
 ## TL;DR for a template maintainer
 
-If you fix three things, fix these:
+If you fix four things, fix these:
 
-1. **Hardcode `--project-name=portfolio` in `cloudflare-pages.yml`** (or read from `github.event.repository.name`). Removes the variable entirely and sidesteps the gh-CLI silent-misroute trap.
-2. **Ship both deploy workflows as `workflow_dispatch`-only**, and tell users in `SETUP_AGENT.md` Phase 9 to flip on the one they want.
-3. **Update CF API token permission guidance** in `docs/deploying.md` and the workflow comment — current UI is `Developer Platform → Pages → Edit`, no "User Details" anywhere.
+1. **Fix `scripts/lighthouse.sh`** — filename mismatch makes `make lighthouse` exit 1 on a clean repo. One-line diff (see snag #8). This is the most user-impacting bug because the runbook tells the user to run it as Phase 10's gating step, and the failure looks like the user did something wrong.
+2. **Hardcode `--project-name=portfolio` in `cloudflare-pages.yml`** (or read from `github.event.repository.name`). Removes the variable entirely and sidesteps the gh-CLI silent-misroute trap.
+3. **Ship both deploy workflows as `workflow_dispatch`-only**, and tell users in `SETUP_AGENT.md` Phase 9 to flip on the one they want.
+4. **Update CF API token permission guidance** in `docs/deploying.md` and the workflow comment — current UI is `Developer Platform → Pages → Edit`, no "User Details" anywhere.
 
 Everything else is polish.

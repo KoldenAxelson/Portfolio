@@ -94,9 +94,16 @@ const icons: Record<string, string> = {
     <div class="mx-auto flex max-w-screen-xl items-center justify-between gap-4 px-6 py-3 lg:px-12">
       <a
         href={url('/')}
-        class="font-mono text-sm font-medium text-fg no-underline hover:!text-accent"
+        class="inline-flex items-center no-underline"
+        aria-label={SITE.author.name}
       >
-        {SITE.author.name}
+        <img
+          src={url('/logo-mark.svg')}
+          alt=""
+          width="36"
+          height="36"
+          class="h-8 w-auto transition-opacity hover:opacity-80"
+        />
       </a>
 
       {
