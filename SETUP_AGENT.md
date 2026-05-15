@@ -6,6 +6,8 @@ through the phases in order, ask the user the questions in each phase, and edit
 the listed files. Do not skip ahead. Do not bulk-ask everything up front: each
 phase's edits depend on the previous phase's answers.
 
+> [`AGENTS.md`](./AGENTS.md) is the shorter orientation doc. Skim it once for the hard invariants (JSON-LD `@id` linkage, base-path safety, no JS above the fold, Lighthouse targets) before starting Phase 1.
+
 The user has already run `make setup` (or `bash setup.sh`). Dependencies are
 installed. The site builds. Your job is to fill in real data and remove the
 template's placeholder content.
@@ -19,11 +21,9 @@ template's placeholder content.
 ## Phase 0 — Pre-flight (no questions yet)
 
 1. Confirm the working directory is the project root (`package.json` present).
-2. Run `npm run build` once to confirm the template builds clean before you
-   start editing. If it fails, stop and surface the error.
-3. Read `src/config.ts` so you know the field names you'll be filling.
-4. Read `docs/customization.md`, `docs/content.md`, and `docs/seo.md` once
-   for context — but do not paste them at the user.
+2. Run `npm run build` once to confirm the template builds clean before editing. Stop and surface the error if it fails.
+3. Read `src/config.ts` and `src/data/cv.ts` once — you'll be filling these in.
+4. Read [`AGENTS.md`](./AGENTS.md) for invariants (do not regress JSON-LD `@id` linkage, base-path safety, no JS above the fold, Lighthouse targets).
 
 ---
 
@@ -105,11 +105,9 @@ Do not also edit `src/pages/cv.astro` or `src/pages/index.astro`.
 
 ## Phase 3 — Projects (`src/content/projects/`)
 
-**Delete every `example-*` file** in `src/content/projects/` and
-`src/content/archive/` first. Same for `public/covers/example-*`.
+Run `node scripts/clean-examples.mjs` once. It removes every template `example-*` file from `src/content/{projects,archive,network,certificates}` and `public/covers/`, plus the placeholder welcome post. Idempotent.
 
-Then run `make project` (interactive) for each real project the user wants
-to feature, OR write the MDX files by hand following `docs/content.md`.
+Then either run `make project` (interactive) for each real project, or write the MDX files by hand following `docs/content.md`.
 
 **Sort projects into tiers BEFORE writing:**
 
@@ -123,9 +121,7 @@ to feature, OR write the MDX files by hand following `docs/content.md`.
   needs a one-sentence honest postmortem. This collection is the template's
   marquee feature; encourage at least 2–3 entries.
 
-**Cover images** — optional. If provided, pre-convert to WebP/AVIF
-(`cwebp -q 80`) and drop in `public/covers/`. Target ≤30 KB each. Do not
-ship PNG/JPG.
+**Cover images** — optional but worth pushing for. The cover doubles as the project's `og:image` and Twitter card (`SEO.astro` passes it through), so it's the social-share thumbnail people see when the URL gets posted. Pre-convert raster sources to WebP/AVIF (`cwebp -q 80`) and drop in `public/covers/`. Target ≤30 KB each.
 
 For Tier-1 projects, also ask for the `metric` field (vanity stat —
 "★ 612 stars", "↓ 12k downloads") and a link to the source page for that
@@ -141,9 +137,9 @@ or omitted = no indicator on that card.
 
 ## Phase 4 — Articles (`src/content/posts/`)
 
-**Delete every `example-*` and the placeholder `welcome-to-neofolio` post.**
+The `clean-examples` script in Phase 3 already removed the placeholder `welcome-to-neofolio` post.
 
-Articles are MDX with frontmatter — `docs/content.md` has the schema.
+Articles are MDX with frontmatter — `docs/content.md` has the schema. A post's `cover:` frontmatter also feeds `og:image` and the BlogPosting JSON-LD `image`, so it's worth supplying when one exists.
 The user can either:
 
 - **Have existing posts** — paste them in, slugify the filename, fill the
@@ -166,9 +162,7 @@ the homepage's recent-articles list. Empty array or omitted = no indicator.
 
 ## Phase 5 — Certifications (`src/content/certificates/`)
 
-**Delete every `example-*.yaml`** in `src/content/certificates/`.
-
-Then for every credential the user holds (or has held — expired ones still
+`clean-examples` already removed the template entries. For every credential the user holds (or has held — expired ones still
 matter), create a YAML file with:
 
 - `name` — exact title as on the credential
@@ -194,7 +188,7 @@ entry from `nav` in `src/config.ts` and delete `src/pages/certificates.astro`.
 
 ## Phase 6 — Network contacts (`src/content/network/`) — optional
 
-**Delete every `example-*.yaml`** in `src/content/network/`.
+`clean-examples` already removed the template entries.
 
 This page is a recruiter aid: it lists 4–10 people who'd vouch for the
 user, with a `relationship` field describing how they know each other.
@@ -256,31 +250,15 @@ final URL — canonicals, JSON-LD, sitemap, llms.txt all derive from it.
 
 ## Phase 10 — Verification (do not skip)
 
-Run these and surface results to the user:
-
 ```bash
-npm run build                      # must pass clean
-npm run preview &                  # serve dist on :4321
-sleep 2
-
-# 1. Real bio is in the HTML (not "A few sentences about who you are…")
-curl -s http://localhost:4321/ | grep -o '<p[^>]*>[^<]\+</p>' | head
-
-# 2. JSON-LD parses on /cv
-curl -s http://localhost:4321/cv | grep -oE '<script type="application/ld\+json">[^<]+'
-
-# 3. llms.txt renders
-curl -s http://localhost:4321/llms.txt | head -40
-
-# 4. robots.txt has the right base URL
-curl -s http://localhost:4321/robots.txt
-
-# 5. Sitemap has real URLs (not example.com)
-curl -s http://localhost:4321/sitemap-index.xml
+npm run build      # must pass clean — schema errors surface here
+make verify        # placeholders gone? JSON-LD parses? sitemap real?
+make lighthouse    # ≥ 90 / 100 / 100 / 100
 ```
 
-Then run `make lighthouse` (or `bash scripts/lighthouse.sh`) and confirm
-all four scores are ≥ 90/100/100/100.
+`make verify` (= `node scripts/verify-setup.mjs`) walks `dist/` looking for any of the template placeholder strings (`Your Name`, `you@example.com`, `Example Corp`, `https://example.com`, `your-username`, `[your name]`), validates every JSON-LD block parses, and confirms `llms.txt` + the sitemap don't reference `example.com`. Exit code 1 on hard issues. Surface the structured report to the user verbatim if anything fails — each issue names the file.
+
+If `make verify` flags placeholders, the agent missed an edit. Find them with `grep -r "<placeholder>" src/`, fix the source, rebuild, re-verify.
 
 ---
 
@@ -288,20 +266,15 @@ all four scores are ≥ 90/100/100/100.
 
 Confirm with the user, point by point:
 
-- [ ] No `example-*` files anywhere in `src/content/`
-- [ ] No "Your Name" / "Example Corp" / "you@example.com" anywhere in the
-  build output (`grep -ri "your name\|example corp\|you@example" dist/`
-  should return nothing)
+- [ ] `make verify` exits clean (covers placeholder + JSON-LD + sitemap checks)
 - [ ] `SITE.url` points at the real domain
 - [ ] `og-default.png` exists OR `DEFAULT_OG_IMAGE` is `undefined`
 - [ ] At least one real article published (or a tracked TODO to write one)
-- [ ] CV page reflects their actual experience
-- [ ] Lighthouse passes
+- [ ] CV page reflects actual experience
+- [ ] `make lighthouse` passes
 - [ ] Domain DNS points at the deploy target
 - [ ] `git commit && git push`
 
-If any item is unchecked, name it explicitly in your wrap-up message.
-Don't let the user "ship it tomorrow" — tomorrow becomes never.
+If any item is unchecked, name it explicitly in the wrap-up. Don't let the user "ship it tomorrow" — tomorrow becomes never.
 
-See `TODO_AI.md` for the post-launch AI-readability follow-ups (directory
-submissions, reciprocal `rel="me"` links, flagship article).
+See [`TODO_AI.md`](./TODO_AI.md) for post-launch AI-readability follow-ups (directory submissions, reciprocal `rel="me"` links, flagship article).

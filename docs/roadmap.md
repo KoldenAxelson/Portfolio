@@ -6,7 +6,7 @@ Context-save for Neofolio. Skim before starting a new session.
 
 Astro static-first portfolio template, Vue islands for two interactive pieces. Designed so humans and LLMs come away with the same accurate picture without running JS.
 
-Template ships as its own GitHub Pages demo. Reference implementation (`wrightfunctions.com`) will be a fork.
+Template ships as its own GitHub Pages demo. Forkers customize from there.
 
 ## Current status
 
@@ -89,18 +89,6 @@ Template ships as its own GitHub Pages demo. Reference implementation (`wrightfu
 - [ ] `scripts/cv-pdf.sh` — Puppeteer headless print of `/cv`
 - [ ] Optional dark-mode toggle (not just `prefers-color-scheme`)
 
-### wf-site fork (per HUMAN.md)
-- [ ] Fork: `gh repo create wf-site --template KoldenAxelson/neofolio --private --clone`
-- [ ] Re-enable Cloudflare workflow
-- [ ] DNS at `wrightfunctions.com`
-- [ ] Cloudflare Workers secrets (`RESEND_API_KEY`, `CONTACT_TO_EMAIL`)
-- [ ] Real identity in `src/config.ts`
-- [ ] Real `/cv`, `/now`, `humans.txt`, content
-- [ ] Real cover images (pre-WebP)
-- [ ] Delete `example-*` content
-- [ ] Inventory external hard drive → Tier 1/2/3 decisions
-- [ ] Flagship article
-
 ### Post-launch directory submissions
 - [ ] uses.tech, nownownow.com, emmabostian/developer-portfolios
 - [ ] Reciprocal `rel="me"` on GitHub, LinkedIn, Bluesky
@@ -109,8 +97,6 @@ Template ships as its own GitHub Pages demo. Reference implementation (`wrightfu
 
 - Single-page vs multi-page architecture
 - Tech tag vocabulary (pick 8–12, stick to them)
-- DoD / classified framing on CV
-- Color palette / typography for wf-site (current neutral works for template)
 
 ## Known quirks
 
@@ -136,5 +122,7 @@ CI safety: no platform-pinned binaries in `dependencies` (Sharp / Rollup binarie
 ## Reference
 
 - [README](../README.md) — front door
-- [HUMAN.md](../HUMAN.md) — maintainer's punch list
+- [AGENTS.md](../AGENTS.md) — agent orientation
+- [SETUP_AGENT.md](../SETUP_AGENT.md) — agent-driven setup runbook
+- [TODO_AI.md](../TODO_AI.md) — deferred AI-readability work
 - [architecture](./architecture.md), [customization](./customization.md), [content](./content.md), [deploying](./deploying.md), [performance](./performance.md), [seo](./seo.md), [design-philosophy](./design-philosophy.md)

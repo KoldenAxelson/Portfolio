@@ -2,7 +2,7 @@
 // SEO + OpenGraph + JSON-LD all in one place.
 // Pages pass in title/description/og; we handle the rest from src/config.
 import { SITE, DEFAULT_OG_IMAGE } from '@config';
-import { personId, websiteId } from '@lib/schema';
+import { personId, websiteId, absoluteImage } from '@lib/schema';
 
 interface Props {
   title?: string;
@@ -33,11 +33,9 @@ const {
 
 const fullTitle = title ? `${title} — ${SITE.title}` : SITE.title;
 const canonical = new URL(Astro.url.pathname, SITE.url).toString();
-const ogImage = image
-  ? image.startsWith('http')
-    ? image
-    : new URL(image, SITE.url).toString()
-  : undefined;
+// Base-path aware: a cover at `/covers/foo.svg` resolves to the deployed
+// asset URL under any sub-path, not the root domain.
+const ogImage = absoluteImage(image);
 
 // Per-page schemas (BlogPosting, CreativeWork, hasOccupation Person on /cv)
 // reference the canonical site Person and WebSite by @id via @lib/schema —
@@ -98,7 +96,7 @@ const allSchema = [...baseSchema, ...schema];
 <meta name="twitter:title" content={fullTitle} />
 <meta name="twitter:description" content={description} />
 {ogImage && <meta name="twitter:image" content={ogImage} />}
-{SITE.links.twitter && (
+{SITE.links.twitter && SITE.author.handle && (
   <meta name="twitter:creator" content={SITE.author.handle} />
 )}
 

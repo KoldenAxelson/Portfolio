@@ -28,7 +28,7 @@ const schema = [
     // Reference the canonical Person — do NOT redeclare it.
     author: { '@id': personId },
     publisher: { '@id': personId },
-    keywords: data.tags.join(', '),
+    ...(data.tags.length > 0 && { keywords: data.tags.join(', ') }),
     inLanguage: SITE.locale,
     ...(articleImage && { image: articleImage }),
     isPartOf: { '@id': websiteId },
@@ -40,6 +40,7 @@ const schema = [
 <BaseLayout
   title={data.title}
   description={data.description}
+  image={data.cover}
   type="article"
   publishedTime={data.pubDate}
   modifiedTime={data.updatedDate}

@@ -36,7 +36,7 @@ const schema = [
     // Reference the canonical Person — do NOT redeclare it.
     author: { '@id': personId },
     creator: { '@id': personId },
-    keywords: data.tags.join(', '),
+    ...(data.tags.length > 0 && { keywords: data.tags.join(', ') }),
     ...(data.stack.length > 0 && { programmingLanguage: data.stack }),
     ...(data.links.repo && { codeRepository: data.links.repo }),
     ...(data.links.live && { url: data.links.live }),
@@ -51,6 +51,7 @@ const schema = [
 <BaseLayout
   title={data.title}
   description={data.summary}
+  image={data.cover}
   type="article"
   schema={schema}
 >

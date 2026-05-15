@@ -7,6 +7,7 @@ stack: ['TypeScript', 'Vite', 'WebExtensions API']
 year: '2025'
 status: 'shipped'
 metric:
-  label: '★ 4.6 @2.1kUsers'
+  icon: user
+  label: '2.1k @ChromeWebstore'
   href: 'https://chromewebstore.google.com/detail/tldr-this'
 ---

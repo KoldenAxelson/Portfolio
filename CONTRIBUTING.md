@@ -1,54 +1,25 @@
 # Contributing
 
-PRs welcome. Six ground rules:
+Neofolio is a **fork-and-customize template**, not a collaborative codebase.
 
-1. **No JS above the fold.** Hero is HTML. Islands hydrate on interaction or visibility (except where the island IS the page content, e.g. NetworkPanel).
-2. **No third-party render-blocking resources.** No Google Fonts CDN, no Font Awesome stylesheet. Self-host or skip.
-3. **Static output stays static.** `make build` must produce a `dist/` that works on a dumb host. Cloudflare Functions are opt-in.
-4. **Lighthouse targets aren't optional.** 90+/100/100/100. PRs that drop any score need a justification.
-5. **Two audiences, one site.** Consider the AI scraper alongside the human visitor. See [docs/seo.md](./docs/seo.md).
-6. **No platform-pinned binaries in `dependencies`.** Sharp / Rollup native binaries belong in `optionalDependencies` if anywhere. They break CI.
+You don't need permission to use it. Clone the repo, edit `src/config.ts`,
+populate your content, ship your portfolio.
 
-## Local dev
+## Not actively accepting PRs
 
-```bash
-git clone https://github.com/KoldenAxelson/neofolio.git
-cd neofolio
-make setup
-make dev
-```
+This template is maintained as one person's opinionated reference. PRs that
+change the architecture, add features, or rebrand the defaults will almost
+always be declined — please just fork instead.
 
-## Before opening a PR
+## When an issue does make sense
 
-```bash
-make build       # confirm it builds
-make lighthouse  # confirm no regressions
-```
+- A reproducible **bug** in a default-deployed build — broken link, schema
+  validation error, JSON-LD that doesn't parse, Lighthouse regression on a
+  clean fork.
+- A **security** concern in the template's code or one of its dependencies.
 
-A11y-touching change → audit `/` and `/projects` for Accessibility = 100.
-Schema-touching change → confirm example content still validates.
-
-## Welcome
-
-- `/cv.json` (JSON Resume) generator
-- Keyboard-driven chip filter for `/projects`
-- `scripts/cv-pdf.sh` Puppeteer print of `/cv`
-- More pre-WebP demo covers
-- i18n layer
-
-## Will be declined
-
-- Search bar (Cmd-F works)
-- Comments (use webmentions)
-- Floating contact buttons (Network + footer suffice)
-- Per-page analytics
-- Astro View Transitions (marginal benefit on a portfolio)
-- Renaming "Articles" back to "Writing" (settled)
-
-## Issue reports
-
-Include: Node version, OS, `git log -1`, repro steps, expected vs actual. For Lighthouse regressions, include the report HTML or category screenshot.
+For anything else — yes, fork it. That's the design.
 
 ## License
 
-MIT. Contributions licensed under same.
+MIT. See [LICENSE](./LICENSE).

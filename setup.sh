@@ -10,7 +10,8 @@
 #   4. Make scripts/*.sh executable
 #   5. Run `npm run build` once to confirm everything compiles
 #
-# What this script does NOT do — see HUMAN.md:
+# What this script does NOT do — those steps belong to a human (or
+# an AI assistant following SETUP_AGENT.md):
 #   - Anything requiring browser sign-in (Cloudflare dashboard, GitHub Pages config)
 #   - Anything requiring credentials you haven't given us (gh auth, wrangler login)
 #   - Picking your domain name, your colors, your project list
@@ -98,11 +99,15 @@ Next steps:
   $ npm run dev        # local dev server on :4321
   $ npm run lighthouse # audit your scores
 
-Things only you can do — see HUMAN.md:
-  · Pick a domain
-  · Edit src/config.ts with your name, bio, links
-  · Add real OG image (public/og-default.png)
-  · Connect the repo to GitHub Pages or Cloudflare Pages
-  · Set Workers secrets for the contact form
+Customize the template (see docs/customization.md for the full surface):
+  · Edit src/config.ts (name, role, bio, links)
+  · Edit src/data/cv.ts (work history, education, skills)
+  · Drop your own 1200×630 PNG at public/og-default.png
+  · Pick a deploy target — see docs/deploying.md
+
+Want an AI assistant to walk you through it?
+  · Read AGENTS.md, then follow SETUP_AGENT.md.
+  · 'node scripts/clean-examples.mjs' wipes the template's example content.
+  · 'make verify' after customizing catches missed placeholders.
 
 EOF

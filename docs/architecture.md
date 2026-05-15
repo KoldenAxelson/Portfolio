@@ -28,8 +28,7 @@ neofolio/
 │   ├── styles/             global.css (Tailwind entry)
 │   └── config.ts           Site identity, nav, bio messages
 ├── Makefile
-├── setup.sh
-└── HUMAN.md                Maintainer's punch list
+└── setup.sh
 ```
 
 ## Source-of-truth files

@@ -17,9 +17,12 @@
 #   make archive    add an archive entry
 #   make badges     optimize ./badges/*.png and move to public/badges/
 #
+#   make clean-examples  remove all template example-* content
+#   make verify          post-customization sanity check (placeholders, JSON-LD)
+#
 #   make clean      remove dist + .astro + lighthouse reports
 
-.PHONY: help setup dev build preview lighthouse clean \
+.PHONY: help setup dev build preview lighthouse clean verify clean-examples \
         contact post project archive noise badges
 
 .DEFAULT_GOAL := help
@@ -72,3 +75,12 @@ badges: ## Optimize images in ./badges/ → public/badges/ (Sharp; resize, recom
 
 noise: ## Regenerate the matte noise textures (public/textures/noise.png + noise-dark.png)
 	@node scripts/_gen-noise.mjs
+
+# ─── Agent setup helpers ──────────────────────────────────────────────
+# Used by SETUP_AGENT.md and AGENTS.md. Also useful directly.
+
+clean-examples: ## Remove every template `example-*` file + the welcome post (idempotent)
+	@node scripts/clean-examples.mjs
+
+verify: ## Post-customization sanity check — placeholders gone, JSON-LD parses
+	@node scripts/verify-setup.mjs

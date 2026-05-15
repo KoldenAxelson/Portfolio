@@ -32,10 +32,18 @@ const projects = defineCollection({
       .default({}),
     /**
      * Vanity metric. Shown as a small linked label on the project card.
+     *
+     * Format: `<number> @<venue>` — the icon conveys the metric type so
+     * the units stay out of the text. Venue reads like a handle (no space
+     * after `@`) and is italicized inside the underline at render time.
+     *
      * Examples:
-     *   { label: '★ 612 stars', href: 'https://github.com/.../stargazers' }
-     *   { label: '↓ 12k downloads', href: 'https://npmjs.com/...' }
-     *   { label: '4.8 ★ on Marketplace', href: 'https://marketplace...' }
+     *   { icon: 'star', label: '612 @GitHub', href: 'https://github.com/.../stargazers' }
+     *   { icon: 'star', label: '4.8 @SlackMarketplace', href: 'https://...' }
+     *   { icon: 'user', label: '2.1k @ChromeWebstore', href: 'https://chromewebstore...' }
+     *   { icon: 'download', label: '24k @GitHubMarketplace', href: 'https://...' }
+     *   { label: 'Read the case study', href: '...' }   // no icon — plain link
+     *
      * The card itself is a link to the project — the metric is a SEPARATE
      * link that typically points at source code, a stats page, or reviews.
      * Omit entirely if there's nothing worth measuring.
@@ -44,6 +52,7 @@ const projects = defineCollection({
       .object({
         label: z.string(),
         href: z.string().url(),
+        icon: z.enum(['star', 'user', 'download']).optional(),
       })
       .optional(),
     /** Cover image path, relative to /public. Optional. */
