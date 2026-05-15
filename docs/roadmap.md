@@ -10,7 +10,7 @@ Template ships as its own GitHub Pages demo. Forkers customize from there.
 
 ## Current status
 
-- v0.1.x — feature-complete for intended scope
+- v1.0 — released
 - Demo live at `koldenaxelson.github.io/neofolio`
 - Lighthouse: ~92 Perf (regional CDN variance), AA+ a11y, 100 BP, 100 SEO
 - Content: seeded with examples — demo-ready, not real
@@ -82,7 +82,6 @@ Template ships as its own GitHub Pages demo. Forkers customize from there.
 ## Planned
 
 ### Template
-- [ ] Real OG image at `public/og-default.png`
 - [ ] `/cv.json` — JSON Resume format (highest-value SEO TODO)
 - [ ] Webmention endpoint (opt-in, requires webmention.io sign-up)
 - [ ] Densify `/projects`, `/articles`, `/cv` with caption + accordion pattern from `/uses`

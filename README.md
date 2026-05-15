@@ -155,6 +155,11 @@ almost always be declined — please just fork instead. Issues for
 reproducible bugs or security concerns are welcome. See
 [CONTRIBUTING.md](./CONTRIBUTING.md).
 
+## Changelog
+
+See [CHANGELOG.md](./CHANGELOG.md) for release history. v1.0.0 is the
+first public release.
+
 ## License
 
 MIT. Attribution appreciated but not required. If Neofolio was useful to
