@@ -40,6 +40,7 @@ Reports → `.lighthouse/`. Manual tool, not CI-gated.
 - JSON-LD: `WebSite`, `Person` site-wide; `BlogPosting`, `CreativeWork`, `ItemList` per page.
 - Sitemap + RSS + JSON Feed.
 - Permissive `robots.txt` (incl. GPTBot, ClaudeBot, PerplexityBot, CCBot).
+- `public/_headers` ships immutable cache lifetimes for hashed/static assets on Cloudflare and Netlify (GitHub Pages ignores it and uses its own CDN defaults). Addresses the Lighthouse "use efficient cache lifetimes" audit.
 
 ## Known constraints
 

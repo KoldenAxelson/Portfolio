@@ -22,6 +22,13 @@ export const SITE = {
     role: 'Software Engineer',
     location: 'City, Country',
     email: 'you@example.com',
+    /**
+     * Phone number for the CV contact line. Optional — set to '' to hide.
+     * Some ATS parsers look for a phone match alongside email; including
+     * one is recommended if you're comfortable with it being public.
+     * Format conventionally for your region (e.g. '+1 555 123-4567').
+     */
+    phone: '',
     /** Short bio for the hero section. One or two sentences. */
     bio: 'I build software that has to keep working when the lights go out. Currently focused on resilient backend systems and developer tooling.',
     /** Longer bio for /cv and JSON-LD. */
@@ -94,10 +101,11 @@ export const SITE = {
 /**
  * Default OpenGraph image (served from /public, no domain prefix).
  *
- * Leave as `undefined` to skip emitting og:image / twitter:image meta tags
- * entirely — better than shipping broken-image links to social platforms.
- * Once you have a real 1200×630 PNG at `public/og-default.png`, set this
- * to `'/og-default.png'`. Pages can also override per-page by passing the
- * `image` prop to `BaseLayout`.
+ * Drop a 1200×630 PNG at `public/og-default.png`. Pages can override
+ * per-page by passing the `image` prop to `BaseLayout` (articles already
+ * do this via their `cover` frontmatter).
+ *
+ * Set to `undefined` to skip emitting og:image / twitter:image meta tags
+ * entirely if you'd rather no preview card than a generic one.
  */
-export const DEFAULT_OG_IMAGE: string | undefined = undefined;
+export const DEFAULT_OG_IMAGE: string | undefined = '/og-default.png';

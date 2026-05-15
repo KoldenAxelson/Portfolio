@@ -39,6 +39,24 @@ const primaryHref: string | null = (() => {
 })();
 
 const primaryIsExternal = primaryHref !== null && /^https?:/i.test(primaryHref);
+
+// Heroicons 2.0 — star (solid), user (outline), download (outline).
+// Solid for award-ish glyphs; outline for stat-ish glyphs.
+type MetricIcon = 'star' | 'user' | 'download';
+const METRIC_ICONS: Record<MetricIcon, { fill: string; path: string }> = {
+  star: {
+    fill: 'currentColor',
+    path: 'M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006Z',
+  },
+  user: {
+    fill: 'none',
+    path: 'M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z',
+  },
+  download: {
+    fill: 'none',
+    path: 'M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3',
+  },
+};
 ---
 
 <article
@@ -113,39 +131,32 @@ const primaryIsExternal = primaryHref !== null && /^https?:/i.test(primaryHref);
 
   {
     /*
-     * Metric label rendering — standardized format is:
+     * Metric rendering. Schema is `{ icon?, label, href }`:
+     *   icon  — 'star' | 'user' | 'download' (see content/config.ts). The
+     *           icon conveys the metric TYPE so the units stay out of the
+     *           label text. Omit for icon-less labels like "Read the case
+     *           study" — just a plain underlined link.
+     *   label — '<number> @<venue>' (e.g. "612 @GitHub", "4.8
+     *           @SlackMarketplace"). The `@<venue>` portion is italicized
+     *           inside the underline. A leading space before `@` is also
+     *           tolerated for legacy entries.
      *
-     *   '★ <metric> [@<venue>]'
-     *
-     *   ★ 1.2k stars
-     *   ★ 612 stars
-     *   ★ 4.8 @SlackMarketplace
-     *   Read the case study              (no star, no venue — also valid)
-     *
-     * The venue is written like a handle — NO space after `@`. The renderer
-     * also strips any whitespace immediately after `@` so legacy labels
-     * (`@ Slack Marketplace`) normalize to the handle form.
-     *
-     * Render structure:
-     *
-     *   [SVG star][underlined: "<metric>" [italic: "@<venue>"]] [↗]
-     *
+     * Render shape: [SVG][underlined: number [italic: @venue]] [↗].
      * The SVG sits OUTSIDE the underlined span so the underline doesn't
-     * span the gap between icon and text. The `@<venue>` portion is
-     * italicized inside the underline.
-     *
-     * Path: Heroicons 2.0 solid star (24x24 viewBox).
+     * span the gap between icon and text.
      */
     data.metric &&
       (() => {
-        const raw = data.metric.label;
-        const hasStar = raw.includes('★');
-        const cleaned = raw.replace(/★/g, '').replace(/\s+/g, ' ').trim();
+        const { icon, label } = data.metric;
+        const cleaned = label.replace(/\s+/g, ' ').trim();
         const atIdx = cleaned.indexOf(' @');
         const beforeVenue = atIdx >= 0 ? cleaned.slice(0, atIdx) : cleaned;
         // Strip any whitespace immediately after `@` so "@ X" → "@X".
         const venue =
-          atIdx >= 0 ? cleaned.slice(atIdx + 1).replace(/^@\s+/, '@') : null; // "@X"
+          atIdx >= 0 ? cleaned.slice(atIdx + 1).replace(/^@\s+/, '@') : null;
+
+        const glyph = icon ? METRIC_ICONS[icon] : null;
+
         return (
           <p class="relative z-10 clear-both mt-3">
             <a
@@ -154,18 +165,23 @@ const primaryIsExternal = primaryHref !== null && /^https?:/i.test(primaryHref);
               class="group/metric -my-1 inline-flex items-center gap-1.5 py-1 font-mono text-sm text-accent no-underline"
               itemprop="codeRepository"
             >
-              {hasStar && (
+              {glyph && (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
-                  fill="currentColor"
+                  fill={glyph.fill}
+                  stroke={glyph.fill === 'none' ? 'currentColor' : undefined}
+                  stroke-width={glyph.fill === 'none' ? 1.6 : undefined}
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
                   aria-hidden="true"
                   class="h-4 w-4 shrink-0"
                 >
                   <path
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
-                    d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006Z"
+                    {...(glyph.fill === 'currentColor'
+                      ? { 'fill-rule': 'evenodd', 'clip-rule': 'evenodd' }
+                      : {})}
+                    d={glyph.path}
                   />
                 </svg>
               )}

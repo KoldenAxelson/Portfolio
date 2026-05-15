@@ -22,7 +22,8 @@ list, license. These docs go deeper.
 ## Beyond /docs
 
 - [README.md](../README.md) — quickstart, feature list, license
-- [CONTRIBUTING.md](../CONTRIBUTING.md) — PR workflow, local dev, ground rules
+- [AGENTS.md](../AGENTS.md) — entry point for an AI assistant working in this repo
+- [SETUP_AGENT.md](../SETUP_AGENT.md) — 11-phase runbook for agent-driven setup
+- [TODO_AI.md](../TODO_AI.md) — deferred AI-readability work (post-launch)
+- [CONTRIBUTING.md](../CONTRIBUTING.md) — fork-friendly stance; PRs not actively accepted
 - [LICENSE](../LICENSE) — MIT
-- `HUMAN.md` (root of the canonical Neofolio repo) — a personal punch list
-  by the maintainer. Forkers can delete or repurpose it.

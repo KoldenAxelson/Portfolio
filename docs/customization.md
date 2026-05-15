@@ -19,14 +19,17 @@ export const SITE = {
   locale: 'en-US',
   author: {
     name, handle, role, location, email, bio, longBio,
+    phone,                       // optional, '' to hide — shown on /cv contact line
+    resume: { pdf, docx },
   },
-  bioMessages: { about: [...], experience: [...], projects: [...], articles: [...] },
   links: { github, linkedin, twitter, mastodon, bluesky, rss },
   nav: [ { label, href, icon } ],
 };
 ```
 
-Flows into: `<title>`, OG/Twitter cards, JSON-LD (`Person`, `WebSite`), h-card, footer, socials, top nav, sidebar typewriter.
+Flows into: `<title>`, OG/Twitter cards, JSON-LD (`Person`, `WebSite`), h-card, footer, socials, top nav.
+
+Per-element typewriter "thoughts" don't live here — they're colocated with the data they're about. See [Sidebar typewriter](#sidebar-typewriter-homepage-only) below.
 
 ## Colors
 
@@ -65,24 +68,32 @@ nav: [
 ];
 ```
 
-Available `icon` keys: `folder`, `newspaper`, `globe`, `desktop`, `briefcase`. Add new keys in the `icons` map in `TopNav.astro` (Heroicons outline SVG paths).
+Available `icon` keys: `folder`, `newspaper`, `desktop`, `globe`, `user-group`, `briefcase`, `fire`, `academic-cap`, `trophy`. Add new keys in the `icons` map in `TopNav.astro` (Heroicons outline SVG paths).
 
 Label and route can mismatch. The route just has to exist as an Astro page.
 
 ## Sidebar typewriter (homepage only)
 
+The typewriter is driven by **per-element `thoughts: string[]`** colocated with each item — not by a central config block. Each role in `src/data/cv.ts`, each project's MDX frontmatter, each post's MDX frontmatter, and each certificate's YAML can carry 1–3 thoughts.
+
 ```ts
-bioMessages: {
-  about: ['…', '…'],
-  experience: ['…', '…'],
-  projects: ['…'],
-  articles: ['…'],
-}
+// src/data/cv.ts
+thoughts: [
+  "An off-resume aside about this role, one to three sentences.",
+],
 ```
 
-Scroll-spy in `SideBar.astro` types a random message from the matching array as the user scrolls into each section. Mobile (`<lg`) skips the typewriter entirely.
+```yaml
+# src/content/projects/foo.mdx
+thoughts:
+  - "An off-resume aside about this project."
+```
 
-Section IDs are defined in `src/pages/index.astro` — adding a new section needs three changes: the `<section id="">`, the `sections` array, and a `bioMessages` key.
+A small `BioIndicator` chat-bubble renders next to each element. Clicking one types one of its thoughts in the sidebar (desktop) or drops it into the navbar's bio panel (mobile). Scrolling into a section auto-picks a random thought from a random indicator in that section.
+
+The About section has no indicator — the sidebar reverts to the static `author.bio` from `src/config.ts` while scrolled there. Empty `thoughts` arrays render a faded, disabled indicator.
+
+Adding a new homepage section means three edits: the `<section id="">` in `src/pages/index.astro`, the matching entry in the `sections` array at the top of that file, and a per-item `thoughts` array on at least one element inside it (or the section will silently fall back to the static bio).
 
 ## Matte noise texture
 

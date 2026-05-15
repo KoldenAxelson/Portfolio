@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '@layouts/BaseLayout.astro';
 import CertRow from '@components/CertRow.astro';
 import { SITE } from '@config';
-import { url } from '@lib/url';
+import { credentialId } from '@lib/schema';
 import { getBadgeImage, badgeImageObject, type BadgeImage } from '@lib/cert';
 
 // Most-recent first. Drafts excluded from the build.
@@ -40,7 +40,7 @@ function credentialSchema(c: (typeof all)[number]) {
   const image = badgeImageObject(badges.get(c.id) ?? null);
   return {
     '@type': 'EducationalOccupationalCredential',
-    '@id': new URL(`/certificates#${c.id}`, SITE.url).toString(),
+    '@id': credentialId(c.id),
     name: d.name,
     ...(d.description && { description: d.description }),
     credentialCategory: 'Professional Certification',
@@ -62,7 +62,7 @@ const schema = [
   {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
-    '@id': new URL('/certificates#list', SITE.url).toString(),
+    '@id': credentialId('list'),
     name: 'Certifications',
     numberOfItems: all.length,
     itemListOrder: 'https://schema.org/ItemListOrderDescending',
@@ -83,11 +83,6 @@ const schema = [
 >
   <header class="mb-8 print:hidden">
     <h1 class="text-3xl font-medium">Certifications</h1>
-    <p class="mt-3 max-w-prose text-muted">
-      Professional credentials I hold or have held. Each one links to its issuer's verification
-      page so anyone can confirm authenticity directly. Expired credentials are kept on the page
-      — letting them roll off without acknowledgement is a small dishonesty I'd rather not commit.
-    </p>
   </header>
 
   {/*
@@ -117,11 +112,7 @@ const schema = [
   {
     expired.length > 0 && (
       <section id="expired" class="scroll-mt-24" aria-labelledby="expired-heading">
-        <h2 id="expired-heading" class="mb-2 text-xl font-medium">Expired</h2>
-        <p class="mb-6 max-w-prose text-sm text-muted">
-          Credentials that have lapsed. Kept here for an honest record — what I learned for them
-          didn't expire even if the badge did.
-        </p>
+        <h2 id="expired-heading" class="mb-4 text-xl font-medium">Expired</h2>
         <ul class="divide-y divide-border">
           {expired.map((c) => (
             <li class="print:break-inside-avoid">
@@ -137,7 +128,7 @@ const schema = [
     all.length === 0 && (
       <p class="text-muted">
         No certifications listed yet. Add one by dropping a YAML file into
-        <code>src/content/certificates/</code> — see <a href={url('/articles')}>docs</a>.
+        <code>src/content/certificates/</code> — see <code>docs/certificates.md</code> for the schema.
       </p>
     )
   }

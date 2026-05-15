@@ -12,10 +12,6 @@ const posts = (await getCollection('posts', ({ data }) => !data.draft)).sort(
 <BaseLayout title="Articles" description="Essays on software, systems, and AI-age portfolio design.">
   <header class="mb-8">
     <h1 class="text-3xl font-medium">Articles</h1>
-    <p class="mt-3 max-w-prose text-muted">
-      Essays on software, systems, and AI-age portfolio design. Canonical home for
-      everything I publish — syndicated elsewhere with <code>rel="canonical"</code> back here.
-    </p>
   </header>
 
   <ul class="divide-y divide-border">

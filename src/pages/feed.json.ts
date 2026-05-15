@@ -29,7 +29,7 @@ export const GET: APIRoute = async (context) => {
       },
     ],
     items: posts.map((post) => {
-      const url = `${baseUrl}/articles/${post.slug}/`;
+      const url = `${baseUrl}/articles/${post.slug}`;
       return {
         id: url,
         url,

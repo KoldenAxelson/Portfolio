@@ -3,15 +3,23 @@ import { SITE } from '@config';
 
 interface Props {
   date: Date;
+  /**
+   * `'day'` (default) — "Sep 21, 2024". Use for article/post dates and any
+   * editorial context where freshness matters.
+   * `'month'` — "Sep 2024". Use for résumé-shaped data (cert validity,
+   * employment ranges) where month-precision is the ATS convention.
+   */
+  precision?: 'day' | 'month';
 }
 
-const { date } = Astro.props;
+const { date, precision = 'day' } = Astro.props;
 const iso = date.toISOString();
-const human = date.toLocaleDateString(SITE.locale, {
-  month: 'short',
-  day: 'numeric',
-  year: 'numeric',
-});
+const human = date.toLocaleDateString(
+  SITE.locale,
+  precision === 'month'
+    ? { month: 'short', year: 'numeric' }
+    : { month: 'short', day: 'numeric', year: 'numeric' },
+);
 ---
 
 <time datetime={iso} class="whitespace-nowrap">{human}</time>

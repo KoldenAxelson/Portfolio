@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
 import { SITE } from '@config';
+import { personId, websiteId, absolute } from '@lib/schema';
 import FormattedDate from '@components/FormattedDate.astro';
 
 // What I'm focused on right now.
@@ -44,14 +45,19 @@ const sections = [
   },
 ];
 
+// Reference the canonical Person and WebSite via @id — DO NOT redeclare a
+// new Person inline. Sharing @ids is what merges the records across pages
+// into a single graph entity for AI / Knowledge Graph ingesters.
 const schema = [
   {
     '@context': 'https://schema.org',
     '@type': 'CreativeWork',
+    '@id': `${absolute('/now')}#now`,
     name: `What ${SITE.author.name} is focused on right now`,
-    dateModified: updated.toISOString(),
-    author: { '@type': 'Person', name: SITE.author.name },
     description: `A snapshot of ${SITE.author.name}'s current focus — building, learning, reading, and life.`,
+    dateModified: updated.toISOString(),
+    author: { '@id': personId },
+    isPartOf: { '@id': websiteId },
   },
 ];
 ---

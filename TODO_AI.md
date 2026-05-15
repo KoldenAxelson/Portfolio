@@ -101,13 +101,13 @@ that enumerates the entries (with `position` and `url`) makes the index
 itself a structured entity. The `docs/seo.md` table mentions this for
 `/network`; it should also exist on `/projects` and `/articles`.
 
-### `dateModified` on `/now`
+### Auto-`dateModified` on `/now` from git
 
-`/now` is the page AI summarizers should treat as the freshest signal of
-"what is this person up to?". Emitting a `CreativeWork` JSON-LD with
-`dateModified` set to the page's actual last-edit date (read from `git
-log -1`) would make the freshness machine-readable. Could be a small
-build-time script.
+`/now` already emits a `CreativeWork` JSON-LD with `dateModified` set from
+an `updated` constant in `src/pages/now.astro` — the constant has to be
+bumped by hand when the page changes. Replacing it with the file's actual
+last-commit date (read from `git log -1 --format=%cI src/pages/now.astro`
+at build time) would make the freshness signal automatic.
 
 ### Project `aggregateRating`
 

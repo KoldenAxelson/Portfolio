@@ -34,7 +34,8 @@ links:                                   # all optional
   live: 'https://...'
   repo: 'https://github.com/...'
 metric:                                  # vanity metric on the card
-  label: '★ 612 stars'                   # see "Metric label format" below
+  icon: star                             # 'star' | 'user' | 'download' (optional)
+  label: '612 @GitHub'                   # see "Metric format" below
   href: 'https://github.com/.../stargazers'
 cover: /covers/event-pipeline.svg        # relative to /public
 thoughts:                                # personal asides, see "thoughts" below
@@ -51,7 +52,21 @@ thoughts:                                # personal asides, see "thoughts" below
 
 Tier-1 body convention: Problem / Constraints / What I did / Outcome / What I'd do differently.
 
-**Metric label format** — `'★ <metric> [@<venue>]'`. Leading `★` (Unicode literal) renders as an inline Heroicons solid-star SVG outside the underlined text. Optional `@<venue>` reads like a handle — no space after `@` — and is italicized inside the underline. Examples: `'★ 612 stars'`, `'★ 1.2k stars'`, `'★ 4.8 @SlackMarketplace'`, `'Read the case study'` (no star — plain link). Legacy `@ Venue` (with a space) auto-normalizes at render time.
+**Metric format** — `icon` picks the SVG, `label` is `'<number> @<venue>'`. The icon conveys the metric type so the units stay out of the text. Available icons: `star` (Heroicons solid star), `user` (Heroicons outline user), `download` (Heroicons outline arrow-down-tray). Omit `icon` for a plain underlined link (e.g. `label: 'Read the case study'`). The `@<venue>` portion reads like a handle — no space after `@` — and is italicized inside the underline. Examples:
+
+```yaml
+icon: star
+label: '612 @GitHub'              # → ★ 612 @GitHub
+
+icon: star
+label: '4.8 @SlackMarketplace'    # → ★ 4.8 @SlackMarketplace
+
+icon: user
+label: '2.1k @ChromeWebstore'     # → 👤 2.1k @ChromeWebstore
+
+icon: download
+label: '24k @GitHubMarketplace'   # → ↓ 24k @GitHubMarketplace
+```
 
 **Cover images** — relative to `/public`. SVG passes through unchanged. **Pre-convert raster sources to WebP/AVIF** before committing:
 

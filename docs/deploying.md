@@ -60,6 +60,15 @@ Required secrets:
 - `CLOUDFLARE_ACCOUNT_ID`
 - Variable `CLOUDFLARE_PROJECT_NAME`
 
+### Cache headers
+
+`public/_headers` ships with sensible cache lifetimes:
+
+- `/_astro/*`, `/fonts/*`, `/textures/*`, `/badges/*`, `/covers/*` → `max-age=1y, immutable` (Astro emits content-hashed names for the first; the rest are committed assets that don't mutate)
+- HTML → 5 min browser, 1 hr CDN, 24 hr `stale-while-revalidate` (so deploys propagate quickly while the CDN stays responsive)
+
+Cloudflare and Netlify read `_headers` automatically. GitHub Pages ignores it (its own CDN handles caching).
+
 ### Contact form on Cloudflare
 
 `functions/api/contact.ts` forwards via Resend. Set secrets:

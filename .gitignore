@@ -36,11 +36,12 @@ pnpm-debug.log*
 !.vscode/extensions.json
 .idea/
 
-# lighthouse
+# lighthouse — scripts/lighthouse.sh writes reports to .lighthouse/
+.lighthouse/
 .lighthouseci/
 lighthouse-report.*.html
 lighthouse-report.*.json
 
 # wrangler / cloudflare
 .wrangler/
-.dev.varsi
+.dev.vars

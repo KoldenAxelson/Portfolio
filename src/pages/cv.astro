@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '@layouts/BaseLayout.astro';
 import FormattedDate from '@components/FormattedDate.astro';
 import { SITE } from '@config';
-import { personId } from '@lib/schema';
+import { personId, credentialId } from '@lib/schema';
 import { getBadgeImage, badgeImageObject, type BadgeImage } from '@lib/cert';
 import { experience, education, skills } from '@data/cv';
 
@@ -72,7 +72,7 @@ const schema = [
         return {
           '@type': 'EducationalOccupationalCredential',
           // Same @id as on /certificates so the two records merge.
-          '@id': new URL(`/certificates#${c.id}`, SITE.url).toString(),
+          '@id': credentialId(c.id),
           name: c.data.name,
           ...(c.data.description && { description: c.data.description }),
           credentialCategory: 'Professional Certification',
@@ -100,6 +100,40 @@ const activeCertificates = certificates.filter(
   (c) => !c.data.expirationDate || c.data.expirationDate > now,
 );
 
+// Visible contact links for the header. Strip the URL scheme so ATS
+// parsers and human readers both see "linkedin.com/in/..." — the most
+// recognizable form. Skip any link the author left empty.
+const visibleLinks: { label: string; href: string }[] = [];
+if (SITE.links.github) {
+  visibleLinks.push({
+    label: SITE.links.github.replace(/^https?:\/\//, ''),
+    href: SITE.links.github,
+  });
+}
+if (SITE.links.linkedin) {
+  visibleLinks.push({
+    label: SITE.links.linkedin.replace(/^https?:\/\//, ''),
+    href: SITE.links.linkedin,
+  });
+}
+
+// Format an employment date range. Uses the ISO `startDate`/`endDate` from
+// `cv.ts` when present (renders as "Jan 2024 – Present"); falls back to
+// the year-only `start`/`end` fields when not. Month-precision is the ATS
+// convention for employment ranges.
+function jobDateRange(job: (typeof experience)[number]): string {
+  const fmt = (iso: string) =>
+    new Date(iso).toLocaleDateString(SITE.locale, { month: 'short', year: 'numeric' });
+  const start = job.startDate ? fmt(job.startDate) : job.start;
+  const end =
+    job.end === 'present'
+      ? 'Present'
+      : job.endDate
+        ? fmt(job.endDate)
+        : job.end;
+  return `${start} – ${end}`;
+}
+
 // Per-page toolbar — Print, PDF download, DOCX download. Rendered by
 // TopNav as a center-justified row on lg+; behind the arrow-down-circle
 // button next to the hamburger on mobile.
@@ -120,17 +154,44 @@ const cvTools = [
   schema={schema}
   tools={cvTools}
 >
-  {/* On-screen only: the "CV" page title and the meta-instruction about
-      printing are hidden in print output. The print version leads with
-      the Summary section, which is the right thing for a printed CV.
-      Print / Download PDF / Download DOCX live in TopNav's toolbar
-      (declared via the `tools` prop above). */}
-  <header class="mb-8 print:hidden">
-    <h1 class="text-3xl font-medium">CV</h1>
-    <p class="mt-3 max-w-prose text-muted">
-      Full work history, plain text. Use the toolbar above to print or download
-      a PDF / DOCX copy.
-    </p>
+  {/*
+    Standard résumé contact block — name as the prominent H1, role one
+    line below, then the contact line. ATS parsers take the first
+    prominent text element as the candidate's name; structuring it this
+    way (rather than a "CV" page title) is what makes the document
+    machine-readable as a résumé.
+
+    Every contact field is visible TEXT (not just an icon link) so ATS
+    body-parsers can extract them: `name@domain.tld` for email,
+    `linkedin.com/in/...` for profiles. Print preserves the block;
+    the on-page toolbar (Print / PDF / DOCX) lives in TopNav and is
+    hidden in print.
+  */}
+  <header class="mb-10 print:mb-6">
+    <h1 class="text-4xl font-semibold tracking-tight sm:text-5xl">{SITE.author.name}</h1>
+    <p class="mt-2 text-lg text-muted">{SITE.author.role}</p>
+    <ul class="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted">
+      {SITE.author.location && <li>{SITE.author.location}</li>}
+      <li>
+        <a href={`mailto:${SITE.author.email}`} class="no-underline hover:!text-fg">
+          {SITE.author.email}
+        </a>
+      </li>
+      {SITE.author.phone && (
+        <li>
+          <a href={`tel:${SITE.author.phone.replace(/\s+/g, '')}`} class="no-underline hover:!text-fg">
+            {SITE.author.phone}
+          </a>
+        </li>
+      )}
+      {visibleLinks.map((link) => (
+        <li>
+          <a href={link.href} rel="noopener" class="no-underline hover:!text-fg">
+            {link.label}
+          </a>
+        </li>
+      ))}
+    </ul>
   </header>
 
   <section id="summary" class="mb-10 scroll-mt-24" aria-labelledby="summary-heading">
@@ -151,7 +212,7 @@ const cvTools = [
                 {job.role} · <span class="text-muted">{job.employer}</span>
               </h3>
               <span class="font-mono text-xs text-muted">
-                {job.start}–{job.end} · {job.location}
+                {jobDateRange(job)} · {job.location}
               </span>
             </header>
             <p class="mt-2 text-muted">{job.summary}</p>
@@ -163,7 +224,10 @@ const cvTools = [
               </ul>
             )}
             {job.stack.length > 0 && (
-              <p class="mt-2 font-mono text-xs text-muted">stack: {job.stack.join(', ')}</p>
+              // "Technologies:" is the ATS-conventional cue word for parsing
+              // a tools list under an employment entry. Capital T matters —
+              // older ATS keyword-match on the exact label.
+              <p class="mt-2 font-mono text-xs text-muted">Technologies: {job.stack.join(', ')}</p>
             )}
           </li>
         ))
@@ -202,14 +266,9 @@ const cvTools = [
               <p class="font-medium">
                 {c.data.name} · <span class="text-muted">{c.data.issuer}</span>{' '}
                 <span class="font-mono text-xs text-muted">
-                  (<FormattedDate date={c.data.issueDate} />
-                  {c.data.expirationDate && (
-                    <>
-                      {' – '}
-                      <FormattedDate date={c.data.expirationDate} />
-                    </>
-                  )}
-                  )
+                  {'('}<FormattedDate date={c.data.issueDate} precision="month" />{c.data.expirationDate && (
+                    <>{' – '}<FormattedDate date={c.data.expirationDate} precision="month" /></>
+                  )}{')'}
                 </span>
               </p>
               {c.data.skills.length > 0 && (
@@ -224,15 +283,23 @@ const cvTools = [
 
   <section id="skills" class="mb-10 scroll-mt-24" aria-labelledby="skills-heading">
     <h2 id="skills-heading" class="mb-4 text-xl font-medium">Skills</h2>
-    <dl class="grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-[max-content_1fr]">
+    {/*
+      Plain `<p>Category: items, items, items</p>` lines instead of a
+      `<dl>/<dt>/<dd>` tree — older ATS pipelines (some Workday configs,
+      legacy Taleo deployments, defense-contractor parsers) misread
+      definition lists as glossary entries rather than skill groupings.
+      Per-line paragraphs are universally understood as "Skills section:
+      category-then-list", whether the parser is from 2003 or 2024.
+    */}
+    <div class="space-y-2">
       {
         Object.entries(skills).map(([cat, items]) => (
-          <>
-            <dt class="font-mono text-sm text-muted">{cat}</dt>
-            <dd class="m-0">{items.join(', ')}</dd>
-          </>
+          <p>
+            <span class="font-mono text-sm text-muted">{cat}:</span>{' '}
+            {items.join(', ')}
+          </p>
         ))
       }
-    </dl>
+    </div>
   </section>
 </BaseLayout>

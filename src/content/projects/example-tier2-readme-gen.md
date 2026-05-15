@@ -9,6 +9,7 @@ status: 'shipped'
 links:
   repo: 'https://github.com/example/readme-gen'
 metric:
-  label: '↓ 8.1k downloads'
+  icon: download
+  label: '8.1k @CratesIO'
   href: 'https://crates.io/crates/readme-gen'
 ---

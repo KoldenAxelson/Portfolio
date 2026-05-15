@@ -5,7 +5,7 @@
   "type": "module",
   "private": false,
   "license": "MIT",
-  "homepage": "https://github.com/your-username/neofolio",
+  "homepage": "https://github.com/KoldenAxelson/neofolio",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",

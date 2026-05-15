@@ -16,9 +16,10 @@ curl -A "Mozilla/5.0" https://yoursite.com/projects | htmlq -t
 |---|---|---|
 | `/articles/[slug]` | `BlogPosting` | `image` (cover or default OG), `inLanguage`, `isPartOf` → WebSite, `author`/`publisher` → Person by `@id` |
 | `/projects/[slug]` | `SoftwareApplication` (live URL) / `SoftwareSourceCode` (repo only) / `CreativeWork` (fallback) | `programmingLanguage` from `stack`, `applicationCategory`, `author`/`creator` → Person by `@id` |
-| `/cv` | `Person` supplement (same `@id`) | `hasOccupation` (one Occupation per role from `src/data/cv.ts`), `alumniOf`, `worksFor`, `knowsAbout` |
-| `/network` | `ItemList` of `Person` | _planned, see TODO_AI.md_ |
-| `/now` | `CreativeWork` with `dateModified` | _planned, see TODO_AI.md_ |
+| `/cv` | `Person` supplement (same `@id`) | `hasOccupation` (one Occupation per role from `src/data/cv.ts`), `alumniOf`, `worksFor`, `knowsAbout`, `hasCredential` (one entry per certificate) |
+| `/certificates` | `ItemList` of `EducationalOccupationalCredential` | One entry per credential, each `@id` shared with `/cv` so parsers merge them |
+| `/network` | `ItemList` of `Person` | One `ListItem` per contact, position-ordered |
+| `/now` | `CreativeWork` with `dateModified` | `author` and `isPartOf` reference the canonical `Person` and `WebSite` via `@id` |
 
 **Semantic HTML** — `<article>`, `<section>`, `<nav>`, `<time datetime>`.
 

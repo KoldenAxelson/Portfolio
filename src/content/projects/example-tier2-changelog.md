@@ -9,6 +9,7 @@ status: 'shipped'
 links:
   repo: 'https://github.com/example/changelog-bot'
 metric:
-  label: '↓ 24k installs'
+  icon: download
+  label: '24k @GitHubMarketplace'
   href: 'https://github.com/marketplace/actions/changelog-bot'
 ---

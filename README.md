@@ -44,6 +44,11 @@ make setup && make dev
   `make lighthouse` — plus interactive scaffolds (`make project`,
   `make post`, `make contact`, `make archive`) that prompt for the
   fields and write the file.
+- **Agent-friendly setup, if you want it.** [`AGENTS.md`](./AGENTS.md)
+  and [`SETUP_AGENT.md`](./SETUP_AGENT.md) let an AI assistant (Claude
+  Code, Cowork, etc.) walk you through populating real data after
+  `make setup`; `make verify` catches anything you missed. Skip it if
+  you'd rather drive the editor yourself — every file is hand-editable.
 
 ## Documentation
 
@@ -121,10 +126,12 @@ Four files to know:
 | `src/styles/global.css` | Five color CSS variables (light + dark) |
 | `tailwind.config.mjs` | Fonts, custom utilities |
 
-For agent-driven setup, see [`SETUP_AGENT.md`](./SETUP_AGENT.md) — an 11-phase
-runbook an AI assistant can follow to walk a user through customization
-after `make setup`. Deferred AI-readability work (post-launch directory
-submissions, optional schema enrichments) is tracked in [`TODO_AI.md`](./TODO_AI.md).
+Driving setup with an AI assistant? It starts at [`AGENTS.md`](./AGENTS.md)
+and works through [`SETUP_AGENT.md`](./SETUP_AGENT.md), an 11-phase
+runbook. `make clean-examples` wipes the template content in one shot;
+`make verify` is a post-build sanity check. Deferred AI-readability
+follow-ups (directory submissions, optional schema enrichments) live in
+[`TODO_AI.md`](./TODO_AI.md).
 
 Three commands to know:
 
@@ -142,12 +149,11 @@ Three docs to read:
 
 ## Contributing
 
-PRs welcome. See [CONTRIBUTING.md](./CONTRIBUTING.md). Ground rules:
-
-- No JS above the fold
-- No third-party render-blocking resources
-- Static output stays static (functions are opt-in)
-- Lighthouse targets aren't optional
+This template is **fork-and-customize**, not a collaborative codebase. PRs
+that change the architecture, add features, or rebrand the defaults will
+almost always be declined — please just fork instead. Issues for
+reproducible bugs or security concerns are welcome. See
+[CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ## License
 
