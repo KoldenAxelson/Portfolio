@@ -22,6 +22,7 @@ list, license. These docs go deeper.
 ## Beyond /docs
 
 - [README.md](../README.md) — quickstart, feature list, license
+- [CHANGELOG.md](../CHANGELOG.md) — release history (Keep-a-Changelog format)
 - [AGENTS.md](../AGENTS.md) — entry point for an AI assistant working in this repo
 - [SETUP_AGENT.md](../SETUP_AGENT.md) — 11-phase runbook for agent-driven setup
 - [TODO_AI.md](../TODO_AI.md) — deferred AI-readability work (post-launch)

@@ -1,6 +1,6 @@
 {
   "name": "neofolio",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "An AI-readable, opinionated portfolio template for developers in the AI age. Astro + Vue islands + Tailwind + MDX.",
   "type": "module",
   "private": false,
