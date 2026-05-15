@@ -21,148 +21,118 @@ import FormattedDate from '@components/FormattedDate.astro';
 type Item = { name: string; note?: string; link?: string; detail?: string };
 type Category = { id: string; label: string; caption?: string; items: Item[] };
 
-const updated = new Date('2026-04-15');
+const updated = new Date('2026-05-15');
 
 const stack: Category[] = [
   {
     id: 'editor',
     label: 'Editor',
     caption:
-      "Spent ten years bouncing between editors. Modal editing won; LazyVim's batteries-included setup spared me another six months of yak-shaving my own config.",
+      'Three editors, three jobs. Zed runs the day, VS Code shows up when the lifting gets heavy, plain vim covers everything in between.',
     items: [
-      {
-        name: 'Neovim',
-        note: 'LazyVim distribution',
-        link: 'https://neovim.io',
-        detail:
-          "Bound to caps lock. About 600 lines of Lua on top of LazyVim — mostly LSP wiring, a handful of keymaps that ate Vimium's lunch, and a treesitter playground I refuse to remove. Configs versioned in dotfiles.",
-      },
+      { name: 'Zed', note: 'editor of choice', link: 'https://zed.dev' },
       {
         name: 'VS Code',
-        note: 'pair-programming only',
+        note: 'when the work needs the heavier IDE',
         link: 'https://code.visualstudio.com',
+      },
+      {
+        name: 'Vim',
+        note: 'plain vim — not neovim',
+        link: 'https://www.vim.org',
         detail:
-          'Stays installed because Live Share is unmatched for synchronous pair-programming. Otherwise dormant — open it maybe twice a month.',
+          "Four years of government work in environments where neovim wasn't an option made bare vi(m) native. Now it's where 90% of my quick edits live — no plugins, no dotfiles, just whatever's already on the box.",
       },
     ],
   },
   {
     id: 'terminal',
     label: 'Terminal',
-    caption:
-      'Ghostty replaced Alacritty mid-2025 — same speed, less config friction. Everything else is rote: fish for ergonomics, tmux for sessions that outlive the SSH connection.',
-    items: [
-      {
-        name: 'Ghostty',
-        link: 'https://ghostty.org',
-        detail:
-          "Switched from Alacritty when I needed proper accessibility support and tabs that don't lag. The Mitchell-Hashimoto pedigree helped, but it earned the slot on merit.",
-      },
-      { name: 'fish', note: 'shell', link: 'https://fishshell.com' },
-      { name: 'tmux', note: 'long-running sessions', link: 'https://github.com/tmux/tmux' },
-      { name: 'starship', note: 'prompt', link: 'https://starship.rs' },
-    ],
+    caption: 'Default zsh with Oh My Zsh. Basic, lovely, gets out of the way.',
+    items: [{ name: 'Oh My Zsh', link: 'https://ohmyz.sh' }],
   },
   {
     id: 'languages',
     label: 'Languages',
-    caption:
-      'Five years of Python, four of Go, three of TypeScript — in that order. Rust is the slow burn; reading more than writing for now.',
+    caption: 'Seven I reach for. Each one earned the slot for a different reason.',
     items: [
-      { name: 'TypeScript' },
-      { name: 'Go' },
-      { name: 'Python' },
-      {
-        name: 'Rust',
-        note: 'learning',
-        detail:
-          'Working through "Programming Rust" (2nd ed) on weekends. Borrow checker still wins more arguments than I do; the patterns are starting to feel less like fighting the compiler and more like a conversation.',
-      },
-      { name: 'SQL', note: 'Postgres dialect' },
+      { name: 'Go', note: 'what I think in' },
+      { name: 'Rust', note: 'in an ongoing debate with the compiler' },
+      { name: 'Python', note: "there's a library for everything" },
+      { name: 'TypeScript', note: 'unavoidable, but needed' },
+      { name: 'Tailwind', note: 'the tool for modern web design' },
+      { name: 'PHP', note: 'mostly for Laravel' },
+      { name: 'SQL', note: 'enough to make Postgres my full stack' },
     ],
   },
   {
     id: 'frameworks',
     label: 'Frameworks',
     caption:
-      'Astro for content-first sites, SvelteKit for app-shaped things, FastAPI for backend prototypes. The common thread is ship-by-default with an escape hatch when you need it.',
+      'Where the work happens. There are others I touch; these are the ones I keep coming back to.',
     items: [
       { name: 'Astro', link: 'https://astro.build' },
       { name: 'Vue', link: 'https://vuejs.org' },
-      { name: 'SvelteKit', link: 'https://kit.svelte.dev' },
       { name: 'FastAPI', link: 'https://fastapi.tiangolo.com' },
-      { name: 'Echo', note: 'Go web framework', link: 'https://echo.labstack.com' },
+      { name: 'Laravel', link: 'https://laravel.com' },
     ],
   },
   {
     id: 'cloud',
     label: 'Cloud',
-    caption:
-      'Cloudflare is the default for anything serverless. AWS Lightsail handles the few workloads that genuinely need a long-running process. Fly.io for the rare regional-edge case.',
+    caption: 'Cloudflare won me over fast. AWS is the muscle memory from years of DevOps.',
     items: [
-      {
-        name: 'Cloudflare',
-        note: 'Pages, Workers, R2, D1',
-        link: 'https://cloudflare.com',
-        detail:
-          "Pages for static. Workers for the contact form and anything edge-y. R2 for blob storage that doesn't bleed me dry on egress. D1 for small projects where Postgres would be overkill.",
-      },
-      { name: 'AWS Lightsail', note: 'stateful workloads' },
-      { name: 'Fly.io', note: 'regional edge', link: 'https://fly.io' },
+      { name: 'Cloudflare', note: 'I love this so much', link: 'https://cloudflare.com' },
+      { name: 'AWS', note: 'my comfort zone', link: 'https://aws.amazon.com' },
     ],
   },
   {
     id: 'data',
     label: 'Database',
-    caption:
-      "Postgres unless there's a specific reason not to. SQLite for sidecars and embedded use. DuckDB has earned permanent residency in my analytics workflow.",
+    caption: 'Default to Postgres. Justify everything else.',
     items: [
       {
         name: 'Postgres',
+        note: "for serious projects (and for things that aren't serious)",
         link: 'https://postgresql.org',
-        detail:
-          "Self-hosted on the bigger projects, Neon for prototypes, Supabase when I want auth bundled. The query planner is the single most useful thing to learn deeply if you do backend work — it's how I find the half of my mistakes that survive code review.",
       },
-      { name: 'SQLite', note: 'embedded' },
-      { name: 'Redis' },
-      { name: 'DuckDB', note: 'analytics', link: 'https://duckdb.org' },
+      {
+        name: 'SQLite',
+        note: 'when you absolutely know Postgres is a bad idea',
+        link: 'https://sqlite.org',
+      },
+      {
+        name: 'Redis',
+        note: 'replaceable by Postgres, but worth the time saved',
+        link: 'https://redis.io',
+      },
     ],
   },
   {
     id: 'cli',
     label: 'CLI',
-    caption:
-      "Most of these were brew installs from a Wes Bos talk in 2018 and never left. fzf is the best $0 upgrade most engineers haven't made yet.",
+    caption: 'Four daily. brew is the one getting away from me.',
     items: [
-      { name: 'gh', link: 'https://cli.github.com' },
-      { name: 'wrangler', link: 'https://developers.cloudflare.com/workers/wrangler' },
-      { name: 'jq', link: 'https://jqlang.github.io/jq' },
+      { name: 'git', note: 'like every developer', link: 'https://git-scm.com' },
+      { name: 'gh', note: "debating leaving this but it's free", link: 'https://cli.github.com' },
       {
-        name: 'fzf',
-        link: 'https://github.com/junegunn/fzf',
-        detail:
-          'Bound to ctrl-r for shell history, ctrl-t for file search, and a custom binding that fuzz-finds across my projects directory. Saved me probably 200 hours of tab-completion fatigue.',
+        name: 'wrangler',
+        note: 'loving this more by the day',
+        link: 'https://developers.cloudflare.com/workers/wrangler',
       },
-      { name: 'ripgrep', link: 'https://github.com/BurntSushi/ripgrep' },
-      { name: 'fd', link: 'https://github.com/sharkdp/fd' },
-      { name: 'eza', link: 'https://eza.rocks' },
+      { name: 'brew', note: 'too many caskets', link: 'https://brew.sh' },
     ],
   },
   {
     id: 'hardware',
     label: 'Hardware',
-    caption:
-      "M3 Pro after years of x86. The HHKB is the only piece of gear I've owned for over five years; I'd buy three if my keyboard travel changed.",
+    caption: 'Apple ecosystem mostly. One paper notebook running the rest.',
     items: [
-      { name: 'MacBook Pro', note: 'M3 Pro, 36 GB' },
-      { name: 'LG UltraFine 5K', note: '27"' },
-      {
-        name: 'HHKB Professional Hybrid',
-        note: 'Type-S',
-        detail:
-          "Type-S silenced sliders, 60% layout. Two USB modes paired with my work iMac and personal Mac. Sublimely consistent feel after seven years. I've stopped trying to convince other people.",
-      },
-      { name: 'Logitech MX Master 3' },
+      { name: 'Mac M2 Mini' },
+      { name: 'Alienware monitor', note: '27"' },
+      { name: 'Apple Magic Keyboard' },
+      { name: 'Apple Magic Trackpad' },
+      { name: 'Analogue notebook', note: 'runs my life' },
     ],
   },
 ];

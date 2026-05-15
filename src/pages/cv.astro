@@ -196,7 +196,9 @@ const cvTools = [
 
   <section id="summary" class="mb-10 scroll-mt-24" aria-labelledby="summary-heading">
     <h2 id="summary-heading" class="mb-2 text-xl font-medium">Summary</h2>
-    <p class="text-muted">{SITE.author.longBio}</p>
+    <div class="space-y-3">
+      {SITE.author.longBio.split('\n\n').map((para) => <p class="text-muted">{para}</p>)}
+    </div>
   </section>
 
   <section id="experience" class="mb-10 scroll-mt-24" aria-labelledby="experience-heading">

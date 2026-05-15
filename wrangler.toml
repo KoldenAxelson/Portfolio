@@ -6,7 +6,7 @@
 #   - Define secrets reproducibly: `wrangler pages secret put RESEND_API_KEY`
 #   - Promote/preview from the CLI: `wrangler pages deploy dist`
 
-name = "neofolio"
+name = "portfolio"
 compatibility_date = "2025-01-15"
 pages_build_output_dir = "dist"
 

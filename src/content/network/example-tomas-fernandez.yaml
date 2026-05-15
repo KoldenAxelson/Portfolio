@@ -1,7 +1,0 @@
-name: 'Tomás Fernández'
-title: 'Open Source Maintainer'
-company: 'Independent · solo-maintaining critical infra'
-blurb: 'Maintains a Rust crate that''s in the dependency tree of half the OS-level tools you use. Has the patience to triage 200 issues a quarter and the eye to ship one correct PR per week.'
-relationship: 'I sent a small PR to his project in 2021 that he merged and improved. We''ve traded notes on burnout-resistant OSS maintenance ever since.'
-link: 'https://example.com/tomas'
-order: 7

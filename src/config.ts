@@ -7,33 +7,36 @@
 
 export const SITE = {
   /** Canonical absolute URL. No trailing slash. */
-  url: 'https://example.com',
+  url: 'https://wrightfunctions.com',
 
   /** Site title — used in <title>, OpenGraph, and JSON-LD WebSite name. */
-  title: 'Neofolio',
+  title: 'Konrad Wright',
 
   /** Tagline / meta description. Keep under 160 chars. */
-  description: 'An AI-readable, opinionated portfolio template for developers in the AI age.',
+  description: "Konrad Wright's Portfolio",
 
   /** Owner identity. Used in <Person> JSON-LD and across the site. */
   author: {
-    name: 'Your Name',
-    handle: '@yourhandle',
-    role: 'Software Engineer',
-    location: 'City, Country',
-    email: 'you@example.com',
+    name: 'Konrad Wright',
+    handle: '@KoldenAxelson',
+    role: 'Principal Software Engineer',
+    location: 'Paso Robles, CA',
+    email: 'KonradWright@Protonmail.com',
     /**
      * Phone number for the CV contact line. Optional — set to '' to hide.
      * Some ATS parsers look for a phone match alongside email; including
      * one is recommended if you're comfortable with it being public.
      * Format conventionally for your region (e.g. '+1 555 123-4567').
      */
-    phone: '',
+    phone: '+1 (805) 423-7338',
     /** Short bio for the hero section. One or two sentences. */
-    bio: 'I build software that has to keep working when the lights go out. Currently focused on resilient backend systems and developer tooling.',
+    bio: 'I make specialized tools for people with problems, then I scale that solution to a magnitude of users.',
     /** Longer bio for /cv and JSON-LD. */
-    longBio:
-      'A few sentences about who you are, what kinds of problems you take on, and what you care about. Be specific. Generic bios get skipped by humans and indexed flatly by AI.',
+    longBio: `I'm a highly skilled software engineer turned professional problem solver, with over fifteen years across various fields. The cross-domain pollination going on in my head has led me to solve some outlandish problems, all the way from concept to business. I'm working on things I know will help my friends — those problems aren't unique. I work best for the person in front of me. When I earn that appreciation, I replay that smile in my head whenever I get a Stripe notification of a new customer.
+
+Currently I'm running VisorPlate, but it doesn't take my around-the-clock attention since I've automated most of it to run without my hand in the pot. That leaves me time for other projects. I took a side-tangent and built this AI-SEO portfolio — then turned the engine into a template — and I'm seeing where that goes. Right now I'm in submission with Google for Widda, which will take 4–6 weeks. Cost of doing business.
+
+If you're interested in what I'm doing or using, check out the /now and /uses pages. That's either accurate, up-to-date info, or I'm addicted to Sudoku again.`,
     /**
      * Public links to downloadable résumé files. Renders as one or two
      * download buttons on /cv. PDF for human review, DOCX for ATS
@@ -65,8 +68,8 @@ export const SITE = {
 
   /** Outbound social / professional links. Remove any you don't want shown. */
   links: {
-    github: 'https://github.com/your-username',
-    linkedin: 'https://linkedin.com/in/your-username',
+    github: 'https://github.com/KoldenAxelson',
+    linkedin: 'https://www.linkedin.com/in/konrad-wright-b53860330/',
     twitter: '',
     mastodon: '',
     bluesky: '',
