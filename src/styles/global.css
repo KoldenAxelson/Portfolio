@@ -36,7 +36,7 @@
   --color-bg: 250 250 247;       /* warm paper white */
   --color-fg: 24 24 27;          /* zinc-900 */
   --color-muted: 82 82 91;       /* zinc-600 — WCAG AA on warm-white (6.5:1) */
-  --color-accent: 154 52 18;     /* amber-800 — AA contrast against bg */
+  --color-accent: 3 119 55;      /* brand green #037737 — AAA contrast on bg */
   --color-border: 228 228 231;   /* zinc-200 */
 }
 
@@ -45,7 +45,7 @@
     --color-bg: 9 9 11;          /* zinc-950 */
     --color-fg: 244 244 245;     /* zinc-100 */
     --color-muted: 161 161 170;  /* zinc-400 */
-    --color-accent: 252 211 77;  /* amber-300 */
+    --color-accent: 74 222 128;  /* green-400 — brighter for dark-bg visibility */
     --color-border: 39 39 42;    /* zinc-800 */
   }
 }
