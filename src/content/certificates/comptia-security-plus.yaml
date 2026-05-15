@@ -1,0 +1,17 @@
+name: 'CompTIA Security+'
+issuer: 'CompTIA'
+issuerUrl: 'https://www.comptia.org/'
+issueDate: 2023-07-01
+expirationDate: 2026-07-01
+credentialId: 'COMP001022308155'
+verifyUrl: 'https://www.certmetrics.com/comptia/public/verification.aspx'
+badge: '/badges/security-plus.png'
+description: 'Industry-standard certification covering threat detection, secure system design, risk management, and incident response.'
+skills:
+  - 'Threats & Vulnerabilities'
+  - 'Cryptography'
+  - 'Identity & Access Management'
+  - 'Risk Management'
+  - 'Incident Response'
+featured: true
+thoughts: []

@@ -72,23 +72,7 @@ const featuredCertBadges = new Map<string, BadgeImage | null>(
   <section id="about" class="mb-24 scroll-mt-24 last:mb-0" aria-labelledby="about-heading">
     <h2 id="about-heading" class="sr-only">About</h2>
     <div class="space-y-4 text-base text-muted">
-      <p>{SITE.author.longBio}</p>
-      <p>
-        Most of my career has been at the seam between resilient backend systems and the people who
-        depend on them not falling over. The work I'm proudest of is invisible — infrastructure you
-        only notice when something breaks elsewhere.
-      </p>
-      <p>
-        I write about what I learn at <a href={url('/articles')}>/articles</a> and keep an honest log
-        of the projects I started and didn't finish in the <a href={url('/projects') + '#archive'}
-          >archive</a
-        > at the bottom of /projects. Both feel like an essential counterweight to the highlight-reel
-        version of a portfolio.
-      </p>
-      <p>
-        If you want the snapshot of what I'm focused on this season — what I'm building, reading,
-        learning — that's at <a href={url('/now')}>/now</a>. Updated whenever it stops being true.
-      </p>
+      {SITE.author.longBio.split('\n\n').map((para) => <p>{para}</p>)}
     </div>
     {
       /* No indicator here: the About section is already deeply personal —

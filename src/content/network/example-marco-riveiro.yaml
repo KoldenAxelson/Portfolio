@@ -1,7 +1,0 @@
-name: 'Marco Riveiro'
-title: 'DevTools Educator · YouTuber'
-company: 'Independent (Terminal Diaries)'
-blurb: 'Runs the "Terminal Diaries" channel — 240k subscribers. Most accessible explainer of low-level systems I know. Has made Postgres internals feel approachable to thousands of new engineers.'
-relationship: 'Met at a hackathon in 2019; we''ve stayed in touch ever since over Postgres tooling and the occasional CLI design rant.'
-link: 'https://youtube.com/@example-terminal-diaries'
-order: 2

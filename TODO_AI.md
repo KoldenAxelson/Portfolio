@@ -67,7 +67,18 @@ beats five thin ones.
 These compound over months, not days. Order roughly by ROI.
 
 - [ ] Submit `/uses` to <https://uses.tech>
-- [ ] Submit `/now` to <https://nownownow.com>
+- [ ] Submit `/now` to <https://nownownow.com>. Form answers prepared:
+  - **Motto:** "For the beginning of [wisdom] is the most true desire of discipline; and the care of discipline is love." (Wisdom 6:17)
+  - **Location:** Paso Robles, California, U.S.A.
+  - **Professional title:** Principal Software Engineer
+  - **What do you do?** I solve problems, then scale the solution.
+  - **Why do you do it?** I love helping the person in front of me, then playing that smile in my head for each new customer I get.
+  - **What should we read?** Chronicles of Narnia. You're never too old to read a good fairytale.
+  - **URLs:**
+    - <https://wrightfunctions.com>
+    - <https://github.com/KoldenAxelson>
+    - <https://www.linkedin.com/in/konrad-wright-b53860330/>
+    - <https://dev.to/konradwright>
 - [ ] PR to <https://github.com/emmabostian/developer-portfolios>
 - [ ] Reciprocal `rel="me"` links from GitHub profile README, LinkedIn
       About section, Bluesky bio → portfolio domain. Establishes the

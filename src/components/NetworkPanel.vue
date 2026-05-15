@@ -411,7 +411,7 @@ watch(selectedId, () => {
                     type="text"
                     autocomplete="name"
                     class="mt-1 w-full rounded border border-border bg-bg/50 px-3 py-2 text-sm text-fg placeholder:text-muted focus:border-accent focus:outline-none"
-                    placeholder="Recruiter at Example Corp"
+                    placeholder="Recruiter at Acme"
                   />
                 </div>
 
@@ -426,7 +426,7 @@ watch(selectedId, () => {
                     type="email"
                     autocomplete="email"
                     class="mt-1 w-full rounded border border-border bg-bg/50 px-3 py-2 text-sm text-fg placeholder:text-muted focus:border-accent focus:outline-none"
-                    placeholder="you@example.com"
+                    placeholder="alex@acme.io"
                   />
                 </div>
 

@@ -1,10 +1,10 @@
 /* TEAM */
 
-  Owner:    Your Name
-  Site:     https://example.com
-  Contact:  you [at] example.com
-  Twitter:  @yourhandle
-  Location: City, Country
+  Owner:    Konrad Wright
+  Site:     https://wrightfunctions.com
+  Contact:  KonradWright [at] Protonmail.com
+  Twitter:  @KoldenAxelson
+  Location: Paso Robles, CA
 
 /* THANKS */
 
@@ -18,10 +18,7 @@
 
 /* SITE */
 
-  Last update:   2026-05-01
+  Last update:   2026-05-15
   Standards:     HTML5, CSS3, ES2022
   Components:    Astro, Vue islands, MDX content collections
-  Software:      Neovim, fish shell, Ghostty
   Built for:     Humans, screen readers, and AI scrapers — equally.
-
-  Edit me. Drop your own values in /public/humans.txt before deploying.
