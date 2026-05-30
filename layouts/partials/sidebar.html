@@ -1,8 +1,8 @@
 {{- /*
-  sidebar — homepage identity + in-page section nav. Port of SideBar.astro
-  (static markup). Reads sections from .Params.sections. The scroll-spy
-  dot/line state machine + bio typewriter JS are Phase 4; the data-* hooks and
-  default states are in place now. h-card microformat preserved.
+  sidebar — homepage identity + in-page section nav. Port of SideBar.astro.
+  Reads sections from .Params.sections. The scroll-spy dot/line state machine
+  + bio typewriter are wired by ts/sidebar.ts via the data-* hooks below.
+  h-card microformat preserved.
 */ -}}
 {{- $site := site.Data.site -}}
 {{- $sections := .Params.sections -}}

@@ -2,7 +2,7 @@
   cert-row — single-row credential presentation. Port of CertRow.astro.
   Dict params: cert (the certificate data map), badge (badge path string or "").
   Whole row links to verifyUrl when set. Renders badge + name + issuer + dates
-  only; description/skills/credentialId live in JSON-LD (Phase 3), not the UI.
+  only; description/skills/credentialId live in JSON-LD, not the UI.
 */ -}}
 {{- $c := .cert -}}
 {{- $badge := .badge -}}

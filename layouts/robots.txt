@@ -1,5 +1,5 @@
 {{- $base := strings.TrimSuffix "/" site.BaseURL -}}
-# NeoGolio — permissive by design.
+# Portfolio — permissive by design.
 # This site is built to be read by humans AND AI systems. Both are welcome.
 
 User-agent: *
