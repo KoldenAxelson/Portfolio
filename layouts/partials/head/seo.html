@@ -65,7 +65,7 @@
 {{- $sameAs := slice -}}
 {{- range $k, $v := $site.links }}{{ if and $v (hasPrefix $v "http") }}{{ $sameAs = $sameAs | append $v }}{{ end }}{{ end -}}
 {{- $website := dict "@context" "https://schema.org" "@type" "WebSite" "@id" $websiteId "name" $site.title "url" $siteUrl "description" $site.description "inLanguage" $site.locale "author" (dict "@id" $personId) -}}
-{{- $longBioPlain := trim ($site.author.longBio | markdownify | plainify) " \n" -}}
+{{- $longBioPlain := trim (htmlUnescape ($site.author.longBio | markdownify | plainify)) " \n" -}}
 {{- $person := dict "@context" "https://schema.org" "@type" "Person" "@id" $personId "name" $site.author.name "jobTitle" $site.author.role "description" $longBioPlain "url" $siteUrl "sameAs" $sameAs -}}
 {{- with $site.author.email }}{{ $person = merge $person (dict "email" (printf "mailto:%s" .)) }}{{ end -}}
 {{- with $site.author.location }}{{ $person = merge $person (dict "address" (dict "@type" "PostalAddress" "addressLocality" .)) }}{{ end -}}

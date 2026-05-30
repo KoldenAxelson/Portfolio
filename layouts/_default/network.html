@@ -11,7 +11,7 @@
 </header>
 
 {{/* Data for the Alpine island. */}}
-{{- $owner := dict "name" $author.name "title" $author.role "email" $author.email "bio" (trim ($author.longBio | markdownify | plainify) " \n") -}}
+{{- $owner := dict "name" $author.name "title" $author.role "email" $author.email "bio" (trim (htmlUnescape ($author.longBio | markdownify | plainify)) " \n") -}}
 {{- $cData := slice -}}
 {{- range $contacts -}}
   {{- $cData = $cData | append (dict "id" .id "name" .name "title" .title "company" (.company | default "") "blurb" .blurb "relationship" .relationship "link" (.link | default "")) -}}
