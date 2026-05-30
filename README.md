@@ -28,12 +28,15 @@ appears only on the one page that needs reactive state (`/network`).
 The toolchain is two binaries, fetched per-platform — no package manager:
 
 ```bash
-make setup    # download the Hugo + Tailwind binaries into ./bin (one-time)
-make dev      # local server at http://localhost:1313 with live CSS rebuild
-make build    # production build to ./public
+make setup      # download the Hugo + Tailwind binaries into ./bin (one-time)
+make dev        # local server at http://localhost:1313 with live CSS rebuild
+make build      # production build to ./public
+make typecheck  # type-check the TypeScript with tsgo (native, no Node)
 ```
 
-Run `make help` for the full list.
+Run `make help` for the full list. `make typecheck` fetches `tsgo` (TypeScript's
+native Go compiler) as a standalone binary — no npm, no Node — and also runs in
+CI before every deploy.
 
 ## Where things live
 
