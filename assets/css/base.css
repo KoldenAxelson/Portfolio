@@ -236,3 +236,28 @@ img {
   scrollbar-width: thin;
   scrollbar-color: rgb(var(--c-border)) transparent;
 }
+
+/* ------------------------------------------------------------------ */
+/* Cross-page crossfade (View Transitions)                            */
+/*                                                                    */
+/* htmx wraps each hx-boost body swap in document.startViewTransition */
+/* (enabled via htmx.config.globalViewTransitions in ts/main.ts), so  */
+/* the browser snapshots the old + new page and we animate between    */
+/* them here. Default browser behavior is already a crossfade; this   */
+/* block just tunes the duration/easing to a calm 180ms. Browsers     */
+/* without the API skip this entirely and get the existing instant    */
+/* swap — pure progressive enhancement, zero effect on first paint.   */
+/* ------------------------------------------------------------------ */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 180ms;
+  animation-timing-function: ease;
+}
+
+/* Respect users who ask for less motion — no fade, just an instant cut. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+}
