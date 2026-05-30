@@ -19,7 +19,7 @@
 {{- if eq $cur "" }}{{ $cur = "/" }}{{ end -}}
 
 <header data-top-nav class="sticky top-0 z-40 w-full transition-transform duration-200 ease-out motion-reduce:transition-none print:hidden">
-  <div class="relative border-b border-border bg-bg/85 backdrop-blur supports-[backdrop-filter]:bg-bg/70">
+  <div class="glass-nav relative">
     <div class="mx-auto flex max-w-screen-xl items-center justify-between gap-4 px-6 py-3 lg:px-12">
       <a href="{{ partial "func/url.html" "/" }}" aria-label="{{ $site.author.name }} — home" class="inline-flex items-center no-underline transition-opacity duration-200 hover:opacity-80">
         <img src="{{ partial "func/url.html" "/logo-mark.svg" }}" alt="{{ $site.author.name }}" width="36" height="36" class="h-9 w-9" />
@@ -79,7 +79,7 @@
   </div>
 
   <div data-mobile-panel data-mode="nav" class="absolute inset-x-0 top-full z-40 grid grid-rows-[0fr] transition-[grid-template-rows] duration-300 ease-out motion-reduce:transition-none lg:hidden">
-    <div class="overflow-hidden border-b border-border bg-bg/85 backdrop-blur supports-[backdrop-filter]:bg-bg/70">
+    <div class="glass-panel overflow-hidden rounded-b-2xl">
       <nav data-mobile-panel-nav aria-label="Site (mobile)">
         <ul class="mx-auto flex max-w-screen-xl flex-col gap-1 px-6 py-4 opacity-0 transition-opacity duration-200 ease-out motion-reduce:transition-none">
           {{- range $site.nav }}

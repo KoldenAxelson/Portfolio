@@ -6,12 +6,17 @@
 */ -}}
 {{- $site := site.Data.site -}}
 {{- $sections := .Params.sections -}}
-<aside class="h-card pb-2 pt-12 lg:sticky lg:top-16 lg:max-h-[calc(100vh-4rem)] lg:w-1/2 lg:self-start lg:py-24">
-  <div>
+<aside class="h-card pb-8 pt-0 lg:sticky lg:top-16 lg:max-h-[calc(100vh-4rem)] lg:w-1/2 lg:self-start lg:py-24">
+  <div class="glass-card relative -mx-6 overflow-hidden text-center lg:mx-0 lg:text-left">
+    <canvas data-constellation aria-hidden="true" class="pointer-events-none absolute inset-0 block h-full w-full"></canvas>
+    <div class="relative z-10">
     <h1 class="text-4xl font-bold tracking-tight text-fg sm:text-5xl">
       <a href="{{ partial "func/url.html" "/" }}" class="u-url hover:!text-fg"><span class="p-name">{{ $site.author.name }}</span></a>
     </h1>
     <p class="p-job-title mt-3 text-lg font-medium tracking-tight text-fg sm:text-xl">{{ $site.author.role }}</p>
+
+    {{- /* Social row — mobile banner only; desktop keeps the section nav below. */}}
+    {{ partial "social-icons.html" (dict "class" "mt-5 justify-center lg:hidden") }}
 
     <p data-bio-typer class="p-note mt-4 hidden min-h-[5.5rem] max-w-xs leading-normal text-muted lg:block">{{ $site.author.bio }}<span data-bio-cursor aria-hidden="true" class="ml-0.5 inline-block w-[2px] h-[1.05em] translate-y-[3px] bg-current opacity-0 transition-opacity duration-300"></span></p>
 
@@ -39,5 +44,6 @@
       </ol>
     </nav>
     {{- end }}
+    </div>
   </div>
 </aside>
