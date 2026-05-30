@@ -30,11 +30,11 @@ A handful of non-negotiables shaped every decision:
 
 ## What I did
 
-Built it on Hugo, with HTMX driving SPA-style navigation and Alpine powering the only two pieces that genuinely need client state — the project tag filter and the network compose form. Everything else is static HTML rendered at build time.
+Built it on Hugo, with HTMX driving SPA-style navigation, a small vanilla-TypeScript bundle handling the nav, scroll-spy, and project tag filter, and Alpine reserved for the one piece that genuinely needs reactive client state — the network explorer. Everything else is static HTML rendered at build time.
 
 The JSON-LD layer is the load-bearing piece. Shared schema partials expose a stable `personId`/`siteId` so every page references the same entities. `Person.hasOccupation` is generated from a single `data/cv.yaml` source of truth, so the homepage Experience block, the `/cv` page, and the structured data all stay coherent. `/llms.txt`, the RSS feed, and the JSON Feed are all emitted at build time — `/llms.txt` per the llmstxt.org spec.
 
-Two deploy targets ship out of the box: GitHub Pages (base path auto-detected from the Actions environment) and Cloudflare Pages (a deploy workflow plus a Pages Function for the contact form). The whole site builds with a single `hugo --minify`, so the same output serves either host.
+It ships with a Cloudflare Pages deploy workflow, and because the base path is driven entirely by `baseURL`, the same `hugo --minify` output serves a sub-path host like GitHub Pages just as well. The network page composes intro requests via a prefilled `mailto:` link, so there's no backend to run.
 
 It started life as an Astro + Vue build; I later rebuilt it on the Node-free Hugo stack. Carrying the same AI-readability contract across two completely different rendering models forced me to articulate decisions I'd otherwise have left implicit — the kind of documentation discipline you write for the next forker that turns out to be good for you too.
 
