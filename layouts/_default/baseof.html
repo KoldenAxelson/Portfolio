@@ -5,9 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content="Hugo {{ hugo.Version }}" />
 
-    {{/* Self-hosted variable fonts — preload the two most-used faces. */}}
+    {{/* Self-hosted variable fonts. Preload ONLY Inter — it renders the LCP
+         element (the hero/bio text), so getting it in early pulls LCP forward.
+         JetBrains Mono (nav, code chips, labels) is not LCP-critical and loads
+         via @font-face discovery with font-display:swap; preloading it too
+         would just compete with Inter for the first bytes on throttled mobile. */}}
     <link rel="preload" href="{{ partial "func/url.html" "/fonts/InterVariable.woff2" }}" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="{{ partial "func/url.html" "/fonts/JetBrainsMono-Variable.woff2" }}" as="font" type="font/woff2" crossorigin />
 
     <link rel="icon" type="image/svg+xml" href="{{ partial "func/url.html" "/favicon.svg" }}" />
     <link rel="alternate" type="application/rss+xml" title="{{ site.Data.site.title }}" href="{{ partial "func/url.html" "/rss.xml" }}" />
