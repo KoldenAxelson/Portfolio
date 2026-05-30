@@ -3,6 +3,7 @@
 import { initNav } from './nav';
 import { initScrollTop } from './scrolltop';
 import { initSidebar } from './sidebar';
+import { initConstellation } from './constellation';
 import { initProjectFilter } from './project-filter';
 import { initPerfMeters } from './perf-meters';
 
@@ -22,6 +23,7 @@ function initPage(): void {
   initNav();
   initScrollTop();
   initSidebar();
+  initConstellation();
   initProjectFilter();
   initPerfMeters();
 }
