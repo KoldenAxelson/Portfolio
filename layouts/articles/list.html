@@ -10,9 +10,10 @@
   {{- $perm := .RelPermalink }}
   <li class="py-5">
     <article class="flex gap-4">
-      {{- with .Params.cover }}
+      {{- $c := partial "func/cover.html" (dict "path" .Params.cover "width" 96 "height" 96) }}
+      {{- with $c.src }}
       <a href="{{ $perm }}" class="shrink-0" aria-hidden="true" tabindex="-1">
-        <img src="{{ partial "func/url.html" . }}" width="96" height="96" alt="" loading="lazy" decoding="async" class="h-[72px] w-[72px] rounded-md object-cover sm:h-24 sm:w-24" />
+        <img src="{{ . }}" srcset="{{ $c.srcset }}" width="96" height="96" alt="" loading="lazy" decoding="async" class="h-[72px] w-[72px] rounded-md object-cover sm:h-24 sm:w-24" />
       </a>
       {{- end }}
       <div class="min-w-0 flex-1">

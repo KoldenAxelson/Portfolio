@@ -1,0 +1,67 @@
+{{- /*
+  cover — build-time image optimizer for cover/badge thumbnails.
+
+  Takes a cover path (as written in front matter, e.g. "/covers/foo.webp") plus
+  a target CSS width, finds the matching SOURCE under assets/, and returns an
+  optimized WebP resource resized for that slot — with a 2× variant for retina.
+  All processing happens at build time (Hugo's Go image pipeline); the browser
+  only ever receives finished, static WebP files. Nothing client-side.
+
+  Sources must be PNG / JPEG / WebP and live under assets/ (Hugo cannot decode
+  AVIF or read static/). A leading "/covers/" or "/badges/" path maps to the
+  same folder under assets/; ".avif" is normalized to ".webp".
+
+  Params (dict):
+    path   — cover path string from front matter (required)
+    width  — target rendered width in px (required; 2× emitted for srcset)
+    height — target rendered height in px (optional). When set, the image is
+             cropped to exactly width×height (Hugo Fill) — use for the square
+             thumbnails. When omitted, the image is scaled by width preserving
+             its aspect ratio (Hugo Resize) — use for the landscape strip.
+    fit    — when true with width+height set, scales to fit INSIDE the box
+             without cropping (Hugo Fit) — use for badges, which shouldn't be
+             cropped. Ignored unless height is also set.
+    q      — WebP quality 0–100 (optional, default 80)
+
+  Returns a dict: { src, srcset, width, height } — or an empty dict if the
+  source can't be resolved, so callers can fall back cleanly.
+
+    {{ $c := partial "func/cover.html" (dict "path" .Params.cover "width" 120) }}
+    {{ with $c.src }}<img src="{{ . }}" srcset="{{ $c.srcset }}" ... />{{ end }}
+*/ -}}
+{{- $path := .path -}}
+{{- $width := int .width -}}
+{{- $height := .height -}}
+{{- $fit := .fit | default false -}}
+{{- $q := .q | default 80 -}}
+{{- $out := dict -}}
+{{- with $path -}}
+  {{- /* Map front-matter path → assets/ source. Strip leading slash, swap
+         .avif → .webp (AVIF sources are pre-converted to webp in assets/). */ -}}
+  {{- $rel := strings.TrimPrefix "/" . -}}
+  {{- $rel = replace $rel ".avif" ".webp" -}}
+  {{- $res := resources.Get $rel -}}
+  {{- with $res -}}
+    {{- $1x := "" -}}
+    {{- $2x := "" -}}
+    {{- if $height -}}
+      {{- $h := int $height -}}
+      {{- if $fit -}}
+        {{- $1x = .Fit (printf "%dx%d webp q%d" $width $h $q) -}}
+        {{- $2x = .Fit (printf "%dx%d webp q%d" (mul $width 2) (mul $h 2) $q) -}}
+      {{- else -}}
+        {{- $1x = .Fill (printf "%dx%d webp q%d" $width $h $q) -}}
+        {{- $2x = .Fill (printf "%dx%d webp q%d" (mul $width 2) (mul $h 2) $q) -}}
+      {{- end -}}
+    {{- else -}}
+      {{- $1x = .Resize (printf "%dx webp q%d" $width $q) -}}
+      {{- $2x = .Resize (printf "%dx webp q%d" (mul $width 2) $q) -}}
+    {{- end -}}
+    {{- $out = dict
+      "src" $1x.RelPermalink
+      "srcset" (printf "%s 1x, %s 2x" $1x.RelPermalink $2x.RelPermalink)
+      "width" $1x.Width
+      "height" $1x.Height -}}
+  {{- end -}}
+{{- end -}}
+{{- return $out -}}
