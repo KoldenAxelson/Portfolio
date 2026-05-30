@@ -88,10 +88,10 @@ education:
 
 skills:
   - category: "Languages"
-    items: ["Python", "Java", "JavaScript", "Rust", "Swift", "Ruby", "SQL"]
+    items: ["Go", "TypeScript", "Python", "Java", "JavaScript", "Rust", "PHP", "Swift", "Ruby", "SQL"]
   - category: "Cloud & Infra"
-    items: ["AWS", "Docker", "Kubernetes", "GitLab", "ArgoCD", "Fortify"]
+    items: ["AWS", "Cloudflare", "Docker", "Kubernetes", "GitLab", "ArgoCD", "Fortify"]
   - category: "Web"
-    items: ["React", "HTML", "CSS", "Full-Stack Development"]
+    items: ["React", "Tailwind", "Laravel", "HTML", "CSS", "Full-Stack Development"]
   - category: "Practices"
     items: ["Mentorship", "Public Speaking", "Agile / Scrum", "Security", "Incident Response"]
