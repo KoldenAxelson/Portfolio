@@ -96,7 +96,7 @@
       {{- $c := partial "func/cover.html" (dict "path" .Params.cover "width" 120) }}
       {{- with $c.src }}
       <a href="{{ $perm }}" class="shrink-0" aria-hidden="true" tabindex="-1">
-        <img src="{{ . }}" srcset="{{ $c.srcset }}" width="120" height="52" alt="" loading="lazy" decoding="async" class="h-[52px] w-[120px] rounded-md border border-border/60 object-cover" />
+        <img src="{{ . }}"{{ with $c.srcset }} srcset="{{ . }}"{{ end }} width="120" height="52" alt="" loading="lazy" decoding="async" class="h-[52px] w-[120px] rounded-md border border-border/60 object-cover" />
       </a>
       {{- end }}
       <div class="flex min-w-0 flex-1 items-center justify-between gap-3">
