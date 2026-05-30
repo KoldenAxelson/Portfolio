@@ -31,7 +31,7 @@
   {{- $px := cond $compact 64 96 }}
   {{- $c := partial "func/cover.html" (dict "path" $d.cover "width" $px "height" $px "fit" true) }}
   {{- with $c.src }}
-  <img src="{{ . }}" srcset="{{ $c.srcset }}" width="{{ $px }}" height="{{ $px }}" alt="" loading="lazy" decoding="async" class="pointer-events-none relative z-10 float-left mb-2 rounded-md object-contain {{ cond $compact "mr-3 h-16 w-16" "mr-4 h-20 w-20 sm:h-24 sm:w-24" }}" />
+  <img src="{{ . }}"{{ with $c.srcset }} srcset="{{ . }}"{{ end }} width="{{ $px }}" height="{{ $px }}" alt="" loading="lazy" decoding="async" class="pointer-events-none relative z-10 float-left mb-2 rounded-md object-contain {{ cond $compact "mr-3 h-16 w-16" "mr-4 h-20 w-20 sm:h-24 sm:w-24" }}" />
   {{- end }}
 
   <header class="relative z-10 mb-2">
