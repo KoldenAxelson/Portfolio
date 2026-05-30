@@ -91,11 +91,21 @@
   <h2 id="articles-heading" class="mb-6 font-mono text-xs uppercase tracking-widest text-fg lg:sr-only">Articles</h2>
   <ul class="divide-y divide-border">
     {{- range . }}
-    <li class="flex flex-col gap-1 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
-      <a href="{{ .RelPermalink }}" class="font-medium text-fg no-underline hover:!text-accent">{{ .Title }}</a>
-      <div class="flex shrink-0 items-center gap-3">
-        <span class="font-mono text-xs text-muted">{{ partial "formatted-date.html" (dict "date" .Date) }}</span>
-        {{ partial "bio-indicator.html" (dict "messages" (.Params.thoughts | default slice) "label" .Title) }}
+    {{- $perm := .RelPermalink }}
+    <li class="flex items-center gap-4 py-3">
+      {{- with .Params.cover }}
+      <a href="{{ $perm }}" class="shrink-0" aria-hidden="true" tabindex="-1">
+        <img src="{{ partial "func/url.html" . }}" width="120" height="52" alt="" loading="lazy" decoding="async" class="h-[52px] w-[120px] rounded-md border border-border/60 object-cover" />
+      </a>
+      {{- end }}
+      <div class="flex min-w-0 flex-1 items-center justify-between gap-3">
+        <div class="min-w-0">
+          <a href="{{ $perm }}" class="font-medium text-fg no-underline hover:!text-accent">{{ .Title }}</a>
+          <p class="mt-0.5 font-mono text-xs text-muted">{{ partial "formatted-date.html" (dict "date" .Date) }}</p>
+        </div>
+        <div class="shrink-0 self-end">
+          {{ partial "bio-indicator.html" (dict "messages" (.Params.thoughts | default slice) "label" .Title) }}
+        </div>
       </div>
     </li>
     {{- end }}
