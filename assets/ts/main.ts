@@ -4,6 +4,7 @@ import { initNav } from './nav';
 import { initScrollTop } from './scrolltop';
 import { initSidebar } from './sidebar';
 import { initProjectFilter } from './project-filter';
+import { initPerfMeters } from './perf-meters';
 
 declare global {
   interface Window {
@@ -22,6 +23,7 @@ function initPage(): void {
   initScrollTop();
   initSidebar();
   initProjectFilter();
+  initPerfMeters();
 }
 
 function ready(fn: () => void): void {

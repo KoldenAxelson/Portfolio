@@ -13,13 +13,13 @@ url: "https://wrightfunctions.com"
 title: "Konrad Wright"
 
 # Tagline / meta description. Keep under 160 chars.
-description: "Konrad Wright's Portfolio"
+description: "Konrad Wright — software engineer: full-stack web, cloud (AWS, Cloudflare), and application security. Founder of VisorPlate & Widda."
 
 # Owner identity. Used in <Person> JSON-LD and across the site.
 author:
   name: "Konrad Wright"
   handle: "@KoldenAxelson"
-  role: "Principal Software Engineer"
+  role: "Lead Software Engineer"
   location: "Paso Robles, CA"
   email: "KonradWright@Protonmail.com"
   phone: "+1 (805) 423-7338"
@@ -58,6 +58,7 @@ nav:
   - { label: "Uses", href: "/uses", icon: "desktop" }
   - { label: "Now", href: "/now", icon: "fire" }
   - { label: "CV", href: "/cv", icon: "briefcase" }
+  - { label: "Info", href: "/colophon", icon: "information-circle" }
 
 # Locale for <html lang> and date formatting. BCP-47 tag.
 locale: "en-US"
