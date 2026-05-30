@@ -1,14 +1,14 @@
 {{- /*
-  topnav — port of Neofolio's TopNav.astro (markup + CSS only).
+  topnav — port of Neofolio's TopNav.astro.
   Receives the page as the dot. Reads nav from data/site.yaml and per-page
   toolbar items from `.Params.tools` (list of {icon,label,href?,download?,action?}).
 
   Desktop (lg+): inline icon buttons, label slides in on hover.
   Mobile (<lg) : hamburger <details> → dropdown panel (nav / bio / tools modes).
 
-  NOTE: the autohide-on-scroll, panel open/close sync, and bio-typewriter JS
-  are Phase 4. The CSS-only icon swap and the grid-rows height animation are
-  here now; the panel won't expand until the Phase 4 script is added.
+  The CSS-only icon swap and grid-rows height animation live here; the
+  autohide-on-scroll, panel open/close sync, and bio-typewriter behavior are
+  wired by ts/nav.ts via the data-* hooks below.
 */ -}}
 {{- $site := site.Data.site -}}
 {{- $tools := .Params.tools -}}

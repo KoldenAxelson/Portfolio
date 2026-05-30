@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------------------
-# NeoGolio — HUGX build tooling
+# Portfolio — build tooling
 #
 # Truly Node-free: Hugo (Go binary) emits static HTML, and the Tailwind v4
 # standalone binary (Rust/Oxide engine — no npm, no node_modules) emits the
@@ -27,7 +27,7 @@ CSS_OUT  := assets/css/app.css
 .PHONY: help setup dev build css css-watch clean distclean
 
 help: ## Show this help
-	@echo "NeoGolio — available commands:"
+	@echo "Portfolio — available commands:"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  \033[1m%-10s\033[0m %s\n", $$1, $$2}'
 
 setup: $(HUGO) $(TAILWIND) ## Download the Hugo + Tailwind binaries for this platform

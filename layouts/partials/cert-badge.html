@@ -2,8 +2,8 @@
   cert-badge — credential badge <img> or trophy fallback. Port of CertBadge.astro.
   Dict params: badge (path string or ""), alt (string), size ("sm"|"md").
   sm = 40px (homepage rows), md = 48px (/certificates). Square badges, so the
-  fallback px attrs preserve the 1:1 ratio for CLS. (Real pixel dims for the
-  JSON-LD ImageObject come in Phase 3.)
+  fallback px attrs preserve the 1:1 ratio for CLS. (The JSON-LD ImageObject's
+  real pixel dims are emitted by func/credential-schema.html.)
 */ -}}
 {{- $badge := .badge -}}
 {{- $alt := .alt -}}

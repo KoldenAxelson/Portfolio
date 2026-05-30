@@ -1,10 +1,10 @@
 # ---------------------------------------------------------------------------
-# NeoGolio — Hugo config
+# Portfolio — Hugo config
 #
-# HUGX port of Neofolio. Static output, deploy-target-agnostic. Primary target
-# is GitHub Pages project sites (user.github.io/neogolio) — set the path in
-# `baseURL` for those. For a custom domain or Cloudflare Pages, use the bare
-# domain. The same `hugo --minify` build serves both.
+# Node-free Hugo port of Neofolio. Static output, deploy-target-agnostic.
+# This site deploys to Cloudflare Pages at the custom domain set in `baseURL`
+# below. Sub-path hosts (e.g. GitHub Pages project sites) work too — just set
+# the path component in `baseURL`. The same `hugo --minify` build serves both.
 # ---------------------------------------------------------------------------
 
 baseURL = "https://wrightfunctions.com/"

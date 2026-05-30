@@ -14,7 +14,7 @@
 
 {{- with $allTags }}
 <section class="mb-8" aria-label="Project filters">
-  {{/* Tag filter buttons. Toggle behavior is wired by vanilla JS in Phase 4
+  {{/* Tag filter buttons. Toggle behavior is wired by ts/project-filter.ts
        via the data-project-filter / data-filter-tag hooks; cards carry
        data-project-tags. Renders fully without JS (all shown). */}}
   <div role="group" aria-label="Filter projects by tag" class="flex flex-wrap gap-2" data-project-filter>

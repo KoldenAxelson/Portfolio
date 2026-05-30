@@ -1,8 +1,8 @@
 {{- /*
   bio-indicator — chat-bubble data-carrier button. Port of BioIndicator.astro.
   Dict params: messages (list of strings), label (string).
-  No JS of its own — SideBar (desktop) and TopNav (mobile) scripts wire it via
-  the data-bio-indicator / data-bio-messages contract (Phase 4). Empty messages
+  No JS of its own — ts/sidebar.ts (desktop) and ts/nav.ts (mobile) wire it via
+  the data-bio-indicator / data-bio-messages contract. Empty messages
   → disabled + faded. The JSON is HTML-attr-escaped so apostrophes survive.
 */ -}}
 {{- $messages := .messages | default slice -}}
