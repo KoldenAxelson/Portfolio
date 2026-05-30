@@ -3,10 +3,10 @@
 # Pages projects don't strictly require a wrangler.toml — the dashboard works
 # fine. This file is here so you can:
 #   - Run `wrangler pages dev public` locally with the same env vars as prod
-#   - Define secrets reproducibly: `wrangler pages secret put RESEND_API_KEY`
+#   - Define any secrets reproducibly: `wrangler pages secret put <NAME>`
 #   - Promote/preview from the CLI: `wrangler pages deploy public`
 #
-# The site is built with Hugo, which emits to ./public (not Astro's ./dist).
+# The site is built with Hugo, which emits static files to ./public.
 
 name = "portfolio"
 compatibility_date = "2025-01-15"
@@ -15,7 +15,6 @@ pages_build_output_dir = "public"
 # Plain-text vars are fine here. Secrets go through `wrangler pages secret put`.
 [vars]
 ENVIRONMENT = "production"
-# CONTACT_TO_EMAIL = "you@example.com"  # uncomment and edit
 
 [[env.preview.vars]]
 ENVIRONMENT = "preview"

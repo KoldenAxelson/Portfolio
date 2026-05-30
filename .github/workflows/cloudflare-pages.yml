@@ -8,7 +8,7 @@ name: Deploy to Cloudflare Pages
 #
 # Node-free build: the Hugo (Go) + Tailwind (Rust standalone) binaries are
 # fetched by `make setup`; Hugo emits static HTML to ./public, which is what
-# wrangler deploys. Pages Functions in ./functions deploy alongside it.
+# wrangler deploys.
 
 on:
   push:

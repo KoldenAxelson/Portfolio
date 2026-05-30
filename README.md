@@ -1,11 +1,11 @@
-# Neofolio
+# Portfolio — Konrad Wright
 
-An AI-readable, opinionated portfolio template for developers in the AI age —
-built on the **OX Stack** (Hugo · Tailwind · Go · HTMX · Alpine · TypeScript).
-Node-free build, Lighthouse-optimized, structured for both human readers and the
-AI systems that increasingly summarize you to them.
+My personal portfolio: an AI-readable, Node-free static site built on the
+**OX Stack** (Hugo · Tailwind · Go · HTMX · Alpine · TypeScript). Structured for
+both human readers and the AI systems that increasingly summarize a developer to
+them. Forked from and powered by [Neofolio](https://github.com/KoldenAxelson/neofolio).
 
-**Live demo → [koldenaxelson.github.io/neofolio](https://koldenaxelson.github.io/neofolio/)**
+**Live → [wrightfunctions.com](https://wrightfunctions.com/)**
 
 ---
 
@@ -14,18 +14,14 @@ AI systems that increasingly summarize you to them.
 Every page serves two audiences: the human reading it and the model summarizing
 it. So all meaningful content is in static HTML, backed by a JSON-LD entity
 graph (a single `Person`/`WebSite` identity that every page references by `@id`)
-and a build-time [`/llms.txt`](https://koldenaxelson.github.io/neofolio/llms.txt).
-RSS, JSON Feed, robots, and sitemap come for free.
+and a build-time [`/llms.txt`](https://wrightfunctions.com/llms.txt). RSS, JSON
+Feed, robots, and sitemap come for free.
 
 The stack is deliberately lean: two compiled binaries (Hugo + the Tailwind
 standalone CLI) and Hugo's built-in esbuild for TypeScript — **no `npm`, no
 `node_modules`, no framework runtime** on the static pages. Client interactivity
-is a ~2–3KB TypeScript bundle; `hx-boost` adds SPA-style navigation; Alpine.js
+is a small TypeScript bundle; `hx-boost` adds SPA-style navigation; Alpine.js
 appears only on the one page that needs reactive state (`/network`).
-
-See [`ox-stack.md`](./ox-stack.md) for the stack and the reasoning behind each
-choice, and [`ox-cloudflare.md`](./ox-cloudflare.md) for a recommended dynamic
-deployment path.
 
 ## Quick start
 
@@ -39,9 +35,9 @@ make build    # production build to ./public
 
 Run `make help` for the full list.
 
-## Make it yours
+## Where things live
 
-1. **`data/site.yaml`** — identity, links, nav, locale. Edit this first.
+1. **`data/site.yaml`** — identity, links, nav, locale.
 2. **`data/cv.yaml`** — work history, education, skills (drives `/cv`, the
    homepage Experience section, and the `Person.hasOccupation` JSON-LD).
 3. **`content/`** — projects, articles, and the `now`/`uses` pages as Markdown
@@ -69,4 +65,5 @@ Requires repo secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
 
 ## License
 
-MIT — see [`LICENSE`](./LICENSE).
+MIT — see [`LICENSE`](./LICENSE). Built on the MIT-licensed
+[Neofolio](https://github.com/KoldenAxelson/neofolio) template.
