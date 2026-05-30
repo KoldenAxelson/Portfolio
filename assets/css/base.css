@@ -215,23 +215,24 @@ img {
    shadow. The no-backdrop-filter fallback is a near-opaque panel so text stays
    legible. Tuned per surface below. */
 
-/* Sticky top bar. A translucent pane that reads as glass even at rest: the look
-   is carried by the bottom hairline, the specular top edge, a faint top-down
-   sheen, and a soft cast shadow — not the fill, which is nearly invisible over a
-   flat page bg. Solid-ish fallback below for no-backdrop-filter browsers. */
+/* Top nav. Mobile: a floating "island" — full border, rounded, lifted off the
+   page (the template adds the side + top margins). Desktop: a flush full-width
+   bar with just a bottom hairline. The fill is nearly invisible over a flat page
+   bg, so the edge (border + specular) and shadow carry the look. */
 .glass-nav {
   background-color: rgb(var(--glass-bg) / 0.82);
-  border-bottom: 1px solid rgb(var(--c-border));
+  border: 1px solid rgb(var(--c-border));
+  border-radius: 1.25rem;
   box-shadow:
-    inset 0 1px 0 0 rgb(var(--glass-hi) / 0.6),
-    0 6px 18px -8px rgb(0 0 0 / 0.18);
+    inset 0 1px 0 0 rgb(var(--glass-hi) / 0.5),
+    0 10px 30px -12px rgb(0 0 0 / 0.3);
 }
 
-/* Mobile dropdown pane: a detached sheet — full edge, rounded bottom, deeper
-   shadow to lift it off the page. */
+/* Mobile nav menu: a detached floating panel that matches the island — full
+   edge, rounded all round (via the template), deep shadow. Mobile-only. */
 .glass-panel {
   background-color: rgb(var(--glass-bg) / 0.85);
-  border-bottom: 1px solid rgb(var(--c-border));
+  border: 1px solid rgb(var(--c-border));
   box-shadow:
     inset 0 1px 0 0 rgb(var(--glass-hi) / 0.55),
     0 18px 44px -16px rgb(0 0 0 / 0.28);
@@ -254,18 +255,37 @@ img {
   }
 }
 
+/* Desktop: revert the nav island to a flush full-width bar. */
+@media (min-width: 1024px) {
+  .glass-nav {
+    border: 0;
+    border-bottom: 1px solid rgb(var(--c-border));
+    border-radius: 0;
+    box-shadow:
+      inset 0 1px 0 0 rgb(var(--glass-hi) / 0.6),
+      0 6px 18px -8px rgb(0 0 0 / 0.18);
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   /* On the dark theme the white specular line runs too hot, and the cast shadow
      needs more weight to register against near-black. */
   .glass-nav {
     box-shadow:
       inset 0 1px 0 0 rgb(var(--glass-hi) / 0.12),
-      0 6px 22px -10px rgb(0 0 0 / 0.7);
+      0 10px 30px -12px rgb(0 0 0 / 0.7);
   }
   .glass-panel {
     box-shadow:
       inset 0 1px 0 0 rgb(var(--glass-hi) / 0.1),
       0 18px 44px -16px rgb(0 0 0 / 0.75);
+  }
+}
+@media (min-width: 1024px) and (prefers-color-scheme: dark) {
+  .glass-nav {
+    box-shadow:
+      inset 0 1px 0 0 rgb(var(--glass-hi) / 0.12),
+      0 6px 22px -10px rgb(0 0 0 / 0.7);
   }
 }
 
