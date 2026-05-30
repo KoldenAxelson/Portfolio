@@ -1,6 +1,5 @@
-// Network explorer — Alpine.js island. Port of Neofolio's NetworkPanel.vue.
-// Loaded only on /network. Registers the `networkPanel` component on
-// alpine:init; owner + contacts come from the #network-data JSON script tag.
+// Network explorer — Alpine.js component, loaded only on /network. owner +
+// contacts come from the #network-data JSON script tag.
 
 declare global {
   interface Window {
@@ -35,8 +34,44 @@ interface Profile {
   isOwner: boolean;
 }
 
+// Alpine-injected "magic" props, mixed into `this` where methods need them.
+interface AlpineMagics {
+  $watch(property: string, callback: () => void): void;
+  $nextTick(callback: () => void): void;
+  $root: HTMLElement;
+}
+
+// Component shape. The returned literal is annotated with this so `this` resolves
+// in getters too (getters can't take a `this` param).
+interface NetworkPanel {
+  owner: Owner;
+  contacts: Contact[];
+  selectedId: string | null;
+  view: 'list' | 'profile' | 'compose';
+  fromName: string;
+  fromEmail: string;
+  message: string;
+  readonly isContactSelected: boolean;
+  readonly activeProfile: Profile;
+  readonly isCompose: boolean;
+  readonly composeReady: boolean;
+  readonly cta: string;
+  readonly messagePlaceholder: string;
+  readonly mailto: string;
+  readonly listPaneClass: string;
+  readonly rightPaneClass: string;
+  init(): void;
+  isMobile(): boolean;
+  scrollToTopOfPanel(): void;
+  selectContact(id: string): void;
+  selectOwner(): void;
+  backToList(): void;
+  openCompose(): void;
+  cancelCompose(): void;
+}
+
 document.addEventListener('alpine:init', () => {
-  window.Alpine.data('networkPanel', () => {
+  window.Alpine.data('networkPanel', (): NetworkPanel => {
     const el = document.getElementById('network-data');
     const data = el ? (JSON.parse(el.textContent || '{}') as { owner: Owner; contacts: Contact[] }) : null;
     const owner: Owner = data?.owner ?? { name: '', title: '', email: '', bio: '' };
@@ -51,14 +86,15 @@ document.addEventListener('alpine:init', () => {
       fromEmail: '',
       message: '',
 
-      init(this: any): void {
+      init(this: NetworkPanel): void {
+        const self = this as NetworkPanel & AlpineMagics;
         // Reset the form when the active profile changes, so a message meant
         // for one person can't be sent in another's context.
-        this.$watch('selectedId', () => {
-          this.fromName = '';
-          this.fromEmail = '';
-          this.message = '';
-          if (this.view === 'compose') this.view = 'profile';
+        self.$watch('selectedId', () => {
+          self.fromName = '';
+          self.fromEmail = '';
+          self.message = '';
+          if (self.view === 'compose') self.view = 'profile';
         });
       },
 
@@ -137,30 +173,31 @@ document.addEventListener('alpine:init', () => {
       isMobile(): boolean {
         return window.matchMedia('(max-width: 1023px)').matches;
       },
-      scrollToTopOfPanel(this: any): void {
+      scrollToTopOfPanel(this: NetworkPanel): void {
         if (!this.isMobile()) return;
-        this.$nextTick(() => this.$root.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+        const self = this as NetworkPanel & AlpineMagics;
+        self.$nextTick(() => self.$root.scrollIntoView({ behavior: 'smooth', block: 'start' }));
       },
 
-      selectContact(this: any, id: string): void {
+      selectContact(this: NetworkPanel, id: string): void {
         this.selectedId = id;
         this.view = 'profile';
         this.scrollToTopOfPanel();
       },
-      selectOwner(this: any): void {
+      selectOwner(this: NetworkPanel): void {
         this.selectedId = null;
         this.view = 'profile';
         this.scrollToTopOfPanel();
       },
-      backToList(this: any): void {
+      backToList(this: NetworkPanel): void {
         this.view = 'list';
         this.scrollToTopOfPanel();
       },
-      openCompose(this: any): void {
+      openCompose(this: NetworkPanel): void {
         this.view = 'compose';
         this.scrollToTopOfPanel();
       },
-      cancelCompose(this: any): void {
+      cancelCompose(this: NetworkPanel): void {
         this.view = 'profile';
         this.scrollToTopOfPanel();
       },

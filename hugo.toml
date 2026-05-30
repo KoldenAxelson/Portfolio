@@ -1,11 +1,5 @@
-# ---------------------------------------------------------------------------
-# Portfolio — Hugo config
-#
-# Node-free Hugo port of Neofolio. Static output, deploy-target-agnostic.
-# This site deploys to Cloudflare Pages at the custom domain set in `baseURL`
-# below. Sub-path hosts (e.g. GitHub Pages project sites) work too — just set
-# the path component in `baseURL`. The same `hugo --minify` build serves both.
-# ---------------------------------------------------------------------------
+# Portfolio — Hugo config. Deploys to Cloudflare Pages at the baseURL domain;
+# sub-path hosts work too via baseURL's path component.
 
 baseURL = "https://wrightfunctions.com/"
 languageCode = "en-us"
@@ -13,12 +7,10 @@ title = "Konrad Wright"
 enableRobotsTXT = true    # native robots.txt via layouts/robots.txt
 enableInlineShortcodes = true
 
-# No taxonomy pages — tags are plain front-matter arrays (used by the project
-# filter and article tag chips), not Hugo taxonomy term pages, matching Neofolio.
+# Tags are plain front-matter arrays (project filter + tag chips), not taxonomies.
 disableKinds = ["taxonomy", "term"]
 
-# Home emits the AI-readability endpoints alongside HTML; sections/pages stay
-# HTML-only so we get a single /rss.xml and /feed.json (not per-section feeds).
+# Home emits the feeds + llms.txt; sections/pages stay HTML-only (single /rss.xml).
 [outputs]
   home = ["HTML", "RSS", "llms", "feedjson"]
   section = ["HTML"]
@@ -43,20 +35,18 @@ disableKinds = ["taxonomy", "term"]
     isPlainText = true
     rel = "alternate"
 
-# Map Neofolio's content date field names onto Hugo's .Date / .Lastmod so the
-# original front-matter keys (pubDate / updatedDate) work unchanged.
+# Map the content's pubDate / updatedDate keys onto Hugo's .Date / .Lastmod.
 [frontmatter]
   date = ["pubDate", "date", "publishDate"]
   lastmod = ["updatedDate", "lastmod", ":git"]
 
 [markup]
   [markup.goldmark.renderer]
-    unsafe = true          # allow raw HTML in Markdown (matches MDX expressiveness)
+    unsafe = true          # allow raw HTML in Markdown
   [markup.highlight]
     noClasses = false      # emit classes so we theme code blocks with our palette
     lineNos = false
     tabWidth = 2
 
 [params]
-  # Identity and most site data live in data/site.yaml; surfaced to templates
-  # via the `site` data file. Kept out of params so the config stays minimal.
+  # Identity and site data live in data/site.yaml, not here.

@@ -1,10 +1,7 @@
 {{- /*
-  project-card — overlay-link project card. Port of Neofolio's ProjectCard.astro.
-  Dict params:
-    project (Page, required) — a projects-section page
-    compact (bool)           — compact mode for tier-2 listings
-  Primary target: tier-1 → its detail page; else links.live || links.repo; else none.
-  Inner metric link floats above the overlay via the z-index trick.
+  project-card — overlay-link project card. Dict params: project (Page, required),
+  compact (bool, tier-2 listings). Primary target: tier-1 → detail page, else
+  links.live || links.repo, else none. Inner metric link floats above the overlay via z-index.
 */ -}}
 {{- $p := .project -}}
 {{- $compact := .compact | default false -}}

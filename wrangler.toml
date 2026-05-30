@@ -1,18 +1,11 @@
-# Wrangler config for Cloudflare Pages.
-#
-# Pages projects don't strictly require a wrangler.toml — the dashboard works
-# fine. This file is here so you can:
-#   - Run `wrangler pages dev public` locally with the same env vars as prod
-#   - Define any secrets reproducibly: `wrangler pages secret put <NAME>`
-#   - Promote/preview from the CLI: `wrangler pages deploy public`
-#
-# The site is built with Hugo, which emits static files to ./public.
+# Wrangler config for Cloudflare Pages. Optional (the dashboard works too), but
+# lets you run `wrangler pages dev public` and deploy from the CLI. Hugo → ./public.
 
 name = "portfolio"
 compatibility_date = "2025-01-15"
 pages_build_output_dir = "public"
 
-# Plain-text vars are fine here. Secrets go through `wrangler pages secret put`.
+# Secrets go through `wrangler pages secret put`.
 [vars]
 ENVIRONMENT = "production"
 

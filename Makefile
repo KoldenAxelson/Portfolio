@@ -1,19 +1,7 @@
-# ---------------------------------------------------------------------------
-# Portfolio — build tooling
-#
-# Truly Node-free: Hugo (Go binary) emits static HTML, and the Tailwind v4
-# standalone binary (Rust/Oxide engine — no npm, no node_modules) emits the
-# CSS. `make setup` downloads both binaries for your platform into ./bin; no
-# global install, no package manager. Everything deployed is a flat file.
-#
-# Quick start:
-#   make setup     # one-time: fetch the Hugo + Tailwind binaries
-#   make dev       # local server at http://localhost:1313 with live CSS
-#   make build     # production build to ./public
-# ---------------------------------------------------------------------------
+# Portfolio — build tooling. Node-free: `make setup` fetches the Hugo + Tailwind
+# binaries into ./bin. Then `make dev` (live server) or `make build`. See `make help`.
 
-# Pinned versions (bump deliberately; pinning keeps builds reproducible and
-# the supply-chain surface auditable).
+# Pinned for reproducible builds.
 HUGO_VERSION     := 0.140.2
 TAILWIND_VERSION := v4.3.0
 

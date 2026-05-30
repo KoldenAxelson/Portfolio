@@ -1,5 +1,4 @@
-{{- /* BlogPosting for /articles/<slug>. References #person + #website by @id.
-       Port of articles/[slug].astro's schema. */ -}}
+{{- /* BlogPosting for /articles/<slug>. References #person + #website by @id. */ -}}
 {{- $site := site.Data.site -}}
 {{- $siteUrl := partial "func/site-url.html" . -}}
 {{- $personId := printf "%s#person" $siteUrl -}}

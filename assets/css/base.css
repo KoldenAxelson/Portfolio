@@ -1,22 +1,9 @@
-/* ------------------------------------------------------------------ */
-/* Portfolio base styles (ported from Neofolio's global.css)          */
-/*                                                                     */
-/* Tailwind v4 (standalone binary, zero-Node) owns the utility layer + */
-/* preflight; this file owns @font-face, the source-of-truth theme     */
-/* tokens, base element styles, and hand-authored utilities.           */
-/*                                                                     */
-/* Token naming: the five raw RGB triplets live in `--c-*` so they do  */
-/* NOT collide with Tailwind's `--color-*` namespace (main.css maps     */
-/* `--color-bg: rgb(var(--c-bg) / 1)` etc. to generate bg-bg/text-fg…). */
-/* Forkers: tweak the five `--c-*` values below to rebrand.            */
-/* ------------------------------------------------------------------ */
+/* Portfolio base styles: @font-face, theme tokens, base elements, hand-authored
+   utilities. Tailwind owns the utility layer + preflight.
+   To rebrand: tweak the five --c-* values below. */
 
-/* ------------------------------------------------------------------ */
-/* Self-hosted Inter font                                              */
-/* Avoids a third-party (rsms.me) request in the critical path.        */
-/* font-display: swap → paint in fallback first, swap to Inter when     */
-/* ready (prevents FOIT, accepts a small FOUT).                        */
-/* ------------------------------------------------------------------ */
+/* Self-hosted fonts (no third-party request in the critical path).
+   font-display: swap avoids FOIT at the cost of a small FOUT. */
 
 @font-face {
   font-family: 'Inter';
@@ -34,12 +21,6 @@
   src: url('/fonts/InterVariable-Italic.woff2') format('woff2');
 }
 
-/* ------------------------------------------------------------------ */
-/* Self-hosted JetBrains Mono (variable, latin subset)                 */
-/* Improvement over Neofolio: it specified JetBrains Mono but never    */
-/* bundled it, so mono text fell back to system mono. We ship it.      */
-/* ------------------------------------------------------------------ */
-
 @font-face {
   font-family: 'JetBrains Mono';
   font-style: normal;
@@ -56,11 +37,7 @@
   src: url('/fonts/JetBrainsMono-Variable-Italic.woff2') format('woff2');
 }
 
-/* ------------------------------------------------------------------ */
-/* Theme tokens (source of truth — the five values to tweak)           */
-/* Light by default. Dark kicks in for users with that preference.     */
-/* ------------------------------------------------------------------ */
-
+/* Theme tokens — source of truth. Light default; dark via media query. */
 :root {
   --c-bg: 250 250 247;       /* warm paper white */
   --c-fg: 24 24 27;          /* zinc-900 */
@@ -79,10 +56,6 @@
   }
 }
 
-/* ------------------------------------------------------------------ */
-/* Base                                                                */
-/* ------------------------------------------------------------------ */
-
 html {
   font-family: Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
   background-color: rgb(var(--c-bg));
@@ -98,12 +71,8 @@ html {
   }
 }
 
-/* ---- Matte noise texturing ------------------------------------------
- * Two tileable 128×128 noise PNGs (static/textures/), one per scheme,
- * overlaid non-destructively on the background-color. baseof injects the
- * base-path-aware URLs onto <body> as --noise-bg-light / --noise-bg-dark.
- * -------------------------------------------------------------------- */
-
+/* Matte noise texture (128×128 tile per scheme). baseof injects the
+   base-path-aware URLs onto <body> as --noise-bg-light / --noise-bg-dark. */
 body {
   min-height: 100dvh;
   background-image: var(--noise-bg-light, none);
@@ -117,11 +86,8 @@ body {
   }
 }
 
-/*
- * Links: underlined by default so color-blind users can identify them
- * without relying on the accent alone (WCAG 1.4.1). Opt out via
- * `class="no-underline"` on nav, icon links, card overlays, etc.
- */
+/* Links underlined by default (WCAG 1.4.1 — don't rely on color alone).
+   Opt out with class="no-underline". */
 a {
   color: rgb(var(--c-accent));
   text-decoration: underline;
@@ -188,10 +154,8 @@ img {
   padding: 0.5rem 1rem;
 }
 
-/* Prose (article + case-study bodies): remap the typography plugin's color
-   variables onto our five tokens so reading copy stays native to the palette
-   and adapts to dark mode automatically (the --c-* tokens swap by media query,
-   so no prose-invert is needed). */
+/* Remap the typography plugin's colors onto our tokens (no prose-invert needed —
+   the --c-* tokens already swap for dark mode). */
 .prose {
   --tw-prose-body: rgb(var(--c-fg) / 0.88);
   --tw-prose-headings: rgb(var(--c-fg));
@@ -237,29 +201,14 @@ img {
   scrollbar-color: rgb(var(--c-border)) transparent;
 }
 
-/* ------------------------------------------------------------------ */
-/* Cross-page crossfade (View Transitions)                            */
-/*                                                                    */
-/* Two paths feed the same fade:                                      */
-/*   1. Boosted swaps — htmx wraps each hx-boost body swap in          */
-/*      document.startViewTransition (htmx.config.globalViewTransitions */
-/*      in ts/main.ts).                                                */
-/*   2. Full-page navigations — the @view-transition rule below opts   */
-/*      into the browser's native cross-document transitions, so loads */
-/*      htmx does NOT intercept (e.g. /network, which sets boost:false */
-/*      to reliably load Alpine in its <head>) still crossfade.        */
-/*                                                                    */
-/* The ::view-transition rules then tune both to a calm 180ms. Browsers */
-/* without the API skip all of this and get the existing instant swap  */
-/* — pure progressive enhancement, zero effect on first paint.        */
-/* ------------------------------------------------------------------ */
+/* Cross-page crossfade (View Transitions). Feeds two paths: htmx-boosted body
+   swaps (via main.ts) and full-document loads (@view-transition below, used by
+   /network which opts out of boost). No API → instant swap, no first-paint cost. */
 @view-transition {
   navigation: auto;
 }
 
-/* Directional fade: the outgoing page fades out, the incoming page fades in
-   while rising a few pixels — a subtle sense of forward motion. The nav is
-   pulled out of this (see below) so only the page content moves. */
+/* Outgoing page fades out; incoming fades in while rising a few px. */
 @keyframes vt-content-out {
   to {
     opacity: 0;
@@ -278,20 +227,12 @@ img {
   animation: 220ms cubic-bezier(0.33, 0, 0.2, 1) both vt-content-in;
 }
 
-/* Keep the top nav steady across transitions. Naming it gives it its own
-   transition group (lifted out of `root`); holding both snapshots with no
-   animation means it doesn't fade or move while the page content does. This
-   matters most on the full-reload path (/network), where the whole document
-   is replaced — without it, the nav would crossfade with everything else. */
+/* Give the nav its own transition group so it holds steady while content fades. */
 [data-top-nav] {
   view-transition-name: site-nav;
 }
-/* Hold the nav steady WITHOUT ghosting. The nav background is translucent
-   (bg-bg/85 + backdrop-blur) and its active-item highlight differs between
-   pages, so keeping BOTH snapshots visible would stack two see-through navs
-   and bleed the old highlight through the new one as an after-image. Hide the
-   old snapshot outright and show only the new (live) one — no fade, no
-   movement, no ghost. */
+/* Hide the old nav snapshot rather than crossfade it: the nav is translucent and
+   its active highlight differs per page, so showing both would ghost an after-image. */
 ::view-transition-old(site-nav) {
   animation: none;
   opacity: 0;

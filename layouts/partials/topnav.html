@@ -1,14 +1,8 @@
 {{- /*
-  topnav — port of Neofolio's TopNav.astro.
-  Receives the page as the dot. Reads nav from data/site.yaml and per-page
-  toolbar items from `.Params.tools` (list of {icon,label,href?,download?,action?}).
-
-  Desktop (lg+): inline icon buttons, label slides in on hover.
-  Mobile (<lg) : hamburger <details> → dropdown panel (nav / bio / tools modes).
-
-  The CSS-only icon swap and grid-rows height animation live here; the
-  autohide-on-scroll, panel open/close sync, and bio-typewriter behavior are
-  wired by ts/nav.ts via the data-* hooks below.
+  topnav — site header. Nav from data/site.yaml; per-page toolbar from
+  .Params.tools ({icon,label,href?,download?,action?}).
+  Desktop (lg+): inline icon buttons. Mobile (<lg): hamburger <details> panel
+  (nav / bio / tools modes). Interactivity is wired by ts/nav.ts via data-* hooks.
 */ -}}
 {{- $site := site.Data.site -}}
 {{- $tools := .Params.tools -}}

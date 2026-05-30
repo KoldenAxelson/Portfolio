@@ -1,8 +1,7 @@
 {{- /*
   formatted-date — <time> element with ISO datetime + localized label.
-  Port of Neofolio's FormattedDate.astro. Dict params:
-    date      (required) — a date (time.Time or ISO string)
-    precision (string)   — "day" (default, "Sep 21, 2024") or "month" ("Sep 2024")
+  Dict params: date (required, time.Time or ISO string),
+  precision ("day" default → "Sep 21, 2024" | "month" → "Sep 2024").
 */ -}}
 {{- $t := time.AsTime .date -}}
 {{- $precision := .precision | default "day" -}}

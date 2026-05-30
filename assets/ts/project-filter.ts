@@ -1,5 +1,4 @@
-// Project tag filter — typed vanilla replacement for Neofolio's Vue island.
-// Cards carry [data-project-tags]; buttons carry [data-filter-tag] ("" = all).
+// Project tag filter. Cards carry [data-project-tags]; buttons [data-filter-tag] ("" = all).
 
 export function initProjectFilter(): void {
   const group = document.querySelector<HTMLElement>('[data-project-filter]');

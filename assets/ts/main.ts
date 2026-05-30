@@ -1,23 +1,18 @@
-// Unified, boost-aware entry. Loaded once from <head> so it survives hx-boost
-// body swaps. Each init feature-detects its own DOM and is safe to re-run:
-// global window/document listeners are wired once inside the modules, so
-// re-running only (re)binds element-level handlers to the freshly-swapped DOM.
+// Entry point. Each init() is idempotent so it can re-run after every hx-boost
+// body swap (see htmx:afterSettle below).
 import { initNav } from './nav';
 import { initScrollTop } from './scrolltop';
 import { initSidebar } from './sidebar';
 import { initProjectFilter } from './project-filter';
 
-// Cross-page fade on boosted navigation. Wraps each hx-boost body swap in the
-// browser's native View Transitions API (document.startViewTransition), which
-// crossfades old → new. Pure progressive enhancement: browsers without the API
-// just get the existing instant swap, and the CSS honors prefers-reduced-motion.
-// Must be set before htmx processes the document. `htmx` is the global from the
-// self-hosted vendor script loaded earlier in <head>.
 declare global {
   interface Window {
     htmx?: { config: { globalViewTransitions?: boolean } };
   }
 }
+
+// Crossfade boosted navigations via the View Transitions API. Must be set before
+// htmx processes the document.
 if (window.htmx) {
   window.htmx.config.globalViewTransitions = true;
 }
@@ -39,6 +34,5 @@ function ready(fn: () => void): void {
 
 ready(initPage);
 
-// hx-boost swaps the <body> without a full reload, so re-bind element-level
-// interactivity to the new DOM after each boosted navigation settles.
+// hx-boost swaps <body> without a reload; re-bind handlers to the new DOM.
 document.addEventListener('htmx:afterSettle', initPage);

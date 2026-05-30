@@ -1,14 +1,7 @@
 name: Deploy to Cloudflare Pages
 
-# Enabled: deploys main on push, builds PRs as previews, also runs on demand.
-# Required repo secrets:
-#   CLOUDFLARE_API_TOKEN  (Account:Developer Platform:Pages — Edit)
-#   CLOUDFLARE_ACCOUNT_ID
-# Project name is hardcoded below — change if you rename the Pages project.
-#
-# Node-free build: the Hugo (Go) + Tailwind (Rust standalone) binaries are
-# fetched by `make setup`; Hugo emits static HTML to ./public, which is what
-# wrangler deploys.
+# Deploys main on push, PRs as previews. Requires repo secrets
+# CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID. Project name is hardcoded below.
 
 on:
   push:
