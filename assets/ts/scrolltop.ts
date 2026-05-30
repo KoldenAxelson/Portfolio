@@ -1,12 +1,13 @@
-// Scroll-to-top button, boost-aware. The scroll listener is wired once and
-// live-queries the (per-page) button; the click handler is (re)bound per page.
+// Scroll-to-top button. Scroll listener wired once; click handler re-bound per page.
+
+const SHOW_AFTER_PX = 400;
 
 let sttGlobalsWired = false;
 let sttTicking = false;
 
 function updateScrollTop(): void {
   const btn = document.querySelector<HTMLButtonElement>('[data-scroll-top]');
-  if (btn) btn.classList.toggle('is-visible', window.scrollY > 400);
+  if (btn) btn.classList.toggle('is-visible', window.scrollY > SHOW_AFTER_PX);
   sttTicking = false;
 }
 

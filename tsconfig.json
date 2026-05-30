@@ -1,5 +1,5 @@
 {
-  "//": "Editor/DX config for the interactivity scripts. The production build uses Hugo's built-in esbuild (js.Build) which transpiles TS without Node or a separate tsc step; this file gives editors strict type-checking.",
+  "//": "Editor type-checking only. The build uses Hugo's esbuild (no tsc step).",
   "compilerOptions": {
     "target": "ES2018",
     "module": "ESNext",

@@ -1,6 +1,6 @@
 {{- /* Project case study schema. Type is SoftwareApplication (has live URL) /
        SoftwareSourceCode (repo only) / CreativeWork (fallback). References
-       #person by @id. Port of projects/[slug].astro's schema. */ -}}
+       #person by @id. */ -}}
 {{- $site := site.Data.site -}}
 {{- $siteUrl := partial "func/site-url.html" . -}}
 {{- $personId := printf "%s#person" $siteUrl -}}

@@ -1,11 +1,7 @@
 {{- /*
   svg-icon — render a 24×24 outline icon from data/icons.yaml.
-  Params (dict):
-    name   (string, required) — key in data/icons.yaml
-    class  (string)           — classes for the <svg>
-    width  (string)           — stroke-width, default "1.6"
-  Matches Neofolio's TopNav <svg> shape (fill none, stroke currentColor,
-  round caps/joins). Falls back to nothing if the name is unknown.
+  Dict params: name (required, key in data/icons.yaml), class, width (stroke-width,
+  default "1.6"). Renders nothing if the name is unknown.
 */ -}}
 {{- $name := .name -}}
 {{- $class := .class | default "h-5 w-5 shrink-0" -}}

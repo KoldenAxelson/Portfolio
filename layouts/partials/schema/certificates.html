@@ -1,6 +1,5 @@
 {{- /* /certificates ItemList of EducationalOccupationalCredential. Each item's
-       @id matches /cv's hasCredential so the records merge. Port of
-       certificates.astro's schema. */ -}}
+       @id matches /cv's hasCredential so the records merge. */ -}}
 {{- $certs := partial "func/certs.html" . -}}
 {{- $items := slice -}}
 {{- range $i, $c := $certs -}}

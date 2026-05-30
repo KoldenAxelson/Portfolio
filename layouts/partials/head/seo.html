@@ -1,10 +1,6 @@
 {{- /*
-  SEO — primary meta + OpenGraph + Twitter card, plus the JSON-LD entity graph.
-  Port of Neofolio's SEO.astro. Receives the page as the dot.
-
-  Emits the meta/OG/Twitter layer, then the WebSite + Person base schema and the
-  per-page blocks (BlogPosting / SoftwareApplication / Person.hasOccupation),
-  which reference the base entities by stable @id.
+  SEO — meta + OpenGraph + Twitter card, then the JSON-LD graph: WebSite + Person
+  base schema plus per-page blocks that reference the base entities by stable @id.
 */ -}}
 {{- $site := site.Data.site -}}
 {{- $siteUrl := partial "func/site-url.html" . -}}

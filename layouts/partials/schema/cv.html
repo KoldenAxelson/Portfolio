@@ -1,6 +1,6 @@
 {{- /* Person supplement for /cv — same @id as the canonical Person so the
        records merge. Adds hasOccupation / alumniOf / worksFor / knowsAbout /
-       hasCredential. Port of cv.astro's schema. */ -}}
+       hasCredential. */ -}}
 {{- $site := site.Data.site -}}
 {{- $cv := site.Data.cv -}}
 {{- $personId := printf "%s#person" (partial "func/site-url.html" .) -}}

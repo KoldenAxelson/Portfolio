@@ -1,28 +1,15 @@
-// Homepage sidebar scroll-spy + desktop bio typewriter, boost-aware.
-// On each init the previous IntersectionObserver is torn down and a fresh one
-// is built for the current DOM; the matchMedia listener is wired once and
-// dispatches to the current page's apply-mode handler (null on non-split pages).
+// Homepage sidebar scroll-spy + desktop bio typewriter. initSidebar() rebuilds
+// the IntersectionObserver for the current DOM on each (boosted) navigation.
+import { sleep, pickRandom, readMessages, charDelay } from './bio';
+
+// Desktop typewriter beats (ms): rewind the old line, pause, type, hold, hide cursor.
+const DELETE_STEP_MS = 12;
+const PRE_TYPE_PAUSE_MS = 150;
+const POST_TYPE_HOLD_MS = 800;
 
 let sbMqWired = false;
 let sbObserver: IntersectionObserver | null = null;
 let sbApplyMode: (() => void) | null = null;
-
-const sleep = (ms: number): Promise<void> => new Promise((r) => setTimeout(r, ms));
-
-const pickRandom = <T>(arr: T[] | undefined): T | null => {
-  if (!arr || !arr.length) return null;
-  return arr[Math.floor(Math.random() * arr.length)];
-};
-
-const readMessages = (indicator: Element | null): string[] => {
-  if (!indicator) return [];
-  try {
-    const parsed = JSON.parse(indicator.getAttribute('data-bio-messages') || '[]');
-    return Array.isArray(parsed) ? parsed : [];
-  } catch (e) {
-    return [];
-  }
-};
 
 export function initSidebar(): void {
   // Tear down any observer/handler from the previous page (boost navigation).
@@ -100,20 +87,19 @@ export function initSidebar(): void {
     while (current.length > 0 && typingToken === myToken) {
       current = current.slice(0, -1);
       setText(current);
-      await sleep(12);
+      await sleep(DELETE_STEP_MS);
     }
     if (typingToken !== myToken) return;
-    await sleep(150);
+    await sleep(PRE_TYPE_PAUSE_MS);
     if (typingToken !== myToken) return;
     let typed = '';
     for (const ch of message) {
       if (typingToken !== myToken) return;
       typed += ch;
       setText(typed);
-      const isPunct = /[.!?,;:]/.test(ch);
-      await sleep(isPunct ? 140 : 28 + Math.random() * 24);
+      await sleep(charDelay(ch));
     }
-    await sleep(800);
+    await sleep(POST_TYPE_HOLD_MS);
     if (typingToken !== myToken) return;
     if (cursorEl) cursorEl.style.opacity = '0';
   };

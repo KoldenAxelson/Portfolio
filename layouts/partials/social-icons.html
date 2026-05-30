@@ -1,8 +1,7 @@
 {{- /*
-  social-icons — inline SVG social row. Port of Neofolio's SocialIcons.astro.
-  Only renders icons for links configured in data/site.yaml (empty strings
-  skipped). Email is always appended. Optional dict param: { class }.
-  Rendered in an explicit order (map iteration is unordered in Hugo).
+  social-icons — inline SVG social row from data/site.yaml (empty links skipped,
+  email always appended). Optional dict param: { class }.
+  Order is explicit because Hugo map iteration is unordered.
 */ -}}
 {{- $site := site.Data.site -}}
 {{- $class := "" -}}
