@@ -1,0 +1,62 @@
+# ---------------------------------------------------------------------------
+# NeoGolio — Hugo config
+#
+# HUGX port of Neofolio. Static output, deploy-target-agnostic. Primary target
+# is GitHub Pages project sites (user.github.io/neogolio) — set the path in
+# `baseURL` for those. For a custom domain or Cloudflare Pages, use the bare
+# domain. The same `hugo --minify` build serves both.
+# ---------------------------------------------------------------------------
+
+baseURL = "https://wrightfunctions.com/"
+languageCode = "en-us"
+title = "Konrad Wright"
+enableRobotsTXT = true    # native robots.txt via layouts/robots.txt
+enableInlineShortcodes = true
+
+# No taxonomy pages — tags are plain front-matter arrays (used by the project
+# filter and article tag chips), not Hugo taxonomy term pages, matching Neofolio.
+disableKinds = ["taxonomy", "term"]
+
+# Home emits the AI-readability endpoints alongside HTML; sections/pages stay
+# HTML-only so we get a single /rss.xml and /feed.json (not per-section feeds).
+[outputs]
+  home = ["HTML", "RSS", "llms", "feedjson"]
+  section = ["HTML"]
+  page = ["HTML"]
+
+[mediaTypes]
+  [mediaTypes."application/feed+json"]
+    suffixes = ["json"]
+
+[outputFormats]
+  # RSS at /rss.xml (Hugo defaults to /index.xml).
+  [outputFormats.RSS]
+    baseName = "rss"
+  [outputFormats.llms]
+    mediaType = "text/plain"
+    baseName = "llms"
+    isPlainText = true
+    rel = "alternate"
+  [outputFormats.feedjson]
+    mediaType = "application/feed+json"
+    baseName = "feed"
+    isPlainText = true
+    rel = "alternate"
+
+# Map Neofolio's content date field names onto Hugo's .Date / .Lastmod so the
+# original front-matter keys (pubDate / updatedDate) work unchanged.
+[frontmatter]
+  date = ["pubDate", "date", "publishDate"]
+  lastmod = ["updatedDate", "lastmod", ":git"]
+
+[markup]
+  [markup.goldmark.renderer]
+    unsafe = true          # allow raw HTML in Markdown (matches MDX expressiveness)
+  [markup.highlight]
+    noClasses = false      # emit classes so we theme code blocks with our palette
+    lineNos = false
+    tabWidth = 2
+
+[params]
+  # Identity and most site data live in data/site.yaml; surfaced to templates
+  # via the `site` data file. Kept out of params so the config stays minimal.

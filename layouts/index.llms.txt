@@ -1,0 +1,55 @@
+{{- /* /llms.txt — llmstxt.org spec. Generated from site config + content.
+       Network line is omitted until the /network page ships. Sitemap points at
+       Hugo's native /sitemap.xml. */ -}}
+{{- $site := site.Data.site -}}
+{{- $base := strings.TrimSuffix "/" site.BaseURL -}}
+{{- $featured := sort (where (where site.RegularPages "Section" "projects") "Params.tier" 1) "Params.year" "desc" -}}
+{{- $posts := sort (where (where site.RegularPages "Section" "articles") "Params.draft" "!=" true) "Date" "desc" -}}
+{{- $certs := partial "func/certs.html" . -}}
+{{- $activeCerts := slice -}}
+{{- range $certs }}{{ if or (not .expirationDate) ((time.AsTime .expirationDate).After now) }}{{ $activeCerts = $activeCerts | append . }}{{ end }}{{ end -}}
+
+{{- $lines := slice (printf "# %s" $site.title) "" (printf "> %s" $site.description) "" (trim $site.author.longBio " ") "" "## Author" "" (printf "- Name: %s" $site.author.name) (printf "- Role: %s" $site.author.role) -}}
+{{- with $site.author.location }}{{ $lines = $lines | append (printf "- Location: %s" .) }}{{ end -}}
+{{- $lines = $lines | append (printf "- Email: %s" $site.author.email) -}}
+{{- range $k := slice "github" "linkedin" "twitter" "mastodon" "bluesky" "rss" -}}
+  {{- $v := index $site.links $k -}}
+  {{- if and $v (hasPrefix $v "http") }}{{ $lines = $lines | append (printf "- %s: %s" (title $k) $v) }}{{ end -}}
+{{- end -}}
+{{- $lines = $lines | append "" "## Primary pages" "" -}}
+{{- $lines = $lines | append (printf "- [Homepage](%s/): identity, recent experience, featured projects, certifications, recent articles" $base) -}}
+{{- $lines = $lines | append (printf "- [CV](%s/cv): full work history, education, certifications, and skills as structured HTML (emits Person.hasOccupation + Person.hasCredential JSON-LD)" $base) -}}
+{{- $lines = $lines | append (printf "- [Projects](%s/projects): full project catalogue + honest archive of abandoned work" $base) -}}
+{{- $lines = $lines | append (printf "- [Articles](%s/articles): long-form writing" $base) -}}
+{{- $lines = $lines | append (printf "- [Certifications](%s/certificates): professional credentials with verification links (emits ItemList of EducationalOccupationalCredential JSON-LD)" $base) -}}
+{{- $lines = $lines | append (printf "- [Network](%s/network): people I'd vouch for, with mailto intro requests (emits ItemList of Person JSON-LD)" $base) -}}
+{{- $lines = $lines | append (printf "- [Uses](%s/uses): tools, stack, hardware" $base) -}}
+{{- $lines = $lines | append (printf "- [Now](%s/now): what the author is focused on this season" $base) -}}
+{{- $lines = $lines | append "" -}}
+
+{{- with $featured -}}
+  {{- $lines = $lines | append "## Featured projects" "" -}}
+  {{- range . }}{{ $lines = $lines | append (printf "- [%s](%s): %s" .Params.title (strings.TrimSuffix "/" .Permalink) .Params.summary) }}{{ end -}}
+  {{- $lines = $lines | append "" -}}
+{{- end -}}
+
+{{- with $posts -}}
+  {{- $lines = $lines | append "## Articles" "" -}}
+  {{- range . }}{{ $lines = $lines | append (printf "- [%s](%s): %s" .Title (strings.TrimSuffix "/" .Permalink) .Params.description) }}{{ end -}}
+  {{- $lines = $lines | append "" -}}
+{{- end -}}
+
+{{- with $activeCerts -}}
+  {{- $lines = $lines | append "## Active certifications" "" -}}
+  {{- range . -}}
+    {{- $issued := (time.AsTime .issueDate).Format "2006-01-02" -}}
+    {{- $expires := "" -}}
+    {{- with .expirationDate }}{{ $expires = printf ", valid until %s" ((time.AsTime .).Format "2006-01-02") }}{{ end -}}
+    {{- $titleLink := cond (and .verifyUrl (ne .verifyUrl "")) (printf "[%s](%s)" .name .verifyUrl) (string .name) -}}
+    {{- $lines = $lines | append (printf "- %s — %s, issued %s%s" $titleLink .issuer $issued $expires) -}}
+  {{- end -}}
+  {{- $lines = $lines | append "" -}}
+{{- end -}}
+
+{{- $lines = $lines | append "## Feeds" "" (printf "- RSS: %s/rss.xml" $base) (printf "- JSON Feed: %s/feed.json" $base) (printf "- Sitemap: %s/sitemap.xml" $base) "" -}}
+{{- delimit $lines "\n" -}}

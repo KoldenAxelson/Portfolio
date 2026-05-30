@@ -1,0 +1,86 @@
+{{ define "main" }}
+{{- $site := site.Data.site -}}
+{{- $author := $site.author -}}
+{{- $cv := site.Data.cv -}}
+{{- $certs := partial "func/certs.html" . -}}
+{{- $active := slice -}}
+{{- range $certs }}{{ if or (not .expirationDate) ((time.AsTime .expirationDate).After now) }}{{ $active = $active | append . }}{{ end }}{{ end -}}
+
+<header class="mb-10 print:mb-6">
+  <h1 class="text-4xl font-semibold tracking-tight sm:text-5xl">{{ $author.name }}</h1>
+  <p class="mt-2 text-lg text-muted">{{ $author.role }}</p>
+  <ul class="mt-4 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted">
+    {{- with $author.location }}<li>{{ . }}</li>{{ end }}
+    <li><a href="mailto:{{ $author.email }}" class="no-underline hover:!text-fg">{{ $author.email }}</a></li>
+    {{- with $author.phone }}<li><a href="tel:{{ replaceRE `\s+` "" . }}" class="no-underline hover:!text-fg">{{ . }}</a></li>{{ end }}
+    {{- with $site.links.github }}<li><a href="{{ . }}" rel="noopener" class="no-underline hover:!text-fg">{{ replaceRE `^https?://` "" . }}</a></li>{{ end }}
+    {{- with $site.links.linkedin }}<li><a href="{{ . }}" rel="noopener" class="no-underline hover:!text-fg">{{ replaceRE `^https?://` "" . }}</a></li>{{ end }}
+  </ul>
+</header>
+
+<section id="summary" class="mb-10 scroll-mt-24" aria-labelledby="summary-heading">
+  <h2 id="summary-heading" class="mb-2 text-xl font-medium">Summary</h2>
+  <div class="space-y-3 text-muted [&_a]:text-fg [&_a]:underline [&_a]:decoration-border hover:[&_a]:!text-accent print:[&_a]:no-underline">{{ $author.longBio | markdownify }}</div>
+</section>
+
+<section id="experience" class="mb-10 scroll-mt-24" aria-labelledby="experience-heading">
+  <h2 id="experience-heading" class="mb-4 text-xl font-medium">Experience</h2>
+  <ol class="space-y-8">
+    {{- range $cv.experience }}
+    {{- $start := cond (ne (string .startDate) "") ((time.AsTime (.startDate | default "2000-01-01")).Format "Jan 2006") .start -}}
+    {{- $end := "" -}}
+    {{- if eq .end "present" }}{{ $end = "Present" }}{{ else if ne (string .endDate) "" }}{{ $end = (time.AsTime .endDate).Format "Jan 2006" }}{{ else }}{{ $end = .end }}{{ end -}}
+    <li class="print:break-inside-avoid">
+      <header class="flex flex-wrap items-baseline justify-between gap-2">
+        <h3 class="m-0 font-medium">{{ .role }} · <span class="text-muted">{{ .employer }}</span></h3>
+        <span class="font-mono text-xs text-muted">{{ $start }} – {{ $end }} · {{ .location }}</span>
+      </header>
+      <p class="mt-2 text-muted">{{ .summary }}</p>
+      {{- with .highlights }}
+      <ul class="mt-2 list-disc pl-5 text-sm">
+        {{- range . }}<li>{{ . }}</li>{{ end }}
+      </ul>
+      {{- end }}
+      {{- with .stack }}
+      <p class="mt-2 font-mono text-xs text-muted">Technologies: {{ delimit . ", " }}</p>
+      {{- end }}
+    </li>
+    {{- end }}
+  </ol>
+</section>
+
+<section id="education" class="mb-10 scroll-mt-24" aria-labelledby="education-heading">
+  <h2 id="education-heading" class="mb-4 text-xl font-medium">Education</h2>
+  <ul class="space-y-3">
+    {{- range $cv.education }}
+    <li>
+      <p class="font-medium">{{ .degree }} · <span class="text-muted">{{ .school }}</span> <span class="font-mono text-xs text-muted">({{ .year }})</span></p>
+      {{- with .notes }}<p class="text-sm text-muted">{{ . }}</p>{{ end }}
+    </li>
+    {{- end }}
+  </ul>
+</section>
+
+{{- with $active }}
+<section id="certifications" class="mb-10 scroll-mt-24" aria-labelledby="certifications-heading">
+  <h2 id="certifications-heading" class="mb-4 text-xl font-medium">Certifications</h2>
+  <ul class="space-y-3">
+    {{- range . }}
+    <li class="print:break-inside-avoid">
+      <p class="font-medium">{{ .name }} · <span class="text-muted">{{ .issuer }}</span> <span class="font-mono text-xs text-muted">({{ partial "formatted-date.html" (dict "date" .issueDate "precision" "month") }}{{ with .expirationDate }} – {{ partial "formatted-date.html" (dict "date" . "precision" "month") }}{{ end }})</span></p>
+      {{- with .skills }}<p class="text-sm text-muted">{{ delimit . " · " }}</p>{{ end }}
+    </li>
+    {{- end }}
+  </ul>
+</section>
+{{- end }}
+
+<section id="skills" class="mb-10 scroll-mt-24" aria-labelledby="skills-heading">
+  <h2 id="skills-heading" class="mb-4 text-xl font-medium">Skills</h2>
+  <div class="space-y-2">
+    {{- range $cv.skills }}
+    <p><span class="font-mono text-sm text-muted">{{ .category }}:</span> {{ delimit .items ", " }}</p>
+    {{- end }}
+  </div>
+</section>
+{{ end }}

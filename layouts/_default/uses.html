@@ -1,0 +1,75 @@
+{{ define "main" }}
+<header class="mb-12">
+  <h1 class="text-3xl font-medium">Uses</h1>
+  <p class="mt-3 max-w-prose text-muted">
+    The things on my machine right now, and what I'd say about them if you asked.
+    Inspired by <a href="https://uses.tech">uses.tech</a>.
+  </p>
+  {{- with .Params.updated }}
+  <p class="mt-3 font-mono text-xs text-muted">
+    Last updated {{ partial "formatted-date.html" (dict "date" .) }}.
+  </p>
+  {{- end }}
+</header>
+
+<div class="space-y-6">
+  {{- range .Params.stack }}
+  <details id="{{ .id }}" class="group/cat scroll-mt-24 border-b border-border/60 pb-6 last:border-b-0">
+    <summary class="flex cursor-pointer list-none items-center justify-between gap-3 py-1 [&::-webkit-details-marker]:hidden" aria-labelledby="{{ .id }}-heading">
+      <h2 id="{{ .id }}-heading" class="font-mono text-xs uppercase tracking-widest text-fg transition-colors group-hover/cat:!text-accent">{{ .label }}</h2>
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-4 w-4 shrink-0 text-muted transition-transform duration-200 group-open/cat:rotate-90 group-hover/cat:!text-accent"><path d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+    </summary>
+
+    <div class="mt-4">
+      {{- with .caption }}
+      <p class="mb-5 max-w-prose text-sm leading-relaxed text-muted">{{ . }}</p>
+      {{- end }}
+
+      <ul class="-mx-2 space-y-0.5">
+        {{- range .items }}
+        {{- $head := dict "name" .name "note" .note "link" .link -}}
+        <li>
+          {{- if .detail }}
+          <details class="group/item rounded px-2 py-1 transition-colors hover:bg-border/30">
+            <summary class="flex cursor-pointer list-none items-center gap-3 [&::-webkit-details-marker]:hidden">
+              <span class="text-fg">
+                {{- if .link }}<a href="{{ .link }}" rel="noopener" class="font-medium no-underline hover:!text-accent">{{ .name }}</a>{{ else }}<span class="font-medium">{{ .name }}</span>{{ end }}
+                {{- with .note }}<span class="text-muted"> · {{ . }}</span>{{ end -}}
+              </span>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="ml-auto h-4 w-4 shrink-0 text-muted/70 transition-transform duration-200 group-open/item:rotate-90"><path d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+            </summary>
+            <p class="mt-2 max-w-prose text-sm leading-relaxed text-muted">{{ .detail }}</p>
+          </details>
+          {{- else }}
+          <div class="px-2 py-1">
+            <span class="text-fg">
+              {{- if .link }}<a href="{{ .link }}" rel="noopener" class="font-medium no-underline hover:!text-accent">{{ .name }}</a>{{ else }}<span class="font-medium">{{ .name }}</span>{{ end }}
+              {{- with .note }}<span class="text-muted"> · {{ . }}</span>{{ end -}}
+            </span>
+          </div>
+          {{- end }}
+        </li>
+        {{- end }}
+      </ul>
+    </div>
+  </details>
+  {{- end }}
+</div>
+
+<script>
+  (function () {
+    function openTargeted() {
+      const id = window.location.hash.slice(1);
+      if (!id) return;
+      const el = document.getElementById(id);
+      if (el && el.tagName.toLowerCase() === 'details') el.open = true;
+    }
+    window.addEventListener('hashchange', openTargeted);
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', openTargeted);
+    } else {
+      openTargeted();
+    }
+  })();
+</script>
+{{ end }}

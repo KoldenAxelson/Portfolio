@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="{{ site.Data.site.locale | default `en-US` }}">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content="Hugo {{ hugo.Version }}" />
+
+    {{/* Self-hosted variable fonts — preload the two most-used faces. */}}
+    <link rel="preload" href="{{ partial "func/url.html" "/fonts/InterVariable.woff2" }}" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="{{ partial "func/url.html" "/fonts/JetBrainsMono-Variable.woff2" }}" as="font" type="font/woff2" crossorigin />
+
+    <link rel="icon" type="image/svg+xml" href="{{ partial "func/url.html" "/favicon.svg" }}" />
+    <link rel="alternate" type="application/rss+xml" title="{{ site.Data.site.title }}" href="{{ partial "func/url.html" "/rss.xml" }}" />
+    <link rel="alternate" type="application/feed+json" title="{{ site.Data.site.title }} (JSON Feed)" href="{{ partial "func/url.html" "/feed.json" }}" />
+
+    {{/* Theme-color tints match the palette (light / dark). */}}
+    <meta name="theme-color" content="#fafaf7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#09090b" media="(prefers-color-scheme: dark)" />
+
+    {{ partial "head/seo.html" . }}
+
+    {{/* CSS: single bundle built by the Tailwind standalone binary. */}}
+    {{ $css := resources.Get "css/app.css" | fingerprint }}
+    <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" />
+
+    {{/* htmx (self-hosted) + our interactivity bundle load from <head> so they
+         persist across hx-boost body swaps. The TS bundle is one unified,
+         boost-aware entry, compiled by Hugo's built-in esbuild (no Node).
+         Both deferred — DOM is parsed before they run. */}}
+    {{ $htmx := resources.Get "vendor/htmx.min.js" | fingerprint }}
+    <script defer src="{{ $htmx.RelPermalink }}" integrity="{{ $htmx.Data.Integrity }}"></script>
+    {{ $opts := dict "minify" true "target" "es2018" "format" "iife" }}
+    {{ $bundle := resources.Get "ts/main.ts" | js.Build $opts | fingerprint }}
+    <script defer src="{{ $bundle.RelPermalink }}" integrity="{{ $bundle.Data.Integrity }}"></script>
+
+    {{/* Alpine island runtime — loaded ONLY on pages with `alpine: true` (just
+         /network), so the ~16KB runtime never touches the rest of the site.
+         Those pages opt out of hx-boost (full page load), so this head runs. */}}
+    {{ if .Params.alpine }}
+    <style>[x-cloak]{display:none !important}</style>
+    {{ $alpine := resources.Get "vendor/alpine.min.js" | fingerprint }}
+    {{ $netpanel := resources.Get "ts/network-panel.ts" | js.Build $opts | fingerprint }}
+    <script defer src="{{ $netpanel.RelPermalink }}" integrity="{{ $netpanel.Data.Integrity }}"></script>
+    <script defer src="{{ $alpine.RelPermalink }}" integrity="{{ $alpine.Data.Integrity }}"></script>
+    {{ end }}
+
+    {{ block "head" . }}{{ end }}
+  </head>
+
+  {{/* hx-boost upgrades internal links to AJAX body-swaps (SPA-like nav, no
+       full reloads) — works on any static host since it just fetches the next
+       pre-rendered page. Noise overlay URLs are base-path-aware. */}}
+  <body class="leading-relaxed" hx-boost="true" style="--noise-bg-light: url('{{ partial "func/url.html" "/textures/noise.png" }}'); --noise-bg-dark: url('{{ partial "func/url.html" "/textures/noise-dark.png" }}')">
+    <a href="#main" class="skip-link">Skip to content</a>
+
+    {{ partial "topnav.html" . }}
+
+    {{ $mode := .Params.container | default "default" }}
+    {{- if eq $mode "split" }}
+    <div class="mx-auto max-w-screen-xl px-6 lg:px-12">
+      <div class="lg:flex lg:justify-between lg:gap-12">
+        {{ partial "sidebar.html" . }}
+        <main id="main" class="pt-8 lg:w-1/2 lg:pt-24 lg:pb-12">
+          {{ block "main" . }}{{ end }}
+        </main>
+      </div>
+      {{ partial "footer.html" . }}
+    </div>
+    {{- else }}
+    <div class="mx-auto px-6 py-12 lg:py-16 {{ cond (eq $mode "wide") "max-w-screen-xl lg:px-12" "max-w-3xl" }}">
+      <main id="main">{{ block "main" . }}{{ end }}</main>
+      {{ partial "footer.html" . }}
+    </div>
+    {{- end }}
+
+    {{/* Mobile-only floating return-to-top. Lives outside both layout branches
+         so it's truly fixed to the viewport. */}}
+    {{ partial "scroll-to-top.html" . }}
+  </body>
+</html>

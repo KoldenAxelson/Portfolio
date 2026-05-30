@@ -2,7 +2,7 @@
 
 Neofolio is a **fork-and-customize template**, not a collaborative codebase.
 
-You don't need permission to use it. Clone the repo, edit `src/config.ts`,
+You don't need permission to use it. Clone the repo, edit `data/site.yaml`,
 populate your content, ship your portfolio.
 
 ## Not actively accepting PRs

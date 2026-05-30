@@ -1,0 +1,28 @@
+{{- /*
+  cert-row — single-row credential presentation. Port of CertRow.astro.
+  Dict params: cert (the certificate data map), badge (badge path string or "").
+  Whole row links to verifyUrl when set. Renders badge + name + issuer + dates
+  only; description/skills/credentialId live in JSON-LD (Phase 3), not the UI.
+*/ -}}
+{{- $c := .cert -}}
+{{- $badge := .badge -}}
+{{- $linked := and $c.verifyUrl (ne $c.verifyUrl "") -}}
+{{- $rowcls := cond $linked "group/cert flex items-center gap-4 py-4 no-underline" "flex items-center gap-4 py-4" -}}
+{{- if $linked -}}
+<a href="{{ $c.verifyUrl }}" rel="noopener" class="{{ $rowcls }}">
+{{- else -}}
+<div class="{{ $rowcls }}">
+{{- end }}
+  {{ partial "cert-badge.html" (dict "badge" $badge "alt" (printf "%s badge" $c.name) "size" "md") }}
+  <div class="min-w-0 flex-1">
+    <p class="m-0 truncate font-medium text-fg{{ if $linked }} group-hover/cert:!text-accent{{ end }}">{{ $c.name }}</p>
+    <p class="m-0 text-xs text-muted">
+      {{ $c.issuer }}
+      <span class="ml-1 font-mono">· {{ partial "formatted-date.html" (dict "date" $c.issueDate) }}{{ with $c.expirationDate }} – {{ partial "formatted-date.html" (dict "date" .) }}{{ end }}</span>
+    </p>
+  </div>
+{{- if $linked -}}
+</a>
+{{- else -}}
+</div>
+{{- end -}}

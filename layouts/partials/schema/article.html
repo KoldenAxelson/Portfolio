@@ -1,0 +1,26 @@
+{{- /* BlogPosting for /articles/<slug>. References #person + #website by @id.
+       Port of articles/[slug].astro's schema. */ -}}
+{{- $site := site.Data.site -}}
+{{- $siteUrl := partial "func/site-url.html" . -}}
+{{- $personId := printf "%s#person" $siteUrl -}}
+{{- $websiteId := printf "%s#website" $siteUrl -}}
+{{- $aurl := strings.TrimSuffix "/" .Permalink -}}
+{{- $cover := .Params.cover | default $site.ogImage -}}
+{{- $img := cond (hasPrefix (string $cover) "http") (string $cover) (printf "%s%s" $siteUrl $cover) -}}
+{{- $bp := dict
+  "@context" "https://schema.org"
+  "@type" "BlogPosting"
+  "@id" (printf "%s#article" $aurl)
+  "headline" .Title
+  "description" .Params.description
+  "datePublished" (.Date.Format "2006-01-02T15:04:05Z07:00")
+  "author" (dict "@id" $personId)
+  "publisher" (dict "@id" $personId)
+  "inLanguage" $site.locale
+  "isPartOf" (dict "@id" $websiteId)
+  "mainEntityOfPage" $aurl
+-}}
+{{- with .Params.updatedDate }}{{ $bp = merge $bp (dict "dateModified" ((time.AsTime .).Format "2006-01-02T15:04:05Z07:00")) }}{{ end -}}
+{{- with .Params.tags }}{{ $bp = merge $bp (dict "keywords" (delimit . ", ")) }}{{ end -}}
+{{- with $img }}{{ $bp = merge $bp (dict "image" .) }}{{ end -}}
+<script type="application/ld+json">{{ $bp | jsonify | safeJS }}</script>

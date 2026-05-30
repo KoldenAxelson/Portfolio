@@ -1,0 +1,74 @@
+{{ define "main" }}
+{{- $projects := where .Pages "Params.draft" "!=" true -}}
+{{- $projects = where $projects "Params.tier" "!=" 3 -}}
+{{- $tier1 := sort (where $projects "Params.tier" 1) "Params.year" "desc" -}}
+{{- $tier2 := sort (where $projects "Params.tier" 2) "Params.year" "desc" -}}
+{{- $tags := slice -}}
+{{- range $projects }}{{ with .Params.tags }}{{ $tags = $tags | append . }}{{ end }}{{ end -}}
+{{- $allTags := sort (uniq $tags) -}}
+{{- $archive := sort site.Data.archive "year" "desc" -}}
+
+<header class="mb-8">
+  <h1 class="text-3xl font-medium">Projects</h1>
+</header>
+
+{{- with $allTags }}
+<section class="mb-8" aria-label="Project filters">
+  {{/* Tag filter buttons. Toggle behavior is wired by vanilla JS in Phase 4
+       via the data-project-filter / data-filter-tag hooks; cards carry
+       data-project-tags. Renders fully without JS (all shown). */}}
+  <div role="group" aria-label="Filter projects by tag" class="flex flex-wrap gap-2" data-project-filter>
+    <button type="button" class="rounded border border-border px-2 py-1 font-mono text-xs bg-fg text-bg" aria-pressed="true" data-filter-tag="">all</button>
+    {{- range . }}
+    <button type="button" class="rounded border border-border px-2 py-1 font-mono text-xs text-muted hover:text-fg" aria-pressed="false" data-filter-tag="{{ . }}">{{ . }}</button>
+    {{- end }}
+  </div>
+</section>
+{{- end }}
+
+{{- with $tier1 }}
+<section id="featured" class="mb-16 scroll-mt-24" aria-labelledby="featured-heading">
+  <h2 id="featured-heading" class="mb-4 text-xl font-medium">Featured</h2>
+  <div class="space-y-4">
+    {{- range . }}
+    <div data-project-tags="{{ delimit .Params.tags "," }}">
+      {{ partial "project-card.html" (dict "project" .) }}
+    </div>
+    {{- end }}
+  </div>
+</section>
+{{- end }}
+
+{{- with $tier2 }}
+<section id="listed" class="mb-16 scroll-mt-24" aria-labelledby="listed-heading">
+  <h2 id="listed-heading" class="mb-4 text-xl font-medium">All projects</h2>
+  <div class="space-y-3">
+    {{- range . }}
+    <div data-project-tags="{{ delimit .Params.tags "," }}">
+      {{ partial "project-card.html" (dict "project" . "compact" true) }}
+    </div>
+    {{- end }}
+  </div>
+</section>
+{{- end }}
+
+{{- with $archive }}
+<section id="archive" class="scroll-mt-24" aria-labelledby="archive-heading">
+  <h2 id="archive-heading" class="mb-6 text-xl font-medium">Archive</h2>
+  <ul class="divide-y divide-border">
+    {{- range . }}
+    <li class="py-5">
+      <header class="flex flex-wrap items-baseline justify-between gap-3">
+        <h3 class="m-0 font-medium">{{ .title }}</h3>
+        <span class="font-mono text-xs text-muted">{{ .year }} · {{ .reason | default "abandoned" }}</span>
+      </header>
+      <p class="mt-2 text-sm text-muted">{{ .postmortem }}</p>
+      {{- with .stack }}
+      <p class="mt-2 font-mono text-xs text-muted">{{ delimit . ", " }}</p>
+      {{- end }}
+    </li>
+    {{- end }}
+  </ul>
+</section>
+{{- end }}
+{{ end }}

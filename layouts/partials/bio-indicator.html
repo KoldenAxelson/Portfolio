@@ -1,0 +1,14 @@
+{{- /*
+  bio-indicator — chat-bubble data-carrier button. Port of BioIndicator.astro.
+  Dict params: messages (list of strings), label (string).
+  No JS of its own — SideBar (desktop) and TopNav (mobile) scripts wire it via
+  the data-bio-indicator / data-bio-messages contract (Phase 4). Empty messages
+  → disabled + faded. The JSON is HTML-attr-escaped so apostrophes survive.
+*/ -}}
+{{- $messages := .messages | default slice -}}
+{{- $label := .label -}}
+{{- $has := gt (len $messages) 0 -}}
+{{- $aria := cond $has (printf "Show a personal note about %s" $label) (printf "No personal note attached to %s" $label) -}}
+<button type="button" data-bio-indicator data-bio-messages="{{ $messages | jsonify }}"{{ if not $has }} disabled{{ end }} aria-label="{{ $aria }}" title="{{ $aria }}" class="group/bio inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-muted transition-colors hover:!text-accent focus-visible:!text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 data-[active=true]:!text-accent disabled:cursor-not-allowed disabled:!text-fg/20 disabled:hover:!text-fg/20">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="h-5 w-5 transition-transform duration-200 ease-out group-hover/bio:scale-110 group-disabled/bio:!scale-100 motion-reduce:transition-none"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.804 21.644A6.707 6.707 0 0 0 6 21.75a6.721 6.721 0 0 0 3.583-1.029c.774.182 1.584.279 2.417.279 5.322 0 9.75-3.97 9.75-9 0-5.03-4.428-9-9.75-9s-9.75 3.97-9.75 9c0 2.409 1.025 4.587 2.674 6.192.232.226.277.428.254.543a3.73 3.73 0 0 1-.814 1.686.75.75 0 0 0 .44 1.223ZM8.25 10.875a1.125 1.125 0 1 0 0 2.25 1.125 1.125 0 0 0 0-2.25ZM10.875 12a1.125 1.125 0 1 1 2.25 0 1.125 1.125 0 0 1-2.25 0Zm4.875-1.125a1.125 1.125 0 1 0 0 2.25 1.125 1.125 0 0 0 0-2.25Z" /></svg>
+</button>

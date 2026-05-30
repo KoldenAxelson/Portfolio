@@ -1,0 +1,42 @@
+{{ define "main" }}
+{{- $certs := partial "func/certs.html" . -}}
+{{- $active := slice -}}
+{{- $expired := slice -}}
+{{- range $certs }}
+  {{- if and .expirationDate (not ((time.AsTime .expirationDate).After now)) }}{{ $expired = $expired | append . }}{{ else }}{{ $active = $active | append . }}{{ end }}
+{{- end -}}
+
+<header class="mb-8 print:hidden">
+  <h1 class="text-3xl font-medium">Certifications</h1>
+</header>
+
+{{- with $active }}
+<section id="active" class="mb-12 scroll-mt-24" aria-labelledby="active-heading">
+  <h2 id="active-heading" class="mb-4 text-xl font-medium">Active</h2>
+  <ul class="divide-y divide-border">
+    {{- range . }}
+    <li id="{{ .id }}" class="scroll-mt-24 print:break-inside-avoid">
+      {{ partial "cert-row.html" (dict "cert" . "badge" (.badge | default "")) }}
+    </li>
+    {{- end }}
+  </ul>
+</section>
+{{- end }}
+
+{{- with $expired }}
+<section id="expired" class="scroll-mt-24" aria-labelledby="expired-heading">
+  <h2 id="expired-heading" class="mb-4 text-xl font-medium">Expired</h2>
+  <ul class="divide-y divide-border">
+    {{- range . }}
+    <li id="{{ .id }}" class="scroll-mt-24 print:break-inside-avoid">
+      {{ partial "cert-row.html" (dict "cert" . "badge" (.badge | default "")) }}
+    </li>
+    {{- end }}
+  </ul>
+</section>
+{{- end }}
+
+{{- if not $certs }}
+<p class="text-muted">No certifications listed yet. Add one by dropping a YAML file into <code>data/certificates/</code>.</p>
+{{- end }}
+{{ end }}

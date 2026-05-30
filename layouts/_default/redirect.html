@@ -1,0 +1,17 @@
+{{- $u := partial "func/url.html" .Params.redirectto -}}
+{{- with .Params.fragment }}{{ $u = printf "%s#%s" $u . }}{{ end -}}
+<!doctype html>
+<html lang="{{ site.Data.site.locale | default `en-US` }}">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Redirecting…</title>
+    <link rel="canonical" href="{{ $u }}" />
+    <meta name="robots" content="noindex" />
+    <meta http-equiv="refresh" content="0; url={{ $u }}" />
+    <script>window.location.replace({{ $u }});</script>
+  </head>
+  <body>
+    <p>Redirecting to <a href="{{ $u }}">{{ $u }}</a>…</p>
+  </body>
+</html>

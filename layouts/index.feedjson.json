@@ -1,0 +1,22 @@
+{{- /* JSON Feed 1.1 at /feed.json — articles only, most recent first. */ -}}
+{{- $site := site.Data.site -}}
+{{- $base := strings.TrimSuffix "/" site.BaseURL -}}
+{{- $posts := sort (where (where site.RegularPages "Section" "articles") "Params.draft" "!=" true) "Date" "desc" -}}
+{{- $items := slice -}}
+{{- range $posts -}}
+  {{- $url := .Permalink -}}
+  {{- $item := dict "id" $url "url" $url "title" .Title "summary" .Params.description "date_published" (.Date.Format "2006-01-02T15:04:05Z07:00") "tags" (.Params.tags | default slice) "authors" (slice (dict "name" $site.author.name)) -}}
+  {{- with .Params.updatedDate }}{{ $item = merge $item (dict "date_modified" ((time.AsTime .).Format "2006-01-02T15:04:05Z07:00")) }}{{ end -}}
+  {{- $items = $items | append $item -}}
+{{- end -}}
+{{- $feed := dict
+  "version" "https://jsonfeed.org/version/1.1"
+  "title" $site.title
+  "home_page_url" $base
+  "feed_url" (printf "%s/feed.json" $base)
+  "description" $site.description
+  "language" $site.locale
+  "authors" (slice (dict "name" $site.author.name "url" $base))
+  "items" $items
+-}}
+{{ $feed | jsonify (dict "indent" "  " "noHTMLEscape" true) }}

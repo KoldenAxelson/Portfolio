@@ -1,0 +1,32 @@
+{{ define "main" }}
+{{- $posts := where .Pages "Params.draft" "!=" true -}}
+{{- $posts = sort $posts "Date" "desc" -}}
+<header class="mb-8">
+  <h1 class="text-3xl font-medium">Articles</h1>
+</header>
+
+<ul class="divide-y divide-border">
+  {{- range $posts }}
+  {{- $perm := .RelPermalink }}
+  <li class="py-5">
+    <article class="flex gap-4">
+      {{- with .Params.cover }}
+      <a href="{{ $perm }}" class="shrink-0" aria-hidden="true" tabindex="-1">
+        <img src="{{ partial "func/url.html" . }}" width="96" height="96" alt="" loading="lazy" decoding="async" class="h-[72px] w-[72px] rounded-md object-cover sm:h-24 sm:w-24" />
+      </a>
+      {{- end }}
+      <div class="min-w-0 flex-1">
+        <h2 class="m-0 text-lg font-medium">
+          <a href="{{ .RelPermalink }}" class="no-underline">{{ .Title }}</a>
+        </h2>
+        <p class="mt-1 text-muted">{{ .Params.description }}</p>
+        <p class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs text-muted">
+          <span class="shrink-0">{{ partial "formatted-date.html" (dict "date" .Date) }}</span>
+          {{- with .Params.tags }}<span>· {{ delimit . ", " }}</span>{{ end }}
+        </p>
+      </div>
+    </article>
+  </li>
+  {{- end }}
+</ul>
+{{ end }}

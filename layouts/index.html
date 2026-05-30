@@ -1,0 +1,108 @@
+{{ define "main" }}
+{{- $site := site.Data.site -}}
+{{- $cv := site.Data.cv -}}
+{{- $recentRoles := first 3 $cv.experience -}}
+{{- $featured := first 4 (sort (where (where site.RegularPages "Section" "projects") "Params.featured" true) "Params.year" "desc") -}}
+{{- $recentPosts := first 5 (sort (where (where site.RegularPages "Section" "articles") "Params.draft" "!=" true) "Date" "desc") -}}
+{{- $certs := partial "func/certs.html" . -}}
+{{- $activeCerts := slice -}}
+{{- range $certs }}{{ if or (not .expirationDate) ((time.AsTime .expirationDate).After now) }}{{ $activeCerts = $activeCerts | append . }}{{ end }}{{ end -}}
+{{- $hasFeaturedCert := false -}}
+{{- range $activeCerts }}{{ if .featured }}{{ $hasFeaturedCert = true }}{{ end }}{{ end -}}
+{{- $featuredCerts := first 4 (cond $hasFeaturedCert (where $activeCerts "featured" true) $activeCerts) -}}
+
+<section id="about" class="mb-24 scroll-mt-24 last:mb-0" aria-labelledby="about-heading">
+  <h2 id="about-heading" class="sr-only">About</h2>
+  <div class="space-y-4 text-base text-muted [&_a]:text-fg [&_a]:underline [&_a]:decoration-border hover:[&_a]:!text-accent">
+    {{ $site.author.longBio | markdownify }}
+  </div>
+</section>
+
+<section id="experience" class="mb-24 scroll-mt-24 last:mb-0" aria-labelledby="experience-heading">
+  <h2 id="experience-heading" class="mb-6 font-mono text-xs uppercase tracking-widest text-fg lg:sr-only">Experience</h2>
+  <ol class="space-y-10">
+    {{- range $recentRoles }}
+    <li class="group relative grid grid-cols-1 gap-3 sm:grid-cols-[9rem_1fr]">
+      <span class="font-mono text-xs uppercase tracking-widest text-muted sm:pt-1">{{ .start }} — {{ cond (eq .end "present") "Present" .end }}</span>
+      <div>
+        <h3 class="font-medium text-fg">{{ .role }} · <span class="text-muted">{{ .employer }}</span></h3>
+        <p class="mt-2 text-sm text-muted">{{ .summary }}</p>
+        <div class="mt-3 flex items-end justify-between gap-3">
+          <ul class="flex flex-wrap gap-1.5">
+            {{- range .stack }}<li class="rounded bg-border/70 px-2 py-0.5 font-mono text-xs text-fg/85">{{ . }}</li>{{ end }}
+          </ul>
+          {{ partial "bio-indicator.html" (dict "messages" (.thoughts | default slice) "label" (printf "%s at %s" .role .employer)) }}
+        </div>
+      </div>
+    </li>
+    {{- end }}
+  </ol>
+  <p class="mt-8 text-sm">
+    <a href="{{ partial "func/url.html" "/cv" }}" class="group/cta no-underline"><span class="underline decoration-1 underline-offset-2 group-hover/cta:decoration-2">Full CV</span><span aria-hidden="true" class="ml-0.5 inline-block transition-transform duration-200 ease-out group-hover/cta:translate-x-0.5 motion-reduce:transition-none">→</span></a>
+  </p>
+</section>
+
+{{- with $featured }}
+<section id="projects" class="mb-24 scroll-mt-24 last:mb-0" aria-labelledby="projects-heading">
+  <h2 id="projects-heading" class="mb-6 font-mono text-xs uppercase tracking-widest text-fg lg:sr-only">Projects</h2>
+  <div class="space-y-4">
+    {{- range . }}
+    <div class="relative">
+      {{ partial "project-card.html" (dict "project" .) }}
+      <div class="pointer-events-none absolute bottom-3 right-3 z-20">
+        <div class="pointer-events-auto">{{ partial "bio-indicator.html" (dict "messages" (.Params.thoughts | default slice) "label" .Params.title) }}</div>
+      </div>
+    </div>
+    {{- end }}
+  </div>
+  <p class="mt-8 text-sm">
+    <a href="{{ partial "func/url.html" "/projects" }}" class="group/cta no-underline"><span class="underline decoration-1 underline-offset-2 group-hover/cta:decoration-2">All projects</span><span aria-hidden="true" class="ml-0.5 inline-block transition-transform duration-200 ease-out group-hover/cta:translate-x-0.5 motion-reduce:transition-none">→</span></a>
+  </p>
+</section>
+{{- end }}
+
+{{- with $featuredCerts }}
+<section id="certificates" class="mb-24 scroll-mt-24 last:mb-0" aria-labelledby="certificates-heading">
+  <h2 id="certificates-heading" class="mb-6 font-mono text-xs uppercase tracking-widest text-fg lg:sr-only">Certifications</h2>
+  <ul class="divide-y divide-border">
+    {{- range . }}
+    {{- $href := cond (and .verifyUrl (ne .verifyUrl "")) (string .verifyUrl) (printf "%s#%s" (partial "func/url.html" "/certificates") .id) -}}
+    {{- $external := and .verifyUrl (ne .verifyUrl "") -}}
+    <li class="relative py-3 pr-10">
+      <a href="{{ $href }}"{{ if $external }} rel="noopener"{{ end }} class="group/cert flex items-start gap-3 no-underline">
+        {{ partial "cert-badge.html" (dict "badge" (.badge | default "") "alt" (printf "%s badge" .name) "size" "sm") }}
+        <div class="min-w-0 flex-1">
+          <p class="m-0 font-medium leading-snug text-fg group-hover/cert:!text-accent">{{ .name }}</p>
+          <p class="m-0 mt-0.5 text-xs text-muted">{{ .issuer }}<span class="ml-1 font-mono">· {{ partial "formatted-date.html" (dict "date" .issueDate) }}{{ with .expirationDate }} – {{ partial "formatted-date.html" (dict "date" .) }}{{ end }}</span></p>
+        </div>
+      </a>
+      <div class="absolute right-0 top-3">{{ partial "bio-indicator.html" (dict "messages" (.thoughts | default slice) "label" (printf "%s from %s" .name .issuer)) }}</div>
+    </li>
+    {{- end }}
+  </ul>
+  <p class="mt-8 text-sm">
+    <a href="{{ partial "func/url.html" "/certificates" }}" class="group/cta no-underline"><span class="underline decoration-1 underline-offset-2 group-hover/cta:decoration-2">All certifications</span><span aria-hidden="true" class="ml-0.5 inline-block transition-transform duration-200 ease-out group-hover/cta:translate-x-0.5 motion-reduce:transition-none">→</span></a>
+  </p>
+</section>
+{{- end }}
+
+{{- with $recentPosts }}
+<section id="articles" class="mb-24 scroll-mt-24 last:mb-0" aria-labelledby="articles-heading">
+  <h2 id="articles-heading" class="mb-6 font-mono text-xs uppercase tracking-widest text-fg lg:sr-only">Articles</h2>
+  <ul class="divide-y divide-border">
+    {{- range . }}
+    <li class="flex flex-col gap-1 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+      <a href="{{ .RelPermalink }}" class="font-medium text-fg no-underline hover:!text-accent">{{ .Title }}</a>
+      <div class="flex shrink-0 items-center gap-3">
+        <span class="font-mono text-xs text-muted">{{ partial "formatted-date.html" (dict "date" .Date) }}</span>
+        {{ partial "bio-indicator.html" (dict "messages" (.Params.thoughts | default slice) "label" .Title) }}
+      </div>
+    </li>
+    {{- end }}
+  </ul>
+  <p class="mt-8 text-sm">
+    <a href="{{ partial "func/url.html" "/articles" }}" class="group/cta no-underline"><span class="underline decoration-1 underline-offset-2 group-hover/cta:decoration-2">All articles</span><span aria-hidden="true" class="ml-0.5 inline-block transition-transform duration-200 ease-out group-hover/cta:translate-x-0.5 motion-reduce:transition-none">→</span></a>
+  </p>
+</section>
+{{- end }}
+{{ end }}

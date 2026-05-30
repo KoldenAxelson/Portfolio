@@ -1,0 +1,13 @@
+{{- /*
+  certs — returns the non-draft certificates as a slice of maps (each with its
+  `id` merged in from the data filename), sorted by issueDate descending.
+  Shared by the homepage, /cv, and /certificates so cert handling stays DRY.
+    {{ $certs := partial "func/certs.html" . }}
+*/ -}}
+{{- $certs := slice -}}
+{{- range $id, $c := site.Data.certificates -}}
+  {{- if not $c.draft -}}
+    {{- $certs = $certs | append (merge $c (dict "id" $id)) -}}
+  {{- end -}}
+{{- end -}}
+{{- return (sort $certs "issueDate" "desc") -}}

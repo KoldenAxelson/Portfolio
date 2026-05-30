@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" role="img" aria-label="AI-Readable HTML cover">
+  <rect width="200" height="200" fill="rgb(180 83 9)" />
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="18" fill="rgb(250 250 247)" font-weight="600">
+    <text x="40" y="70">&lt;h1&gt;</text>
+    <text x="60" y="100">Hello</text>
+    <text x="40" y="130">&lt;/h1&gt;</text>
+  </g>
+</svg>
