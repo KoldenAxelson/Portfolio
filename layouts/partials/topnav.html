@@ -19,7 +19,7 @@
 {{- if eq $cur "" }}{{ $cur = "/" }}{{ end -}}
 
 <header data-top-nav class="sticky top-0 z-40 w-full transition-transform duration-200 ease-out motion-reduce:transition-none print:hidden">
-  <div class="glass-nav relative">
+  <div class="glass-nav relative mx-3 mt-3 lg:mx-0 lg:mt-0">
     <div class="mx-auto flex max-w-screen-xl items-center justify-between gap-4 px-6 py-3 lg:px-12">
       <a href="{{ partial "func/url.html" "/" }}" aria-label="{{ $site.author.name }} — home" class="inline-flex items-center no-underline transition-opacity duration-200 hover:opacity-80">
         <img src="{{ partial "func/url.html" "/logo-mark.svg" }}" alt="{{ $site.author.name }}" width="36" height="36" class="h-9 w-9" />
@@ -78,8 +78,8 @@
     </div>
   </div>
 
-  <div data-mobile-panel data-mode="nav" class="absolute inset-x-0 top-full z-40 grid grid-rows-[0fr] transition-[grid-template-rows] duration-300 ease-out motion-reduce:transition-none lg:hidden">
-    <div class="glass-panel overflow-hidden rounded-b-2xl">
+  <div data-mobile-panel data-mode="nav" class="absolute left-3 right-3 top-full z-40 mt-2 grid grid-rows-[0fr] transition-[grid-template-rows] duration-300 ease-out motion-reduce:transition-none lg:hidden">
+    <div class="glass-panel overflow-hidden rounded-2xl">
       <nav data-mobile-panel-nav aria-label="Site (mobile)">
         <ul class="mx-auto flex max-w-screen-xl flex-col gap-1 px-6 py-4 opacity-0 transition-opacity duration-200 ease-out motion-reduce:transition-none">
           {{- range $site.nav }}
@@ -128,6 +128,16 @@
   [data-mobile-nav][open] .icon-bars { display: none; }
   [data-mobile-nav]:not([open]) .icon-close { display: none; }
   [data-mobile-panel].is-open { grid-template-rows: 1fr; }
+  /* While collapsed the panel is zero-height; strip its entire glass treatment
+     (border, shadow, fill, blur) so nothing paints as a vestigial 1px line below
+     the nav island. Everything returns when .is-open is set. */
+  [data-mobile-panel]:not(.is-open) .glass-panel {
+    border-color: transparent;
+    box-shadow: none;
+    background-color: transparent;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
   [data-mobile-panel-nav],
   [data-mobile-panel-bio],
   [data-mobile-panel-tools] { display: none; }

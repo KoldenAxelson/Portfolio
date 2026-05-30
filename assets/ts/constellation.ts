@@ -20,7 +20,7 @@ const LINK_DIST = 116; // px; lines fade to 0 at this distance
 const MAX_LINK_ALPHA = 0.5;
 const DRIFT = 0.32; // px/frame max component velocity
 const DOT_RADIUS = 2.6;
-const DOT_ALPHA = 0.5;
+const DOT_ALPHA = 0.3;
 // Points roam this far past the card edges before wrapping to the far side, so
 // they drift out of the (overflow-clipped) card and pop back in.
 const ROAM_MARGIN = 40;
@@ -34,32 +34,37 @@ export function initConstellation(): void {
     teardown = null;
   }
 
-  const canvas = document.querySelector<HTMLCanvasElement>('[data-constellation]');
+  const canvas = document.querySelector<HTMLCanvasElement>(
+    "[data-constellation]",
+  );
   if (!canvas) return;
-  const ctx = canvas.getContext('2d');
+  const ctx = canvas.getContext("2d");
   if (!ctx) return;
 
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const dark = window.matchMedia('(prefers-color-scheme: dark)');
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const dark = window.matchMedia("(prefers-color-scheme: dark)");
 
   let width = 0;
   let height = 0;
   let points: Point[] = [];
-  let dotColor = 'rgb(120 120 120)';
-  let lineColor = '120,120,120';
+  let dotColor = "rgb(120 120 120)";
+  let lineColor = "120,120,120";
   let running = false;
   let intersecting = true;
   let rafId: number | null = null;
 
   const readColors = (): void => {
     const cs = getComputedStyle(document.documentElement);
-    const muted = cs.getPropertyValue('--c-muted').trim() || '120 120 120';
-    lineColor = muted.replace(/\s+/g, ','); // "r,g,b" for rgba()
+    const muted = cs.getPropertyValue("--c-muted").trim() || "120 120 120";
+    lineColor = muted.replace(/\s+/g, ","); // "r,g,b" for rgba()
     // White dots on the dark theme (as requested); a neutral foreground tone in
     // light mode, where white would vanish against the pale card.
     dotColor = dark.matches
-      ? '255,255,255'
-      : (cs.getPropertyValue('--c-fg').trim() || '24 24 27').replace(/\s+/g, ',');
+      ? "255,255,255"
+      : (cs.getPropertyValue("--c-fg").trim() || "24 24 27").replace(
+          /\s+/g,
+          ",",
+        );
   };
 
   const makePoint = (): Point => ({
@@ -129,7 +134,8 @@ export function initConstellation(): void {
     rafId = requestAnimationFrame(loop);
   };
 
-  const shouldRun = (): boolean => !reduce.matches && intersecting && !document.hidden;
+  const shouldRun = (): boolean =>
+    !reduce.matches && intersecting && !document.hidden;
 
   const sync = (): void => {
     if (shouldRun()) {
@@ -176,9 +182,9 @@ export function initConstellation(): void {
   resize();
   io.observe(canvas);
   ro.observe(canvas);
-  document.addEventListener('visibilitychange', onVisibility);
-  reduce.addEventListener('change', onMqChange);
-  dark.addEventListener('change', onTheme);
+  document.addEventListener("visibilitychange", onVisibility);
+  reduce.addEventListener("change", onMqChange);
+  dark.addEventListener("change", onTheme);
   sync();
 
   teardown = (): void => {
@@ -187,8 +193,8 @@ export function initConstellation(): void {
     rafId = null;
     io.disconnect();
     ro.disconnect();
-    document.removeEventListener('visibilitychange', onVisibility);
-    reduce.removeEventListener('change', onMqChange);
-    dark.removeEventListener('change', onTheme);
+    document.removeEventListener("visibilitychange", onVisibility);
+    reduce.removeEventListener("change", onMqChange);
+    dark.removeEventListener("change", onTheme);
   };
 }
