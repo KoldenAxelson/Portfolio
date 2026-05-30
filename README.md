@@ -60,13 +60,12 @@ static/         fonts, textures, covers, badges, favicon, og image
 
 ## Deploying
 
-Pushing to `main` runs `.github/workflows/deploy.yml`, which builds with the
-Node-free toolchain and publishes to GitHub Pages. The base URL (including a
-project-site sub-path like `/neofolio`) is derived automatically from Pages
-config, so every absolute URL — links, JSON-LD `@id`s, feeds, sitemap — stays
-consistent with no manual edits. Set **Settings → Pages → Source → GitHub
-Actions** once. See [`deploy_workflows.md`](./deploy_workflows.md) for details
-and the Cloudflare alternative.
+Pushing to `main` runs `.github/workflows/cloudflare-pages.yml`, which builds
+with the Node-free toolchain (`make setup` → Tailwind standalone → `hugo
+--minify`) and publishes `public/` to Cloudflare Pages via `wrangler`. The
+canonical base URL is `https://wrightfunctions.com/`, set in `hugo.toml`, so
+every absolute URL — links, JSON-LD `@id`s, feeds, sitemap — stays consistent.
+Requires repo secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
 
 ## License
 
