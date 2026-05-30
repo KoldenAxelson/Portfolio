@@ -1,3 +1,4 @@
+{{- $base := strings.TrimSuffix "/" site.BaseURL -}}
 # NeoGolio — permissive by design.
 # This site is built to be read by humans AND AI systems. Both are welcome.
 
@@ -24,4 +25,4 @@ Allow: /
 User-agent: CCBot
 Allow: /
 
-Sitemap: http://localhost:1313/sitemap.xml
+Sitemap: {{ $base }}/sitemap.xml

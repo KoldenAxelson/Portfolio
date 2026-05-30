@@ -1,0 +1,18 @@
+{{- /* CreativeWork for /now. References #person + #website by @id.
+       Port of now.astro's schema. */ -}}
+{{- $site := site.Data.site -}}
+{{- $siteUrl := partial "func/site-url.html" . -}}
+{{- $personId := printf "%s#person" $siteUrl -}}
+{{- $websiteId := printf "%s#website" $siteUrl -}}
+{{- $nurl := strings.TrimSuffix "/" .Permalink -}}
+{{- $cw := dict
+  "@context" "https://schema.org"
+  "@type" "CreativeWork"
+  "@id" (printf "%s#now" $nurl)
+  "name" (printf "What %s is focused on right now" $site.author.name)
+  "description" (printf "A snapshot of %s's current focus — building, learning, reading, and life." $site.author.name)
+  "author" (dict "@id" $personId)
+  "isPartOf" (dict "@id" $websiteId)
+-}}
+{{- with .Params.updated }}{{ $cw = merge $cw (dict "dateModified" ((time.AsTime .).Format "2006-01-02T15:04:05Z07:00")) }}{{ end -}}
+<script type="application/ld+json">{{ $cw | jsonify | safeJS }}</script>

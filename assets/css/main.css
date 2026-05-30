@@ -1,0 +1,38 @@
+/* ------------------------------------------------------------------ */
+/* NeoGolio — Tailwind v4 entry stylesheet                             */
+/*                                                                     */
+/* Built with the Tailwind standalone binary (zero Node, no npm, no    */
+/* node_modules) — honoring HUGX's no-supply-chain promise. The Oxide  */
+/* engine scans the @source globs for class names and emits only what  */
+/* is used.                                                            */
+/* ------------------------------------------------------------------ */
+
+@import "tailwindcss";
+@import "./base.css";
+
+/* Typography plugin (bundled in the Tailwind standalone binary) — used for
+   article and project case-study bodies. Neofolio referenced `prose` but never
+   installed the plugin, so its bodies were unstyled; enabling it here is the
+   deliberate reading-typography improvement. Prose colors are remapped to our
+   five tokens below so it stays native to the palette. */
+@plugin "@tailwindcss/typography";
+
+/* Tell the engine where class names live (Hugo templates + content). */
+@source "../../layouts/**/*.html";
+@source "../../content/**/*.md";
+
+/* Map Tailwind's color + font tokens onto our source-of-truth vars so
+   utilities like bg-bg / text-fg / text-accent / border-border resolve to
+   the same values Neofolio used. The raw triplets (--c-*) swap by
+   prefers-color-scheme in base.css; these references inherit the swap.
+   Dark mode is media-query driven — no `.dark` class, no JS toggle. */
+@theme {
+  --color-bg: rgb(var(--c-bg) / 1);
+  --color-fg: rgb(var(--c-fg) / 1);
+  --color-muted: rgb(var(--c-muted) / 1);
+  --color-accent: rgb(var(--c-accent) / 1);
+  --color-border: rgb(var(--c-border) / 1);
+
+  --font-sans: Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}

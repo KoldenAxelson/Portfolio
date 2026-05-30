@@ -1,0 +1,33 @@
+{{ define "main" }}
+<header class="mb-10">
+  <h1 class="text-3xl font-medium">What I'm doing now</h1>
+  <p class="mt-3 max-w-prose text-muted">
+    A snapshot of where my attention is this season. Inspired by Derek Sivers'
+    <a href="https://nownownow.com/about" rel="noopener">/now page convention</a> — updated
+    whenever it stops being true.
+  </p>
+  {{- with .Params.updated }}
+  <p class="mt-2 font-mono text-xs text-muted">
+    Last updated {{ partial "formatted-date.html" (dict "date" .) }}.
+  </p>
+  {{- end }}
+</header>
+
+<div class="space-y-12">
+  {{- range .Params.sections }}
+  {{- $id := printf "%s-heading" (lower .label) }}
+  <section aria-labelledby="{{ $id }}">
+    <h2 id="{{ $id }}" class="mb-3 font-mono text-xs uppercase tracking-widest text-fg">{{ .label }}</h2>
+    <ul class="space-y-3">
+      {{- range .items }}
+      <li class="text-muted">{{ . }}</li>
+      {{- end }}
+    </ul>
+  </section>
+  {{- end }}
+</div>
+
+<p class="mt-16 text-sm text-muted">
+  Other "now" pages in the directory at <a href="https://nownownow.com" rel="noopener">nownownow.com</a>.
+</p>
+{{ end }}

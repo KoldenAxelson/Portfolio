@@ -1,0 +1,18 @@
+{{- /* /certificates ItemList of EducationalOccupationalCredential. Each item's
+       @id matches /cv's hasCredential so the records merge. Port of
+       certificates.astro's schema. */ -}}
+{{- $certs := partial "func/certs.html" . -}}
+{{- $items := slice -}}
+{{- range $i, $c := $certs -}}
+  {{- $items = $items | append (dict "@type" "ListItem" "position" (add $i 1) "item" (partial "func/credential-schema.html" $c)) -}}
+{{- end -}}
+{{- $list := dict
+  "@context" "https://schema.org"
+  "@type" "ItemList"
+  "@id" (printf "%s#list" (absURL "/certificates"))
+  "name" "Certifications"
+  "numberOfItems" (len $certs)
+  "itemListOrder" "https://schema.org/ItemListOrderDescending"
+  "itemListElement" $items
+-}}
+<script type="application/ld+json">{{ $list | jsonify | safeJS }}</script>

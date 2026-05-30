@@ -1,0 +1,70 @@
+{{- /*
+  project-card — overlay-link project card. Port of Neofolio's ProjectCard.astro.
+  Dict params:
+    project (Page, required) — a projects-section page
+    compact (bool)           — compact mode for tier-2 listings
+  Primary target: tier-1 → its detail page; else links.live || links.repo; else none.
+  Inner metric link floats above the overlay via the z-index trick.
+*/ -}}
+{{- $p := .project -}}
+{{- $compact := .compact | default false -}}
+{{- $d := $p.Params -}}
+{{- $links := $d.links | default dict -}}
+
+{{- $primaryHref := "" -}}
+{{- if eq (int $d.tier) 1 -}}{{ $primaryHref = $p.RelPermalink }}
+{{- else if $links.live }}{{ $primaryHref = $links.live }}
+{{- else if $links.repo }}{{ $primaryHref = $links.repo }}{{ end -}}
+{{- $external := and $primaryHref (findRE `^https?:` $primaryHref) -}}
+
+{{- $metricIcons := dict
+  "star" (dict "fill" "currentColor" "path" "M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006Z")
+  "user" (dict "fill" "none" "path" "M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z")
+  "download" (dict "fill" "none" "path" "M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3")
+-}}
+
+<article class="group relative rounded-lg border border-border bg-bg/30 transition hover:border-accent {{ cond $compact "p-4" "p-5" }}" itemscope itemtype="https://schema.org/CreativeWork">
+  {{- with $primaryHref }}
+  <a href="{{ . }}"{{ if $external }} rel="noopener"{{ end }} aria-label="{{ $d.title }}" class="absolute inset-0 z-0 rounded-lg"></a>
+  {{- end }}
+
+  {{- with $d.cover }}
+  <img src="{{ partial "func/url.html" . }}" width="{{ cond $compact 64 96 }}" height="{{ cond $compact 64 96 }}" alt="" loading="lazy" decoding="async" class="pointer-events-none relative z-10 float-left mb-2 rounded-md object-cover {{ cond $compact "mr-3 h-16 w-16" "mr-4 h-20 w-20 sm:h-24 sm:w-24" }}" />
+  {{- end }}
+
+  <header class="relative z-10 mb-2">
+    <span class="float-right ml-2 font-mono text-xs text-muted" itemprop="dateCreated">{{ $d.year }}</span>
+    <h3 class="m-0 font-medium transition-colors group-hover:text-accent {{ cond $compact "text-base" "text-lg" }}" itemprop="name">{{ $d.title }}</h3>
+  </header>
+
+  <p class="pointer-events-none relative z-10 text-sm text-muted" itemprop="abstract">{{ $d.summary }}</p>
+
+  {{- with $d.stack }}
+  <ul class="pointer-events-none relative z-10 clear-both mt-3 flex flex-wrap gap-1.5">
+    {{- range . }}
+    <li class="rounded bg-border/70 px-1.5 py-0.5 font-mono text-xs text-fg/85">{{ . }}</li>
+    {{- end }}
+  </ul>
+  {{- end }}
+
+  {{- with $d.metric }}
+  {{- $cleaned := trim (replaceRE `\s+` " " .label) " " -}}
+  {{- $parts := split $cleaned " @" -}}
+  {{- $beforeVenue := index $parts 0 -}}
+  {{- $venue := "" -}}
+  {{- if gt (len $parts) 1 -}}
+    {{- $venue = printf "@%s" (replaceRE `^\s+` "" (index $parts 1)) -}}
+  {{- end -}}
+  {{- $glyph := "" -}}
+  {{- with .icon }}{{ $glyph = index $metricIcons . }}{{ end -}}
+  <p class="relative z-10 clear-both mt-3">
+    <a href="{{ .href }}" rel="noopener" class="group/metric -my-1 inline-flex items-center gap-1.5 py-1 font-mono text-sm text-accent no-underline" itemprop="codeRepository">
+      {{- with $glyph }}
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="{{ .fill }}"{{ if eq .fill "none" }} stroke="currentColor" stroke-width="1.6"{{ end }} stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-4 w-4 shrink-0"><path {{ if eq .fill "currentColor" }}fill-rule="evenodd" clip-rule="evenodd" {{ end }}d="{{ .path }}" /></svg>
+      {{- end }}
+      <span class="underline decoration-1 underline-offset-2 group-hover/metric:decoration-2">{{ $beforeVenue }}{{ with $venue }} <em class="italic">{{ . }}</em>{{ end }}</span>
+      <span aria-hidden="true" class="inline-block transition-transform duration-200 ease-out group-hover/metric:-translate-y-0.5 group-hover/metric:translate-x-0.5 motion-reduce:transition-none">↗</span>
+    </a>
+  </p>
+  {{- end }}
+</article>

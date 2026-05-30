@@ -1,0 +1,135 @@
+{{ define "main" }}
+{{- $author := site.Data.site.author -}}
+{{- $contacts := partial "func/network.html" . -}}
+
+<header class="mb-10">
+  <h1 class="text-3xl font-medium">Network</h1>
+  <p class="mt-3 max-w-prose text-muted">
+    People I'd vouch for — and would happily make an introduction to. Pick a name to see how
+    we know each other, then compose an intro request.
+  </p>
+</header>
+
+{{/* Data for the Alpine island. */}}
+{{- $owner := dict "name" $author.name "title" $author.role "email" $author.email "bio" (trim ($author.longBio | markdownify | plainify) " \n") -}}
+{{- $cData := slice -}}
+{{- range $contacts -}}
+  {{- $cData = $cData | append (dict "id" .id "name" .name "title" .title "company" (.company | default "") "blurb" .blurb "relationship" .relationship "link" (.link | default "")) -}}
+{{- end -}}
+<script id="network-data" type="application/json">{{ (dict "owner" $owner "contacts" $cData) | jsonify | safeJS }}</script>
+
+{{/* ─── Interactive explorer (Alpine island) ─── */}}
+<section x-data="networkPanel" x-cloak class="grid scroll-mt-20 gap-6 lg:grid-cols-[20rem_1fr] lg:items-start lg:gap-8">
+  {{/* LEFT: persistent contact list */}}
+  <aside :class="[listPaneClass, 'lg:order-1 lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:overflow-y-auto']">
+    <header class="mb-4 flex items-baseline justify-between">
+      <h2 class="font-mono text-xs uppercase tracking-widest text-fg">My network</h2>
+      <span class="font-mono text-xs text-muted"><span x-text="contacts.length"></span> contacts</span>
+    </header>
+
+    <button type="button" @click="selectOwner" :aria-pressed="!isContactSelected" class="group flex w-full flex-col items-start rounded px-3 py-2 text-left transition" :class="!isContactSelected ? 'bg-accent/15 text-fg' : 'text-muted hover:bg-border/40 hover:text-fg'">
+      <span class="text-sm font-medium" x-text="owner.name"></span>
+      <span class="font-mono text-xs uppercase tracking-widest text-muted" x-text="owner.title"></span>
+    </button>
+
+    <div x-show="contacts.length > 0" class="my-2 border-t border-border/40" aria-hidden="true"></div>
+
+    <ul :class="['space-y-1', contacts.length > 6 ? 'scroll-slim max-h-[22rem] overflow-y-auto pr-1' : '']">
+      <template x-for="c in contacts" :key="c.id">
+        <li>
+          <button type="button" @click="selectContact(c.id)" :aria-pressed="selectedId === c.id" class="group flex w-full flex-col items-start rounded px-3 py-2 text-left transition" :class="selectedId === c.id ? 'bg-accent/15 text-fg' : 'text-muted hover:bg-border/40 hover:text-fg'">
+            <span class="text-sm font-medium" x-text="c.name"></span>
+            <span class="font-mono text-xs uppercase tracking-widest text-muted"><span x-text="c.title"></span><span x-show="c.company"> · <span x-text="c.company"></span></span></span>
+          </button>
+        </li>
+      </template>
+    </ul>
+
+    <p class="mt-4 text-xs text-muted"><span x-show="contacts.length > 6">Scroll for more. </span>Tap a name to see how we know each other.</p>
+  </aside>
+
+  {{/* RIGHT: carousel — profile ⇄ compose */}}
+  <article :class="[rightPaneClass, 'lg:order-2']">
+    <button x-show="view !== 'list'" type="button" @click="backToList" class="-mt-2 mb-4 inline-flex items-center font-mono text-xs uppercase tracking-widest text-muted hover:!text-fg lg:hidden">← All connections</button>
+
+    <div class="relative overflow-hidden">
+      <div class="flex transition-transform duration-300 ease-out motion-reduce:transition-none" :style="{ transform: isCompose ? 'translateX(-100%)' : 'translateX(0)' }">
+        {{/* Slide 1: profile */}}
+        <div class="w-full shrink-0" :inert="isCompose" :aria-hidden="isCompose ? 'true' : null">
+          <div class="rounded-lg border border-border bg-bg/30 p-6 lg:p-8" aria-labelledby="active-profile-name">
+            <header class="flex items-start justify-between gap-4">
+              <div>
+                <p class="font-mono text-xs uppercase tracking-widest text-muted" x-text="activeProfile.isOwner ? 'About me' : 'Connection'"></p>
+                <h2 id="active-profile-name" class="mt-2 text-2xl font-medium tracking-tight text-fg sm:text-3xl" x-text="activeProfile.name"></h2>
+                <p class="mt-1 text-muted"><span x-text="activeProfile.title"></span><span x-show="activeProfile.company"> · <span x-text="activeProfile.company"></span></span></p>
+              </div>
+              <a x-show="activeProfile.link" :href="activeProfile.link" rel="noopener" class="group/verify shrink-0 font-mono text-xs uppercase tracking-widest text-muted no-underline hover:!text-accent" :aria-label="activeProfile.name + ' on the web'">Verify <span aria-hidden="true" class="inline-block transition-transform duration-200 ease-out motion-reduce:transition-none group-hover/verify:translate-x-0.5 group-hover/verify:-translate-y-0.5">↗</span></a>
+            </header>
+
+            <p class="mt-5 leading-relaxed text-fg/90" x-text="activeProfile.blurb"></p>
+
+            <p x-show="!activeProfile.isOwner && activeProfile.relationship" class="mt-4 border-l-2 border-accent/40 pl-3 text-sm italic text-muted">How we know each other: <span x-text="activeProfile.relationship"></span></p>
+
+            <div class="mt-6">
+              <button type="button" @click="openCompose" class="group/cta rounded border border-accent bg-accent/10 px-4 py-2 text-sm font-medium text-fg transition hover:bg-accent hover:!text-bg"><span x-text="cta"></span><span aria-hidden="true" class="ml-0.5 inline-block transition-transform duration-200 ease-out motion-reduce:transition-none group-hover/cta:translate-x-0.5">→</span></button>
+            </div>
+          </div>
+        </div>
+
+        {{/* Slide 2: compose */}}
+        <div class="w-full shrink-0" :inert="!isCompose" :aria-hidden="!isCompose ? 'true' : null">
+          <form class="rounded-lg border border-border bg-bg/30 p-6 lg:p-8" @submit.prevent>
+            <header class="mb-4 flex items-baseline justify-between">
+              <h2 class="text-lg font-medium tracking-tight text-fg" x-text="isContactSelected ? ('Request intro to ' + activeProfile.name.split(' ')[0]) : 'Get in touch'"></h2>
+              <button type="button" @click="cancelCompose" class="font-mono text-xs uppercase tracking-widest text-muted hover:!text-fg">← back to profile</button>
+            </header>
+
+            <p class="mb-5 text-sm text-muted"><span x-show="isContactSelected">This message goes to <span x-text="owner.name.split(' ')[0]"></span>. They decide whether to make the introduction.</span><span x-show="!isContactSelected">Drops straight into <span x-text="owner.name.split(' ')[0]"></span>'s inbox via your mail client.</span></p>
+
+            <div class="space-y-4">
+              <div>
+                <label for="net-from-name" class="block text-xs font-medium text-muted">Your name</label>
+                <input id="net-from-name" x-model="fromName" type="text" autocomplete="name" class="mt-1 w-full rounded border border-border bg-bg/50 px-3 py-2 text-sm text-fg placeholder:text-muted focus:border-accent focus:outline-none" placeholder="Recruiter at Example Corp" />
+              </div>
+              <div>
+                <label for="net-from-email" class="block text-xs font-medium text-muted">Your email <span class="text-muted/70">(optional — your mail client fills From)</span></label>
+                <input id="net-from-email" x-model="fromEmail" type="email" autocomplete="email" class="mt-1 w-full rounded border border-border bg-bg/50 px-3 py-2 text-sm text-fg placeholder:text-muted focus:border-accent focus:outline-none" placeholder="you@example.com" />
+              </div>
+              <div>
+                <label for="net-message" class="block text-xs font-medium text-muted">Message</label>
+                <textarea id="net-message" x-model="message" rows="5" required class="mt-1 w-full rounded border border-border bg-bg/50 px-3 py-2 text-sm text-fg placeholder:text-muted focus:border-accent focus:outline-none" :placeholder="messagePlaceholder"></textarea>
+              </div>
+
+              <a :href="mailto" :aria-disabled="!composeReady" :tabindex="composeReady ? 0 : -1" class="group/cta block w-full rounded border border-accent bg-accent/10 px-4 py-2 text-center text-sm font-medium no-underline transition" :class="composeReady ? 'text-fg hover:bg-accent hover:!text-bg' : 'pointer-events-none text-muted opacity-60'">Open in mail client<span aria-hidden="true" class="ml-0.5 inline-block transition-transform duration-200 ease-out motion-reduce:transition-none group-hover/cta:translate-x-0.5">→</span></a>
+
+              <p class="text-xs text-muted">Prefer it direct? <a :href="'mailto:' + owner.email" class="underline" x-text="owner.email"></a></p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </article>
+</section>
+
+{{/* No-JS / crawler fallback: the static contact list. */}}
+<noscript>
+  <section class="mt-4" aria-label="Connections">
+    <ul class="space-y-8">
+      {{- range $contacts }}
+      <li class="border-b border-border/60 pb-8 last:border-b-0">
+        <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+          <h2 class="m-0 text-lg font-medium text-fg">{{ .name }}</h2>
+          <p class="m-0 font-mono text-xs text-muted">{{ .title }}{{ with .company }} · {{ . }}{{ end }}</p>
+        </div>
+        <p class="mt-2 text-muted">{{ .blurb }}</p>
+        <p class="mt-2 text-sm italic text-muted">{{ .relationship }}</p>
+        <div class="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1 text-sm">
+          <a href="mailto:{{ $author.email }}?subject=Intro%20request:%20{{ replace .name " " "%20" }}">Request an intro →</a>
+          {{- with .link }}<a href="{{ . }}" rel="noopener">Verify ↗</a>{{ end }}
+        </div>
+      </li>
+      {{- end }}
+    </ul>
+    <p class="mt-10 text-sm text-muted">For an introduction, email <a href="mailto:{{ $author.email }}">{{ $author.email }}</a> with the connection's name in the subject line.</p>
+  </section>
+</noscript>
+{{ end }}

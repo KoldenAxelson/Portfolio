@@ -1,0 +1,18 @@
+{{- /* /network ItemList of Person — each connection as a related Person.
+       Port of network.astro's schema. */ -}}
+{{- $site := site.Data.site -}}
+{{- $contacts := partial "func/network.html" . -}}
+{{- $items := slice -}}
+{{- range $i, $c := $contacts -}}
+  {{- $person := dict "@type" "Person" "name" $c.name "jobTitle" $c.title "description" $c.blurb -}}
+  {{- with $c.company }}{{ $person = merge $person (dict "worksFor" (dict "@type" "Organization" "name" .)) }}{{ end -}}
+  {{- with $c.link }}{{ $person = merge $person (dict "url" .) }}{{ end -}}
+  {{- $items = $items | append (dict "@type" "ListItem" "position" (add $i 1) "item" $person) -}}
+{{- end -}}
+{{- $list := dict
+  "@context" "https://schema.org"
+  "@type" "ItemList"
+  "name" (printf "%s's professional network" $site.author.name)
+  "itemListElement" $items
+-}}
+<script type="application/ld+json">{{ $list | jsonify | safeJS }}</script>

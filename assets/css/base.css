@@ -1,0 +1,238 @@
+/* ------------------------------------------------------------------ */
+/* NeoGolio base styles (ported from Neofolio's global.css)            */
+/*                                                                     */
+/* Tailwind v4 (standalone binary, zero-Node) owns the utility layer + */
+/* preflight; this file owns @font-face, the source-of-truth theme     */
+/* tokens, base element styles, and hand-authored utilities.           */
+/*                                                                     */
+/* Token naming: the five raw RGB triplets live in `--c-*` so they do  */
+/* NOT collide with Tailwind's `--color-*` namespace (main.css maps     */
+/* `--color-bg: rgb(var(--c-bg) / 1)` etc. to generate bg-bg/text-fg…). */
+/* Forkers: tweak the five `--c-*` values below to rebrand.            */
+/* ------------------------------------------------------------------ */
+
+/* ------------------------------------------------------------------ */
+/* Self-hosted Inter font                                              */
+/* Avoids a third-party (rsms.me) request in the critical path.        */
+/* font-display: swap → paint in fallback first, swap to Inter when     */
+/* ready (prevents FOIT, accepts a small FOUT).                        */
+/* ------------------------------------------------------------------ */
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/InterVariable.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/InterVariable-Italic.woff2') format('woff2');
+}
+
+/* ------------------------------------------------------------------ */
+/* Self-hosted JetBrains Mono (variable, latin subset)                 */
+/* Improvement over Neofolio: it specified JetBrains Mono but never    */
+/* bundled it, so mono text fell back to system mono. We ship it.      */
+/* ------------------------------------------------------------------ */
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url('/fonts/JetBrainsMono-Variable.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: italic;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url('/fonts/JetBrainsMono-Variable-Italic.woff2') format('woff2');
+}
+
+/* ------------------------------------------------------------------ */
+/* Theme tokens (source of truth — the five values to tweak)           */
+/* Light by default. Dark kicks in for users with that preference.     */
+/* ------------------------------------------------------------------ */
+
+:root {
+  --c-bg: 250 250 247;       /* warm paper white */
+  --c-fg: 24 24 27;          /* zinc-900 */
+  --c-muted: 82 82 91;       /* zinc-600 — WCAG AA on warm-white (6.5:1) */
+  --c-accent: 154 52 18;     /* amber-800 — AA contrast against bg */
+  --c-border: 228 228 231;   /* zinc-200 */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --c-bg: 9 9 11;          /* zinc-950 */
+    --c-fg: 244 244 245;     /* zinc-100 */
+    --c-muted: 161 161 170;  /* zinc-400 */
+    --c-accent: 252 211 77;  /* amber-300 */
+    --c-border: 39 39 42;    /* zinc-800 */
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/* Base                                                                */
+/* ------------------------------------------------------------------ */
+
+html {
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  background-color: rgb(var(--c-bg));
+  color: rgb(var(--c-fg));
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Smooth scroll for in-page anchors, gated by motion preference. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* ---- Matte noise texturing ------------------------------------------
+ * Two tileable 128×128 noise PNGs (static/textures/), one per scheme,
+ * overlaid non-destructively on the background-color. baseof injects the
+ * base-path-aware URLs onto <body> as --noise-bg-light / --noise-bg-dark.
+ * -------------------------------------------------------------------- */
+
+body {
+  min-height: 100dvh;
+  background-image: var(--noise-bg-light, none);
+  background-size: 128px 128px;
+  background-repeat: repeat;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-image: var(--noise-bg-dark, none);
+  }
+}
+
+/*
+ * Links: underlined by default so color-blind users can identify them
+ * without relying on the accent alone (WCAG 1.4.1). Opt out via
+ * `class="no-underline"` on nav, icon links, card overlays, etc.
+ */
+a {
+  color: rgb(var(--c-accent));
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  transition: color 150ms ease;
+}
+
+a:hover {
+  color: rgb(var(--c-fg));
+  text-decoration-thickness: 2px;
+}
+
+.no-underline {
+  text-decoration: none;
+}
+.no-underline:hover {
+  text-decoration: none;
+}
+
+code {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.9em;
+  background-color: rgb(var(--c-border) / 0.5);
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+}
+
+pre {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  overflow-x: auto;
+  padding: 1rem;
+  border-radius: 6px;
+  background-color: rgb(var(--c-border) / 0.4);
+  border: 1px solid rgb(var(--c-border));
+}
+
+pre code {
+  background: transparent;
+  padding: 0;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+:focus-visible {
+  outline: 2px solid rgb(var(--c-accent));
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+}
+.skip-link:focus {
+  left: 1rem;
+  top: 1rem;
+  z-index: 100;
+  background: rgb(var(--c-bg));
+  border: 2px solid rgb(var(--c-accent));
+  padding: 0.5rem 1rem;
+}
+
+/* Prose (article + case-study bodies): remap the typography plugin's color
+   variables onto our five tokens so reading copy stays native to the palette
+   and adapts to dark mode automatically (the --c-* tokens swap by media query,
+   so no prose-invert is needed). */
+.prose {
+  --tw-prose-body: rgb(var(--c-fg) / 0.88);
+  --tw-prose-headings: rgb(var(--c-fg));
+  --tw-prose-lead: rgb(var(--c-muted));
+  --tw-prose-links: rgb(var(--c-accent));
+  --tw-prose-bold: rgb(var(--c-fg));
+  --tw-prose-counters: rgb(var(--c-muted));
+  --tw-prose-bullets: rgb(var(--c-border));
+  --tw-prose-hr: rgb(var(--c-border));
+  --tw-prose-quotes: rgb(var(--c-fg));
+  --tw-prose-quote-borders: rgb(var(--c-border));
+  --tw-prose-captions: rgb(var(--c-muted));
+  --tw-prose-code: rgb(var(--c-fg));
+  --tw-prose-pre-code: rgb(var(--c-fg));
+  --tw-prose-pre-bg: rgb(var(--c-border) / 0.4);
+  --tw-prose-th-borders: rgb(var(--c-border));
+  --tw-prose-td-borders: rgb(var(--c-border));
+}
+
+.nav-scroll::-webkit-scrollbar {
+  display: none;
+}
+.nav-scroll {
+  scrollbar-width: none;
+}
+
+/* Slim, theme-aware scrollbar for scrollable lists (e.g. /network). */
+.scroll-slim::-webkit-scrollbar {
+  width: 6px;
+}
+.scroll-slim::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scroll-slim::-webkit-scrollbar-thumb {
+  background: rgb(var(--c-border));
+  border-radius: 3px;
+}
+.scroll-slim::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--c-muted));
+}
+.scroll-slim {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--c-border)) transparent;
+}

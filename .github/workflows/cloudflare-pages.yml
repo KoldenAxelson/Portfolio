@@ -5,6 +5,10 @@ name: Deploy to Cloudflare Pages
 #   CLOUDFLARE_API_TOKEN  (Account:Developer Platform:Pages — Edit)
 #   CLOUDFLARE_ACCOUNT_ID
 # Project name is hardcoded below — change if you rename the Pages project.
+#
+# Node-free build: the Hugo (Go) + Tailwind (Rust standalone) binaries are
+# fetched by `make setup`; Hugo emits static HTML to ./public, which is what
+# wrangler deploys. Pages Functions in ./functions deploy alongside it.
 
 on:
   push:
@@ -21,19 +25,22 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
         with:
-          node-version: '22'
-          cache: 'npm'
+          fetch-depth: 0 # full history so :git lastmod dates resolve
 
-      - run: npm ci
-      - run: npm run build
+      - name: Install toolchain (pinned Hugo + Tailwind binaries)
+        run: make setup
+
+      - name: Build CSS
+        run: ./bin/tailwindcss -i assets/css/main.css -o assets/css/app.css --minify
+
+      - name: Build site
+        run: ./bin/hugo --minify --baseURL "https://wrightfunctions.com/"
 
       - name: Deploy
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist --project-name=portfolio
+          command: pages deploy public --project-name=portfolio
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}

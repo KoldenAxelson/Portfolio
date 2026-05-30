@@ -1,0 +1,43 @@
+{{- /*
+  sidebar — homepage identity + in-page section nav. Port of SideBar.astro
+  (static markup). Reads sections from .Params.sections. The scroll-spy
+  dot/line state machine + bio typewriter JS are Phase 4; the data-* hooks and
+  default states are in place now. h-card microformat preserved.
+*/ -}}
+{{- $site := site.Data.site -}}
+{{- $sections := .Params.sections -}}
+<aside class="h-card pb-2 pt-12 lg:sticky lg:top-16 lg:max-h-[calc(100vh-4rem)] lg:w-1/2 lg:self-start lg:py-24">
+  <div>
+    <h1 class="text-4xl font-bold tracking-tight text-fg sm:text-5xl">
+      <a href="{{ partial "func/url.html" "/" }}" class="u-url hover:!text-fg"><span class="p-name">{{ $site.author.name }}</span></a>
+    </h1>
+    <p class="p-job-title mt-3 text-lg font-medium tracking-tight text-fg sm:text-xl">{{ $site.author.role }}</p>
+
+    <p data-bio-typer class="p-note mt-4 hidden min-h-[5.5rem] max-w-xs leading-normal text-muted lg:block">{{ $site.author.bio }}<span data-bio-cursor aria-hidden="true" class="ml-0.5 inline-block w-[2px] h-[1.05em] translate-y-[3px] bg-current opacity-0 transition-opacity duration-300"></span></p>
+
+    <data class="u-email" value="{{ $site.author.email }}" hidden>{{ $site.author.email }}</data>
+
+    {{- with $sections }}
+    <nav class="nav-scroll mt-12 hidden lg:block lg:mt-16" aria-label="On this page">
+      <ol class="space-y-0">
+        {{- $n := len . }}
+        {{- range $i, $s := . }}
+        <li>
+          <a href="#{{ $s.id }}" data-section-link="{{ $s.id }}" class="group/nav-link flex items-center gap-3 py-1.5 text-muted no-underline transition-colors hover:!text-fg data-[active=true]:!text-fg">
+            <span class="flex h-3 w-3 shrink-0 items-center justify-center" aria-hidden="true">
+              <span data-nav-dot class="block h-1.5 w-1.5 rounded-full bg-border transition-all duration-200 motion-reduce:transition-none data-[state=passed]:bg-accent data-[state=current]:h-3 data-[state=current]:w-3 data-[state=current]:bg-accent data-[state=highlighted]:h-2.5 data-[state=highlighted]:w-2.5 data-[state=highlighted]:border-2 data-[state=highlighted]:border-accent data-[state=highlighted]:bg-transparent"></span>
+            </span>
+            <span class="font-mono text-xs uppercase tracking-widest group-data-[active=true]:font-semibold">{{ $s.label }}</span>
+          </a>
+          {{- if lt $i (sub $n 1) }}
+          <div class="flex w-3 justify-center" aria-hidden="true">
+            <span data-nav-line class="block h-3 w-px bg-border transition-all duration-200 motion-reduce:transition-none data-[state=primary]:bg-accent data-[state=dashed-primary]:w-0 data-[state=dashed-primary]:border-l data-[state=dashed-primary]:border-dashed data-[state=dashed-primary]:border-accent data-[state=dashed-primary]:bg-transparent"></span>
+          </div>
+          {{- end }}
+        </li>
+        {{- end }}
+      </ol>
+    </nav>
+    {{- end }}
+  </div>
+</aside>

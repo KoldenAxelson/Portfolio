@@ -1,0 +1,28 @@
+{{- /*
+  url — internal link helper, base-path aware. Port of Neofolio's src/lib/url.ts.
+
+  Prepends the deploy base path (the path component of baseURL, e.g. /neofolio on
+  a GitHub Pages project site) to internal paths, returning a root-relative URL.
+  External URLs (http/https/mailto/tel) and same-page anchors (#…) pass through
+  unchanged, so it's safe to wrap every href.
+
+  Built from baseURL's path rather than relURL because relURL treats a
+  leading-slash path as host-root-absolute and drops the sub-path.
+
+    {{ partial "func/url.html" "/projects" }}              → /projects  (or /neofolio/projects)
+    {{ partial "func/url.html" "https://github.com/foo" }} → https://github.com/foo
+    {{ partial "func/url.html" "mailto:me@example.com" }}  → mailto:me@example.com
+    {{ partial "func/url.html" "#top" }}                   → #top
+*/ -}}
+{{- $p := . -}}
+{{- $out := $p -}}
+{{- if not $p -}}
+  {{- $out = (strings.TrimSuffix "/" (urls.Parse site.BaseURL).Path) | default "/" -}}
+{{- else if or (hasPrefix $p "http") (hasPrefix $p "mailto:") (hasPrefix $p "tel:") (hasPrefix $p "#") -}}
+  {{- $out = $p -}}
+{{- else -}}
+  {{- if not (hasPrefix $p "/") }}{{ $p = printf "/%s" $p }}{{ end -}}
+  {{- $base := strings.TrimSuffix "/" (urls.Parse site.BaseURL).Path -}}
+  {{- $out = printf "%s%s" $base $p -}}
+{{- end -}}
+{{- return $out -}}

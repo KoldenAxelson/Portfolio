@@ -1,0 +1,16 @@
+{{- /*
+  footer — port of Neofolio's Footer.astro. Copyright + stack disclosure +
+  social row. Stack list updated for the HUGX build.
+*/ -}}
+{{- $site := site.Data.site -}}
+{{- $stack := slice "Hugo" "Tailwind" "HTMX" -}}
+<footer class="mt-24 border-t border-border pb-12 pt-8 text-sm text-muted print:hidden">
+  <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+    <p>
+      © {{ now.Year }}
+      {{ $site.author.name }}. Built with {{ delimit $stack ", " }}. Powered by
+      <a href="https://github.com/KoldenAxelson/neofolio" rel="noopener">Neofolio</a>.
+    </p>
+    {{ partial "social-icons.html" (dict "class" "") }}
+  </div>
+</footer>

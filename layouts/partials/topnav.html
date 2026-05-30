@@ -1,0 +1,157 @@
+{{- /*
+  topnav — port of Neofolio's TopNav.astro (markup + CSS only).
+  Receives the page as the dot. Reads nav from data/site.yaml and per-page
+  toolbar items from `.Params.tools` (list of {icon,label,href?,download?,action?}).
+
+  Desktop (lg+): inline icon buttons, label slides in on hover.
+  Mobile (<lg) : hamburger <details> → dropdown panel (nav / bio / tools modes).
+
+  NOTE: the autohide-on-scroll, panel open/close sync, and bio-typewriter JS
+  are Phase 4. The CSS-only icon swap and the grid-rows height animation are
+  here now; the panel won't expand until the Phase 4 script is added.
+*/ -}}
+{{- $site := site.Data.site -}}
+{{- $tools := .Params.tools -}}
+{{- /* The CV page sets `cvtools: true`; build Print/PDF/DOCX from site data
+       so résumé paths stay in data/site.yaml (DRY). */ -}}
+{{- if .Params.cvtools -}}
+  {{- $tools = slice (dict "icon" "printer" "label" "Print" "action" "print") -}}
+  {{- with site.Data.site.author.resume.pdf }}{{ $tools = $tools | append (dict "icon" "pdf" "label" "PDF" "href" . "download" true) }}{{ end -}}
+  {{- with site.Data.site.author.resume.docx }}{{ $tools = $tools | append (dict "icon" "docx" "label" "DOCX" "href" . "download" true) }}{{ end -}}
+{{- end -}}
+{{- $hasTools := false -}}
+{{- with $tools }}{{ $hasTools = gt (len .) 0 }}{{ end -}}
+{{- $cur := strings.TrimSuffix "/" .RelPermalink -}}
+{{- if eq $cur "" }}{{ $cur = "/" }}{{ end -}}
+
+<header data-top-nav class="sticky top-0 z-40 w-full transition-transform duration-200 ease-out motion-reduce:transition-none print:hidden">
+  <div class="relative border-b border-border bg-bg/85 backdrop-blur supports-[backdrop-filter]:bg-bg/70">
+    <div class="mx-auto flex max-w-screen-xl items-center justify-between gap-4 px-6 py-3 lg:px-12">
+      <a href="{{ partial "func/url.html" "/" }}" aria-label="{{ $site.author.name }} — home" class="inline-flex items-center no-underline transition-opacity duration-200 hover:opacity-80">
+        <img src="{{ partial "func/url.html" "/logo-mark.svg" }}" alt="{{ $site.author.name }}" width="36" height="36" class="h-9 w-9" />
+      </a>
+
+      {{- if $hasTools }}
+      <ul class="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-2 lg:flex">
+        {{- range $tools }}
+        <li>
+          {{- if eq .action "print" }}
+          <button type="button" onclick="window.print()" aria-label="{{ .label }}" class="group inline-flex items-center rounded-full px-2 py-2 no-underline text-accent transition-colors duration-200 hover:!text-fg hover:bg-border/40 border-0 bg-transparent">
+            {{ partial "func/svg-icon.html" (dict "name" .icon "class" "h-5 w-5 shrink-0 transition-transform duration-300 ease-out group-hover:rotate-[-3deg] group-hover:scale-110") }}
+            <span class="ml-0 max-w-0 overflow-hidden whitespace-nowrap text-sm opacity-0 transition-all duration-300 ease-out motion-reduce:transition-none group-hover:ml-2 group-hover:max-w-[8rem] group-hover:opacity-100 group-focus-within:ml-2 group-focus-within:max-w-[8rem] group-focus-within:opacity-100">{{ .label }}</span>
+          </button>
+          {{- else }}
+          <a href="{{ .href }}"{{ if .download }} download{{ end }}{{ if and .href (findRE `^https?:` .href) }} rel="noopener"{{ end }} aria-label="{{ .label }}" class="group inline-flex items-center rounded-full px-2 py-2 no-underline text-muted transition-colors duration-200 hover:!text-fg hover:bg-border/40">
+            {{ partial "func/svg-icon.html" (dict "name" .icon "class" "h-5 w-5 shrink-0 transition-transform duration-300 ease-out group-hover:rotate-[-3deg] group-hover:scale-110") }}
+            <span class="ml-0 max-w-0 overflow-hidden whitespace-nowrap text-sm opacity-0 transition-all duration-300 ease-out motion-reduce:transition-none group-hover:ml-2 group-hover:max-w-[8rem] group-hover:opacity-100 group-focus-within:ml-2 group-focus-within:max-w-[8rem] group-focus-within:opacity-100">{{ .label }}</span>
+          </a>
+          {{- end }}
+        </li>
+        {{- end }}
+      </ul>
+      {{- end }}
+
+      <nav aria-label="Site" class="hidden lg:block">
+        <ul class="flex items-center gap-2">
+          {{- range $site.nav }}
+          {{- $href := strings.TrimSuffix "/" (partial "func/url.html" .href) -}}
+          {{- $isActive := or (eq $cur $href) (hasPrefix $cur (printf "%s/" $href)) -}}
+          <li>
+            <a href="{{ partial "func/url.html" .href }}" aria-label="{{ .label }}"{{ if $isActive }} aria-current="page"{{ end }}{{ if eq .boost false }} hx-boost="false"{{ end }} class="group inline-flex items-center rounded-full px-2 py-2 no-underline transition-colors duration-200 {{ if $isActive }}bg-border/60 text-fg{{ else }}text-muted hover:bg-border/40 hover:!text-fg{{ end }}">
+              {{ partial "func/svg-icon.html" (dict "name" .icon "class" "h-5 w-5 shrink-0 transition-transform duration-300 ease-out group-hover:rotate-[-3deg] group-hover:scale-110") }}
+              <span class="whitespace-nowrap text-sm {{ if $isActive }}ml-2{{ else }}ml-0 max-w-0 overflow-hidden opacity-0 transition-all duration-300 ease-out group-focus-within:ml-2 group-focus-within:max-w-[8rem] group-focus-within:opacity-100 group-hover:ml-2 group-hover:max-w-[8rem] group-hover:opacity-100 motion-reduce:transition-none{{ end }}">{{ .label }}</span>
+            </a>
+          </li>
+          {{- end }}
+        </ul>
+      </nav>
+
+      <div class="flex items-center gap-1 lg:hidden">
+        {{- if $hasTools }}
+        <button type="button" data-mobile-tools-trigger aria-label="Open page actions" class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-md text-muted transition-colors hover:bg-border/40 hover:text-fg focus-visible:bg-border/40 focus-visible:text-fg">
+          {{ partial "func/svg-icon.html" (dict "name" "arrow-down-circle" "class" "h-7 w-7") }}
+        </button>
+        {{- end }}
+
+        <details data-mobile-nav>
+          <summary aria-label="Open menu" class="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-md text-muted transition-colors hover:bg-border/40 hover:text-fg focus-visible:bg-border/40 focus-visible:text-fg">
+            <span class="sr-only">Menu</span>
+            <svg class="icon-bars h-7 w-7" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"></path></svg>
+            <svg class="icon-close h-7 w-7" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+          </summary>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <div data-mobile-panel data-mode="nav" class="absolute inset-x-0 top-full z-40 grid grid-rows-[0fr] transition-[grid-template-rows] duration-300 ease-out motion-reduce:transition-none lg:hidden">
+    <div class="overflow-hidden border-b border-border bg-bg/85 backdrop-blur supports-[backdrop-filter]:bg-bg/70">
+      <nav data-mobile-panel-nav aria-label="Site (mobile)">
+        <ul class="mx-auto flex max-w-screen-xl flex-col gap-1 px-6 py-4 opacity-0 transition-opacity duration-200 ease-out motion-reduce:transition-none">
+          {{- range $site.nav }}
+          {{- $href := strings.TrimSuffix "/" (partial "func/url.html" .href) -}}
+          {{- $isActive := or (eq $cur $href) (hasPrefix $cur (printf "%s/" $href)) -}}
+          <li>
+            <a href="{{ partial "func/url.html" .href }}"{{ if $isActive }} aria-current="page"{{ end }}{{ if eq .boost false }} hx-boost="false"{{ end }} class="flex items-center gap-4 rounded-md px-3 py-3 text-lg no-underline transition-colors {{ if $isActive }}bg-border/60 font-medium text-fg{{ else }}text-fg/85 hover:bg-border/40 hover:!text-accent{{ end }}">
+              {{ partial "func/svg-icon.html" (dict "name" .icon "class" "h-6 w-6 shrink-0") }}
+              <span>{{ .label }}</span>
+            </a>
+          </li>
+          {{- end }}
+        </ul>
+      </nav>
+
+      <div data-mobile-panel-bio class="mx-auto max-w-screen-xl px-6 py-5">
+        <p data-bio-mobile-typer aria-live="polite" class="m-0 min-h-[3rem] text-base leading-snug text-fg/90 opacity-0 transition-opacity duration-200 ease-out motion-reduce:transition-none"></p>
+      </div>
+
+      {{- if $hasTools }}
+      <ul data-mobile-panel-tools class="mx-auto flex max-w-screen-xl flex-col gap-1 px-6 py-4 opacity-0 transition-opacity duration-200 ease-out motion-reduce:transition-none">
+        {{- range $tools }}
+        <li>
+          {{- if eq .action "print" }}
+          <button type="button" onclick="window.print()" aria-label="{{ .label }}" class="flex w-full items-center gap-4 rounded-md px-3 py-3 text-lg text-accent no-underline transition-colors hover:bg-border/40 hover:!text-accent border-0 bg-transparent text-left">
+            {{ partial "func/svg-icon.html" (dict "name" .icon "class" "h-6 w-6 shrink-0") }}
+            <span>{{ .label }}</span>
+          </button>
+          {{- else }}
+          <a href="{{ .href }}"{{ if .download }} download{{ end }}{{ if and .href (findRE `^https?:` .href) }} rel="noopener"{{ end }} aria-label="{{ .label }}" class="flex w-full items-center gap-4 rounded-md px-3 py-3 text-lg text-fg/85 no-underline transition-colors hover:bg-border/40 hover:!text-accent">
+            {{ partial "func/svg-icon.html" (dict "name" .icon "class" "h-6 w-6 shrink-0") }}
+            <span>{{ .label }}</span>
+          </a>
+          {{- end }}
+        </li>
+        {{- end }}
+      </ul>
+      {{- end }}
+    </div>
+  </div>
+</header>
+
+<style>
+  [data-mobile-nav] > summary::-webkit-details-marker { display: none; }
+  [data-mobile-nav] > summary::marker { display: none; }
+  [data-mobile-nav][open] .icon-bars { display: none; }
+  [data-mobile-nav]:not([open]) .icon-close { display: none; }
+  [data-mobile-panel].is-open { grid-template-rows: 1fr; }
+  [data-mobile-panel-nav],
+  [data-mobile-panel-bio],
+  [data-mobile-panel-tools] { display: none; }
+  [data-mobile-panel][data-mode='nav'] [data-mobile-panel-nav],
+  [data-mobile-panel][data-mode='bio'] [data-mobile-panel-bio],
+  [data-mobile-panel][data-mode='tools'] [data-mobile-panel-tools] { display: block; }
+  [data-mobile-panel].is-open [data-mobile-panel-nav] ul,
+  [data-mobile-panel].is-open [data-mobile-panel-bio] p,
+  [data-mobile-panel].is-open [data-mobile-panel-tools] {
+    opacity: 1;
+    transition-delay: 200ms;
+  }
+  [data-mobile-tools-trigger] {
+    transition: opacity 200ms ease, transform 200ms ease;
+  }
+  [data-mobile-tools-trigger][data-hidden='true'] {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.85);
+  }
+</style>

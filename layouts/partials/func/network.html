@@ -1,0 +1,12 @@
+{{- /*
+  network — returns the network contacts as a slice of maps (each with its `id`
+  merged in from the data filename), sorted by `order` ascending then name.
+  Shared by /network and its JSON-LD so ordering is identical.
+*/ -}}
+{{- $list := slice -}}
+{{- range $id, $c := site.Data.network -}}
+  {{- $list = $list | append (merge $c (dict "id" $id)) -}}
+{{- end -}}
+{{- $list = sort $list "name" -}}
+{{- $list = sort $list "order" -}}
+{{- return $list -}}

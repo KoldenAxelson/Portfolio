@@ -1,0 +1,16 @@
+{{ define "main" }}
+{{- $d := .Params -}}
+<article class="prose prose-lg max-w-none">
+  <header class="not-prose mb-8">
+    <h1 class="text-3xl font-medium sm:text-4xl">{{ .Title }}</h1>
+    <p class="mt-3 text-lg text-muted">{{ $d.description }}</p>
+    <p class="mt-3 flex flex-wrap items-center gap-x-3 font-mono text-sm text-muted">
+      {{ partial "formatted-date.html" (dict "date" .Date) }}
+      {{- with $d.updatedDate }}<span>· updated {{ partial "formatted-date.html" (dict "date" .) }}</span>{{ end }}
+      {{- with $d.tags }}<span>· {{ delimit . ", " }}</span>{{ end }}
+    </p>
+  </header>
+
+  {{ .Content }}
+</article>
+{{ end }}

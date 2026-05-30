@@ -1,0 +1,45 @@
+{{- /* Person supplement for /cv — same @id as the canonical Person so the
+       records merge. Adds hasOccupation / alumniOf / worksFor / knowsAbout /
+       hasCredential. Port of cv.astro's schema. */ -}}
+{{- $site := site.Data.site -}}
+{{- $cv := site.Data.cv -}}
+{{- $personId := printf "%s#person" (partial "func/site-url.html" .) -}}
+
+{{- $occ := slice -}}
+{{- range $cv.experience -}}
+  {{- $o := dict "@type" "Occupation" "name" .role "occupationLocation" (dict "@type" "Place" "name" .location) "hiringOrganization" (dict "@type" "Organization" "name" .employer) "description" .summary "skills" (delimit .stack ", ") "responsibilities" .highlights -}}
+  {{- with .startDate }}{{ $o = merge $o (dict "startDate" .) }}{{ end -}}
+  {{- with .endDate }}{{ $o = merge $o (dict "endDate" .) }}{{ end -}}
+  {{- $occ = $occ | append $o -}}
+{{- end -}}
+
+{{- $alumni := slice -}}
+{{- range $cv.education -}}
+  {{- $e := dict "@type" "EducationalOrganization" "name" .school -}}
+  {{- if .notes }}{{ $e = merge $e (dict "description" (printf "%s (%s). %s" .degree .year .notes)) }}{{ end -}}
+  {{- $alumni = $alumni | append $e -}}
+{{- end -}}
+
+{{- $worksFor := slice -}}
+{{- range $cv.experience -}}{{- if eq .end "present" }}{{ $worksFor = $worksFor | append (dict "@type" "Organization" "name" .employer) }}{{ end -}}{{- end -}}
+
+{{- $knows := slice -}}
+{{- range $cv.skills }}{{ range .items }}{{ $knows = $knows | append . }}{{ end }}{{ end -}}
+
+{{- $person := dict
+  "@context" "https://schema.org"
+  "@type" "Person"
+  "@id" $personId
+  "hasOccupation" $occ
+  "alumniOf" $alumni
+  "worksFor" $worksFor
+  "knowsAbout" $knows
+-}}
+
+{{- $certs := partial "func/certs.html" . -}}
+{{- with $certs -}}
+  {{- $creds := slice -}}
+  {{- range . }}{{ $creds = $creds | append (partial "func/credential-schema.html" .) }}{{ end -}}
+  {{- $person = merge $person (dict "hasCredential" $creds) -}}
+{{- end -}}
+<script type="application/ld+json">{{ $person | jsonify | safeJS }}</script>
