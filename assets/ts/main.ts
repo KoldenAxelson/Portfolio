@@ -7,6 +7,21 @@ import { initScrollTop } from './scrolltop';
 import { initSidebar } from './sidebar';
 import { initProjectFilter } from './project-filter';
 
+// Cross-page fade on boosted navigation. Wraps each hx-boost body swap in the
+// browser's native View Transitions API (document.startViewTransition), which
+// crossfades old → new. Pure progressive enhancement: browsers without the API
+// just get the existing instant swap, and the CSS honors prefers-reduced-motion.
+// Must be set before htmx processes the document. `htmx` is the global from the
+// self-hosted vendor script loaded earlier in <head>.
+declare global {
+  interface Window {
+    htmx?: { config: { globalViewTransitions?: boolean } };
+  }
+}
+if (window.htmx) {
+  window.htmx.config.globalViewTransitions = true;
+}
+
 function initPage(): void {
   initNav();
   initScrollTop();
