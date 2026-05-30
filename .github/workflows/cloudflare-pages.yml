@@ -24,6 +24,9 @@ jobs:
       - name: Install toolchain (pinned Hugo + Tailwind binaries)
         run: make setup
 
+      - name: Type-check (tsgo)
+        run: make typecheck
+
       - name: Build CSS
         run: ./bin/tailwindcss -i assets/css/main.css -o assets/css/app.css --minify
 
