@@ -9,7 +9,7 @@ year: '2024–present'
 status: 'shipped'
 links:
   live: 'https://visorplate-us.com/'
-cover: '/covers/visorplate.avif'
+cover: '/covers/visorplate.webp'
 featured: true
 thoughts:
   - "Don't overcomplicate things with Laravel when Cloudflare Pages does it just as well for free."
