@@ -1,12 +1,18 @@
-# Cloudflare Pages / Netlify cache headers.
-# GitHub Pages ignores this file — its own CDN handles caching.
+# Cloudflare Pages cache headers.
 #
-# Astro emits content-hashed filenames into /_astro/, so those assets are
-# safe to mark `immutable, max-age=1y`. Fonts, textures, badges, and cover
-# images are committed once and never mutate. HTML stays short-cached so
-# content edits propagate quickly without a manual purge.
+# Hugo emits content-hashed filenames for the CSS/JS bundles into /css/, /ts/,
+# and /vendor/ (fingerprinted via `| fingerprint`), so they're safe to mark
+# `immutable, max-age=1y` — the hash changes whenever the content does. Fonts,
+# textures, badges, and cover images are committed once and never mutate. HTML
+# stays short-cached so content edits propagate quickly without a manual purge.
 
-/_astro/*
+/css/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/ts/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/vendor/*
   Cache-Control: public, max-age=31536000, immutable
 
 /fonts/*

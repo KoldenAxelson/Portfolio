@@ -20,9 +20,13 @@
 
     {{ partial "head/seo.html" . }}
 
-    {{/* CSS: single bundle built by the Tailwind standalone binary. */}}
-    {{ $css := resources.Get "css/app.css" | fingerprint }}
-    <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" />
+    {{/* CSS: single bundle built by the Tailwind standalone binary. Inlined
+         (~10KB gzipped) so it never becomes a render-blocking request — this
+         removes the round-trip that otherwise delays LCP on throttled mobile.
+         hx-boost swaps only <body>, so this <style> persists across in-session
+         navigation. */}}
+    {{ $css := resources.Get "css/app.css" | minify }}
+    <style>{{ $css.Content | safeCSS }}</style>
 
     {{/* htmx (self-hosted) + our interactivity bundle load from <head> so they
          persist across hx-boost body swaps. The TS bundle is one unified,
