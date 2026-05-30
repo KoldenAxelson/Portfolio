@@ -1,7 +1,8 @@
-// Colophon performance meters. The score rings and vital bars render empty;
-// this fills them (and counts the ring numbers up) the first time the section
-// scrolls into view. Idempotent so it survives hx-boost swaps, honors
-// prefers-reduced-motion, and no-ops on every page except /colophon.
+// Colophon performance meters. Each device panel (mobile / desktop) renders its
+// score rings and vital bars empty; this fills them — and counts the ring
+// numbers up — the first time a panel is shown, whether that's the initial
+// scroll-into-view or a toggle click. Idempotent so it survives hx-boost swaps,
+// honors prefers-reduced-motion, and no-ops on every page except /colophon.
 
 const NUM_DURATION_MS = 1100;
 
@@ -17,24 +18,29 @@ export function initPerfMeters(): void {
   const root = document.querySelector<HTMLElement>('[data-perf-meters]');
   if (!root) return;
 
-  const rings = Array.from(root.querySelectorAll<SVGCircleElement>('[data-ring-target]'));
-  const nums = Array.from(root.querySelectorAll<SVGTextElement>('[data-num-target]'));
-  const bars = Array.from(root.querySelectorAll<HTMLElement>('[data-bar-target]'));
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const panels = Array.from(root.querySelectorAll<HTMLElement>('[data-perf-panel]'));
+  const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-perf-toggle]'));
+  const suffix = root.querySelector<HTMLElement>('[data-perf-suffix]');
 
-  const fill = (): void => {
-    for (const ring of rings) {
+  // Animate a panel's meters once. Subsequent shows keep their final state, so
+  // toggling back and forth doesn't re-run the sweep.
+  const fillPanel = (panel: HTMLElement | null): void => {
+    if (!panel || panel.dataset.filled === 'true') return;
+    panel.dataset.filled = 'true';
+
+    panel.querySelectorAll<SVGCircleElement>('[data-ring-target]').forEach((ring) => {
       // Set via style (not attribute) so the CSS transition on .perf-ring runs.
       ring.style.strokeDasharray = `${ring.dataset.ringTarget} 100`;
-    }
-    for (const bar of bars) {
+    });
+    panel.querySelectorAll<HTMLElement>('[data-bar-target]').forEach((bar) => {
       bar.style.width = `${bar.dataset.barTarget}%`;
-    }
-    for (const num of nums) {
+    });
+    panel.querySelectorAll<SVGTextElement>('[data-num-target]').forEach((num) => {
       const target = Number(num.dataset.numTarget) || 0;
       if (reduceMotion) {
         num.textContent = String(target);
-        continue;
+        return;
       }
       const start = performance.now();
       const step = (now: number): void => {
@@ -44,12 +50,38 @@ export function initPerfMeters(): void {
         if (p < 1) requestAnimationFrame(step);
       };
       requestAnimationFrame(step);
-    }
+    });
   };
 
-  // No animation needed (or possible) — paint the final state immediately.
+  const visiblePanel = (): HTMLElement | null => panels.find((p) => !p.hidden) ?? null;
+
+  const showPanel = (id: string): void => {
+    for (const panel of panels) panel.hidden = panel.dataset.perfPanel !== id;
+    let label = '';
+    for (const btn of buttons) {
+      const active = btn.dataset.perfToggle === id;
+      btn.setAttribute('aria-pressed', String(active));
+      if (active) label = btn.dataset.perfLabel ?? '';
+    }
+    // Mirror the active source into the section heading ("Performance — Desktop").
+    if (suffix && label) suffix.textContent = `— ${label}`;
+    const shown = panels.find((p) => p.dataset.perfPanel === id) ?? null;
+    // The panel was display:none; let layout apply before animating from 0.
+    requestAnimationFrame(() => fillPanel(shown));
+  };
+
+  for (const btn of buttons) {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.perfToggle;
+      if (id) showPanel(id);
+    });
+  }
+
+  const start = (): void => fillPanel(visiblePanel());
+
+  // No animation needed (or possible) — paint the visible panel immediately.
   if (reduceMotion || !('IntersectionObserver' in window)) {
-    fill();
+    start();
     return;
   }
 
@@ -57,7 +89,7 @@ export function initPerfMeters(): void {
     (entries) => {
       for (const entry of entries) {
         if (entry.isIntersecting) {
-          fill();
+          start();
           pmObserver?.disconnect();
           pmObserver = null;
           return;
