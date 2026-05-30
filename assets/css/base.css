@@ -263,6 +263,18 @@ img {
   }
 }
 
+/* Mobile / desktop segmented toggle. */
+.perf-toggle {
+  color: rgb(var(--c-muted));
+}
+.perf-toggle[aria-pressed='true'] {
+  background: rgb(var(--c-fg));
+  color: rgb(var(--c-bg));
+}
+.perf-toggle[aria-pressed='false']:hover {
+  color: rgb(var(--c-fg));
+}
+
 /* Reference checkpoints on a vital's bar (web-average / poor thresholds),
    each with a hover/focus tooltip. */
 .perf-dot {
