@@ -42,8 +42,16 @@
     {{ block "head" . }}{{ end }}
   </head>
 
+  {{/* Noise textures: emit a compressed WebP via Hugo Pipes when the source
+       lives in assets/textures/; otherwise fall back to the static /textures
+       file so the build never breaks. */}}
+  {{- $noiseLight := partial "func/url.html" "/textures/noise.png" -}}
+  {{- $noiseDark := partial "func/url.html" "/textures/noise-dark.png" -}}
+  {{- with resources.Get "textures/noise.png" }}{{ $noiseLight = (.Process "webp q70").RelPermalink }}{{ end -}}
+  {{- with resources.Get "textures/noise-dark.png" }}{{ $noiseDark = (.Process "webp q70").RelPermalink }}{{ end -}}
+
   {{/* hx-boost upgrades internal links to AJAX body-swaps (SPA-like nav). */}}
-  <body class="leading-relaxed" hx-boost="true" style="--noise-bg-light: url('{{ partial "func/url.html" "/textures/noise.png" }}'); --noise-bg-dark: url('{{ partial "func/url.html" "/textures/noise-dark.png" }}')">
+  <body class="leading-relaxed" hx-boost="true" style="--noise-bg-light: url('{{ $noiseLight }}'); --noise-bg-dark: url('{{ $noiseDark }}')">
     <a href="#main" class="skip-link">Skip to content</a>
 
     {{ partial "topnav.html" . }}

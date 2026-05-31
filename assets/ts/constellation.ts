@@ -74,10 +74,11 @@ export function initConstellation(): void {
     vy: (Math.random() - 0.5) * 2 * DRIFT,
   });
 
-  const resize = (): void => {
-    const rect = canvas.getBoundingClientRect();
-    width = rect.width;
-    height = rect.height;
+  // Sized from the ResizeObserver's contentRect (already-computed layout) rather
+  // than getBoundingClientRect(), so we never force a synchronous reflow.
+  const applySize = (w: number, h: number): void => {
+    width = w;
+    height = h;
     if (width === 0 || height === 0) return;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     canvas.width = Math.round(width * dpr);
@@ -163,23 +164,23 @@ export function initConstellation(): void {
     },
     { threshold: 0 },
   );
-  const ro = new ResizeObserver(() => {
-    resize();
+  const ro = new ResizeObserver((entries) => {
+    const cr = entries[entries.length - 1].contentRect;
+    applySize(cr.width, cr.height);
     if (!running) draw();
   });
 
   const onVisibility = (): void => sync();
-  const onMqChange = (): void => {
-    resize();
-    sync();
-  };
+  // Size is driven by the ResizeObserver; mq changes only affect run state.
+  const onMqChange = (): void => sync();
   const onTheme = (): void => {
     readColors();
     if (!running) draw();
   };
 
   readColors();
-  resize();
+  // Note: no synchronous getBoundingClientRect here — the ResizeObserver fires
+  // right after observe() with the initial contentRect, post-layout.
   io.observe(canvas);
   ro.observe(canvas);
   document.addEventListener("visibilitychange", onVisibility);
