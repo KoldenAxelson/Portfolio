@@ -39,7 +39,9 @@
   <p class="pointer-events-none relative z-10 text-sm text-muted" itemprop="abstract">{{ $d.summary }}</p>
 
   {{- with $d.stack }}
-  <ul class="pointer-events-none relative z-10 clear-both mt-3 flex flex-wrap gap-1.5">
+  {{- /* pr reserves the bottom-right corner for the thought indicator overlaid
+         by callers, so the last tag row doesn't clip into it. */}}
+  <ul class="pointer-events-none relative z-10 clear-both mt-3 flex flex-wrap gap-1.5 pr-8">
     {{- range . }}
     <li class="rounded bg-border/70 px-1.5 py-0.5 font-mono text-xs text-fg/85">{{ . }}</li>
     {{- end }}
@@ -56,7 +58,7 @@
   {{- end -}}
   {{- $glyph := "" -}}
   {{- with .icon }}{{ $glyph = index $metricIcons . }}{{ end -}}
-  <p class="relative z-10 clear-both mt-3">
+  <p class="relative z-10 clear-both mt-3 pr-8">
     <a href="{{ .href }}" rel="noopener" class="group/metric -my-1 inline-flex items-center gap-1.5 py-1 font-mono text-sm text-accent no-underline" itemprop="codeRepository">
       {{- with $glyph }}
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="{{ .fill }}"{{ if eq .fill "none" }} stroke="currentColor" stroke-width="1.6"{{ end }} stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-4 w-4 shrink-0"><path {{ if eq .fill "currentColor" }}fill-rule="evenodd" clip-rule="evenodd" {{ end }}d="{{ .path }}" /></svg>
