@@ -42,7 +42,7 @@
   --c-bg: 250 250 247;       /* warm paper white */
   --c-fg: 24 24 27;          /* zinc-900 */
   --c-muted: 82 82 91;       /* zinc-600 — WCAG AA on warm-white (6.5:1) */
-  --c-accent: 154 52 18;     /* amber-800 — AA contrast against bg */
+  --c-accent: 3 119 55;      /* logo green #037737 — AA ~5.4:1 on warm-white bg */
   --c-border: 228 228 231;   /* zinc-200 */
 
   /* Glassmorphism 2.0 ("liquid glass") tokens. --glass-bg tints the frosted
