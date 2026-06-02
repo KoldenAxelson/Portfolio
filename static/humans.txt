@@ -8,17 +8,16 @@
 
 /* THANKS */
 
-  Astro          — astro.build
-  Vue            — vuejs.org
+  Hugo           — gohugo.io
   Tailwind CSS   — tailwindcss.com
-  MDX            — mdxjs.com
+  HTMX           — htmx.org
+  Alpine.js      — alpinejs.dev
   Heroicons      — heroicons.com
   Inter font     — rsms.me/inter
-  Neofolio       — github.com/KoldenAxelson/neofolio
 
 /* SITE */
 
   Last update:   2026-05-15
   Standards:     HTML5, CSS3, ES2022
-  Components:    Astro, Vue islands, MDX content collections
+  Components:    Hugo, HTMX hx-boost, Alpine islands, TypeScript — Node-free
   Built for:     Humans, screen readers, and AI scrapers — equally.

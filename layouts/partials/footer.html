@@ -1,15 +1,10 @@
 {{- /*
-  footer — copyright + stack disclosure + social row.
+  footer — copyright + colophon (info icon) + social row.
 */ -}}
 {{- $site := site.Data.site -}}
-{{- $stack := slice "Hugo" "Tailwind" "HTMX" -}}
 <footer class="mt-24 border-t border-border pb-12 pt-8 text-sm text-muted print:hidden">
   <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-    <p>
-      © {{ now.Year }}
-      {{ $site.author.name }}. <a href="{{ partial "func/url.html" "/colophon" }}">Colophon</a> — built with {{ delimit $stack ", " }}. Powered by
-      <a href="https://github.com/KoldenAxelson/neofolio" rel="noopener">Neofolio</a>.
-    </p>
-    {{ partial "social-icons.html" (dict "class" "") }}
+    <p>© {{ now.Year }} {{ $site.author.name }}.</p>
+    {{ partial "social-icons.html" (dict "class" "" "colophon" true) }}
   </div>
 </footer>

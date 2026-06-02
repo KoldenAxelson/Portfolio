@@ -3,7 +3,7 @@
 My personal portfolio: an AI-readable, Node-free static site built on the
 **OX Stack** (Hugo · Tailwind · Go · HTMX · Alpine · TypeScript). Structured for
 both human readers and the AI systems that increasingly summarize a developer to
-them. Forked from and powered by [Neofolio](https://github.com/KoldenAxelson/neofolio).
+them. Open source — fork it if it's useful to you.
 
 **Live → [wrightfunctions.com](https://wrightfunctions.com/)**
 
@@ -68,5 +68,4 @@ Requires repo secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
 
 ## License
 
-MIT — see [`LICENSE`](./LICENSE). Built on the MIT-licensed
-[Neofolio](https://github.com/KoldenAxelson/neofolio) template.
+MIT — see [`LICENSE`](./LICENSE).
