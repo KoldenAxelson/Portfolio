@@ -161,8 +161,8 @@ decisions:
     body: >-
       Hugo · Tailwind · Go · HTMX · Alpine · TypeScript — the "OX Stack." The
       individual tools are off-the-shelf; the Node-free composition is the part
-      that's mine. It's packaged as an open template, Neofolio, so anyone can
-      run the same setup.
+      that's mine. The whole site is open source, so anyone can run the same
+      setup.
 stack:
   - { name: 'Hugo', note: 'static site generator (Go)', link: 'https://gohugo.io' }
   - { name: 'Tailwind CSS', note: 'standalone CLI, no Node', link: 'https://tailwindcss.com' }

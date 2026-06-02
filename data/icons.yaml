@@ -1,6 +1,6 @@
 # ---------------------------------------------------------------------------
-# Icon set — inner SVG content (paths) keyed by name, ported verbatim from
-# Neofolio's TopNav `icons` map. Rendered into a 24×24 <svg> via safeHTML.
+# Icon set — inner SVG content (paths) keyed by name.
+# Rendered into a 24×24 <svg> via safeHTML.
 # Nav icons are Heroicons 2.0 outline; pdf/docx are custom document outlines
 # with the format label baked in.
 # ---------------------------------------------------------------------------
