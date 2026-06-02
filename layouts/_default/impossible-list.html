@@ -1,18 +1,13 @@
+{{ define "banner" }}
+{{- $sub := .Params.lead | default "" -}}
+{{- if .Params.wip }}{{ $sub = printf "%s · Work in progress." $sub | strings.TrimSpace }}{{ end -}}
+{{ partial "page-banner.html" (dict "title" "Impossible List" "subtitle" $sub) }}
+{{ end }}
+
 {{ define "main" }}
-<header class="mb-10">
-  <div class="flex flex-wrap items-center gap-3">
-    <h1 class="text-3xl font-medium tracking-tight text-fg sm:text-4xl">Impossible List</h1>
-    {{- if .Params.wip }}
-    <span class="rounded-full border border-border/70 px-2 py-0.5 font-mono text-[0.65rem] uppercase tracking-widest text-muted">Work in progress</span>
-    {{- end }}
-  </div>
-  {{- with .Params.lead }}
-  <p class="mt-4 max-w-prose text-muted">{{ . }}</p>
-  {{- end }}
-  {{- with .Params.updated }}
-  <p class="mt-4 font-mono text-xs text-muted">Last updated {{ partial "formatted-date.html" (dict "date" .) }}.</p>
-  {{- end }}
-</header>
+{{- with .Params.updated }}
+<p class="mb-10 font-mono text-xs text-muted">Last updated {{ partial "formatted-date.html" (dict "date" .) }}.</p>
+{{- end }}
 
 <div class="space-y-8">
   {{- range .Params.groups }}

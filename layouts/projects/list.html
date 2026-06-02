@@ -1,3 +1,9 @@
+{{ define "banner" }}
+{{ partial "page-banner.html" (dict
+  "title" "Projects"
+  "subtitle" (.Description | default "Things I've built — featured case studies and the wider catalogue.")) }}
+{{ end }}
+
 {{ define "main" }}
 {{- $projects := where .Pages "Params.draft" "!=" true -}}
 {{- $projects = where $projects "Params.tier" "!=" 3 -}}
@@ -8,9 +14,6 @@
 {{- $allTags := sort (uniq $tags) -}}
 {{- $archive := sort site.Data.archive "year" "desc" -}}
 
-<header class="mb-8">
-  <h1 class="text-3xl font-medium">Projects</h1>
-</header>
 
 {{- with $allTags }}
 <section class="mb-8" aria-label="Project filters">

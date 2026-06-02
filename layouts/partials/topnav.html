@@ -76,8 +76,11 @@
         <details data-mobile-nav>
           <summary aria-label="Open menu" class="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-md text-muted transition-colors hover:bg-border/40 hover:!text-accent focus-visible:bg-border/40 focus-visible:!text-accent">
             <span class="sr-only">Menu</span>
-            <svg class="icon-bars h-7 w-7" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"></path></svg>
-            <svg class="icon-close h-7 w-7" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+            <svg class="ham ham8 h-8 w-8" viewBox="24 24 52 52" aria-hidden="true">
+              <path class="line top" d="m 30,33 h 40 c 3.722839,0 7.5,3.126468 7.5,8.578427 0,5.451959 -2.727029,8.421573 -7.5,8.421573 h -20" />
+              <path class="line middle" d="m 30,50 h 40" />
+              <path class="line bottom" d="m 70,67 h -40 c 0,0 -7.5,-0.802118 -7.5,-8.365747 0,-7.563629 7.5,-8.634253 7.5,-8.634253 h 20" />
+            </svg>
           </summary>
         </details>
       </div>
@@ -136,8 +139,29 @@
 <style>
   [data-mobile-nav] > summary::-webkit-details-marker { display: none; }
   [data-mobile-nav] > summary::marker { display: none; }
-  [data-mobile-nav][open] .icon-bars { display: none; }
-  [data-mobile-nav]:not([open]) .icon-close { display: none; }
+  /* Animated hamburger — stroke-dasharray morph. Themed to currentColor
+     so it inherits the nav's muted→accent color and adapts to light/dark.
+     `.active` is driven by the <details> open state. */
+  .ham { -webkit-tap-highlight-color: transparent; user-select: none; }
+  .ham8 { transition: transform 400ms; }
+  .ham .line {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 4;
+    stroke-linecap: round;
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: stroke-dasharray 400ms, stroke-dashoffset 400ms;
+  }
+  .ham8 .top { stroke-dasharray: 40 160; }
+  .ham8 .middle { stroke-dasharray: 40 142; transform-origin: 50%; transition: transform 400ms; }
+  .ham8 .bottom { stroke-dasharray: 40 85; transform-origin: 50%; transition: transform 400ms, stroke-dashoffset 400ms; }
+  /* The path morph alone lands on a "+", so rotate the whole icon 45° on open
+     to finish it into an X. */
+  [data-mobile-nav][open] .ham8 { transform: rotate(45deg); }
+  [data-mobile-nav][open] .ham8 .top { stroke-dashoffset: -64px; }
+  [data-mobile-nav][open] .ham8 .middle { transform: rotate(90deg); }
+  [data-mobile-nav][open] .ham8 .bottom { stroke-dashoffset: -64px; }
   [data-mobile-panel].is-open { grid-template-rows: 1fr; }
   /* While collapsed the panel is zero-height; strip its entire glass treatment
      (border, shadow, fill, blur) so nothing paints as a vestigial 1px line below

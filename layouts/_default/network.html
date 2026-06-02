@@ -1,15 +1,12 @@
+{{ define "banner" }}
+{{ partial "page-banner.html" (dict
+  "title" "Network"
+  "subtitle" "People I'd vouch for — and would happily make an introduction to. Pick a name to see how we know each other, then compose an intro request.") }}
+{{ end }}
+
 {{ define "main" }}
 {{- $author := site.Data.site.author -}}
 {{- $contacts := partial "func/network.html" . -}}
-
-<header class="mb-10">
-  <h1 class="text-3xl font-medium">Network</h1>
-  <p class="mt-3 max-w-prose text-muted">
-    People I'd vouch for — and would happily make an introduction to. Pick a name to see how
-    we know each other, then compose an intro request. (Want to reach <em>me</em> directly?
-    <a href="mailto:{{ $author.email }}">Email me</a>.)
-  </p>
-</header>
 
 {{/* Data for the Alpine island. */}}
 {{- $owner := dict "name" $author.name "title" $author.role "email" $author.email "bio" (trim (htmlUnescape ($author.longBio | markdownify | plainify)) " \n") -}}
