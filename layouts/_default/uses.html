@@ -1,16 +1,15 @@
+{{ define "banner" }}
+{{ partial "page-banner.html" (dict
+  "title" "Uses"
+  "subtitle" `The things on my machine right now, and what I'd say about them if you asked. Inspired by <a href="https://uses.tech">uses.tech</a>.`) }}
+{{ end }}
+
 {{ define "main" }}
-<header class="mb-12">
-  <h1 class="text-3xl font-medium">Uses</h1>
-  <p class="mt-3 max-w-prose text-muted">
-    The things on my machine right now, and what I'd say about them if you asked.
-    Inspired by <a href="https://uses.tech">uses.tech</a>.
-  </p>
-  {{- with .Params.updated }}
-  <p class="mt-3 font-mono text-xs text-muted">
-    Last updated {{ partial "formatted-date.html" (dict "date" .) }}.
-  </p>
-  {{- end }}
-</header>
+{{- with .Params.updated }}
+<p class="mb-10 font-mono text-xs text-muted">
+  Last updated {{ partial "formatted-date.html" (dict "date" .) }}.
+</p>
+{{- end }}
 
 <div class="space-y-6">
   {{- range .Params.stack }}

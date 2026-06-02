@@ -1,3 +1,10 @@
+{{ define "banner" }}
+{{ partial "page-banner.html" (dict
+  "title" "Certifications"
+  "subtitle" "Credentials I've earned and keep current — the active ones up top, with lapsed ones kept on the record."
+  "printHidden" true) }}
+{{ end }}
+
 {{ define "main" }}
 {{- $certs := partial "func/certs.html" . -}}
 {{- $active := slice -}}
@@ -5,10 +12,6 @@
 {{- range $certs }}
   {{- if and .expirationDate (not ((time.AsTime .expirationDate).After now)) }}{{ $expired = $expired | append . }}{{ else }}{{ $active = $active | append . }}{{ end }}
 {{- end -}}
-
-<header class="mb-8 print:hidden">
-  <h1 class="text-3xl font-medium">Certifications</h1>
-</header>
 
 {{- with $active }}
 <section id="active" class="mb-12 scroll-mt-24" aria-labelledby="active-heading">

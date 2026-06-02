@@ -1,9 +1,12 @@
+{{ define "banner" }}
+{{ partial "page-banner.html" (dict
+  "title" "Articles"
+  "subtitle" (.Description | default "Writing on backend systems, developer tooling, and the occasional opinion.")) }}
+{{ end }}
+
 {{ define "main" }}
 {{- $posts := where .Pages "Params.draft" "!=" true -}}
 {{- $posts = sort $posts "Date" "desc" -}}
-<header class="mb-8">
-  <h1 class="text-3xl font-medium">Articles</h1>
-</header>
 
 <ul class="divide-y divide-border">
   {{- range $posts }}

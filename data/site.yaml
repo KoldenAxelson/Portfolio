@@ -27,13 +27,18 @@ author:
   phone: ""
   # Short bio for the hero section. One or two sentences.
   bio: "I make specialized tools for people with problems, then I scale that solution to a magnitude of users."
-  # Longer bio for /cv and JSON-LD.
+  # Longer bio for the homepage hero, JSON-LD, and llms.txt.
   longBio: |
-    I'm a highly skilled software engineer turned professional problem solver, with over fifteen years across various fields. The cross-domain pollination going on in my head has led me to solve some outlandish problems, all the way from concept to business. I'm working on things I know will help my friends — those problems aren't unique. I work best for the person in front of me. When I earn that appreciation, I replay that smile in my head whenever I get a Stripe notification of a new customer.
+    Welcome to my little corner of the internet! I'm **your local tech bro**. Growing up, I was always the one people came to with their computer problems, and eventually Uncle Sam asked the same. I work best for the person right in front of me: I solve their niche problem, scale that solution up for the public, and replay that smile whenever a *Stripe notification* lands.
 
-    Currently I'm running VisorPlate, but it doesn't take my around-the-clock attention since I've automated most of it to run without my hand in the pot. That leaves me time for other projects. I took a side-tangent and built this AI-SEO portfolio — then turned the engine into a template — and I'm seeing where that goes. Right now I'm in submission with Google for Widda, which will take 4–6 weeks. Cost of doing business.
-
-    If you're interested in what I'm doing or using, check out the [/now](/now) and [/uses](/uses) pages. That's either accurate, up-to-date info, or I'm addicted to Sudoku again.
+    Whether you're here to recruit, scope me out, or just see what I'm up to, this site has it all! I'm either working hard or hopelessly addicted to *Sudoku*.
+  # CV summary — a concise, professional bio for the /cv Summary section.
+  cvBio: >
+    Lead software engineer with over fifteen years across web, automation, and
+    product. A cross-domain generalist, I turn ambiguous problems into
+    specialized tools and take them from concept to shipped, profitable product,
+    designing, engineering, and scaling each solution myself. I'm open to roles
+    where that range and end-to-end ownership matter.
   # Public résumé downloads (rendered on /cv). Set either to "" to hide.
   resume:
     pdf: "/resume.pdf"

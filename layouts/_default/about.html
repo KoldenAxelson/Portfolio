@@ -1,16 +1,15 @@
+{{ define "banner" }}
+{{ partial "page-banner.html" (dict
+  "title" "About"
+  "subtitle" (.Params.lead | default "")) }}
+{{ end }}
+
 {{ define "main" }}
-{{- $site := site.Data.site -}}
-<header class="mb-12">
-  <h1 class="text-3xl font-medium tracking-tight text-fg sm:text-4xl">About</h1>
-  {{- with .Params.lead }}
-  <p class="mt-4 max-w-prose text-lg leading-relaxed text-muted">{{ . }}</p>
-  {{- end }}
-  {{- with .Params.updated }}
-  <p class="mt-4 font-mono text-xs text-muted">
-    Last updated {{ partial "formatted-date.html" (dict "date" .) }}.
-  </p>
-  {{- end }}
-</header>
+{{- with .Params.updated }}
+<p class="mb-10 font-mono text-xs text-muted">
+  Last updated {{ partial "formatted-date.html" (dict "date" .) }}.
+</p>
+{{- end }}
 
 {{- with .Content }}
 <section class="max-w-prose space-y-4 text-base leading-relaxed text-muted [&_a]:text-fg [&_a]:underline [&_a]:decoration-border hover:[&_a]:!text-accent">
