@@ -80,7 +80,9 @@ document.addEventListener('alpine:init', () => {
     return {
       owner,
       contacts,
-      selectedId: null as string | null,
+      // Open on the first connection — the page is about other people now; the
+      // owner is only the intro target, never a selectable "About me" profile.
+      selectedId: (contacts[0]?.id ?? null) as string | null,
       view: 'list' as 'list' | 'profile' | 'compose',
       fromName: '',
       fromEmail: '',

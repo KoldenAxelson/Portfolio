@@ -74,7 +74,8 @@
     </div>
     {{- end }}
 
-    {{/* Outside both layout branches so it's fixed to the viewport. */}}
+    {{/* Outside both layout branches so they're fixed to the viewport. */}}
+    {{ partial "print-button.html" . }}
     {{ partial "scroll-to-top.html" . }}
   </body>
 </html>
