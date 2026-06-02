@@ -22,7 +22,9 @@ author:
   role: "Lead Software Engineer"
   location: "Paso Robles, CA"
   email: "KonradWright@Protonmail.com"
-  phone: "+1 (805) 423-7338"
+  # Intentionally blank — phone is not listed publicly. (Templates guard on
+  # `with`, so an empty string renders nothing on the CV or anywhere else.)
+  phone: ""
   # Short bio for the hero section. One or two sentences.
   bio: "I make specialized tools for people with problems, then I scale that solution to a magnitude of users."
   # Longer bio for /cv and JSON-LD.
@@ -48,17 +50,17 @@ links:
   rss: "/rss.xml"
 
 # Top-nav items. Order matters. Each `icon` keys into data/icons.yaml.
+# Deliberately small: Projects (the work), About (the person + Now/Uses/Impossible
+# List), Contact, CV. Articles & Certs are surfaced via the homepage section links;
+# Now/Uses live under /about; the colophon lives in the footer.
 nav:
   - { label: "Projects", href: "/projects", icon: "folder" }
-  - { label: "Articles", href: "/articles", icon: "newspaper" }
-  - { label: "Certs", href: "/certificates", icon: "trophy" }
-  # boost:false → full page load (not an hx-boost swap), so /network's <head>
-  # loads its Alpine island runtime. See layouts/_default/network.html.
-  - { label: "Network", href: "/network", icon: "user-group", boost: false }
-  - { label: "Uses", href: "/uses", icon: "desktop" }
-  - { label: "Now", href: "/now", icon: "fire" }
+  - { label: "About", href: "/about", icon: "user" }
+  # "Email" opens the visitor's mail client. `email: true` is resolved to
+  # mailto:<author.email> in topnav.html, keeping the address DRY (set above).
+  # boost:false so htmx never tries to AJAX-swap the mailto link.
+  - { label: "Email", email: true, icon: "envelope", boost: false }
   - { label: "CV", href: "/cv", icon: "briefcase" }
-  - { label: "Info", href: "/colophon", icon: "information-circle" }
 
 # Locale for <html lang> and date formatting. BCP-47 tag.
 locale: "en-US"

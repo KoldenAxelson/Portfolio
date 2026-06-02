@@ -1,0 +1,16 @@
+{{- /*
+  subnav-items — given a nav item (dict from data/site.yaml `nav`), return its
+  secondary items as a slice. Email → contact channels (socials); CV → résumé
+  downloads. Returns an empty slice for items without a secondary set. Shared by
+  the desktop hover bar (subnav-bar.html) and the mobile drill-in panel so both
+  stay in sync. Each item: { label, href } + EITHER `path` (brand glyph) OR
+  `icon` (icons.yaml key); optional `download`, `rel`.
+*/ -}}
+{{- $item := . -}}
+{{- $sub := slice -}}
+{{- if eq $item.email true }}{{ $sub = partial "func/contact-channels.html" $item }}{{ end -}}
+{{- if eq $item.href "/cv" -}}
+  {{- with site.Data.site.author.resume.pdf }}{{ $sub = $sub | append (dict "label" "PDF" "href" . "icon" "pdf" "download" true) }}{{ end -}}
+  {{- with site.Data.site.author.resume.docx }}{{ $sub = $sub | append (dict "label" "DOCX" "href" . "icon" "docx" "download" true) }}{{ end -}}
+{{- end -}}
+{{- return $sub -}}

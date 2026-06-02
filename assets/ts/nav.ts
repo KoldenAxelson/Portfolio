@@ -73,6 +73,27 @@ function wireNavElements(): void {
     document.querySelectorAll<HTMLButtonElement>('[data-bio-indicator]'),
   );
 
+  // Mobile nav drill-in (Email / CV page-over).
+  const navStack = document.querySelector<HTMLElement>('[data-mobile-nav-stack]');
+  const drillButtons = navStack
+    ? Array.from(navStack.querySelectorAll<HTMLButtonElement>('[data-mobile-drill]'))
+    : [];
+  const backButtons = navStack
+    ? Array.from(navStack.querySelectorAll<HTMLButtonElement>('[data-mobile-drill-back]'))
+    : [];
+  const subpanels = navStack
+    ? Array.from(navStack.querySelectorAll<HTMLElement>('[data-mobile-subpanel]'))
+    : [];
+
+  const resetDrill = (): void => {
+    if (!navStack) return;
+    delete navStack.dataset.drilled;
+    subpanels.forEach((p) => {
+      p.dataset.active = 'false';
+      p.setAttribute('aria-hidden', 'true');
+    });
+  };
+
   const syncToolsTriggerVisibility = (): void => {
     if (!toolsTrigger || !mobilePanel) return;
     const toolsActive = mobileNav.open && mobilePanel.dataset.mode === 'tools';
@@ -86,6 +107,7 @@ function wireNavElements(): void {
       bioIndicators.forEach((i) => i.setAttribute('data-active', 'false'));
       bioTypingToken += 1;
       if (bioTyper) bioTyper.textContent = '';
+      resetDrill();
     }
   };
   mobileNav.addEventListener('toggle', syncPanel);
@@ -94,8 +116,33 @@ function wireNavElements(): void {
   if (summary) {
     summary.addEventListener('click', () => {
       if (!mobileNav.open && mobilePanel) mobilePanel.dataset.mode = 'nav';
+      // Always reopen on the main list, never a stale drilled sub-panel.
+      resetDrill();
     });
   }
+
+  // Drill into a sub-panel (Email / CV) and back out.
+  drillButtons.forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!navStack) return;
+      const key = btn.dataset.mobileDrill;
+      subpanels.forEach((p) => {
+        const active = p.dataset.mobileSubpanel === key;
+        p.dataset.active = String(active);
+        p.setAttribute('aria-hidden', String(!active));
+      });
+      navStack.dataset.drilled = '1';
+    });
+  });
+  backButtons.forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      resetDrill();
+    });
+  });
 
   if (toolsTrigger && mobilePanel) {
     toolsTrigger.addEventListener('click', (e) => {

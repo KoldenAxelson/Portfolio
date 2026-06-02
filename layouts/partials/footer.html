@@ -7,7 +7,7 @@
   <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
     <p>
       © {{ now.Year }}
-      {{ $site.author.name }}. <a href="{{ partial "func/url.html" "/colophon" }}">Built with {{ delimit $stack ", " }}</a>. Powered by
+      {{ $site.author.name }}. <a href="{{ partial "func/url.html" "/colophon" }}">Colophon</a> — built with {{ delimit $stack ", " }}. Powered by
       <a href="https://github.com/KoldenAxelson/neofolio" rel="noopener">Neofolio</a>.
     </p>
     {{ partial "social-icons.html" (dict "class" "") }}

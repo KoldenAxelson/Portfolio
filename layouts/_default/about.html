@@ -1,0 +1,38 @@
+{{ define "main" }}
+{{- $site := site.Data.site -}}
+<header class="mb-12">
+  <h1 class="text-3xl font-medium tracking-tight text-fg sm:text-4xl">About</h1>
+  {{- with .Params.lead }}
+  <p class="mt-4 max-w-prose text-lg leading-relaxed text-muted">{{ . }}</p>
+  {{- end }}
+  {{- with .Params.updated }}
+  <p class="mt-4 font-mono text-xs text-muted">
+    Last updated {{ partial "formatted-date.html" (dict "date" .) }}.
+  </p>
+  {{- end }}
+</header>
+
+{{- with .Content }}
+<section class="max-w-prose space-y-4 text-base leading-relaxed text-muted [&_a]:text-fg [&_a]:underline [&_a]:decoration-border hover:[&_a]:!text-accent">
+  {{ . }}
+</section>
+{{- end }}
+
+{{- with .Params.elsewhere }}
+<section class="mt-16 border-t border-border/60 pt-10" aria-labelledby="elsewhere-heading">
+  <h2 id="elsewhere-heading" class="font-mono text-xs uppercase tracking-widest text-fg">Elsewhere on the site</h2>
+  <div class="mt-6 grid gap-3 sm:grid-cols-2">
+    {{- range . }}
+    <a href="{{ partial "func/url.html" .href }}"{{ if eq .boost false }} hx-boost="false"{{ end }} class="group block rounded-xl border border-border/70 p-5 no-underline transition-colors hover:border-accent/50 hover:bg-border/20">
+      <span class="flex items-center gap-2 text-fg">
+        {{ partial "func/svg-icon.html" (dict "name" .icon "class" "h-5 w-5 shrink-0 text-muted transition-colors group-hover:!text-accent") }}
+        <span class="font-medium group-hover:!text-accent">{{ .label }}</span>
+        <span aria-hidden="true" class="ml-auto inline-block text-muted transition-transform duration-200 ease-out group-hover:translate-x-0.5 group-hover:!text-accent">&rarr;</span>
+      </span>
+      {{- with .blurb }}<span class="mt-2 block text-sm leading-snug text-muted">{{ . }}</span>{{ end }}
+    </a>
+    {{- end }}
+  </div>
+</section>
+{{- end }}
+{{ end }}

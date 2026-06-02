@@ -1,0 +1,61 @@
+{{ define "main" }}
+{{- $a := site.Data.site.author -}}
+{{- $tel := replaceRE "[^0-9+]" "" $a.phone -}}
+<header class="mb-10">
+  <h1 class="text-3xl font-medium tracking-tight text-fg sm:text-4xl">Contact</h1>
+  <p class="mt-3 max-w-prose text-muted">
+    The fastest ways to reach me directly. I read everything that lands in my inbox —
+    a recruiter, an old colleague, or someone who just wants to say hello are all welcome.
+  </p>
+</header>
+
+<section aria-label="Direct contact" class="space-y-1">
+  {{- with $a.email }}
+  <a href="mailto:{{ . }}" class="group flex items-center gap-4 rounded-lg border border-transparent px-3 py-3 no-underline transition-colors hover:border-border/70 hover:bg-border/20">
+    {{ partial "func/svg-icon.html" (dict "name" "envelope" "class" "h-5 w-5 shrink-0 text-muted transition-colors group-hover:!text-accent") }}
+    <span class="min-w-0">
+      <span class="block font-mono text-xs uppercase tracking-widest text-muted">Email</span>
+      <span class="block truncate text-fg group-hover:!text-accent">{{ . }}</span>
+    </span>
+  </a>
+  {{- end }}
+  {{- with $a.phone }}
+  <a href="tel:{{ $tel }}" class="group flex items-center gap-4 rounded-lg border border-transparent px-3 py-3 no-underline transition-colors hover:border-border/70 hover:bg-border/20">
+    {{ partial "func/svg-icon.html" (dict "name" "device-phone-mobile" "class" "h-5 w-5 shrink-0 text-muted transition-colors group-hover:!text-accent") }}
+    <span class="min-w-0">
+      <span class="block font-mono text-xs uppercase tracking-widest text-muted">Phone</span>
+      <span class="block text-fg group-hover:!text-accent">{{ . }}</span>
+    </span>
+  </a>
+  {{- end }}
+  {{- with $a.location }}
+  <div class="flex items-center gap-4 px-3 py-3">
+    {{ partial "func/svg-icon.html" (dict "name" "map-pin" "class" "h-5 w-5 shrink-0 text-muted") }}
+    <span class="min-w-0">
+      <span class="block font-mono text-xs uppercase tracking-widest text-muted">Based in</span>
+      <span class="block text-fg">{{ . }}</span>
+    </span>
+  </div>
+  {{- end }}
+</section>
+
+<div class="mt-8 flex flex-wrap items-center gap-4">
+  <a href="mailto:{{ $a.email }}?subject=Hi%20from%20your%20portfolio" class="group/cta inline-flex items-center rounded-lg border border-accent bg-accent/10 px-4 py-2 text-sm font-medium text-fg no-underline transition hover:bg-accent hover:!text-bg">
+    Email me<span aria-hidden="true" class="ml-1 inline-block transition-transform duration-200 ease-out motion-reduce:transition-none group-hover/cta:translate-x-0.5">&rarr;</span>
+  </a>
+  {{ partial "social-icons.html" (dict "class" "") }}
+</div>
+
+<section class="mt-16 border-t border-border/60 pt-10" aria-labelledby="network-drilldown-heading">
+  <h2 id="network-drilldown-heading" class="font-mono text-xs uppercase tracking-widest text-fg">Looking for an introduction?</h2>
+  {{/* hx-boost=false forces a full page load so /network loads its Alpine runtime. */}}
+  <a href="{{ partial "func/url.html" "/network" }}" hx-boost="false" class="group mt-4 block rounded-xl border border-border/70 p-5 no-underline transition-colors hover:border-accent/50 hover:bg-border/20">
+    <span class="flex items-center gap-2 text-fg">
+      {{ partial "func/svg-icon.html" (dict "name" "user-group" "class" "h-5 w-5 shrink-0 text-muted transition-colors group-hover:!text-accent") }}
+      <span class="font-medium group-hover:!text-accent">My network</span>
+      <span aria-hidden="true" class="ml-auto inline-block text-muted transition-transform duration-200 ease-out group-hover:translate-x-0.5 group-hover:!text-accent">&rarr;</span>
+    </span>
+    <span class="mt-2 block text-sm leading-snug text-muted">People I'd vouch for. Pick a name and I'll pass along an introduction.</span>
+  </a>
+</section>
+{{ end }}

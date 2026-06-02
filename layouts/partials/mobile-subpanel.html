@@ -1,0 +1,48 @@
+{{- /*
+  mobile-subpanel — one drill-in slide for the mobile nav island. Tapping a nav
+  item that has secondary options pages this over the main list (slide wired in
+  ts/nav.ts; transforms in topnav.html's <style>). Receives { item, cur }.
+
+  Contents = a primary action + the item's secondary items:
+    Email → "Email me" (mailto), then LinkedIn / GitHub
+    CV     → "View CV", then PDF / DOCX   (printing is the floating print button)
+*/ -}}
+{{- $item := .item -}}
+{{- $key := $item.label | urlize -}}
+{{- $sub := partial "func/subnav-items.html" $item -}}
+{{- $primary := dict -}}
+{{- if eq $item.email true -}}
+  {{- $primary = dict "label" "Email me" "icon" "envelope" "href" (printf "mailto:%s" site.Data.site.author.email) -}}
+{{- else if eq $item.href "/cv" -}}
+  {{- $primary = dict "label" "View CV" "icon" "briefcase" "href" "/cv" -}}
+{{- end -}}
+{{- $items := slice -}}
+{{- with $primary }}{{ $items = $items | append . }}{{ end -}}
+{{- range $sub }}{{ $items = $items | append . }}{{ end -}}
+<div data-mobile-subpanel="{{ $key }}" data-active="false" aria-hidden="true" role="group" aria-label="{{ $item.label }} options">
+  <button type="button" data-mobile-drill-back class="mb-1 flex items-center gap-2 rounded-md px-3 py-2 font-mono text-xs uppercase tracking-widest text-muted transition-colors hover:bg-border/40 hover:!text-accent">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-4 w-4"><path d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
+    Back
+  </button>
+  <ul class="flex flex-col gap-1">
+    {{- range $items }}
+    <li>
+      {{- if eq .action "print" }}
+      <button type="button" onclick="window.print()" class="group/ms flex w-full items-center gap-4 rounded-md border-0 bg-transparent px-3 py-3 text-left text-lg text-fg transition-colors hover:bg-border/40 hover:!text-accent">
+        {{ partial "func/svg-icon.html" (dict "name" .icon "class" "h-6 w-6 shrink-0") }}
+        <span>{{ .label }}</span>
+      </button>
+      {{- else }}
+      <a href="{{ partial "func/url.html" .href }}"{{ with .download }} download hx-boost="false"{{ end }}{{ with .rel }} rel="{{ . }}"{{ end }} class="group/ms flex items-center gap-4 rounded-md px-3 py-3 text-lg !text-fg no-underline transition-colors hover:bg-border/40 hover:!text-accent">
+        {{- if .path }}
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true" class="h-6 w-6 shrink-0"><path d="{{ .path }}" /></svg>
+        {{- else }}
+        {{ partial "func/svg-icon.html" (dict "name" .icon "class" "h-6 w-6 shrink-0") }}
+        {{- end }}
+        <span>{{ .label }}</span>
+      </a>
+      {{- end }}
+    </li>
+    {{- end }}
+  </ul>
+</div>

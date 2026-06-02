@@ -6,7 +6,8 @@
   <h1 class="text-3xl font-medium">Network</h1>
   <p class="mt-3 max-w-prose text-muted">
     People I'd vouch for — and would happily make an introduction to. Pick a name to see how
-    we know each other, then compose an intro request.
+    we know each other, then compose an intro request. (Want to reach <em>me</em> directly?
+    <a href="mailto:{{ $author.email }}">Email me</a>.)
   </p>
 </header>
 
@@ -26,13 +27,6 @@
       <h2 class="font-mono text-xs uppercase tracking-widest text-fg">My network</h2>
       <span class="font-mono text-xs text-muted"><span x-text="contacts.length"></span> contacts</span>
     </header>
-
-    <button type="button" @click="selectOwner" :aria-pressed="!isContactSelected" class="group flex w-full flex-col items-start rounded px-3 py-2 text-left transition" :class="!isContactSelected ? 'bg-accent/15 text-fg' : 'text-muted hover:bg-border/40 hover:text-fg'">
-      <span class="text-sm font-medium" x-text="owner.name"></span>
-      <span class="font-mono text-xs uppercase tracking-widest text-muted" x-text="owner.title"></span>
-    </button>
-
-    <div x-show="contacts.length > 0" class="my-2 border-t border-border/40" aria-hidden="true"></div>
 
     <ul :class="['space-y-1', contacts.length > 6 ? 'scroll-slim max-h-[22rem] overflow-y-auto pr-1' : '']">
       <template x-for="c in contacts" :key="c.id">
@@ -59,7 +53,7 @@
           <div class="rounded-lg border border-border bg-bg/30 p-6 lg:p-8" aria-labelledby="active-profile-name">
             <header class="flex items-start justify-between gap-4">
               <div>
-                <p class="font-mono text-xs uppercase tracking-widest text-muted" x-text="activeProfile.isOwner ? 'About me' : 'Connection'"></p>
+                <p class="font-mono text-xs uppercase tracking-widest text-muted">Connection</p>
                 <h2 id="active-profile-name" class="mt-2 text-2xl font-medium tracking-tight text-fg sm:text-3xl" x-text="activeProfile.name"></h2>
                 <p class="mt-1 text-muted"><span x-text="activeProfile.title"></span><span x-show="activeProfile.company"> · <span x-text="activeProfile.company"></span></span></p>
               </div>
@@ -68,7 +62,7 @@
 
             <p class="mt-5 leading-relaxed text-fg/90" x-text="activeProfile.blurb"></p>
 
-            <p x-show="!activeProfile.isOwner && activeProfile.relationship" class="mt-4 border-l-2 border-accent/40 pl-3 text-sm italic text-muted">How we know each other: <span x-text="activeProfile.relationship"></span></p>
+            <p x-show="activeProfile.relationship" class="mt-4 border-l-2 border-accent/40 pl-3 text-sm italic text-muted">How we know each other: <span x-text="activeProfile.relationship"></span></p>
 
             <div class="mt-6">
               <button type="button" @click="openCompose" class="group/cta rounded border border-accent bg-accent/10 px-4 py-2 text-sm font-medium text-fg transition hover:bg-accent hover:!text-bg"><span x-text="cta"></span><span aria-hidden="true" class="ml-0.5 inline-block transition-transform duration-200 ease-out motion-reduce:transition-none group-hover/cta:translate-x-0.5">→</span></button>
@@ -80,11 +74,11 @@
         <div class="w-full shrink-0" :inert="!isCompose" :aria-hidden="!isCompose ? 'true' : null">
           <form class="rounded-lg border border-border bg-bg/30 p-6 lg:p-8" @submit.prevent>
             <header class="mb-4 flex items-baseline justify-between">
-              <h2 class="text-lg font-medium tracking-tight text-fg" x-text="isContactSelected ? ('Request intro to ' + activeProfile.name.split(' ')[0]) : 'Get in touch'"></h2>
+              <h2 class="text-lg font-medium tracking-tight text-fg" x-text="'Request intro to ' + activeProfile.name.split(' ')[0]"></h2>
               <button type="button" @click="cancelCompose" class="font-mono text-xs uppercase tracking-widest text-muted hover:!text-fg">← back to profile</button>
             </header>
 
-            <p class="mb-5 text-sm text-muted"><span x-show="isContactSelected">This message goes to <span x-text="owner.name.split(' ')[0]"></span>. They decide whether to make the introduction.</span><span x-show="!isContactSelected">Drops straight into <span x-text="owner.name.split(' ')[0]"></span>'s inbox via your mail client.</span></p>
+            <p class="mb-5 text-sm text-muted">This message goes to <span x-text="owner.name.split(' ')[0]"></span>. They decide whether to make the introduction.</p>
 
             <div class="space-y-4">
               <div>
