@@ -5,11 +5,18 @@
   (nav / bio / tools modes). Interactivity is wired by ts/nav.ts via data-* hooks.
 */ -}}
 {{- $site := site.Data.site -}}
-{{- /* Optional per-page toolbar, centered in the nav. Any page may set
-       `tools:` in front matter ({icon,label,href?,download?,action?}). The CV
-       page no longer uses this — its Print / PDF / DOCX live on the CV nav item
-       (Print swap + secondary bar) instead. */ -}}
+{{- /* Optional per-page toolbar. Any page may set `tools:` in front matter
+       ({icon,label,href?,download?,action?}). The CV page auto-populates its
+       résumé actions (Print / DOCX / PDF) from site.yaml: on mobile they pop
+       from the navbar download button (shared tools panel); on desktop the
+       centered toolbar is suppressed and the floating FAB handles them. */ -}}
 {{- $tools := .Params.tools -}}
+{{- if and (not $tools) (eq .Layout "cv") -}}
+  {{- $t := slice (dict "icon" "printer" "label" "Print" "action" "print") -}}
+  {{- with $site.author.resume.docx }}{{ $t = $t | append (dict "icon" "docx" "label" "DOCX" "href" . "download" true) }}{{ end -}}
+  {{- with $site.author.resume.pdf }}{{ $t = $t | append (dict "icon" "pdf" "label" "PDF" "href" . "download" true) }}{{ end -}}
+  {{- $tools = $t -}}
+{{- end -}}
 {{- $hasTools := false -}}
 {{- with $tools }}{{ $hasTools = gt (len .) 0 }}{{ end -}}
 {{- $cur := strings.TrimSuffix "/" .RelPermalink -}}
@@ -22,7 +29,7 @@
         <img src="{{ partial "func/url.html" "/logo-mark.svg" }}" alt="{{ $site.author.name }}" width="36" height="36" class="h-9 w-9" />
       </a>
 
-      {{- if $hasTools }}
+      {{- if and $hasTools (ne .Layout "cv") }}
       <ul class="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-2 lg:flex">
         {{- range $tools }}
         <li>
@@ -32,7 +39,7 @@
             <span class="ml-0 max-w-0 overflow-hidden whitespace-nowrap text-sm opacity-0 transition-all duration-300 ease-out motion-reduce:transition-none group-hover:ml-2 group-hover:max-w-[8rem] group-hover:opacity-100 group-focus-within:ml-2 group-focus-within:max-w-[8rem] group-focus-within:opacity-100">{{ .label }}</span>
           </button>
           {{- else }}
-          <a href="{{ .href }}"{{ if .download }} download{{ end }}{{ if and .href (findRE `^https?:` .href) }} rel="noopener"{{ end }} aria-label="{{ .label }}" class="group inline-flex items-center rounded-full px-2 py-2 no-underline text-muted transition-colors duration-200 hover:!text-fg hover:bg-border/40">
+          <a href="{{ .href }}"{{ if .download }} download hx-boost="false"{{ end }}{{ if and .href (findRE `^https?:` .href) }} rel="noopener"{{ end }} aria-label="{{ .label }}" class="group inline-flex items-center rounded-full px-2 py-2 no-underline text-muted transition-colors duration-200 hover:!text-fg hover:bg-border/40">
             {{ partial "func/svg-icon.html" (dict "name" .icon "class" "h-5 w-5 shrink-0 transition-transform duration-300 ease-out group-hover:rotate-[-3deg] group-hover:scale-110") }}
             <span class="ml-0 max-w-0 overflow-hidden whitespace-nowrap text-sm opacity-0 transition-all duration-300 ease-out motion-reduce:transition-none group-hover:ml-2 group-hover:max-w-[8rem] group-hover:opacity-100 group-focus-within:ml-2 group-focus-within:max-w-[8rem] group-focus-within:opacity-100">{{ .label }}</span>
           </a>
@@ -49,11 +56,8 @@
           {{- $resolved := partial "func/url.html" $linkHref -}}
           {{- $href := strings.TrimSuffix "/" $resolved -}}
           {{- $isActive := or (eq $cur $href) (hasPrefix $cur (printf "%s/" $href)) -}}
-          {{- /* Items with a secondary set get a [data-subnav-trigger]; the single
-                 shared bar (rendered once below) reveals the matching panel. */ -}}
-          {{- $sub := partial "func/subnav-items.html" . -}}
           <li>
-            <a href="{{ $resolved }}" aria-label="{{ .label }}"{{ if $sub }} data-subnav-trigger="{{ .label | urlize }}" aria-haspopup="true"{{ end }}{{ if $isActive }} aria-current="page"{{ end }}{{ if eq .boost false }} hx-boost="false"{{ end }} class="group inline-flex items-center rounded-full px-2 py-2 no-underline transition-colors duration-200 {{ if $isActive }}bg-border/60 !text-fg{{ else }}!text-fg hover:bg-border/40 hover:!text-accent{{ end }}">
+            <a href="{{ $resolved }}" aria-label="{{ .label }}"{{ if $isActive }} aria-current="page"{{ end }}{{ if eq .boost false }} hx-boost="false"{{ end }} class="group inline-flex items-center rounded-full px-2 py-2 no-underline transition-colors duration-200 {{ if $isActive }}bg-border/60 !text-fg{{ else }}!text-fg hover:bg-border/40 hover:!text-accent{{ end }}">
               {{ partial "func/svg-icon.html" (dict "name" .icon "class" "h-5 w-5 shrink-0 transition-transform duration-300 ease-out group-hover:rotate-[-3deg] group-hover:scale-110") }}
               <span class="whitespace-nowrap text-sm {{ if $isActive }}ml-2{{ else }}ml-0 max-w-0 overflow-hidden opacity-0 transition-all duration-300 ease-out group-focus-within:ml-2 group-focus-within:max-w-[8rem] group-focus-within:opacity-100 group-hover:ml-2 group-hover:max-w-[8rem] group-hover:opacity-100 motion-reduce:transition-none{{ end }}">{{ .label }}</span>
             </a>
@@ -80,48 +84,26 @@
     </div>
   </div>
 
-  {{/* Single shared secondary bar — sibling of .glass-nav (NOT inside it: the nav's
-       own backdrop-filter would otherwise isolate this bar's blur). Reveals the
-       panel for whichever nav item ([data-subnav-trigger]) is hovered. */}}
-  {{ partial "subnav-bar.html" . }}
-
   <div data-mobile-panel data-mode="nav" class="absolute left-3 right-3 top-full z-40 mt-2 grid grid-rows-[0fr] transition-[grid-template-rows] duration-300 ease-out motion-reduce:transition-none lg:hidden">
     <div class="glass-panel overflow-hidden rounded-2xl">
-      {{/* Mobile nav island. Items with a secondary set (Email, CV) are drill
-           buttons: tapping them pages the island over to their sub-panel (slide
-           wired in ts/nav.ts; transforms in the <style> block). */}}
-      <div data-mobile-panel-nav data-mobile-nav-stack class="relative overflow-hidden">
-        <nav data-mobile-nav-main aria-label="Site (mobile)">
+      {{/* Mobile nav island — plain link list (Email → mailto, others → page). */}}
+      <div data-mobile-panel-nav>
+        <nav aria-label="Site (mobile)">
           <ul class="mx-auto flex max-w-screen-xl flex-col gap-1 px-6 py-4 opacity-0 transition-opacity duration-200 ease-out motion-reduce:transition-none">
             {{- range $site.nav }}
             {{- $linkHref := cond (eq .email true) (printf "mailto:%s" $site.author.email) .href -}}
             {{- $resolved := partial "func/url.html" $linkHref -}}
             {{- $href := strings.TrimSuffix "/" $resolved -}}
             {{- $isActive := or (eq $cur $href) (hasPrefix $cur (printf "%s/" $href)) -}}
-            {{- $sub := partial "func/subnav-items.html" . -}}
             <li>
-              {{- if $sub }}
-              <button type="button" data-mobile-drill="{{ .label | urlize }}" aria-haspopup="true" class="flex w-full items-center gap-4 rounded-md border-0 bg-transparent px-3 py-3 text-left text-lg text-fg transition-colors hover:bg-border/40 hover:!text-accent">
-                {{ partial "func/svg-icon.html" (dict "name" .icon "class" "h-6 w-6 shrink-0") }}
-                <span>{{ .label }}</span>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="ml-auto h-5 w-5 shrink-0 text-muted"><path d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
-              </button>
-              {{- else }}
               <a href="{{ $resolved }}"{{ if $isActive }} aria-current="page"{{ end }}{{ if eq .boost false }} hx-boost="false"{{ end }} class="flex items-center gap-4 rounded-md px-3 py-3 text-lg no-underline transition-colors {{ if $isActive }}bg-border/60 font-medium !text-fg{{ else }}!text-fg hover:bg-border/40 hover:!text-accent{{ end }}">
                 {{ partial "func/svg-icon.html" (dict "name" .icon "class" "h-6 w-6 shrink-0") }}
                 <span>{{ .label }}</span>
               </a>
-              {{- end }}
             </li>
             {{- end }}
           </ul>
         </nav>
-        {{- range $site.nav }}
-        {{- $it := . -}}
-        {{- if (partial "func/subnav-items.html" $it) }}
-        {{ partial "mobile-subpanel.html" (dict "item" $it "cur" $cur) }}
-        {{- end }}
-        {{- end }}
       </div>
 
       <div data-mobile-panel-bio class="mx-auto max-w-screen-xl px-6 py-5">
@@ -133,12 +115,12 @@
         {{- range $tools }}
         <li>
           {{- if eq .action "print" }}
-          <button type="button" onclick="window.print()" aria-label="{{ .label }}" class="flex w-full items-center gap-4 rounded-md px-3 py-3 text-lg text-accent no-underline transition-colors hover:bg-border/40 hover:!text-accent border-0 bg-transparent text-left">
+          <button type="button" onclick="window.print()" aria-label="{{ .label }}" class="flex w-full items-center gap-4 rounded-md px-3 py-3 text-lg !text-fg no-underline transition-colors hover:bg-border/40 hover:!text-accent border-0 bg-transparent text-left">
             {{ partial "func/svg-icon.html" (dict "name" .icon "class" "h-6 w-6 shrink-0") }}
             <span>{{ .label }}</span>
           </button>
           {{- else }}
-          <a href="{{ .href }}"{{ if .download }} download{{ end }}{{ if and .href (findRE `^https?:` .href) }} rel="noopener"{{ end }} aria-label="{{ .label }}" class="flex w-full items-center gap-4 rounded-md px-3 py-3 text-lg text-fg/85 no-underline transition-colors hover:bg-border/40 hover:!text-accent">
+          <a href="{{ .href }}"{{ if .download }} download hx-boost="false"{{ end }}{{ if and .href (findRE `^https?:` .href) }} rel="noopener"{{ end }} aria-label="{{ .label }}" class="flex w-full items-center gap-4 rounded-md px-3 py-3 text-lg !text-fg no-underline transition-colors hover:bg-border/40 hover:!text-accent">
             {{ partial "func/svg-icon.html" (dict "name" .icon "class" "h-6 w-6 shrink-0") }}
             <span>{{ .label }}</span>
           </a>
@@ -188,32 +170,4 @@
     transform: scale(0.85);
   }
 
-  /* Desktop secondary-bar CSS now lives in subnav-bar.html (with its surface
-     and the generated per-item :has() reveal rules). */
-
-  /* ── Mobile nav drill-in ───────────────────────────────────────────────────
-     Tapping a drill item ([data-mobile-drill]) pages the island over: the main
-     list slides left, the item's [data-mobile-subpanel] slides in from the right.
-     State toggled by ts/nav.ts (data-drilled on the stack, data-active on the
-     chosen sub-panel). */
-  [data-mobile-nav-main] {
-    transition: transform 0.3s ease;
-  }
-  [data-mobile-nav-stack][data-drilled] [data-mobile-nav-main] {
-    transform: translateX(-100%);
-  }
-  [data-mobile-subpanel] {
-    position: absolute;
-    inset: 0;
-    padding: 1rem 1.5rem;
-    transform: translateX(100%);
-    transition: transform 0.3s ease;
-  }
-  [data-mobile-subpanel][data-active='true'] {
-    transform: translateX(0);
-  }
-  @media (prefers-reduced-motion: reduce) {
-    [data-mobile-nav-main],
-    [data-mobile-subpanel] { transition: none; }
-  }
 </style>

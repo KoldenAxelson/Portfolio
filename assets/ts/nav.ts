@@ -60,6 +60,19 @@ function wireNavGlobalsOnce(): void {
     const mobileNav = document.querySelector<HTMLDetailsElement>('[data-mobile-nav]');
     if (e.key === 'Escape' && mobileNav && mobileNav.open) mobileNav.open = false;
   });
+
+  // Close the CV actions speed-dial (<details data-cv-actions>) on click-outside
+  // / Escape. Live-queried so it survives hx-boost swaps; no-ops off the CV page.
+  document.addEventListener('click', (e) => {
+    const cvActions = document.querySelector<HTMLDetailsElement>('[data-cv-actions]');
+    if (!cvActions || !cvActions.open) return;
+    const target = e.target as Element | null;
+    if (target && !cvActions.contains(target)) cvActions.open = false;
+  });
+  document.addEventListener('keydown', (e) => {
+    const cvActions = document.querySelector<HTMLDetailsElement>('[data-cv-actions]');
+    if (e.key === 'Escape' && cvActions && cvActions.open) cvActions.open = false;
+  });
 }
 
 function wireNavElements(): void {
@@ -72,27 +85,6 @@ function wireNavElements(): void {
   const bioIndicators = Array.from(
     document.querySelectorAll<HTMLButtonElement>('[data-bio-indicator]'),
   );
-
-  // Mobile nav drill-in (Email / CV page-over).
-  const navStack = document.querySelector<HTMLElement>('[data-mobile-nav-stack]');
-  const drillButtons = navStack
-    ? Array.from(navStack.querySelectorAll<HTMLButtonElement>('[data-mobile-drill]'))
-    : [];
-  const backButtons = navStack
-    ? Array.from(navStack.querySelectorAll<HTMLButtonElement>('[data-mobile-drill-back]'))
-    : [];
-  const subpanels = navStack
-    ? Array.from(navStack.querySelectorAll<HTMLElement>('[data-mobile-subpanel]'))
-    : [];
-
-  const resetDrill = (): void => {
-    if (!navStack) return;
-    delete navStack.dataset.drilled;
-    subpanels.forEach((p) => {
-      p.dataset.active = 'false';
-      p.setAttribute('aria-hidden', 'true');
-    });
-  };
 
   const syncToolsTriggerVisibility = (): void => {
     if (!toolsTrigger || !mobilePanel) return;
@@ -107,7 +99,6 @@ function wireNavElements(): void {
       bioIndicators.forEach((i) => i.setAttribute('data-active', 'false'));
       bioTypingToken += 1;
       if (bioTyper) bioTyper.textContent = '';
-      resetDrill();
     }
   };
   mobileNav.addEventListener('toggle', syncPanel);
@@ -115,34 +106,10 @@ function wireNavElements(): void {
 
   if (summary) {
     summary.addEventListener('click', () => {
+      // Always reopen on the main nav list, never a stale bio/tools mode.
       if (!mobileNav.open && mobilePanel) mobilePanel.dataset.mode = 'nav';
-      // Always reopen on the main list, never a stale drilled sub-panel.
-      resetDrill();
     });
   }
-
-  // Drill into a sub-panel (Email / CV) and back out.
-  drillButtons.forEach((btn) => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      if (!navStack) return;
-      const key = btn.dataset.mobileDrill;
-      subpanels.forEach((p) => {
-        const active = p.dataset.mobileSubpanel === key;
-        p.dataset.active = String(active);
-        p.setAttribute('aria-hidden', String(!active));
-      });
-      navStack.dataset.drilled = '1';
-    });
-  });
-  backButtons.forEach((btn) => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      resetDrill();
-    });
-  });
 
   if (toolsTrigger && mobilePanel) {
     toolsTrigger.addEventListener('click', (e) => {

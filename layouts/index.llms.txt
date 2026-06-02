@@ -12,7 +12,7 @@
 {{- $lines := slice (printf "# %s" $site.title) "" (printf "> %s" $site.description) "" (trim $site.author.longBio " ") "" "## Author" "" (printf "- Name: %s" $site.author.name) (printf "- Role: %s" $site.author.role) -}}
 {{- with $site.author.location }}{{ $lines = $lines | append (printf "- Location: %s" .) }}{{ end -}}
 {{- $lines = $lines | append (printf "- Email: %s" $site.author.email) -}}
-{{- range $k := slice "github" "linkedin" "twitter" "mastodon" "bluesky" "rss" -}}
+{{- range $k := slice "github" "linkedin" "twitter" "mastodon" "bluesky" -}}
   {{- $v := index $site.links $k -}}
   {{- if and $v (hasPrefix $v "http") }}{{ $lines = $lines | append (printf "- %s: %s" (title $k) $v) }}{{ end -}}
 {{- end -}}
@@ -51,5 +51,5 @@
   {{- $lines = $lines | append "" -}}
 {{- end -}}
 
-{{- $lines = $lines | append "## Feeds" "" (printf "- RSS: %s/rss.xml" $base) (printf "- JSON Feed: %s/feed.json" $base) (printf "- Sitemap: %s/sitemap.xml" $base) "" -}}
+{{- $lines = $lines | append "## Feeds" "" (printf "- JSON Feed: %s/feed.json" $base) (printf "- Sitemap: %s/sitemap.xml" $base) "" -}}
 {{- delimit $lines "\n" -}}

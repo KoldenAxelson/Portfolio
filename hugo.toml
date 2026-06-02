@@ -10,9 +10,9 @@ enableInlineShortcodes = true
 # Tags are plain front-matter arrays (project filter + tag chips), not taxonomies.
 disableKinds = ["taxonomy", "term"]
 
-# Home emits the feeds + llms.txt; sections/pages stay HTML-only (single /rss.xml).
+# Home emits the JSON Feed + llms.txt; sections/pages stay HTML-only.
 [outputs]
-  home = ["HTML", "RSS", "llms", "feedjson"]
+  home = ["HTML", "llms", "feedjson"]
   section = ["HTML"]
   page = ["HTML"]
 
@@ -21,9 +21,6 @@ disableKinds = ["taxonomy", "term"]
     suffixes = ["json"]
 
 [outputFormats]
-  # RSS at /rss.xml (Hugo defaults to /index.xml).
-  [outputFormats.RSS]
-    baseName = "rss"
   [outputFormats.llms]
     mediaType = "text/plain"
     baseName = "llms"

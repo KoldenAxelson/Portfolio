@@ -47,7 +47,6 @@ links:
   twitter: ""
   mastodon: ""
   bluesky: ""
-  rss: "/rss.xml"
 
 # Top-nav items. Order matters. Each `icon` keys into data/icons.yaml.
 # Deliberately small: Projects (the work), About (the person + Now/Uses/Impossible
@@ -60,7 +59,7 @@ nav:
   # mailto:<author.email> in topnav.html, keeping the address DRY (set above).
   # boost:false so htmx never tries to AJAX-swap the mailto link.
   - { label: "Email", email: true, icon: "envelope", boost: false }
-  - { label: "CV", href: "/cv", icon: "briefcase" }
+  - { label: "CV", href: "/cv", icon: "cv" }
 
 # Locale for <html lang> and date formatting. BCP-47 tag.
 locale: "en-US"

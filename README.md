@@ -14,8 +14,8 @@ them. Forked from and powered by [Neofolio](https://github.com/KoldenAxelson/neo
 Every page serves two audiences: the human reading it and the model summarizing
 it. So all meaningful content is in static HTML, backed by a JSON-LD entity
 graph (a single `Person`/`WebSite` identity that every page references by `@id`)
-and a build-time [`/llms.txt`](https://wrightfunctions.com/llms.txt). RSS, JSON
-Feed, robots, and sitemap come for free.
+and a build-time [`/llms.txt`](https://wrightfunctions.com/llms.txt). JSON Feed,
+robots, and sitemap come for free.
 
 The stack is deliberately lean: two compiled binaries (Hugo + the Tailwind
 standalone CLI) and Hugo's built-in esbuild for TypeScript — **no `npm`, no

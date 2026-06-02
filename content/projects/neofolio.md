@@ -32,7 +32,7 @@ A handful of non-negotiables shaped every decision:
 
 Built it on Hugo, with HTMX driving SPA-style navigation, a small vanilla-TypeScript bundle handling the nav, scroll-spy, and project tag filter, and Alpine reserved for the one piece that genuinely needs reactive client state — the network explorer. Everything else is static HTML rendered at build time.
 
-The JSON-LD layer is the load-bearing piece. Shared schema partials expose a stable `personId`/`siteId` so every page references the same entities. `Person.hasOccupation` is generated from a single `data/cv.yaml` source of truth, so the homepage Experience block, the `/cv` page, and the structured data all stay coherent. `/llms.txt`, the RSS feed, and the JSON Feed are all emitted at build time — `/llms.txt` per the llmstxt.org spec.
+The JSON-LD layer is the load-bearing piece. Shared schema partials expose a stable `personId`/`siteId` so every page references the same entities. `Person.hasOccupation` is generated from a single `data/cv.yaml` source of truth, so the homepage Experience block, the `/cv` page, and the structured data all stay coherent. `/llms.txt` and the JSON Feed are both emitted at build time — `/llms.txt` per the llmstxt.org spec.
 
 It ships with a Cloudflare Pages deploy workflow, and because the base path is driven entirely by `baseURL`, the same `hugo --minify` output serves a sub-path host like GitHub Pages just as well. The network page composes intro requests via a prefilled `mailto:` link, so there's no backend to run.
 
