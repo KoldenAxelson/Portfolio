@@ -12,7 +12,7 @@ lighthouse:
     - id: mobile
       label: Mobile
       icon: device-phone-mobile
-      link: 'https://pagespeed.web.dev/analysis/https-wrightfunctions-com/u58hc4g3qh?form_factor=mobile'
+      link: 'https://pagespeed.web.dev/analysis/https-wrightfunctions-com/5obdgwcsv4?form_factor=mobile'
       scores:
         - { label: 'Performance', value: 97 }
         - { label: 'Accessibility', value: 100 }
@@ -54,10 +54,17 @@ lighthouse:
           avg: { pos: 51, label: 'Web average ≈ 3.4 s' }
           bad: { pos: 17, label: 'Poor > 5.8 s' }
           desc: 'How fast the page looks visually finished.'
+        - label: 'Transferred Assets'
+          num: '401'
+          unit: 'KB'
+          bar: 92
+          avg: { pos: 54, label: 'Web average ≈ 2.2 MB' }
+          bad: { pos: 17, label: 'Heavy > 4 MB' }
+          desc: 'Total bytes sent over the wire to load the page.'
     - id: desktop
       label: Desktop
       icon: desktop
-      link: 'https://pagespeed.web.dev/analysis/https-wrightfunctions-com/u58hc4g3qh?form_factor=desktop'
+      link: 'https://pagespeed.web.dev/analysis/https-wrightfunctions-com/5obdgwcsv4?form_factor=desktop'
       scores:
         - { label: 'Performance', value: 100 }
         - { label: 'Accessibility', value: 100 }
@@ -99,19 +106,26 @@ lighthouse:
           avg: { pos: 51, label: 'Web average ≈ 3.4 s' }
           bad: { pos: 17, label: 'Poor > 5.8 s' }
           desc: 'How fast the page looks visually finished.'
+        - label: 'Transferred Assets'
+          num: '401'
+          unit: 'KB'
+          bar: 92
+          avg: { pos: 54, label: 'Web average ≈ 2.2 MB' }
+          bad: { pos: 17, label: 'Heavy > 4 MB' }
+          desc: 'Total bytes sent over the wire to load the page.'
     # Global multi-region Lighthouse run — performance score per region, no
     # single-run vitals (the per-region breakdown lives in the linked report).
     - id: global
       label: Worldwide
       icon: globe
-      link: 'https://lighthouse-metrics.com/lighthouse/checks/2fae8fb5-ae8e-4480-90b4-2561fc183ec9'
+      link: 'https://lighthouse-metrics.com/lighthouse/checks/f511a37a-2cf7-48a2-95c2-fcb21c412b94'
       scores:
-        - { label: 'US West', value: 99 }
-        - { label: 'US East', value: 95 }
-        - { label: 'Finland', value: 99 }
-        - { label: 'Germany', value: 97 }
+        - { label: 'US West', value: 100 }
+        - { label: 'US East', value: 96 }
+        - { label: 'Finland', value: 100 }
+        - { label: 'Germany', value: 99 }
         - { label: 'Japan', value: 100 }
-        - { label: 'Australia', value: 97 }
+        - { label: 'Australia', value: 100 }
 decisions:
   - title: 'Node-free by design'
     body: >-
