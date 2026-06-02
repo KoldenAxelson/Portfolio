@@ -1,10 +1,94 @@
 {{- /*
-  print-button — floating glass FAB shown on the CV page only (all viewports).
-  Mirrors the scroll-to-top button's glass treatment; prints the current page.
-  Self-gates on the page layout, and hides itself in the printout.
+  cv-actions — floating glass "document actions" speed-dial for the CV page,
+  DESKTOP ONLY (lg+). A download (⤓) toggle opens a stack of pill buttons above
+  it — Print (window.print), DOCX download, PDF download — each expanding its
+  label on hover like the desktop nav items. The toggle morphs into an ✕ to
+  close. DOCX / PDF come from site.yaml (author.resume.*) and only render when
+  set. On mobile these same actions live in the navbar download button (the
+  shared tools panel — see topnav.html). Built on <details> so the toggle works
+  without JS; ts/nav.ts adds outside-click / Escape close. Hidden in print.
 */ -}}
 {{- if eq .Layout "cv" }}
-<button type="button" onclick="window.print()" aria-label="Print this page" title="Print" class="glass-btn fixed bottom-6 right-6 z-30 inline-flex h-12 w-12 items-center justify-center rounded-full text-fg transition-colors duration-200 ease-out hover:!text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 motion-reduce:transition-none print:!hidden">
-  {{ partial "func/svg-icon.html" (dict "name" "printer" "class" "h-6 w-6" "width" "1.75") }}
-</button>
+{{- $resume := site.Data.site.author.resume -}}
+<details data-cv-actions class="fixed bottom-6 right-6 z-30 hidden lg:block print:!hidden">
+  <summary aria-label="Document actions" title="Save or print" class="glass-btn relative flex h-12 w-12 cursor-pointer list-none items-center justify-center rounded-full text-fg transition-colors duration-200 ease-out hover:!text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 motion-reduce:transition-none">
+    <span class="sr-only">Document actions</span>
+    {{ partial "func/svg-icon.html" (dict "name" "arrow-down-tray" "class" "cv-icon-main h-6 w-6" "width" "1.75") }}
+    <svg class="cv-icon-close h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18 18 6M6 6l12 12" /></svg>
+  </summary>
+
+  <div data-cv-actions-menu class="absolute bottom-full right-0 mb-3 flex flex-col items-end gap-3">
+    <button type="button" onclick="window.print()" aria-label="Print this page" class="cv-action group/act glass-btn flex h-12 items-center rounded-full border-0 !text-fg transition-colors duration-200 hover:!text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
+      <span class="cv-label">Print</span>
+      <span class="flex h-12 w-12 shrink-0 items-center justify-center">{{ partial "func/svg-icon.html" (dict "name" "printer" "class" "h-6 w-6" "width" "1.75") }}</span>
+    </button>
+    {{- with $resume.docx }}
+    <a href="{{ partial "func/url.html" . }}" download hx-boost="false" aria-label="Download DOCX résumé" class="cv-action group/act glass-btn flex h-12 items-center rounded-full !text-fg no-underline transition-colors duration-200 hover:!text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
+      <span class="cv-label">DOCX</span>
+      <span class="flex h-12 w-12 shrink-0 items-center justify-center">{{ partial "func/svg-icon.html" (dict "name" "docx" "class" "h-6 w-6") }}</span>
+    </a>
+    {{- end }}
+    {{- with $resume.pdf }}
+    <a href="{{ partial "func/url.html" . }}" download hx-boost="false" aria-label="Download PDF résumé" class="cv-action group/act glass-btn flex h-12 items-center rounded-full !text-fg no-underline transition-colors duration-200 hover:!text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
+      <span class="cv-label">PDF</span>
+      <span class="flex h-12 w-12 shrink-0 items-center justify-center">{{ partial "func/svg-icon.html" (dict "name" "pdf" "class" "h-6 w-6") }}</span>
+    </a>
+    {{- end }}
+  </div>
+</details>
+<style>
+  /* Strip the default <summary> disclosure marker. */
+  [data-cv-actions] > summary::-webkit-details-marker { display: none; }
+  [data-cv-actions] > summary::marker { content: ""; }
+
+  /* Toggle icon swap: download glyph when closed, ✕ when open. */
+  [data-cv-actions] .cv-icon-close { display: none; }
+  [data-cv-actions][open] .cv-icon-main { display: none; }
+  [data-cv-actions][open] .cv-icon-close { display: block; }
+
+  /* Keep the menu laid out even when closed (overriding the UA rule that
+     display:none's a closed <details>'s content) so the buttons can animate.
+     Visibility is driven by [open]; pointer-events gate the hidden state. */
+  [data-cv-actions] > [data-cv-actions-menu] { display: flex; }
+  [data-cv-actions-menu] { pointer-events: none; }
+  [data-cv-actions][open] [data-cv-actions-menu] { pointer-events: auto; }
+
+  /* Hover label: collapsed to the left of the icon, expands open like the nav. */
+  .cv-label {
+    margin-left: 0;
+    max-width: 0;
+    padding-left: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    opacity: 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: max-width 0.3s ease, padding-left 0.3s ease, opacity 0.3s ease;
+  }
+  .cv-action:hover .cv-label,
+  .cv-action:focus-visible .cv-label {
+    max-width: 8rem;
+    padding-left: 1rem;
+    opacity: 1;
+  }
+
+  .cv-action {
+    opacity: 0;
+    transform: translateY(0.5rem) scale(0.85);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  [data-cv-actions][open] .cv-action {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  /* Stagger outward from the toggle: nearest button (last child) leads. */
+  [data-cv-actions][open] .cv-action:nth-last-child(1) { transition-delay: 0s; }
+  [data-cv-actions][open] .cv-action:nth-last-child(2) { transition-delay: 0.05s; }
+  [data-cv-actions][open] .cv-action:nth-last-child(3) { transition-delay: 0.1s; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cv-action,
+    .cv-label { transition: opacity 0.001s linear; transform: none; }
+  }
+</style>
 {{- end }}
