@@ -48,7 +48,9 @@ export function initSidebar(): void {
   let currentSection: string | null = null;
   let typingToken = 0;
 
-  const getInitialBio = (): string => {
+  // Concatenate the bio element's text, ignoring the trailing cursor node.
+  // Used both for the initial/default bio and for reading the current line.
+  const bioText = (): string => {
     if (!bioEl) return '';
     let s = '';
     for (const node of Array.from(bioEl.childNodes)) {
@@ -56,7 +58,7 @@ export function initSidebar(): void {
     }
     return s;
   };
-  const defaultBio = getInitialBio();
+  const defaultBio = bioText();
 
   const setText = (text: string): void => {
     if (!bioEl) return;
@@ -64,15 +66,6 @@ export function initSidebar(): void {
       if (node !== cursorEl) bioEl.removeChild(node);
     }
     bioEl.insertBefore(document.createTextNode(text), cursorEl);
-  };
-
-  const visibleText = (): string => {
-    if (!bioEl) return '';
-    let s = '';
-    for (const node of Array.from(bioEl.childNodes)) {
-      if (node !== cursorEl && node.nodeType === Node.TEXT_NODE) s += node.textContent;
-    }
-    return s;
   };
 
   const typeMessage = async (message: string): Promise<void> => {
@@ -83,7 +76,7 @@ export function initSidebar(): void {
       return;
     }
     if (cursorEl) cursorEl.style.opacity = '1';
-    let current = visibleText();
+    let current = bioText();
     while (current.length > 0 && typingToken === myToken) {
       current = current.slice(0, -1);
       setText(current);
