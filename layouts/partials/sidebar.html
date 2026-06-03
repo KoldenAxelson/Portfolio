@@ -33,7 +33,10 @@
         <li>
           <a href="#{{ $s.id }}" data-section-link="{{ $s.id }}" class="group/nav-link inline-flex w-fit items-center gap-3 py-1.5 text-muted no-underline transition-colors hover:!text-fg data-[active=true]:!text-fg">
             <span class="flex h-3 w-3 shrink-0 items-center justify-center" aria-hidden="true">
-              <span data-nav-dot class="block h-1.5 w-1.5 rounded-full bg-border transition-all duration-200 motion-reduce:transition-none data-[state=passed]:bg-accent data-[state=current]:h-3 data-[state=current]:w-3 data-[state=current]:bg-accent data-[state=highlighted]:h-2.5 data-[state=highlighted]:w-2.5 data-[state=highlighted]:border-2 data-[state=highlighted]:border-accent data-[state=highlighted]:bg-transparent"></span>
+              {{- /* Fixed 12px layout box; states change only transform: scale()
+                     and colors, never width/height — so the dot can't reflow the
+                     card (a Firefox sub-pixel resize on hover/scroll-spy). */ -}}
+              <span data-nav-dot class="block h-3 w-3 scale-50 rounded-full bg-border transition-all duration-200 motion-reduce:transition-none data-[state=passed]:bg-accent data-[state=current]:scale-100 data-[state=current]:bg-accent data-[state=highlighted]:scale-[0.833] data-[state=highlighted]:border-2 data-[state=highlighted]:border-accent data-[state=highlighted]:bg-transparent"></span>
             </span>
             <span class="font-mono text-xs uppercase tracking-widest group-data-[active=true]:font-semibold">{{ $s.label }}</span>
           </a>

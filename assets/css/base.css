@@ -188,6 +188,10 @@ img {
 }
 .nav-scroll {
   scrollbar-width: none;
+  /* Firefox sub-pixel-reflows the whole card while the dot/line states animate
+     their size on hover and scroll-spy. Layout containment makes the nav its own
+     layout boundary, so those internal animations can't resize the parent card. */
+  contain: layout;
 }
 
 /* Slim, theme-aware scrollbar for scrollable lists (e.g. /network). */
