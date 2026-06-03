@@ -38,5 +38,11 @@ function ready(fn: () => void): void {
 
 ready(initPage);
 
-// hx-boost swaps <body> without a reload; re-bind handlers to the new DOM.
-document.addEventListener('htmx:afterSettle', initPage);
+// hx-boost swaps <body> without a reload; re-bind handlers to the new DOM, then
+// move focus to the new <main> so keyboard / screen-reader users land in the fresh
+// content instead of being stranded on the now-removed link they activated.
+// preventScroll: hx-boost already handles scroll position; don't fight it.
+document.addEventListener('htmx:afterSettle', () => {
+  initPage();
+  document.getElementById('main')?.focus({ preventScroll: true });
+});

@@ -149,6 +149,14 @@ img {
   border-radius: 2px;
 }
 
+/* main.ts focuses #main after each hx-boost navigation so keyboard / screen-reader
+   users land in the new content. It's a tabindex=-1 landmark, never a tab stop, so
+   suppress the focus ring (Safari draws one around the whole region otherwise). */
+#main:focus,
+#main:focus-visible {
+  outline: none;
+}
+
 .skip-link {
   position: absolute;
   left: -9999px;

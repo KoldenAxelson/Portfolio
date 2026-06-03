@@ -60,7 +60,7 @@
     <div class="mx-auto max-w-screen-xl px-6 lg:px-12">
       <div class="lg:flex lg:justify-between lg:gap-12">
         {{ partial "sidebar.html" . }}
-        <main id="main" class="pt-8 lg:w-1/2 lg:pt-24 lg:pb-12">
+        <main id="main" tabindex="-1" class="pt-8 lg:w-1/2 lg:pt-24 lg:pb-12">
           {{ block "main" . }}{{ end }}
         </main>
       </div>
@@ -71,7 +71,7 @@
          Sits outside the constrained column so it spans the full viewport. */}}
     {{ block "banner" . }}{{ end }}
     <div class="mx-auto px-6 py-12 lg:py-16 {{ cond (eq $mode "wide") "max-w-screen-xl lg:px-12" "max-w-3xl" }}">
-      <main id="main">{{ block "main" . }}{{ end }}</main>
+      <main id="main" tabindex="-1">{{ block "main" . }}{{ end }}</main>
       {{ partial "footer.html" . }}
     </div>
     {{- end }}
