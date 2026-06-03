@@ -27,3 +27,7 @@
 # wrangler / cloudflare
 .wrangler/
 .dev.vars
+
+# Fallow
+.fallow/
+.fallowrc.json
