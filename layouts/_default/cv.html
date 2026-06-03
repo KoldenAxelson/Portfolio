@@ -2,9 +2,7 @@
 {{- $site := site.Data.site -}}
 {{- $author := $site.author -}}
 {{- $cv := site.Data.cv -}}
-{{- $certs := partial "func/certs.html" . -}}
-{{- $active := slice -}}
-{{- range $certs }}{{ if or (not .expirationDate) ((time.AsTime .expirationDate).After now) }}{{ $active = $active | append . }}{{ end }}{{ end -}}
+{{- $active := (partial "func/active-certs.html" .).active -}}
 
 <header class="mb-10 print:mb-6">
   <h1 class="text-4xl font-semibold tracking-tight sm:text-5xl">{{ $author.name }}</h1>

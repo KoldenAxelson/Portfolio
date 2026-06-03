@@ -26,7 +26,6 @@
 
       <ul class="-mx-2 space-y-0.5">
         {{- range .items }}
-        {{- $head := dict "name" .name "note" .note "link" .link -}}
         <li>
           {{- if .detail }}
           <details class="group/item rounded px-2 py-1 transition-colors hover:bg-border/30">

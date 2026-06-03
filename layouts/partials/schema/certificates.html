@@ -8,7 +8,7 @@
 {{- $list := dict
   "@context" "https://schema.org"
   "@type" "ItemList"
-  "@id" (printf "%s#list" (absURL "/certificates"))
+  "@id" (printf "%s/certificates#list" (partial "func/site-url.html" .))
   "name" "Certifications"
   "numberOfItems" (len $certs)
   "itemListOrder" "https://schema.org/ItemListOrderDescending"

@@ -5,9 +5,7 @@
 {{- $base := strings.TrimSuffix "/" site.BaseURL -}}
 {{- $featured := sort (where (where site.RegularPages "Section" "projects") "Params.tier" 1) "Params.year" "desc" -}}
 {{- $posts := sort (where (where site.RegularPages "Section" "articles") "Params.draft" "!=" true) "Date" "desc" -}}
-{{- $certs := partial "func/certs.html" . -}}
-{{- $activeCerts := slice -}}
-{{- range $certs }}{{ if or (not .expirationDate) ((time.AsTime .expirationDate).After now) }}{{ $activeCerts = $activeCerts | append . }}{{ end }}{{ end -}}
+{{- $activeCerts := (partial "func/active-certs.html" .).active -}}
 
 {{- $lines := slice (printf "# %s" $site.title) "" (printf "> %s" $site.description) "" (trim $site.author.longBio " ") "" "## Author" "" (printf "- Name: %s" $site.author.name) (printf "- Role: %s" $site.author.role) -}}
 {{- with $site.author.location }}{{ $lines = $lines | append (printf "- Location: %s" .) }}{{ end -}}

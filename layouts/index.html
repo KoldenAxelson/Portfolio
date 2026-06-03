@@ -4,9 +4,7 @@
 {{- $recentRoles := first 3 $cv.experience -}}
 {{- $featured := first 4 (sort (where (where site.RegularPages "Section" "projects") "Params.featured" true) "Params.year" "desc") -}}
 {{- $recentPosts := first 5 (sort (where (where site.RegularPages "Section" "articles") "Params.draft" "!=" true) "Date" "desc") -}}
-{{- $certs := partial "func/certs.html" . -}}
-{{- $activeCerts := slice -}}
-{{- range $certs }}{{ if or (not .expirationDate) ((time.AsTime .expirationDate).After now) }}{{ $activeCerts = $activeCerts | append . }}{{ end }}{{ end -}}
+{{- $activeCerts := (partial "func/active-certs.html" .).active -}}
 {{- $hasFeaturedCert := false -}}
 {{- range $activeCerts }}{{ if .featured }}{{ $hasFeaturedCert = true }}{{ end }}{{ end -}}
 {{- $featuredCerts := first 4 (cond $hasFeaturedCert (where $activeCerts "featured" true) $activeCerts) -}}
