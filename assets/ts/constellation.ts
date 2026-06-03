@@ -52,6 +52,7 @@ export function initConstellation(): void {
   let running = false;
   let intersecting = true;
   let rafId: number | null = null;
+  let lastT = 0;
 
   const readColors = (): void => {
     const cs = getComputedStyle(document.documentElement);
@@ -81,9 +82,16 @@ export function initConstellation(): void {
     height = h;
     if (width === 0 || height === 0) return;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    canvas.width = Math.round(width * dpr);
-    canvas.height = Math.round(height * dpr);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const cw = Math.round(width * dpr);
+    const ch = Math.round(height * dpr);
+    // Assigning canvas.width/height clears the whole canvas — even when set to
+    // the same value. Only do it when the backing-store size truly changes, so
+    // ResizeObserver noise (sub-pixel reflows) doesn't wipe the frame.
+    if (canvas.width !== cw || canvas.height !== ch) {
+      canvas.width = cw;
+      canvas.height = ch;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
 
     const target = Math.max(
       MIN_POINTS,
@@ -93,12 +101,14 @@ export function initConstellation(): void {
     points.length = target; // truncate if the card shrank
   };
 
-  const draw = (): void => {
+  // dt is in 60fps-frame units (1 = one frame at 60Hz), so motion is scaled by
+  // real elapsed time rather than frame count. Static repaints pass dt=1.
+  const draw = (dt = 1): void => {
     ctx.clearRect(0, 0, width, height);
 
     for (const p of points) {
-      p.x += p.vx;
-      p.y += p.vy;
+      p.x += p.vx * dt;
+      p.y += p.vy * dt;
       // Wrap around past the margins so points roam off the card and re-enter.
       if (p.x < -ROAM_MARGIN) p.x = width + ROAM_MARGIN;
       else if (p.x > width + ROAM_MARGIN) p.x = -ROAM_MARGIN;
@@ -130,8 +140,15 @@ export function initConstellation(): void {
     }
   };
 
-  const loop = (): void => {
-    draw();
+  const loop = (t: number): void => {
+    // Advance by elapsed time (normalised to 60fps) so the drift speed is the
+    // same regardless of the display's refresh rate or the browser's rAF
+    // cadence. Without this the motion runs 2-3x faster on 120Hz+ screens and in
+    // browsers that don't vsync-cap to 60 (e.g. Firefox here). Clamp so a long
+    // pause (background tab) doesn't teleport everything on resume.
+    const dt = lastT ? Math.min((t - lastT) / (1000 / 60), 3) : 1;
+    lastT = t;
+    draw(dt);
     rafId = requestAnimationFrame(loop);
   };
 
@@ -142,6 +159,7 @@ export function initConstellation(): void {
     if (shouldRun()) {
       if (!running) {
         running = true;
+        lastT = 0; // reset clock so the first frame after a pause uses dt=1
         rafId = requestAnimationFrame(loop);
       }
       return;
@@ -167,7 +185,11 @@ export function initConstellation(): void {
   const ro = new ResizeObserver((entries) => {
     const cr = entries[entries.length - 1].contentRect;
     applySize(cr.width, cr.height);
-    if (!running) draw();
+    // Always repaint in the same turn. If the canvas was just cleared by a real
+    // resize, this fills it immediately instead of waiting for the next rAF —
+    // that one-frame gap was the full-canvas flicker when the card reflowed
+    // (e.g. as the bio retypes on a section change).
+    draw();
   });
 
   const onVisibility = (): void => sync();
