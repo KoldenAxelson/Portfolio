@@ -6,12 +6,9 @@
 {{ end }}
 
 {{ define "main" }}
-{{- $certs := partial "func/certs.html" . -}}
-{{- $active := slice -}}
-{{- $expired := slice -}}
-{{- range $certs }}
-  {{- if and .expirationDate (not ((time.AsTime .expirationDate).After now)) }}{{ $expired = $expired | append . }}{{ else }}{{ $active = $active | append . }}{{ end }}
-{{- end -}}
+{{- $split := partial "func/active-certs.html" . -}}
+{{- $active := $split.active -}}
+{{- $expired := $split.expired -}}
 
 {{- with $active }}
 <section id="active" class="mb-12 scroll-mt-24" aria-labelledby="active-heading">
@@ -39,7 +36,7 @@
 </section>
 {{- end }}
 
-{{- if not $certs }}
+{{- if not $split.all }}
 <p class="text-muted">No certifications listed yet. Add one by dropping a YAML file into <code>data/certificates/</code>.</p>
 {{- end }}
 {{ end }}

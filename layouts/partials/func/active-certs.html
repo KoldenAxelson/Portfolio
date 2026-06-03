@@ -1,0 +1,14 @@
+{{- /* Single source for the active/expired cert split (was duplicated across
+       /, /cv, /certificates). Active = no expirationDate, or not yet past.
+       Returns a dict: { active, expired, all }, each in data-file order. */ -}}
+{{- $certs := partial "func/certs.html" . -}}
+{{- $active := slice -}}
+{{- $expired := slice -}}
+{{- range $certs -}}
+  {{- if and .expirationDate (not ((time.AsTime .expirationDate).After now)) -}}
+    {{- $expired = $expired | append . -}}
+  {{- else -}}
+    {{- $active = $active | append . -}}
+  {{- end -}}
+{{- end -}}
+{{- return (dict "active" $active "expired" $expired "all" $certs) -}}
