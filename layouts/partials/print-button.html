@@ -11,7 +11,7 @@
 {{- if eq .Layout "cv" }}
 {{- $resume := site.Data.site.author.resume -}}
 <details data-cv-actions class="fixed bottom-6 right-6 z-30 hidden lg:block print:!hidden">
-  <summary aria-label="Document actions" title="Save or print" class="glass-btn relative flex h-12 w-12 cursor-pointer list-none items-center justify-center rounded-full text-fg transition-colors duration-200 ease-out hover:!text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 motion-reduce:transition-none">
+  <summary aria-label="Document actions" title="Save or print" class="cv-fab-primary relative flex h-12 w-12 cursor-pointer list-none items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
     <span class="sr-only">Document actions</span>
     {{ partial "func/svg-icon.html" (dict "name" "arrow-down-tray" "class" "cv-icon-main h-6 w-6" "width" "1.75") }}
     <svg class="cv-icon-close h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18 18 6M6 6l12 12" /></svg>
@@ -37,6 +37,29 @@
   </div>
 </details>
 <style>
+  /* Primary-tinted toggle so the closed FAB pops against the page instead of
+     blending in like the glass buttons. The icon inherits the page background
+     colour for contrast against the accent fill — legible in both the light
+     (green) and dark (amber) themes. */
+  .cv-fab-primary {
+    background-color: rgb(var(--c-accent));
+    color: rgb(var(--c-bg));
+    border: 1px solid rgb(var(--c-accent));
+    box-shadow: 0 6px 18px -6px rgb(0 0 0 / 0.25);
+    transition: filter 0.2s ease, box-shadow 0.2s ease;
+  }
+  .cv-fab-primary:hover {
+    filter: brightness(1.08);
+    box-shadow: 0 8px 22px -6px rgb(0 0 0 / 0.3);
+  }
+  @media (prefers-color-scheme: dark) {
+    .cv-fab-primary { box-shadow: 0 6px 18px -8px rgb(0 0 0 / 0.6); }
+    .cv-fab-primary:hover { box-shadow: 0 8px 22px -8px rgb(0 0 0 / 0.65); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cv-fab-primary { transition: none; }
+  }
+
   /* Strip the default <summary> disclosure marker. */
   [data-cv-actions] > summary::-webkit-details-marker { display: none; }
   [data-cv-actions] > summary::marker { content: ""; }
@@ -46,9 +69,13 @@
   [data-cv-actions][open] .cv-icon-main { display: none; }
   [data-cv-actions][open] .cv-icon-close { display: block; }
 
-  /* Keep the menu laid out even when closed (overriding the UA rule that
-     display:none's a closed <details>'s content) so the buttons can animate.
-     Visibility is driven by [open]; pointer-events gate the hidden state. */
+  /* Keep the menu laid out even when closed so the buttons can animate every
+     time. Two UA hiding models to override: the old one display:none's a closed
+     <details>'s children; the current one (Firefox 139+/Chrome 131+) wraps them
+     in ::details-content with content-visibility:hidden, which skipped rendering
+     and left the open/close animation playing only once (jumping on replay).
+     Visibility is driven by [open] via opacity; pointer-events gate interaction. */
+  [data-cv-actions]::details-content { content-visibility: visible; }
   [data-cv-actions] > [data-cv-actions-menu] { display: flex; }
   [data-cv-actions-menu] { pointer-events: none; }
   [data-cv-actions][open] [data-cv-actions-menu] { pointer-events: auto; }

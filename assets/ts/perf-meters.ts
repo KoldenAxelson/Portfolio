@@ -1,12 +1,19 @@
 // Colophon performance meters. Each device panel (mobile / desktop) renders its
-// score rings and vital bars empty; this fills them — and counts the ring
-// numbers up — the first time a panel is shown, whether that's the initial
-// scroll-into-view or a toggle click. Idempotent so it survives hx-boost swaps,
-// honors prefers-reduced-motion, and no-ops on every page except /colophon.
+// score rings, vital bars, and ring numbers empty; this sweeps them up to their
+// targets. The sweep is driven entirely by requestAnimationFrame — not CSS
+// transitions — because Firefox doesn't reliably animate a two-value
+// stroke-dasharray list, which left the rings stuck when toggling to a panel
+// that started hidden. Re-runs from zero on every tab press, honors
+// prefers-reduced-motion, idempotent across hx-boost swaps, and no-ops on every
+// page except /colophon.
 
-const NUM_DURATION_MS = 1100;
+const DURATION_MS = 1100;
+const easeOutCubic = (p: number): number => 1 - Math.pow(1 - p, 3);
 
 let pmObserver: IntersectionObserver | null = null;
+// Per-panel animation token: bumping it cancels an in-flight sweep so rapid
+// toggling doesn't leave two rAF loops fighting over the same elements.
+const tokens = new WeakMap<HTMLElement, number>();
 
 export function initPerfMeters(): void {
   // Tear down any observer from the previous page (boost navigation).
@@ -23,34 +30,49 @@ export function initPerfMeters(): void {
   const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-perf-toggle]'));
   const suffix = root.querySelector<HTMLElement>('[data-perf-suffix]');
 
-  // Animate a panel's meters once. Subsequent shows keep their final state, so
-  // toggling back and forth doesn't re-run the sweep.
-  const fillPanel = (panel: HTMLElement | null): void => {
-    if (!panel || panel.dataset.filled === 'true') return;
-    panel.dataset.filled = 'true';
+  // Sweep a panel's meters from zero to their targets. Called fresh on each show,
+  // so toggling tabs replays the animation.
+  const animatePanel = (panel: HTMLElement | null): void => {
+    if (!panel) return;
 
-    panel.querySelectorAll<SVGCircleElement>('[data-ring-target]').forEach((ring) => {
-      // Set via style (not attribute) so the CSS transition on .perf-ring runs.
-      ring.style.strokeDasharray = `${ring.dataset.ringTarget} 100`;
-    });
-    panel.querySelectorAll<HTMLElement>('[data-bar-target]').forEach((bar) => {
-      bar.style.width = `${bar.dataset.barTarget}%`;
-    });
-    panel.querySelectorAll<SVGTextElement>('[data-num-target]').forEach((num) => {
-      const target = Number(num.dataset.numTarget) || 0;
-      if (reduceMotion) {
-        num.textContent = String(target);
-        return;
-      }
-      const start = performance.now();
-      const step = (now: number): void => {
-        const p = Math.min((now - start) / NUM_DURATION_MS, 1);
-        const eased = 1 - Math.pow(1 - p, 3); // easeOutCubic
-        num.textContent = String(Math.round(target * eased));
-        if (p < 1) requestAnimationFrame(step);
-      };
-      requestAnimationFrame(step);
-    });
+    const rings = Array.from(panel.querySelectorAll<SVGCircleElement>('[data-ring-target]'));
+    const bars = Array.from(panel.querySelectorAll<HTMLElement>('[data-bar-target]'));
+    const nums = Array.from(panel.querySelectorAll<SVGTextElement>('[data-num-target]'));
+
+    // We write every frame ourselves, so suppress any CSS transition that would
+    // otherwise double-animate (and lag) each step.
+    rings.forEach((r) => { r.style.transition = 'none'; });
+    bars.forEach((b) => { b.style.transition = 'none'; });
+
+    const ringT = rings.map((r) => Number(r.dataset.ringTarget) || 0);
+    const barT = bars.map((b) => Number(b.dataset.barTarget) || 0);
+    const numT = nums.map((n) => Number(n.dataset.numTarget) || 0);
+
+    // k is progress 0→1. The dasharray is "<visible> 100" on a circle whose
+    // circumference is ~100, so the visible length doubles as a percentage.
+    const paint = (k: number): void => {
+      rings.forEach((r, i) => { r.style.strokeDasharray = `${ringT[i] * k} 100`; });
+      bars.forEach((b, i) => { b.style.width = `${barT[i] * k}%`; });
+      nums.forEach((n, i) => { n.textContent = String(Math.round(numT[i] * k)); });
+    };
+
+    if (reduceMotion) {
+      paint(1);
+      return;
+    }
+
+    const myToken = (tokens.get(panel) ?? 0) + 1;
+    tokens.set(panel, myToken);
+
+    paint(0); // reset to the initial (empty) state before sweeping
+    const startT = performance.now();
+    const step = (now: number): void => {
+      if (tokens.get(panel) !== myToken) return; // superseded by a newer sweep
+      const p = Math.min((now - startT) / DURATION_MS, 1);
+      paint(easeOutCubic(p));
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
   };
 
   const visiblePanel = (): HTMLElement | null => panels.find((p) => !p.hidden) ?? null;
@@ -65,9 +87,7 @@ export function initPerfMeters(): void {
     }
     // Mirror the active source into the section heading ("Performance — Desktop").
     if (suffix && label) suffix.textContent = `— ${label}`;
-    const shown = panels.find((p) => p.dataset.perfPanel === id) ?? null;
-    // The panel was display:none; let layout apply before animating from 0.
-    requestAnimationFrame(() => fillPanel(shown));
+    animatePanel(panels.find((p) => p.dataset.perfPanel === id) ?? null);
   };
 
   for (const btn of buttons) {
@@ -77,7 +97,7 @@ export function initPerfMeters(): void {
     });
   }
 
-  const start = (): void => fillPanel(visiblePanel());
+  const start = (): void => animatePanel(visiblePanel());
 
   // No animation needed (or possible) — paint the visible panel immediately.
   if (reduceMotion || !('IntersectionObserver' in window)) {
