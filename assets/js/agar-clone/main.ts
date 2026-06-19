@@ -15,6 +15,9 @@ declare global {
   }
 }
 
+// Circumference of the dash button's progress ring (SVG circle r=24).
+const DASH_RING_C = 2 * Math.PI * 24;
+
 interface Toast {
   id: number;
   msg: string;
@@ -94,6 +97,7 @@ function agarGame() {
     isTouch: false,
     isFullscreen: false,
     fsSupported: false,
+    pseudoFs: false,
     joyActive: false,
     thumbX: 0,
     thumbY: 0,
@@ -136,13 +140,21 @@ function agarGame() {
       const el = this.$refs.stage as any;
       const doc = document as any;
       if (!el) return;
-      if (!(document.fullscreenElement || doc.webkitFullscreenElement)) {
-        if (el.requestFullscreen) void el.requestFullscreen();
-        else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
-      } else if (document.exitFullscreen) {
-        void document.exitFullscreen();
-      } else if (doc.webkitExitFullscreen) {
-        doc.webkitExitFullscreen();
+      if (this.fsSupported) {
+        if (!(document.fullscreenElement || doc.webkitFullscreenElement)) {
+          if (el.requestFullscreen) void el.requestFullscreen();
+          else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+        } else if (document.exitFullscreen) {
+          void document.exitFullscreen();
+        } else if (doc.webkitExitFullscreen) {
+          doc.webkitExitFullscreen();
+        }
+      } else {
+        // iOS Safari has no element Fullscreen API — fall back to a CSS cover.
+        this.pseudoFs = !this.pseudoFs;
+        this.isFullscreen = this.pseudoFs;
+        document.body.style.overflow = this.pseudoFs ? 'hidden' : '';
+        this.$nextTick(() => window.dispatchEvent(new Event('resize')));
       }
     },
 
@@ -192,9 +204,6 @@ function agarGame() {
     dashBtn(): void {
       game?.dash();
     },
-    explodeBtn(): void {
-      game?.explode();
-    },
     fireDown(this: any, e?: Event): void {
       e?.preventDefault();
       game?.setFiring(true);
@@ -225,16 +234,43 @@ function agarGame() {
     respawn(this: any): void {
       this.phase = 'playing';
       this.dashReady = true;
+      this.setDashFull();
+      game?.respawnPlayer();
+    },
+
+    // Restart — clear all game state and return to the name screen. Play starts
+    // a brand-new world.
+    restart(this: any): void {
+      game?.stop();
+      game?.setFiring(false);
+      game?.clearSteer();
+      this.phase = 'pre';
+      this.score = 0;
+      this.leaders = [];
+      this.toasts = [];
+      this.dashReady = true;
+      this.pseudoFs = false;
+      this.isFullscreen = false;
+      document.body.style.overflow = '';
+    },
+
+    // Reset the dash indicators (linear bar + circular ring) to "ready".
+    setDashFull(this: any): void {
       const fill = this.$refs.dashFill as HTMLElement | undefined;
       if (fill) {
         fill.style.transition = 'none';
         fill.style.width = '100%';
       }
-      game?.respawnPlayer();
+      const ring = this.$refs.dashRing as SVGElement | undefined;
+      if (ring) {
+        ring.style.transition = 'none';
+        ring.style.strokeDasharray = String(DASH_RING_C);
+        ring.style.strokeDashoffset = '0';
+      }
     },
 
-    // Drain the dash meter to empty, then refill it over the cooldown so the bar
-    // visually tracks when dash becomes available again.
+    // Drain both dash indicators to empty, then refill over the cooldown so they
+    // visually track when dash becomes available again.
     runDashMeter(this: any, cooldownMs: number): void {
       this.dashReady = false;
       const fill = this.$refs.dashFill as HTMLElement | undefined;
@@ -245,6 +281,17 @@ function agarGame() {
         requestAnimationFrame(() => {
           fill.style.transition = `width ${cooldownMs}ms linear`;
           fill.style.width = '100%';
+        });
+      }
+      const ring = this.$refs.dashRing as SVGElement | undefined;
+      if (ring) {
+        ring.style.transition = 'none';
+        ring.style.strokeDasharray = String(DASH_RING_C);
+        ring.style.strokeDashoffset = String(DASH_RING_C); // empty
+        void ring.getBoundingClientRect();
+        requestAnimationFrame(() => {
+          ring.style.transition = `stroke-dashoffset ${cooldownMs}ms linear`;
+          ring.style.strokeDashoffset = '0'; // fills as it recharges
         });
       }
       setTimeout(() => {

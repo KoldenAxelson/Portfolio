@@ -54,8 +54,7 @@ export const CONFIG = {
   PARRY_ALIGN: 0.78, // ...that are heading within this cosine of straight at them
   FACING_MIN_SPEED: 25, // below this speed, keep the last heading for aiming
 
-  // Explode (ESC): scatter mass above EXPLODE_MIN_MASS into collectable dots.
-  EXPLODE_MIN_MASS: 60, // need at least this much to explode
+  // Dropped-loot dots (from bullet damage): how they scatter as collectable food.
   EXPLODE_DOT_MASS: 5, // mass per scattered dot
   EXPLODE_MAX_DOTS: 60,
   EXPLODE_SPEED: 260, // initial outward speed of dots (world units / sec)
