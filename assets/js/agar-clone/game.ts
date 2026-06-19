@@ -156,8 +156,12 @@ export class Game {
   dash(): void {
     this.tryDash();
   }
-  explode(): void {
-    this.explodePlayer();
+
+  // Halt the loop without tearing down input listeners, so start() can run again
+  // for a clean restart.
+  stop(): void {
+    this.running = false;
+    cancelAnimationFrame(this.rafId);
   }
 
   // ── entity helpers ──────────────────────────────────────────────────────────
@@ -267,9 +271,6 @@ export class Game {
       // Held-fire: the loop fires while shift is down, rate-limited by cooldown.
       this.keys.add('shift');
       e.preventDefault();
-    } else if (k === 'escape' || e.code === 'Escape') {
-      e.preventDefault();
-      this.explodePlayer();
     }
   };
 
@@ -380,16 +381,6 @@ export class Game {
         mass: dotMass,
       });
     }
-  }
-
-  // ESC — scatter mass above EXPLODE_MIN_MASS into collectable dots; the player
-  // drops back to base size.
-  private explodePlayer(): void {
-    const p = this.player;
-    if (!p?.alive || p.mass < CONFIG.EXPLODE_MIN_MASS) return;
-    const excess = p.mass - CONFIG.START_MASS;
-    p.mass = CONFIG.START_MASS;
-    this.dropPoints(p.x, p.y, excess, p.color);
   }
 
   private resize(): void {
