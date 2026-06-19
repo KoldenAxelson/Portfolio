@@ -22,7 +22,9 @@
 
 <article class="group relative rounded-lg border border-border bg-bg/30 transition hover:border-accent {{ cond $compact "p-4" "p-5" }}" itemscope itemtype="https://schema.org/CreativeWork">
   {{- with $primaryHref }}
-  <a href="{{ . }}"{{ if $external }} rel="noopener"{{ end }} aria-label="{{ $d.title }}" class="absolute inset-0 z-0 rounded-lg"></a>
+  {{/* boost:false on a project (e.g. the Alpine game page) forces a full page
+       load so its per-page <head> runtime actually executes. */}}
+  <a href="{{ . }}"{{ if $external }} rel="noopener"{{ end }}{{ if eq $d.boost false }} hx-boost="false"{{ end }} aria-label="{{ $d.title }}" class="absolute inset-0 z-0 rounded-lg"></a>
   {{- end }}
 
   {{- $px := cond $compact 64 96 }}

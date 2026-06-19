@@ -1,0 +1,18 @@
+# Wrangler config for the Agar.io clone names Worker. Deployed separately from
+# the site's Pages project. Bind the AGAR_NAMES KV namespace before deploying:
+#
+#   wrangler kv namespace create AGAR_NAMES
+#   # paste the returned id below, then:
+#   wrangler deploy
+#
+# The game page reads the deployed URL from the `agarWorkerBase` front-matter
+# field in content/projects/agar-clone/index.md.
+
+name = "agar-names"
+main = "worker.js"
+compatibility_date = "2025-01-15"
+
+# Replace `id` with the id printed by `wrangler kv namespace create AGAR_NAMES`.
+[[kv_namespaces]]
+binding = "AGAR_NAMES"
+id = "REPLACE_WITH_KV_NAMESPACE_ID"

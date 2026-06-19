@@ -1,0 +1,217 @@
+{{/*
+  Agar.io clone project page. Uses the site's wide container (set in front
+  matter). All UI state outside the canvas is an Alpine island (x-data="agarGame",
+  registered by assets/js/agar-clone/main.ts); the canvas game loop is pure TS.
+
+  Alpine + the game bundle are loaded here (not via the baseof alpine:true path)
+  so the game bundle's `alpine:init` listener is registered BEFORE Alpine starts.
+*/}}
+
+{{ define "head" }}
+  {{/* Hide Alpine markup until the runtime hydrates it, and make the game stage
+       fill the screen in fullscreen (the canvas resizes via its ResizeObserver). */}}
+  <style>
+    [x-cloak]{display:none !important}
+    [data-stage]:fullscreen,
+    [data-stage]:-webkit-full-screen{width:100vw !important;height:100vh !important;min-height:0 !important;border-radius:0 !important}
+  </style>
+
+  {{ $opts := dict "minify" true "target" "es2018" "format" "iife" }}
+  {{/* Game bundle first → its alpine:init handler is in place before Alpine boots. */}}
+  {{ $game := resources.Get "js/agar-clone/main.ts" | js.Build $opts | fingerprint }}
+  <script defer src="{{ $game.RelPermalink }}" integrity="{{ $game.Data.Integrity }}"></script>
+  {{ $alpine := resources.Get "vendor/alpine.min.js" | fingerprint }}
+  <script defer src="{{ $alpine.RelPermalink }}" integrity="{{ $alpine.Data.Integrity }}"></script>
+{{ end }}
+
+{{ define "main" }}
+{{- $d := .Params -}}
+<article class="max-w-none">
+  {{/* ── Project header (follows the single.html convention) ── */}}
+  <header class="mb-8">
+    <p class="font-mono text-sm text-muted">{{ $d.year }} · {{ $d.role | default "Project" }}</p>
+    <h1 class="mt-2 text-3xl font-medium sm:text-4xl">{{ $d.title }}</h1>
+    <p class="mt-3 max-w-2xl text-lg text-muted">{{ $d.summary }}</p>
+
+    {{- with $d.stack }}
+    <dl class="mt-6 grid grid-cols-[max-content_1fr] gap-x-4 gap-y-2 text-sm">
+      <dt class="font-mono text-muted">stack</dt>
+      <dd>{{ delimit . ", " }}</dd>
+      <dt class="font-mono text-muted">status</dt>
+      <dd>{{ $d.status | default "shipped" }}</dd>
+    </dl>
+    {{- end }}
+  </header>
+
+  {{/* ── Game island ── */}}
+  <div
+    x-data="agarGame"
+    data-worker-base="{{ $d.agarWorkerBase | default "" }}"
+    class="select-none"
+  >
+    {{/* Pre-game: username input (sits above the canvas, hidden once playing). */}}
+    <div x-show="phase === 'pre'" class="mb-4 flex flex-wrap items-center gap-3">
+      <input
+        type="text"
+        x-model="nameInput"
+        maxlength="32"
+        placeholder="Enter your name to join"
+        @keydown.enter.prevent="play()"
+        class="w-full max-w-xs rounded border border-border bg-bg/60 px-3 py-2 text-sm text-fg placeholder:text-muted focus:border-accent focus:outline-none"
+        aria-label="Enter your name to join"
+      />
+      <button
+        type="button"
+        @click="play()"
+        class="rounded border border-border bg-fg px-5 py-2 font-mono text-sm text-bg transition hover:border-accent"
+      >Play</button>
+      <span class="font-mono text-xs text-muted">Name optional · mouse / WASD to move · SPACE dash · SHIFT shoot (50+ pts) · ESC explode</span>
+    </div>
+
+    {{/* Canvas + overlaid HUD. The stage element is what goes fullscreen. */}}
+    <div x-ref="stage" data-stage class="relative h-[70vh] min-h-[440px] w-full overflow-hidden rounded-lg border border-border bg-bg">
+      <canvas x-ref="canvas" class="absolute inset-0 block h-full w-full"></canvas>
+
+      {{/* Fullscreen toggle (always available). */}}
+      <button
+        type="button"
+        x-show="fsSupported"
+        @click="toggleFullscreen()"
+        class="pointer-events-auto absolute right-3 top-3 z-20 rounded bg-bg/85 px-2 py-1.5 font-mono text-xs text-fg transition hover:text-accent"
+        :aria-label="isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'"
+        x-text="isFullscreen ? '✕ Exit' : '⛶ Fullscreen'"
+      ></button>
+
+      {{/* Top-left: live score + dash meter. */}}
+      <div x-show="phase !== 'pre'" x-cloak class="pointer-events-none absolute left-3 top-3 space-y-2">
+        <div class="rounded bg-bg/85 px-3 py-1.5 font-mono text-sm text-fg">
+          Score: <span x-text="score"></span>
+        </div>
+        <div class="rounded bg-bg/85 px-3 py-1.5">
+          <div class="flex items-center justify-between gap-3 font-mono text-xs">
+            <span class="text-muted">DASH</span>
+            <span :class="dashReady ? 'text-accent' : 'text-muted'" x-text="dashReady ? 'SPACE' : '…'"></span>
+          </div>
+          <div class="mt-1 h-1.5 w-28 overflow-hidden rounded bg-border/60">
+            <div x-ref="dashFill" class="h-full rounded bg-accent" style="width:100%"></div>
+          </div>
+        </div>
+        <div class="rounded bg-bg/85 px-3 py-1.5 font-mono text-xs">
+          <div class="flex items-center justify-between gap-3">
+            <span class="text-muted">FIRE</span>
+            <span :class="score >= fireUnlockAt ? 'text-accent' : 'text-muted'"
+                  x-text="score >= fireUnlockAt ? 'SHIFT' : (fireUnlockAt + ' pts')"></span>
+          </div>
+        </div>
+      </div>
+
+      {{/* Top-right: leaderboard (top 5). */}}
+      <div
+        x-show="phase !== 'pre' && leaders.length"
+        x-cloak
+        class="pointer-events-none absolute right-3 top-14 w-44 rounded bg-bg/85 p-3"
+      >
+        <p class="mb-2 font-mono text-xs uppercase tracking-widest text-muted">Leaderboard</p>
+        <ul class="space-y-1.5">
+          <template x-for="(row, i) in leaders" :key="i">
+            <li>
+              <div
+                class="flex items-baseline justify-between gap-2 text-xs"
+                :class="row.isPlayer ? 'text-accent font-medium' : (row.isKonrad ? 'text-fg font-medium' : 'text-fg/85')"
+              >
+                <span class="truncate"><span x-text="i + 1"></span>. <span x-text="row.name"></span></span>
+                <span class="font-mono" x-text="row.score"></span>
+              </div>
+              <div class="mt-0.5 h-1 w-full overflow-hidden rounded bg-border/60">
+                <div
+                  class="h-full rounded"
+                  :class="row.isPlayer ? 'bg-accent' : (row.isKonrad ? 'bg-fg' : 'bg-muted')"
+                  :style="`width:${barWidth(row.score)}`"
+                ></div>
+              </div>
+            </li>
+          </template>
+        </ul>
+      </div>
+
+      {{/* Toasts: bottom-centre, stack upward, auto-dismiss after 3s. */}}
+      <div class="pointer-events-none absolute inset-x-0 bottom-3 flex flex-col-reverse items-center gap-1.5">
+        <template x-for="t in toasts" :key="t.id">
+          <div
+            class="rounded px-3 py-1 font-mono text-xs"
+            :class="t.kind === 'konrad' ? 'bg-accent/85 text-bg' : 'bg-bg/80 text-fg'"
+            x-text="t.msg"
+          ></div>
+        </template>
+      </div>
+
+      {{/* ── Mobile controls (touch devices only) ── */}}
+      {{/* Virtual joystick — steers the cell. */}}
+      <div
+        x-show="isTouch && phase === 'playing'"
+        x-cloak
+        x-ref="joyBase"
+        @touchstart="joyStart($event)"
+        @touchmove="joyMove($event)"
+        @touchend="joyEnd()"
+        @touchcancel="joyEnd()"
+        class="absolute bottom-5 left-5 z-20 h-28 w-28 rounded-full border border-border bg-bg/75"
+        style="touch-action:none; pointer-events:auto;"
+        aria-label="Movement joystick"
+      >
+        <div
+          class="absolute left-1/2 top-1/2 h-12 w-12 rounded-full bg-fg/70"
+          :style="`transform: translate(calc(-50% + ${thumbX}px), calc(-50% + ${thumbY}px))`"
+        ></div>
+      </div>
+
+      {{/* Action buttons. */}}
+      <div
+        x-show="isTouch && phase === 'playing'"
+        x-cloak
+        class="absolute bottom-5 right-5 z-20 flex flex-col items-end gap-3"
+        style="pointer-events:auto;"
+      >
+        <button
+          type="button"
+          @touchstart.prevent="fireDown($event)"
+          @touchend.prevent="fireUp($event)"
+          @touchcancel="fireUp()"
+          :class="score >= fireUnlockAt ? 'border-accent text-accent' : 'border-border text-muted'"
+          class="flex h-16 w-16 items-center justify-center rounded-full border-2 bg-bg/85 font-mono text-xs"
+          style="touch-action:none;"
+        >FIRE</button>
+        <div class="flex gap-3">
+          <button
+            type="button"
+            @touchstart.prevent="explodeBtn()"
+            class="flex h-14 w-14 items-center justify-center rounded-full border border-border bg-bg/85 font-mono text-[10px] text-fg"
+            style="touch-action:none;"
+          >BLOW</button>
+          <button
+            type="button"
+            @touchstart.prevent="dashBtn()"
+            class="flex h-14 w-14 items-center justify-center rounded-full border border-border bg-bg/85 font-mono text-xs text-fg"
+            style="touch-action:none;"
+          >DASH</button>
+        </div>
+      </div>
+
+      {{/* Game-over overlay. */}}
+      <div
+        x-show="phase === 'over'"
+        x-cloak
+        class="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-bg/80 text-center"
+      >
+        <h2 class="text-3xl font-medium text-fg">Game Over</h2>
+        <p class="font-mono text-lg text-muted">Score: <span x-text="gameOverScore"></span></p>
+        <button
+          type="button"
+          @click="respawn()"
+          class="rounded border border-border bg-fg px-6 py-2 font-mono text-sm text-bg transition hover:border-accent"
+        >Respawn</button>
+      </div>
+    </div>
+  </div>
+</article>
+{{ end }}

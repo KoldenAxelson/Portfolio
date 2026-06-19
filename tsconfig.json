@@ -14,5 +14,5 @@
     "verbatimModuleSyntax": true,
     "noEmit": true
   },
-  "include": ["assets/ts/**/*.ts"]
+  "include": ["assets/ts/**/*.ts", "assets/js/**/*.ts"]
 }
