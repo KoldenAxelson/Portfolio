@@ -25,6 +25,10 @@ elsewhere:
     icon: "user-group"
     boost: false
     blurb: "People I'd vouch for — pick a name and I'll pass along an introduction."
+  - label: "Misc"
+    href: "/misc"
+    icon: "ellipsis-vertical"
+    blurb: "A junk drawer of personal reference pages — notes, cheat sheets, and odds and ends."
 ---
 
 I'm a software engineer who turned into a professional problem-solver somewhere along the way. Fifteen-plus years across a lot of different fields means a lot of cross-domain pollination rattling around in my head, and that's led me to solve some genuinely outlandish problems — concept all the way through to a running business.

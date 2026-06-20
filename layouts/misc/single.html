@@ -1,0 +1,21 @@
+{{ define "banner" }}
+{{ partial "page-banner.html" (dict
+  "title" .Title
+  "subtitle" (.Params.lead | default .Description | default "")) }}
+{{ end }}
+
+{{ define "main" }}
+{{- with .Params.updated }}
+<p class="mb-10 font-mono text-xs text-muted">
+  Last updated {{ partial "formatted-date.html" (dict "date" .) }}.
+</p>
+{{- end }}
+
+<article class="space-y-4 text-base leading-relaxed text-muted [&_a]:text-fg [&_a]:underline [&_a]:decoration-border hover:[&_a]:!text-accent">
+  {{ .Content }}
+</article>
+
+<p class="mt-16 border-t border-border/60 pt-8 font-mono text-xs">
+  <a href="{{ partial "func/url.html" "/misc" }}" class="text-muted no-underline transition-colors hover:!text-accent">&larr; Back to Misc</a>
+</p>
+{{ end }}
