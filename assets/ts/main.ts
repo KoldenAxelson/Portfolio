@@ -6,6 +6,7 @@ import { initSidebar } from './sidebar';
 import { initConstellation } from './constellation';
 import { initProjectFilter } from './project-filter';
 import { initPerfMeters } from './perf-meters';
+import { initAiWidget } from './ai-widget';
 
 declare global {
   interface Window {
@@ -26,6 +27,7 @@ function initPage(): void {
   initConstellation();
   initProjectFilter();
   initPerfMeters();
+  initAiWidget();
 }
 
 function ready(fn: () => void): void {

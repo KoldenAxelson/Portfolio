@@ -19,7 +19,14 @@ TSGO     := $(TSGO_DIR)/tsgo
 CSS_IN   := assets/css/main.css
 CSS_OUT  := assets/css/app.css
 
-.PHONY: help setup dev build css css-watch typecheck clean distclean
+# AI chat proxy (Go, stdlib-only — see SPEC-ai-agent.md). The binary is built
+# into its own dir and is gitignored; never commit it.
+AI_PROXY_DIR := ai-proxy
+AI_PROXY_BIN := $(AI_PROXY_DIR)/ai-proxy
+AI_CONTEXT   := CONTEXT.md
+AI_PORT      := 8080
+
+.PHONY: help setup dev build css css-watch typecheck clean distclean ai-proxy ai-proxy-run
 
 help: ## Show this help
 	@echo "Portfolio — available commands:"
@@ -114,8 +121,20 @@ typecheck: $(TSGO) ## Type-check the TypeScript with tsgo (no emit)
 	@$(TSGO) --noEmit -p tsconfig.json
 	@echo "Type-check passed."
 
-clean: ## Remove build artifacts (public/, resources/, generated CSS)
-	@rm -rf public resources $(CSS_OUT)
+# --- AI chat proxy ----------------------------------------------------------
+
+ai-proxy: ## Build the AI chat proxy binary (needs Go on PATH)
+	@command -v go >/dev/null 2>&1 || { echo "Go not found on PATH — install from https://go.dev/dl/" >&2; exit 1; }
+	@cd $(AI_PROXY_DIR) && go build -o ai-proxy main.go
+	@echo "Built $(AI_PROXY_BIN)"
+
+ai-proxy-run: ai-proxy ## Build + run the proxy (env: AI_PROXY_SECRET, AI_MODEL)
+	@[ -n "$$AI_PROXY_SECRET" ] || { echo "Set AI_PROXY_SECRET first: export AI_PROXY_SECRET=…" >&2; exit 1; }
+	@echo "Running ai-proxy on :$(AI_PORT) (model $${AI_MODEL:-llama3.2}, context $(AI_CONTEXT))…"
+	@cd $(AI_PROXY_DIR) && ./ai-proxy -context ../$(AI_CONTEXT) -port $(AI_PORT) $${AI_MODEL:+-model "$$AI_MODEL"}
+
+clean: ## Remove build artifacts (public/, resources/, generated CSS, proxy binary)
+	@rm -rf public resources $(CSS_OUT) $(AI_PROXY_BIN)
 
 distclean: clean ## Also remove the downloaded toolchain (./bin)
 	@rm -rf $(BIN)

@@ -67,6 +67,11 @@
       </nav>
 
       <div class="flex items-center gap-1 lg:hidden">
+        {{- if ne .Layout "cv" }}
+        <button type="button" data-ai-trigger aria-haspopup="dialog" aria-expanded="false" aria-label="Ask about Konrad" class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-md text-muted transition-colors hover:bg-border/40 hover:!text-accent focus-visible:bg-border/40 focus-visible:!text-accent">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-7 w-7"><path d="M8 10.5h8M8 14h5" /><path d="M4 5.5h16a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H9l-4 3.5v-3.5H4a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1Z" /></svg>
+        </button>
+        {{- end }}
         {{- if $hasTools }}
         <button type="button" data-mobile-tools-trigger aria-label="Open page actions" class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-md text-muted transition-colors hover:bg-border/40 hover:text-fg focus-visible:bg-border/40 focus-visible:text-fg">
           {{ partial "func/svg-icon.html" (dict "name" "arrow-down-circle" "class" "h-7 w-7") }}

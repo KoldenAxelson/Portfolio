@@ -1,6 +1,9 @@
 # Local Dev Storage
 /private/
 
+# AI chat proxy — compiled binary (build with `make ai-proxy`; never commit)
+/ai-proxy/ai-proxy
+
 # Hugo build output
 /public/
 /resources/

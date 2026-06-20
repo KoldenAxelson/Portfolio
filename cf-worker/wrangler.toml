@@ -1,0 +1,42 @@
+# Wrangler config for the portfolio AI chat Worker. Deployed separately from the
+# site's Pages project, to the route `ai.wrightfunctions.com`.
+#
+# NOTE: This currently targets the wrightfunctions.com zone (the live site). To
+# move the whole feature to konradwright.com later, see docs/ai-tunnel.md.
+#
+# One-time setup before `wrangler deploy`:
+#
+#   1. Create the rate-limit KV namespace and paste its id below:
+#        wrangler kv namespace create AI_RL
+#
+#   2. Store the shared secret (must match the Go proxy's AI_PROXY_SECRET):
+#        wrangler secret put PROXY_SECRET
+#
+#   3. Set the private tunnel hostname (NEVER commit this — dashboard or CLI var):
+#        wrangler deploy --var TUNNEL_URL:https://ai-tunnel.wrightfunctions.com
+#      ...or set TUNNEL_URL under Settings → Variables in the dashboard.
+#
+name = "ai-chat"
+main = "worker.js"
+compatibility_date = "2025-01-15"
+
+# Custom domain (ai.wrightfunctions.com) is managed in the DASHBOARD, not here:
+#   Workers & Pages → ai-chat → Settings → Domains & Routes → Add → Custom domain
+# Doing it there uses your logged-in session (no API-token Zone permissions), and
+# keeping it out of this file means `wrangler deploy` only needs Account-level
+# Workers Scripts + KV Storage perms. To let wrangler manage the route instead,
+# uncomment the block below and give the token Zone · Workers Routes + DNS (Edit):
+#
+# routes = [
+#   { pattern = "ai.wrightfunctions.com", custom_domain = true },
+# ]
+
+# Per-IP rate-limit counters. Replace `id` with the value printed by
+# `wrangler kv namespace create AI_RL`.
+[[kv_namespaces]]
+binding = "AI_RL"
+id = "853881cb436a469aaa33ace94baf5c9c"
+
+# TUNNEL_URL and PROXY_SECRET are intentionally NOT defined here:
+#   - PROXY_SECRET is a secret    → `wrangler secret put PROXY_SECRET`
+#   - TUNNEL_URL is a private host → set as a dashboard/CLI var, never committed
