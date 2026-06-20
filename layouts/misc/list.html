@@ -1,0 +1,29 @@
+{{ define "banner" }}
+{{ partial "page-banner.html" (dict
+  "title" (.Title | default "Misc")
+  "subtitle" (.Params.lead | default "")) }}
+{{ end }}
+
+{{ define "main" }}
+{{- with .Content }}
+<section class="max-w-prose space-y-4 text-base leading-relaxed text-muted [&_a]:text-fg [&_a]:underline [&_a]:decoration-border hover:[&_a]:!text-accent">
+  {{ . }}
+</section>
+{{- end }}
+
+{{- $pages := where .Pages "Params.hidden" "!=" true -}}
+{{- with $pages }}
+<section class="{{ if $.Content }}mt-12 {{ end }}grid gap-3 sm:grid-cols-2" aria-label="Pages">
+  {{- range . }}
+  <a href="{{ .RelPermalink }}" class="group block rounded-xl border border-border/70 p-5 no-underline transition-colors hover:border-accent/50 hover:bg-border/20">
+    <span class="flex items-center gap-2 text-fg">
+      {{- with .Params.icon }}{{ partial "func/svg-icon.html" (dict "name" . "class" "h-5 w-5 shrink-0 text-muted transition-colors group-hover:!text-accent") }}{{ end }}
+      <span class="font-medium group-hover:!text-accent">{{ .Title }}</span>
+      <span aria-hidden="true" class="ml-auto inline-block text-muted transition-transform duration-200 ease-out group-hover:translate-x-0.5 group-hover:!text-accent">&rarr;</span>
+    </span>
+    {{- with (.Params.blurb | default .Description) }}<span class="mt-2 block text-sm leading-snug text-muted">{{ . }}</span>{{ end }}
+  </a>
+  {{- end }}
+</section>
+{{- end }}
+{{ end }}
