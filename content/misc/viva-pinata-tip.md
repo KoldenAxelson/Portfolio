@@ -9,7 +9,7 @@ checklist: true
 updated: 2026-06-20
 ---
 
-Each species changes colour when you feed it the listed items. Tick a species off as you collect its variants — your progress is saved in this browser automatically, and the **Save / Load** button (bottom-right) gives you a short code you can copy to back it up or move it to another device.
+Each species changes colour when you feed it the listed items. Tick a species and it drops into the **Collected** table at the bottom; untick it and it returns to the list. Your progress saves in this browser automatically, and the **Save / Load** button (bottom-right) gives you a short code you can copy to back it up or move it to another device.
 
 <div class="vp-wrap" data-vp-app data-vp-total="88">
   <div class="vp-toolbar">
@@ -19,17 +19,18 @@ Each species changes colour when you feed it the listed items. Tick a species of
     </div>
     <p id="vp-count" class="vp-count" aria-live="polite"></p>
   </div>
-
-  <div class="vp-table-scroll">
-    <table class="vp-table">
-      <thead>
-        <tr>
-          <th scope="col" class="vp-check-head"><span class="sr-only">Collected</span></th>
-          <th scope="col">Species</th>
-          <th scope="col">Colour-variant feeds</th>
-        </tr>
-      </thead>
-      <tbody id="vp-tbody">
+  <section class="vp-section">
+    <h2 class="vp-section-title">To collect <span class="vp-section-n" data-vp-todo-count></span></h2>
+    <div class="vp-table-scroll">
+      <table class="vp-table">
+        <thead>
+          <tr>
+            <th scope="col" class="vp-check-head"><span class="sr-only">Collected</span></th>
+            <th scope="col">Species</th>
+            <th scope="col">Colour-variant feeds</th>
+          </tr>
+        </thead>
+        <tbody id="vp-tbody">
         <tr class="vp-row" data-search="arocknid bluebell flower, jack o&#x27; lantern, water lily flower" data-index="0">
           <td class="vp-check"><input type="checkbox" class="vp-box" id="vp-0" aria-label="Mark Arocknid collected" /></td>
           <th scope="row" class="vp-name"><label for="vp-0">Arocknid</label></th>
@@ -470,10 +471,27 @@ Each species changes colour when you feed it the listed items. Tick a species of
           <th scope="row" class="vp-name"><label for="vp-87">Zumbug</label></th>
           <td><ul class="vp-chips"><li class="vp-chip">Bluebell Seed</li><li class="vp-chip">Water Lily Seed</li><li class="vp-chip">Carrot Cake</li></ul></td>
         </tr>
-      </tbody>
-    </table>
-  </div>
-  <p id="vp-empty" class="vp-empty" hidden>No species match that filter.</p>
+        </tbody>
+      </table>
+    </div>
+    <p class="vp-empty" data-vp-todo-empty hidden></p>
+  </section>
+  <section class="vp-section" data-vp-done-section hidden>
+    <h2 class="vp-section-title">Collected <span class="vp-section-n" data-vp-done-count></span></h2>
+    <div class="vp-table-scroll">
+      <table class="vp-table">
+        <thead>
+          <tr>
+            <th scope="col" class="vp-check-head"><span class="sr-only">Collected</span></th>
+            <th scope="col">Species</th>
+            <th scope="col">Colour-variant feeds</th>
+          </tr>
+        </thead>
+        <tbody id="vp-tbody-done"></tbody>
+      </table>
+    </div>
+    <p class="vp-empty" data-vp-done-empty hidden>No collected species match that filter.</p>
+  </section>
 </div>
 
 <!-- Floating Save / Load speed-dial — mirrors the /cv document-actions FAB. -->
@@ -483,7 +501,6 @@ Each species changes colour when you feed it the listed items. Tick a species of
     <svg class="vp-icon-main h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.5 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25h12A2.25 2.25 0 0 0 20.25 18V8.56a2.25 2.25 0 0 0-.66-1.59l-2.56-2.56a2.25 2.25 0 0 0-1.59-.66H15M7.5 3.75V8.25H15V3.75M7.5 3.75H15M8.25 14.25h7.5" /></svg>
     <svg class="vp-icon-close h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18 18 6M6 6l12 12" /></svg>
   </summary>
-
   <div class="vp-actions-menu absolute bottom-full right-0 mb-3 flex flex-col items-end gap-3">
     <button type="button" data-vp-open="save" aria-label="Save progress (export code)" class="vp-action group/act glass-btn flex h-12 items-center rounded-full border-0 !text-fg transition-colors duration-200 hover:!text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
       <span class="vp-label">Save</span>
@@ -529,34 +546,31 @@ Each species changes colour when you feed it the listed items. Tick a species of
 </div>
 
 <style>
-  /* ---- Layout / table ---- */
+  /* ---- Layout / tables ---- */
   .vp-wrap { margin-top: 1.5rem; }
   .vp-toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem; }
   .vp-search-wrap { flex: 1 1 16rem; }
   .vp-search {
-    width: 100%;
-    border: 1px solid rgb(var(--c-border));
-    background-color: rgb(var(--glass-bg) / 0.4);
-    border-radius: 0.75rem;
-    padding: 0.7rem 1rem;
-    font-size: 1rem;
-    color: rgb(var(--c-fg));
-    outline: none;
-    transition: border-color 150ms ease;
+    width: 100%; border: 1px solid rgb(var(--c-border));
+    background-color: rgb(var(--glass-bg) / 0.4); border-radius: 0.75rem;
+    padding: 0.7rem 1rem; font-size: 1rem; color: rgb(var(--c-fg));
+    outline: none; transition: border-color 150ms ease;
   }
   .vp-search:focus { border-color: rgb(var(--c-accent)); }
   .vp-search::placeholder { color: rgb(var(--c-muted)); }
   .vp-count { margin: 0; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.75rem; color: rgb(var(--c-muted)); white-space: nowrap; }
-  .vp-table-scroll { margin-top: 1rem; overflow-x: auto; border: 1px solid rgb(var(--c-border)); border-radius: 0.9rem; }
+  .vp-section { margin-top: 1.75rem; }
+  .vp-section-title { margin: 0 0 0.7rem; font-size: 1rem; font-weight: 700; color: rgb(var(--c-fg)); display: flex; align-items: baseline; gap: 0.5rem; }
+  .vp-section-n { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.8rem; font-weight: 500; color: rgb(var(--c-muted)); }
+  .vp-section-n::before { content: "("; }
+  .vp-section-n::after { content: ")"; }
+  .vp-table-scroll { overflow-x: auto; border: 1px solid rgb(var(--c-border)); border-radius: 0.9rem; }
   .vp-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
   .vp-table thead th {
-    position: sticky; top: 0; z-index: 1;
-    text-align: left; padding: 0.7rem 1rem;
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
-    color: rgb(var(--c-fg));
-    background-color: rgb(var(--glass-bg) / 0.95);
-    border-bottom: 1px solid rgb(var(--c-border));
+    position: sticky; top: 0; z-index: 1; text-align: left; padding: 0.7rem 1rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.7rem;
+    text-transform: uppercase; letter-spacing: 0.08em; color: rgb(var(--c-fg));
+    background-color: rgb(var(--glass-bg) / 0.95); border-bottom: 1px solid rgb(var(--c-border));
   }
   @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
     .vp-table thead th { background-color: rgb(var(--glass-bg) / 0.6); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); }
@@ -564,37 +578,18 @@ Each species changes colour when you feed it the listed items. Tick a species of
   .vp-check-head { width: 2.75rem; }
   .vp-row { border-top: 1px solid rgb(var(--c-border) / 0.6); transition: background-color 120ms ease; }
   .vp-row:hover { background-color: rgb(var(--c-border) / 0.18); }
-  .vp-row.is-done { background-color: rgb(var(--c-accent) / 0.08); }
-  .vp-row.is-done .vp-name { color: rgb(var(--c-muted)); text-decoration: line-through; text-decoration-color: rgb(var(--c-accent) / 0.6); }
+  .vp-row.is-done { background-color: rgb(var(--c-accent) / 0.06); }
   .vp-check { padding: 0.7rem 0.5rem 0.7rem 1rem; vertical-align: top; }
-  .vp-box {
-    width: 1.15rem; height: 1.15rem; cursor: pointer;
-    accent-color: rgb(var(--c-accent));
-    margin-top: 0.1rem;
-  }
+  .vp-box { width: 1.15rem; height: 1.15rem; cursor: pointer; accent-color: rgb(var(--c-accent)); margin-top: 0.1rem; }
   .vp-name { text-align: left; vertical-align: top; padding: 0.7rem 1rem; font-weight: 600; color: rgb(var(--c-fg)); white-space: nowrap; }
   .vp-name label { cursor: pointer; }
   .vp-table td { padding: 0.7rem 1rem; vertical-align: top; }
   .vp-chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.4rem; }
-  .vp-chip {
-    display: inline-block;
-    padding: 0.15rem 0.6rem;
-    border: 1px solid rgb(var(--c-border));
-    border-radius: 9999px;
-    font-size: 0.8rem;
-    color: rgb(var(--c-muted));
-    background-color: rgb(var(--c-border) / 0.12);
-  }
-  .vp-empty { margin-top: 1rem; font-size: 0.95rem; color: rgb(var(--c-muted)); }
+  .vp-chip { display: inline-block; padding: 0.15rem 0.6rem; border: 1px solid rgb(var(--c-border)); border-radius: 9999px; font-size: 0.8rem; color: rgb(var(--c-muted)); background-color: rgb(var(--c-border) / 0.12); }
+  .vp-empty { margin: 0.9rem 0 0; font-size: 0.95rem; color: rgb(var(--c-muted)); }
 
   /* ---- Floating speed-dial (mirrors /cv cv-actions) ---- */
-  .vp-fab-primary {
-    background-color: rgb(var(--c-accent));
-    color: rgb(var(--c-bg));
-    border: 1px solid rgb(var(--c-accent));
-    box-shadow: 0 6px 18px -6px rgb(0 0 0 / 0.25);
-    transition: filter 0.2s ease, box-shadow 0.2s ease;
-  }
+  .vp-fab-primary { background-color: rgb(var(--c-accent)); color: rgb(var(--c-bg)); border: 1px solid rgb(var(--c-accent)); box-shadow: 0 6px 18px -6px rgb(0 0 0 / 0.25); transition: filter 0.2s ease, box-shadow 0.2s ease; }
   .vp-fab-primary:hover { filter: brightness(1.08); box-shadow: 0 8px 22px -6px rgb(0 0 0 / 0.3); }
   @media (prefers-color-scheme: dark) {
     .vp-fab-primary { box-shadow: 0 6px 18px -8px rgb(0 0 0 / 0.6); }
@@ -609,20 +604,14 @@ Each species changes colour when you feed it the listed items. Tick a species of
   [data-vp-actions] > .vp-actions-menu { display: flex; }
   .vp-actions-menu { pointer-events: none; }
   [data-vp-actions][open] .vp-actions-menu { pointer-events: auto; }
-  .vp-label {
-    margin-left: 0; max-width: 0; padding-left: 0; overflow: hidden;
-    white-space: nowrap; opacity: 0; font-size: 0.875rem; font-weight: 500;
-    transition: max-width 0.3s ease, padding-left 0.3s ease, opacity 0.3s ease;
-  }
+  .vp-label { margin-left: 0; max-width: 0; padding-left: 0; overflow: hidden; white-space: nowrap; opacity: 0; font-size: 0.875rem; font-weight: 500; transition: max-width 0.3s ease, padding-left 0.3s ease, opacity 0.3s ease; }
   .vp-action:hover .vp-label, .vp-action:focus-visible .vp-label { max-width: 8rem; padding-left: 1rem; opacity: 1; }
   .vp-action { opacity: 0; transform: translateY(0.5rem) scale(0.85); transition: opacity 0.2s ease, transform 0.2s ease; }
   [data-vp-actions][open] .vp-action { opacity: 1; transform: translateY(0) scale(1); }
   [data-vp-actions][open] .vp-action:nth-last-child(1) { transition-delay: 0s; }
   [data-vp-actions][open] .vp-action:nth-last-child(2) { transition-delay: 0.05s; }
   [data-vp-actions][open] .vp-action:nth-last-child(3) { transition-delay: 0.1s; }
-  @media (prefers-reduced-motion: reduce) {
-    .vp-fab-primary, .vp-action, .vp-label { transition: none; transform: none; }
-  }
+  @media (prefers-reduced-motion: reduce) { .vp-fab-primary, .vp-action, .vp-label { transition: none; transform: none; } }
 
   /* ---- Modal ---- */
   .vp-modal { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 1rem; }
@@ -637,23 +626,9 @@ Each species changes colour when you feed it the listed items. Tick a species of
   .vp-modal-h3 { margin: 0 0 0.25rem; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: rgb(var(--c-fg)); }
   .vp-modal-note { margin: 0 0 0.6rem; font-size: 0.85rem; line-height: 1.4; color: rgb(var(--c-muted)); }
   .vp-field-row { display: flex; gap: 0.5rem; }
-  .vp-code-input {
-    flex: 1 1 auto; min-width: 0;
-    border: 1px solid rgb(var(--c-border));
-    background-color: rgb(var(--glass-bg) / 0.4);
-    border-radius: 0.6rem; padding: 0.55rem 0.8rem;
-    font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.95rem;
-    color: rgb(var(--c-fg)); outline: none;
-  }
+  .vp-code-input { flex: 1 1 auto; min-width: 0; border: 1px solid rgb(var(--c-border)); background-color: rgb(var(--glass-bg) / 0.4); border-radius: 0.6rem; padding: 0.55rem 0.8rem; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.95rem; color: rgb(var(--c-fg)); outline: none; }
   .vp-code-input:focus { border-color: rgb(var(--c-accent)); }
-  .vp-btn {
-    flex: 0 0 auto; cursor: pointer;
-    border: 1px solid rgb(var(--c-border));
-    background-color: rgb(var(--c-border) / 0.15);
-    border-radius: 0.6rem; padding: 0.55rem 0.95rem;
-    font-size: 0.9rem; font-weight: 500; color: rgb(var(--c-fg));
-    transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease;
-  }
+  .vp-btn { flex: 0 0 auto; cursor: pointer; border: 1px solid rgb(var(--c-border)); background-color: rgb(var(--c-border) / 0.15); border-radius: 0.6rem; padding: 0.55rem 0.95rem; font-size: 0.9rem; font-weight: 500; color: rgb(var(--c-fg)); transition: background-color 150ms ease, color 150ms ease, border-color 150ms ease; }
   .vp-btn:hover { color: rgb(var(--c-accent)); border-color: rgb(var(--c-accent) / 0.5); }
   .vp-btn-primary { background-color: rgb(var(--c-accent)); border-color: rgb(var(--c-accent)); color: rgb(var(--c-bg)); }
   .vp-btn-primary:hover { color: rgb(var(--c-bg)); filter: brightness(1.08); }
@@ -672,15 +647,19 @@ Each species changes colour when you feed it the listed items. Tick a species of
     var STORE_KEY = 'vp-colour-variant-checklist:v1';
     var B64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_';
 
-    var tbody = document.getElementById('vp-tbody');
-    var boxes = Array.prototype.slice.call(tbody.querySelectorAll('.vp-box'));
-    var rows = Array.prototype.slice.call(tbody.querySelectorAll('.vp-row'));
-    var rowByIndex = {};
-    rows.forEach(function (r) { rowByIndex[r.getAttribute('data-index')] = r; });
+    var mainTbody = document.getElementById('vp-tbody');
+    var doneTbody = document.getElementById('vp-tbody-done');
+    var rows = Array.prototype.slice.call(app.querySelectorAll('.vp-row'));
+    rows.sort(function (a, b) { return (+a.getAttribute('data-index')) - (+b.getAttribute('data-index')); });
+    var boxes = rows.map(function (r) { return r.querySelector('.vp-box'); });
 
     var search = document.getElementById('vp-search');
     var count = document.getElementById('vp-count');
-    var empty = document.getElementById('vp-empty');
+    var todoCountEl = app.querySelector('[data-vp-todo-count]');
+    var doneCountEl = app.querySelector('[data-vp-done-count]');
+    var doneSection = app.querySelector('[data-vp-done-section]');
+    var todoEmpty = app.querySelector('[data-vp-todo-empty]');
+    var doneEmpty = app.querySelector('[data-vp-done-empty]');
 
     /* ---- encode / decode: 88-bit field -> base64url (~15 chars) ---- */
     function encode(bits) {
@@ -711,63 +690,68 @@ Each species changes colour when you feed it the listed items. Tick a species of
       return arr;
     }
 
-    function currentBits() {
+    function currentCode() {
       var bits = new Array(TOTAL);
       for (var i = 0; i < TOTAL; i++) bits[i] = 0;
-      boxes.forEach(function (b) { if (b.checked) bits[parseInt(b.id.slice(3), 10)] = 1; });
-      return bits;
-    }
-    function currentCode() { return encode(currentBits()); }
-
-    function rowState(box) {
-      var r = rowByIndex[box.id.slice(3)];
-      if (r) r.classList.toggle('is-done', box.checked);
+      boxes.forEach(function (b, i) { if (b.checked) bits[i] = 1; });
+      return encode(bits);
     }
 
-    function updateCount() {
-      var done = boxes.filter(function (b) { return b.checked; }).length;
+    /* ---- distribute rows between the two tables, preserving species order ---- */
+    function placeAll() {
+      rows.forEach(function (r, i) {
+        r.classList.toggle('is-done', boxes[i].checked);
+        (boxes[i].checked ? doneTbody : mainTbody).appendChild(r);
+      });
+    }
+
+    function countVisible(tbody) {
+      var n = 0, kids = tbody.children;
+      for (var i = 0; i < kids.length; i++) { if (!kids[i].hidden) n++; }
+      return n;
+    }
+
+    function updateView() {
       var q = search.value.trim().toLowerCase();
-      if (q) {
-        var shown = 0;
-        rows.forEach(function (r) {
-          var m = r.getAttribute('data-search').indexOf(q) !== -1;
-          r.hidden = !m; if (m) shown++;
-        });
-        empty.hidden = shown !== 0;
-        count.textContent = shown + ' shown · ' + done + ' / ' + TOTAL + ' collected';
-      } else {
-        rows.forEach(function (r) { r.hidden = false; });
-        empty.hidden = true;
-        count.textContent = done + ' / ' + TOTAL + ' collected';
-      }
+      rows.forEach(function (r) {
+        r.hidden = !!q && r.getAttribute('data-search').indexOf(q) === -1;
+      });
+      var done = boxes.filter(function (b) { return b.checked; }).length;
+      var todo = TOTAL - done;
+      todoCountEl.textContent = todo;
+      doneCountEl.textContent = done;
+      count.textContent = done + ' / ' + TOTAL + ' collected';
+      doneSection.hidden = done === 0;
+
+      var todoVisible = countVisible(mainTbody);
+      if (todo === 0) { todoEmpty.hidden = false; todoEmpty.textContent = 'All ' + TOTAL + ' collected — nothing left here.'; }
+      else if (todoVisible === 0) { todoEmpty.hidden = false; todoEmpty.textContent = 'No species to collect match that filter.'; }
+      else { todoEmpty.hidden = true; }
+
+      doneEmpty.hidden = !(done > 0 && countVisible(doneTbody) === 0);
     }
 
-    function save() {
-      try { localStorage.setItem(STORE_KEY, currentCode()); } catch (e) {}
-    }
+    function save() { try { localStorage.setItem(STORE_KEY, currentCode()); } catch (e) {} }
 
     function applyBits(bits) {
-      boxes.forEach(function (b) {
-        var idx = parseInt(b.id.slice(3), 10);
-        b.checked = !!bits[idx];
-        rowState(b);
-      });
-      updateCount();
+      boxes.forEach(function (b, i) { b.checked = !!bits[i]; });
+      placeAll();
+      updateView();
     }
 
-    /* ---- wire checkboxes ---- */
+    /* ---- wire up ---- */
     boxes.forEach(function (b) {
-      b.addEventListener('change', function () { rowState(b); updateCount(); save(); });
+      b.addEventListener('change', function () { placeAll(); updateView(); save(); });
     });
-    search.addEventListener('input', updateCount);
+    search.addEventListener('input', updateView);
 
     /* ---- restore from storage ---- */
     try {
       var saved = localStorage.getItem(STORE_KEY);
-      if (saved) { var bits = decode(saved); if (bits) applyBits(bits); }
+      if (saved) { var bits = decode(saved); if (bits) { boxes.forEach(function (b, i) { b.checked = !!bits[i]; }); } }
     } catch (e) {}
-    boxes.forEach(rowState);
-    updateCount();
+    placeAll();
+    updateView();
 
     /* ---- speed-dial + modal ---- */
     var details = document.querySelector('[data-vp-actions]');
@@ -776,14 +760,10 @@ Each species changes colour when you feed it the listed items. Tick a species of
     var importInput = modal.querySelector('[data-vp-import]');
     var status = modal.querySelector('[data-vp-status]');
 
-    function setStatus(msg, kind) {
-      status.textContent = msg || '';
-      status.className = 'vp-status' + (kind ? ' is-' + kind : '');
-    }
+    function setStatus(msg, kind) { status.textContent = msg || ''; status.className = 'vp-status' + (kind ? ' is-' + kind : ''); }
     function openModal(focus) {
       exportInput.value = currentCode();
-      setStatus('');
-      importInput.value = '';
+      setStatus(''); importInput.value = '';
       modal.hidden = false;
       if (details) details.removeAttribute('open');
       var el = focus === 'load' ? importInput : exportInput;
@@ -794,20 +774,14 @@ Each species changes colour when you feed it the listed items. Tick a species of
     document.querySelectorAll('[data-vp-open]').forEach(function (btn) {
       btn.addEventListener('click', function () { openModal(btn.getAttribute('data-vp-open')); });
     });
-    modal.querySelectorAll('[data-vp-close]').forEach(function (el) {
-      el.addEventListener('click', closeModal);
-    });
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && !modal.hidden) closeModal();
-    });
+    modal.querySelectorAll('[data-vp-close]').forEach(function (el) { el.addEventListener('click', closeModal); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !modal.hidden) closeModal(); });
 
     modal.querySelector('[data-vp-copy]').addEventListener('click', function () {
       exportInput.select();
       var ok = false;
       try { ok = document.execCommand('copy'); } catch (e) {}
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(exportInput.value).then(function () { setStatus('Code copied to clipboard.', 'ok'); }, function () {});
-      }
+      if (navigator.clipboard) { navigator.clipboard.writeText(exportInput.value).then(function () { setStatus('Code copied to clipboard.', 'ok'); }, function () {}); }
       if (ok) setStatus('Code copied to clipboard.', 'ok');
     });
 
@@ -823,17 +797,11 @@ Each species changes colour when you feed it the listed items. Tick a species of
     var clearBtn = document.querySelector('[data-vp-clear]');
     if (clearBtn) clearBtn.addEventListener('click', function () {
       if (!window.confirm('Clear all ticks? This cannot be undone (export your code first if you want a backup).')) return;
-      applyBits(new Array(TOTAL).fill(0));
-      save();
+      applyBits(new Array(TOTAL).fill(0)); save();
       if (details) details.removeAttribute('open');
     });
 
-    /* close speed-dial on outside click / Escape (parity with /cv) */
-    document.addEventListener('click', function (e) {
-      if (details && details.hasAttribute('open') && !details.contains(e.target)) details.removeAttribute('open');
-    });
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && details) details.removeAttribute('open');
-    });
+    document.addEventListener('click', function (e) { if (details && details.hasAttribute('open') && !details.contains(e.target)) details.removeAttribute('open'); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && details) details.removeAttribute('open'); });
   })();
 </script>
