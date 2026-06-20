@@ -1,0 +1,141 @@
+{{- /*
+  ai-widget — "Ask about Konrad" chat. A lightweight, vanilla-JS chat panel
+  backed by the local-Ollama tunnel (see SPEC-ai-agent.md). Rendered on every
+  page except /cv (the include in baseof.html guards on RelPermalink).
+
+  Pieces:
+    - Desktop trigger: a floating glass FAB (bottom-right), mirroring the site's
+      other floating button (scroll-to-top / the CV actions FAB). Desktop only.
+    - Mobile trigger: lives in the navbar cluster (see topnav.html), styled like
+      the existing mobile tools button. Both triggers carry [data-ai-trigger].
+    - Panel: a glass drawer (bottom sheet on mobile, corner card on desktop).
+
+  No design tokens or component classes are invented here — it reuses glass-btn /
+  glass-panel and the same Tailwind utilities the rest of the site uses. State and
+  fetch live in assets/ts/ai-widget.ts (bundled into ts/main.ts, idempotent across
+  hx-boost swaps). The Worker endpoint comes from the `aiChatURL` Hugo param; the
+  contact address from site.yaml — no secrets ever reach the client.
+*/ -}}
+{{- $endpoint := site.Params.aiChatURL -}}
+{{- $email := site.Data.site.author.email -}}
+{{- if $endpoint -}}
+
+<div
+  data-ai-widget
+  data-ai-endpoint="{{ $endpoint }}"
+  data-ai-contact="mailto:{{ $email }}"
+  hx-boost="false"
+  class="print:hidden"
+>
+  {{/* Scrim — mobile only; tap to dismiss. */}}
+  <div data-ai-scrim class="fixed inset-0 z-40 bg-black/30 opacity-0 transition-opacity duration-200 ease-out lg:hidden motion-reduce:transition-none" hidden></div>
+
+  {{/* Desktop floating trigger (mobile trigger lives in topnav.html). */}}
+  <button
+    type="button"
+    data-ai-trigger
+    aria-haspopup="dialog"
+    aria-expanded="false"
+    aria-label="Ask about Konrad"
+    title="Ask about Konrad"
+    class="glass-btn fixed bottom-6 right-6 z-30 hidden h-12 w-12 items-center justify-center rounded-full text-fg transition-colors duration-200 hover:!text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 lg:inline-flex"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-6 w-6"><path d="M8 10.5h8M8 14h5" /><path d="M4 5.5h16a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H9l-4 3.5v-3.5H4a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1Z" /></svg>
+  </button>
+
+  {{/* Chat panel */}}
+  <section
+    data-ai-panel
+    role="dialog"
+    aria-modal="false"
+    aria-label="Ask about Konrad"
+    aria-hidden="true"
+    class="glass-panel fixed z-50 flex flex-col overflow-hidden inset-x-0 bottom-0 max-h-[80vh] rounded-t-2xl lg:inset-x-auto lg:bottom-6 lg:right-6 lg:w-[22rem] lg:max-h-[70vh] lg:rounded-2xl"
+  >
+    <header class="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
+      <div class="flex items-center gap-2">
+        <span class="text-accent" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M8 10.5h8M8 14h5" /><path d="M4 5.5h16a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H9l-4 3.5v-3.5H4a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1Z" /></svg>
+        </span>
+        <h2 class="m-0 text-sm font-medium">Ask about Konrad</h2>
+      </div>
+      <button type="button" data-ai-close aria-label="Close chat" class="flex h-8 w-8 items-center justify-center rounded-md text-muted transition-colors hover:bg-border/40 hover:!text-fg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-5 w-5"><path d="M6 18 18 6M6 6l12 12" /></svg>
+      </button>
+    </header>
+
+    <div data-ai-log role="log" aria-live="polite" aria-atomic="false" class="flex-1 space-y-3 overflow-y-auto px-4 py-4 text-sm">
+      <p data-ai-intro class="text-muted">Hi! I'm Konrad's #1 fan. Ask me about his work, projects, or background.</p>
+    </div>
+
+    {{/* Typing indicator (toggled by JS) */}}
+    <div data-ai-typing hidden class="px-4 pb-1 text-muted" aria-hidden="true">
+      <span class="ai-dots inline-flex items-center gap-1 align-middle">
+        <span class="ai-dot"></span><span class="ai-dot"></span><span class="ai-dot"></span>
+      </span>
+    </div>
+
+    <form data-ai-form class="flex items-end gap-2 border-t border-border px-3 py-3">
+      <label class="sr-only" for="ai-input">Your question</label>
+      <textarea
+        id="ai-input"
+        data-ai-input
+        rows="1"
+        maxlength="500"
+        placeholder="Ask a question…"
+        autocomplete="off"
+        class="max-h-28 flex-1 resize-none rounded-lg border border-border bg-transparent px-3 py-2 text-sm text-fg placeholder:text-muted focus:border-accent focus:outline-none"
+      ></textarea>
+      <button
+        type="submit"
+        data-ai-send
+        aria-label="Send"
+        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent text-bg transition-[filter,opacity] duration-200 hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 disabled:opacity-40"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-5 w-5"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+      </button>
+    </form>
+  </section>
+</div>
+
+<style>
+  /* Panel visibility + entrance. Hidden by default; [data-open] reveals it.
+     Bottom-sheet on mobile slides up; desktop corner card fades/rises. */
+  [data-ai-panel] {
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(1rem);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  [data-ai-widget][data-open] [data-ai-panel] {
+    pointer-events: auto;
+    opacity: 1;
+    transform: translateY(0);
+  }
+  [data-ai-widget][data-open] [data-ai-scrim] {
+    opacity: 1;
+  }
+  /* Hide the closed panel from AT + the floating trigger when open is toggled. */
+  [data-ai-widget]:not([data-open]) [data-ai-panel] { visibility: hidden; }
+  [data-ai-widget][data-open] [data-ai-panel] { visibility: visible; }
+
+  /* Message bubbles (added by JS with these classes). */
+  .ai-msg { max-width: 100%; border-radius: 0.75rem; padding: 0.5rem 0.75rem; line-height: 1.45; white-space: pre-wrap; word-break: break-word; }
+  .ai-msg-user { margin-left: auto; background-color: rgb(var(--c-accent) / 0.15); color: rgb(var(--c-fg)); border: 1px solid rgb(var(--c-accent) / 0.25); }
+  .ai-msg-bot { margin-right: auto; background-color: rgb(var(--c-border) / 0.4); color: rgb(var(--c-fg)); }
+  .ai-msg-system { margin-right: auto; color: rgb(var(--c-muted)); font-style: italic; }
+  .ai-msg-user, .ai-msg-bot { width: fit-content; }
+  .ai-msg a { color: rgb(var(--c-accent)); text-decoration: underline; }
+
+  /* Typing dots. */
+  .ai-dot { width: 0.375rem; height: 0.375rem; border-radius: 9999px; background-color: rgb(var(--c-muted)); display: inline-block; animation: ai-bounce 1.2s infinite ease-in-out; }
+  .ai-dot:nth-child(2) { animation-delay: 0.15s; }
+  .ai-dot:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes ai-bounce { 0%, 80%, 100% { transform: translateY(0); opacity: 0.4; } 40% { transform: translateY(-0.2rem); opacity: 1; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    [data-ai-panel], [data-ai-scrim] { transition: none; }
+    .ai-dot { animation: none; opacity: 0.6; }
+  }
+</style>
+{{- end -}}

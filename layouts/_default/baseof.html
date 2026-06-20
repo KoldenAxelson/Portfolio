@@ -79,5 +79,10 @@
     {{/* Outside both layout branches so they're fixed to the viewport. */}}
     {{ partial "cv-actions.html" . }}
     {{ partial "scroll-to-top.html" . }}
+
+    {{/* AI chat widget — every page except /cv. */}}
+    {{- if not (eq .RelPermalink "/cv/") }}
+    {{ partial "ai-widget.html" . }}
+    {{- end }}
   </body>
 </html>

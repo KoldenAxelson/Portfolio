@@ -47,3 +47,8 @@ disableKinds = ["taxonomy", "term"]
 
 [params]
   # Identity and site data live in data/site.yaml, not here.
+
+  # AI chat widget endpoint — the Cloudflare Worker URL the widget POSTs to.
+  # This is the ONLY backend URL exposed to the browser; the tunnel hostname and
+  # the shared secret stay server-side. Change here if the Worker route changes.
+  aiChatURL = "https://ai.wrightfunctions.com/chat"
