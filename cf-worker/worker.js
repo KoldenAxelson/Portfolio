@@ -7,8 +7,9 @@
  * proxy in front of Ollama). The tunnel hostname and the secret are never in this
  * source — they come from Worker bindings:
  *
- *   TUNNEL_URL    (var)    e.g. https://ai-tunnel.wrightfunctions.com — set in the
- *                          Cloudflare dashboard; NOT committed, NOT in client code.
+ *   TUNNEL_URL    (var)    the private tunnel hostname, e.g. https://<tunnel-host>
+ *                          — set in the Cloudflare dashboard; NOT committed, NOT
+ *                          in client code.
  *   PROXY_SECRET  (secret) shared secret matching the Go proxy's AI_PROXY_SECRET.
  *                          `wrangler secret put PROXY_SECRET`.
  *   AI_RL         (KV)     namespace used for per-IP rate-limit counters.

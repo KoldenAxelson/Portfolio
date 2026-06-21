@@ -13,7 +13,7 @@
 #        wrangler secret put PROXY_SECRET
 #
 #   3. Set the private tunnel hostname (NEVER commit this — dashboard or CLI var):
-#        wrangler deploy --var TUNNEL_URL:https://ai-tunnel.wrightfunctions.com
+#        wrangler deploy --var TUNNEL_URL:https://<your-private-tunnel-host>
 #      ...or set TUNNEL_URL under Settings → Variables in the dashboard.
 #
 name = "ai-chat"

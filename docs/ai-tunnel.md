@@ -16,7 +16,7 @@ yet, which is why the initial setup pointed here instead.
 | ---------------- | --------------------------------------- |
 | Site baseURL     | `https://wrightfunctions.com/`          |
 | Worker host      | `ai.wrightfunctions.com`                |
-| Tunnel hostname  | `ai-tunnel.wrightfunctions.com` (private — Worker var only) |
+| Tunnel hostname  | _private_ — set as the Worker `TUNNEL_URL` var / `~/.cloudflared`; never committed |
 | Browser endpoint | `https://ai.wrightfunctions.com/chat` (Hugo param `aiChatURL`) |
 | CORS allowlist   | `wrightfunctions.com`, `www.wrightfunctions.com` |
 
@@ -46,7 +46,7 @@ yet, which is why the initial setup pointed here instead.
 3. Tunnel: `cloudflared tunnel --config ~/.cloudflared/ai-tunnel.yml run ai-tunnel`.
 4. Worker: from `cf-worker/` — `wrangler kv namespace create AI_RL` (paste id),
    `wrangler secret put PROXY_SECRET`, then
-   `wrangler deploy --var TUNNEL_URL:https://ai-tunnel.wrightfunctions.com`.
+   `wrangler deploy --var TUNNEL_URL:https://<your-private-tunnel-host>`.
 5. Site: `make css && make build` and deploy `./public`.
 6. Smoke test:
    ```bash
@@ -81,32 +81,33 @@ and the Pages site serves from it.
 
 **Infra changes**
 
-1. Re-point the tunnel DNS to the new zone:
+1. Re-point the tunnel DNS to the new zone (choose a private hostname on it —
+   keep it out of committed files; the setup script reads it from `AI_TUNNEL_HOST`
+   or `~/.cloudflared`):
    ```bash
-   cloudflared tunnel route dns ai-tunnel ai-tunnel.konradwright.com
+   cloudflared tunnel route dns ai-tunnel <tunnel-host>
    ```
-   Update `~/.cloudflared/ai-tunnel.yml` ingress `hostname` to
-   `ai-tunnel.konradwright.com` and restart the tunnel.
+   Update `~/.cloudflared/ai-tunnel.yml` ingress `hostname` to that host and
+   restart the tunnel.
 2. Redeploy the Worker with the new tunnel var:
    ```bash
    cd cf-worker
-   wrangler deploy --var TUNNEL_URL:https://ai-tunnel.konradwright.com
+   wrangler deploy --var TUNNEL_URL:https://<tunnel-host>
    ```
-   `custom_domain = true` provisions `ai.konradwright.com` automatically once the
-   zone exists.
-3. Rebuild + redeploy the site.
+3. Add the `ai.konradwright.com` custom domain in the dashboard (Workers & Pages →
+   ai-chat → Settings → Domains & Routes → Add → Custom domain).
+4. Rebuild + redeploy the site.
 
 **Decommission the old hostnames** after cutover: delete the
-`ai.wrightfunctions.com` Worker route and the `ai-tunnel.wrightfunctions.com`
-CNAME if you don't want the feature reachable on both domains.
+`ai.wrightfunctions.com` custom domain and the old tunnel CNAME if you don't want
+the feature reachable on both domains.
 
 ## Gotchas seen during setup
 
-- `cloudflared tunnel route dns ai-tunnel ai-tunnel.konradwright.com` created a
-  CNAME named `ai-tunnel.konradwright.com.wrightfunctions.com` because
-  konradwright.com wasn't a zone — cloudflared appended the only zone it found.
-  If you see a hostname with a doubled apex, the target zone isn't on the account.
-  Delete that stray CNAME in the wrightfunctions.com DNS panel.
+- `cloudflared tunnel route dns` for a hostname on a zone that isn't on the
+  account creates a CNAME with a **doubled apex** (`host.newzone.currentzone`),
+  because cloudflared appends the only zone it finds. If you see that, the target
+  zone isn't on the account — delete the stray CNAME in the DNS panel.
 - Wrangler `kv namespace create` failing with a `/memberships` 403 means the
   OAuth token can't read user details. Fix: `export CLOUDFLARE_ACCOUNT_ID=…`, or
   re-run `wrangler login` granting all scopes, or use a scoped API token via

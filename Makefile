@@ -24,13 +24,15 @@ CSS_OUT  := assets/css/app.css
 AI_PROXY_DIR := ai-proxy
 AI_PROXY_BIN := $(AI_PROXY_DIR)/ai-proxy
 AI_CONTEXT   := CONTEXT.md
-AI_PORT      := 8080
+AI_PORT      := 6573    # localhost-only proxy port (ASCII "AI" = 65,73). Must
+                        # match the proxy default in ai-proxy/main.go, PROXY_PORT
+                        # in scripts/setup-ai-tunnel.sh, and the tunnel ingress.
 # Default to whatever model Ollama actually has installed (first one listed), so
 # `make ai-proxy-run` just works without respecifying. Override with AI_MODEL=…
 # `?=` means an AI_MODEL from the environment wins and skips this detection.
 AI_MODEL     ?= $(shell command -v ollama >/dev/null 2>&1 && ollama list 2>/dev/null | awk 'NR==2 {print $$1}')
 
-.PHONY: help setup dev build css css-watch typecheck clean distclean ai-proxy ai-proxy-run
+.PHONY: help setup dev build css css-watch typecheck clean distclean ai-proxy ai-proxy-run ai-proxy-stop
 
 help: ## Show this help
 	@echo "Portfolio — available commands:"
@@ -137,6 +139,18 @@ ai-proxy-run: ai-proxy ## Build + run the proxy (env: AI_PROXY_SECRET; AI_MODEL 
 	@model='$(AI_MODEL)'; model="$${model:-llama3.2}"; \
 	  echo "Running ai-proxy on :$(AI_PORT) (model $$model, context $(AI_CONTEXT))…"; \
 	  cd $(AI_PROXY_DIR) && ./ai-proxy -context ../$(AI_CONTEXT) -port $(AI_PORT) -model "$$model"
+
+# Stop our proxy by exact executable name (NOT by port, NOT by args), so it
+# catches every ai-proxy instance regardless of how it was started, while never
+# touching an unrelated app on :$(AI_PORT), `make`, `go build`, or its own shell
+# (those have different process names). Run `ai-proxy-run` again to restart.
+ai-proxy-stop: ## Stop all running ai-proxy instances (started by ai-proxy-run)
+	@if pkill -x ai-proxy 2>/dev/null; then \
+	  echo "Stopped ai-proxy."; \
+	else \
+	  echo "No running ai-proxy found."; \
+	  echo "If :$(AI_PORT) is still busy, another app holds it — check: lsof -nP -i :$(AI_PORT)"; \
+	fi
 
 clean: ## Remove build artifacts (public/, resources/, generated CSS, proxy binary)
 	@rm -rf public resources $(CSS_OUT) $(AI_PROXY_BIN)
