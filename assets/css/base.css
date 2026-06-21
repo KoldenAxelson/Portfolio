@@ -301,6 +301,18 @@ img {
   }
 }
 
+/* AI chat trigger gate. The desktop FAB and the mobile navbar button stay hidden
+   until a backend health check passes — ts/ai-widget.ts sets data-ai-ok on <html>
+   when the chat is reachable (cached in localStorage). Hidden-by-default also
+   means "no JS / health unknown → no button", which fails safe (the chat needs JS
+   anyway). The FAB is desktop-only; the mobile button's parent is lg:hidden. */
+[data-ai-fab],
+[data-ai-mobile-trigger] { display: none; }
+[data-ai-ok] [data-ai-mobile-trigger] { display: flex; }
+@media (min-width: 1024px) {
+  [data-ai-ok] [data-ai-fab] { display: inline-flex; }
+}
+
 /* Floating glass button (e.g. the mobile scroll-to-top). The button carries its
    own transform for the show/hide animation; since that transform is on the same
    element as the backdrop-filter it doesn't break the blur. */

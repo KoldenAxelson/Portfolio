@@ -43,6 +43,7 @@ import (
 
 const (
 	ollamaURL      = "http://localhost:11434/api/chat"
+	ollamaTagsURL  = "http://localhost:11434/api/tags"
 	defaultModel   = "llama3.2"
 	numPredict     = 100 // hard token ceiling; ~280-char tweet-length replies finish well within this
 	maxMessageLen  = 500              // characters
@@ -209,6 +210,7 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/chat", s.handleChat)
+	mux.HandleFunc("/health", s.handleHealth)
 
 	addr := ":" + *port
 	srv := &http.Server{
@@ -296,6 +298,60 @@ func (s *server) handleChat(w http.ResponseWriter, r *http.Request) {
 	// 8. Log: no message content, only metadata.
 	log.Printf("ai-proxy: ok ip=%s in=%d out=%d dur=%s",
 		ip, len([]rune(msg)), len([]rune(reply)), time.Since(start).Round(time.Millisecond))
+}
+
+// handleHealth reports whether the chat can actually answer right now: Ollama
+// reachable AND the configured model present. Secret-gated like /chat, so the
+// open internet can't probe it. The widget gates its button on this.
+func (s *server) handleHealth(w http.ResponseWriter, r *http.Request) {
+	if subtle.ConstantTimeCompare([]byte(r.Header.Get("X-Proxy-Secret")), []byte(s.secret)) != 1 {
+		writeError(w, http.StatusUnauthorized, "unauthorized")
+		return
+	}
+	if s.ollamaHealthy() {
+		writeJSON(w, http.StatusOK, map[string]string{"status": "ok"})
+		return
+	}
+	writeJSON(w, http.StatusServiceUnavailable, map[string]string{"status": "unavailable"})
+}
+
+// ollamaHealthy is a cheap, fast check (3s budget) that Ollama is up and the
+// configured model is pulled — catching the "proxy up but model missing" case.
+func (s *server) ollamaHealthy() bool {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, ollamaTagsURL, nil)
+	if err != nil {
+		return false
+	}
+	resp, err := s.client.Do(req)
+	if err != nil {
+		return false
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		return false
+	}
+	var out struct {
+		Models []struct {
+			Name string `json:"name"`
+		} `json:"models"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&out); err != nil {
+		return false
+	}
+	// Exact tag match, or — when the model is given without a tag (e.g. "llama3.2",
+	// which Ollama resolves to "llama3.2:latest") — any matching "name:" prefix.
+	prefix := ""
+	if !strings.Contains(s.model, ":") {
+		prefix = s.model + ":"
+	}
+	for _, m := range out.Models {
+		if m.Name == s.model || (prefix != "" && strings.HasPrefix(m.Name, prefix)) {
+			return true
+		}
+	}
+	return false
 }
 
 // askOllama builds the chat request and extracts the assistant's reply.

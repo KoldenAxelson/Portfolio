@@ -60,6 +60,47 @@ function cleanField(v, max) {
   return v.replace(/[\u0000-\u001F\u007F]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, max);
 }
 
+/**
+ * Health probe for the widget's button gate. Returns { ok } with a 200/503 status.
+ * The boolean is edge-cached (~45s) so a burst of page loads doesn't fan out into
+ * a burst of Ollama checks; the client also caches it (minutes). Cached under a
+ * synthetic key without CORS headers, then re-wrapped with per-origin CORS.
+ */
+async function handleHealth(request, env, origin) {
+  if (request.method !== 'GET') {
+    return json({ error: 'method_not_allowed' }, 405, origin);
+  }
+  const cache = caches.default;
+  const cacheKey = new Request('https://ai-health.internal/status');
+
+  let ok;
+  const hit = await cache.match(cacheKey);
+  if (hit) {
+    ok = ((await hit.json()) || {}).ok === true;
+  } else {
+    ok = await probeUpstream(env);
+    const cached = new Response(JSON.stringify({ ok }), {
+      headers: { 'Content-Type': 'application/json', 'Cache-Control': 'max-age=45' },
+    });
+    await cache.put(cacheKey, cached);
+  }
+  return json({ ok }, ok ? 200 : 503, origin);
+}
+
+// Ask the proxy (behind the tunnel) whether the chat can answer right now.
+async function probeUpstream(env) {
+  if (!env.TUNNEL_URL || !env.PROXY_SECRET) return false;
+  try {
+    const r = await fetch(`${env.TUNNEL_URL.replace(/\/+$/, '')}/health`, {
+      headers: { 'X-Proxy-Secret': env.PROXY_SECRET },
+      cf: { cacheTtl: 0 },
+    });
+    return r.ok;
+  } catch {
+    return false;
+  }
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -68,6 +109,11 @@ export default {
     // CORS preflight.
     if (request.method === 'OPTIONS') {
       return new Response(null, { status: 204, headers: corsHeaders(origin) });
+    }
+
+    // Health probe — public, GET, edge-cached. The widget gates its button on it.
+    if (url.pathname === '/health') {
+      return handleHealth(request, env, origin);
     }
 
     if (url.pathname !== '/chat') {

@@ -68,7 +68,7 @@
 
       <div class="flex items-center gap-1 lg:hidden">
         {{- if and (ne .Layout "cv") (not (in .RelPermalink "/misc")) }}
-        <button type="button" data-ai-trigger aria-haspopup="dialog" aria-expanded="false" aria-label="Ask about Konrad" class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-md text-muted transition-colors hover:bg-border/40 hover:!text-accent focus-visible:bg-border/40 focus-visible:!text-accent">
+        <button type="button" data-ai-trigger data-ai-mobile-trigger aria-haspopup="dialog" aria-expanded="false" aria-label="Ask about Konrad" class="h-10 w-10 cursor-pointer items-center justify-center rounded-md text-muted transition-colors hover:bg-border/40 hover:!text-accent focus-visible:bg-border/40 focus-visible:!text-accent">
           {{ partial "func/svg-icon.html" (dict "name" "sparkles" "class" "h-7 w-7" "width" "1.6") }}
         </button>
         {{- end }}

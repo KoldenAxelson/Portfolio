@@ -37,15 +37,18 @@
   {{/* Scrim — mobile only; tap to dismiss. */}}
   <div data-ai-scrim class="fixed inset-0 z-40 bg-black/30 opacity-0 transition-opacity duration-200 ease-out lg:hidden motion-reduce:transition-none" hidden></div>
 
-  {{/* Desktop floating trigger (mobile trigger lives in topnav.html). */}}
+  {{/* Desktop floating trigger (mobile trigger lives in topnav.html). Display is
+       controlled by the health gate (base.css + ts/ai-widget.ts) — hidden until
+       html[data-ai-ok] is set, then inline-flex on lg+. */}}
   <button
     type="button"
     data-ai-trigger
+    data-ai-fab
     aria-haspopup="dialog"
     aria-expanded="false"
     aria-label="Ask about Konrad"
     title="Ask about Konrad"
-    class="glass-btn fixed bottom-6 right-6 z-30 hidden h-12 w-12 items-center justify-center rounded-full text-fg transition-colors duration-200 hover:!text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 lg:inline-flex"
+    class="glass-btn fixed bottom-6 right-6 z-30 h-12 w-12 items-center justify-center rounded-full text-fg transition-colors duration-200 hover:!text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
   >
     {{ partial "func/svg-icon.html" (dict "name" "sparkles" "class" "h-6 w-6" "width" "1.6") }}
   </button>
