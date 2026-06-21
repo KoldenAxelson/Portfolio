@@ -29,7 +29,7 @@ const ALLOWED_ORIGINS = new Set([
   'https://www.wrightfunctions.com',
 ]);
 
-const MAX_BODY_BYTES = 2 * 1024; // 2 KB
+const MAX_BODY_BYTES = 4 * 1024; // 4 KB (message + current-page context)
 const MAX_MESSAGE_LEN = 500;
 const PER_MINUTE_LIMIT = 5;
 const PER_DAY_LIMIT = 30;
@@ -52,6 +52,12 @@ function json(body, status, origin) {
     status,
     headers: { 'Content-Type': 'application/json', ...corsHeaders(origin) },
   });
+}
+
+// Coerce an untrusted field to a clean, length-capped string (or '' if absent).
+function cleanField(v, max) {
+  if (typeof v !== 'string') return '';
+  return v.replace(/[\u0000-\u001F\u007F]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, max);
 }
 
 export default {
@@ -107,6 +113,13 @@ export default {
       return json({ error: 'bad_request' }, 400, origin);
     }
 
+    // Optional current-page context — same sanitize, length-capped per field.
+    const page = {
+      title: cleanField(payload?.page?.title, 200),
+      url: cleanField(payload?.page?.url, 300),
+      desc: cleanField(payload?.page?.desc, 500),
+    };
+
     // Per-IP rate limiting at the edge (KV). Minute window first, then daily cap.
     const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
     const limited = await checkRateLimit(env, ip);
@@ -130,7 +143,7 @@ export default {
           // the tunnel hop.
           'X-Forwarded-For': ip,
         },
-        body: JSON.stringify({ message }),
+        body: JSON.stringify({ message, page }),
       });
     } catch {
       return json({ error: 'upstream_error' }, 502, origin);

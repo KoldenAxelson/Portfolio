@@ -18,12 +18,19 @@
 */ -}}
 {{- $endpoint := site.Params.aiChatURL -}}
 {{- $email := site.Data.site.author.email -}}
+{{- /* Current-page context, sent with each question so the agent knows where the
+       visitor is. Description first; fall back to a trimmed, HTML-stripped summary. */ -}}
+{{- $pageDesc := .Description -}}
+{{- if not $pageDesc }}{{ $pageDesc = (.Summary | plainify | chomp | truncate 240) }}{{ end -}}
 {{- if $endpoint -}}
 
 <div
   data-ai-widget
   data-ai-endpoint="{{ $endpoint }}"
   data-ai-contact="mailto:{{ $email }}"
+  data-ai-page-title="{{ .Title }}"
+  data-ai-page-url="{{ .RelPermalink }}"
+  data-ai-page-desc="{{ $pageDesc }}"
   hx-boost="false"
   class="print:hidden"
 >
