@@ -84,7 +84,16 @@ async function handleHealth(request, env, origin) {
     });
     await cache.put(cacheKey, cached);
   }
-  return json({ ok }, ok ? 200 : 503, origin);
+  // Short browser cache so it isn't flagged as "no cache lifetime"; well under
+  // the widget's localStorage TTLs, so it can't mask a recovery.
+  return new Response(JSON.stringify({ ok }), {
+    status: ok ? 200 : 503,
+    headers: {
+      'Content-Type': 'application/json',
+      'Cache-Control': 'public, max-age=30',
+      ...corsHeaders(origin),
+    },
+  });
 }
 
 // Ask the proxy (behind the tunnel) whether the chat can answer right now.

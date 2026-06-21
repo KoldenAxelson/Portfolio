@@ -8,6 +8,16 @@
     {{/* Preload Inter only — it renders the LCP text. Mono isn't LCP-critical. */}}
     <link rel="preload" href="{{ partial "func/url.html" "/fonts/InterVariable.woff2" }}" as="font" type="font/woff2" crossorigin />
 
+    {{/* Pre-resolve DNS for the AI chat origin (a different subdomain) on pages
+         where the widget loads, so the deferred health check / first question
+         connects faster. dns-prefetch only — no held connection to flag as unused. */}}
+    {{- with site.Params.aiChatURL }}
+    {{- if and (not (eq $.RelPermalink "/cv/")) (not (in $.RelPermalink "/misc")) }}
+    {{- $o := urls.Parse . }}
+    <link rel="dns-prefetch" href="{{ $o.Scheme }}://{{ $o.Host }}" />
+    {{- end }}
+    {{- end }}
+
     <link rel="icon" type="image/svg+xml" href="{{ partial "func/url.html" "/favicon.svg" }}" />
     <link rel="alternate" type="application/feed+json" title="{{ site.Data.site.title }} (JSON Feed)" href="{{ partial "func/url.html" "/feed.json" }}" />
     <link rel="alternate" type="text/plain" title="{{ site.Data.site.title }} (llms.txt)" href="{{ partial "func/url.html" "/llms.txt" }}" />
