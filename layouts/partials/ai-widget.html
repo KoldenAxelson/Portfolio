@@ -40,7 +40,7 @@
     title="Ask about Konrad"
     class="glass-btn fixed bottom-6 right-6 z-30 hidden h-12 w-12 items-center justify-center rounded-full text-fg transition-colors duration-200 hover:!text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 lg:inline-flex"
   >
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-6 w-6"><path d="M8 10.5h8M8 14h5" /><path d="M4 5.5h16a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H9l-4 3.5v-3.5H4a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1Z" /></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-6 w-6"><path d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" /><path d="M18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" /><path d="M16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" /></svg>
   </button>
 
   {{/* Chat panel */}}
@@ -55,7 +55,7 @@
     <header class="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
       <div class="flex items-center gap-2">
         <span class="text-accent" aria-hidden="true">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M8 10.5h8M8 14h5" /><path d="M4 5.5h16a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H9l-4 3.5v-3.5H4a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1Z" /></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" /><path d="M18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" /><path d="M16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" /></svg>
         </span>
         <h2 class="m-0 text-sm font-medium">Ask about Konrad</h2>
       </div>
@@ -126,6 +126,33 @@
   .ai-msg-system { margin-right: auto; color: rgb(var(--c-muted)); font-style: italic; }
   .ai-msg-user, .ai-msg-bot { width: fit-content; }
   .ai-msg a { color: rgb(var(--c-accent)); text-decoration: underline; }
+
+  /* Rendered markdown inside bot replies. Bot bubbles use normal whitespace
+     (newlines become <p>/<br>); user + system bubbles keep pre-wrap above. */
+  .ai-msg-bot { white-space: normal; }
+  .ai-msg-bot > :first-child { margin-top: 0; }
+  .ai-msg-bot > :last-child { margin-bottom: 0; }
+  .ai-msg-bot p { margin: 0 0 0.5rem; }
+  .ai-msg-bot strong { font-weight: 600; }
+  .ai-msg-bot ul, .ai-msg-bot ol { margin: 0.25rem 0 0.5rem; padding-left: 1.25rem; }
+  .ai-msg-bot ul { list-style: disc; }
+  .ai-msg-bot ol { list-style: decimal; }
+  .ai-msg-bot li { margin: 0.125rem 0; }
+  .ai-msg-bot code {
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 0.85em;
+    background-color: rgb(var(--c-bg) / 0.55);
+    padding: 0.05rem 0.3rem;
+    border-radius: 0.25rem;
+  }
+  .ai-msg-bot pre {
+    margin: 0.25rem 0 0.5rem;
+    padding: 0.5rem 0.6rem;
+    border-radius: 0.4rem;
+    background-color: rgb(var(--c-bg) / 0.55);
+    overflow-x: auto;
+  }
+  .ai-msg-bot pre code { background: none; padding: 0; font-size: 0.8rem; }
 
   /* Typing dots. */
   .ai-dot { width: 0.375rem; height: 0.375rem; border-radius: 9999px; background-color: rgb(var(--c-muted)); display: inline-block; animation: ai-bounce 1.2s infinite ease-in-out; }

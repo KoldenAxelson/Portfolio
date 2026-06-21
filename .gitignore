@@ -31,6 +31,14 @@
 .wrangler/
 .dev.vars
 
+# Credentials — never commit. (Belt-and-suspenders: the AI feature keeps the
+# proxy secret in env and the tunnel creds in ~/.cloudflared, not in the repo.)
+*.key
+*.pem
+cloudflared/
+*.tunnel.json
+AI_PROXY_SECRET
+
 # Fallow
 .fallow/
 .fallowrc.json

@@ -70,6 +70,98 @@ function setOpen(open: boolean): void {
   }
 }
 
+// --- Markdown (safe subset) ------------------------------------------------
+// The model replies in markdown. We render a limited, safe subset: escape ALL
+// HTML first, then emit only our own whitelisted tags. Link hrefs are scheme-
+// checked, so no user/model content can inject markup. Applied to bot messages
+// only — user and system text stay plain.
+
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function safeUrl(url: string): string {
+  return /^(https?:|mailto:)/i.test(url.trim()) ? url.trim() : '#';
+}
+
+function renderMarkdown(src: string): string {
+  let s = escapeHtml(src.replace(/\r\n/g, '\n'));
+
+  // Pull code out first so its contents aren't touched by other rules.
+  const stash: string[] = [];
+  const keep = (html: string): string => `\u0000${stash.push(html) - 1}\u0000`;
+  s = s.replace(
+    /```([\s\S]*?)```/g,
+    (_m, c) => `\n\n${keep(`<pre><code>${c.replace(/^\n/, '').replace(/\n$/, '')}</code></pre>`)}\n\n`,
+  );
+  s = s.replace(/`([^`]+)`/g, (_m, c) => keep(`<code>${c}</code>`));
+
+  // Links, then bold, then italic.
+  s = s.replace(
+    /\[([^\]]+)\]\(([^)\s]+)\)/g,
+    (_m, t, u) => `<a href="${safeUrl(u)}" target="_blank" rel="noopener noreferrer">${t}</a>`,
+  );
+  s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/__([^_]+)__/g, '<strong>$1</strong>');
+  s = s.replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<em>$2</em>').replace(/(^|[^_])_([^_\n]+)_/g, '$1<em>$2</em>');
+
+  // Line-oriented: headings → bold line; -/*/+ and 1. → lists.
+  let listType: 'ul' | 'ol' | null = null;
+  const out: string[] = [];
+  const closeList = (): void => {
+    if (listType) {
+      out.push(`</${listType}>`);
+      listType = null;
+    }
+  };
+  for (const line of s.split('\n')) {
+    const h = line.match(/^\s*#{1,6}\s+(.*)$/);
+    const ul = line.match(/^\s*[-*+]\s+(.*)$/);
+    const ol = line.match(/^\s*\d+\.\s+(.*)$/);
+    if (h) {
+      closeList();
+      out.push(`<strong>${h[1]}</strong>`);
+    } else if (ul) {
+      if (listType !== 'ul') {
+        closeList();
+        out.push('<ul>');
+        listType = 'ul';
+      }
+      out.push(`<li>${ul[1]}</li>`);
+    } else if (ol) {
+      if (listType !== 'ol') {
+        closeList();
+        out.push('<ol>');
+        listType = 'ol';
+      }
+      out.push(`<li>${ol[1]}</li>`);
+    } else {
+      closeList();
+      out.push(line);
+    }
+  }
+  closeList();
+
+  // Blank-line-separated blocks → paragraphs; single newlines → <br>. Block-level
+  // elements (lists, code) are passed through untouched.
+  s = out
+    .join('\n')
+    .split(/\n{2,}/)
+    .map((block) => {
+      const b = block.trim();
+      if (!b) return '';
+      if (/^<(ul|ol|pre)/.test(b)) return b;
+      if (/^\u0000\d+\u0000$/.test(b)) return b; // standalone code block
+      return `<p>${b.replace(/\n/g, '<br>')}</p>`;
+    })
+    .join('');
+
+  return s.replace(/\u0000(\d+)\u0000/g, (_m, i) => stash[Number(i)]);
+}
+
 // --- Rendering -------------------------------------------------------------
 
 function bubble(msg: Msg, contact: string): HTMLElement {
@@ -79,14 +171,17 @@ function bubble(msg: Msg, contact: string): HTMLElement {
   else el.className = 'ai-msg ai-msg-system';
 
   if (msg.cta) {
-    // Build the contact CTA with a real link node — never innerHTML.
+    // Build the contact CTA with a real link node — never raw HTML.
     el.appendChild(document.createTextNode(DAY_LIMIT_MSG));
     const a = document.createElement('a');
     a.href = contact || '#';
     a.textContent = 'contact Konrad →';
     el.appendChild(a);
+  } else if (msg.role === 'bot') {
+    // Markdown — escaped first, only whitelisted tags emitted (see renderMarkdown).
+    el.innerHTML = renderMarkdown(msg.text);
   } else {
-    el.textContent = msg.text; // textContent escapes; replies render as plain text
+    el.textContent = msg.text; // user + system stay plain text
   }
   return el;
 }
