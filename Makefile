@@ -25,6 +25,10 @@ AI_PROXY_DIR := ai-proxy
 AI_PROXY_BIN := $(AI_PROXY_DIR)/ai-proxy
 AI_CONTEXT   := CONTEXT.md
 AI_PORT      := 8080
+# Default to whatever model Ollama actually has installed (first one listed), so
+# `make ai-proxy-run` just works without respecifying. Override with AI_MODEL=…
+# `?=` means an AI_MODEL from the environment wins and skips this detection.
+AI_MODEL     ?= $(shell command -v ollama >/dev/null 2>&1 && ollama list 2>/dev/null | awk 'NR==2 {print $$1}')
 
 .PHONY: help setup dev build css css-watch typecheck clean distclean ai-proxy ai-proxy-run
 
@@ -128,10 +132,11 @@ ai-proxy: ## Build the AI chat proxy binary (needs Go on PATH)
 	@cd $(AI_PROXY_DIR) && go build -o ai-proxy main.go
 	@echo "Built $(AI_PROXY_BIN)"
 
-ai-proxy-run: ai-proxy ## Build + run the proxy (env: AI_PROXY_SECRET, AI_MODEL)
+ai-proxy-run: ai-proxy ## Build + run the proxy (env: AI_PROXY_SECRET; AI_MODEL optional)
 	@[ -n "$$AI_PROXY_SECRET" ] || { echo "Set AI_PROXY_SECRET first: export AI_PROXY_SECRET=…" >&2; exit 1; }
-	@echo "Running ai-proxy on :$(AI_PORT) (model $${AI_MODEL:-llama3.2}, context $(AI_CONTEXT))…"
-	@cd $(AI_PROXY_DIR) && ./ai-proxy -context ../$(AI_CONTEXT) -port $(AI_PORT) $${AI_MODEL:+-model "$$AI_MODEL"}
+	@model='$(AI_MODEL)'; model="$${model:-llama3.2}"; \
+	  echo "Running ai-proxy on :$(AI_PORT) (model $$model, context $(AI_CONTEXT))…"; \
+	  cd $(AI_PROXY_DIR) && ./ai-proxy -context ../$(AI_CONTEXT) -port $(AI_PORT) -model "$$model"
 
 clean: ## Remove build artifacts (public/, resources/, generated CSS, proxy binary)
 	@rm -rf public resources $(CSS_OUT) $(AI_PROXY_BIN)
