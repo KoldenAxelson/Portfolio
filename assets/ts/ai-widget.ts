@@ -372,8 +372,19 @@ function writeHealthCache(ok: boolean): void {
   }
 }
 
+function isLocalDev(): boolean {
+  const h = location.hostname;
+  return h === 'localhost' || h === '127.0.0.1' || h === '[::1]';
+}
+
 async function gateOnHealth(endpoint: string): Promise<void> {
   if (!endpoint) return;
+  // Local dev (`make dev`): show the button so it's styleable. The health check
+  // would fail anyway — CORS blocks localhost from the production Worker.
+  if (isLocalDev()) {
+    applyHealth(true);
+    return;
+  }
   const cached = readHealthCache();
   if (cached !== null) {
     applyHealth(cached);
