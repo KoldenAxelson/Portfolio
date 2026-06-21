@@ -20,6 +20,14 @@ const history: Msg[] = [];
 let dayLimitReached = false;
 let pending = false;
 let globalsWired = false;
+let healthChecking = false;
+
+// Button gate: only show the chat trigger when the backend can actually answer.
+// Result is cached in localStorage — longer when healthy, short when not, so the
+// button comes back quickly once the backend recovers.
+const HEALTH_KEY = 'ai_health';
+const HEALTHY_TTL = 20 * 60 * 1000; // 20 min
+const UNHEALTHY_TTL = 3 * 60 * 1000; // 3 min
 
 const DAY_LIMIT_MSG = "You've reached the daily question limit. For more, ";
 const SPIKE_MSG =
@@ -336,11 +344,67 @@ function wireGlobalsOnce(): void {
   });
 }
 
+// --- Health gate -----------------------------------------------------------
+
+function applyHealth(ok: boolean): void {
+  const el = document.documentElement;
+  if (ok) el.setAttribute('data-ai-ok', '');
+  else el.removeAttribute('data-ai-ok');
+}
+
+function readHealthCache(): boolean | null {
+  try {
+    const raw = localStorage.getItem(HEALTH_KEY);
+    if (!raw) return null;
+    const { ok, ts } = JSON.parse(raw) as { ok: boolean; ts: number };
+    const ttl = ok ? HEALTHY_TTL : UNHEALTHY_TTL;
+    return Date.now() - ts > ttl ? null : ok; // null = stale, needs recheck
+  } catch {
+    return null;
+  }
+}
+
+function writeHealthCache(ok: boolean): void {
+  try {
+    localStorage.setItem(HEALTH_KEY, JSON.stringify({ ok, ts: Date.now() }));
+  } catch {
+    /* storage unavailable (e.g. private mode) — we just recheck next load */
+  }
+}
+
+async function gateOnHealth(endpoint: string): Promise<void> {
+  if (!endpoint) return;
+  const cached = readHealthCache();
+  if (cached !== null) {
+    applyHealth(cached);
+    return;
+  }
+  if (healthChecking) return;
+  healthChecking = true;
+  let ok = false;
+  try {
+    const ctrl = new AbortController();
+    const timer = window.setTimeout(() => ctrl.abort(), 6000);
+    const res = await fetch(endpoint.replace(/\/chat$/, '/health'), { signal: ctrl.signal });
+    window.clearTimeout(timer);
+    ok = res.ok; // 200 → healthy, 503 → down. Anything else (error) → hide.
+  } catch {
+    ok = false; // hide-on-unknown: a blip never shows a dead button
+  } finally {
+    healthChecking = false;
+  }
+  writeHealthCache(ok);
+  applyHealth(ok);
+}
+
 export function initAiWidget(): void {
   wireGlobalsOnce();
 
   const els = widgetEls();
   if (!els || !els.panel) return;
+
+  // Gate the button on a (cached) backend health check.
+  void gateOnHealth(els.endpoint);
 
   // Re-render any prior conversation into the freshly-swapped DOM.
   renderHistory();
