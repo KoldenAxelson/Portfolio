@@ -80,8 +80,9 @@
     {{ partial "cv-actions.html" . }}
     {{ partial "scroll-to-top.html" . }}
 
-    {{/* AI chat widget — every page except /cv. */}}
-    {{- if not (eq .RelPermalink "/cv/") }}
+    {{/* AI chat widget — every page except /cv and /misc/* (those use the
+         navbar button slot for their own page actions). */}}
+    {{- if and (not (eq .RelPermalink "/cv/")) (not (in .RelPermalink "/misc")) }}
     {{ partial "ai-widget.html" . }}
     {{- end }}
   </body>

@@ -44,6 +44,11 @@ function widgetEls() {
     triggers: Array.from(document.querySelectorAll<HTMLButtonElement>('[data-ai-trigger]')),
     endpoint: root.dataset.aiEndpoint || '',
     contact: root.dataset.aiContact || '',
+    page: {
+      title: root.dataset.aiPageTitle || '',
+      url: root.dataset.aiPageUrl || '',
+      desc: root.dataset.aiPageDesc || '',
+    },
   };
 }
 
@@ -257,7 +262,8 @@ async function send(text: string): Promise<void> {
     const res = await fetch(els.endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: text }),
+      // Send the current page so the agent can answer "what is this page?" etc.
+      body: JSON.stringify({ message: text, page: els.page }),
       signal: ctrl.signal,
     });
     let data: { reply?: string; error?: string; scope?: string } = {};
