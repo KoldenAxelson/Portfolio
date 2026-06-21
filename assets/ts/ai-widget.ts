@@ -377,7 +377,19 @@ function isLocalDev(): boolean {
   return h === 'localhost' || h === '127.0.0.1' || h === '[::1]';
 }
 
-async function gateOnHealth(endpoint: string): Promise<void> {
+// Run non-critical work when the browser is idle, so it never competes with
+// first render / LCP. Falls back to a short timeout where requestIdleCallback
+// isn't available (older Safari).
+function whenIdle(fn: () => void): void {
+  const ric: typeof window.requestIdleCallback | undefined = window.requestIdleCallback;
+  if (ric) {
+    ric(fn, { timeout: 3000 });
+  } else {
+    window.setTimeout(fn, 1200);
+  }
+}
+
+function gateOnHealth(endpoint: string): void {
   if (!endpoint) return;
   // Local dev (`make dev`): show the button so it's styleable. The health check
   // would fail anyway — CORS blocks localhost from the production Worker.
@@ -387,11 +399,17 @@ async function gateOnHealth(endpoint: string): Promise<void> {
   }
   const cached = readHealthCache();
   if (cached !== null) {
-    applyHealth(cached);
+    applyHealth(cached); // instant, synchronous — no network on the hot path
     return;
   }
   if (healthChecking) return;
   healthChecking = true;
+  // The probe is non-critical (the button can appear a beat late); defer it out
+  // of the page's critical request chain.
+  whenIdle(() => void probeHealth(endpoint));
+}
+
+async function probeHealth(endpoint: string): Promise<void> {
   let ok = false;
   try {
     const ctrl = new AbortController();
@@ -415,7 +433,7 @@ export function initAiWidget(): void {
   if (!els || !els.panel) return;
 
   // Gate the button on a (cached) backend health check.
-  void gateOnHealth(els.endpoint);
+  gateOnHealth(els.endpoint);
 
   // Re-render any prior conversation into the freshly-swapped DOM.
   renderHistory();
