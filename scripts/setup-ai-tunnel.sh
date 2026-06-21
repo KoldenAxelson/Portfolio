@@ -13,11 +13,15 @@
 #   - npx / wrangler available; Cloudflare auth working.
 #   - AI_PROXY_SECRET exported (same value the Go proxy is running with).
 #   - CLOUDFLARE_ACCOUNT_ID exported (skips wrangler's failing /memberships call).
-#   - The Go proxy running on :8080 (`make ai-proxy-run`) and Ollama up.
+#   - Tunnel hostname: read from ~/.cloudflared/<tunnel>.yml if present, else set
+#     AI_TUNNEL_HOST (kept out of the repo — it's not in any committed file).
+#   - The Go proxy running on :6573 (`make ai-proxy-run`) and Ollama up.
 #
 # Usage:
 #   export AI_PROXY_SECRET=…           # must match the running proxy
 #   export CLOUDFLARE_ACCOUNT_ID=…     # dashboard right sidebar
+#   export AI_TUNNEL_HOST=…            # only on first run (before the tunnel
+#                                      # config exists); private, never committed
 #   ./scripts/setup-ai-tunnel.sh                # tunnel + Worker + build the site
 #   DEPLOY_PAGES=1 ./scripts/setup-ai-tunnel.sh # also push the site via wrangler
 #                                               # (otherwise deploy via your usual
@@ -26,12 +30,14 @@
 set -euo pipefail
 
 # --- config -----------------------------------------------------------------
+# ZONE / WORKER_HOST are public (the site domain + the client-facing endpoint).
+# The private tunnel hostname is NOT hardcoded here — it's resolved at runtime
+# from the local cloudflared config or AI_TUNNEL_HOST (see preflight).
 ZONE="wrightfunctions.com"
 TUNNEL_NAME="ai-tunnel"
-TUNNEL_HOST="ai-tunnel.${ZONE}"
 WORKER_HOST="ai.${ZONE}"
 SITE_ORIGIN="https://${ZONE}"
-PROXY_PORT="8080"
+PROXY_PORT="6573"   # must match AI_PORT (Makefile) + the proxy default (main.go)
 PAGES_PROJECT="portfolio"
 
 CF_DIR="${HOME}/.cloudflared"
@@ -51,25 +57,15 @@ die()  { echo "${R}  ✗ $*${N}" >&2; exit 1; }
 auth_hint() {
   cat >&2 <<'HINT'
 
-  Cloudflare rejected the request (auth error 10000). The Worker upload usually
-  succeeds; what fails is the Zone-level custom-domain route. Your API token is
-  missing Zone permissions and/or isn't scoped to the zone.
+  Cloudflare rejected the request (auth error 10000). Your API token is missing
+  the permissions this deploy needs (the custom domain is managed in the
+  dashboard, so only Account-level Workers perms are required here).
 
-  Fix the token (Dashboard → My Profile → API Tokens → edit your token):
-    Permissions:
-      Account · Workers Scripts        : Edit
-      Account · Workers KV Storage      : Edit
-      Account · Account Settings        : Read
-      Zone    · Workers Routes          : Edit
-      Zone    · DNS                     : Edit
-    Zone Resources:
-      Include · Specific zone · wrightfunctions.com   ← easy to miss
+  Edit the token (Dashboard → My Profile → API Tokens → edit your token):
+    Account · Workers Scripts     : Edit
+    Account · Workers KV Storage  : Edit
+    Account · Account Settings    : Read
   Then re-export CLOUDFLARE_API_TOKEN and re-run this script.
-
-  No-token-route fallback (if Zone perms stay blocked): run the script with
-  SKIP_ROUTE=1 to deploy the Worker without the custom domain, then add it once
-  by hand: Dashboard → Workers & Pages → ai-chat → Settings → Domains & Routes
-  → Add → Custom domain → ai.wrightfunctions.com.
 HINT
 }
 
@@ -98,6 +94,15 @@ fi
 CF_CREDS="${CF_DIR}/${TUNNEL_ID}.json"
 [ -f "${CF_CREDS}" ] || die "Tunnel credentials file not found: ${CF_CREDS}"
 ok "tunnel '${TUNNEL_NAME}' id=${TUNNEL_ID}"
+
+# Resolve the private tunnel hostname without hardcoding it: prefer AI_TUNNEL_HOST,
+# else read the ingress hostname from the existing (untracked) cloudflared config.
+TUNNEL_HOST="${AI_TUNNEL_HOST:-}"
+if [ -z "${TUNNEL_HOST}" ] && [ -f "${CF_YML}" ]; then
+  TUNNEL_HOST="$(awk -F'hostname: *' '/hostname:/ {print $2; exit}' "${CF_YML}" | tr -d '[:space:]' || true)"
+fi
+[ -n "${TUNNEL_HOST}" ] || die "Set AI_TUNNEL_HOST=<your private tunnel hostname> (it's not stored in the repo)."
+ok "tunnel host resolved (private; not echoed)"
 
 # --- 1. proxy reachability --------------------------------------------------
 step "Checking the Go proxy on :${PROXY_PORT}"
@@ -157,27 +162,16 @@ else
   ok "KV namespace id already set in wrangler.toml"
 fi
 
-# 5b. Deploy with the private tunnel hostname as a var (never committed).
-#     SKIP_ROUTE=1 deploys against a route-less copy of the config so the upload
-#     succeeds without Zone permissions (add the custom domain by hand after).
-DEPLOY_CFG="wrangler.toml"
-if [ "${SKIP_ROUTE:-0}" = "1" ]; then
-  DEPLOY_CFG=".wrangler.noroute.toml"
-  awk 'BEGIN{skip=0} /^routes *= *\[/{skip=1} skip==1{ if(/\]/){skip=0}; next } {print}' wrangler.toml > "${DEPLOY_CFG}"
-  warn "SKIP_ROUTE=1 — deploying without the custom-domain route"
-fi
+# 5b. Deploy with the private tunnel hostname as a var (never committed). The
+#     custom domain (${WORKER_HOST}) is managed in the dashboard, not in
+#     wrangler.toml, so this only needs Account-level Workers + KV permissions.
 echo "    deploying…"
 set +e
-${WRANGLER} deploy -c "${DEPLOY_CFG}" --var "TUNNEL_URL:https://${TUNNEL_HOST}" 2>&1 | sed 's/^/    /'
+${WRANGLER} deploy --var "TUNNEL_URL:https://${TUNNEL_HOST}" 2>&1 | sed 's/^/    /'
 rc=${PIPESTATUS[0]}
 set -e
-[ "${DEPLOY_CFG}" = ".wrangler.noroute.toml" ] && rm -f "${DEPLOY_CFG}"
 if [ "${rc}" -ne 0 ]; then auth_hint; die "Worker deploy failed (see above)"; fi
 ok "Worker deployed"
-if [ "${SKIP_ROUTE:-0}" = "1" ]; then
-  warn "Add the custom domain manually: Dashboard → Workers & Pages → ai-chat →"
-  warn "Settings → Domains & Routes → Add → Custom domain → ${WORKER_HOST}"
-fi
 
 # 5c. Set the shared secret (matches the proxy's AI_PROXY_SECRET).
 set +e

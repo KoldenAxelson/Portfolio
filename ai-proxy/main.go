@@ -14,7 +14,7 @@
 //
 // Run:
 //
-//	./ai-proxy -context ../CONTEXT.md -secret YOUR_SECRET -port 8080
+//	./ai-proxy -context ../CONTEXT.md -secret YOUR_SECRET -port 6573
 //
 // The secret may also be supplied via the AI_PROXY_SECRET environment variable
 // (preferred — keeps it out of the process arguments / shell history).
@@ -23,6 +23,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"crypto/subtle"
 	"encoding/json"
 	"errors"
 	"flag"
@@ -122,7 +123,7 @@ func main() {
 	var (
 		contextPath = flag.String("context", "./CONTEXT.md", "path to CONTEXT.md")
 		secretFlag  = flag.String("secret", "", "shared secret (or set AI_PROXY_SECRET)")
-		port        = flag.String("port", "8080", "TCP port to listen on")
+		port        = flag.String("port", "6573", "TCP port to listen on (localhost only)")
 		modelFlag   = flag.String("model", "", "Ollama model tag (or set AI_MODEL; default "+defaultModel+")")
 	)
 	flag.Parse()
@@ -165,20 +166,27 @@ func main() {
 
 	addr := ":" + *port
 	srv := &http.Server{
-		Addr:              addr,
 		Handler:           mux,
 		ReadHeaderTimeout: 5 * time.Second,
 	}
+
+	// Bind first, then log — so a failed bind (e.g. port in use) doesn't print a
+	// misleading "listening" line before erroring.
+	ln, err := net.Listen("tcp", addr)
+	if err != nil {
+		log.Fatalf("ai-proxy: cannot bind %s: %v (another instance is running — stop it with `pkill -x ai-proxy` or `make ai-proxy-stop`)", addr, err)
+	}
 	log.Printf("ai-proxy: listening on %s (model %q, context %q, %d bytes)", addr, model, *contextPath, len(ctx))
-	log.Fatal(srv.ListenAndServe())
+	log.Fatal(srv.Serve(ln))
 }
 
 func (s *server) handleChat(w http.ResponseWriter, r *http.Request) {
 	start := time.Now()
 	ip := clientIP(r)
 
-	// 1. Verify the shared secret. Anything without it is the open internet.
-	if !subtleEqual(r.Header.Get("X-Proxy-Secret"), s.secret) {
+	// 1. Verify the shared secret (constant-time). Anything without it is the
+	//    open internet.
+	if subtle.ConstantTimeCompare([]byte(r.Header.Get("X-Proxy-Secret")), []byte(s.secret)) != 1 {
 		writeError(w, http.StatusUnauthorized, "unauthorized")
 		return
 	}
@@ -418,19 +426,6 @@ func clientIP(r *http.Request) string {
 		return r.RemoteAddr
 	}
 	return host
-}
-
-// subtleEqual is a constant-time string comparison that avoids importing
-// crypto/subtle's []byte ceremony at the call site.
-func subtleEqual(a, b string) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	var v byte
-	for i := 0; i < len(a); i++ {
-		v |= a[i] ^ b[i]
-	}
-	return v == 0
 }
 
 func writeJSON(w http.ResponseWriter, status int, v any) {
