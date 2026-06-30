@@ -9,32 +9,52 @@
 {{- $projects = where $projects "Params.tier" "!=" 3 -}}
 {{- $tier1 := sort (where $projects "Params.tier" 1) "Params.year" "desc" -}}
 {{- $tier2 := sort (where $projects "Params.tier" 2) "Params.year" "desc" -}}
-{{- $tags := slice -}}
-{{- range $projects }}{{ with .Params.tags }}{{ $tags = $tags | append . }}{{ end }}{{ end -}}
-{{- $allTags := sort (uniq $tags) -}}
 {{- $archive := sort site.Data.archive "year" "desc" -}}
 
+{{/* Focus-area filter. Ordered, icon-led categories sharing the site icon set
+     (data/icons.yaml via func/svg-icon.html); "web" reuses the existing globe.
+     The "all" bubble always shows; every other bubble renders only if at least
+     one project carries that type, so the bar never shows an empty filter. Toggle
+     behavior is wired by ts/project-filter.ts via the data-project-filter /
+     data-filter-type hooks; cards carry data-project-types. Active state is the
+     button's aria-pressed, styled by the group-aria-[pressed=true] variants
+     below. Renders fully without JS (all shown). */}}
+{{- $cats := slice
+  (dict "key" ""         "label" "All"      "icon" "squares-2x2")
+  (dict "key" "web"      "label" "Web"      "icon" "globe")
+  (dict "key" "cloud"    "label" "Cloud"    "icon" "cloud")
+  (dict "key" "security" "label" "Security" "icon" "shield-check")
+  (dict "key" "game"     "label" "Game"     "icon" "puzzle-piece")
+  (dict "key" "tooling"  "label" "Tooling"  "icon" "wrench-screwdriver")
+-}}
+{{- $types := slice -}}
+{{- range $projects }}{{ with .Params.types }}{{ $types = $types | append . }}{{ end }}{{ end -}}
+{{- $present := uniq $types -}}
 
-{{- with $allTags }}
-<section class="mb-8" aria-label="Project filters">
-  {{/* Tag filter buttons. Toggle behavior is wired by ts/project-filter.ts
-       via the data-project-filter / data-filter-tag hooks; cards carry
-       data-project-tags. Renders fully without JS (all shown). */}}
-  <div role="group" aria-label="Filter projects by tag" class="flex flex-wrap gap-2" data-project-filter>
-    <button type="button" class="rounded border border-border px-2 py-1 font-mono text-xs bg-fg text-bg" aria-pressed="true" data-filter-tag="">all</button>
-    {{- range . }}
-    <button type="button" class="rounded border border-border px-2 py-1 font-mono text-xs text-muted hover:text-fg" aria-pressed="false" data-filter-tag="{{ . }}">{{ . }}</button>
+{{- $circle := "flex h-14 w-14 items-center justify-center rounded-full border border-border text-muted transition group-hover:border-accent group-hover:text-accent group-aria-[pressed=true]:border-accent group-aria-[pressed=true]:bg-accent/10 group-aria-[pressed=true]:text-accent" -}}
+{{- $caption := "font-mono text-xs text-muted transition group-hover:text-fg group-aria-[pressed=true]:text-fg group-aria-[pressed=true]:font-medium" -}}
+
+{{- with $present }}
+<section class="mb-12 scroll-mt-24">
+  <div role="group" aria-label="Filter projects by focus area" class="flex flex-wrap justify-center gap-x-6 gap-y-5 sm:gap-x-9" data-project-filter>
+    {{- range $cats }}
+    {{- if or (eq .key "") (in $present .key) }}
+    <button type="button" aria-pressed="{{ if eq .key "" }}true{{ else }}false{{ end }}" data-filter-type="{{ .key }}" class="group flex flex-col items-center gap-2 focus:outline-none focus-visible:outline-none">
+      <span class="{{ $circle }}">{{ partial "func/svg-icon.html" (dict "name" .icon "class" "h-6 w-6") }}</span>
+      <span class="{{ $caption }}">{{ .label }}</span>
+    </button>
+    {{- end }}
     {{- end }}
   </div>
 </section>
 {{- end }}
 
 {{- with $tier1 }}
-<section id="featured" class="mb-16 scroll-mt-24" aria-labelledby="featured-heading">
+<section id="featured" class="mb-16 scroll-mt-24" data-project-section aria-labelledby="featured-heading">
   <h2 id="featured-heading" class="mb-4 text-xl font-medium">Featured</h2>
   <div class="space-y-4">
     {{- range . }}
-    <div data-project-tags="{{ delimit .Params.tags "," }}">
+    <div data-project-types="{{ delimit .Params.types "," }}">
       {{ partial "project-card.html" (dict "project" .) }}
     </div>
     {{- end }}
@@ -43,11 +63,11 @@
 {{- end }}
 
 {{- with $tier2 }}
-<section id="listed" class="mb-16 scroll-mt-24" aria-labelledby="listed-heading">
+<section id="listed" class="mb-16 scroll-mt-24" data-project-section aria-labelledby="listed-heading">
   <h2 id="listed-heading" class="mb-4 text-xl font-medium">All projects</h2>
   <div class="space-y-3">
     {{- range . }}
-    <div data-project-tags="{{ delimit .Params.tags "," }}">
+    <div data-project-types="{{ delimit .Params.types "," }}">
       {{ partial "project-card.html" (dict "project" . "compact" true) }}
     </div>
     {{- end }}
@@ -56,7 +76,7 @@
 {{- end }}
 
 {{- with $archive }}
-<section id="archive" class="scroll-mt-24" aria-labelledby="archive-heading">
+<section id="archive" class="scroll-mt-24" data-archive-section aria-labelledby="archive-heading">
   <h2 id="archive-heading" class="mb-6 text-xl font-medium">Archive</h2>
   <ul class="divide-y divide-border">
     {{- range . }}

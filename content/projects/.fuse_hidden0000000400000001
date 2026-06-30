@@ -3,7 +3,6 @@ title: 'Widda'
 tier: 1
 summary: 'A monetization tool helping mid-size YouTube creators convert affiliate links more effectively. In private development; small launch team committed.'
 tags: ['creator-tools', 'extension', 'saas']
-types: ['web']
 stack: ['TypeScript', 'Cloudflare Pages', 'Chrome Extension']
 role: 'Founder · engineer'
 year: '2025–present'
