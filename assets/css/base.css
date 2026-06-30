@@ -512,3 +512,123 @@ html:not([data-ai-ok]) [data-ai-mobile-trigger] { display: none !important; }
     transition: none;
   }
 }
+
+/* ── Impossible-list game detail drawer (desktop only) ──────────────────────
+   Desktop (>=1024px): a full-height card sliding in from the right. On mobile the
+   game detail is shown inside the top-nav panel instead (a 'game' mode -- see
+   topnav.html / nav.ts), so this drawer is disabled below 1024px. Hidden by
+   default ([hidden]); ts/impossible-modal.ts removes it and toggles [data-open]. */
+[data-game-modal] {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+}
+@media (max-width: 1023px) {
+  [data-game-modal] {
+    display: none; /* mobile uses the nav panel */
+  }
+}
+
+[data-game-backdrop] {
+  position: absolute;
+  inset: 0;
+  background: rgb(0 0 0 / 0.6);
+  opacity: 0;
+  transition: opacity 240ms ease;
+}
+[data-game-modal][data-open] [data-game-backdrop] {
+  opacity: 1;
+}
+
+[data-game-shell] {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-end;
+  pointer-events: none;
+}
+[data-game-dialog] {
+  pointer-events: auto;
+  width: 24rem;
+  max-width: 90vw;
+  transform: translateX(100%);
+  transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+[data-game-modal][data-open] [data-game-dialog] {
+  transform: translateX(0);
+}
+[data-game-card] {
+  position: relative;
+  height: 100%;
+  overflow-y: auto;
+  padding-top: 1.5rem; /* breathing room above the screenshot in the tall drawer */
+  background-color: rgb(var(--c-bg));
+  border-left: 1px solid rgb(var(--c-border));
+}
+
+/* Letterbox the game screenshots inside their 16:9 frames. Needed because the
+   global `img { height: auto }` base rule is unlayered and would otherwise beat
+   Tailwind's h-full utility, leaving the image to overflow and clip. */
+[data-game-figure] img,
+[data-mobile-panel-game] img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Media carousel inside the detail modal (games + books). Horizontal scroll-snap;
+   slides are injected by the TS. game kind = 16:9 frame, book kind = portrait. */
+[data-game-media],
+[data-game-mobile-media] {
+  display: flex;
+  width: 100%;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  background-color: rgb(var(--c-border) / 0.15);
+  scrollbar-width: none;
+}
+[data-game-media]::-webkit-scrollbar,
+[data-game-mobile-media]::-webkit-scrollbar {
+  display: none;
+}
+[data-game-media] {
+  border-bottom: 1px solid rgb(var(--c-border) / 0.6);
+}
+[data-game-mobile-media] {
+  border: 1px solid rgb(var(--c-border) / 0.6);
+  border-radius: 0.75rem;
+}
+[data-game-media][data-kind='game'],
+[data-game-mobile-media][data-kind='game'] {
+  aspect-ratio: 16 / 9;
+}
+[data-game-media][data-kind='book'],
+[data-game-mobile-media][data-kind='book'] {
+  height: 20rem;
+}
+
+/* Desktop lightbox — enlarge a carousel image over the drawer. */
+[data-game-lightbox] {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: rgb(0 0 0 / 0.9);
+  cursor: zoom-out;
+}
+[data-game-lightbox] img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-game-backdrop],
+  [data-game-dialog] {
+    transition: none;
+  }
+}

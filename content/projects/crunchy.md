@@ -10,4 +10,8 @@ year: '2023'
 status: 'shipped'
 links:
   repo: 'https://github.com/KoldenAxelson/crunchy'
+thoughts:
+  - "Wrote a whole Rust tool so I'd never have to check a release calendar again. Worth every line."
+  - "Rust for a hobby CLI is absurd, and I learned more from this toy than from plenty of serious work."
+  - "Color-coding episodes by how stale they were scratched an itch I didn't know ran that deep."
 ---

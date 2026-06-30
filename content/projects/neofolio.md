@@ -12,7 +12,10 @@ links:
   live: 'https://koldenaxelson.github.io/neofolio/'
   repo: 'https://github.com/KoldenAxelson/neofolio'
 featured: true
-thoughts: []
+thoughts:
+  - "Betting on AI-readability felt ridiculous when I started. It's already paying off."
+  - "Rebuilding it from Astro and Vue to a Node-free Hugo stack forced me to justify every decision."
+  - "The best proof a template works is living in it — and you're in it right now."
 ---
 
 ## Problem

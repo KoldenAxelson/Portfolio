@@ -10,4 +10,8 @@ year: '2025'
 status: 'shipped'
 links:
   live: 'https://bighammergarage.com/'
+thoughts:
+  - "Building for a friend who crashed on my couch for two years — I wanted it good, not just done."
+  - "Astro was overkill for a brochure site, but the build was so quick I never looked back."
+  - "The best client briefs come from people who already trust you."
 ---

@@ -17,4 +17,8 @@ boost: false
 # Set to your deployed names Worker, e.g. https://agar-names.<you>.workers.dev
 # Leave empty to run fully offline against the baked-in dummy name list.
 agarWorkerBase: ''
+thoughts:
+  - "There's no server. Every other cell is a bot wearing a past visitor's name — multiplayer theater."
+  - "Faking multiplayer convincingly was a better problem than real multiplayer would have been."
+  - "The blob you just ate might show up wearing your name the next time someone visits."
 ---
