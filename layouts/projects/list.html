@@ -36,7 +36,7 @@
 
 {{- with $present }}
 <section class="mb-12 scroll-mt-24">
-  <div role="group" aria-label="Filter projects by focus area" class="flex flex-wrap justify-center gap-x-6 gap-y-5 sm:gap-x-9" data-project-filter>
+  <div role="group" aria-label="Filter projects by focus area" class="grid grid-cols-3 justify-items-center gap-x-2 gap-y-6 sm:flex sm:flex-wrap sm:justify-center sm:gap-x-9 sm:gap-y-5" data-project-filter>
     {{- range $cats }}
     {{- if or (eq .key "") (in $present .key) }}
     <button type="button" aria-pressed="{{ if eq .key "" }}true{{ else }}false{{ end }}" data-filter-type="{{ .key }}" class="group flex flex-col items-center gap-2 focus:outline-none focus-visible:outline-none">

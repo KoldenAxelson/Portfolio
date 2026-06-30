@@ -522,6 +522,7 @@ html:not([data-ai-ok]) [data-ai-mobile-trigger] { display: none !important; }
   position: fixed;
   inset: 0;
   z-index: 60;
+  pointer-events: none; /* let clicks reach the page; only the card re-enables them */
 }
 @media (max-width: 1023px) {
   [data-game-modal] {
@@ -529,42 +530,40 @@ html:not([data-ai-ok]) [data-ai-mobile-trigger] { display: none !important; }
   }
 }
 
-[data-game-backdrop] {
-  position: absolute;
-  inset: 0;
-  background: rgb(0 0 0 / 0.6);
-  opacity: 0;
-  transition: opacity 240ms ease;
-}
-[data-game-modal][data-open] [data-game-backdrop] {
-  opacity: 1;
-}
-
 [data-game-shell] {
   position: absolute;
   inset: 0;
+  max-width: 99rem; /* track the centered content; card sits beside it, not at the edge */
+  margin-inline: auto;
   display: flex;
-  align-items: stretch;
-  justify-content: flex-end;
+  align-items: center; /* float, vertically centered */
+  justify-content: flex-end; /* …on the right */
+  padding: 1.5rem;
   pointer-events: none;
 }
 [data-game-dialog] {
   pointer-events: auto;
+  display: flex;
   width: 24rem;
-  max-width: 90vw;
-  transform: translateX(100%);
-  transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
+  max-width: calc(100vw - 3rem);
+  max-height: calc(100dvh - 3rem);
+  transform: translateX(calc(100% + 2rem)); /* off-screen incl. the gutter */
+  opacity: 0;
+  transition:
+    transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 240ms ease;
 }
 [data-game-modal][data-open] [data-game-dialog] {
   transform: translateX(0);
+  opacity: 1;
 }
+/* Glass "long card": the .glass-panel + rounded-2xl classes (in the markup)
+   supply the frosted fill, border, shadow, and blur, matching the mobile panel. */
 [data-game-card] {
   position: relative;
-  height: 100%;
+  width: 100%;
+  max-height: calc(100dvh - 3rem);
   overflow-y: auto;
-  padding-top: 1.5rem; /* breathing room above the screenshot in the tall drawer */
-  background-color: rgb(var(--c-bg));
-  border-left: 1px solid rgb(var(--c-border));
 }
 
 /* Letterbox the game screenshots inside their 16:9 frames. Needed because the
@@ -613,6 +612,7 @@ html:not([data-ai-ok]) [data-ai-mobile-trigger] { display: none !important; }
   position: fixed;
   inset: 0;
   z-index: 70;
+  pointer-events: auto; /* re-enable, since the modal root is now click-through */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -627,7 +627,6 @@ html:not([data-ai-ok]) [data-ai-mobile-trigger] { display: none !important; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  [data-game-backdrop],
   [data-game-dialog] {
     transition: none;
   }

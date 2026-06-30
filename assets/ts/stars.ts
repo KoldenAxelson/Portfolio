@@ -51,6 +51,25 @@ export const buildCarousel = (images: MediaImage[]): string =>
     })
     .join('');
 
+// Carousel position dots. Rendered only when there's more than one image.
+export const buildDots = (count: number): string => {
+  let html = '';
+  for (let i = 0; i < count; i++) {
+    html +=
+      '<span style="width:6px;height:6px;border-radius:9999px;background:var(--color-border);transition:background 150ms ease,transform 150ms ease;"></span>';
+  }
+  return html;
+};
+
+export const setActiveDot = (dotsEl: HTMLElement, index: number): void => {
+  const dots = dotsEl.children;
+  for (let i = 0; i < dots.length; i++) {
+    const el = dots[i] as HTMLElement;
+    el.style.background = i === index ? 'var(--color-accent)' : 'var(--color-border)';
+    el.style.transform = i === index ? 'scale(1.35)' : 'scale(1)';
+  }
+};
+
 const SERIES_CHECK =
   '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="color:var(--color-accent);flex:0 0 auto;"><path d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>';
 const SERIES_CIRCLE =
