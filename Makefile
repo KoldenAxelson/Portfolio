@@ -19,6 +19,13 @@ TSGO     := $(TSGO_DIR)/tsgo
 CSS_IN   := assets/css/main.css
 CSS_OUT  := assets/css/app.css
 
+# WebAssembly games. Each game is a separate Rust crate (living outside this
+# repo) that compiles to wasm and is blitted onto a 2D canvas. Its own
+# scripts/build-web.sh recompiles and drops the .wasm into assets/wasm/<game>/,
+# which Hugo fingerprints at build time. Override a path if your checkout differs,
+# e.g. `make spinmasters SPINMASTERS_DIR=/path/to/spinmasters`.
+SPINMASTERS_DIR ?= ../Playgrounds/Rust/spinmasters
+
 # AI chat proxy (Go, stdlib-only — see SPEC-ai-agent.md). The binary is built
 # into its own dir and is gitignored; never commit it.
 AI_PROXY_DIR := ai-proxy
@@ -32,7 +39,7 @@ AI_PORT      := 6573    # localhost-only proxy port (ASCII "AI" = 65,73). Must
 # `?=` means an AI_MODEL from the environment wins and skips this detection.
 AI_MODEL     ?= $(shell command -v ollama >/dev/null 2>&1 && ollama list 2>/dev/null | awk 'NR==2 {print $$1}')
 
-.PHONY: help setup dev build css css-watch typecheck clean distclean ai-proxy ai-proxy-run ai-proxy-stop
+.PHONY: help setup dev build css css-watch typecheck clean distclean ai-proxy ai-proxy-run ai-proxy-stop spinmasters games
 
 help: ## Show this help
 	@echo "Portfolio — available commands:"
@@ -126,6 +133,20 @@ build: $(HUGO) $(TAILWIND) ## Production build to ./public
 typecheck: $(TSGO) ## Type-check the TypeScript with tsgo (no emit)
 	@$(TSGO) --noEmit -p tsconfig.json
 	@echo "Type-check passed."
+
+# --- WebAssembly games ------------------------------------------------------
+# `make spinmasters` rebuilds the game's wasm and copies it into assets/wasm/.
+# Run it after changing the game; the committed .wasm is what the site serves
+# (so `make build` itself never needs Rust). Add a future game by mirroring this
+# target with its own _DIR variable — and add it to the `games` aggregate below.
+
+spinmasters: ## Rebuild the SpinMasters wasm from its repo into assets/wasm/
+	@command -v cargo >/dev/null 2>&1 || { echo "Rust not found on PATH — install from https://rustup.rs" >&2; exit 1; }
+	@[ -d "$(SPINMASTERS_DIR)" ] || { echo "SpinMasters repo not found at $(SPINMASTERS_DIR) — override: make spinmasters SPINMASTERS_DIR=/path/to/spinmasters" >&2; exit 1; }
+	@echo "Building SpinMasters wasm from $(SPINMASTERS_DIR)…"
+	@cd "$(SPINMASTERS_DIR)" && bash scripts/build-web.sh "$(CURDIR)"
+
+games: spinmasters ## Rebuild every game's wasm
 
 # --- AI chat proxy ----------------------------------------------------------
 
