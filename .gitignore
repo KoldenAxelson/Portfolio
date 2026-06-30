@@ -26,6 +26,7 @@
 # OS / editor cruft
 .DS_Store
 .idea/
+.fuse_hidden*
 
 # wrangler / cloudflare
 .wrangler/

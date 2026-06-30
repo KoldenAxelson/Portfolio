@@ -1,0 +1,21 @@
+{{- /*
+  console-icon — inline a console logo SVG from static/consoles/<code>.svg,
+  flattening its fills and strokes to currentColor so it takes the site accent
+  color and adapts to light/dark. `none` values are preserved (so hollow shapes
+  stay hollow), and width/height attrs are stripped so CSS controls the size (the
+  viewBox keeps the aspect ratio). Renders nothing if the file is absent.
+  Dict params: code (e.g. "N64").
+*/ -}}
+{{- $path := printf "static/consoles/%s.svg" (lower .code) -}}
+{{- if os.FileExists $path -}}
+  {{- $s := os.ReadFile $path -}}
+  {{- $s = replace $s `fill="none"` `fill="__keepf__"` -}}
+  {{- $s = replace $s `stroke="none"` `stroke="__keeps__"` -}}
+  {{- $s = replaceRE `fill="[^"]*"` `fill="currentColor"` $s -}}
+  {{- $s = replaceRE `stroke="[^"]*"` `stroke="currentColor"` $s -}}
+  {{- $s = replace $s `fill="__keepf__"` `fill="none"` -}}
+  {{- $s = replace $s `stroke="__keeps__"` `stroke="none"` -}}
+  {{- $s = replaceRE `(fill|stroke):\s*#[0-9A-Fa-f]{3,8}` `$1:currentColor` $s -}}
+  {{- $s = replaceRE ` (?:width|height)="[^"]*"` "" $s -}}
+  {{- $s | safeHTML -}}
+{{- end -}}

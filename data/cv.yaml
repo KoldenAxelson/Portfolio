@@ -22,6 +22,10 @@ experience:
       - "Pitched a farmers-market application for VC funding; pitch failed, but the process was the lesson."
       - "Built a Discord community and a custom bot using game-design principles — group accountability with a \"casino points\" carrot-and-stick loop."
     stack: ["Cloudflare Pages", "TypeScript", "Laravel", "Astro", "Discord API"]
+    thoughts:
+      - "Going independent meant being CEO, engineer, and shipping clerk on the same Tuesday."
+      - "A VC pitch that failed taught me more than a funded one would have."
+      - "Turns out the government years had quietly been training me to run solo."
 
   - role: "Lead DevOps Engineer"
     employer: "UNCOMN LLC"
@@ -37,6 +41,10 @@ experience:
       - "Built GitOps CI/CD on GitLab + ArgoCD, retiring the prior Jenkins-only pipeline."
       - "Ran code reviews, security reviews, and agile coordination with leadership and external clients."
     stack: ["AWS", "Java", "Python", "Kubernetes", "GitLab", "Fortify"]
+    thoughts:
+      - "Five years of locked-down government infra is where I learned to do it right the first time."
+      - "Retiring a Jenkins-only pipeline for GitOps was the most satisfying delete of my career."
+      - "Running security review on several production systems at once teaches ruthless triage."
 
   - role: "Software Engineer"
     employer: "Draftboard"
@@ -50,6 +58,9 @@ experience:
       - "Drove a stalled iOS product to launch readiness; the company was acquired by DraftKings in 2019."
       - "Mentored junior developers and ran user-feedback iterations into the dev cycle."
     stack: ["Swift", "iOS", "JavaScript"]
+    thoughts:
+      - "Dragged a stalled iOS app to the finish line, then watched DraftKings buy the company."
+      - "Shipping the thing that had been 'almost done' for months taught me what done really means."
 
   - role: "Software Engineer"
     employer: "Cumulus Data Storage Solutions"
@@ -64,6 +75,9 @@ experience:
       - "Designed user-friendly visualizations of complex POS data to support decision-making."
       - "Transitioned to consultancy at the end of the contract to support long-term client relationships."
     stack: ["SQL", "JavaScript", "Data Visualization"]
+    thoughts:
+      - "Automating a team's manual reporting earned me more genuine thank-yous than any flashy feature."
+      - "Making dense POS data legible is half engineering, half empathy."
 
   - role: "Software Engineer"
     employer: "Neurotopia (SenseLabs LLC)"
@@ -79,6 +93,10 @@ experience:
       - "Delivered talks at San Francisco conferences as a young engineer."
       - "Mentored interns through their first technical challenges in the role."
     stack: ["Ruby", "Unity", "Swift", "JavaScript"]
+    thoughts:
+      - "First real job, and I owned a Ruby backend for five years — trial by fire, on slow simmer."
+      - "Building EEG training games in Unity taught me the brain is the strangest API there is."
+      - "Gave conference talks before I felt ready. You never feel ready."
 
 education:
   - school: "Cuesta College"

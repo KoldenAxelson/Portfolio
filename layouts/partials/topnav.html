@@ -118,6 +118,29 @@
         <p data-bio-mobile-typer aria-live="polite" class="m-0 min-h-[3rem] text-base leading-snug text-fg/90 opacity-0 transition-opacity duration-200 ease-out motion-reduce:transition-none"></p>
       </div>
 
+      {{/* Game detail mode — driven by ts/nav.ts from [data-game-open] line items
+           on /impossible-list. Same panel, card, and physics as the nav menu. */}}
+      {{- $consoleNames := dict "N64" "Nintendo 64" "GCN" "Nintendo GameCube" "GBC" "Game Boy Color" "GBA" "Game Boy Advance" "PC" "PC" -}}
+      <div data-mobile-panel-game class="mx-auto max-w-screen-xl px-6 py-5">
+        <div class="opacity-0 transition-opacity duration-200 ease-out motion-reduce:transition-none">
+          <div data-game-mobile-media data-kind="game" class="mb-4"></div>
+          <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5">
+            <span class="flex items-center gap-2">
+              {{- range (slice "N64" "GCN" "GBC" "GBA" "PC") }}
+              <span data-console-icon-for="{{ . }}" hidden role="img" aria-label="{{ index $consoleNames . }}" title="{{ index $consoleNames . }}" class="shrink-0 text-accent [&_svg]:h-5 [&_svg]:w-auto">{{ partial "func/console-icon.html" (dict "code" .) }}</span>
+              {{- end }}
+              <h2 data-game-mobile-title class="m-0 text-lg font-medium text-fg"></h2>
+            </span>
+            <span class="flex items-center">
+              <span data-game-mobile-stars class="flex items-center"></span>
+              <span data-game-mobile-status hidden class="font-mono text-xs text-muted"></span>
+            </span>
+          </div>
+          <div data-game-mobile-series hidden class="mt-3"></div>
+          <p data-game-mobile-blurb class="mt-3 text-base leading-snug text-fg/90"></p>
+        </div>
+      </div>
+
       {{- if $hasTools }}
       <ul data-mobile-panel-tools class="mx-auto flex max-w-screen-xl flex-col gap-1 px-6 py-4 opacity-0 transition-opacity duration-200 ease-out motion-reduce:transition-none">
         {{- range $tools }}
@@ -180,13 +203,16 @@
   }
   [data-mobile-panel-nav],
   [data-mobile-panel-bio],
-  [data-mobile-panel-tools] { display: none; }
+  [data-mobile-panel-tools],
+  [data-mobile-panel-game] { display: none; }
   [data-mobile-panel][data-mode='nav'] [data-mobile-panel-nav],
   [data-mobile-panel][data-mode='bio'] [data-mobile-panel-bio],
-  [data-mobile-panel][data-mode='tools'] [data-mobile-panel-tools] { display: block; }
+  [data-mobile-panel][data-mode='tools'] [data-mobile-panel-tools],
+  [data-mobile-panel][data-mode='game'] [data-mobile-panel-game] { display: block; }
   [data-mobile-panel].is-open [data-mobile-panel-nav] ul,
   [data-mobile-panel].is-open [data-mobile-panel-bio] p,
-  [data-mobile-panel].is-open [data-mobile-panel-tools] {
+  [data-mobile-panel].is-open [data-mobile-panel-tools],
+  [data-mobile-panel].is-open [data-mobile-panel-game] > div {
     opacity: 1;
     transition-delay: 200ms;
   }
@@ -194,6 +220,14 @@
     transition: opacity 200ms ease, transform 200ms ease;
   }
   [data-mobile-tools-trigger][data-hidden='true'] {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.85);
+  }
+  [data-ai-mobile-trigger] {
+    transition: opacity 200ms ease, transform 200ms ease;
+  }
+  [data-ai-mobile-trigger][data-game-hidden='true'] {
     opacity: 0;
     pointer-events: none;
     transform: scale(0.85);

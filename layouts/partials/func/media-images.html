@@ -1,0 +1,25 @@
+{{- /*
+  media-images — collect a slug's images from an assets subdir, ordered with the
+  base (slug.<ext>) first and the -1, -2 … carousel extras after, each run through
+  func/cover.html (resized to WebP). Returns a slice of {src, srcset} dicts for
+  jsonify into a data attribute. Dict params: dir (e.g. "achievements"), slug,
+  width.
+*/ -}}
+{{- $dir := .dir -}}
+{{- $slug := .slug -}}
+{{- $w := .width -}}
+{{- $base := slice -}}
+{{- $rest := slice -}}
+{{- range (resources.Match (printf "%s/%s*" $dir $slug)) -}}
+  {{- $stem := replaceRE `\.[^.]*$` "" (path.Base .Name) -}}
+  {{- if eq $stem $slug -}}{{- $base = $base | append . -}}{{- else -}}{{- $rest = $rest | append . -}}{{- end -}}
+{{- end -}}
+{{- $ordered := slice -}}
+{{- range $base -}}{{- $ordered = $ordered | append . -}}{{- end -}}
+{{- range $rest -}}{{- $ordered = $ordered | append . -}}{{- end -}}
+{{- $imgs := slice -}}
+{{- range $ordered -}}
+  {{- $c := partial "func/cover.html" (dict "path" (printf "/%s" .Name) "width" $w) -}}
+  {{- with $c.src -}}{{- $imgs = $imgs | append (dict "src" . "srcset" $c.srcset) -}}{{- end -}}
+{{- end -}}
+{{- return $imgs -}}

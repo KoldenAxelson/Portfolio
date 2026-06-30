@@ -5,6 +5,7 @@ import { initScrollTop } from './scrolltop';
 import { initSidebar } from './sidebar';
 import { initConstellation } from './constellation';
 import { initProjectFilter } from './project-filter';
+import { initGameModal } from './impossible-modal';
 import { initPerfMeters } from './perf-meters';
 import { initAiWidget } from './ai-widget';
 
@@ -26,6 +27,7 @@ function initPage(): void {
   initSidebar();
   initConstellation();
   initProjectFilter();
+  initGameModal();
   initPerfMeters();
   initAiWidget();
 }

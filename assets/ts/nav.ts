@@ -1,6 +1,8 @@
 // TopNav interactivity. Global listeners wired once and live-query elements so
 // they survive hx-boost swaps; element handlers re-bound per page via initNav().
 import { sleep, pickRandom, readMessages, charDelay } from './bio';
+import { buildStars, buildCarousel, buildSeries } from './stars';
+import type { MediaImage, SeriesEntry } from './stars';
 
 const SHOW_NAV_BELOW_PX = 50;
 const SCROLL_JITTER_PX = 4;
@@ -82,6 +84,7 @@ function wireNavElements(): void {
   const bioTyper = document.querySelector<HTMLElement>('[data-bio-mobile-typer]');
   const summary = mobileNav.querySelector('summary');
   const toolsTrigger = document.querySelector<HTMLElement>('[data-mobile-tools-trigger]');
+  const aiTrigger = document.querySelector<HTMLElement>('[data-ai-mobile-trigger]');
   const bioIndicators = Array.from(
     document.querySelectorAll<HTMLButtonElement>('[data-bio-indicator]'),
   );
@@ -92,9 +95,18 @@ function wireNavElements(): void {
     toolsTrigger.dataset.hidden = String(toolsActive);
   };
 
+  // Hide the AI nav button while a game detail is showing, so the panel reads as
+  // a focused view (matches how the tools trigger hides in tools mode).
+  const syncAiTriggerVisibility = (): void => {
+    if (!aiTrigger || !mobilePanel) return;
+    const gameActive = mobileNav.open && mobilePanel.dataset.mode === 'game';
+    aiTrigger.dataset.gameHidden = String(gameActive);
+  };
+
   const syncPanel = (): void => {
     if (mobilePanel) mobilePanel.classList.toggle('is-open', mobileNav.open);
     syncToolsTriggerVisibility();
+    syncAiTriggerVisibility();
     if (!mobileNav.open) {
       bioIndicators.forEach((i) => i.setAttribute('data-active', 'false'));
       bioTypingToken += 1;
@@ -167,6 +179,88 @@ function wireNavElements(): void {
         if (!wasOpen) mobileNav.open = true;
         const delay = wasOpen || reduceMotion ? 0 : PANEL_OPEN_DELAY_MS;
         setTimeout(() => typeInto(bioTyper, msg), delay);
+      });
+    }
+  }
+
+  // Completed-game line items reuse this very panel as a new 'game' mode, so the
+  // card, the grid-rows drop, and the hamburger→X are identical to the nav menu.
+  // Desktop is handled separately by ts/impossible-modal.ts (the right drawer).
+  const gamePanel = document.querySelector<HTMLElement>('[data-mobile-panel-game]');
+  const gameTriggers = Array.from(
+    document.querySelectorAll<HTMLButtonElement>('[data-game-open]'),
+  );
+  if (mobilePanel && gamePanel && gameTriggers.length) {
+    const gMedia = gamePanel.querySelector<HTMLElement>('[data-game-mobile-media]');
+    const gTitle = gamePanel.querySelector<HTMLElement>('[data-game-mobile-title]');
+    const gStars = gamePanel.querySelector<HTMLElement>('[data-game-mobile-stars]');
+    const gStatus = gamePanel.querySelector<HTMLElement>('[data-game-mobile-status]');
+    const gSeries = gamePanel.querySelector<HTMLElement>('[data-game-mobile-series]');
+    const gBlurb = gamePanel.querySelector<HTMLElement>('[data-game-mobile-blurb]');
+    const gConsoleIcons = Array.from(
+      gamePanel.querySelectorAll<HTMLElement>('[data-console-icon-for]'),
+    );
+    for (const trigger of gameTriggers) {
+      trigger.addEventListener('click', (e) => {
+        if (window.matchMedia('(min-width: 1024px)').matches) return; // desktop → drawer
+        e.preventDefault();
+        e.stopPropagation();
+        const d = trigger.dataset;
+        mobilePanel.dataset.mode = 'game';
+        if (gTitle) gTitle.textContent = d.title || '';
+        if (gBlurb) gBlurb.textContent = d.blurb || '';
+        if (gMedia) {
+          let imgs: MediaImage[] = [];
+          try {
+            imgs = JSON.parse(d.images || '[]');
+          } catch {
+            imgs = [];
+          }
+          gMedia.innerHTML = buildCarousel(imgs);
+          gMedia.setAttribute('data-kind', d.kind || 'game');
+          gMedia.scrollLeft = 0;
+        }
+        const r = parseFloat(d.rating || '0');
+        const hasRating = Boolean(d.rating) && r > 0;
+        if (gStars) {
+          if (hasRating) {
+            gStars.innerHTML = buildStars(r);
+            gStars.setAttribute('role', 'img');
+            gStars.setAttribute('aria-label', `Rated ${r.toFixed(1)} out of 5`);
+            gStars.hidden = false;
+          } else {
+            gStars.innerHTML = '';
+            gStars.hidden = true;
+          }
+        }
+        if (gStatus) {
+          if (d.status && !hasRating) {
+            gStatus.textContent = d.status;
+            gStatus.hidden = false;
+          } else {
+            gStatus.hidden = true;
+          }
+        }
+        if (gSeries) {
+          let entries: SeriesEntry[] = [];
+          if (d.series) {
+            try {
+              entries = JSON.parse(d.series);
+            } catch {
+              entries = [];
+            }
+          }
+          gSeries.innerHTML = entries.length ? buildSeries(entries) : '';
+          gSeries.hidden = entries.length === 0;
+        }
+        for (const el of gConsoleIcons) {
+          el.hidden = el.getAttribute('data-console-icon-for') !== d.console;
+        }
+        syncToolsTriggerVisibility();
+        syncAiTriggerVisibility();
+        const nav = document.querySelector<HTMLElement>('[data-top-nav]');
+        if (nav) nav.style.transform = '';
+        if (!mobileNav.open) mobileNav.open = true;
       });
     }
   }
