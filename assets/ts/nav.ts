@@ -1,7 +1,7 @@
 // TopNav interactivity. Global listeners wired once and live-query elements so
 // they survive hx-boost swaps; element handlers re-bound per page via initNav().
 import { sleep, pickRandom, readMessages, charDelay } from './bio';
-import { buildStars, buildCarousel, buildSeries } from './stars';
+import { buildStars, buildCarousel, buildSeries, buildDots, setActiveDot } from './stars';
 import type { MediaImage, SeriesEntry } from './stars';
 
 const SHOW_NAV_BELOW_PX = 50;
@@ -192,6 +192,7 @@ function wireNavElements(): void {
   );
   if (mobilePanel && gamePanel && gameTriggers.length) {
     const gMedia = gamePanel.querySelector<HTMLElement>('[data-game-mobile-media]');
+    const gDots = gamePanel.querySelector<HTMLElement>('[data-game-dots]');
     const gTitle = gamePanel.querySelector<HTMLElement>('[data-game-mobile-title]');
     const gStars = gamePanel.querySelector<HTMLElement>('[data-game-mobile-stars]');
     const gStatus = gamePanel.querySelector<HTMLElement>('[data-game-mobile-status]');
@@ -200,6 +201,16 @@ function wireNavElements(): void {
     const gConsoleIcons = Array.from(
       gamePanel.querySelectorAll<HTMLElement>('[data-console-icon-for]'),
     );
+    if (gMedia && gDots) {
+      gMedia.addEventListener(
+        'scroll',
+        () => {
+          if (gDots.hidden || !gMedia.clientWidth) return;
+          setActiveDot(gDots, Math.round(gMedia.scrollLeft / gMedia.clientWidth));
+        },
+        { passive: true },
+      );
+    }
     for (const trigger of gameTriggers) {
       trigger.addEventListener('click', (e) => {
         if (window.matchMedia('(min-width: 1024px)').matches) return; // desktop → drawer
@@ -219,6 +230,16 @@ function wireNavElements(): void {
           gMedia.innerHTML = buildCarousel(imgs);
           gMedia.setAttribute('data-kind', d.kind || 'game');
           gMedia.scrollLeft = 0;
+          if (gDots) {
+            if (imgs.length > 1) {
+              gDots.innerHTML = buildDots(imgs.length);
+              setActiveDot(gDots, 0);
+              gDots.hidden = false;
+            } else {
+              gDots.innerHTML = '';
+              gDots.hidden = true;
+            }
+          }
         }
         const r = parseFloat(d.rating || '0');
         const hasRating = Boolean(d.rating) && r > 0;
