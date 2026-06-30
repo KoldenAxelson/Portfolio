@@ -3,6 +3,7 @@ title: 'VisorPlate'
 tier: 1
 summary: 'Legally compliant, no-drill front-license-plate display for nice cars. Sold in bulk to car dealerships for white-label resale.'
 tags: ['ecommerce', 'product', 'cloudflare']
+types: ['web']
 stack: ['Cloudflare Pages', 'Laravel', 'TypeScript']
 role: 'Founder · designer · engineer · salesperson'
 year: '2024–present'

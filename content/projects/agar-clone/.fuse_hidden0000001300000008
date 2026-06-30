@@ -3,7 +3,6 @@ title: 'Agar.io Clone'
 tier: 1
 summary: "A pseudo-multiplayer Canvas arena. There's no live server — the other cells are bots, each wearing the name of a previous visitor (logged to Cloudflare Workers KV) or a recruiter-style stand-in. Built with TypeScript."
 tags: ['game', 'canvas', 'typescript', 'cloudflare']
-types: ['game', 'web']
 stack: ['TypeScript', 'Canvas API', 'Cloudflare Workers', 'Alpine.js']
 role: 'Solo build'
 year: '2026'
