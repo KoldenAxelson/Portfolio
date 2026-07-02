@@ -11,7 +11,9 @@
 {{- $list := dict
   "@context" "https://schema.org"
   "@type" "ItemList"
+  "@id" (printf "%s/network#list" (partial "func/site-url.html" .))
   "name" (printf "%s's professional network" $site.author.name)
+  "numberOfItems" (len $contacts)
   "itemListElement" $items
 -}}
 <script type="application/ld+json">{{ $list | jsonify | safeJS }}</script>

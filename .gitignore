@@ -1,8 +1,11 @@
 # Local Dev Storage
 /private/
 
-# AI chat proxy — compiled binary (build with `make ai-proxy`; never commit)
+# AI chat proxy — compiled binary and Go build leftovers (build with
+# `make ai-proxy`; never commit). The glob also catches stray toolchain
+# artifacts like the zero-byte `ai-proxy-go-tmp-umask` probe file.
 /ai-proxy/ai-proxy
+/ai-proxy/ai-proxy-*
 
 # Hugo build output
 /public/

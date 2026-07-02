@@ -3,8 +3,7 @@
 // attributes; on desktop (≥1024px) clicking one opens the shared [data-game-modal]
 // drawer. On mobile the same buttons feed the top-nav panel instead (ts/nav.ts),
 // so this handler is gated to desktop. Idempotent across hx-boost swaps.
-import { buildStars, buildCarousel, buildSeries, buildDots, setActiveDot } from './stars';
-import type { MediaImage, SeriesEntry } from './stars';
+import { populateGameCard, wireCarouselDots } from './game-card';
 
 const DESKTOP = '(min-width: 1024px)';
 let docKeyHandler: ((e: KeyboardEvent) => void) | null = null;
@@ -68,68 +67,22 @@ export function initGameModal(): void {
     }
   };
 
+  // Card slots for the shared populate step (game-card.ts). The drawer keeps
+  // only what's unique to it: slide/swap choreography, focus, and the lightbox.
+  const cardEls = {
+    title: titleEl,
+    blurb: blurbEl,
+    media: mediaEl,
+    dots: dotsEl,
+    stars: starsEl,
+    status: statusEl,
+    series: seriesEl,
+    consoleIcons,
+  };
+
   const populate = (btn: HTMLButtonElement): void => {
-    const d = btn.dataset;
     lastFocused = btn;
-    if (titleEl) titleEl.textContent = d.title || '';
-    if (blurbEl) blurbEl.textContent = d.blurb || '';
-    if (mediaEl) {
-      let imgs: MediaImage[] = [];
-      try {
-        imgs = JSON.parse(d.images || '[]');
-      } catch {
-        imgs = [];
-      }
-      mediaEl.innerHTML = buildCarousel(imgs);
-      mediaEl.setAttribute('data-kind', d.kind || 'game');
-      mediaEl.scrollLeft = 0;
-      if (dotsEl) {
-        if (imgs.length > 1) {
-          dotsEl.innerHTML = buildDots(imgs.length);
-          setActiveDot(dotsEl, 0);
-          dotsEl.hidden = false;
-        } else {
-          dotsEl.innerHTML = '';
-          dotsEl.hidden = true;
-        }
-      }
-    }
-    const rating = parseFloat(d.rating || '0');
-    const hasRating = Boolean(d.rating) && rating > 0;
-    if (starsEl) {
-      if (hasRating) {
-        starsEl.innerHTML = buildStars(rating);
-        starsEl.setAttribute('role', 'img');
-        starsEl.setAttribute('aria-label', `Rated ${rating.toFixed(1)} out of 5`);
-        starsEl.hidden = false;
-      } else {
-        starsEl.innerHTML = '';
-        starsEl.hidden = true;
-      }
-    }
-    if (statusEl) {
-      if (d.status && !hasRating) {
-        statusEl.textContent = d.status;
-        statusEl.hidden = false;
-      } else {
-        statusEl.hidden = true;
-      }
-    }
-    if (seriesEl) {
-      let entries: SeriesEntry[] = [];
-      if (d.series) {
-        try {
-          entries = JSON.parse(d.series);
-        } catch {
-          entries = [];
-        }
-      }
-      seriesEl.innerHTML = entries.length ? buildSeries(entries) : '';
-      seriesEl.hidden = entries.length === 0;
-    }
-    for (const el of consoleIcons) {
-      el.hidden = el.getAttribute('data-console-icon-for') !== d.console;
-    }
+    populateGameCard(btn.dataset, cardEls);
   };
 
   const open = (btn: HTMLButtonElement): void => {
@@ -188,17 +141,7 @@ export function initGameModal(): void {
   for (const el of Array.from(modal.querySelectorAll<HTMLElement>('[data-game-close]'))) {
     el.addEventListener('click', close);
   }
-  // Update the active carousel dot as the media scrolls.
-  if (mediaEl && dotsEl) {
-    mediaEl.addEventListener(
-      'scroll',
-      () => {
-        if (dotsEl.hidden || !mediaEl.clientWidth) return;
-        setActiveDot(dotsEl, Math.round(mediaEl.scrollLeft / mediaEl.clientWidth));
-      },
-      { passive: true },
-    );
-  }
+  wireCarouselDots(mediaEl, dotsEl);
   // Click a carousel image to enlarge it in the lightbox; click the lightbox to close.
   if (mediaEl && lightbox && lightboxImg) {
     mediaEl.addEventListener('click', (e) => {
