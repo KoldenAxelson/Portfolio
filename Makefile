@@ -26,7 +26,7 @@ CSS_OUT  := assets/css/app.css
 # e.g. `make spinmasters SPINMASTERS_DIR=/path/to/spinmasters`.
 SPINMASTERS_DIR ?= ../Playgrounds/Rust/spinmasters
 
-# AI chat proxy (Go, stdlib-only — see SPEC-ai-agent.md). The binary is built
+# AI chat proxy (Go, stdlib-only — see docs/ai-tunnel.md). The binary is built
 # into its own dir and is gitignored; never commit it.
 AI_PROXY_DIR := ai-proxy
 AI_PROXY_BIN := $(AI_PROXY_DIR)/ai-proxy

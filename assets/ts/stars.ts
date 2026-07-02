@@ -1,7 +1,8 @@
-// Shared modal-content renderers for the impossible list (used by the desktop
-// drawer in impossible-modal.ts and the mobile nav panel in nav.ts): star
-// ratings, the image carousel, and the series progress checklist. Inline styles
-// + CSS theme vars, because Tailwind doesn't scan .ts for classes.
+// HTML-string renderers for the impossible list's game cards: star ratings,
+// the image carousel, and the series progress checklist. Consumed via
+// game-card.ts, which feeds both card surfaces (desktop drawer + mobile nav
+// panel). Inline styles + CSS theme vars, because Tailwind doesn't scan .ts
+// for classes.
 
 export interface MediaImage {
   src: string;
@@ -12,8 +13,10 @@ export interface SeriesEntry {
   done: boolean;
 }
 
+// Also escapes double quotes so the result is safe inside double-quoted
+// attribute values (buildCarousel), not just text nodes.
 const escapeHtml = (s: string): string =>
-  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 const STAR_PATH =
   'M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006Z';
@@ -47,7 +50,9 @@ export const buildCarousel = (images: MediaImage[]): string =>
         const last = im.srcset.split(',').pop();
         if (last) full = last.trim().split(' ')[0];
       }
-      return `<div style="flex:0 0 100%;scroll-snap-align:center;display:flex;align-items:center;justify-content:center;height:100%;"><img src="${im.src}"${im.srcset ? ` srcset="${im.srcset}"` : ''} data-full="${full}" alt="" decoding="async" style="width:100%;height:100%;object-fit:contain;display:block;cursor:zoom-in;" /></div>`;
+      // Escaped defensively even though today's callers only pass Hugo-generated
+      // permalinks — keeps the sink safe no matter who calls it next.
+      return `<div style="flex:0 0 100%;scroll-snap-align:center;display:flex;align-items:center;justify-content:center;height:100%;"><img src="${escapeHtml(im.src)}"${im.srcset ? ` srcset="${escapeHtml(im.srcset)}"` : ''} data-full="${escapeHtml(full)}" alt="" decoding="async" style="width:100%;height:100%;object-fit:contain;display:block;cursor:zoom-in;" /></div>`;
     })
     .join('');
 

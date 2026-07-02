@@ -212,7 +212,10 @@ func main() {
 	mux.HandleFunc("/chat", s.handleChat)
 	mux.HandleFunc("/health", s.handleHealth)
 
-	addr := ":" + *port
+	// Loopback-only by design: the Cloudflare Tunnel (cloudflared) runs on this
+	// same machine and is the sole intended client; nothing on the LAN should be
+	// able to reach the proxy directly.
+	addr := "127.0.0.1:" + *port
 	srv := &http.Server{
 		Handler:           mux,
 		ReadHeaderTimeout: 5 * time.Second,

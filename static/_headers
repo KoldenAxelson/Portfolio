@@ -32,5 +32,13 @@
 
 # HTML — short browser cache, longer CDN cache with revalidation.
 # stale-while-revalidate keeps the CDN responsive during a deploy.
+# Security headers ride along on every response: nosniff stops MIME confusion
+# on user-download paths (resume.pdf/docx), DENY blocks clickjacking framing,
+# and the referrer policy keeps full URLs from leaking cross-origin. A CSP is
+# deliberately absent for now — the templates use inline scripts and Alpine
+# evaluates inline expressions, so a meaningful CSP needs nonce plumbing first.
 /*
   Cache-Control: public, max-age=300, s-maxage=3600, stale-while-revalidate=86400
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin

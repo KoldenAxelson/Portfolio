@@ -21,7 +21,8 @@ The stack is deliberately lean: two compiled binaries (Hugo + the Tailwind
 standalone CLI) and Hugo's built-in esbuild for TypeScript — **no `npm`, no
 `node_modules`, no framework runtime** on the static pages. Client interactivity
 is a small TypeScript bundle; `hx-boost` adds SPA-style navigation; Alpine.js
-appears only on the one page that needs reactive state (`/network`).
+is loaded sparsely — only on pages that need reactive state — to keep page
+loads fast everywhere else.
 
 ## Quick start
 

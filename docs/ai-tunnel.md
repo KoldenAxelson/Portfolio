@@ -1,10 +1,9 @@
 # AI Tunnel — operations & domain-migration notes
 
 The "Ask about Konrad" chat widget is backed by a local Ollama instance exposed
-through a Cloudflare Tunnel and guarded by a Cloudflare Worker. Full design:
-`SPEC-ai-agent.md`. This doc covers what's deployed today and exactly what to
-change to move the feature from **wrightfunctions.com** to **konradwright.com**
-later.
+through a Cloudflare Tunnel and guarded by a Cloudflare Worker. This doc covers
+the design, what's deployed today, and exactly what to change to move the
+feature from **wrightfunctions.com** to **konradwright.com** later.
 
 The widget shows on every page **except `/cv` and `/misc/*`**, and only when a
 backend health check passes (see *Health gate* below). Each question also carries

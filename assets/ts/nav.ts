@@ -1,8 +1,7 @@
 // TopNav interactivity. Global listeners wired once and live-query elements so
 // they survive hx-boost swaps; element handlers re-bound per page via initNav().
 import { sleep, pickRandom, readMessages, charDelay } from './bio';
-import { buildStars, buildCarousel, buildSeries, buildDots, setActiveDot } from './stars';
-import type { MediaImage, SeriesEntry } from './stars';
+import { populateGameCard, wireCarouselDots } from './game-card';
 
 const SHOW_NAV_BELOW_PX = 50;
 const SCROLL_JITTER_PX = 4;
@@ -191,92 +190,24 @@ function wireNavElements(): void {
     document.querySelectorAll<HTMLButtonElement>('[data-game-open]'),
   );
   if (mobilePanel && gamePanel && gameTriggers.length) {
-    const gMedia = gamePanel.querySelector<HTMLElement>('[data-game-mobile-media]');
-    const gDots = gamePanel.querySelector<HTMLElement>('[data-game-dots]');
-    const gTitle = gamePanel.querySelector<HTMLElement>('[data-game-mobile-title]');
-    const gStars = gamePanel.querySelector<HTMLElement>('[data-game-mobile-stars]');
-    const gStatus = gamePanel.querySelector<HTMLElement>('[data-game-mobile-status]');
-    const gSeries = gamePanel.querySelector<HTMLElement>('[data-game-mobile-series]');
-    const gBlurb = gamePanel.querySelector<HTMLElement>('[data-game-mobile-blurb]');
-    const gConsoleIcons = Array.from(
-      gamePanel.querySelectorAll<HTMLElement>('[data-console-icon-for]'),
-    );
-    if (gMedia && gDots) {
-      gMedia.addEventListener(
-        'scroll',
-        () => {
-          if (gDots.hidden || !gMedia.clientWidth) return;
-          setActiveDot(gDots, Math.round(gMedia.scrollLeft / gMedia.clientWidth));
-        },
-        { passive: true },
-      );
-    }
+    const cardEls = {
+      title: gamePanel.querySelector<HTMLElement>('[data-game-mobile-title]'),
+      blurb: gamePanel.querySelector<HTMLElement>('[data-game-mobile-blurb]'),
+      media: gamePanel.querySelector<HTMLElement>('[data-game-mobile-media]'),
+      dots: gamePanel.querySelector<HTMLElement>('[data-game-dots]'),
+      stars: gamePanel.querySelector<HTMLElement>('[data-game-mobile-stars]'),
+      status: gamePanel.querySelector<HTMLElement>('[data-game-mobile-status]'),
+      series: gamePanel.querySelector<HTMLElement>('[data-game-mobile-series]'),
+      consoleIcons: Array.from(gamePanel.querySelectorAll<HTMLElement>('[data-console-icon-for]')),
+    };
+    wireCarouselDots(cardEls.media, cardEls.dots);
     for (const trigger of gameTriggers) {
       trigger.addEventListener('click', (e) => {
         if (window.matchMedia('(min-width: 1024px)').matches) return; // desktop → drawer
         e.preventDefault();
         e.stopPropagation();
-        const d = trigger.dataset;
         mobilePanel.dataset.mode = 'game';
-        if (gTitle) gTitle.textContent = d.title || '';
-        if (gBlurb) gBlurb.textContent = d.blurb || '';
-        if (gMedia) {
-          let imgs: MediaImage[] = [];
-          try {
-            imgs = JSON.parse(d.images || '[]');
-          } catch {
-            imgs = [];
-          }
-          gMedia.innerHTML = buildCarousel(imgs);
-          gMedia.setAttribute('data-kind', d.kind || 'game');
-          gMedia.scrollLeft = 0;
-          if (gDots) {
-            if (imgs.length > 1) {
-              gDots.innerHTML = buildDots(imgs.length);
-              setActiveDot(gDots, 0);
-              gDots.hidden = false;
-            } else {
-              gDots.innerHTML = '';
-              gDots.hidden = true;
-            }
-          }
-        }
-        const r = parseFloat(d.rating || '0');
-        const hasRating = Boolean(d.rating) && r > 0;
-        if (gStars) {
-          if (hasRating) {
-            gStars.innerHTML = buildStars(r);
-            gStars.setAttribute('role', 'img');
-            gStars.setAttribute('aria-label', `Rated ${r.toFixed(1)} out of 5`);
-            gStars.hidden = false;
-          } else {
-            gStars.innerHTML = '';
-            gStars.hidden = true;
-          }
-        }
-        if (gStatus) {
-          if (d.status && !hasRating) {
-            gStatus.textContent = d.status;
-            gStatus.hidden = false;
-          } else {
-            gStatus.hidden = true;
-          }
-        }
-        if (gSeries) {
-          let entries: SeriesEntry[] = [];
-          if (d.series) {
-            try {
-              entries = JSON.parse(d.series);
-            } catch {
-              entries = [];
-            }
-          }
-          gSeries.innerHTML = entries.length ? buildSeries(entries) : '';
-          gSeries.hidden = entries.length === 0;
-        }
-        for (const el of gConsoleIcons) {
-          el.hidden = el.getAttribute('data-console-icon-for') !== d.console;
-        }
+        populateGameCard(trigger.dataset, cardEls);
         syncToolsTriggerVisibility();
         syncAiTriggerVisibility();
         const nav = document.querySelector<HTMLElement>('[data-top-nav]');
