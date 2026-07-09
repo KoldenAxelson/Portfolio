@@ -120,7 +120,7 @@
 
       {{/* Game detail mode — driven by ts/nav.ts from [data-game-open] line items
            on /impossible-list. Same panel, card, and physics as the nav menu. */}}
-      {{- $consoleNames := dict "N64" "Nintendo 64" "GCN" "Nintendo GameCube" "GBC" "Game Boy Color" "GBA" "Game Boy Advance" "PC" "PC" -}}
+      {{- $consoleNames := dict "N64" "Nintendo 64" "GCN" "Nintendo GameCube" "GBC" "Game Boy Color" "GBA" "Game Boy Advance" "XBOX" "Xbox 360" "PC" "PC" -}}
       <div data-mobile-panel-game class="mx-auto max-w-screen-xl px-6 py-5">
         <div class="opacity-0 transition-opacity duration-200 ease-out motion-reduce:transition-none">
           <div class="relative mb-4">
@@ -129,7 +129,7 @@
           </div>
           <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5">
             <span class="flex items-center gap-2">
-              {{- range (slice "N64" "GCN" "GBC" "GBA" "PC") }}
+              {{- range (slice "N64" "GCN" "GBC" "GBA" "XBOX" "PC") }}
               <span data-console-icon-for="{{ . }}" hidden role="img" aria-label="{{ index $consoleNames . }}" title="{{ index $consoleNames . }}" class="shrink-0 text-accent [&_svg]:h-5 [&_svg]:w-auto">{{ partial "func/console-icon.html" (dict "code" .) }}</span>
               {{- end }}
               <h2 data-game-mobile-title class="m-0 text-lg font-medium text-fg"></h2>
