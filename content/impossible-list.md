@@ -79,20 +79,49 @@ games:
       rating: 3.5
       shot: "zelda-wind-waker.png"
       blurb: "Vast world with small compact islands. I'll admit, I used a little speed hack to get from point A to point B sometimes for the long sailing adventure. Still the story and charm puts this with the greats."
+    - title: "Pokémon Sapphire"  # 2003
+      console: "GBA"
+      done: true
+      rating: 4.0
+      shot: "pokemon-sapphire.png"
+      blurb: "My comfort zone for Pokémon games. Straightforward without the extra fluff. Good story, memorable additions, and a solid starter trio."
+    - title: "Hamtaro: Ham-Ham Heartbreak"  # 2003
+      console: "GBA"
+      done: true
+      rating: 3.5
+      shot: "hamtaro-heartbreak.png"
+      blurb: "Honestly, for how childish it is, this has some of the best puzzles that actually got me to think and get stuck. It's pretty much a point-and-click adventure with some 'keys' that'll have you returning to previously unsolvable puzzles."
     - title: "Custom Robo"  # 2004
       console: "GCN"
       done: true
       rating: 3.5
       shot: "custom-robo.png"
       blurb: "The battles are fun! Lots of expression in the customization and playstyles. Though I ended up cheesing most battles I could with high stun striking vanisher builds."
-    - { title: "The Legend of Zelda: The Minish Cap", done: false, console: "GBA" }  # 2004
+    - title: "The Legend of Zelda: The Minish Cap"  # 2004
+      console: "GBA"
+      done: true
+      rating: 4.0
+      shot: "zelda-minish-cap.png"
+      blurb: "As someone who liked the Oracle series additions, this was a solid approach to how I like to engage with Zelda. Boiled down to its essence, this game nails it."
     - title: "Need for Speed: Most Wanted"  # 2005
       console: "GCN"
       done: true
       rating: 3.5
       shot: "need-for-speed-most-wanted.png"
       blurb: "I'm not much of a racing sim kinda guy, but the story and the cop chases were peak power fantasy. This game dictated my dream sports car."
+    - title: "Pokémon Mystery Dungeon: Red Rescue Team"  # 2006
+      console: "GBA"
+      done: true
+      rating: 3.0
+      shot: "pokemon-mystery-dungeon-red.png"
+      blurb: "More of a nostalgia trip for me. The story is decent, and the gameplay was probably my first foray into tile-based dungeon crawls."
     - { title: "The Legend of Zelda: Twilight Princess", done: false, console: "GCN" }  # 2006
+    - title: "Viva Piñata: Trouble in Paradise"  # 2008
+      console: "XBOX"
+      done: true
+      rating: 3.5
+      shot: "viva-pinata-trouble-in-paradise.jpg"
+      blurb: "Not a design pattern I see often — I'll call it attraction-based gameplay. You put effort into something to attract discovery to you. That's an underserved gaming niche, not to mention the aesthetic is charming as can be."
     - { title: "Old School RuneScape: Max Cape", done: false, console: "PC" }  # 2013
 # Books — same checklist + drill-down pattern as games. Covers live in
 # assets/achievements/<cover>.<ext> (any raster type; -1, -2 … = extra
