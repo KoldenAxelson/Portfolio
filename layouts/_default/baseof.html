@@ -63,6 +63,11 @@
   <body class="leading-relaxed" hx-boost="true" style="--noise-bg-light: url('{{ $noiseLight }}'); --noise-bg-dark: url('{{ $noiseDark }}')">
     <a href="#main" class="skip-link">Skip to content</a>
 
+    {{/* Optional promo/disclaimer strip above the nav. Pages opt in via
+         {{ define "topbanner" }}; it sits before the sticky nav in normal flow,
+         so it scrolls away while the nav stays pinned. Empty (no-op) elsewhere. */}}
+    {{ block "topbanner" . }}{{ end }}
+
     {{ partial "topnav.html" . }}
 
     {{ $mode := .Params.container | default "default" }}
