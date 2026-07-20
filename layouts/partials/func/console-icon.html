@@ -6,7 +6,11 @@
   viewBox keeps the aspect ratio). Renders nothing if the file is absent.
   Dict params: code (e.g. "N64").
 */ -}}
-{{- $path := printf "static/consoles/%s.svg" (lower .code) -}}
+{{- /* Codes that share another console's logo (e.g. every Xbox generation uses
+     the same sphere mark) alias onto that icon file instead of duplicating it. */ -}}
+{{- $aliases := dict "XSX" "xbox" -}}
+{{- $file := index $aliases .code | default (lower .code) -}}
+{{- $path := printf "static/consoles/%s.svg" $file -}}
 {{- if os.FileExists $path -}}
   {{- $s := os.ReadFile $path -}}
   {{- $s = replace $s `fill="none"` `fill="__keepf__"` -}}

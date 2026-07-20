@@ -1,0 +1,163 @@
+{{/*
+  Verdant project page. The scene is an Odin module compiled to WebAssembly
+  (js_wasm32) that renders a stylized-grass diorama with WebGL2 — no engine, no
+  emscripten. Odin's own JS runtime glue (assets/vendor/odin.js) is loaded first
+  as a classic script and exposes `window.odin`; the loader
+  (assets/js/verdant/main.ts) replicates Odin's runWasm driver so it can capture
+  the wasm exports and drive the in-page control panel.
+
+  odin.js MUST run before the loader boots, so both are plain deferred scripts
+  (deferred scripts execute in document order, before the window `load` event the
+  loader waits on). Same full-page-load arrangement as the spinmasters page
+  (boost:false in front matter) so these <head> scripts actually execute.
+
+  The canvas carries id="verdant-canvas": the Odin code calls
+  gl.CreateCurrentContextById("verdant-canvas") (see src/game/game.odin CANVAS_ID),
+  and odin.js resolves it with document.getElementById — so the id must match.
+*/}}
+
+{{ define "head" }}
+  <style>
+    /* Canvas fills the stage; the WebGL backing store is sized to the element in
+       JS (devicePixelRatio-aware) — object-fit keeps it crisp on odd ratios. */
+    [data-stage] #verdant-canvas{display:block;width:100%;height:100%;background:#0b0e0c}
+    [data-stage]:fullscreen,
+    [data-stage]:-webkit-full-screen{width:100vw !important;height:100vh !important;min-height:0 !important;border-radius:0 !important}
+
+    /* Control panel — Verdant's own look, but absolutely positioned inside the
+       stage (the standalone app fixed it to the viewport). */
+    [data-verdant] .v-panel{
+      position:absolute;top:12px;right:12px;width:232px;z-index:20;
+      background:rgba(14,20,16,.82);backdrop-filter:blur(6px);
+      border:1px solid rgba(150,200,160,.18);border-radius:10px;
+      color:#d6e6da;font-size:12px;user-select:none;box-shadow:0 6px 24px rgba(0,0,0,.35);
+      max-height:calc(100% - 24px);overflow-y:auto;
+    }
+    [data-verdant] .v-panel h3{
+      margin:0;padding:10px 12px;font-size:12px;font-weight:600;letter-spacing:.04em;
+      text-transform:uppercase;color:#a9d2b6;cursor:pointer;
+      display:flex;justify-content:space-between;align-items:center;
+    }
+    [data-verdant] .v-panel h3 .caret{transition:transform .15s}
+    [data-verdant] .v-panel.collapsed h3 .caret{transform:rotate(-90deg)}
+    [data-verdant] .v-panel .body{padding:4px 12px 12px}
+    [data-verdant] .v-panel.collapsed .body{display:none}
+    [data-verdant] .v-panel .row{margin:9px 0}
+    [data-verdant] .v-panel .row label{display:flex;justify-content:space-between;margin-bottom:3px;color:#bcd4c4}
+    [data-verdant] .v-panel .row label .val{color:#eaf5ee;font-variant-numeric:tabular-nums}
+    [data-verdant] .v-panel .row input[type=range]{width:100%;accent-color:#7fd39a;height:16px}
+    [data-verdant] .v-panel .chk{display:flex;align-items:center;gap:7px;margin:10px 0 2px}
+    [data-verdant] .v-panel .chk input{accent-color:#7fd39a}
+    [data-verdant] .v-panel .hint{color:#7f9a88;font-size:10.5px;margin-top:8px;line-height:1.4}
+    [data-verdant] .v-panel .group{border-top:1px solid rgba(150,200,160,.10)}
+    [data-verdant] .v-panel .group:first-child{border-top:none}
+    [data-verdant] .v-panel .group-h{
+      padding:8px 1px;font-size:11px;font-weight:600;letter-spacing:.03em;
+      text-transform:uppercase;color:#8fb89e;cursor:pointer;
+      display:flex;justify-content:space-between;align-items:center;
+    }
+    [data-verdant] .v-panel .group-h:hover{color:#a9d2b6}
+    [data-verdant] .v-panel .group-h .caret{transition:transform .15s;font-size:10px;opacity:.8}
+    [data-verdant] .v-panel .group.collapsed .group-h .caret{transform:rotate(-90deg)}
+    [data-verdant] .v-panel .group-b{padding:0 0 6px}
+    [data-verdant] .v-panel .group.collapsed .group-b{display:none}
+
+    [data-verdant] .v-log{
+      position:absolute;left:10px;bottom:10px;margin:0;z-index:20;
+      font:12px/1.4 ui-monospace,Menlo,Consolas,monospace;color:#8fbf9f;
+      white-space:pre-wrap;pointer-events:none;text-shadow:0 1px 2px #000;opacity:.85;
+    }
+  </style>
+
+  {{/* Fingerprinted wasm URL — passed to the loader via a data attribute. */}}
+  {{ $wasm := resources.Get "wasm/verdant/verdant.wasm" | fingerprint }}
+
+  {{/* Odin's runtime glue: a classic script that assigns window.odin. Loaded
+       (deferred) before the loader so window.odin exists when boot() runs. */}}
+  {{ $odin := resources.Get "vendor/odin.js" | fingerprint }}
+  <script defer src="{{ $odin.RelPermalink }}" integrity="{{ $odin.Data.Integrity }}"></script>
+
+  {{ $opts := dict "minify" true "target" "es2018" "format" "iife" }}
+  {{ $loader := resources.Get "js/verdant/main.ts" | js.Build $opts | fingerprint }}
+  <script defer src="{{ $loader.RelPermalink }}" integrity="{{ $loader.Data.Integrity }}"></script>
+{{ end }}
+
+{{ define "main" }}
+{{- $d := .Params -}}
+
+{{/* Sprite sheets, fingerprinted, in the exact index order the Odin code expects
+     (world/character.odin: state*4 + dir; idle=0/run=1/attack=2, dir down/up/left/right). */}}
+{{- $names := slice
+  "idle_down" "idle_up" "idle_left" "idle_right"
+  "run_down" "run_up" "run_left" "run_right"
+  "attack1_down" "attack1_up" "attack1_left" "attack1_right" -}}
+{{- $sprites := slice -}}
+{{- range $names -}}
+  {{- $s := resources.Get (printf "img/verdant/sprites/%s.png" .) | fingerprint -}}
+  {{- $sprites = $sprites | append $s.RelPermalink -}}
+{{- end -}}
+
+<article class="max-w-none">
+  {{/* ── Project header (follows the single.html convention) ── */}}
+  <header class="mb-8">
+    <p class="font-mono text-sm text-muted">{{ $d.year }} · {{ $d.role | default "Project" }}</p>
+    <h1 class="mt-2 text-3xl font-medium sm:text-4xl">{{ $d.title }}</h1>
+    <p class="mt-3 max-w-2xl text-lg text-muted">{{ $d.summary }}</p>
+
+    {{- with $d.stack }}
+    <dl class="mt-6 grid grid-cols-[max-content_1fr] gap-x-4 gap-y-2 text-sm">
+      <dt class="font-mono text-muted">stack</dt>
+      <dd>{{ delimit . ", " }}</dd>
+      <dt class="font-mono text-muted">status</dt>
+      <dd>{{ $d.status | default "shipped" }}</dd>
+    </dl>
+    {{- end }}
+  </header>
+
+  {{/* ── Scene ── */}}
+  <div
+    data-verdant
+    data-wasm-url="{{ (resources.Get "wasm/verdant/verdant.wasm" | fingerprint).RelPermalink }}"
+    data-sprites="{{ $sprites | jsonify }}"
+    class="select-none"
+  >
+    <p class="mb-3 font-mono text-xs text-muted">
+      WASD / arrows move · SPACE attack · SHIFT dash · F fullscreen · drag “Time of day” to scrub dawn→night
+    </p>
+
+    <div
+      data-stage
+      class="relative flex h-[70vh] min-h-[440px] w-full items-center justify-center overflow-hidden rounded-lg border border-border bg-[#0b0e0c]"
+    >
+      <canvas id="verdant-canvas"></canvas>
+
+      {{/* Loading state until the wasm has booted. */}}
+      <div data-loading class="pointer-events-none absolute inset-0 flex items-center justify-center">
+        <span class="font-mono text-sm text-muted">Loading…</span>
+      </div>
+
+      {{/* WebGL2 failure fallback. */}}
+      <div data-fallback class="pointer-events-none absolute inset-0 hidden place-items-center px-6 text-center">
+        <span class="font-mono text-sm text-muted">This browser could not create a WebGL2 context.</span>
+      </div>
+
+      {{/* Control panel — populated by the loader. */}}
+      <div class="v-panel" data-panel>
+        <h3 data-panel-toggle>Verdant <span class="caret">▾</span></h3>
+        <div class="body" data-panel-body></div>
+      </div>
+
+      {{/* Runtime log (bottom-left, matches the standalone app). */}}
+      <pre class="v-log" data-log></pre>
+
+      {{/* Fullscreen toggle. */}}
+      <button
+        type="button"
+        data-fs
+        class="absolute left-3 top-3 z-30 rounded bg-bg/85 px-2 py-1.5 font-mono text-xs text-fg transition hover:text-accent"
+        aria-label="Toggle fullscreen"
+      >⛶ Fullscreen</button>
+    </div>
+  </div>
+</article>
+{{ end }}

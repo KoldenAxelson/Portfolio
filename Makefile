@@ -19,12 +19,16 @@ TSGO     := $(TSGO_DIR)/tsgo
 CSS_IN   := assets/css/main.css
 CSS_OUT  := assets/css/app.css
 
-# WebAssembly games. Each game is a separate Rust crate (living outside this
-# repo) that compiles to wasm and is blitted onto a 2D canvas. Its own
-# scripts/build-web.sh recompiles and drops the .wasm into assets/wasm/<game>/,
-# which Hugo fingerprints at build time. Override a path if your checkout differs,
-# e.g. `make spinmasters SPINMASTERS_DIR=/path/to/spinmasters`.
+# WebAssembly pieces. Each is a separate crate/module (living outside this repo)
+# that compiles to wasm. Its own scripts/build-web.sh recompiles and drops the
+# browser artifacts into assets/ (which Hugo fingerprints at build time). Override
+# a path if your checkout differs, e.g. `make spinmasters SPINMASTERS_DIR=/path`.
+#
+# SpinMasters (Rust) blits a CPU framebuffer onto a 2D canvas — just a .wasm.
+# Verdant (Odin) renders with WebGL2 through Odin's runtime glue, so it ships
+# three things: the .wasm, assets/vendor/odin.js, and assets/img/verdant/sprites/.
 SPINMASTERS_DIR ?= ../Playgrounds/Rust/spinmasters
+VERDANT_DIR     ?= ../Micro/Portfolio/verdant
 
 # AI chat proxy (Go, stdlib-only — see docs/ai-tunnel.md). The binary is built
 # into its own dir and is gitignored; never commit it.
@@ -39,7 +43,7 @@ AI_PORT      := 6573    # localhost-only proxy port (ASCII "AI" = 65,73). Must
 # `?=` means an AI_MODEL from the environment wins and skips this detection.
 AI_MODEL     ?= $(shell command -v ollama >/dev/null 2>&1 && ollama list 2>/dev/null | awk 'NR==2 {print $$1}')
 
-.PHONY: help setup dev build css css-watch typecheck clean distclean ai-proxy ai-proxy-run ai-proxy-stop spinmasters games
+.PHONY: help setup dev build css css-watch typecheck clean distclean ai-proxy ai-proxy-run ai-proxy-stop spinmasters verdant games
 
 help: ## Show this help
 	@echo "Portfolio — available commands:"
@@ -146,7 +150,13 @@ spinmasters: ## Rebuild the SpinMasters wasm from its repo into assets/wasm/
 	@echo "Building SpinMasters wasm from $(SPINMASTERS_DIR)…"
 	@cd "$(SPINMASTERS_DIR)" && bash scripts/build-web.sh "$(CURDIR)"
 
-games: spinmasters ## Rebuild every game's wasm
+verdant: ## Rebuild the Verdant wasm + odin.js + sprites from its repo into assets/
+	@command -v odin >/dev/null 2>&1 || { echo "Odin not found on PATH — install from https://odin-lang.org" >&2; exit 1; }
+	@[ -d "$(VERDANT_DIR)" ] || { echo "Verdant repo not found at $(VERDANT_DIR) — override: make verdant VERDANT_DIR=/path/to/verdant" >&2; exit 1; }
+	@echo "Building Verdant wasm from $(VERDANT_DIR)…"
+	@cd "$(VERDANT_DIR)" && bash scripts/build-web.sh "$(CURDIR)"
+
+games: spinmasters verdant ## Rebuild every wasm piece (SpinMasters + Verdant)
 
 # --- AI chat proxy ----------------------------------------------------------
 

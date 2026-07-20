@@ -123,6 +123,12 @@ games:
       shot: "viva-pinata-trouble-in-paradise.jpg"
       blurb: "Not a design pattern I see often — I'll call it attraction-based gameplay. You put effort into something to attract discovery to you. That's an underserved gaming niche, not to mention the aesthetic is charming as can be."
     - { title: "Old School RuneScape: Max Cape", done: false, console: "PC" }  # 2013
+    - title: "The Elder Scrolls V: Skyrim"  # 2016
+      console: "XSX"
+      done: true
+      rating: 3.0
+      shot: "skyrim.jpg"
+      blurb: "This is a comfort game for me. When I want to just 'take a walk' digitally, this feels like walking around my old neighborhood. Over time some new things are added in, and it's fun to discover things I never saw before. I'm not huge into the modding scene — I appreciate it, but I like having the shared experience."
 # Books — same checklist + drill-down pattern as games. Covers live in
 # assets/achievements/<cover>.<ext> (any raster type; -1, -2 … = extra
 # carousel images). rating → stars; status → a progress/state note.
