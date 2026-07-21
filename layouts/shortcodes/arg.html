@@ -1,0 +1,68 @@
+{{- /*
+  arg — render an argument in standard form: numbered premises, a dividing
+  line, then the conclusion. Matches the book's "standard form" definition
+  (premises listed first, separated from the conclusion by a horizontal line).
+
+  Usage — one premise per line, a line of --- , then the conclusion:
+
+    {{< arg title="Standard Form Example" >}}
+    Whoever wrote *Macbeth* is the best playwright who ever lived.
+    Shakespeare wrote *Macbeth*.
+    ---
+    Shakespeare is the best playwright who ever lived.
+    {{< /arg >}}
+
+  Optional attributes:
+    title  — caption shown above the block
+    kind   — a small label chip, e.g. "Deductive" / "Inductive" / "Valid"
+    note   — a muted footnote under the block (e.g. "Valid, but unsound.")
+
+  Premise/conclusion text is rendered as inline Markdown, so *italics*,
+  **bold**, and links work. Presentational only for now; the data-arg hook is
+  here so it can gain interactivity later without changing any chapter file.
+
+  Layout: each row is a flexbox so the P1/P2/∴ label stays inline with its
+  statement (label is shrink-0; wrapped lines hang-indent under the text).
+*/ -}}
+{{- $title := .Get "title" -}}
+{{- $kind := .Get "kind" -}}
+{{- $note := .Get "note" -}}
+{{- /* Split premises from conclusion on a line that is only dashes. */ -}}
+{{- $canon := replaceRE `(?m)^[ \t]*-{3,}[ \t]*$` "@@ARGSEP@@" (trim .Inner "\n") -}}
+{{- $halves := split $canon "@@ARGSEP@@" -}}
+{{- $prem := slice -}}
+{{- range (split (index $halves 0) "\n") -}}
+  {{- with (trim . " \t") }}{{ $prem = $prem | append . }}{{ end -}}
+{{- end -}}
+{{- $concl := "" -}}
+{{- if gt (len $halves) 1 -}}
+  {{- range (split (index $halves 1) "\n") -}}
+    {{- with (trim . " \t") }}{{ if not $concl }}{{ $concl = . }}{{ end }}{{ end -}}
+  {{- end -}}
+{{- end -}}
+<figure data-arg{{ with $kind }} data-arg-kind="{{ . }}"{{ end }} class="my-8 overflow-hidden rounded-2xl border border-border/70 bg-border/10">
+  {{- if or $title $kind }}
+  <figcaption class="flex items-center gap-2 border-b border-border/60 px-5 py-3 text-sm font-medium text-fg">
+    <span>{{ $title | default "Argument" }}</span>
+    {{- with $kind }}<span class="ml-auto rounded-full border border-border/70 px-2 py-0.5 font-mono text-[11px] uppercase tracking-wide text-muted">{{ . }}</span>{{ end }}
+  </figcaption>
+  {{- end }}
+  <div class="px-5 py-4 text-base leading-relaxed [&_a]:text-fg [&_a]:underline [&_a]:decoration-border">
+    <div class="space-y-1.5">
+      {{- range $i, $p := $prem }}
+      <p class="flex items-baseline gap-x-2.5">
+        <span class="shrink-0 font-mono text-xs text-muted" aria-hidden="true">P{{ add $i 1 }}</span>
+        <span class="min-w-0 text-fg"><span class="sr-only">Premise {{ add $i 1 }}: </span>{{ $p | $.Page.RenderString }}</span>
+      </p>
+      {{- end }}
+    </div>
+    <hr class="my-2.5 border-0 border-t border-border/70" />
+    <p class="flex items-baseline gap-x-2.5">
+      <span class="shrink-0 font-mono text-sm text-accent" aria-hidden="true">&there4;</span>
+      <span class="min-w-0 font-medium text-fg"><span class="sr-only">Therefore, conclusion: </span>{{ $concl | $.Page.RenderString }}</span>
+    </p>
+    {{- with $note }}
+    <p class="mt-3 text-sm italic leading-snug text-muted">{{ . | $.Page.RenderString }}</p>
+    {{- end }}
+  </div>
+</figure>

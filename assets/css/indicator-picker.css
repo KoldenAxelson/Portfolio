@@ -1,0 +1,10 @@
+/* indicator-picker — rules unique to "Deductive or Inductive?"; the card, mode
+   buttons, "why" box, pills, and score screen come from quiz-kit.css. The
+   passage words are the one bespoke control here. */
+.ip-passage{ line-height:1.9; font-size:1.05rem; }
+.ip-word{ cursor:pointer; border-radius:5px; padding:1px 3px; transition:background .12s, box-shadow .12s, color .12s; }
+.ip-word:hover{ background:rgb(var(--c-accent) / .22); box-shadow:0 0 0 1px rgb(var(--c-accent) / .6); color:rgb(var(--c-fg)); }
+.ip-word.ip-sel{ background:rgb(var(--c-accent) / .18); box-shadow:0 0 0 1.5px rgb(var(--c-accent)) inset; }
+.ip-word.ip-ok{ background:rgb(34 197 94 / .18); box-shadow:0 0 0 1.5px var(--qz-ok) inset; }
+.ip-word.ip-bad{ background:rgb(239 68 68 / .18); box-shadow:0 0 0 1.5px var(--qz-bad) inset; }
+.ip-passage .qz-oicon{ vertical-align:-3px; margin:0 1px 0 3px; }

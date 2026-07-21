@@ -1,0 +1,34 @@
+{{- /*
+  arg-builder — drops the "Natural Speech → Standard Form" parsing quiz into a
+  page. Problems come from a data file under data/argsets/.
+
+    {{< arg-builder >}}                         uses data/argsets/standard-form-ch01
+    {{< arg-builder set="my-set" quiz="4" >}}   pick a set + questions per round
+
+  The problem data is emitted as JSON inside the mount; a small plain-JS module
+  (kept out of the tsgo gate) hydrates it and bundles in the shared quiz-kit. CSS
+  ships once per page as fingerprinted resources — quiz-kit.css shared across all
+  the exercise widgets, plus this widget's own rules.
+*/ -}}
+{{- $set := .Get "set" | default "standard-form-ch01" -}}
+{{- $quiz := .Get "quiz" | default "4" -}}
+{{- $data := index site.Data.argsets $set -}}
+{{- if $data -}}
+<div data-arg-builder data-quiz="{{ $quiz }}">
+  <script type="application/json" data-arg-data>{{ $data | jsonify | safeJS }}</script>
+</div>
+{{- if not (.Page.Scratch.Get "quizKitCss") -}}
+  {{- $kit := resources.Get "css/quiz-kit.css" | minify | fingerprint -}}
+  <link rel="stylesheet" href="{{ $kit.RelPermalink }}" integrity="{{ $kit.Data.Integrity }}" />
+  {{- .Page.Scratch.Set "quizKitCss" true -}}
+{{- end -}}
+{{- if not (.Page.Scratch.Get "argBuilderAssets") -}}
+  {{- $css := resources.Get "css/arg-builder.css" | minify | fingerprint -}}
+  <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" />
+  {{- $js := resources.Get "js/arg-builder.js" | js.Build (dict "minify" true) | fingerprint -}}
+  <script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
+  {{- .Page.Scratch.Set "argBuilderAssets" true -}}
+{{- end -}}
+{{- else -}}
+<p><em>arg-builder: no data set named “{{ $set }}” found under data/argsets/.</em></p>
+{{- end -}}

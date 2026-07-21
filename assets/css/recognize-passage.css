@@ -1,0 +1,5 @@
+/* recognize-passage — rules unique to "Argument or Not?"; the card, choice
+   buttons, "why" box, and score screen come from quiz-kit.css. */
+.qz-passage.rp-withsrc{ margin-bottom:6px; }               /* tighten the gap when the source line follows */
+.rp-src{ margin:0 0 18px; font-size:.85rem; font-style:italic; color:rgb(var(--c-muted)); }
+.rp-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }   /* the eight non-inferential types */

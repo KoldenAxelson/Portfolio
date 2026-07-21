@@ -1,0 +1,43 @@
+{{- /*
+  logic-widget — a mount point for an interactive "Basic Logic" widget.
+
+  Usage in a chapter .md file:
+
+    Self-closing (a client script supplies the whole widget):
+      {{< logic-widget name="truth-table" title="Truth Table Explorer" >}}
+
+    With Markdown fallback (shown before/without JavaScript):
+      {{< logic-widget name="venn" title="Venn Diagram" icon="squares-2x2" >}}
+      A static explanation or image goes here — it stays visible until the
+      interactive version hydrates, so the page is complete even with JS off.
+      {{< /logic-widget >}}
+
+  Params:
+    name  (required) — stable id a script uses to find and hydrate this widget.
+    title (optional) — caption shown in the header. Default "Interactive".
+    icon  (optional) — any key from data/icons.yaml. Default "puzzle-piece".
+
+  How hydration will work later: ship a small module under assets/ts that
+  queries `[data-logic-widget]`, reads its `data-logic-widget` (the name),
+  and replaces the contents of `[data-logic-widget-slot]` with the live UI.
+  Wire it into the TS bundle the same way the site already does (see
+  assets/ts + the data-* hooks in layouts/partials). Until then this renders
+  a styled placeholder, so authoring can proceed now and widgets land later.
+*/ -}}
+{{- $name := .Get "name" | default (.Get 0) -}}
+{{- $title := .Get "title" | default "Interactive" -}}
+{{- $icon := .Get "icon" | default "puzzle-piece" -}}
+<figure data-logic-widget="{{ $name }}" class="my-8 overflow-hidden rounded-2xl border border-border/70 bg-border/10">
+  <figcaption class="flex items-center gap-2 border-b border-border/60 px-5 py-3 text-sm font-medium text-fg">
+    {{ partial "func/svg-icon.html" (dict "name" $icon "class" "h-5 w-5 shrink-0 text-accent") }}
+    <span>{{ $title }}</span>
+    <span class="ml-auto font-mono text-[11px] uppercase tracking-wide text-muted">Interactive</span>
+  </figcaption>
+  <div data-logic-widget-slot class="px-5 py-4 text-sm leading-relaxed text-muted [&_a]:text-fg [&_a]:underline [&_a]:decoration-border">
+    {{- with .Inner }}
+    {{ . | markdownify }}
+    {{- else }}
+    <p>An interactive widget will appear here. <span class="text-fg">(“{{ $name }}” isn’t wired up yet.)</span></p>
+    {{- end }}
+  </div>
+</figure>

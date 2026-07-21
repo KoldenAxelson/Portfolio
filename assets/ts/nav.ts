@@ -216,6 +216,33 @@ function wireNavElements(): void {
       });
     }
   }
+
+  // Glossary terms reuse this panel as a 'definition' mode, so the navbar stays
+  // and the hamburger→X dismisses it — identical to the game detail. Desktop is
+  // handled separately by assets/js/definitions.js (the right drawer).
+  const defPanel = document.querySelector<HTMLElement>('[data-mobile-panel-definition]');
+  const termTriggers = Array.from(
+    document.querySelectorAll<HTMLButtonElement>('[data-term-def]'),
+  );
+  if (mobilePanel && defPanel && termTriggers.length) {
+    const defLabel = defPanel.querySelector<HTMLElement>('[data-definition-label]');
+    const defBody = defPanel.querySelector<HTMLElement>('[data-definition-body]');
+    for (const trigger of termTriggers) {
+      trigger.addEventListener('click', (e) => {
+        if (window.matchMedia('(min-width: 1024px)').matches) return; // desktop → drawer
+        e.preventDefault();
+        e.stopPropagation();
+        mobilePanel.dataset.mode = 'definition';
+        if (defLabel) defLabel.textContent = trigger.getAttribute('data-term-label') || '';
+        if (defBody) defBody.textContent = trigger.getAttribute('data-term-def') || '';
+        syncToolsTriggerVisibility();
+        syncAiTriggerVisibility();
+        const nav = document.querySelector<HTMLElement>('[data-top-nav]');
+        if (nav) nav.style.transform = '';
+        if (!mobileNav.open) mobileNav.open = true;
+      });
+    }
+  }
 }
 
 export function initNav(): void {

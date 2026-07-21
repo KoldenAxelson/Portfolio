@@ -1,0 +1,34 @@
+{{- /*
+  recognize-passage — "Argument or Not?" quiz. Problems come from a data file
+  under data/argsets/.
+
+    {{< recognize-passage >}}                              uses data/argsets/recognize-ch01
+    {{< recognize-passage set="my-set" quiz="10" args="4" >}}
+
+  Same delivery pattern as the other widgets: JSON in the mount, a plain-JS
+  module that bundles the shared quiz-kit, and fingerprinted CSS (shared
+  quiz-kit.css once per page, plus this widget's rules).
+*/ -}}
+{{- $set := .Get "set" | default "recognize-ch01" -}}
+{{- $quiz := .Get "quiz" | default "10" -}}
+{{- $args := .Get "args" | default "4" -}}
+{{- $data := index site.Data.argsets $set -}}
+{{- if $data -}}
+<div data-recognize data-quiz="{{ $quiz }}" data-args="{{ $args }}">
+  <script type="application/json" data-rp-data>{{ $data | jsonify | safeJS }}</script>
+</div>
+{{- if not (.Page.Scratch.Get "quizKitCss") -}}
+  {{- $kit := resources.Get "css/quiz-kit.css" | minify | fingerprint -}}
+  <link rel="stylesheet" href="{{ $kit.RelPermalink }}" integrity="{{ $kit.Data.Integrity }}" />
+  {{- .Page.Scratch.Set "quizKitCss" true -}}
+{{- end -}}
+{{- if not (.Page.Scratch.Get "recognizeAssets") -}}
+  {{- $css := resources.Get "css/recognize-passage.css" | minify | fingerprint -}}
+  <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" />
+  {{- $js := resources.Get "js/recognize-passage.js" | js.Build (dict "minify" true) | fingerprint -}}
+  <script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
+  {{- .Page.Scratch.Set "recognizeAssets" true -}}
+{{- end -}}
+{{- else -}}
+<p><em>recognize-passage: no data set named “{{ $set }}” found under data/argsets/.</em></p>
+{{- end -}}

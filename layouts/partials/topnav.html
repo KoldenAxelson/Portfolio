@@ -17,6 +17,17 @@
   {{- with $site.author.resume.pdf }}{{ $t = $t | append (dict "icon" "pdf" "label" "PDF" "href" . "download" true) }}{{ end -}}
   {{- $tools = $t -}}
 {{- end -}}
+{{- /* Basic Logic chapters auto-populate their toolbar with the section's other
+       chapters — a "jump to chapter" menu. On mobile it drops from the navbar
+       button (shared tools panel); on desktop the inline toolbar is suppressed
+       and the floating chapter-select FAB handles it (partials/chapter-select). */ -}}
+{{- if and (not $tools) (eq .Type "basic-logic") (eq .Kind "page") -}}
+  {{- $t := slice -}}
+  {{- range .CurrentSection.RegularPages.ByWeight -}}
+    {{- $t = $t | append (dict "label" .Title "href" .RelPermalink) -}}
+  {{- end -}}
+  {{- $tools = $t -}}
+{{- end -}}
 {{- $hasTools := false -}}
 {{- with $tools }}{{ $hasTools = gt (len .) 0 }}{{ end -}}
 {{- $cur := strings.TrimSuffix "/" .RelPermalink -}}
@@ -29,7 +40,7 @@
         <img src="{{ partial "func/url.html" "/logo-mark.svg" }}" alt="{{ $site.author.name }}" width="36" height="36" class="h-9 w-9" />
       </a>
 
-      {{- if and $hasTools (ne .Layout "cv") }}
+      {{- if and $hasTools (ne .Layout "cv") (ne .Type "basic-logic") }}
       <ul class="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-2 lg:flex">
         {{- range $tools }}
         <li>
@@ -74,7 +85,7 @@
         {{- end }}
         {{- if $hasTools }}
         <button type="button" data-mobile-tools-trigger aria-label="Open page actions" class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-md text-muted transition-colors hover:bg-border/40 hover:text-fg focus-visible:bg-border/40 focus-visible:text-fg">
-          {{ partial "func/svg-icon.html" (dict "name" "arrow-down-circle" "class" "h-7 w-7") }}
+          {{ partial "func/svg-icon.html" (dict "name" (cond (eq .Type "basic-logic") "book-open" "arrow-down-circle") "class" "h-7 w-7") }}
         </button>
         {{- end }}
 
@@ -144,6 +155,16 @@
         </div>
       </div>
 
+      {{/* Definition mode — glossary term detail, driven by ts/nav.ts from
+           [data-term-def] words on Basic Logic pages. Same panel + physics as the
+           nav menu; desktop is handled separately by the definitions drawer. */}}
+      <div data-mobile-panel-definition class="mx-auto max-w-screen-xl px-6 py-5">
+        <div class="opacity-0 transition-opacity duration-200 ease-out motion-reduce:transition-none">
+          <p data-definition-label></p>
+          <p data-definition-body></p>
+        </div>
+      </div>
+
       {{- if $hasTools }}
       <ul data-mobile-panel-tools class="mx-auto flex max-w-screen-xl flex-col gap-1 px-6 py-4 opacity-0 transition-opacity duration-200 ease-out motion-reduce:transition-none">
         {{- range $tools }}
@@ -155,7 +176,7 @@
           </button>
           {{- else }}
           <a href="{{ .href }}"{{ if .download }} download hx-boost="false"{{ end }}{{ if and .href (findRE `^https?:` .href) }} rel="noopener"{{ end }} aria-label="{{ .label }}" class="flex w-full items-center gap-4 rounded-md px-3 py-3 text-lg !text-fg no-underline transition-colors hover:bg-border/40 hover:!text-accent">
-            {{ partial "func/svg-icon.html" (dict "name" .icon "class" "h-6 w-6 shrink-0") }}
+            {{- with .icon }}{{ partial "func/svg-icon.html" (dict "name" . "class" "h-6 w-6 shrink-0") }}{{ end }}
             <span>{{ .label }}</span>
           </a>
           {{- end }}
@@ -207,17 +228,34 @@
   [data-mobile-panel-nav],
   [data-mobile-panel-bio],
   [data-mobile-panel-tools],
-  [data-mobile-panel-game] { display: none; }
+  [data-mobile-panel-game],
+  [data-mobile-panel-definition] { display: none; }
   [data-mobile-panel][data-mode='nav'] [data-mobile-panel-nav],
   [data-mobile-panel][data-mode='bio'] [data-mobile-panel-bio],
   [data-mobile-panel][data-mode='tools'] [data-mobile-panel-tools],
-  [data-mobile-panel][data-mode='game'] [data-mobile-panel-game] { display: block; }
+  [data-mobile-panel][data-mode='game'] [data-mobile-panel-game],
+  [data-mobile-panel][data-mode='definition'] [data-mobile-panel-definition] { display: block; }
   [data-mobile-panel].is-open [data-mobile-panel-nav] ul,
   [data-mobile-panel].is-open [data-mobile-panel-bio] p,
   [data-mobile-panel].is-open [data-mobile-panel-tools],
-  [data-mobile-panel].is-open [data-mobile-panel-game] > div {
+  [data-mobile-panel].is-open [data-mobile-panel-game] > div,
+  [data-mobile-panel].is-open [data-mobile-panel-definition] > div {
     opacity: 1;
     transition-delay: 200ms;
+  }
+  /* Definition mode — a glossary term tapped on mobile (see ts/nav.ts). */
+  [data-definition-label] {
+    margin: 0 0 0.35rem;
+    font: 600 0.72rem var(--font-mono, ui-monospace, monospace);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgb(var(--c-accent));
+  }
+  [data-definition-body] {
+    margin: 0;
+    font-size: 1.05rem;
+    line-height: 1.55;
+    color: rgb(var(--c-fg));
   }
   [data-mobile-tools-trigger] {
     transition: opacity 200ms ease, transform 200ms ease;
