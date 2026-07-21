@@ -1,5 +1,6 @@
 # Local Dev Storage
 /private/
+/_to_delete/
 
 # AI chat proxy — compiled binary and Go build leftovers (build with
 # `make ai-proxy`; never commit). The glob also catches stray toolchain
