@@ -8,6 +8,8 @@ import { initProjectFilter } from './project-filter';
 import { initGameModal } from './impossible-modal';
 import { initPerfMeters } from './perf-meters';
 import { initAiWidget } from './ai-widget';
+import { initAuxButton } from './auxiliary-button';
+import { initDefinitions } from './definitions';
 
 declare global {
   interface Window {
@@ -30,6 +32,8 @@ function initPage(): void {
   initGameModal();
   initPerfMeters();
   initAiWidget();
+  initAuxButton();
+  initDefinitions();
 }
 
 function ready(fn: () => void): void {

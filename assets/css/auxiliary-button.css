@@ -1,0 +1,97 @@
+/* auxiliary-button — the shared floating "speed-dial" FAB used across the site
+   (CV document-actions, Viva save/load, Basic Logic chapter-select). It's a
+   <details> whose accent-circle summary toggles an expanding menu, with the icon
+   morphing to an X on open. Two menu layouts: --pills (a stack of glass circles
+   that reveal a label on hover) and --list (a glass menu of titled rows).
+   Close-on-outside / Escape is wired globally by ts/auxiliary-button.ts.
+   Colors come from the site's --c-* / --glass-* tokens. */
+
+/* Primary toggle: accent-filled circle. Its icon inherits the page background so
+   it stays legible on the accent fill in both light (green) and dark (amber). */
+.aux-fab__btn {
+  background-color: rgb(var(--c-accent)); color: rgb(var(--c-bg)); border: 1px solid rgb(var(--c-accent));
+  box-shadow: 0 6px 18px -6px rgb(0 0 0 / 0.25); transition: filter 0.2s ease, box-shadow 0.2s ease;
+}
+.aux-fab__btn:hover { filter: brightness(1.08); box-shadow: 0 8px 22px -6px rgb(0 0 0 / 0.3); }
+@media (prefers-color-scheme: dark) {
+  .aux-fab__btn { box-shadow: 0 6px 18px -8px rgb(0 0 0 / 0.6); }
+  .aux-fab__btn:hover { box-shadow: 0 8px 22px -8px rgb(0 0 0 / 0.65); }
+}
+[data-aux-fab] > summary::-webkit-details-marker { display: none; }
+[data-aux-fab] > summary::marker { content: ""; }
+
+/* Icon swap: the main glyph when closed, an ✕ when open. */
+.aux-fab__icon--close { display: none; }
+[data-aux-fab][open] .aux-fab__icon--main { display: none; }
+[data-aux-fab][open] .aux-fab__icon--close { display: block; }
+
+/* Keep the menu laid out even when closed so it animates on every open. Two UA
+   hiding models to defeat: the legacy one display:none's a closed <details>'s
+   children; the current one (Chrome 131+/FF 139+) wraps them in
+   ::details-content with content-visibility:hidden. Visibility is driven by
+   [open] via opacity below; pointer-events gate interaction. */
+[data-aux-fab]::details-content { content-visibility: visible; }
+.aux-fab__menu { position: absolute; bottom: 100%; right: 0; margin-bottom: 0.75rem; pointer-events: none; }
+[data-aux-fab][open] .aux-fab__menu { pointer-events: auto; }
+
+/* ── Pills layout (CV, Viva): a vertical stack of glass circles, each revealing
+      its label on hover, staggered outward from the toggle (nearest leads). ── */
+.aux-fab__menu--pills { display: flex; flex-direction: column; align-items: flex-end; gap: 0.75rem; }
+.aux-fab__pill {
+  opacity: 0; transform: translateY(0.5rem) scale(0.85);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+[data-aux-fab][open] .aux-fab__pill { opacity: 1; transform: translateY(0) scale(1); }
+[data-aux-fab][open] .aux-fab__pill:nth-last-child(1) { transition-delay: 0s; }
+[data-aux-fab][open] .aux-fab__pill:nth-last-child(2) { transition-delay: 0.05s; }
+[data-aux-fab][open] .aux-fab__pill:nth-last-child(3) { transition-delay: 0.1s; }
+[data-aux-fab][open] .aux-fab__pill:nth-last-child(4) { transition-delay: 0.15s; }
+.aux-fab__label {
+  margin-left: 0; max-width: 0; padding-left: 0; overflow: hidden; white-space: nowrap;
+  opacity: 0; font-size: 0.875rem; font-weight: 500;
+  transition: max-width 0.3s ease, padding-left 0.3s ease, opacity 0.3s ease;
+}
+.aux-fab__pill:hover .aux-fab__label,
+.aux-fab__pill:focus-visible .aux-fab__label { max-width: 8rem; padding-left: 1rem; opacity: 1; }
+
+/* ── List layout (chapter-select): a glass menu of titled rows. ── */
+.aux-fab__menu--list {
+  width: 15rem; border-radius: 0.9rem; padding: 8px; box-sizing: border-box;
+  background: rgb(var(--glass-bg) / 0.92); border: 1px solid rgb(var(--c-border));
+  -webkit-backdrop-filter: blur(14px) saturate(160%); backdrop-filter: blur(14px) saturate(160%);
+  box-shadow: inset 0 1px 0 0 rgb(var(--glass-hi) / 0.5), 0 18px 44px -16px rgb(0 0 0 / 0.28);
+  opacity: 0; transform: translateY(8px) scale(0.97); transform-origin: bottom right;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+@media (prefers-color-scheme: dark) {
+  .aux-fab__menu--list { box-shadow: inset 0 1px 0 0 rgb(var(--glass-hi) / 0.1), 0 18px 44px -16px rgb(0 0 0 / 0.75); }
+}
+[data-aux-fab][open] .aux-fab__menu--list { opacity: 1; transform: translateY(0) scale(1); }
+.aux-fab__title {
+  font: 600 0.62rem var(--font-mono, ui-monospace, monospace); letter-spacing: 0.12em;
+  text-transform: uppercase; color: rgb(var(--c-muted)); margin: 0; padding: 6px 10px 8px;
+}
+.aux-fab__row {
+  display: flex; align-items: center; gap: 10px; width: 100%; text-align: left;
+  padding: 9px 10px; border-radius: 0.55rem; text-decoration: none; color: rgb(var(--c-fg));
+  font-size: 0.95rem; opacity: 0; transform: translateY(4px);
+  transition: opacity 0.2s ease, transform 0.2s ease, background 0.12s ease, color 0.12s ease;
+}
+[data-aux-fab][open] .aux-fab__row { opacity: 1; transform: translateY(0); }
+[data-aux-fab][open] .aux-fab__row:nth-child(2) { transition-delay: 0.03s; }
+[data-aux-fab][open] .aux-fab__row:nth-child(3) { transition-delay: 0.06s; }
+[data-aux-fab][open] .aux-fab__row:nth-child(4) { transition-delay: 0.09s; }
+[data-aux-fab][open] .aux-fab__row:nth-child(5) { transition-delay: 0.12s; }
+[data-aux-fab][open] .aux-fab__row:nth-child(6) { transition-delay: 0.15s; }
+.aux-fab__row:hover { background: rgb(var(--c-accent) / 0.1); color: rgb(var(--c-accent)); }
+.aux-fab__num { flex-shrink: 0; font: 600 0.7rem var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-muted)); width: 1.6rem; }
+.aux-fab__row:hover .aux-fab__num { color: rgb(var(--c-accent)); }
+.aux-fab__row--current { background: rgb(var(--c-accent) / 0.1); color: rgb(var(--c-accent)); font-weight: 600; cursor: default; }
+.aux-fab__row--current .aux-fab__num { color: rgb(var(--c-accent)); }
+.aux-fab__name { flex: 1; min-width: 0; }
+.aux-fab__dot { margin-left: auto; width: 6px; height: 6px; border-radius: 999px; background: rgb(var(--c-accent)); flex-shrink: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .aux-fab__btn, .aux-fab__pill, .aux-fab__label, .aux-fab__menu--list, .aux-fab__row { transition: none; transform: none; }
+  [data-aux-fab][open] .aux-fab__menu--list { transform: none; }
+}

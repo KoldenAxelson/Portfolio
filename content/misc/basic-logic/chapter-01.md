@@ -116,3 +116,29 @@ The counterpart is {{< term "validity" >}}Validity{{< /term >}}, the premises be
 
 ### Cogency
 *A property of strong inductive arguments in which: all the premises are true, and no pertinent information is omitted.*
+
+## Homework
+
+### Section A — Natural Speech to Standard Form
+
+Reading an argument out of everyday speech and rebuilding it in standard form is the whole skill this chapter builds toward. Tap a sentence to break it into its logical pieces, assemble each premise and the conclusion word by word, then check your work — the widget also names what *kind* of argument you just parsed.
+
+{{< arg-builder >}}
+
+### Section B — Deductive or Inductive?
+
+Every argument is either deductive (its premises are meant to *guarantee* the conclusion) or inductive (they only make it *probable*). The tell is the inferential claim indicator — a word in the conclusion that reveals which kind of support is being claimed. Read each argument, decide which it is, then tap the word that gives it away.
+
+{{< indicator-picker >}}
+
+### Section C — Argument or Not?
+
+Not every passage is an argument. Some only give advice, sound a warning, report events, explain a known fact, or state a condition — these are **non-inferential** passages, because nothing is actually being inferred. Read each passage, decide whether it's an argument, and if it isn't, name what kind of non-inferential passage it is.
+
+{{< recognize-passage >}}
+
+### Section D — Evaluate the Argument
+
+Once you know whether an argument is deductive or inductive, you can judge how well it holds together. A deductive argument is either **valid** — its conclusion follows necessarily — or **invalid**; an inductive one is either **strong** or **weak**, depending on how much its premises raise the likelihood of the conclusion. Remember this is a question of *form*, not fact: an argument can be perfectly valid and still rest on a false premise. Decide which kind each argument is, then judge it.
+
+{{< validity-picker >}}

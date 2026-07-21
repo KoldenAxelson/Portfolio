@@ -1,32 +1,44 @@
 // Impossible-list game detail — DESKTOP drawer. Completed game line items
 // ([data-game-open]) carry their title / rating / blurb / image on data
-// attributes; on desktop (≥1024px) clicking one opens the shared [data-game-modal]
-// drawer. On mobile the same buttons feed the top-nav panel instead (ts/nav.ts),
-// so this handler is gated to desktop. Idempotent across hx-boost swaps.
+// attributes; on desktop (>=1024px) clicking one slides the shared drawer in from
+// the right. On mobile the same buttons feed the top-nav panel instead
+// (sub-nav.ts), so the drawer's desktop gate lets those taps through.
+//
+// The slide / swap / dismiss lifecycle lives in drawer.ts; this file keeps only
+// what's specific to the game card: filling it (game-card.ts), paging its image
+// carousel with the arrow keys, and the full-screen lightbox layered over it.
 import { populateGameCard, wireCarouselDots } from './game-card';
+import { createDrawer } from './drawer';
 
-const DESKTOP = '(min-width: 1024px)';
 let docKeyHandler: ((e: KeyboardEvent) => void) | null = null;
 
 export function initGameModal(): void {
   const modal = document.querySelector<HTMLElement>('[data-game-modal]');
   if (!modal) return;
-  const triggers = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-game-open]'));
+  const triggers = document.querySelectorAll<HTMLButtonElement>('[data-game-open]');
   if (!triggers.length) return;
 
   const dialog = modal.querySelector<HTMLElement>('[role="dialog"]');
   const mediaEl = modal.querySelector<HTMLElement>('[data-game-media]');
   const dotsEl = modal.querySelector<HTMLElement>('[data-game-dots]');
-  const consoleIcons = Array.from(modal.querySelectorAll<HTMLElement>('[data-console-icon-for]'));
-  const titleEl = modal.querySelector<HTMLElement>('[data-game-title]');
-  const starsEl = modal.querySelector<HTMLElement>('[data-game-stars]');
-  const statusEl = modal.querySelector<HTMLElement>('[data-game-status]');
-  const seriesEl = modal.querySelector<HTMLElement>('[data-game-series]');
-  const blurbEl = modal.querySelector<HTMLElement>('[data-game-blurb]');
   const lightbox = modal.querySelector<HTMLElement>('[data-game-lightbox]');
   const lightboxImg = modal.querySelector<HTMLImageElement>('[data-game-lightbox-img]');
   const lbPrev = modal.querySelector<HTMLElement>('[data-game-lightbox-prev]');
   const lbNext = modal.querySelector<HTMLElement>('[data-game-lightbox-next]');
+
+  // Card slots for the shared populate step (game-card.ts). The drawer keeps only
+  // what's unique here: the carousel, the lightbox, and arrow-key paging.
+  const cardEls = {
+    title: modal.querySelector<HTMLElement>('[data-game-title]'),
+    blurb: modal.querySelector<HTMLElement>('[data-game-blurb]'),
+    media: mediaEl,
+    dots: dotsEl,
+    stars: modal.querySelector<HTMLElement>('[data-game-stars]'),
+    status: modal.querySelector<HTMLElement>('[data-game-status]'),
+    series: modal.querySelector<HTMLElement>('[data-game-series]'),
+    consoleIcons: Array.from(modal.querySelectorAll<HTMLElement>('[data-console-icon-for]')),
+  };
+
   let lbImgs: string[] = [];
   let lbIndex = 0;
   const lbStep = (delta: number): void => {
@@ -44,72 +56,32 @@ export function initGameModal(): void {
     const next = (idx + delta + count) % count;
     mediaEl.scrollTo({ left: next * mediaEl.clientWidth, behavior: 'smooth' });
   };
-  let lastFocused: HTMLElement | null = null;
-  let closeTimer = 0;
-  let swapTimer = 0;
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const CLOSE_MS = 320; // keep in sync with the transition in base.css
-  const SWAP_OUT_MS = 280; // old card slides out before the new slides in
 
-  const close = (): void => {
-    if (modal.hidden || !modal.hasAttribute('data-open')) return;
-    window.clearTimeout(swapTimer);
-    if (lightbox) lightbox.hidden = true;
-    modal.removeAttribute('data-open'); // triggers the slide out
-    lastFocused?.focus();
-    if (reduceMotion) {
-      modal.hidden = true;
-    } else {
-      window.clearTimeout(closeTimer);
-      closeTimer = window.setTimeout(() => {
-        modal.hidden = true;
-      }, CLOSE_MS);
-    }
-  };
+  const drawer = createDrawer(
+    {
+      id: 'game',
+      root: modal,
+      card: dialog || modal,
+      trigger: '[data-game-open]',
+      closeButton: '[data-game-close]',
+      animateSwap: true,
+    },
+    {
+      populate: (trigger) => populateGameCard(trigger.dataset, cardEls),
+      onOpen: () => (dialog || modal.querySelector<HTMLElement>('[data-game-close]'))?.focus(),
+      onClose: () => {
+        if (lightbox) lightbox.hidden = true;
+      },
+      // While the lightbox is up it owns Escape (to close itself); don't let the
+      // drawer close underneath it.
+      blockClose: () => Boolean(lightbox && !lightbox.hidden),
+    },
+  );
 
-  // Card slots for the shared populate step (game-card.ts). The drawer keeps
-  // only what's unique to it: slide/swap choreography, focus, and the lightbox.
-  const cardEls = {
-    title: titleEl,
-    blurb: blurbEl,
-    media: mediaEl,
-    dots: dotsEl,
-    stars: starsEl,
-    status: statusEl,
-    series: seriesEl,
-    consoleIcons,
-  };
-
-  const populate = (btn: HTMLButtonElement): void => {
-    lastFocused = btn;
-    populateGameCard(btn.dataset, cardEls);
-  };
-
-  const open = (btn: HTMLButtonElement): void => {
-    window.clearTimeout(closeTimer);
-    window.clearTimeout(swapTimer);
-    // A card is already showing → slide the whole card out to the right, then
-    // slide a fresh card in from the right to take its place.
-    if (!modal.hidden && modal.hasAttribute('data-open') && !reduceMotion) {
-      modal.removeAttribute('data-open'); // slide + fade out to the right
-      swapTimer = window.setTimeout(() => {
-        populate(btn);
-        void modal.offsetWidth; // ensure it's at the off-screen start
-        modal.setAttribute('data-open', ''); // new card slides + fades in from the right
-        (dialog || modal.querySelector<HTMLElement>('[data-game-close]'))?.focus();
-      }, SWAP_OUT_MS);
-      return;
-    }
-    // Fresh open (or reduced motion) → slide + fade in from the right.
-    populate(btn);
-    modal.hidden = false;
-    void modal.offsetWidth; // reflow so the slide+fade runs from the closed state
-    modal.setAttribute('data-open', '');
-    (dialog || modal.querySelector<HTMLElement>('[data-game-close]'))?.focus();
-  };
-
+  // Arrow keys page the carousel, or the lightbox when it's open; the lightbox
+  // also handles its own Escape. Drawer Escape/close is drawer.ts's job.
   const onKeydown = (e: KeyboardEvent): void => {
-    if (modal.hidden) return;
+    if (!drawer.isOpen()) return;
     if (lightbox && !lightbox.hidden) {
       if (e.key === 'Escape') lightbox.hidden = true;
       else if (e.key === 'ArrowLeft') {
@@ -121,9 +93,7 @@ export function initGameModal(): void {
       }
       return;
     }
-    if (e.key === 'Escape') {
-      close();
-    } else if (e.key === 'ArrowLeft') {
+    if (e.key === 'ArrowLeft') {
       e.preventDefault();
       stepCarousel(-1);
     } else if (e.key === 'ArrowRight') {
@@ -132,15 +102,6 @@ export function initGameModal(): void {
     }
   };
 
-  for (const btn of triggers) {
-    btn.addEventListener('click', () => {
-      if (!window.matchMedia(DESKTOP).matches) return; // mobile → nav panel handles it
-      open(btn);
-    });
-  }
-  for (const el of Array.from(modal.querySelectorAll<HTMLElement>('[data-game-close]'))) {
-    el.addEventListener('click', close);
-  }
   wireCarouselDots(mediaEl, dotsEl);
   // Click a carousel image to enlarge it in the lightbox; click the lightbox to close.
   if (mediaEl && lightbox && lightboxImg) {
@@ -169,8 +130,9 @@ export function initGameModal(): void {
       lbStep(1);
     });
   }
-  // Document-level so Esc / arrow keys work no matter where focus is while the
-  // card or lightbox is open. Guarded so it doesn't accumulate across hx-boost swaps.
+
+  // Document-level so the keys work wherever focus sits while the card is open.
+  // Guarded so it doesn't accumulate across hx-boost swaps.
   if (docKeyHandler) document.removeEventListener('keydown', docKeyHandler);
   docKeyHandler = onKeydown;
   document.addEventListener('keydown', onKeydown);

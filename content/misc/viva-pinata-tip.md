@@ -494,24 +494,24 @@ Each species changes colour when you feed it the listed items. Tick a species an
   </section>
 </div>
 
-<!-- Floating Save / Load speed-dial — mirrors the /cv document-actions FAB. -->
-<details data-vp-actions class="vp-actions fixed bottom-24 right-6 z-30 lg:bottom-6 print:!hidden">
-  <summary aria-label="Save or load progress" title="Save or load progress" class="vp-fab-primary relative flex h-12 w-12 cursor-pointer list-none items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
+<!-- Floating Save / Load speed-dial — built on the shared auxiliary-button FAB. -->
+<details data-aux-fab class="fixed bottom-24 right-6 z-30 lg:bottom-6 print:!hidden">
+  <summary class="aux-fab__btn relative flex h-12 w-12 cursor-pointer list-none items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50" aria-label="Save or load progress" title="Save or load progress">
     <span class="sr-only">Save or load progress</span>
-    <svg class="vp-icon-main h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.5 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25h12A2.25 2.25 0 0 0 20.25 18V8.56a2.25 2.25 0 0 0-.66-1.59l-2.56-2.56a2.25 2.25 0 0 0-1.59-.66H15M7.5 3.75V8.25H15V3.75M7.5 3.75H15M8.25 14.25h7.5" /></svg>
-    <svg class="vp-icon-close h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18 18 6M6 6l12 12" /></svg>
+    <svg class="aux-fab__icon aux-fab__icon--main h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.5 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25h12A2.25 2.25 0 0 0 20.25 18V8.56a2.25 2.25 0 0 0-.66-1.59l-2.56-2.56a2.25 2.25 0 0 0-1.59-.66H15M7.5 3.75V8.25H15V3.75M7.5 3.75H15M8.25 14.25h7.5" /></svg>
+    <svg class="aux-fab__icon aux-fab__icon--close h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18 18 6M6 6l12 12" /></svg>
   </summary>
-  <div class="vp-actions-menu absolute bottom-full right-0 mb-3 flex flex-col items-end gap-3">
-    <button type="button" data-vp-open="save" aria-label="Save progress (export code)" class="vp-action group/act glass-btn flex h-12 items-center rounded-full border-0 !text-fg transition-colors duration-200 hover:!text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
-      <span class="vp-label">Save</span>
+  <div class="aux-fab__menu aux-fab__menu--pills">
+    <button type="button" data-vp-open="save" aria-label="Save progress (export code)" class="aux-fab__pill group/act glass-btn flex h-12 items-center rounded-full border-0 !text-fg transition-colors duration-200 hover:!text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
+      <span class="aux-fab__label">Save</span>
       <span class="flex h-12 w-12 shrink-0 items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6"><path d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 7.5 12 3m0 0L7.5 7.5M12 3v13.5" /></svg></span>
     </button>
-    <button type="button" data-vp-open="load" aria-label="Load progress (import code)" class="vp-action group/act glass-btn flex h-12 items-center rounded-full border-0 !text-fg transition-colors duration-200 hover:!text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
-      <span class="vp-label">Load</span>
+    <button type="button" data-vp-open="load" aria-label="Load progress (import code)" class="aux-fab__pill group/act glass-btn flex h-12 items-center rounded-full border-0 !text-fg transition-colors duration-200 hover:!text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
+      <span class="aux-fab__label">Load</span>
       <span class="flex h-12 w-12 shrink-0 items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6"><path d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" /></svg></span>
     </button>
-    <button type="button" data-vp-clear aria-label="Clear all progress" class="vp-action group/act glass-btn flex h-12 items-center rounded-full border-0 !text-fg transition-colors duration-200 hover:!text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
-      <span class="vp-label">Clear</span>
+    <button type="button" data-vp-clear aria-label="Clear all progress" class="aux-fab__pill group/act glass-btn flex h-12 items-center rounded-full border-0 !text-fg transition-colors duration-200 hover:!text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
+      <span class="aux-fab__label">Clear</span>
       <span class="flex h-12 w-12 shrink-0 items-center justify-center"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6"><path d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" /></svg></span>
     </button>
   </div>
@@ -588,30 +588,8 @@ Each species changes colour when you feed it the listed items. Tick a species an
   .vp-chip { display: inline-block; padding: 0.15rem 0.6rem; border: 1px solid rgb(var(--c-border)); border-radius: 9999px; font-size: 0.8rem; color: rgb(var(--c-muted)); background-color: rgb(var(--c-border) / 0.12); }
   .vp-empty { margin: 0.9rem 0 0; font-size: 0.95rem; color: rgb(var(--c-muted)); }
 
-  /* ---- Floating speed-dial (mirrors /cv cv-actions) ---- */
-  .vp-fab-primary { background-color: rgb(var(--c-accent)); color: rgb(var(--c-bg)); border: 1px solid rgb(var(--c-accent)); box-shadow: 0 6px 18px -6px rgb(0 0 0 / 0.25); transition: filter 0.2s ease, box-shadow 0.2s ease; }
-  .vp-fab-primary:hover { filter: brightness(1.08); box-shadow: 0 8px 22px -6px rgb(0 0 0 / 0.3); }
-  @media (prefers-color-scheme: dark) {
-    .vp-fab-primary { box-shadow: 0 6px 18px -8px rgb(0 0 0 / 0.6); }
-    .vp-fab-primary:hover { box-shadow: 0 8px 22px -8px rgb(0 0 0 / 0.65); }
-  }
-  [data-vp-actions] > summary::-webkit-details-marker { display: none; }
-  [data-vp-actions] > summary::marker { content: ""; }
-  [data-vp-actions] .vp-icon-close { display: none; }
-  [data-vp-actions][open] .vp-icon-main { display: none; }
-  [data-vp-actions][open] .vp-icon-close { display: block; }
-  [data-vp-actions]::details-content { content-visibility: visible; }
-  [data-vp-actions] > .vp-actions-menu { display: flex; }
-  .vp-actions-menu { pointer-events: none; }
-  [data-vp-actions][open] .vp-actions-menu { pointer-events: auto; }
-  .vp-label { margin-left: 0; max-width: 0; padding-left: 0; overflow: hidden; white-space: nowrap; opacity: 0; font-size: 0.875rem; font-weight: 500; transition: max-width 0.3s ease, padding-left 0.3s ease, opacity 0.3s ease; }
-  .vp-action:hover .vp-label, .vp-action:focus-visible .vp-label { max-width: 8rem; padding-left: 1rem; opacity: 1; }
-  .vp-action { opacity: 0; transform: translateY(0.5rem) scale(0.85); transition: opacity 0.2s ease, transform 0.2s ease; }
-  [data-vp-actions][open] .vp-action { opacity: 1; transform: translateY(0) scale(1); }
-  [data-vp-actions][open] .vp-action:nth-last-child(1) { transition-delay: 0s; }
-  [data-vp-actions][open] .vp-action:nth-last-child(2) { transition-delay: 0.05s; }
-  [data-vp-actions][open] .vp-action:nth-last-child(3) { transition-delay: 0.1s; }
-  @media (prefers-reduced-motion: reduce) { .vp-fab-primary, .vp-action, .vp-label { transition: none; transform: none; } }
+  /* The floating Save / Load speed-dial uses the shared auxiliary-button shell
+     (.aux-fab, in assets/css/auxiliary-button.css) — no FAB styles needed here. */
 
   /* ---- Modal ---- */
   .vp-modal { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 1rem; }
@@ -754,7 +732,7 @@ Each species changes colour when you feed it the listed items. Tick a species an
     updateView();
 
     /* ---- speed-dial + modal ---- */
-    var details = document.querySelector('[data-vp-actions]');
+    var details = document.querySelector('[data-aux-fab]');
     var modal = document.querySelector('[data-vp-modal]');
     var exportInput = modal.querySelector('[data-vp-export]');
     var importInput = modal.querySelector('[data-vp-import]');
