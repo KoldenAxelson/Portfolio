@@ -1,0 +1,90 @@
+- category: invalid
+  mode: deductive
+  indicator: must
+  passage: If it snowed last night, then the sidewalks would be slippery this morning. Walking in to work just now, I noticed the sidewalks are slippery. So it must have snowed last night.
+  explanation: 'It''s deductive — the word “must” claims the conclusion follows with necessity: if the premises are true, it cannot be otherwise.'
+- category: invalid
+  mode: deductive
+  indicator: certainly
+  passage: If somebody is a licensed surgeon, then they went through medical school. But my cousin Dave is not a licensed surgeon. So Dave certainly never went to medical school.
+  explanation: It's deductive — “certainly” claims the conclusion follows for certain from the premises, leaving no room for doubt.
+- category: invalid
+  mode: deductive
+  indicator: necessarily
+  passage: All cats are animals, that much is clear. And every dog is an animal too. So all cats are necessarily dogs.
+  explanation: It's deductive — “necessarily” claims the conclusion follows of necessity; the premises are meant to guarantee it.
+- category: valid-unsound
+  mode: deductive
+  indicator: must
+  passage: Everyone takes for granted that every bird can fly. And a penguin, waddling around in Antarctica, is a bird. So a penguin must be able to fly.
+  explanation: 'It''s deductive — the word “must” claims the conclusion follows with necessity: if the premises are true, it cannot be otherwise.'
+- category: valid-unsound
+  mode: deductive
+  indicator: certainly
+  passage: If something is made of solid gold, then it floats on water. This old coin my grandfather left me is made of solid gold. So this coin certainly floats on water.
+  explanation: It's deductive — “certainly” claims the conclusion follows for certain from the premises, leaving no room for doubt.
+- category: valid-unsound
+  mode: deductive
+  indicator: necessarily
+  passage: All spiders are insects, or so people say. And a tarantula, hairy as it is, is a spider. So a tarantula is necessarily an insect.
+  explanation: It's deductive — “necessarily” claims the conclusion follows of necessity; the premises are meant to guarantee it.
+- category: valid-sound
+  mode: deductive
+  indicator: must
+  passage: Every whale is a mammal. And Bella, the blue whale down at the bay, is a whale. So Bella must be a mammal.
+  explanation: 'It''s deductive — the word “must” claims the conclusion follows with necessity: if the premises are true, it cannot be otherwise.'
+- category: valid-sound
+  mode: deductive
+  indicator: certainly
+  passage: Every multiple of four you could name is an even number. And twelve is a multiple of four. So twelve is certainly even.
+  explanation: It's deductive — “certainly” claims the conclusion follows for certain from the premises, leaving no room for doubt.
+- category: valid-sound
+  mode: deductive
+  indicator: necessarily
+  passage: Every square is a rectangle, true by definition. The shape drawn on this card is a square. So the shape is necessarily a rectangle.
+  explanation: It's deductive — “necessarily” claims the conclusion follows of necessity; the premises are meant to guarantee it.
+- category: weak
+  mode: inductive
+  indicator: probably
+  passage: I met two people from Canada on my vacation, and both of them were incredibly polite. So every single person in Canada is probably polite.
+  explanation: It's inductive — “probably” signals the premises make the conclusion only likely, not guaranteed.
+- category: weak
+  mode: inductive
+  indicator: likely
+  passage: My old car was red, and it ran for fifteen years without a breakdown. This shiny new car I'm eyeing is also red. So this new car is likely just as reliable.
+  explanation: It's inductive — “likely” signals the premises support the conclusion as probable, not certain.
+- category: weak
+  mode: inductive
+  indicator: probably
+  passage: Every time I've worn my lucky socks, my team has won the game — three times now. So if I wear them this weekend, my team will probably win again.
+  explanation: It's inductive — “probably” signals the premises make the conclusion only likely, not guaranteed.
+- category: strong-uncogent
+  mode: inductive
+  indicator: probably
+  passage: The vast majority of birds are completely unable to fly. This little sparrow hopping around my yard is a bird. So this sparrow probably can't fly.
+  explanation: It's inductive — “probably” signals the premises make the conclusion only likely, not guaranteed.
+- category: strong-uncogent
+  mode: inductive
+  indicator: likely
+  passage: Almost all mammals reproduce by laying eggs. A horse, naturally, is a mammal. So this horse likely lays eggs.
+  explanation: It's inductive — “likely” signals the premises support the conclusion as probable, not certain.
+- category: strong-uncogent
+  mode: inductive
+  indicator: probably
+  passage: The great majority of world chess champions are under the age of ten. My next-door neighbor is a world chess champion. So my neighbor is probably under ten.
+  explanation: It's inductive — “probably” signals the premises make the conclusion only likely, not guaranteed.
+- category: strong-cogent
+  mode: inductive
+  indicator: likely
+  passage: The overwhelming majority of professional jockeys are quite short. Maria races horses professionally for a living. So Maria is likely on the short side.
+  explanation: It's inductive — “likely” signals the premises support the conclusion as probable, not certain.
+- category: strong-cogent
+  mode: inductive
+  indicator: probably
+  passage: The vast majority of days out in the Sahara turn out hot and dry. Tomorrow is going to be a day in the Sahara. So tomorrow will probably be hot and dry.
+  explanation: It's inductive — “probably” signals the premises make the conclusion only likely, not guaranteed.
+- category: strong-cogent
+  mode: inductive
+  indicator: likely
+  passage: Nearly all students who study hard for this exam end up passing it. Ben studied hard for weeks. So Ben will likely pass the exam.
+  explanation: It's inductive — “likely” signals the premises support the conclusion as probable, not certain.

@@ -1,0 +1,168 @@
+- type: argument
+  source: René Descartes
+  passage: I think, therefore I am.
+  explanation: 'It''s an argument: “I think” is a premise, and “I am” is the conclusion drawn from it — the word therefore marks the inference.'
+- type: argument
+  source: The classic syllogism
+  passage: All men are mortal. Socrates is a man. Therefore, Socrates is mortal.
+  explanation: 'It''s an argument: two premises support the conclusion that Socrates is mortal, and therefore signals the inference.'
+- type: argument
+  source: Abraham Lincoln, “House Divided” speech
+  passage: A house divided against itself cannot stand. This government cannot endure permanently half slave and half free. It will become all one thing, or all the other.
+  explanation: 'It''s an argument: the premises lead to the conclusion that the nation must become all one thing or the other.'
+- type: argument
+  source: Martin Luther King Jr., Letter from Birmingham Jail
+  passage: Any law that degrades human personality is unjust. Segregation statutes degrade the human personality. Therefore, one has a moral responsibility to disobey them.
+  explanation: 'It''s an argument: two premises about unjust laws lead, via therefore, to a conclusion about how one must act.'
+- type: argument
+  source: The cosmological (Kalam) argument
+  passage: Whatever begins to exist has a cause. The universe began to exist. Therefore, the universe has a cause.
+  explanation: 'It''s an argument: from two premises it infers, with therefore, that the universe has a cause.'
+- type: argument
+  source: Charles Darwin, On the Origin of Species
+  passage: Far more creatures are born than can ever survive. Those with traits that aid survival are the likeliest to reproduce. So, over generations, such advantageous traits spread through the species.
+  explanation: 'It''s an argument: the premises support the conclusion (so) that advantageous traits spread over time.'
+- type: argument
+  source: Pascal's Wager
+  passage: If God exists, the believer gains eternal happiness while the unbeliever loses everything. Since the possible gain is infinite and the cost of belief is small, it is only reasonable to believe.
+  explanation: 'It''s an argument: it reasons from the stakes of belief to the conclusion (since… it is reasonable to believe) that one ought to believe.'
+- type: argument
+  source: The Declaration of Independence
+  passage: All people are created equal and endowed with unalienable rights, and governments exist to secure those rights. Therefore, whenever a government becomes destructive of these ends, the people may alter or abolish it.
+  explanation: 'It''s an argument: from premises about rights and government it concludes (therefore) that the people may abolish a destructive government.'
+- type: argument
+  source: John Stuart Mill, Utilitarianism
+  passage: An action is right insofar as it promotes the greatest happiness of the greatest number. This reform would raise the wellbeing of nearly everyone affected. Therefore, it is the right course to take.
+  explanation: 'It''s an argument: a moral principle plus a factual premise yield the conclusion (therefore) that the reform is right.'
+- type: argument
+  source: David Hume, on induction
+  passage: The sun has risen every morning so far, but the past is no guarantee of the future. Since nothing ensures that tomorrow will resemble today, we cannot prove the sun will rise again.
+  explanation: 'It''s an argument: it reasons from the gap between past and future (since…) to the conclusion that we can''t prove the sun will rise.'
+- type: argument
+  source: Epicurus, the problem of evil
+  passage: If God cannot prevent suffering, he is not all-powerful; if he can but will not, he is not all-good. Suffering plainly exists, so a God who is both all-powerful and all-good does not.
+  explanation: 'It''s an argument: the conditional premises plus the fact that suffering exists lead (so) to a conclusion about God.'
+- type: argument
+  source: Sherlock Holmes, “Silver Blaze”
+  passage: The stable dog did not bark when the horse was led away. A dog barks at strangers but stays silent with those it knows. Therefore, the thief was no stranger — he was someone the dog knew well.
+  explanation: 'It''s an argument: from the silent dog and a premise about dogs, it concludes (therefore) the thief was known to the dog.'
+- type: nip
+  subtype: warning
+  source: Shakespeare, Julius Caesar
+  passage: Beware the ides of March.
+  explanation: 'Non-inferential — it''s a warning: a caution about danger to come. It offers no premises and draws no conclusion.'
+- type: nip
+  subtype: warning
+  source: Dante, Inferno (the gate of Hell)
+  passage: Abandon all hope, ye who enter here.
+  explanation: Non-inferential — it's a warning inscribed at Hell's gate, cautioning those who enter. Nothing is being inferred.
+- type: nip
+  subtype: warning
+  source: WWII poster
+  passage: Loose lips sink ships.
+  explanation: Non-inferential — it's a warning against careless talk, not a conclusion drawn from evidence.
+- type: nip
+  subtype: advice
+  source: Shakespeare, Hamlet (Polonius)
+  passage: Neither a borrower nor a lender be.
+  explanation: 'Non-inferential — it''s advice: a recommendation about how to act, with no premises supporting a conclusion.'
+- type: nip
+  subtype: advice
+  source: a common proverb
+  passage: Look before you leap.
+  explanation: 'Non-inferential — it''s advice: a directive about what to do, not an inference from premises.'
+- type: nip
+  subtype: advice
+  source: the Delphic maxim
+  passage: Know thyself.
+  explanation: 'Non-inferential — it''s advice: a maxim recommending self-knowledge. It asserts nothing to be proven.'
+- type: nip
+  subtype: belief
+  source: Socrates
+  passage: The unexamined life is not worth living.
+  explanation: 'Non-inferential — it''s a statement of belief: an opinion about life''s worth, asserted without any reasons to back it.'
+- type: nip
+  subtype: belief
+  source: Albert Einstein
+  passage: God does not play dice with the universe.
+  explanation: 'Non-inferential — it''s a statement of belief: Einstein voices a conviction, offering no supporting premises.'
+- type: nip
+  subtype: belief
+  source: Martin Luther King Jr.
+  passage: I have a dream that my children will one day live in a nation where they will not be judged by the color of their skin but by the content of their character.
+  explanation: 'Non-inferential — it''s a statement of belief (a hope): it expresses what King believes without arguing for it.'
+- type: nip
+  subtype: report
+  source: historical record
+  passage: On July 20, 1969, Apollo 11 landed on the Moon, and Neil Armstrong became the first person to set foot on its surface.
+  explanation: 'Non-inferential — it''s a report: it conveys what happened and draws no conclusion from the events.'
+- type: nip
+  subtype: report
+  source: historical record
+  passage: On the night of April 14, 1912, the RMS Titanic struck an iceberg in the North Atlantic and sank within hours, taking more than 1,500 lives.
+  explanation: 'Non-inferential — it''s a report of events: it states facts without inferring anything from them.'
+- type: nip
+  subtype: report
+  source: historical record
+  passage: On November 9, 1989, East Germany opened its borders, and the crowds gathered at the Berlin Wall began tearing it down through the night.
+  explanation: 'Non-inferential — it''s a report: it relates the events of that night without arguing for a conclusion.'
+- type: nip
+  subtype: expository
+  source: Carl Sagan, Cosmos
+  passage: The cosmos is all that is, or ever was, or ever will be. It stretches across billions of galaxies, each holding billions of stars, separated by distances the mind can barely grasp.
+  explanation: 'Non-inferential — it''s expository: the opening claim is developed with further detail, not proven by evidence.'
+- type: nip
+  subtype: expository
+  source: expository passage
+  passage: The Amazon is the largest rainforest on Earth. It spreads across nine countries, shelters millions of species of plants and animals, and helps regulate the climate of the entire planet.
+  explanation: 'Non-inferential — it''s expository: a topic sentence expanded with descriptive detail, not a conclusion argued for.'
+- type: nip
+  subtype: expository
+  source: expository passage
+  passage: Jazz is a uniquely American art form. Born in New Orleans, it weaves together African rhythms, the blues, and improvisation into a style that has shaped music the world over.
+  explanation: 'Non-inferential — it''s expository: it develops the topic of jazz with detail, rather than offering premises for a conclusion.'
+- type: nip
+  subtype: illustration
+  source: illustration
+  passage: Many English words come from Latin. For example, “video” means “I see,” and “audio” means “I hear.”
+  explanation: 'Non-inferential — it''s an illustration: “for example” introduces cases meant to illustrate the claim, not to prove it.'
+- type: nip
+  subtype: illustration
+  source: illustration
+  passage: Several renowned scientists were largely self-taught. Michael Faraday and Thomas Edison, for instance, had almost no formal schooling.
+  explanation: 'Non-inferential — it''s an illustration: “for instance” signals examples of the claim, which illustrate rather than establish it.'
+- type: nip
+  subtype: illustration
+  source: illustration
+  passage: A number of foods we call vegetables are technically fruits. Tomatoes, cucumbers, and peppers, for example, all grow from flowers and carry seeds.
+  explanation: 'Non-inferential — it''s an illustration: “for example” gives cases to illustrate the claim, not evidence offered to prove it.'
+- type: nip
+  subtype: explanation
+  source: explanation
+  passage: The sky is blue because molecules in the air scatter the sun's blue light far more than they scatter its other colors.
+  explanation: 'Non-inferential — it''s an explanation: that the sky is blue is already accepted; the passage tells you why (the cause), not that it is blue. An argument would instead try to prove a claim in doubt.'
+- type: nip
+  subtype: explanation
+  source: explanation
+  passage: Ice floats because it is less dense than the liquid water beneath it.
+  explanation: 'Non-inferential — it''s an explanation: it gives the reason ice floats (lower density), not evidence that it floats — which we already know.'
+- type: nip
+  subtype: explanation
+  source: explanation
+  passage: The dinosaurs died out because a massive asteroid struck the Earth, throwing up enough dust to blot out the sun for years.
+  explanation: 'Non-inferential — it''s an explanation: the extinction is an accepted fact; the asteroid is offered as its cause, not as proof that it happened.'
+- type: nip
+  subtype: conditional
+  source: Field of Dreams
+  passage: If you build it, he will come.
+  explanation: Non-inferential — it's a single conditional (if–then). Neither part is asserted as true and nothing is inferred, so it isn't an argument.
+- type: nip
+  subtype: conditional
+  source: an old proverb
+  passage: If wishes were horses, then beggars would ride.
+  explanation: 'Non-inferential — it''s a conditional statement: it only links a hypothetical to a consequence, without asserting or concluding anything.'
+- type: nip
+  subtype: conditional
+  source: geometry
+  passage: If two lines in a plane never meet, then they are parallel.
+  explanation: 'Non-inferential — it''s a conditional (if–then): it states a relationship, not an inference from premises to a conclusion.'

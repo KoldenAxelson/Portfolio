@@ -1,0 +1,109 @@
+# Basic Logic glossary — the single source of truth for the {{< term >}} popovers.
+# Key (lowercase-hyphen) is what you pass to the shortcode; `term` is the label
+# shown in the popover header, `definition` is the body. Decoupled from the
+# chapter prose, so restructuring the sections never touches these.
+
+reasoning:
+  term: Reasoning
+  definition: Our ability to infer — to grasp that the truth of some statements implies the truth of others.
+
+infer:
+  term: Infer
+  definition: To grasp that the truth of some statements implies the truth of other statements.
+
+logic:
+  term: Logic
+  definition: The study of reasoning.
+
+argument:
+  term: Argument
+  definition: A group of statements, one of which is meant to be supported by the other(s).
+
+premise:
+  term: Premise
+  definition: A statement that is meant to support the conclusion of its argument.
+
+conclusion:
+  term: Conclusion
+  definition: A statement that is meant to be supported by the premise(s) of its argument.
+
+standard-form:
+  term: Standard Form
+  definition: A written argument in which the premises are listed first and separated from the conclusion by a horizontal line.
+
+statement:
+  term: Statement
+  definition: A sentence that makes an assertion.
+
+truth-value:
+  term: Truth Value
+  definition: The result of an assertion being either true or false.
+
+supports:
+  term: Supports
+  definition: A quality of one statement, in relation to another, that backs the second statement's truth value.
+
+deductive:
+  term: Deductive Argument
+  definition: An argument whose premises support the conclusion so strongly that it would be impossible for the conclusion to be false.
+
+inductive:
+  term: Inductive Argument
+  definition: An argument whose premises support the conclusion only enough to make it likely.
+
+inferential-claim-indicator:
+  term: Inferential Claim Indicator
+  definition: A word in the conclusion that hints at whether an argument is meant to be deductive or inductive.
+
+non-inferential-passage:
+  term: Non-Inferential Passage
+  definition: A passage that may contain statements with truth values but lacks the two-part, supporting structure of an argument.
+
+# The eight kinds of non-inferential passage.
+advice:
+  term: Advice
+  definition: A form of discourse intended to guide the behavior of others.
+
+conditional:
+  term: Conditional
+  definition: 'A statement of the form "If X, then Y."'
+
+expository:
+  term: Expository
+  definition: A form of writing in which a topic sentence is followed by elaboration on that topic.
+
+illustration:
+  term: Illustration
+  definition: A general idea followed by a specific example or examples.
+
+report:
+  term: Report
+  definition: A form of discourse intended to convey information.
+
+statement-of-belief:
+  term: Statement of Belief
+  definition: An assertion of something that the speaker/writer regards as true.
+
+warning:
+  term: Warning
+  definition: A form of discourse intended to help the audience avoid some harm.
+
+explanation:
+  term: Explanation
+  definition: A statement containing an explanandum—that which must be explained—and an explanans—that which does the explaining.
+
+validity:
+  term: Validity
+  definition: A property of deductive arguments in which it is impossible for the premises to be true and the conclusion false.
+
+soundness:
+  term: Soundness
+  definition: A property of valid deductive arguments in which all the premises are true.
+
+strength:
+  term: Strength
+  definition: A property of inductive arguments in which it is likely, when the premises are true, that the conclusion is also true.
+
+cogency:
+  term: Cogency
+  definition: A property of strong inductive arguments in which all the premises are true, and no pertinent information is omitted.

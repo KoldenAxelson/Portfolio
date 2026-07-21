@@ -1,0 +1,30 @@
+{{- /*
+  validity-picker — "Evaluate the Argument" quiz. Problems come from a data
+  file under data/argsets/.
+
+    {{< validity-picker >}}                     uses data/argsets/validity-ch01
+    {{< validity-picker set="my-set" quiz="4" >}}
+
+  This widget's chrome is entirely shared, so it loads only quiz-kit.css (once
+  per page) alongside its plain-JS module, which bundles the shared quiz-kit.
+*/ -}}
+{{- $set := .Get "set" | default "validity-ch01" -}}
+{{- $quiz := .Get "quiz" | default "4" -}}
+{{- $data := index site.Data.argsets $set -}}
+{{- if $data -}}
+<div data-validity data-quiz="{{ $quiz }}">
+  <script type="application/json" data-vp-data>{{ $data | jsonify | safeJS }}</script>
+</div>
+{{- if not (.Page.Scratch.Get "quizKitCss") -}}
+  {{- $kit := resources.Get "css/quiz-kit.css" | minify | fingerprint -}}
+  <link rel="stylesheet" href="{{ $kit.RelPermalink }}" integrity="{{ $kit.Data.Integrity }}" />
+  {{- .Page.Scratch.Set "quizKitCss" true -}}
+{{- end -}}
+{{- if not (.Page.Scratch.Get "validityAssets") -}}
+  {{- $js := resources.Get "js/validity-picker.js" | js.Build (dict "minify" true) | fingerprint -}}
+  <script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
+  {{- .Page.Scratch.Set "validityAssets" true -}}
+{{- end -}}
+{{- else -}}
+<p><em>validity-picker: no data set named “{{ $set }}” found under data/argsets/.</em></p>
+{{- end -}}

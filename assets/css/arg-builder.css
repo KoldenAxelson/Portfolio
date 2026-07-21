@@ -1,0 +1,47 @@
+/* arg-builder — rules unique to "Natural Speech → Standard Form"; the card,
+   controls, pills, "why" box, and score screen come from quiz-kit.css. The
+   sentence chips, standard-form scaffold, token bank, and answer key below are
+   this widget's own. --qz-ok / --qz-bad are defined on .qz-card. */
+.ab-passage{ margin:0 0 22px; font-size:1rem; color:rgb(var(--c-fg)); }
+.ab-sent{ cursor:pointer; border-radius:5px; padding:1px 3px;
+  border-bottom:1px dashed rgb(var(--c-muted) / .4); transition:background .12s, box-shadow .12s, border-color .12s; }
+.ab-sent:hover{ background:rgb(var(--c-accent) / .22); box-shadow:0 0 0 1px rgb(var(--c-accent) / .6); border-bottom-color:transparent; }
+.ab-sent.ab-sel{ background:rgb(var(--c-accent) / .18); box-shadow:0 0 0 1.5px rgb(var(--c-accent)) inset; border-bottom-color:transparent; }
+
+.ab-h{ font:600 .72rem var(--font-mono, ui-monospace, monospace); letter-spacing:.08em;
+  text-transform:uppercase; color:rgb(var(--c-muted)); margin:0 0 10px; }
+.ab-stack{ display:flex; flex-direction:column; gap:24px; }
+.ab-stack hr{ border:0; border-top:1px solid rgb(var(--c-border)); margin:14px 0; }
+
+.ab-row{ display:flex; align-items:stretch; gap:10px; margin-bottom:8px; }
+.ab-lbl{ flex-shrink:0; width:1.9rem; display:flex; align-items:center;
+  font:400 .8rem var(--font-mono, ui-monospace, monospace); color:rgb(var(--c-muted)); }
+.ab-lbl.ab-c{ color:rgb(var(--c-accent)); font-size:1rem; }
+.ab-slot{ flex:1; min-width:0; border:1px dashed rgb(var(--c-border)); border-radius:10px;
+  padding:8px 10px; min-height:44px; display:flex; flex-wrap:wrap; gap:6px; align-items:center;
+  cursor:pointer; transition:border-color .15s, background .15s; }
+.ab-slot:hover{ border-color:rgb(var(--c-accent)); }
+.ab-slot .ab-ph{ color:rgb(var(--c-muted)); font-size:.9rem; padding:2px; }
+.ab-slot.ab-filled{ border-style:solid; background:rgb(var(--c-muted) / .05); }
+.ab-slot.ab-armed{ border-color:rgb(var(--c-accent)); background:rgb(var(--c-accent) / .06); }
+.ab-slot.ab-ok{ border-color:var(--qz-ok); background:rgb(34 197 94 / .1); }
+.ab-slot.ab-bad{ border-color:var(--qz-bad); background:rgb(239 68 68 / .1); }
+
+.ab-tok{ border:1px solid rgb(var(--c-border)); background:rgb(var(--c-muted) / .06);
+  color:rgb(var(--c-fg)); border-radius:8px; padding:5px 10px; font:inherit; font-size:.9rem;
+  cursor:pointer; transition:border-color .15s, background .15s, transform .05s; white-space:nowrap; }
+.ab-tok:hover{ border-color:rgb(var(--c-accent)); }
+.ab-tok:active{ transform:scale(.97); }
+.ab-chip-tok{ border-color:rgb(var(--c-accent)); background:rgb(var(--c-accent) / .1); }
+
+.ab-bankwrap{ min-height:44px; }
+.ab-bank{ display:flex; flex-wrap:wrap; gap:8px; }
+
+.ab-status{ flex-shrink:0; width:1.6rem; display:flex; align-items:center; justify-content:center; }
+
+/* correct standard-form reveal, shown inside the shared .qz-why box */
+.ab-answer{ display:flex; flex-direction:column; gap:4px; }
+.ab-arow{ display:flex; gap:10px; align-items:baseline; }
+.ab-albl{ flex-shrink:0; width:1.6rem; font:400 .78rem var(--font-mono, ui-monospace, monospace); color:rgb(var(--c-muted)); }
+.ab-albl.ab-c{ color:rgb(var(--c-accent)); }
+.ab-atext{ color:rgb(var(--c-fg)); font-size:.95rem; }

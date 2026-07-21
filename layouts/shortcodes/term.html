@@ -1,0 +1,30 @@
+{{- /*
+  term — wrap a vocab word to make it a tappable definition popover.
+
+    {{< term "validity" >}}validity{{< /term >}}   key + the word as it reads in prose
+    {{< term "standard-form" >}}standard form{{< /term >}}
+
+  The key looks up data/glossary/basic-logic.yaml (one source of truth for the
+  definitions). The button carries the label + definition; a small plain-JS
+  module (assets/js/definitions.js) shows the shared popover on tap. CSS + JS
+  ship once per page as fingerprinted resources. A bad key renders the plain
+  word and logs a build warning, so a typo never breaks the page.
+*/ -}}
+{{- $set := .Get "set" | default "basic-logic" -}}
+{{- $key := .Get 0 -}}
+{{- $glossary := index site.Data.glossary $set -}}
+{{- $entry := index $glossary $key -}}
+{{- $display := .Inner | default $key -}}
+{{- if $entry -}}
+<button type="button" class="term" data-term-def="{{ $entry.definition }}" data-term-label="{{ $entry.term }}" aria-expanded="false" aria-haspopup="dialog">{{ $display }}</button>
+{{- if not (.Page.Scratch.Get "definitionsAssets") -}}
+  {{- $css := resources.Get "css/definitions.css" | minify | fingerprint -}}
+  <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" />
+  {{- $js := resources.Get "js/definitions.js" | js.Build (dict "minify" true) | fingerprint -}}
+  <script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
+  {{- .Page.Scratch.Set "definitionsAssets" true -}}
+{{- end -}}
+{{- else -}}
+{{- warnf "term shortcode: no glossary entry %q in data/glossary/%s.yaml" $key $set -}}
+{{ $display }}
+{{- end -}}

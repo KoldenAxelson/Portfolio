@@ -1,0 +1,72 @@
+- category: invalid
+  mode: deductive
+  passage: If it snowed last night, then the sidewalks would be slippery this morning. Walking in to work just now, I noticed the sidewalks are slippery. So it must have snowed last night.
+  explanation: 'It''s deductive — “must” claims the conclusion follows with necessity. But it''s invalid: slippery sidewalks could come from many causes (rain, frost, a burst pipe), so even with the premises true, it needn''t have snowed. The conclusion doesn''t follow.'
+- category: invalid
+  mode: deductive
+  passage: If somebody is a licensed surgeon, then they went through medical school. But my cousin Dave is not a licensed surgeon. So Dave certainly never went to medical school.
+  explanation: 'It''s deductive — “certainly” claims the conclusion is guaranteed. But it''s invalid: the premise says surgeons went to medical school, not that only surgeons did. Dave could have attended without ever becoming a surgeon.'
+- category: invalid
+  mode: deductive
+  passage: All cats are animals, that much is clear. And every dog is an animal too. So all cats are necessarily dogs.
+  explanation: 'It''s deductive — “necessarily” claims a guaranteed conclusion. But it''s invalid: cats and dogs are both animals, yet sharing a category doesn''t make one the other. The premises can be true while the conclusion is false.'
+- category: valid-unsound
+  mode: deductive
+  passage: Everyone takes for granted that every bird can fly. And a penguin, waddling around in Antarctica, is a bird. So a penguin must be able to fly.
+  explanation: 'It''s deductive — “must” claims necessity. And it''s valid: if every bird could fly and a penguin is a bird, the conclusion would have to hold. Validity is about the form, not the facts — the false premise (that all birds fly) affects soundness, not validity.'
+- category: valid-unsound
+  mode: deductive
+  passage: If something is made of solid gold, then it floats on water. This old coin my grandfather left me is made of solid gold. So this coin certainly floats on water.
+  explanation: 'It''s deductive — “certainly” claims certainty. And it''s valid: this is a clean modus ponens (if gold, then floats; this is gold; so it floats). The conclusion follows from the premises. Whether gold really floats is a separate question — that''s soundness.'
+- category: valid-unsound
+  mode: deductive
+  passage: All spiders are insects, or so people say. And a tarantula, hairy as it is, is a spider. So a tarantula is necessarily an insect.
+  explanation: 'It''s deductive — “necessarily” claims a guaranteed link. And it''s valid: if all spiders were insects and a tarantula is a spider, it would have to be an insect. The form is airtight; the false premise only makes it unsound, not invalid.'
+- category: valid-sound
+  mode: deductive
+  passage: Every whale is a mammal. And Bella, the blue whale down at the bay, is a whale. So Bella must be a mammal.
+  explanation: 'It''s deductive — “must” claims necessity. And it''s valid: if every whale is a mammal and Bella is a whale, the conclusion can''t fail. Here the premises are true as well, so the argument is also sound.'
+- category: valid-sound
+  mode: deductive
+  passage: Every multiple of four you could name is an even number. And twelve is a multiple of four. So twelve is certainly even.
+  explanation: 'It''s deductive — “certainly” claims certainty. And it''s valid: every multiple of four is even, twelve is a multiple of four, so it must be even. The form guarantees the conclusion — and since the premises are true, it''s sound too.'
+- category: valid-sound
+  mode: deductive
+  passage: Every square is a rectangle, true by definition. The shape drawn on this card is a square. So the shape is necessarily a rectangle.
+  explanation: 'It''s deductive — “necessarily” claims a guaranteed conclusion. And it''s valid: if every square is a rectangle and this shape is a square, it has to be a rectangle. True premises make it sound as well.'
+- category: weak
+  mode: inductive
+  passage: I met two people from Canada on my vacation, and both of them were incredibly polite. So every single person in Canada is probably polite.
+  explanation: 'It''s inductive — “probably” signals the conclusion is only made likely. And it''s weak: two polite people is far too small a sample to support a claim about every single Canadian. This is a hasty generalization.'
+- category: weak
+  mode: inductive
+  passage: My old car was red, and it ran for fifteen years without a breakdown. This shiny new car I'm eyeing is also red. So this new car is likely just as reliable.
+  explanation: 'It''s inductive — “likely” signals a probable, not guaranteed, conclusion. And it''s weak: the two cars share only their color, which has nothing to do with reliability. The analogy rests on an irrelevant similarity.'
+- category: weak
+  mode: inductive
+  passage: Every time I've worn my lucky socks, my team has won the game — three times now. So if I wear them this weekend, my team will probably win again.
+  explanation: 'It''s inductive — “probably” signals a likely conclusion. And it''s weak: three wins while wearing the socks is a coincidence, with no plausible causal link between the socks and the outcome of a game.'
+- category: strong-uncogent
+  mode: inductive
+  passage: The vast majority of birds are completely unable to fly. This little sparrow hopping around my yard is a bird. So this sparrow probably can't fly.
+  explanation: 'It''s inductive — “probably” signals a likely conclusion. And it''s strong: IF most birds couldn''t fly, then a randomly picked bird probably couldn''t either — the premise would strongly support the conclusion. (The premise is actually false, which makes it uncogent, but strength is about how well the premises WOULD support the conclusion.)'
+- category: strong-uncogent
+  mode: inductive
+  passage: Almost all mammals reproduce by laying eggs. A horse, naturally, is a mammal. So this horse likely lays eggs.
+  explanation: 'It''s inductive — “likely” signals a probable conclusion. And it''s strong: if almost all mammals laid eggs, a given mammal probably would too. The support is strong; the premise just happens to be false, which is a matter of cogency, not strength.'
+- category: strong-uncogent
+  mode: inductive
+  passage: The great majority of world chess champions are under the age of ten. My next-door neighbor is a world chess champion. So my neighbor is probably under ten.
+  explanation: 'It''s inductive — “probably” signals a likely conclusion. And it''s strong: if most chess champions really were under ten, this champion probably would be as well. The false premise makes it uncogent, but the reasoning itself is strong.'
+- category: strong-cogent
+  mode: inductive
+  passage: The overwhelming majority of professional jockeys are quite short. Maria races horses professionally for a living. So Maria is likely on the short side.
+  explanation: 'It''s inductive — “likely” signals a probable conclusion. And it''s strong: most jockeys are short, so a given jockey is probably short. Here the premise is true as well, so the argument is cogent.'
+- category: strong-cogent
+  mode: inductive
+  passage: The vast majority of days out in the Sahara turn out hot and dry. Tomorrow is going to be a day in the Sahara. So tomorrow will probably be hot and dry.
+  explanation: 'It''s inductive — “probably” signals a likely conclusion. And it''s strong: if most Sahara days are hot and dry, tomorrow probably will be too. The true premise makes it cogent as well.'
+- category: strong-cogent
+  mode: inductive
+  passage: Nearly all students who study hard for this exam end up passing it. Ben studied hard for weeks. So Ben will likely pass the exam.
+  explanation: 'It''s inductive — “likely” signals a probable conclusion. And it''s strong: if nearly all hard-studying students pass, Ben probably will too. True premise, so it''s cogent as well.'

@@ -1,0 +1,366 @@
+- category: invalid
+  mode: deductive
+  passage:
+  - role: premise
+    text: Everyone knows that if it snowed last night, then the sidewalks are bound to be slippery this morning.
+    target: If It Snowed Then The Sidewalks Are Slippery
+    herrings:
+    - Rained
+    - Dry
+  - role: premise
+    text: And walking in to work just now, I couldn't help noticing that the sidewalks are definitely slippery.
+    target: The Sidewalks Are Slippery
+    herrings:
+    - Dry
+    - Clean
+  - role: conclusion
+    text: So it must have snowed last night — what else could it be?
+    target: It Snowed
+    herrings:
+    - Rained
+    - Melted
+- category: invalid
+  mode: deductive
+  passage:
+  - role: premise
+    text: Look, if somebody is a licensed surgeon, then naturally they've been through medical school.
+    target: If Someone Is A Surgeon Then They Went To Medical School
+    herrings:
+    - Nurse
+    - Plumber
+  - role: premise
+    text: But my cousin Dave, bless him, isn't a licensed surgeon at all.
+    target: Dave Is Not A Surgeon
+    herrings:
+    - Lawyer
+    - Chef
+  - role: conclusion
+    text: So there's just no way Dave has ever been to medical school.
+    target: Dave Did Not Go To Medical School
+    herrings:
+    - Law
+    - College
+- category: invalid
+  mode: deductive
+  passage:
+  - role: premise
+    text: 'Here''s the thing, and it''s not up for debate: all cats are animals.'
+    target: All Cats Are Animals
+    herrings:
+    - Some
+    - Plants
+  - role: premise
+    text: And every dog, sure enough, is an animal too.
+    target: All Dogs Are Animals
+    herrings:
+    - Some
+    - Birds
+  - role: conclusion
+    text: So when you really get down to it, all cats must be dogs.
+    target: All Cats Are Dogs
+    herrings:
+    - Some
+    - Fish
+- category: valid-unsound
+  mode: deductive
+  passage:
+  - role: premise
+    text: Everybody just takes for granted that every bird in existence is capable of flight, no exceptions.
+    target: All Birds Can Fly
+    herrings:
+    - Some
+    - Swim
+  - role: premise
+    text: And the penguin, waddling around down there in Antarctica, is certainly a bird.
+    target: The Penguin Is A Bird
+    herrings:
+    - Fish
+    - Not
+  - role: conclusion
+    text: So it follows plainly that the penguin can fly.
+    target: The Penguin Can Fly
+    herrings:
+    - Cannot
+    - Swim
+- category: valid-unsound
+  mode: deductive
+  passage:
+  - role: premise
+    text: As we supposedly all learned back in school, if something is made of solid gold, then it floats on water.
+    target: If Something Is Gold Then It Floats
+    herrings:
+    - Sinks
+    - Silver
+  - role: premise
+    text: And this old coin my grandfather left me is made of solid gold, no question about it.
+    target: This Coin Is Gold
+    herrings:
+    - Silver
+    - Plastic
+  - role: conclusion
+    text: Therefore, this coin of mine floats on water.
+    target: This Coin Floats
+    herrings:
+    - Sinks
+    - Dissolves
+- category: valid-unsound
+  mode: deductive
+  passage:
+  - role: premise
+    text: It's just common knowledge, everyone says so, that all spiders are insects.
+    target: All Spiders Are Insects
+    herrings:
+    - Some
+    - Reptiles
+  - role: premise
+    text: And the tarantula, hairy and creepy as it is, is definitely a spider.
+    target: The Tarantula Is A Spider
+    herrings:
+    - Beetle
+    - Not
+  - role: conclusion
+    text: So the tarantula, without a doubt, is an insect.
+    target: The Tarantula Is An Insect
+    herrings:
+    - Reptile
+    - Not
+- category: valid-sound
+  mode: deductive
+  passage:
+  - role: premise
+    text: It's simply true, whether it surprises you or not, that every whale is a mammal.
+    target: All Whales Are Mammals
+    herrings:
+    - Some
+    - Fish
+  - role: premise
+    text: And Bella, a blue whale and the largest animal you will ever lay eyes on, is of course a whale.
+    target: Bella Is A Whale
+    herrings:
+    - Shark
+    - Not
+  - role: conclusion
+    text: So Bella, that gentle giant, is a mammal — plain and simple.
+    target: Bella Is A Mammal
+    herrings:
+    - Fish
+    - Not
+- category: valid-sound
+  mode: deductive
+  passage:
+  - role: premise
+    text: Everyone agrees that every multiple of four you could name turns out to be an even number.
+    target: All Multiples Of Four Are Even
+    herrings:
+    - Odd
+    - Some
+  - role: premise
+    text: And the number twelve, as it happens, is a multiple of four.
+    target: Twelve Is A Multiple Of Four
+    herrings:
+    - Odd
+    - Five
+  - role: conclusion
+    text: Therefore, twelve has to be an even number.
+    target: Twelve Is Even
+    herrings:
+    - Odd
+    - Prime
+- category: valid-sound
+  mode: deductive
+  passage:
+  - role: premise
+    text: It's a basic fact of geometry, true by definition, that every square is a rectangle.
+    target: All Squares Are Rectangles
+    herrings:
+    - Some
+    - Circles
+  - role: premise
+    text: And the shape drawn on this card, with its four equal sides and right angles, is a square.
+    target: This Shape Is A Square
+    herrings:
+    - Triangle
+    - Not
+  - role: conclusion
+    text: So the shape on this card is a rectangle.
+    target: This Shape Is A Rectangle
+    herrings:
+    - Circle
+    - Not
+- category: weak
+  mode: inductive
+  passage:
+  - role: premise
+    text: I met exactly two people from Canada during my whole vacation, and honestly, both of them were incredibly polite to me.
+    target: Two Canadians Were Polite
+    herrings:
+    - Rude
+    - Many
+  - role: conclusion
+    text: So it's fair to say that every single person in Canada is polite.
+    target: All Canadians Are Polite
+    herrings:
+    - Some
+    - Rude
+- category: weak
+  mode: inductive
+  passage:
+  - role: premise
+    text: My old car was bright red, and that thing ran beautifully for fifteen years without a single breakdown.
+    target: My Old Red Car Was Reliable
+    herrings:
+    - Slow
+    - Broke
+  - role: premise
+    text: This shiny new car I'm thinking of buying happens to be red as well.
+    target: This New Car Is Red
+    herrings:
+    - Blue
+    - Fast
+  - role: conclusion
+    text: So this new car is bound to be every bit as reliable.
+    target: This New Car Is Reliable
+    herrings:
+    - Unreliable
+    - Fast
+- category: weak
+  mode: inductive
+  passage:
+  - role: premise
+    text: Every single time I've worn my lucky socks, my team has gone on to win the game — that's three times now.
+    target: My Team Won When I Wore Lucky Socks
+    herrings:
+    - Lost
+    - Shoes
+  - role: conclusion
+    text: So if I wear those same socks this weekend, my team is guaranteed to win again.
+    target: My Team Will Win If I Wear Lucky Socks
+    herrings:
+    - Lose
+    - Shoes
+- category: strong-uncogent
+  mode: inductive
+  passage:
+  - role: premise
+    text: The vast majority of birds — surely more than ninety percent of them — are completely unable to fly.
+    target: Most Birds Cannot Fly
+    herrings:
+    - Can
+    - Swim
+  - role: premise
+    text: This little sparrow hopping around my yard is a bird, that much is obvious.
+    target: This Sparrow Is A Bird
+    herrings:
+    - Bat
+    - Not
+  - role: conclusion
+    text: So this sparrow here very probably can't fly.
+    target: This Sparrow Probably Cannot Fly
+    herrings:
+    - Can
+    - Certainly
+- category: strong-uncogent
+  mode: inductive
+  passage:
+  - role: premise
+    text: It's well established, or so people keep insisting, that almost all mammals reproduce by laying eggs.
+    target: Most Mammals Lay Eggs
+    herrings:
+    - Milk
+    - Few
+  - role: premise
+    text: The horse, naturally, is a mammal.
+    target: The Horse Is A Mammal
+    herrings:
+    - Bird
+    - Not
+  - role: conclusion
+    text: So this horse most likely lays eggs.
+    target: This Horse Probably Lays Eggs
+    herrings:
+    - Milk
+    - Certainly
+- category: strong-uncogent
+  mode: inductive
+  passage:
+  - role: premise
+    text: As nearly everyone will earnestly tell you, the great majority of world chess champions are under the age of ten.
+    target: Most Chess Champions Are Under Ten
+    herrings:
+    - Over
+    - Adults
+  - role: premise
+    text: My next-door neighbor, as it happens, is a world chess champion.
+    target: My Neighbor Is A Chess Champion
+    herrings:
+    - Beginner
+    - Not
+  - role: conclusion
+    text: So my neighbor is very probably under ten years old.
+    target: My Neighbor Is Probably Under Ten
+    herrings:
+    - Over
+    - Certainly
+- category: strong-cogent
+  mode: inductive
+  passage:
+  - role: premise
+    text: It's true that the overwhelming majority of professional jockeys, the folks who race horses for a living, are quite short.
+    target: Most Jockeys Are Short
+    herrings:
+    - Tall
+    - Few
+  - role: premise
+    text: And Maria races horses professionally — that's her actual, day-to-day job.
+    target: Maria Is A Jockey
+    herrings:
+    - Referee
+    - Not
+  - role: conclusion
+    text: So Maria is very probably on the short side.
+    target: Maria Is Probably Short
+    herrings:
+    - Tall
+    - Certainly
+- category: strong-cogent
+  mode: inductive
+  passage:
+  - role: premise
+    text: By just about any measure, the vast majority of days out in the Sahara Desert turn out hot and dry.
+    target: Most Sahara Days Are Hot And Dry
+    herrings:
+    - Cold
+    - Wet
+  - role: premise
+    text: Tomorrow is going to be a day spent out in the Sahara.
+    target: Tomorrow Is A Sahara Day
+    herrings:
+    - Rainy
+    - Not
+  - role: conclusion
+    text: So tomorrow will most likely be hot and dry.
+    target: Tomorrow Will Probably Be Hot And Dry
+    herrings:
+    - Cold
+    - Certainly
+- category: strong-cogent
+  mode: inductive
+  passage:
+  - role: premise
+    text: The records make it clear that nearly all students who study hard for this professor's final go on to pass it.
+    target: Most Students Who Study Hard Pass The Exam
+    herrings:
+    - Fail
+    - Few
+  - role: premise
+    text: Ben, for his part, studied hard for weeks leading up to the final.
+    target: Ben Studied Hard
+    herrings:
+    - Barely
+    - Skipped
+  - role: conclusion
+    text: So Ben will very likely pass the exam.
+    target: Ben Will Probably Pass
+    herrings:
+    - Fail
+    - Certainly

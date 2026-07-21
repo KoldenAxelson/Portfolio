@@ -1,0 +1,33 @@
+{{- /*
+  indicator-picker — "Deductive or Inductive?" + inferential-claim indicator
+  quiz. Problems come from a data file under data/argsets/.
+
+    {{< indicator-picker >}}                       uses data/argsets/indicators-ch01
+    {{< indicator-picker set="my-set" quiz="4" >}}  pick a set + questions per round
+
+  Same delivery pattern as arg-builder: JSON in the mount, a plain-JS module that
+  bundles the shared quiz-kit, and fingerprinted CSS (shared quiz-kit.css once
+  per page, plus this widget's rules).
+*/ -}}
+{{- $set := .Get "set" | default "indicators-ch01" -}}
+{{- $quiz := .Get "quiz" | default "4" -}}
+{{- $data := index site.Data.argsets $set -}}
+{{- if $data -}}
+<div data-indicator-picker data-quiz="{{ $quiz }}">
+  <script type="application/json" data-ip-data>{{ $data | jsonify | safeJS }}</script>
+</div>
+{{- if not (.Page.Scratch.Get "quizKitCss") -}}
+  {{- $kit := resources.Get "css/quiz-kit.css" | minify | fingerprint -}}
+  <link rel="stylesheet" href="{{ $kit.RelPermalink }}" integrity="{{ $kit.Data.Integrity }}" />
+  {{- .Page.Scratch.Set "quizKitCss" true -}}
+{{- end -}}
+{{- if not (.Page.Scratch.Get "indicatorPickerAssets") -}}
+  {{- $css := resources.Get "css/indicator-picker.css" | minify | fingerprint -}}
+  <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" />
+  {{- $js := resources.Get "js/indicator-picker.js" | js.Build (dict "minify" true) | fingerprint -}}
+  <script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
+  {{- .Page.Scratch.Set "indicatorPickerAssets" true -}}
+{{- end -}}
+{{- else -}}
+<p><em>indicator-picker: no data set named “{{ $set }}” found under data/argsets/.</em></p>
+{{- end -}}

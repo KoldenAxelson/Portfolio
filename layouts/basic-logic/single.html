@@ -1,0 +1,31 @@
+{{/* Basic Logic — chapter page. A copy of layouts/misc/single.html, isolated
+     here so its styling is local to Basic Logic chapters and touches nothing
+     else on the site.
+
+     HEADER / PROSE STYLING lives in the class string on the <article> below.
+     Hugo turns `## My Header` into <h2>, `### …` into <h3>, and so on. The
+     `[&_h2]:…` utilities style those tags *only inside this article* — edit,
+     add, or delete them to change how chapter headers look. (Without them,
+     Tailwind's reset makes headings render at body size, so they're what give
+     `# My Header` its visual weight.) Nothing here affects other pages. */}}
+{{ define "banner" }}
+{{ partial "page-banner.html" (dict
+  "title" .Title
+  "subtitle" (.Params.lead | default .Description | default "")) }}
+{{ end }}
+
+{{ define "main" }}
+{{- with .Params.updated }}
+<p class="mb-10 font-mono text-xs text-muted">
+  Last updated {{ partial "formatted-date.html" (dict "date" .) }}.
+</p>
+{{- end }}
+
+<article class="space-y-4 text-base leading-relaxed text-muted
+  [&_h2]:mt-10 [&_h2]:mb-1 [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:tracking-tight [&_h2]:text-fg
+  [&_h3]:mt-6 [&_h3]:mb-1 [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-fg
+  [&_a]:text-fg [&_a]:underline [&_a]:decoration-border hover:[&_a]:!text-accent">
+  {{ .Content }}
+</article>
+{{ partial "chapter-select.html" . }}
+{{ end }}

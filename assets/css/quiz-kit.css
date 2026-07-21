@@ -1,0 +1,64 @@
+/* quiz-kit — shared chrome for the Basic Logic exercise widgets: the card
+   shell, choice buttons, controls, pills, the "why" box, and the score screen.
+   Each widget's own stylesheet adds only the rules unique to its interaction.
+   Colors come from the site's --c-* tokens (they swap by light/dark in
+   base.css); correct/incorrect use fixed green/red since the palette has no
+   success/danger token. */
+.qz-card{ --qz-ok:#22c55e; --qz-bad:#ef4444; border:1px solid rgb(var(--c-border));
+  background:rgb(var(--c-muted) / 0.05); border-radius:16px; overflow:hidden;
+  font-family:var(--font-sans, Inter, sans-serif); line-height:1.75; color:rgb(var(--c-fg)); }
+.qz-card *{ box-sizing:border-box; }
+
+.qz-cap{ display:flex; align-items:center; gap:8px; border-bottom:1px solid rgb(var(--c-border));
+  padding:12px 20px; font-size:.9rem; font-weight:600; }
+.qz-chip{ margin-left:auto; border:1px solid rgb(var(--c-border)); border-radius:999px;
+  padding:2px 8px; font:600 11px var(--font-mono, ui-monospace, monospace);
+  letter-spacing:.05em; text-transform:uppercase; color:rgb(var(--c-muted)); }
+.qz-body{ padding:20px; }
+
+.qz-passage{ margin:0 0 22px; font-size:1.05rem; color:rgb(var(--c-fg)); }
+
+/* Choice buttons + their selected / correct / incorrect states. */
+.qz-btns{ display:flex; gap:10px; }
+/* divider above a second-stage choice group (used on both flex rows and grids) */
+.qz-spaced{ margin-top:14px; padding-top:14px; border-top:1px solid rgb(var(--c-border)); }
+.qz-opt{ flex:1; display:flex; align-items:center; justify-content:center; gap:8px;
+  border:1px solid rgb(var(--c-border)); background:transparent; color:rgb(var(--c-fg)); border-radius:10px;
+  padding:11px 14px; font:inherit; font-weight:500; cursor:pointer; text-align:center;
+  transition:border-color .15s, background .15s; }
+.qz-opt:hover{ border-color:rgb(var(--c-accent)); }
+.qz-opt.qz-sel{ border-color:rgb(var(--c-accent)); background:rgb(var(--c-accent) / .1); }
+.qz-opt.qz-ok{ border-color:var(--qz-ok); background:rgb(34 197 94 / .12); }
+.qz-opt.qz-bad{ border-color:var(--qz-bad); background:rgb(239 68 68 / .12); }
+.qz-oicon{ display:inline-flex; }
+
+.qz-back{ border:0; background:transparent; color:rgb(var(--c-muted)); font:inherit; font-size:.85rem;
+  cursor:pointer; padding:0; margin:0 0 12px; }
+.qz-back:hover{ color:rgb(var(--c-accent)); }
+
+/* The "why" box, shown only after a wrong answer. */
+.qz-why{ margin-top:18px; border:1px solid rgb(var(--c-border)); border-left:3px solid var(--qz-bad);
+  border-radius:8px; padding:11px 14px; background:rgb(239 68 68 / .05); }
+.qz-why-lbl{ font:600 .68rem var(--font-mono, ui-monospace, monospace); letter-spacing:.09em;
+  text-transform:uppercase; color:var(--qz-bad); margin:0 0 5px; white-space:nowrap; }
+.qz-why p:last-child{ margin:0; font-size:.93rem; line-height:1.55; color:rgb(var(--c-fg)); }
+
+/* Controls row: action buttons, verdict pills, progress counter. */
+.qz-controls{ display:flex; flex-wrap:wrap; gap:10px; margin-top:24px; align-items:center; }
+.qz-act{ border:1px solid rgb(var(--c-border)); background:transparent; color:rgb(var(--c-fg)); border-radius:10px;
+  padding:8px 16px; font:inherit; font-weight:500; cursor:pointer; transition:border-color .15s, background .15s; }
+.qz-act:hover{ border-color:rgb(var(--c-accent)); }
+.qz-act.qz-primary{ border-color:rgb(var(--c-accent)); background:rgb(var(--c-accent) / .1); }
+.qz-progress{ margin-left:auto; font:400 .8rem var(--font-mono, ui-monospace, monospace); color:rgb(var(--c-muted)); }
+
+.qz-pill{ border:1px solid rgb(var(--c-border)); border-radius:999px; padding:3px 11px;
+  font:600 .72rem var(--font-mono, ui-monospace, monospace); letter-spacing:.04em;
+  text-transform:uppercase; color:rgb(var(--c-muted)); }
+.qz-pill.qz-good{ border-color:rgb(34 197 94 / .5); color:var(--qz-ok); }
+.qz-pill.qz-bad{ border-color:rgb(239 68 68 / .5); color:var(--qz-bad); }
+
+/* Score screen. */
+.qz-results{ text-align:center; padding:26px 0 14px; }
+.qz-results h2{ font-size:1.05rem; margin:0 0 12px; color:rgb(var(--c-fg)); }
+.qz-scoreline{ font:700 2.6rem/1 var(--font-sans, Inter, sans-serif); margin:0 0 22px; color:rgb(var(--c-fg)); }
+.qz-scoreline .qz-den{ color:rgb(var(--c-muted)); font-weight:400; }

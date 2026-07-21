@@ -1,0 +1,63 @@
+/* chapter-select — floating "jump to chapter" FAB for Basic Logic chapters
+   (desktop only). Mirrors the cv-actions FAB's accent toggle; opens a chapter
+   menu. Colors from the site's --c-* / --glass-* tokens. */
+
+.cs__btn {
+  background-color: rgb(var(--c-accent)); color: rgb(var(--c-bg)); border: 1px solid rgb(var(--c-accent));
+  box-shadow: 0 6px 18px -6px rgb(0 0 0 / 0.25); transition: filter 0.2s ease, box-shadow 0.2s ease;
+}
+.cs__btn:hover { filter: brightness(1.08); box-shadow: 0 8px 22px -6px rgb(0 0 0 / 0.3); }
+@media (prefers-color-scheme: dark) {
+  .cs__btn { box-shadow: 0 6px 18px -8px rgb(0 0 0 / 0.6); }
+  .cs__btn:hover { box-shadow: 0 8px 22px -8px rgb(0 0 0 / 0.65); }
+}
+[data-chapter-select] > summary::-webkit-details-marker { display: none; }
+[data-chapter-select] > summary::marker { content: ""; }
+.cs__icon-close { display: none; }
+[data-chapter-select][open] .cs__icon-main { display: none; }
+[data-chapter-select][open] .cs__icon-close { display: block; }
+
+/* Menu panel above the button. Kept laid out even when closed (like cv-actions)
+   so it animates every open; visibility gated by [open]. */
+[data-chapter-select]::details-content { content-visibility: visible; }
+.cs__menu {
+  position: absolute; bottom: 100%; right: 0; margin-bottom: 0.75rem; width: 15rem;
+  border-radius: 0.9rem; padding: 8px; box-sizing: border-box;
+  background: rgb(var(--glass-bg) / 0.92); border: 1px solid rgb(var(--c-border));
+  -webkit-backdrop-filter: blur(14px) saturate(160%); backdrop-filter: blur(14px) saturate(160%);
+  box-shadow: inset 0 1px 0 0 rgb(var(--glass-hi) / 0.5), 0 18px 44px -16px rgb(0 0 0 / 0.28);
+  opacity: 0; transform: translateY(8px) scale(0.97); transform-origin: bottom right; pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+@media (prefers-color-scheme: dark) {
+  .cs__menu { box-shadow: inset 0 1px 0 0 rgb(var(--glass-hi) / 0.1), 0 18px 44px -16px rgb(0 0 0 / 0.75); }
+}
+[data-chapter-select][open] .cs__menu { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+
+.cs__title { font: 600 0.62rem var(--font-mono, ui-monospace, monospace); letter-spacing: 0.12em; text-transform: uppercase; color: rgb(var(--c-muted)); margin: 0; padding: 6px 10px 8px; }
+.cs__item {
+  display: flex; align-items: center; gap: 10px; width: 100%; text-align: left;
+  padding: 9px 10px; border-radius: 0.55rem; text-decoration: none; color: rgb(var(--c-fg));
+  font-size: 0.95rem; transition: background 0.12s ease, color 0.12s ease;
+}
+.cs__item:hover { background: rgb(var(--c-accent) / 0.1); color: rgb(var(--c-accent)); }
+.cs__num { flex-shrink: 0; font: 600 0.7rem var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-muted)); width: 1.6rem; }
+.cs__item:hover .cs__num { color: rgb(var(--c-accent)); }
+.cs__name { flex: 1; min-width: 0; }
+.cs__item--current { background: rgb(var(--c-accent) / 0.1); color: rgb(var(--c-accent)); font-weight: 600; cursor: default; }
+.cs__item--current .cs__num { color: rgb(var(--c-accent)); }
+.cs__dot { margin-left: auto; width: 6px; height: 6px; border-radius: 999px; background: rgb(var(--c-accent)); flex-shrink: 0; }
+
+/* Staggered item entrance, outward from the toggle (nearest leads). */
+.cs__item { opacity: 0; transform: translateY(4px); transition: opacity 0.2s ease, transform 0.2s ease, background 0.12s ease, color 0.12s ease; }
+[data-chapter-select][open] .cs__item { opacity: 1; transform: translateY(0); }
+[data-chapter-select][open] .cs__item:nth-child(2) { transition-delay: 0.03s; }
+[data-chapter-select][open] .cs__item:nth-child(3) { transition-delay: 0.06s; }
+[data-chapter-select][open] .cs__item:nth-child(4) { transition-delay: 0.09s; }
+[data-chapter-select][open] .cs__item:nth-child(5) { transition-delay: 0.12s; }
+[data-chapter-select][open] .cs__item:nth-child(6) { transition-delay: 0.15s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cs__btn, .cs__menu, .cs__item { transition: none; transform: none; }
+  [data-chapter-select][open] .cs__menu { transform: none; }
+}
