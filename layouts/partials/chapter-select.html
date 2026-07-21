@@ -1,36 +1,30 @@
 {{- /*
-  chapter-select — floating "jump to chapter" speed-dial for Basic Logic chapter
-  pages, DESKTOP ONLY (lg+), mirroring partials/cv-actions.html. The toggle opens
-  a menu of the section's chapters (current one marked, others linked) and morphs
-  into an ✕ to close. On mobile these same chapters live in the navbar tools
-  button (the shared panel — see topnav.html). Built on <details> so the toggle
-  works without JS; assets/js/chapter-select.js adds outside-click / Escape close.
-  Hidden in print. Renders only on chapter (single) pages.
+  chapter-select — floating "jump to chapter" FAB for Basic Logic chapter pages,
+  DESKTOP ONLY (lg+). Built on the shared auxiliary-button shell (.aux-fab, list
+  layout — see assets/css/auxiliary-button.css and ts/auxiliary-button.ts), so
+  all it supplies is the icon and the chapter menu. The menu lists the section's
+  chapters (current one marked, others linked). On mobile these same chapters
+  live in the navbar tools button (topnav.html). Renders only on chapter pages.
 */ -}}
 {{- if and (eq .Type "basic-logic") (eq .Kind "page") -}}
 {{- $cur := .RelPermalink -}}
-<details data-chapter-select class="cs fixed bottom-6 right-6 z-30 hidden lg:block print:!hidden">
-  <summary class="cs__btn relative flex h-12 w-12 cursor-pointer list-none items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50" aria-label="Select chapter" title="Select chapter">
+<details data-aux-fab class="fixed bottom-6 right-6 z-30 hidden lg:block print:!hidden">
+  <summary class="aux-fab__btn relative flex h-12 w-12 cursor-pointer list-none items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50" aria-label="Select chapter" title="Select chapter">
     <span class="sr-only">Select chapter</span>
-    {{ partial "func/svg-icon.html" (dict "name" "book-open" "class" "cs__icon-main h-6 w-6" "width" "1.75") }}
-    <svg class="cs__icon-close h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18 18 6M6 6l12 12" /></svg>
+    {{ partial "func/svg-icon.html" (dict "name" "book-open" "class" "aux-fab__icon aux-fab__icon--main h-6 w-6" "width" "1.75") }}
+    <svg class="aux-fab__icon aux-fab__icon--close h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18 18 6M6 6l12 12" /></svg>
   </summary>
-  <div class="cs__menu" role="menu" aria-label="Chapters">
-    <p class="cs__title">Chapters</p>
+  <div class="aux-fab__menu aux-fab__menu--list" role="menu" aria-label="Chapters">
+    <p class="aux-fab__title">Chapters</p>
     {{- range $i, $ch := .CurrentSection.RegularPages.ByWeight -}}
-    {{- $isCur := eq $ch.RelPermalink $cur -}}
     {{- /* The number column already conveys order, so drop a leading "Chapter N:" from the title. */ -}}
     {{- $name := replaceRE `^\s*Chapter\s+\d+\s*[:.\-–—]\s*` "" $ch.LinkTitle -}}
-    {{- if $isCur -}}
-    <span class="cs__item cs__item--current" aria-current="page"><span class="cs__num">{{ add $i 1 }}</span><span class="cs__name">{{ $name }}</span><span class="cs__dot"></span></span>
+    {{- if eq $ch.RelPermalink $cur -}}
+    <span class="aux-fab__row aux-fab__row--current" aria-current="page"><span class="aux-fab__num">{{ add $i 1 }}</span><span class="aux-fab__name">{{ $name }}</span><span class="aux-fab__dot"></span></span>
     {{- else -}}
-    <a class="cs__item" href="{{ $ch.RelPermalink }}" role="menuitem"><span class="cs__num">{{ add $i 1 }}</span><span class="cs__name">{{ $name }}</span></a>
+    <a class="aux-fab__row" href="{{ $ch.RelPermalink }}" role="menuitem"><span class="aux-fab__num">{{ add $i 1 }}</span><span class="aux-fab__name">{{ $name }}</span></a>
     {{- end -}}
     {{- end }}
   </div>
 </details>
-{{- $css := resources.Get "css/chapter-select.css" | minify | fingerprint -}}
-<link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" />
-{{- $js := resources.Get "js/chapter-select.js" | js.Build (dict "minify" true) | fingerprint -}}
-<script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
 {{- end -}}

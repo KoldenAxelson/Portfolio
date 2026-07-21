@@ -15,7 +15,7 @@
 .term:focus-visible { outline: 2px solid rgb(var(--c-accent)); outline-offset: 2px; }
 
 /* Desktop drawer (>=1024px): a card floating on the right, vertically centered.
-   Its horizontal position is set by definitions.js so it sits in the gutter
+   Its horizontal position is set by definitions.ts so it sits in the gutter
    beside the text when there's room, and pins to the edge otherwise. Slides in
    from the right. */
 .def-drawer { position: fixed; inset: 0; z-index: 60; pointer-events: none; }

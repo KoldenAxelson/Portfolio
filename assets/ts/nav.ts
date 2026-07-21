@@ -2,6 +2,8 @@
 // they survive hx-boost swaps; element handlers re-bound per page via initNav().
 import { sleep, pickRandom, readMessages, charDelay } from './bio';
 import { populateGameCard, wireCarouselDots } from './game-card';
+import { wirePanelMode } from './sub-nav';
+import type { PanelHost } from './sub-nav';
 
 const SHOW_NAV_BELOW_PX = 50;
 const SCROLL_JITTER_PX = 4;
@@ -62,18 +64,6 @@ function wireNavGlobalsOnce(): void {
     if (e.key === 'Escape' && mobileNav && mobileNav.open) mobileNav.open = false;
   });
 
-  // Close the CV actions speed-dial (<details data-cv-actions>) on click-outside
-  // / Escape. Live-queried so it survives hx-boost swaps; no-ops off the CV page.
-  document.addEventListener('click', (e) => {
-    const cvActions = document.querySelector<HTMLDetailsElement>('[data-cv-actions]');
-    if (!cvActions || !cvActions.open) return;
-    const target = e.target as Element | null;
-    if (target && !cvActions.contains(target)) cvActions.open = false;
-  });
-  document.addEventListener('keydown', (e) => {
-    const cvActions = document.querySelector<HTMLDetailsElement>('[data-cv-actions]');
-    if (e.key === 'Escape' && cvActions && cvActions.open) cvActions.open = false;
-  });
 }
 
 function wireNavElements(): void {
@@ -182,67 +172,63 @@ function wireNavElements(): void {
     }
   }
 
-  // Completed-game line items reuse this very panel as a new 'game' mode, so the
-  // card, the grid-rows drop, and the hamburger→X are identical to the nav menu.
-  // Desktop is handled separately by ts/impossible-modal.ts (the right drawer).
-  const gamePanel = document.querySelector<HTMLElement>('[data-mobile-panel-game]');
-  const gameTriggers = Array.from(
-    document.querySelectorAll<HTMLButtonElement>('[data-game-open]'),
-  );
-  if (mobilePanel && gamePanel && gameTriggers.length) {
-    const cardEls = {
-      title: gamePanel.querySelector<HTMLElement>('[data-game-mobile-title]'),
-      blurb: gamePanel.querySelector<HTMLElement>('[data-game-mobile-blurb]'),
-      media: gamePanel.querySelector<HTMLElement>('[data-game-mobile-media]'),
-      dots: gamePanel.querySelector<HTMLElement>('[data-game-dots]'),
-      stars: gamePanel.querySelector<HTMLElement>('[data-game-mobile-stars]'),
-      status: gamePanel.querySelector<HTMLElement>('[data-game-mobile-status]'),
-      series: gamePanel.querySelector<HTMLElement>('[data-game-mobile-series]'),
-      consoleIcons: Array.from(gamePanel.querySelectorAll<HTMLElement>('[data-console-icon-for]')),
-    };
-    wireCarouselDots(cardEls.media, cardEls.dots);
-    for (const trigger of gameTriggers) {
-      trigger.addEventListener('click', (e) => {
-        if (window.matchMedia('(min-width: 1024px)').matches) return; // desktop → drawer
-        e.preventDefault();
-        e.stopPropagation();
-        mobilePanel.dataset.mode = 'game';
-        populateGameCard(trigger.dataset, cardEls);
-        syncToolsTriggerVisibility();
-        syncAiTriggerVisibility();
-        const nav = document.querySelector<HTMLElement>('[data-top-nav]');
-        if (nav) nav.style.transform = '';
-        if (!mobileNav.open) mobileNav.open = true;
-      });
-    }
-  }
+  // Detail modes reuse this very panel: tapping a trigger swaps it into a focused
+  // view, so the card, the grid-rows drop, and the hamburger→X match the nav menu.
+  // The shared choreography lives in sub-nav.ts; each mode supplies only its
+  // triggers, its content panel, and how to fill it. Desktop drawers handle the
+  // >=1024px case separately (impossible-modal.ts, definitions.ts).
+  if (!mobilePanel) return;
+  const host: PanelHost = {
+    nav: mobileNav,
+    panel: mobilePanel,
+    topNav: document.querySelector<HTMLElement>('[data-top-nav]'),
+    afterOpen: () => {
+      syncToolsTriggerVisibility();
+      syncAiTriggerVisibility();
+    },
+  };
 
-  // Glossary terms reuse this panel as a 'definition' mode, so the navbar stays
-  // and the hamburger→X dismisses it — identical to the game detail. Desktop is
-  // handled separately by assets/js/definitions.js (the right drawer).
-  const defPanel = document.querySelector<HTMLElement>('[data-mobile-panel-definition]');
-  const termTriggers = Array.from(
-    document.querySelectorAll<HTMLButtonElement>('[data-term-def]'),
+  // Completed-game line items on /impossible-list.
+  wirePanelMode(
+    {
+      mode: 'game',
+      trigger: '[data-game-open]',
+      content: '[data-mobile-panel-game]',
+      setup: (content) =>
+        wireCarouselDots(
+          content.querySelector<HTMLElement>('[data-game-mobile-media]'),
+          content.querySelector<HTMLElement>('[data-game-dots]'),
+        ),
+      populate: (trigger, content) =>
+        populateGameCard(trigger.dataset, {
+          title: content.querySelector<HTMLElement>('[data-game-mobile-title]'),
+          blurb: content.querySelector<HTMLElement>('[data-game-mobile-blurb]'),
+          media: content.querySelector<HTMLElement>('[data-game-mobile-media]'),
+          dots: content.querySelector<HTMLElement>('[data-game-dots]'),
+          stars: content.querySelector<HTMLElement>('[data-game-mobile-stars]'),
+          status: content.querySelector<HTMLElement>('[data-game-mobile-status]'),
+          series: content.querySelector<HTMLElement>('[data-game-mobile-series]'),
+          consoleIcons: Array.from(content.querySelectorAll<HTMLElement>('[data-console-icon-for]')),
+        }),
+    },
+    host,
   );
-  if (mobilePanel && defPanel && termTriggers.length) {
-    const defLabel = defPanel.querySelector<HTMLElement>('[data-definition-label]');
-    const defBody = defPanel.querySelector<HTMLElement>('[data-definition-body]');
-    for (const trigger of termTriggers) {
-      trigger.addEventListener('click', (e) => {
-        if (window.matchMedia('(min-width: 1024px)').matches) return; // desktop → drawer
-        e.preventDefault();
-        e.stopPropagation();
-        mobilePanel.dataset.mode = 'definition';
-        if (defLabel) defLabel.textContent = trigger.getAttribute('data-term-label') || '';
-        if (defBody) defBody.textContent = trigger.getAttribute('data-term-def') || '';
-        syncToolsTriggerVisibility();
-        syncAiTriggerVisibility();
-        const nav = document.querySelector<HTMLElement>('[data-top-nav]');
-        if (nav) nav.style.transform = '';
-        if (!mobileNav.open) mobileNav.open = true;
-      });
-    }
-  }
+
+  // Glossary terms on Basic Logic pages.
+  wirePanelMode(
+    {
+      mode: 'definition',
+      trigger: '[data-term-def]',
+      content: '[data-mobile-panel-definition]',
+      populate: (trigger, content) => {
+        const label = content.querySelector<HTMLElement>('[data-definition-label]');
+        const body = content.querySelector<HTMLElement>('[data-definition-body]');
+        if (label) label.textContent = trigger.getAttribute('data-term-label') || '';
+        if (body) body.textContent = trigger.getAttribute('data-term-def') || '';
+      },
+    },
+    host,
+  );
 }
 
 export function initNav(): void {

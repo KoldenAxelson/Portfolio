@@ -31,6 +31,9 @@
     {{/* CSS inlined (not render-blocking); persists across hx-boost body swaps. */}}
     {{ $css := resources.Get "css/app.css" | minify }}
     <style>{{ $css.Content | safeCSS }}</style>
+    {{/* Shared floating-FAB shell (CV / Viva / Basic Logic) — behavior in ts/auxiliary-button.ts. */}}
+    {{ $auxcss := resources.Get "css/auxiliary-button.css" | minify }}
+    <style>{{ $auxcss.Content | safeCSS }}</style>
 
     {{/* htmx + the TS bundle load in <head> (deferred) so they survive hx-boost swaps. */}}
     {{ $htmx := resources.Get "vendor/htmx.min.js" | fingerprint }}
