@@ -416,7 +416,11 @@ async function probeHealth(endpoint: string): Promise<void> {
     const timer = window.setTimeout(() => ctrl.abort(), 6000);
     const res = await fetch(endpoint.replace(/\/chat$/, '/health'), { signal: ctrl.signal });
     window.clearTimeout(timer);
-    ok = res.ok; // 200 → healthy, 503 → down. Anything else (error) → hide.
+    // The probe always answers 200; up/down is a boolean in the body ("is it
+    // raining or not?"), never a 5xx — so a down tunnel doesn't log a console
+    // error. Treat a missing/false flag, or any non-2xx, as down.
+    const data: { ok?: boolean } = res.ok ? await res.json().catch(() => ({})) : {};
+    ok = data.ok === true;
   } catch {
     ok = false; // hide-on-unknown: a blip never shows a dead button
   } finally {

@@ -3,13 +3,20 @@
    To rebrand: tweak the five --c-* values below. */
 
 /* Self-hosted fonts (no third-party request in the critical path).
-   font-display: swap avoids FOIT at the cost of a small FOUT. */
+   Inter (the body/LCP font) uses font-display: optional: it gets a ~100ms
+   window to paint, and if it misses that window on a cold, uncached load the
+   browser keeps the system fallback for that one pageview (Inter is used on the
+   next visit, straight from the year-long cache). This avoids the late font
+   *swap* that repaints the LCP text and pushes the LCP metric out — the swap,
+   not the download, was the cost. Inter regular is preloaded (see baseof.html)
+   so it usually wins the window anyway. JetBrains Mono stays on swap: it's only
+   for code, never the LCP element, and code should always render in mono. */
 
 @font-face {
   font-family: 'Inter';
   font-style: normal;
   font-weight: 100 900;
-  font-display: swap;
+  font-display: optional;
   src: url('/fonts/InterVariable.woff2') format('woff2');
 }
 
@@ -17,7 +24,7 @@
   font-family: 'Inter';
   font-style: italic;
   font-weight: 100 900;
-  font-display: swap;
+  font-display: optional;
   src: url('/fonts/InterVariable-Italic.woff2') format('woff2');
 }
 
