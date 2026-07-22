@@ -40,11 +40,21 @@
         <img src="{{ partial "func/url.html" "/logo-mark.svg" }}" alt="{{ $site.author.name }}" width="36" height="36" class="h-9 w-9" />
       </a>
 
-      {{- if and $hasTools (ne .Layout "cv") (ne .Type "basic-logic") }}
+      {{- /* desktopFab pages (Viva) render their own floating FAB, so the centered
+             toolbar is suppressed there too, same as CV / Basic Logic. */ -}}
+      {{- if and $hasTools (ne .Layout "cv") (ne .Type "basic-logic") (not .Params.desktopFab) }}
       <ul class="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-2 lg:flex">
         {{- range $tools }}
         <li>
-          {{- if eq .action "print" }}
+          {{- if .data }}
+          {{- /* Data-attribute buttons carry JS hooks (e.g. Viva save/load). The whole
+                 attribute is built and marked safeHTMLAttr because html/template blocks
+                 dynamic attribute names. Front matter is author-trusted. */ -}}
+          <button type="button"{{ range $k, $v := .data }} {{ printf "data-%s=%q" $k $v | safeHTMLAttr }}{{ end }} aria-label="{{ .label }}" class="group inline-flex items-center rounded-full px-2 py-2 no-underline text-muted transition-colors duration-200 hover:!text-fg hover:bg-border/40 border-0 bg-transparent">
+            {{ partial "func/svg-icon.html" (dict "name" .icon "class" "h-5 w-5 shrink-0 transition-transform duration-300 ease-out group-hover:rotate-[-3deg] group-hover:scale-110") }}
+            <span class="ml-0 max-w-0 overflow-hidden whitespace-nowrap text-sm opacity-0 transition-all duration-300 ease-out motion-reduce:transition-none group-hover:ml-2 group-hover:max-w-[8rem] group-hover:opacity-100 group-focus-within:ml-2 group-focus-within:max-w-[8rem] group-focus-within:opacity-100">{{ .label }}</span>
+          </button>
+          {{- else if eq .action "print" }}
           <button type="button" onclick="window.print()" aria-label="{{ .label }}" class="group inline-flex items-center rounded-full px-2 py-2 no-underline text-accent transition-colors duration-200 hover:!text-fg hover:bg-border/40 border-0 bg-transparent">
             {{ partial "func/svg-icon.html" (dict "name" .icon "class" "h-5 w-5 shrink-0 transition-transform duration-300 ease-out group-hover:rotate-[-3deg] group-hover:scale-110") }}
             <span class="ml-0 max-w-0 overflow-hidden whitespace-nowrap text-sm opacity-0 transition-all duration-300 ease-out motion-reduce:transition-none group-hover:ml-2 group-hover:max-w-[8rem] group-hover:opacity-100 group-focus-within:ml-2 group-focus-within:max-w-[8rem] group-focus-within:opacity-100">{{ .label }}</span>
@@ -85,7 +95,7 @@
         {{- end }}
         {{- if $hasTools }}
         <button type="button" data-mobile-tools-trigger aria-label="Open page actions" class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-md text-muted transition-colors hover:bg-border/40 hover:text-fg focus-visible:bg-border/40 focus-visible:text-fg">
-          {{ partial "func/svg-icon.html" (dict "name" (cond (eq .Type "basic-logic") "book-open" "arrow-down-circle") "class" "h-7 w-7") }}
+          {{ partial "func/svg-icon.html" (dict "name" (.Params.toolsIcon | default (cond (eq .Type "basic-logic") "book-open" "arrow-down-circle")) "class" "h-7 w-7") }}
         </button>
         {{- end }}
 
@@ -169,7 +179,12 @@
       <ul data-mobile-panel-tools class="mx-auto flex max-w-screen-xl flex-col gap-1 px-6 py-4 opacity-0 transition-opacity duration-200 ease-out motion-reduce:transition-none">
         {{- range $tools }}
         <li>
-          {{- if eq .action "print" }}
+          {{- if .data }}
+          <button type="button"{{ range $k, $v := .data }} {{ printf "data-%s=%q" $k $v | safeHTMLAttr }}{{ end }} aria-label="{{ .label }}" class="flex w-full items-center gap-4 rounded-md px-3 py-3 text-lg !text-fg no-underline transition-colors hover:bg-border/40 hover:!text-accent border-0 bg-transparent text-left">
+            {{ partial "func/svg-icon.html" (dict "name" .icon "class" "h-6 w-6 shrink-0") }}
+            <span>{{ .label }}</span>
+          </button>
+          {{- else if eq .action "print" }}
           <button type="button" onclick="window.print()" aria-label="{{ .label }}" class="flex w-full items-center gap-4 rounded-md px-3 py-3 text-lg !text-fg no-underline transition-colors hover:bg-border/40 hover:!text-accent border-0 bg-transparent text-left">
             {{ partial "func/svg-icon.html" (dict "name" .icon "class" "h-6 w-6 shrink-0") }}
             <span>{{ .label }}</span>

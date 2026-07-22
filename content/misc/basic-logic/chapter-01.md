@@ -39,12 +39,12 @@ Arguments being an attempt to pursuade, are found everywhere in life. Studying l
 ### Standard Form
 *A written argument in which the premises are listed first and seperated from the coclusion by a horizontal line.*
 
-{{< logic-widget name="standard-form" title="Standard Form Example" icon="puzzle-piece" >}}
-# P1  Whoever wrote *Macbeth* is the best playwright who ever lived.
-# P2  Shakespeare wrote *Macbeth*
-# --------------------------------------------------------------------------------------------------------------------------------------------------
-# C   Shakespeare is the best playwright who ever lived.
-{{< /logic-widget >}}
+{{< arg title="Standard Form Example" >}}
+Whoever wrote *Macbeth* is the best playwright who ever lived.
+Shakespeare wrote *Macbeth*
+---
+Shakespeare is the best playwright who ever lived.
+{{< /arg >}}
 
 ### Statement
 *A sentence that makes an assertion*
@@ -65,19 +65,19 @@ Accordingly, Consequently, Hence, It follows that, Must, So, Therefore, Thus
 
 {{< term "deductive" >}}Deductive Arguments{{< /term >}} are arguments in which the premises support the conclusion in such a way it would be *impossible* for the conclusion to be false. Meanwhile an {{< term "inductive" >}}Inductive Argument{{< /term >}} the premises support the conclusion to only be *likely*.
 
-{{< logic-widget name="deductive-argument" title="Deductive Argument" icon="puzzle-piece" >}}
-# P1  Socrates was a man.
-# P2  All men are mortal.
-# --------------------------------------------------------------------------------------------------------------------------------------------------
-# C   Socrates was mortal.
-{{< /logic-widget >}}
+{{< arg title="Deductive Argument" kind="Deductive" >}}
+Socrates was a man.
+All men are mortal.
+---
+Socrates was mortal.
+{{< /arg >}}
 
-{{< logic-widget name="inductive-argument" title="Inductive Argument" icon="puzzle-piece" >}}
-# P1  Most crows are black.
-# P2  Carl is a crow.
-# --------------------------------------------------------------------------------------------------------------------------------------------------
-# C   Carl is most likely black.
-{{< /logic-widget >}}
+{{< arg title="Inductive Argument" kind="Inductive" >}}
+Most crows are black.
+Carl is a crow.
+---
+Carl is most likely black.
+{{< /arg >}}
 
 {{< term "inferential-claim-indicator" >}}Inferential claim indicator words{{< /term >}} are the words found in the conclusion that hint towards whether an argument is deductive or inductive. Additionally, we must treat the argument as it identifies itself. 
 
@@ -90,21 +90,19 @@ It's important to learn to distinguish arguments from {{< term "non-inferential-
 ### Validity
 *A property of deductive arguments in which: it is impossible for the premises to be true and the conclusion false.*
 
-{{< logic-widget name="valid-argument" title="Valid Argument" icon="puzzle-piece" >}}
-# P1  All cats are fish.
-# P2  Konrad was a cat.
-# --------------------------------------------------------------------------------------------------------------------------------------------------
-# C   Konrad was a fish.
-{{< /logic-widget >}}
-*Valid, however the premise and conclusions are false.*
+{{< arg title="Valid Argument" kind="Valid" note="Valid, however the premise and conclusions are false." >}}
+All cats are fish.
+Konrad was a cat.
+---
+Konrad was a fish.
+{{< /arg >}}
 
-{{< logic-widget name="invalid-argument" title="Invalid Argument" icon="puzzle-piece" >}}
-# P1  California is in the United States.
-# P2  United States is in North America.
-# --------------------------------------------------------------------------------------------------------------------------------------------------
-# C   Konrad is in California.
-{{< /logic-widget >}}
-*Invalid, however the premise and conclusions are all true.*
+{{< arg title="Invalid Argument" kind="Invalid" note="Invalid, however the premise and conclusions are all true." >}}
+California is in the United States.
+United States is in North America.
+---
+Konrad is in California.
+{{< /arg >}}
 
 ### Soundness
 *A property of valid deductive arguments in which: all the premises are true.*
