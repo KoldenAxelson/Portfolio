@@ -7,6 +7,23 @@ blurb: "Colour-variant feeds for every species in Viva Piñata — searchable, w
 container: "wide"
 checklist: true
 updated: 2026-06-20
+# Desktop shows the floating FAB (below); mobile routes these same actions into
+# the navbar tools button + sub-nav panel, so suppress the centered toolbar.
+desktopFab: true
+toolsIcon: "document-save"
+tools:
+  - icon: "arrow-up-tray"
+    label: "Save"
+    data:
+      vp-open: "save"
+  - icon: "arrow-down-tray"
+    label: "Load"
+    data:
+      vp-open: "load"
+  - icon: "trash"
+    label: "Clear"
+    data:
+      vp-clear: ""
 ---
 
 Each species changes colour when you feed it the listed items. Tick a species and it drops into the **Collected** table at the bottom; untick it and it returns to the list. Your progress saves in this browser automatically, and the **Save / Load** button (bottom-right) gives you a short code you can copy to back it up or move it to another device.
@@ -495,7 +512,7 @@ Each species changes colour when you feed it the listed items. Tick a species an
 </div>
 
 <!-- Floating Save / Load speed-dial — built on the shared auxiliary-button FAB. -->
-<details data-aux-fab class="fixed bottom-24 right-6 z-30 lg:bottom-6 print:!hidden">
+<details data-aux-fab class="fixed bottom-6 right-6 z-30 hidden lg:block print:!hidden">
   <summary class="aux-fab__btn relative flex h-12 w-12 cursor-pointer list-none items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50" aria-label="Save or load progress" title="Save or load progress">
     <span class="sr-only">Save or load progress</span>
     <svg class="aux-fab__icon aux-fab__icon--main h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.5 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25h12A2.25 2.25 0 0 0 20.25 18V8.56a2.25 2.25 0 0 0-.66-1.59l-2.56-2.56a2.25 2.25 0 0 0-1.59-.66H15M7.5 3.75V8.25H15V3.75M7.5 3.75H15M8.25 14.25h7.5" /></svg>
@@ -739,11 +756,18 @@ Each species changes colour when you feed it the listed items. Tick a species an
     var status = modal.querySelector('[data-vp-status]');
 
     function setStatus(msg, kind) { status.textContent = msg || ''; status.className = 'vp-status' + (kind ? ' is-' + kind : ''); }
+    // Close whichever surface launched the action: the desktop FAB or, on mobile,
+    // the navbar sub-nav panel these actions now live in.
+    function closeLaunchers() {
+      if (details) details.removeAttribute('open');
+      var mobileNav = document.querySelector('[data-mobile-nav]');
+      if (mobileNav) mobileNav.removeAttribute('open');
+    }
     function openModal(focus) {
       exportInput.value = currentCode();
       setStatus(''); importInput.value = '';
       modal.hidden = false;
-      if (details) details.removeAttribute('open');
+      closeLaunchers();
       var el = focus === 'load' ? importInput : exportInput;
       setTimeout(function () { el.focus(); if (focus !== 'load') el.select(); }, 30);
     }
@@ -772,14 +796,16 @@ Each species changes colour when you feed it the listed items. Tick a species an
       exportInput.value = currentCode();
     });
 
-    var clearBtn = document.querySelector('[data-vp-clear]');
-    if (clearBtn) clearBtn.addEventListener('click', function () {
-      if (!window.confirm('Clear all ticks? This cannot be undone (export your code first if you want a backup).')) return;
-      applyBits(new Array(TOTAL).fill(0)); save();
-      if (details) details.removeAttribute('open');
+    // Bind every Clear trigger — the desktop FAB and the mobile navbar sub-nav
+    // both carry [data-vp-clear], so a single querySelector would miss one.
+    document.querySelectorAll('[data-vp-clear]').forEach(function (clearBtn) {
+      clearBtn.addEventListener('click', function () {
+        if (!window.confirm('Clear all ticks? This cannot be undone (export your code first if you want a backup).')) return;
+        applyBits(new Array(TOTAL).fill(0)); save();
+        closeLaunchers();
+      });
     });
-
-    document.addEventListener('click', function (e) { if (details && details.hasAttribute('open') && !details.contains(e.target)) details.removeAttribute('open'); });
-    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && details) details.removeAttribute('open'); });
+    // The FAB's own outside-click / Escape close is handled globally by
+    // ts/auxiliary-button.ts, so no per-page handler is needed here.
   })();
 </script>

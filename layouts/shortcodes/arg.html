@@ -40,11 +40,15 @@
     {{- with (trim . " \t") }}{{ if not $concl }}{{ $concl = . }}{{ end }}{{ end -}}
   {{- end -}}
 {{- end -}}
-<figure data-arg{{ with $kind }} data-arg-kind="{{ . }}"{{ end }} class="my-8 overflow-hidden rounded-2xl border border-border/70 bg-border/10">
+{{- /* Card matches the exercise widgets (.qz-card): full-opacity border + a 5%
+       muted wash that lets the warm page texture through. The background is an
+       inline literal (not interpolated) so it isn't a new Tailwind class needing
+       a rebuild, and isn't template-sanitized. */ -}}
+<figure data-arg{{ with $kind }} data-arg-kind="{{ . }}"{{ end }} class="my-8 overflow-hidden rounded-2xl border border-border" style="background-color: rgb(var(--c-muted) / 0.05);">
   {{- if or $title $kind }}
-  <figcaption class="flex items-center gap-2 border-b border-border/60 px-5 py-3 text-sm font-medium text-fg">
+  <figcaption class="flex items-center gap-2 border-b border-border px-5 py-3 text-sm font-medium text-fg">
     <span>{{ $title | default "Argument" }}</span>
-    {{- with $kind }}<span class="ml-auto rounded-full border border-border/70 px-2 py-0.5 font-mono text-[11px] uppercase tracking-wide text-muted">{{ . }}</span>{{ end }}
+    {{- with $kind }}<span class="ml-auto rounded-full border border-border px-2 py-0.5 font-mono text-[11px] uppercase tracking-wide text-muted">{{ . }}</span>{{ end }}
   </figcaption>
   {{- end }}
   <div class="px-5 py-4 text-base leading-relaxed [&_a]:text-fg [&_a]:underline [&_a]:decoration-border">
