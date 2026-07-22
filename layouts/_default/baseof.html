@@ -59,8 +59,11 @@
        file so the build never breaks. */}}
   {{- $noiseLight := partial "func/url.html" "/textures/noise.png" -}}
   {{- $noiseDark := partial "func/url.html" "/textures/noise-dark.png" -}}
-  {{- with resources.Get "textures/noise.png" }}{{ $noiseLight = (.Process "webp q70").RelPermalink }}{{ end -}}
-  {{- with resources.Get "textures/noise-dark.png" }}{{ $noiseDark = (.Process "webp q70").RelPermalink }}{{ end -}}
+  {{/* q45: this is a subtle, low-opacity grain overlay, so aggressive WebP
+       compression is invisible here but trims the transfer (PageSpeed flagged it
+       under "improve image delivery"). Bump the quality back up if banding shows. */}}
+  {{- with resources.Get "textures/noise.png" }}{{ $noiseLight = (.Process "webp q45").RelPermalink }}{{ end -}}
+  {{- with resources.Get "textures/noise-dark.png" }}{{ $noiseDark = (.Process "webp q45").RelPermalink }}{{ end -}}
 
   {{/* hx-boost upgrades internal links to AJAX body-swaps (SPA-like nav). */}}
   <body class="leading-relaxed" hx-boost="true" style="--noise-bg-light: url('{{ $noiseLight }}'); --noise-bg-dark: url('{{ $noiseDark }}')">

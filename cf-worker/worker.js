@@ -61,7 +61,14 @@ function cleanField(v, max) {
 }
 
 /**
- * Health probe for the widget's button gate. Returns { ok } with a 200/503 status.
+ * Health probe for the widget's button gate. Always returns HTTP 200; the
+ * up/down state is carried in the JSON body as { ok }. This is a status check
+ * ("is it raining or not?"), not an error — a down tunnel is an expected,
+ * routine state, so we must NOT surface it as a 5xx. A non-2xx here would make
+ * the browser log a failed-request console error on every page load (which
+ * Lighthouse "Best Practices" then flags), even though the widget handles the
+ * down state gracefully by hiding its button.
+ *
  * The boolean is edge-cached (~45s) so a burst of page loads doesn't fan out into
  * a burst of Ollama checks; the client also caches it (minutes). Cached under a
  * synthetic key without CORS headers, then re-wrapped with per-origin CORS.
@@ -84,10 +91,12 @@ async function handleHealth(request, env, origin) {
     });
     await cache.put(cacheKey, cached);
   }
-  // Short browser cache so it isn't flagged as "no cache lifetime"; well under
-  // the widget's localStorage TTLs, so it can't mask a recovery.
+  // Always 200 — the up/down state lives in the body, not the status code, so a
+  // down tunnel never logs a console error. Short browser cache so it isn't
+  // flagged as "no cache lifetime"; well under the widget's localStorage TTLs,
+  // so it can't mask a recovery.
   return new Response(JSON.stringify({ ok }), {
-    status: ok ? 200 : 503,
+    status: 200,
     headers: {
       'Content-Type': 'application/json',
       'Cache-Control': 'public, max-age=30',
