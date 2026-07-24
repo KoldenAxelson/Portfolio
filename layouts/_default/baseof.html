@@ -8,12 +8,17 @@
     {{/* Preload Inter only — it renders the LCP text. Mono isn't LCP-critical. */}}
     <link rel="preload" href="{{ partial "func/url.html" "/fonts/InterVariable.woff2" }}" as="font" type="font/woff2" crossorigin />
 
-    {{/* Pre-resolve DNS for the AI chat origin (a different subdomain) on pages
-         where the widget loads, so the deferred health check / first question
-         connects faster. dns-prefetch only — no held connection to flag as unused. */}}
+    {{/* Warm up the AI chat origin (a different subdomain) on pages where the
+         widget loads, so the deferred health check / first question connects
+         faster. preconnect opens the full DNS + TCP + TLS handshake up front;
+         dns-prefetch stays as a fallback for engines that ignore preconnect. The
+         widget's health check fires on every one of these pages, so the connection
+         gets used — no "unused preconnect" waste. crossorigin: the endpoint is hit
+         with an anonymous CORS fetch, so the preconnected socket matches and is reused. */}}
     {{- with site.Params.aiChatURL }}
     {{- if and (not (eq $.RelPermalink "/cv/")) (not (in $.RelPermalink "/misc")) }}
     {{- $o := urls.Parse . }}
+    <link rel="preconnect" href="{{ $o.Scheme }}://{{ $o.Host }}" crossorigin />
     <link rel="dns-prefetch" href="{{ $o.Scheme }}://{{ $o.Host }}" />
     {{- end }}
     {{- end }}

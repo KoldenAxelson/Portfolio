@@ -2,34 +2,34 @@
 title: 'How this site is built'
 description: "How this site is built and why: Node-free, static, ~$12/year on Cloudflare, and engineered for performance, supply-chain safety, and AI-readability."
 layout: 'colophon'
-updated: 2026-05-29
+updated: 2026-07-22
 # bar = our score as % "goodness"; avg/bad dots are Google's good + poor
 # thresholds mapped onto the same scale (pos %), shared across profiles.
 lighthouse:
-  captured: 2026-05-29
+  captured: 2026-07-22
   default: mobile
   profiles:
     - id: mobile
       label: Mobile
       icon: device-phone-mobile
-      link: 'https://pagespeed.web.dev/analysis/https-wrightfunctions-com/5obdgwcsv4?form_factor=mobile'
+      link: 'https://pagespeed.web.dev/analysis/https-wrightfunctions-com/7azseunfxm?form_factor=mobile'
       scores:
-        - { label: 'Performance', value: 97 }
+        - { label: 'Performance', value: 98 }
         - { label: 'Accessibility', value: 100 }
         - { label: 'Best Practices', value: 100 }
         - { label: 'SEO', value: 100 }
       vitals:
         - label: 'First Contentful Paint'
-          num: '1.2'
+          num: '1.7'
           unit: 's'
-          bar: 67
+          bar: 53
           avg: { pos: 50, label: 'Web average ≈ 1.8 s' }
           bad: { pos: 17, label: 'Poor > 3.0 s' }
           desc: 'How soon the first text or image shows up.'
         - label: 'Largest Contentful Paint'
-          num: '2.4'
+          num: '2.1'
           unit: 's'
-          bar: 50
+          bar: 56
           avg: { pos: 48, label: 'Web average ≈ 2.5 s' }
           bad: { pos: 17, label: 'Poor > 4.0 s' }
           desc: 'When the biggest element finishes loading.'
@@ -48,14 +48,14 @@ lighthouse:
           bad: { pos: 17, label: 'Poor > 0.25' }
           desc: 'How much the layout jumps around while loading.'
         - label: 'Speed Index'
-          num: '2.6'
+          num: '1.7'
           unit: 's'
-          bar: 63
+          bar: 76
           avg: { pos: 51, label: 'Web average ≈ 3.4 s' }
           bad: { pos: 17, label: 'Poor > 5.8 s' }
           desc: 'How fast the page looks visually finished.'
         - label: 'Transferred Assets'
-          num: '401'
+          num: '374'
           unit: 'KB'
           bar: 92
           avg: { pos: 54, label: 'Web average ≈ 2.2 MB' }
@@ -64,7 +64,7 @@ lighthouse:
     - id: desktop
       label: Desktop
       icon: desktop
-      link: 'https://pagespeed.web.dev/analysis/https-wrightfunctions-com/5obdgwcsv4?form_factor=desktop'
+      link: 'https://pagespeed.web.dev/analysis/https-wrightfunctions-com/7azseunfxm?form_factor=desktop'
       scores:
         - { label: 'Performance', value: 100 }
         - { label: 'Accessibility', value: 100 }
@@ -72,16 +72,16 @@ lighthouse:
         - { label: 'SEO', value: 100 }
       vitals:
         - label: 'First Contentful Paint'
-          num: '0.3'
+          num: '0.5'
           unit: 's'
-          bar: 92
+          bar: 86
           avg: { pos: 50, label: 'Web average ≈ 1.8 s' }
           bad: { pos: 17, label: 'Poor > 3.0 s' }
           desc: 'How soon the first text or image shows up.'
         - label: 'Largest Contentful Paint'
-          num: '0.8'
+          num: '0.7'
           unit: 's'
-          bar: 83
+          bar: 85
           avg: { pos: 48, label: 'Web average ≈ 2.5 s' }
           bad: { pos: 17, label: 'Poor > 4.0 s' }
           desc: 'When the biggest element finishes loading.'
@@ -107,7 +107,7 @@ lighthouse:
           bad: { pos: 17, label: 'Poor > 5.8 s' }
           desc: 'How fast the page looks visually finished.'
         - label: 'Transferred Assets'
-          num: '401'
+          num: '374'
           unit: 'KB'
           bar: 92
           avg: { pos: 54, label: 'Web average ≈ 2.2 MB' }
@@ -118,14 +118,14 @@ lighthouse:
     - id: global
       label: Worldwide
       icon: globe
-      link: 'https://lighthouse-metrics.com/lighthouse/checks/f511a37a-2cf7-48a2-95c2-fcb21c412b94'
+      link: 'https://lighthouse-metrics.com/lighthouse/checks/40514b19-4777-42c3-a471-49c35a6720c1'
       scores:
-        - { label: 'US West', value: 100 }
-        - { label: 'US East', value: 96 }
-        - { label: 'Finland', value: 100 }
-        - { label: 'Germany', value: 99 }
-        - { label: 'Japan', value: 100 }
-        - { label: 'Australia', value: 100 }
+        - { label: 'US West', value: 85 }
+        - { label: 'US East', value: 97 }
+        - { label: 'Finland', value: 94 }
+        - { label: 'Germany', value: 100 }
+        - { label: 'Japan', value: 87 }
+        - { label: 'Australia', value: 98 }
 decisions:
   - title: 'Node-free by design'
     body: >-
