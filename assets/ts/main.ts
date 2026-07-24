@@ -44,7 +44,25 @@ function ready(fn: () => void): void {
   }
 }
 
-ready(initPage);
+// On first load, get out of the way of the LCP paint. The above-the-fold content
+// (hero text, nav) is server-rendered HTML that needs no JS to be visible, so we
+// let the browser paint it before running the ten idempotent init()s — otherwise
+// they pile into one long main-thread task on the pre-LCP critical path and push
+// the Largest Contentful Paint out (Lighthouse: "render delay"). rAF waits for the
+// first paint; requestIdleCallback then runs init in the next idle gap (capped by
+// the timeout so it can't be starved). Falls back to a timeout where rIC is absent
+// (Safari). The hx-boost path below stays synchronous — LCP isn't measured on
+// boosted navigations, and we want handlers rebound the instant new content lands.
+function scheduleInit(fn: () => void): void {
+  const ric = window.requestIdleCallback;
+  if (ric) {
+    requestAnimationFrame(() => ric(fn, { timeout: 1500 }));
+  } else {
+    requestAnimationFrame(() => window.setTimeout(fn, 1));
+  }
+}
+
+ready(() => scheduleInit(initPage));
 
 // hx-boost swaps <body> without a reload; re-bind handlers to the new DOM, then
 // move focus to the new <main> so keyboard / screen-reader users land in the fresh
