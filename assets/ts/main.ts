@@ -10,6 +10,7 @@ import { initPerfMeters } from './perf-meters';
 import { initAiWidget } from './ai-widget';
 import { initAuxButton } from './auxiliary-button';
 import { initDefinitions } from './definitions';
+import { initQuotes } from './quotes';
 
 declare global {
   interface Window {
@@ -34,6 +35,7 @@ function initPage(): void {
   initAiWidget();
   initAuxButton();
   initDefinitions();
+  initQuotes();
 }
 
 function ready(fn: () => void): void {
