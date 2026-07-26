@@ -10,7 +10,7 @@ import { initPerfMeters } from './perf-meters';
 import { initAiWidget } from './ai-widget';
 import { initAuxButton } from './auxiliary-button';
 import { initDefinitions } from './definitions';
-import { initQuotes } from './quotes';
+import { initQuotes } from './quotes/index';
 
 declare global {
   interface Window {
