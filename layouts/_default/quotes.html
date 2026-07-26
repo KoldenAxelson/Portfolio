@@ -1,0 +1,442 @@
+{{- /*
+  quotes — the /quotes page. Reads its deck straight out of the Markdown body of
+  content/quotes.md (every list item is one quote), so adding a quote is a
+  one-line content edit with no template change.
+
+  Two stacked canvases. The lower one is WebGL and carries the smoke, which is a
+  real fluid simulation (ts/quotes-fluid.ts) — a column of dye rising off the
+  bottom edge, lit where it passes over the letterforms. The upper one is 2D and
+  carries the lattice: the quote rasterized and sampled on a grid, the same
+  technique as the Emil Kowalski card on /misc/web-dev-sites, drawn as cursor-shy
+  dots (ts/quotes.ts). The lattice also produces the mask the solver lights by,
+  so the two stay in step through a transition.
+
+  The checkbox row switches the layers on and off, and the stage is a button: a
+  click eases every lattice point across to the next quote.
+
+  Progressive enhancement: the parsed quotes are server-rendered as a real <ul>,
+  which is the content search engines, /llms.txt readers, and no-JS visitors get.
+  ts/quotes.ts then flags the section .is-live, which swaps the list for the
+  canvas and keeps the list in the accessibility tree (sr-only) so screen readers
+  get all of it at once instead of a moving target.
+
+  Component CSS lives inline here rather than in app.css — the served bundle is
+  pre-compiled, so new classes wouldn't survive a build without a CSS rebuild
+  (same reasoning as page-banner.html / topnav.html).
+*/ -}}
+
+{{ define "banner" }}
+{{ partial "page-banner.html" (dict
+  "title" "Inspirational Quotes"
+  "subtitle" (.Params.lead | default "")) }}
+{{ end }}
+
+{{ define "main" }}
+{{- /* Parse the body: keep "- " / "* " list items, drop the leading marker and
+       any wrapping quote marks (straight or curly), then render inline Markdown
+       so *emphasis* and [links](/) work inside a quote. The canvas draws plain
+       text, so that formatting shows in the list below, not in the dot field. */ -}}
+{{- $quotes := slice -}}
+{{- range (split .RawContent "\n") -}}
+  {{- $line := trim . " \t\r" -}}
+  {{- if or (hasPrefix $line "- ") (hasPrefix $line "* ") -}}
+    {{- $text := trim (substr $line 2) " \"“”" -}}
+    {{- with $text }}{{ $quotes = $quotes | append ($.RenderString .) }}{{ end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- with .Params.updated }}
+<p class="mb-6 font-mono text-xs text-muted">
+  Last updated {{ partial "formatted-date.html" (dict "date" .) }}. {{ len $quotes }} in the deck.
+</p>
+{{- end }}
+
+<style>
+  /* Dot field — hidden until ts/quotes.ts marks the section live, so the no-JS
+     view isn't left with a tall empty box above the list. */
+  .quotes__viewport {
+    display: none;
+  }
+  /* The box tracks the width, because the width is what caps the type size: a
+     long unbreakable word ("Procrastination") sets the font, and a fixed tall
+     box would then strand the text in a sea of empty canvas on a phone. 52vw
+     approximates the height four lines want at that size; the vh term keeps a
+     short landscape window from overflowing. */
+  .quotes.is-live .quotes__viewport {
+    display: block;
+    position: relative;
+    height: min(56vh, clamp(11rem, 52vw, 26rem));
+    margin: 0.5rem 0 1rem;
+  }
+  .quotes__canvas,
+  .quotes__fluid {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+  }
+  /* font-* and color are read back by ts/quotes.ts (getComputedStyle) for the
+     offscreen type-setting, the dot fill and the smoke colour, so the stylesheet
+     stays the single source of truth — including the dark-mode palette swap. */
+  .quotes__canvas {
+    font-family: inherit;
+    font-weight: 700;
+    color: rgb(var(--c-fg));
+  }
+  .quotes__fluid {
+    transition: opacity 0.4s ease;
+  }
+  .quotes__defs {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+  }
+  /* The stage is the click target, sitting over the canvas rather than being it:
+     a real <button> brings keyboard access and an accessible name for free,
+     which a bare canvas can't. Pointer events land here, so the canvas stays
+     inert. */
+  .quotes__stage {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    background: none;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+    border-radius: 0.75rem;
+  }
+  .quotes__stage:focus-visible {
+    outline: 2px solid rgb(var(--c-accent));
+    outline-offset: 4px;
+  }
+
+  .quotes__controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    margin-top: 0.75rem;
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgb(var(--c-muted));
+  }
+  .quotes__controls label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    cursor: pointer;
+    transition: color 0.15s ease;
+  }
+  .quotes__controls label:hover {
+    color: rgb(var(--c-fg));
+  }
+  .quotes__tuner {
+    margin-top: 1rem;
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.68rem;
+    color: rgb(var(--c-muted));
+  }
+  .quotes__tuner > summary {
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    list-style: none;
+  }
+  .quotes__tuner > summary::-webkit-details-marker {
+    display: none;
+  }
+  .quotes__tuner > summary::before {
+    content: '+ ';
+  }
+  .quotes__tuner[open] > summary::before {
+    content: '− ';
+  }
+  .quotes__tuner > summary:hover {
+    color: rgb(var(--c-fg));
+  }
+  .quotes__tunegroup {
+    margin-top: 1rem;
+  }
+  .quotes__tunegroup h3 {
+    margin: 0 0 0.4rem;
+    font-size: 0.62rem;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: rgb(var(--c-fg));
+    opacity: 0.55;
+  }
+  .quotes__knob {
+    display: grid;
+    grid-template-columns: minmax(9rem, 14rem) 4.5rem 1fr;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.18rem 0;
+  }
+  .quotes__knobvalue {
+    text-align: right;
+    color: rgb(var(--c-accent));
+  }
+  .quotes__knob input[type='range'] {
+    width: 100%;
+    accent-color: rgb(var(--c-accent));
+    cursor: ew-resize;
+  }
+  .quotes__knob select {
+    font: inherit;
+    color: rgb(var(--c-fg));
+    background: none;
+    border: 1px solid rgb(var(--c-border));
+    border-radius: 0.3rem;
+    padding: 0.15rem 0.3rem;
+    cursor: pointer;
+  }
+  .quotes__tuneactions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  .quotes__button,
+  .quotes__tuneactions button {
+    font: inherit;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgb(var(--c-muted));
+    background: none;
+    border: 1px solid rgb(var(--c-border));
+    border-radius: 0.35rem;
+    padding: 0.3rem 0.7rem;
+    cursor: pointer;
+  }
+  .quotes__button:hover,
+  .quotes__tuneactions button:hover {
+    color: rgb(var(--c-fg));
+    border-color: rgb(var(--c-accent));
+  }
+  @media (max-width: 640px) {
+    .quotes__knob {
+      grid-template-columns: 1fr 4rem;
+    }
+    .quotes__knob input[type='range'] {
+      grid-column: 1 / -1;
+    }
+  }
+
+  /* Set when the solver can't start — no WebGL2, or no float render targets. */
+  .quotes__controls label.is-off {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .quotes__controls input {
+    width: 0.9rem;
+    height: 0.9rem;
+    margin: 0;
+    accent-color: rgb(var(--c-accent));
+    cursor: pointer;
+  }
+
+  .quotes .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Fullscreen. Everything that isn't the quote goes away — heading, switches,
+     tuning drawer — and the viewport takes the whole screen. The only surviving
+     control is the X, which exists solely for this state (Esc still works, but
+     a presentation shouldn't require knowing that). The backdrop needs painting
+     explicitly or light mode opens onto the UA's black. */
+  .quotes:fullscreen {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    padding: 1.5rem 2rem;
+    background: rgb(var(--c-bg));
+  }
+  .quotes:fullscreen::backdrop {
+    background: rgb(var(--c-bg));
+  }
+  .quotes:fullscreen > h2,
+  .quotes:fullscreen .quotes__controls,
+  .quotes:fullscreen .quotes__tuner {
+    display: none;
+  }
+  .quotes:fullscreen .quotes__viewport {
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 0;
+    margin: 0;
+  }
+
+  /* The exit affordance. display:none outside fullscreen rather than an [hidden]
+     the JS has to remember to flip — the selector is the state, so Esc, F11 and
+     the button all leave it correct with nothing to sync. */
+  .quotes__exit {
+    display: none;
+  }
+  .quotes:fullscreen .quotes__exit {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: rgb(var(--c-muted));
+    cursor: pointer;
+    opacity: 0.45;
+    transition: opacity 0.15s ease, color 0.15s ease;
+  }
+  .quotes:fullscreen .quotes__exit:hover,
+  .quotes:fullscreen .quotes__exit:focus-visible {
+    opacity: 1;
+    color: rgb(var(--c-fg));
+  }
+  .quotes:fullscreen .quotes__exit:focus-visible {
+    outline: 2px solid rgb(var(--c-accent));
+    outline-offset: 2px;
+  }
+  .quotes__exit svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  /* Full deck. Without JS this is the page; with JS it stays in the a11y tree
+     but leaves the visual layout (sr-only), so assistive tech gets every quote
+     at once rather than chasing a timer. */
+  .quotes__source {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 2rem;
+    text-align: center;
+  }
+  .quotes__source li {
+    font-size: clamp(1.4rem, 4vw, 2rem);
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+    color: rgb(var(--c-fg));
+  }
+  .quotes__source em {
+    font-style: normal;
+    color: rgb(var(--c-accent));
+  }
+  .quotes.is-live .quotes__source {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>
+
+{{- with $quotes }}
+{{/* The auto-advance dwell is a knob now (see KNOBS in ts/quotes.ts), not an
+     attribute here — one place to set it, and it's adjustable from the panel. */}}
+{{/* The solver is a page-scoped runtime — no reason for the rest of the site to
+     carry a fluid simulation in the shared bundle. It isn't loaded from <head>,
+     though: hx-boost swaps only <body>, so a head script never arrives when you
+     reach this page from another one. ts/quotes.ts injects it instead, once the
+     lattice is up and there's a mask for it to read. */}}
+{{ $opts := dict "minify" true "target" "es2018" "format" "iife" }}
+{{ $fluid := resources.Get "ts/quotes-fluid.ts" | js.Build $opts | fingerprint }}
+<section class="quotes" data-quotes
+  data-quotes-solver="{{ $fluid.RelPermalink }}"
+  data-quotes-solver-integrity="{{ $fluid.Data.Integrity }}"
+  aria-labelledby="quotes-heading">
+  <h2 id="quotes-heading" class="mb-4 font-mono text-xs uppercase tracking-widest text-muted">The deck</h2>
+
+  {{/* The goo filter. Blur, then a steep curve on the alpha channel: overlapping
+       blurred dots clear the threshold together and read as one solid stroke,
+       an isolated one clears it alone and stays a dot. The alpha-matrix form is
+       the one that works over a transparent canvas — the CSS contrast() version
+       of this trick needs an opaque backdrop. Values are set from the knobs by
+       ts/quotes.ts. */}}
+  <svg class="quotes__defs" aria-hidden="true" focusable="false">
+    <filter id="quotes-goo">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
+      <feColorMatrix in="blur" type="matrix"
+        values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8.1" />
+    </filter>
+  </svg>
+
+  {{/* Only ever visible in fullscreen (see .quotes__exit above). Kept in the
+       markup rather than created by JS so it inherits the page's styles and
+       needs no cleanup on an hx-boost swap. */}}
+  <button type="button" class="quotes__exit" data-quotes-exit>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+      <path d="M6 6l12 12M18 6L6 18" />
+    </svg>
+    <span class="sr-only">Exit fullscreen</span>
+  </button>
+
+  <div class="quotes__viewport">
+    {{/* aria-hidden: the particles are a rendering of the list below —
+         announcing each rearrangement would interrupt a screen reader
+         mid-sentence. The button above it carries the interaction. */}}
+    <canvas class="quotes__fluid" data-quotes-fluid aria-hidden="true"></canvas>
+    <canvas class="quotes__canvas" data-quotes-canvas aria-hidden="true"></canvas>
+    <button type="button" class="quotes__stage" data-quotes-advance>
+      <span class="sr-only">Show the next quote</span>
+    </button>
+  </div>
+
+  {{/* Feature switches, read live by ts/quotes.ts via [data-quotes-toggle].
+       Checked here = the default state on load. */}}
+  <div class="quotes__controls">
+    <label><input type="checkbox" data-quotes-toggle="smoke" checked> Smoke</label>
+    <label><input type="checkbox" data-quotes-toggle="dots"> Dots</label>
+    <label><input type="checkbox" data-quotes-toggle="merge"> Merge</label>
+    <label><input type="checkbox" data-quotes-toggle="cursor" checked> Cursor</label>
+    <label><input type="checkbox" data-quotes-toggle="auto"> Auto-advance</label>
+    <button type="button" class="quotes__button" data-quotes-fullscreen aria-pressed="false">Fullscreen</button>
+  </div>
+
+  {{/* Tuning panel. Empty here on purpose — ts/quotes.ts generates the sliders
+       from its KNOBS table so the markup and the defaults can't drift apart.
+       Collapsed by default, and it only renders once the lattice is up, so a
+       reader who never opens it sees a single line of small print. */}}
+  <details class="quotes__tuner">
+    <summary>Tuning</summary>
+    <div data-quotes-tuner></div>
+  </details>
+
+  <ul class="quotes__source" data-quotes-source>
+    {{- range . }}
+    <li>{{ . }}</li>
+    {{- end }}
+  </ul>
+</section>
+{{- else }}
+<p class="text-muted">No quotes yet — add a list item to <code>content/quotes.md</code>.</p>
+{{- end }}
+{{ end }}
