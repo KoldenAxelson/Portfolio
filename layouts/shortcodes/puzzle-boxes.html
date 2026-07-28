@@ -1,0 +1,53 @@
+{{- /*
+  puzzle-boxes — two boxes side by side, no board, no solver, no script.
+
+    {{< puzzle-boxes >}}
+    {{< puzzle-boxes boxes="fathers,officers" >}}
+
+  Blocks the box holds more than one of are drawn solid. That is the entire
+  point of the comparison: one box is speckled with duplicates, the other has
+  none at all, and the difference is what makes one solvable.
+*/ -}}
+{{- $keys := split (.Get "boxes" | default "fathers,officers") "," -}}
+<div class="pz pz-boxes not-prose">
+  <p class="pz-cap">
+    {{ partial "func/svg-icon.html" (dict "name" "puzzle-piece" "class" "h-5 w-5 shrink-0 text-accent") }}
+    <span>{{ .Get "title" | default "Duplicates, and none" }}</span>
+  </p>
+  <div class="pz-body">
+    <div class="pz-boxes-pair">
+      {{- range $keys }}
+      {{- $box := index site.Data.puzzle.boxes (trim . " ") }}
+      {{- if $box }}
+      {{/* distinct (number, color) kinds = distinct numbers within each color */}}
+      {{- $kinds := 0 }}
+      {{- range $box.blocks }}{{ $kinds = add $kinds (len (uniq .)) }}{{ end }}
+      <figure class="pz-boxes-one">
+        <ul class="pz-tray-rows" aria-label="{{ $box.label }}">
+          {{- range $ci, $row := $box.blocks }}
+          {{- $color := index $box.palette $ci }}
+          {{/* How many of each number this color carries, tallied once per row
+               rather than recounted inside the loop that prints the blocks. */}}
+          {{- $tally := dict }}
+          {{- range $n := $row }}{{ $tally = merge $tally (dict (printf "%v" $n) (add (index $tally (printf "%v" $n) | default 0) 1)) }}{{ end }}
+          <li class="pz-tray-row" data-color="{{ $color }}">
+            {{- range $n := $row }}
+            {{- $count := index $tally (printf "%v" $n) }}
+            <span class="pz-block" data-color="{{ $color }}"
+                  {{ if gt $count 1 }}data-dupe{{ end }}
+                  aria-label="{{ $n }} {{ $color }}{{ if gt $count 1 }}, one of {{ $count }}{{ end }}">{{ $n }}</span>
+            {{- end }}
+          </li>
+          {{- end }}
+        </ul>
+        <figcaption class="pz-boxes-label">
+          <span>{{ $box.label }}</span>
+          <span class="pz-boxes-kinds">{{ $kinds }} kinds</span>
+        </figcaption>
+      </figure>
+      {{- end }}
+      {{- end }}
+    </div>
+  </div>
+</div>
+{{- partial "puzzle-assets.html" (dict "page" .Page "styleOnly" true) -}}

@@ -1,0 +1,44 @@
+{{- /*
+  puzzle-build — the same solved board, laid down one color at a time.
+
+    {{< puzzle-build >}}
+
+  No solver: the board is the precomputed solution, revealed in stages. Order is
+  derived in the bundle (fewest distinct numbers first), not set here.
+*/ -}}
+{{- $key := .Get "box" | default "fathers" -}}
+{{- $box := index site.Data.puzzle.boxes $key -}}
+{{- if not (and $box $box.solution) -}}
+<p><em>puzzle-build: box “{{ $key }}” needs a `solution` in data/puzzle/boxes.yaml.</em></p>
+{{- else -}}
+<div class="pz not-prose" data-puzzle-build>
+  <script type="application/json" data-puzzle-box>{{ $box | jsonify | safeJS }}</script>
+
+  <p class="pz-cap">
+    {{ partial "func/svg-icon.html" (dict "name" "puzzle-piece" "class" "h-5 w-5 shrink-0 text-accent") }}
+    <span>{{ .Get "title" | default "One color at a time" }}</span>
+    <span class="pz-cap-controls" data-build-controls hidden>
+      <span class="pz-chip-tag" data-build-step>0 / 6</span>
+      <button type="button" class="pz-step" data-build-action="prev" aria-label="Take the last color back">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true"
+             stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14.5 6.5L9 12l5.5 5.5" />
+        </svg>
+      </button>
+      <button type="button" class="pz-step" data-build-action="next" aria-label="Lay down the next color">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true"
+             stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9.5 6.5L15 12l-5.5 5.5" />
+        </svg>
+      </button>
+    </span>
+  </p>
+
+  <div class="pz-body">
+    {{ partial "puzzle-board.html" (dict "label" (printf "%s board, 6 by 6" $box.label)) }}
+
+    {{ partial "puzzle-tray.html" (dict "box" $box) }}
+  </div>
+</div>
+{{- partial "puzzle-assets.html" .Page -}}
+{{- end -}}

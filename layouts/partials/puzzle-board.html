@@ -1,0 +1,24 @@
+{{- /* The 6x6 grid, server-rendered so the page is complete before any script.
+
+       {{ partial "puzzle-board.html" (dict "label" "…" "interactive" true) }}
+
+       interactive — squares are focusable and announce a pressed state. Set it
+                     for widgets a reader can click into (solver, swap); leave it
+                     off for ones that only play back (build, mirror), where a
+                     tab stop on every square is 36 stops to nothing.
+       label       — the grid's accessible name.
+
+       Emitted from one partial because four shortcodes want the same 36 squares
+       and the copies had already drifted apart in their aria attributes. */ -}}
+{{- $interactive := .interactive | default false -}}
+<div class="pz-board" role="grid" aria-label="{{ .label | default "Puzzle board, 6 by 6" }}">
+  {{- range $row := seq 0 5 }}
+  <div class="pz-row" role="row">
+    {{- range $col := seq 0 5 }}
+    <div class="pz-cell" role="gridcell"
+         {{ if $interactive }}tabindex="0" aria-pressed="false" {{ end }}data-cell="{{ add (mul $row 6) $col }}"
+         aria-label="Row {{ add $row 1 }}, column {{ add $col 1 }}{{ if $interactive }}: empty{{ end }}"></div>
+    {{- end }}
+  </div>
+  {{- end }}
+</div>

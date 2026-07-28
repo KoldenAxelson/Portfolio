@@ -1,0 +1,54 @@
+# The physical boxes the solver widget can be pointed at.
+#
+# `blocks` lists the numbers printed on the six blocks of each color, indexed
+# to match `palette`. This file is the single source of truth: the shortcode
+# renders the tray from it and embeds it as JSON for the browser bundle, so the
+# markup a reader sees and the data the solver works from cannot drift apart.
+
+fathers:
+  label: "Father's puzzle"
+  note: "A wooden set bought secondhand in the 1930s. Six blocks of each color; every number appears six times."
+  palette: [orange, blue, green, red, yellow, purple]
+  blocks:
+    - [1, 1, 3, 3, 6, 6] # orange
+    - [1, 1, 2, 4, 4, 5] # blue
+    - [1, 4, 5, 5, 5, 6] # green
+    - [1, 2, 3, 5, 6, 6] # red
+    - [2, 2, 2, 3, 4, 6] # yellow
+    - [2, 3, 3, 4, 4, 5] # purple
+  # The box maps onto itself under this relabelling: swap these colors, swap
+  # these numbers, and every block lands on a block the box already has. Each
+  # list is indexed by the source — colors by palette position, numbers by value.
+  # Verified: it is an involution, and it pairs the 204 solutions into 102.
+  mirror:
+    colors: [orange, purple, yellow, red, green, blue]
+    numbers: [3, 5, 1, 4, 2, 6]
+
+  # A worked solution, precomputed so the swap demo needs no solver at all.
+  # Canonical form: the first row and the first column both read 1-6.
+  solution:
+    - "1 orange, 2 yellow, 3 red, 4 purple, 5 blue, 6 green"
+    - "2 red, 5 purple, 6 orange, 3 yellow, 4 green, 1 blue"
+    - "3 purple, 1 green, 4 yellow, 2 blue, 6 orange, 5 red"
+    - "4 blue, 6 red, 5 green, 1 orange, 3 purple, 2 yellow"
+    - "5 green, 3 orange, 1 blue, 6 red, 2 yellow, 4 purple"
+    - "6 yellow, 4 blue, 2 purple, 5 green, 1 red, 3 orange"
+
+# Euler's 36 officers: one block of every number/color combination. It passes
+# every counting test and Tarry proved in 1900 that it has no solution.
+#
+# CAUTION: do not hand this to the solver widget expecting an answer. Proving it
+# impossible means exhausting the whole search, which takes far longer than a
+# reader will wait — the widget would appear to hang. Use it for the tray and
+# the prose, not for a Solve button.
+officers:
+  label: "Euler's 36 officers"
+  note: "One block of every combination. No arrangement exists — proved by Tarry in 1900."
+  palette: [orange, blue, green, red, yellow, purple]
+  blocks:
+    - [1, 2, 3, 4, 5, 6]
+    - [1, 2, 3, 4, 5, 6]
+    - [1, 2, 3, 4, 5, 6]
+    - [1, 2, 3, 4, 5, 6]
+    - [1, 2, 3, 4, 5, 6]
+    - [1, 2, 3, 4, 5, 6]

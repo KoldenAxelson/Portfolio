@@ -1,3 +1,21 @@
+{{/* Misc — single page.
+
+     Two body treatments, chosen per page by front matter:
+
+       (default)     the original short-note styling. Tailwind's reset leaves
+                     headings at body size, which is fine for a page that is a
+                     few paragraphs or hand-written HTML (viva-pinata-tip,
+                     web-dev-sites) and wrong for anything long-form.
+
+       prose: true   Tailwind Typography, already remapped to the site's --c-*
+                     tokens in assets/css/base.css and used the same way by
+                     layouts/articles/single.html. Gives headings, tables, code
+                     blocks and lists their weight for free.
+
+     Opt-in rather than a new default so existing misc pages render exactly as
+     they did. Interactive widgets embedded in a prose page must carry
+     `not-prose` on their root, or Typography restyles their lists and tables —
+     the puzzle-solver shortcode does. */}}
 {{ define "banner" }}
 {{ partial "page-banner.html" (dict
   "title" .Title
@@ -11,7 +29,13 @@
 </p>
 {{- end }}
 
+{{- if .Params.prose }}
+<article class="prose prose-lg max-w-none">
+  {{ .Content }}
+</article>
+{{- else }}
 <article class="space-y-4 text-base leading-relaxed text-muted [&_a]:text-fg [&_a]:underline [&_a]:decoration-border hover:[&_a]:!text-accent">
   {{ .Content }}
 </article>
+{{- end }}
 {{ end }}
