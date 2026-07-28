@@ -1,0 +1,17 @@
+{{- /*
+  puzzle-blocks — one line of blocks, drawn the same way as the box draws them.
+
+    {{< puzzle-blocks blocks="1 orange, 2 blue, 4 green, 3 red, 6 yellow, 5 purple" >}}
+
+  Static. Use it to show a single row of blocks in the body text.
+*/ -}}
+<ul class="pz pz-strip not-prose" aria-label="{{ .Get "label" | default "A row of blocks" }}">
+  {{- range split (.Get "blocks") "," }}
+  {{- $parts := split (trim . " ") " " }}
+  {{- if eq (len $parts) 2 }}
+  <li class="pz-block" data-color="{{ index $parts 1 }}"
+      aria-label="{{ index $parts 0 }} {{ index $parts 1 }}">{{ index $parts 0 }}</li>
+  {{- end }}
+  {{- end }}
+</ul>
+{{- partial "puzzle-assets.html" (dict "page" .Page "styleOnly" true) -}}

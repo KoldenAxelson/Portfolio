@@ -1,0 +1,368 @@
+/* puzzle — the block-puzzle solver widget.
+ *
+ * Chrome follows the same shape as quiz-kit (card, caption, controls) but this
+ * widget lives outside the Basic Logic series, so it carries its own rules.
+ * Everything structural comes from the site's --c-* tokens; only the six block
+ * colors are new, and they are defined twice — a darker set for the warm-white
+ * page and a lighter set for the dark one — so both stay legible against the
+ * background they sit on.
+ */
+
+.pz {
+  --pz-orange: 194 65 12;
+  --pz-blue: 29 78 216;
+  --pz-green: 21 128 61;
+  --pz-red: 185 28 28;
+  --pz-yellow: 161 98 7;
+  --pz-purple: 126 34 206;
+
+  border: 1px solid rgb(var(--c-border));
+  background: rgb(var(--c-muted) / 0.05);
+  border-radius: 16px;
+  overflow: hidden;
+  color: rgb(var(--c-fg));
+  line-height: 1.6;
+}
+.pz * { box-sizing: border-box; }
+
+@media (prefers-color-scheme: dark) {
+  .pz {
+    --pz-orange: 251 146 60;
+    --pz-blue: 96 165 250;
+    --pz-green: 74 222 128;
+    --pz-red: 248 113 113;
+    --pz-yellow: 250 204 21;
+    --pz-purple: 192 132 252;
+  }
+}
+
+.pz-cap {
+  display: flex; align-items: center; gap: 8px;
+  border-bottom: 1px solid rgb(var(--c-border));
+  padding: 12px 20px;
+  font-size: .9rem; font-weight: 600;
+}
+.pz-chip-tag {
+  margin-left: auto;
+  border: 1px solid rgb(var(--c-border)); border-radius: 999px;
+  padding: 2px 8px;
+  font: 600 11px var(--font-mono, ui-monospace, monospace);
+  letter-spacing: .05em; text-transform: uppercase;
+  color: rgb(var(--c-muted));
+}
+.pz-body { padding: 20px; }
+
+
+/* ── Tray: the box the blocks come out of ──────────────────────────────── */
+
+/* Sits under the board and reads as a recess — a darker well with an inset
+   shadow — so it looks like the compartment the blocks lift out of rather than
+   a second grid competing with the board. The colors name themselves, so the
+   rows carry no labels. */
+.pz-tray {
+  max-width: 26rem;
+  margin: 22px auto 0;
+  padding: 14px 12px;
+  border: 1px solid rgb(var(--c-border));
+  border-radius: 12px;
+  background: rgb(var(--c-muted) / .11);
+  box-shadow: inset 0 2px 5px rgb(0 0 0 / .07), inset 0 0 0 1px rgb(0 0 0 / .02);
+}
+/* Must come after the rule above, not up with the other dark tokens: same
+   specificity, so source order decides the winner. */
+@media (prefers-color-scheme: dark) {
+  .pz-tray {
+    background: rgb(0 0 0 / .28);
+    box-shadow: inset 0 2px 6px rgb(0 0 0 / .5);
+  }
+}
+.pz-tray-rows { margin: 0; padding: 0; list-style: none; display: grid; gap: 5px; }
+.pz-tray-row { display: flex; align-items: center; justify-content: center; gap: 5px; }
+.pz-block {
+  flex: 0 0 auto;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 1.85rem; height: 1.85rem; border-radius: 6px;
+  border: 1px solid rgb(var(--pz) / .45); background: rgb(var(--pz) / .12);
+  color: rgb(var(--pz));
+  font: 600 .88rem/1 var(--font-sans, Inter, sans-serif);
+  font-variant-numeric: tabular-nums;
+  transition: opacity .18s ease, filter .18s ease;
+}
+/* Placed blocks stay exactly where they were — only their weight changes, so
+   the eye can follow one block leaving the box instead of re-reading the row. */
+.pz-block[data-placed] { opacity: .18; filter: grayscale(1); }
+
+@media (max-width: 30rem) {
+  .pz-tray { padding: 11px 8px; }
+  .pz-block { width: 1.6rem; height: 1.6rem; font-size: .8rem; }
+}
+
+/* ── Board ─────────────────────────────────────────────────────────────── */
+
+.pz-board { display: grid; gap: 6px; max-width: 26rem; margin: 0 auto; }
+.pz-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+
+.pz-cell {
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  aspect-ratio: 1;
+  border: 1px solid rgb(var(--c-border));
+  border-radius: 8px;
+  background: rgb(var(--c-muted) / .04);
+  font-variant-numeric: tabular-nums;
+  transition: background-color .18s ease, border-color .18s ease;
+}
+.pz-num { font: 600 clamp(1.05rem, 3.8vw, 1.45rem)/1 var(--font-sans, Inter, sans-serif); }
+
+/* The block itself carries the color: tinted fill, matching border, matching
+   numeral — on the board and in the tray alike. */
+.pz [data-color='orange'] { --pz: var(--pz-orange); }
+.pz [data-color='blue']   { --pz: var(--pz-blue); }
+.pz [data-color='green']  { --pz: var(--pz-green); }
+.pz [data-color='red']    { --pz: var(--pz-red); }
+.pz [data-color='yellow'] { --pz: var(--pz-yellow); }
+.pz [data-color='purple'] { --pz: var(--pz-purple); }
+
+.pz-cell[data-color] { border-color: rgb(var(--pz) / .45); background: rgb(var(--pz) / .12); color: rgb(var(--pz)); }
+
+@keyframes pz-pop { from { transform: scale(.86); } to { transform: scale(1); } }
+.pz-cell.is-changed { animation: pz-pop .18s ease-out; }
+
+/* ── Controls ──────────────────────────────────────────────────────────── */
+
+/* .pz-btn is the plain text button; the swap explorer's "Mirror" is the only
+   one left. Everything else in the caption bar is a .pz-icon disc. */
+.pz-btn {
+  border: 1px solid rgb(var(--c-border)); border-radius: 10px;
+  background: transparent; color: rgb(var(--c-fg));
+  padding: 8px 16px; font: inherit; font-weight: 500; cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+.pz-btn:hover { border-color: rgb(var(--c-accent)); }
+
+/* ── Status ────────────────────────────────────────────────────────────── */
+
+/* The visible readout is the placement counter alone; the sentence that used to
+   sit beside it is now .pz-sr-only and reaches screen readers only. */
+.pz-stats {
+  margin: 0;
+  font: 400 .78rem var(--font-mono, ui-monospace, monospace);
+  color: rgb(var(--c-muted));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pz-cell { transition: none; }
+  .pz-cell.is-changed { animation: none; }
+  .pz-block { transition: none; }
+}
+
+/* ── Swap explorer ─────────────────────────────────────────────────────────
+   A solved board with clickable row and column handles, and selectable squares.
+   No tray, no prose, no controls beyond reset — the verdict is a single tick or
+   cross, so nothing competes with the board. */
+
+.pz-swap-grid {
+  display: grid;
+  grid-template-columns: 1.6rem minmax(0, 26rem);
+  grid-template-rows: 1.6rem auto;
+  gap: 6px;
+  justify-content: center;
+}
+.pz-swap-corner { grid-column: 1; grid-row: 1; }
+.pz-swap-cols { grid-column: 2; grid-row: 1; display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+.pz-swap-rows { grid-column: 1; grid-row: 2; display: grid; grid-template-rows: repeat(6, 1fr); gap: 6px; }
+/* Scoped to .pz-swap-grid, not .pz-swapper. The mirror widget is a .pz-swapper
+   with no handles and so no swap-grid: dropping the board's `margin: 0 auto`
+   there left it hanging off-centre in .pz-body. */
+.pz-swap-grid .pz-board { grid-column: 2; grid-row: 2; margin: 0; }
+
+.pz-handle {
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid rgb(var(--c-border)); border-radius: 6px;
+  background: transparent; color: rgb(var(--c-muted));
+  font: 500 .78rem/1 var(--font-mono, ui-monospace, monospace);
+  cursor: pointer; padding: 0;
+  transition: border-color .15s, background .15s, color .15s;
+}
+.pz-handle:hover { border-color: rgb(var(--c-accent)); color: rgb(var(--c-fg)); }
+.pz-handle[data-armed] {
+  border-color: rgb(var(--c-accent));
+  background: rgb(var(--c-accent) / .16);
+  color: rgb(var(--c-accent));
+}
+
+/* Selected square — same treatment as an armed handle, drawn over whatever
+   color the block already carries. */
+.pz-cell[data-armed] {
+  outline: 2px solid rgb(var(--c-accent));
+  outline-offset: 1px;
+}
+.pz-swapper .pz-cell, [data-puzzle-solver] .pz-cell,
+[data-puzzle-solver] .pz-block:not([data-placed]) { cursor: pointer; }
+[data-puzzle-solver] .pz-block[data-placed] { cursor: default; }
+.pz-block[data-armed] { outline: 2px solid rgb(var(--c-accent)); outline-offset: 1px; }
+[data-puzzle-solver] .pz-cell:focus-visible,
+[data-puzzle-solver] .pz-block:focus-visible { outline: 2px solid rgb(var(--c-accent)); outline-offset: 1px; }
+
+/* Squares taking part in a repeat. A ring drawn outside the block's own border,
+   so it reads as an annotation rather than recoloring the block — and it uses
+   box-shadow while selection uses outline, so a square can show both at once. */
+.pz-cell[data-conflict] { box-shadow: 0 0 0 2px #dc2626; }
+@media (prefers-color-scheme: dark) {
+  .pz-cell[data-conflict] { box-shadow: 0 0 0 2px #f87171; }
+}
+.pz-swapper .pz-cell:focus-visible { outline: 2px solid rgb(var(--c-accent)); outline-offset: 1px; }
+
+/* Verdict and reset, one control, sitting where the caption's chip used to.
+   Order matters below: the hover rules carry the same specificity as the
+   state rules, so they only win by coming last. */
+.pz-cap-controls { margin-left: auto; display: inline-flex; align-items: center; gap: 10px; }
+.pz-cap-controls[hidden] { display: none; }
+.pz-btn-sm { padding: 4px 11px; font-size: .82rem; border-radius: 8px; }
+
+/* Circle-and-glyph buttons, same footprint as the verdict so the caption row
+   stays a tidy line of discs however the set changes. */
+.pz-icon {
+  display: none;
+  align-items: center; justify-content: center;
+  border: 0; background: transparent; padding: 0; line-height: 0;
+  cursor: pointer; border-radius: 999px;
+}
+.pz-icon svg { display: block; }
+.pz-icon:focus-visible { outline: 2px solid rgb(var(--c-accent)); outline-offset: 2px; }
+.pz-icon-solve { color: #2563eb; }
+.pz-icon-watch { color: #7c3aed; }
+.pz-icon-toggle { color: rgb(var(--c-muted)); }
+[data-puzzle-solver][data-mode='solve'] .pz-icon-toggle { color: #2563eb; }
+[data-puzzle-solver][data-mode='watch'] .pz-icon-toggle { color: #7c3aed; }
+.pz-icon .pz-play { display: none; }
+
+@media (prefers-color-scheme: dark) {
+  .pz-icon-solve { color: #60a5fa; }
+  .pz-icon-watch { color: #c084fc; }
+  [data-puzzle-solver][data-mode='solve'] .pz-icon-toggle { color: #60a5fa; }
+  [data-puzzle-solver][data-mode='watch'] .pz-icon-toggle { color: #c084fc; }
+}
+
+/* Which controls exist right now. Scoped to the solver so the swap and mirror
+   widgets, which carry no phase, keep their verdict button.
+
+   Watch and Solve appear on a blank board only. Once a block is down the board
+   is the reader's, and the offer to take it over goes away; the indicator, which
+   doubles as the reset, is what brings the two buttons back. */
+[data-puzzle-solver] .pz-verdict { display: none; }
+[data-puzzle-solver][data-phase='empty'] .pz-icon-solve,
+[data-puzzle-solver][data-phase='empty'] .pz-icon-watch,
+[data-puzzle-solver][data-phase='running'] .pz-icon-toggle,
+[data-puzzle-solver][data-phase='paused'] .pz-icon-toggle { display: inline-flex; }
+[data-puzzle-solver][data-phase='idle'] .pz-verdict,
+[data-puzzle-solver][data-phase='running'] .pz-verdict,
+[data-puzzle-solver][data-phase='paused'] .pz-verdict,
+[data-puzzle-solver][data-phase='done'] .pz-verdict { display: inline-flex; }
+[data-puzzle-solver][data-phase='paused'] .pz-icon-toggle .pz-pause { display: none; }
+[data-puzzle-solver][data-phase='paused'] .pz-icon-toggle .pz-play { display: block; }
+
+.pz-step {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 1.75rem; height: 1.75rem; padding: 0;
+  border: 1px solid rgb(var(--c-border)); border-radius: 8px;
+  background: transparent; color: rgb(var(--c-fg)); cursor: pointer;
+  transition: border-color .15s, color .15s, opacity .15s;
+}
+.pz-step:hover:not(:disabled) { border-color: rgb(var(--c-accent)); color: rgb(var(--c-accent)); }
+.pz-step:disabled { opacity: .3; cursor: default; }
+
+.pz-verdict {
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 0; background: transparent; padding: 0; line-height: 0;
+  cursor: pointer; border-radius: 999px;
+}
+.pz-verdict[hidden] { display: none; }
+.pz-verdict svg { display: block; }
+.pz-verdict:focus-visible { outline: 2px solid rgb(var(--c-accent)); outline-offset: 2px; }
+
+.pz-tick { color: #16a34a; }
+.pz-cross { color: #dc2626; }
+.pz-reset { color: #ca8a04; }
+.pz-dot { color: rgb(var(--c-border)); }
+
+/* Default is "solved or nothing"; the neutral dot only appears while a board is
+   still being filled in, which only the playable widget ever is. */
+.pz-verdict .pz-reset, .pz-verdict .pz-dot { display: none; }
+.pz[data-state='solved'] .pz-cross { display: none; }
+.pz[data-state='error'] .pz-tick { display: none; }
+.pz[data-state='building'] .pz-tick,
+.pz[data-state='building'] .pz-cross { display: none; }
+.pz[data-state='building'] .pz-dot { display: block; }
+
+.pz-verdict:hover .pz-tick,
+.pz-verdict:hover .pz-cross,
+.pz-verdict:focus-visible .pz-tick,
+.pz-verdict:focus-visible .pz-cross { display: none; }
+.pz-verdict:hover .pz-dot,
+.pz-verdict:focus-visible .pz-dot { display: none; }
+.pz-verdict:hover .pz-reset,
+.pz-verdict:focus-visible .pz-reset { display: block; }
+
+@media (prefers-color-scheme: dark) {
+  .pz-tick { color: #4ade80; }
+  .pz-cross { color: #f87171; }
+  .pz-reset { color: #facc15; }
+}
+
+.pz-sr-only {
+  position: absolute; width: 1px; height: 1px; margin: -1px;
+  padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+@media (max-width: 30rem) {
+  .pz-swap-grid { grid-template-columns: 1.25rem minmax(0, 26rem); grid-template-rows: 1.25rem auto; }
+  .pz-handle { font-size: .68rem; }
+}
+
+/* ── Two boxes, compared ───────────────────────────────────────────────────
+   No board, no script. Blocks the box holds more than one of are drawn solid;
+   everything else is the usual pale tint. One box is speckled, the other is
+   not, and that is the whole argument. */
+
+.pz-boxes-pair { display: flex; flex-wrap: wrap; gap: 26px; justify-content: center; }
+.pz-boxes-one { margin: 0; display: grid; gap: 10px; justify-items: center; }
+.pz-boxes-label {
+  display: flex; align-items: baseline; gap: 8px;
+  font-size: .82rem; color: rgb(var(--c-fg));
+}
+.pz-boxes-kinds {
+  border: 1px solid rgb(var(--c-border)); border-radius: 999px; padding: 1px 8px;
+  font: 600 10px var(--font-mono, ui-monospace, monospace);
+  letter-spacing: .05em; text-transform: uppercase; color: rgb(var(--c-muted));
+}
+.pz-block[data-dupe] {
+  border-width: 2px;
+  border-color: rgb(var(--pz) / .95);
+  background: rgb(var(--pz) / .26);
+}
+
+/* ── Static illustrations ──────────────────────────────────────────────────
+   A grid of bare numbers, and a single line of blocks for use in body text.
+   Neither has a script behind it. */
+
+.pz-plain .pz-cell { color: rgb(var(--c-fg) / .85); }
+.pz-plain .pz-board { max-width: 21rem; }
+.pz-plain .pz-body { padding: 18px 20px; }
+
+/* Numerals tinted by value, one palette color per number. The square keeps its
+   neutral border and background on purpose: tint the whole cell and the grid
+   starts to read as a solved board, which is the opposite of the point. */
+.pz-tinted .pz-num[data-num='1'] { color: rgb(var(--pz-orange)); }
+.pz-tinted .pz-num[data-num='2'] { color: rgb(var(--pz-blue)); }
+.pz-tinted .pz-num[data-num='3'] { color: rgb(var(--pz-green)); }
+.pz-tinted .pz-num[data-num='4'] { color: rgb(var(--pz-red)); }
+.pz-tinted .pz-num[data-num='5'] { color: rgb(var(--pz-yellow)); }
+.pz-tinted .pz-num[data-num='6'] { color: rgb(var(--pz-purple)); }
+
+.pz-strip {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 6px;
+  margin: 22px auto; padding: 14px 12px; max-width: 26rem;
+  list-style: none;
+}
+.pz-strip .pz-block { width: 2.1rem; height: 2.1rem; font-size: 1rem; }

@@ -1,0 +1,48 @@
+{{- /*
+  puzzle-swap — a finished board you can shuffle by whole rows and columns.
+
+    {{< puzzle-swap >}}
+    {{< puzzle-swap box="fathers" title="Any shuffle is another solution" >}}
+
+  No tray, no solver, no search. The board comes precomputed from the `solution`
+  key in data/puzzle/boxes.yaml; the widget rearranges it and re-checks it from
+  scratch after every move.
+*/ -}}
+{{- $key := .Get "box" | default "fathers" -}}
+{{- $box := index site.Data.puzzle.boxes $key -}}
+{{- if not (and $box $box.solution) -}}
+<p><em>puzzle-swap: box “{{ $key }}” needs a `solution` in data/puzzle/boxes.yaml.</em></p>
+{{- else -}}
+{{- $title := .Get "title" | default "Swap any two rows, or any two columns" -}}
+<div class="pz pz-swapper not-prose" data-puzzle-swap>
+  <script type="application/json" data-puzzle-box>{{ $box | jsonify | safeJS }}</script>
+
+  <p class="pz-cap">
+    {{ partial "func/svg-icon.html" (dict "name" "puzzle-piece" "class" "h-5 w-5 shrink-0 text-accent") }}
+    <span>{{ $title }}</span>
+    <span class="pz-cap-controls" data-swap-controls hidden>{{ partial "puzzle-verdict.html" . }}</span>
+  </p>
+
+  <div class="pz-body">
+    <div class="pz-swap-grid">
+      <span class="pz-swap-corner" aria-hidden="true"></span>
+      <div class="pz-swap-cols">
+        {{- range $c := seq 0 5 }}
+        <button type="button" class="pz-handle" data-swap-handle="col" data-swap-index="{{ $c }}"
+                aria-pressed="false" aria-label="Column {{ add $c 1 }}">{{ add $c 1 }}</button>
+        {{- end }}
+      </div>
+      <div class="pz-swap-rows">
+        {{- range $r := seq 0 5 }}
+        <button type="button" class="pz-handle" data-swap-handle="row" data-swap-index="{{ $r }}"
+                aria-pressed="false" aria-label="Row {{ add $r 1 }}">{{ add $r 1 }}</button>
+        {{- end }}
+      </div>
+      {{ partial "puzzle-board.html" (dict "label" "A solved board, 6 by 6" "interactive" true) }}
+    </div>
+
+    <p class="pz-sr-only" data-swap-verdict role="status" aria-live="polite">Valid solution.</p>
+  </div>
+</div>
+{{- partial "puzzle-assets.html" .Page -}}
+{{- end -}}

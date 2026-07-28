@@ -1,0 +1,35 @@
+{{- /*
+  puzzle-grid — a static grid of numbers. No script, no interaction.
+
+    {{< puzzle-grid rows="123456,234561,345612,456123,561234,612345" >}}
+    {{< puzzle-grid rows="..." tint="false" >}}
+
+  Use it when the point is the pattern of the numbers only.
+
+  Each numeral is tinted by its own value — 1 orange through 6 purple — so the
+  shift from row to row is visible at a glance. Only the glyph is colored; the
+  squares stay neutral, because a tinted square would read as a placed block
+  and this grid is deliberately not a board. Pass tint="false" for bare digits.
+*/ -}}
+{{- $rows := split (.Get "rows") "," -}}
+{{- $tint := ne (.Get "tint") "false" -}}
+<div class="pz pz-plain not-prose{{ if $tint }} pz-tinted{{ end }}">
+  {{- with .Get "title" }}
+  <p class="pz-cap">
+    {{ partial "func/svg-icon.html" (dict "name" "puzzle-piece" "class" "h-5 w-5 shrink-0 text-accent") }}
+    <span>{{ . }}</span>
+  </p>
+  {{- end }}
+  <div class="pz-body">
+    <div class="pz-board" role="table" aria-label="{{ .Get "label" | default "A grid of numbers" }}">
+      {{- range $r, $row := $rows }}
+      <div class="pz-row" role="row">
+        {{- range $c, $n := (split (trim $row " ") "") }}
+        <div class="pz-cell" role="cell"><span class="pz-num" data-num="{{ $n }}">{{ $n }}</span></div>
+        {{- end }}
+      </div>
+      {{- end }}
+    </div>
+  </div>
+</div>
+{{- partial "puzzle-assets.html" (dict "page" .Page "styleOnly" true) -}}

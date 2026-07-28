@@ -1,0 +1,88 @@
+{{- /*
+  puzzle-solver — the block tray, the board, and the solver controls.
+
+    {{< puzzle-solver >}}
+    {{< puzzle-solver box="officers" title="Euler's 36 officers" >}}
+    {{< puzzle-solver solver="backtrack" title="Plain backtracking" >}}
+
+  The board and the box are both interactive: click a block to pick it up, click
+  a square to put it down, double-click a square to send its block back.
+
+  Params (all optional):
+    box       — key under data/puzzle/boxes.yaml.                  default "fathers"
+    title     — caption text.                            default the box's label
+    solver    — key from assets/js/puzzle/solver.ts.             default "support"
+    order     — "mrv" | "scan": which square the search picks next. default "mrv"
+    canonical — "true" | "false": pin row 1 and column 1 to 1..6.   default "true"
+
+  The tray and the 6x6 grid are rendered here, server-side, so a reader sees the
+  whole box before any script runs. The same box data is embedded as JSON for
+  the bundle, so the markup and the solver cannot disagree about what is in the
+  box. Several instances can sit on one page; the Scratch guards keep the CSS
+  and the bundle shipping exactly once.
+*/ -}}
+{{- $key := .Get "box" | default "fathers" -}}
+{{- $box := index site.Data.puzzle.boxes $key -}}
+{{- if not $box -}}
+<p><em>puzzle-solver: no box named “{{ $key }}” under data/puzzle/boxes.yaml.</em></p>
+{{- else -}}
+{{- $title := .Get "title" | default $box.label | default "Puzzle" -}}
+{{- $order := .Get "order" | default "mrv" -}}
+{{- $canonical := .Get "canonical" | default "true" -}}
+{{- $solver := .Get "solver" | default "support" -}}
+{{/* not-prose: on a `prose: true` page Tailwind Typography would otherwise
+     restyle the tray list and the caption paragraphs. */}}
+<div class="pz not-prose" data-puzzle-solver data-solver="{{ $solver }}" data-order="{{ $order }}" data-canonical="{{ $canonical }}">
+  <script type="application/json" data-puzzle-box>{{ $box | jsonify | safeJS }}</script>
+
+  <p class="pz-cap">
+    {{ partial "func/svg-icon.html" (dict "name" "puzzle-piece" "class" "h-5 w-5 shrink-0 text-accent") }}
+    <span>{{ $title }}</span>
+    {{/* Which of these is on screen depends on data-phase, set by the bundle:
+         empty -> watch, solve · idle -> verdict alone (which is also the reset)
+         running/paused -> pause-or-play, verdict · done -> verdict alone.
+         There is nothing to reset on a blank board, so nothing offers to, and
+         nothing offers to solve a board the reader has started. */}}
+    <span class="pz-cap-controls" data-puzzle-controls hidden>
+      <button type="button" class="pz-icon pz-icon-watch" data-action="watch"
+              title="Watch" aria-label="Watch it being solved">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" aria-hidden="true"
+             stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10" />
+          <path d="M6.6 12s2.3-3.4 5.4-3.4S17.4 12 17.4 12s-2.3 3.4-5.4 3.4S6.6 12 6.6 12Z" />
+          <circle cx="12" cy="12" r="1.5" />
+        </svg>
+      </button>
+      <button type="button" class="pz-icon pz-icon-solve" data-action="solve"
+              title="Solve" aria-label="Solve it">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" aria-hidden="true"
+             stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10" /><path d="M8 12h8M13.2 9.2 16 12l-2.8 2.8" />
+        </svg>
+      </button>
+      <button type="button" class="pz-icon pz-icon-toggle" data-action="toggle"
+              title="Pause or resume" aria-label="Pause or resume">
+        <svg class="pz-pause" viewBox="0 0 24 24" width="22" height="22" fill="none" aria-hidden="true"
+             stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10" /><path d="M10 8.4v7.2M14 8.4v7.2" />
+        </svg>
+        <svg class="pz-play" viewBox="0 0 24 24" width="22" height="22" fill="none" aria-hidden="true"
+             stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10" /><path d="M10.4 8.3 16 12l-5.6 3.7Z" />
+        </svg>
+      </button>
+      {{ partial "puzzle-verdict.html" . }}
+    </span>
+  </p>
+
+  <div class="pz-body">
+    {{ partial "puzzle-board.html" (dict "label" (printf "%s board, 6 by 6" $title) "interactive" true) }}
+
+    {{ partial "puzzle-tray.html" (dict "box" $box "interactive" true) }}
+
+    <p class="pz-sr-only" data-puzzle-status role="status" aria-live="polite"></p>
+    <p class="pz-stats" data-puzzle-stats></p>
+  </div>
+</div>
+{{- partial "puzzle-assets.html" .Page -}}
+{{- end -}}

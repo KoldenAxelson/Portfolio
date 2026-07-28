@@ -1,0 +1,33 @@
+{{- /*
+  puzzle-mirror — the same solved board, with the box's own relabelling applied.
+
+    {{< puzzle-mirror >}}
+
+  No tray, no solver, no row or column handles. One button swaps every block for
+  the block it maps to; pressing it again puts them back. The verdict stays green
+  throughout, which is the point.
+*/ -}}
+{{- $key := .Get "box" | default "fathers" -}}
+{{- $box := index site.Data.puzzle.boxes $key -}}
+{{- if not (and $box $box.solution $box.mirror) -}}
+<p><em>puzzle-mirror: box “{{ $key }}” needs `solution` and `mirror` in data/puzzle/boxes.yaml.</em></p>
+{{- else -}}
+<div class="pz pz-swapper not-prose" data-puzzle-swap>
+  <script type="application/json" data-puzzle-box>{{ $box | jsonify | safeJS }}</script>
+
+  <p class="pz-cap">
+    {{ partial "func/svg-icon.html" (dict "name" "puzzle-piece" "class" "h-5 w-5 shrink-0 text-accent") }}
+    <span>{{ .Get "title" | default "The box mapped onto itself" }}</span>
+    <span class="pz-cap-controls" data-swap-controls hidden>
+      <button type="button" class="pz-btn pz-btn-sm" data-swap-action="mirror">Mirror</button>
+      {{ partial "puzzle-verdict.html" . }}
+    </span>
+  </p>
+
+  <div class="pz-body">
+    {{ partial "puzzle-board.html" (dict "label" "A solved board, 6 by 6" "interactive" true) }}
+    <p class="pz-sr-only" data-swap-verdict role="status" aria-live="polite">Valid solution.</p>
+  </div>
+</div>
+{{- partial "puzzle-assets.html" .Page -}}
+{{- end -}}

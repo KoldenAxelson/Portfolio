@@ -1,0 +1,25 @@
+{{- /* The box, sitting under the board the way the real one sits under the tray:
+       one row per color, blocks dimming in place as they come out.
+
+       {{ partial "puzzle-tray.html" (dict "box" $box "interactive" true) }}
+
+       interactive — blocks are clickable and announce a pressed state. Only the
+                     main widget lets a reader pick blocks up; the build widget
+                     plays back a fixed order, so its blocks are not controls.
+
+       The colors name themselves, so only the numbers are printed. */ -}}
+{{- $box := .box -}}
+{{- $interactive := .interactive | default false -}}
+<div class="pz-tray">
+  <ul class="pz-tray-rows" aria-label="Blocks still in the box, six of each color">
+    {{- range $ci, $row := $box.blocks }}
+    {{- $color := index $box.palette $ci }}
+    <li class="pz-tray-row" data-color="{{ $color }}">
+      {{- range $row }}
+      <span class="pz-block" {{ if $interactive }}role="button" tabindex="0" aria-pressed="false" {{ end }}data-color="{{ $color }}" data-block="{{ . }}"
+            data-color-index="{{ $ci }}" aria-label="{{ . }} {{ $color }}">{{ . }}</span>
+      {{- end }}
+    </li>
+    {{- end }}
+  </ul>
+</div>

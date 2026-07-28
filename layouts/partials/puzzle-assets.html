@@ -1,0 +1,22 @@
+{{- /* The puzzle CSS, and the bundle for widgets that need it, shipped once per
+       page however many puzzle shortcodes appear on it.
+
+       Call with the page:                {{ partial "puzzle-assets.html" .Page }}
+       or, for a widget with no behaviour: {{ partial "puzzle-assets.html" (dict "page" .Page "styleOnly" true) }}
+*/ -}}
+{{- $page := . -}}
+{{- $styleOnly := false -}}
+{{- if reflect.IsMap . -}}
+  {{- $page = .page -}}
+  {{- $styleOnly = .styleOnly -}}
+{{- end -}}
+{{- if not ($page.Scratch.Get "puzzleCss") -}}
+  {{- $css := resources.Get "css/puzzle.css" | minify | fingerprint -}}
+  <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" />
+  {{- $page.Scratch.Set "puzzleCss" true -}}
+{{- end -}}
+{{- if and (not $styleOnly) (not ($page.Scratch.Get "puzzleJs")) -}}
+  {{- $js := resources.Get "js/puzzle/main.ts" | js.Build (dict "minify" true "target" "es2018" "format" "iife") | fingerprint -}}
+  <script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
+  {{- $page.Scratch.Set "puzzleJs" true -}}
+{{- end -}}
