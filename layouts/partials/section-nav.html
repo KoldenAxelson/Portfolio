@@ -1,0 +1,54 @@
+{{- /*
+  section-nav — floating "jump to section" FAB for a long single page.
+  DESKTOP ONLY (lg+), the same shell chapter-select.html uses: .aux-fab-* comes
+  from assets/css/auxiliary-button.css, and outside-click / Escape dismissal is
+  already wired globally by ts/auxiliary-button.ts.
+
+  Where chapter-select navigates between the pages of a section, this one scrolls
+  within a single page. Opt in from front matter:
+
+      sections:
+        - { id: "combat",   label: "Combat" }
+        - { id: "survival", label: "Survival" }
+      desktopFab: true          # suppress the centered navbar toolbar
+      toolsIcon: "book-open"    # icon for the mobile navbar button
+
+  `id` must match a heading id on the page. Write the heading as
+  `## Combat {#combat}` so the id is pinned rather than left to Hugo's slugifier.
+
+  On mobile the same list drops from the navbar tools button — topnav.html builds
+  it from this identical `sections` list, so there is one source of truth.
+
+  Rendered as ordinary anchors with hx-boost="false" (hx-boost would otherwise
+  try to fetch "#combat" as a URL), so the jump works with JavaScript off;
+  js/section-nav.ts upgrades it to a smooth scroll and marks the current section.
+*/ -}}
+{{- $page := . -}}
+{{- with .Params.sections -}}
+{{- $icon := $page.Params.toolsIcon | default "book-open" -}}
+
+{{- /* The navbar is sticky, so an anchored heading would otherwise land under
+       it. Scoped to this page's own headings and shipped inline because it is
+       three lines — not worth a second stylesheet request. */ -}}
+<style>
+  #main h2[id], #main h3[id] { scroll-margin-top: 5.5rem; }
+  #main h2[id]:focus-visible, #main h3[id]:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.5); outline-offset: 4px; border-radius: 0.3rem; }
+</style>
+
+<details data-aux-fab class="fixed bottom-6 right-6 z-30 hidden lg:block print:!hidden">
+  <summary class="aux-fab__btn relative flex h-12 w-12 cursor-pointer list-none items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50" aria-label="Jump to section" title="Jump to section">
+    <span class="sr-only">Jump to section</span>
+    {{ partial "func/svg-icon.html" (dict "name" $icon "class" "aux-fab__icon aux-fab__icon--main h-6 w-6" "width" "1.75") }}
+    <svg class="aux-fab__icon aux-fab__icon--close h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18 18 6M6 6l12 12" /></svg>
+  </summary>
+  <div class="aux-fab__menu aux-fab__menu--list" role="menu" aria-label="Sections">
+    <p class="aux-fab__title">{{ $page.Params.sectionsLabel | default "Sections" }}</p>
+    {{- range $i, $s := . }}
+    <a class="aux-fab__row" href="#{{ $s.id }}" data-section-goto="{{ $s.id }}" hx-boost="false" role="menuitem"><span class="aux-fab__num">{{ add $i 1 }}</span><span class="aux-fab__name">{{ $s.label }}</span></a>
+    {{- end }}
+  </div>
+</details>
+
+{{- $js := resources.Get "js/section-nav.ts" | js.Build (dict "minify" true "target" "es2018" "format" "iife") | fingerprint }}
+<script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
+{{- end -}}

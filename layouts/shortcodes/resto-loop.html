@@ -1,0 +1,85 @@
+{{- /*
+  resto-loop — the Restoration-loop planner.
+
+    {{< resto-loop >}}
+    {{< resto-loop target="200" effect="Fortify Destruction" >}}
+
+  Two inputs in the open: what you are enchanting, and the number you want. Out
+  comes the wear pattern that lands closest and how many rounds it takes.
+  Everything else sits behind Configuration with defaults describing a finished
+  character — skills 100, perks maxed, four Fortify Alchemy pieces at the
+  natural 25% — but all of it is editable, so the planner still works for a
+  half-built character or for gear you have already bootstrapped past 25%.
+
+  The enchantment picker is built from data/skyrim/enchantments.yaml, grouped by
+  the two things that decide the answer: base magnitude, and which +25% perk
+  applies. Everything inside a group lands on the same number.
+
+  The maths, the sources and the accuracy caveats live in the header of
+  assets/js/skyrim/resto.ts.
+
+  `not-prose` keeps Tailwind Typography off the controls.
+*/ -}}
+{{ partial "skyrim-assets.html" .Page }}
+{{- $target := .Get "target" | default "200" -}}
+{{- $want := .Get "effect" | default "Fortify Destruction" -}}
+<div class="sky-calc not-prose" data-resto>
+
+  <div class="sky-bar">
+    <label class="sky-bar__field sky-bar__field--grow">
+      <span class="sky-bar__label">Enchanting</span>
+      <select data-f="effect">
+        {{- range $g := site.Data.skyrim.enchantments }}
+        <optgroup label="base {{ $g.base }}{{ with $g.perk }} · {{ . }}{{ else }} · no perk{{ end }}">
+          {{- range $e := $g.effects }}
+          <option data-base="{{ $g.base }}" data-perk="{{ $g.perk }}" data-note="{{ $g.note }}"{{ if eq $e $want }} selected{{ end }}>{{ $e }}</option>
+          {{- end }}
+        </optgroup>
+        {{- end }}
+      </select>
+    </label>
+    <label class="sky-bar__field">
+      {{- /* The % lives in the label, not inside the box — a number input's
+             spinner arrows sit exactly where a suffix would go. */ -}}
+      <span class="sky-bar__label">Target %</span>
+      <input type="number" min="1" step="1" value="{{ $target }}" data-f="target" />
+    </label>
+    {{- /* Rendered hidden and revealed by resto.ts. With JavaScript off the panel
+           below stays open, so nothing hides behind a control that cannot work. */ -}}
+    <button type="button" class="sky-bar__toggle" data-config-toggle aria-expanded="true" hidden>
+      <span aria-hidden="true">+</span> Configuration
+    </button>
+  </div>
+
+  <div class="sky-config" data-config>
+    <div class="sky-config__grid">
+      <fieldset class="sky-set">
+        <legend>Alchemy</legend>
+        <label class="sky-in"><span>Skill</span><input type="number" min="15" max="100" step="1" value="100" data-f="alchemy" /></label>
+        <label class="sky-in"><span>Alchemist</span>
+          <select data-f="alchemist">{{ range $i := (seq 0 5) }}<option value="{{ $i }}"{{ if eq $i 5 }} selected{{ end }}>{{ $i }}/5</option>{{ end }}</select></label>
+        <label class="sky-ck"><input type="checkbox" data-f="benefactor" checked /><span>Benefactor</span></label>
+        <label class="sky-ck"><input type="checkbox" data-f="seekerShadows" /><span>Seeker of Shadows</span></label>
+      </fieldset>
+
+      <fieldset class="sky-set">
+        <legend>Enchanting</legend>
+        <label class="sky-in"><span>Skill</span><input type="number" min="15" max="100" step="1" value="100" data-f="enchanting" /></label>
+        <label class="sky-in"><span>Enchanter</span>
+          <select data-f="enchanter">{{ range $i := (seq 0 5) }}<option value="{{ $i }}"{{ if eq $i 5 }} selected{{ end }}>{{ $i }}/5</option>{{ end }}</select></label>
+        <label class="sky-ck"><input type="checkbox" data-f="perk" checked /><span data-resto-perk-label>Insightful Enchanter</span></label>
+        <label class="sky-ck"><input type="checkbox" data-f="seekerSorcery" /><span>Seeker of Sorcery</span></label>
+      </fieldset>
+
+      <fieldset class="sky-set">
+        <legend>Fortify Alchemy gear</legend>
+        <label class="sky-in"><span>Pieces worn</span><input type="number" min="1" max="5" step="1" value="4" data-f="pieces" /></label>
+        <label class="sky-in"><span>Each, %</span><input type="number" min="1" max="200" step="1" value="25" data-f="perPiece" /></label>
+        <p class="sky-set__hint">25% is the natural cap — what you can enchant without drinking anything. Raise it if your pieces are already bootstrapped. A fifth slot needs the helmet + circlet bug.</p>
+      </fieldset>
+    </div>
+  </div>
+  <p class="sky-bar__note" data-resto-group-note></p>
+
+  <div class="sky-plan" data-resto-plan></div>
+</div>

@@ -1,0 +1,38 @@
+{{- /*
+  func/potion-effects — work out what a potion actually does.
+
+    {{ $effects := partial "func/potion-effects.html" $ingredients }}
+
+  Takes a slice of ingredient dicts (entries from data/skyrim/ingredients.yaml;
+  nil entries are skipped) and returns the ordered slice of effects the brew
+  carries. Skyrim's rule is the whole of it: an effect makes it into the potion
+  when TWO OR MORE of the ingredients in the mortar share it. A fourth effect
+  nobody planned for is normal — see Nord Blood, where Fly Amanita and Mora
+  Tapinella quietly both carry Regenerate Stamina.
+
+  Order is first appearance across the ingredient list, which reads the way you
+  would say the recipe out loud.
+
+  Counting is done by scanning the flat list rather than accumulating into a
+  dict, because `merge` normalises map keys and these keys are Title Case effect
+  names with spaces in them. Twelve effects at most, so the nested scan is free.
+*/ -}}
+{{- $all := slice -}}
+{{- range . -}}
+  {{- with . -}}
+    {{- range .effects -}}
+      {{- $all = $all | append . -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $shared := slice -}}
+{{- range $e := $all -}}
+  {{- if not (in $shared $e) -}}
+    {{- $n := 0 -}}
+    {{- range $all -}}
+      {{- if eq . $e -}}{{- $n = add $n 1 -}}{{- end -}}
+    {{- end -}}
+    {{- if ge $n 2 -}}{{- $shared = $shared | append $e -}}{{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $shared -}}

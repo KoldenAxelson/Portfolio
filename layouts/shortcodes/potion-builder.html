@@ -1,0 +1,111 @@
+{{- /*
+  potion-builder — three screens, one question each.
+
+    {{< potion-builder >}}
+
+  1. Potion, poison, or either.
+  2. The effects you want. Anything that cannot share a bottle with what you
+     have already picked greys out as you go.
+  3. The brews, ranked three ways, with the rest behind a "show more".
+
+  Everything is server-rendered — the effect list is real markup, and the
+  ingredient table ships as one JSON blob that assets/js/skyrim/builder.ts reads.
+  Nothing here is fetched at runtime.
+
+  The ingredient payload uses single-letter keys — s(lug), n(ame), v(alue),
+  a(vailability), d(lc), f(our effect ids) — because 183 ingredients × full key
+  names is several KB of repeated text for no benefit. The f-values index the
+  effect-name array that precedes them.
+
+  `not-prose` keeps Tailwind Typography off the controls.
+*/ -}}
+{{ partial "skyrim-assets.html" .Page }}
+{{- $fx := site.Data.skyrim.effects -}}
+{{- $index := dict -}}
+{{- range $i, $e := $fx }}{{ $index = merge $index (dict $e.name $i) }}{{ end -}}
+
+<div class="sky-build not-prose" data-builder data-screen="1">
+
+  {{- /* ── 1 ────────────────────────────────────────────────────────────── */}}
+  <section class="sky-scr" data-scr="1">
+    <p class="sky-scr__q">What are you making?</p>
+    <div class="sky-pick">
+      <button type="button" class="sky-pick__b" data-kind="good"><b>Potion</b><span>Restore, Fortify, Resist, Regenerate, Cure</span></button>
+      <button type="button" class="sky-pick__b" data-kind="bad"><b>Poison</b><span>Damage, Ravage, Lingering, Weakness, Fear</span></button>
+      <button type="button" class="sky-pick__b" data-kind="any"><b>Either</b><span>Every effect, mixed however they fall</span></button>
+    </div>
+  </section>
+
+  {{- /* ── 2 ────────────────────────────────────────────────────────────── */}}
+  <section class="sky-scr" data-scr="2" hidden>
+    <div class="sky-scr__head">
+      <button type="button" class="sky-back" data-back>&larr; Back</button>
+      <p class="sky-scr__q sky-scr__q--tight">Which effects?</p>
+    </div>
+    <ul class="sky-fx">
+      {{- range $i, $e := $fx }}
+      <li><button type="button" class="sky-fx__b" data-fx="{{ $i }}" data-kind="{{ $e.kind }}">{{ $e.name }}</button></li>
+      {{- end }}
+    </ul>
+    <div class="sky-scr__foot">
+      <p class="sky-hint" data-picked></p>
+      <button type="button" class="sky-go" data-brew disabled>Brew</button>
+    </div>
+  </section>
+
+  {{- /* ── 3 ────────────────────────────────────────────────────────────── */}}
+  <section class="sky-scr" data-scr="3" hidden>
+    <div class="sky-scr__head">
+      <button type="button" class="sky-back" data-back>&larr; Back</button>
+      <p class="sky-scr__q sky-scr__q--tight" data-result-head></p>
+    </div>
+    <div data-results></div>
+  </section>
+
+  {{- /* Effect names, plus the magnitude/duration multipliers that make Creation
+       Club ingredients silly. `x` runs parallel to `e`: for each effect, a map
+       of ingredient slug -> [magnitude multiplier, duration multiplier]. Most
+       are empty. `bm` is each effect's base magnitude, kept as its own flat
+       array (Hugo's `append` flattens a slice argument, so a list of pairs
+       would come apart) — the builder only needs it to tell whether an
+       effect's strength lives in its magnitude or, when that is 0, its
+       duration. */ -}}
+{{- $payload := dict "e" (apply $fx "index" "." "name") -}}
+{{- $mults := slice -}}
+{{- $baseMag := slice -}}
+{{- range $e := $fx -}}
+  {{- $m := dict -}}
+  {{- range $slug, $v := $e.mult -}}
+    {{- $m = merge $m (dict $slug (slice (float ($v.mag | default 1)) (float ($v.dur | default 1)))) -}}
+  {{- end -}}
+  {{- $mults = $mults | append $m -}}
+  {{- $baseMag = $baseMag | append (float $e.baseMag) -}}
+{{- end -}}
+{{- $payload = merge $payload (dict "x" $mults "bm" $baseMag) -}}
+  {{- $rows := slice -}}
+  {{- range $slug, $ing := site.Data.skyrim.ingredients -}}
+    {{- $ids := slice -}}
+    {{- range $e := $ing.effects -}}
+      {{- $id := index $index $e -}}
+      {{- if eq $id nil -}}
+        {{- warnf "potion-builder: %q lists effect %q, which is not in data/skyrim/effects.yaml" $slug $e -}}
+      {{- else -}}
+        {{- $ids = $ids | append $id -}}
+      {{- end -}}
+    {{- end -}}
+    {{- /* A map, not a positional slice: Hugo's `append` flattens a slice
+           argument, so rows would come apart into their fields. */ -}}
+    {{- $rows = $rows | append (dict
+        "s" $slug
+        "n" $ing.name
+        "v" (int $ing.value)
+        "a" (int ($ing.avail | default 3))
+        "d" ($ing.dlc | default "")
+        "f" $ids) -}}
+  {{- end -}}
+  {{- $payload = merge $payload (dict "i" $rows) }}
+  {{- /* safeJS: Go's contextual escaper treats a <script> body as JavaScript and
+         would re-encode the JSON as a quoted string. The payload is built from
+         our own data files, never user input. */ -}}
+  <script type="application/json" data-builder-data>{{ $payload | jsonify | safeJS }}</script>
+</div>
