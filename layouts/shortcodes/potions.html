@@ -1,0 +1,88 @@
+{{- /*
+  potions — render the potion cards from data/skyrim/potions.yaml.
+
+    {{< potions >}}
+
+  One card per recipe: the ingredient tiles, the title, the effect chips, and
+  the note in a <details> that starts closed. Effects are COMPUTED from the
+  ingredients (partials/func/potion-effects.html) unless the recipe overrides
+  them, so a card cannot claim an effect the ingredients do not produce.
+
+  Every card carries a lowercased data-search string covering its title, tag,
+  effects and ingredients — that is what the {{< potion-filter >}} box reads.
+  Filtering is therefore pure string matching over server-rendered markup: the
+  full list is in the HTML before any script runs, and it stays readable with
+  JavaScript off.
+
+  `not-prose` on the root keeps Tailwind Typography off the widget internals,
+  since the page sets `prose: true`.
+*/ -}}
+{{- $page := .Page -}}
+{{- $list := site.Data.skyrim.potions -}}
+{{- if not $list -}}
+  {{- warnf "potions shortcode: data/skyrim/potions.yaml is empty (page: %s)" $page.RelPermalink -}}
+{{- else -}}
+{{ partial "skyrim-assets.html" $page }}
+<div class="sky-grid not-prose" data-sky-group>
+  {{- range $list -}}
+  {{- $ings := slice -}}
+  {{- range .ingredients }}{{ $ings = $ings | append (index site.Data.skyrim.ingredients .) }}{{ end -}}
+  {{- $effects := .effects | default (partial "func/potion-effects.html" $ings) -}}
+  {{- /* Search index: title, tag, effects, and both the display name and the
+         slug of every ingredient, so "dragons-tongue" and "Dragon's Tongue"
+         both match. */ -}}
+  {{- $terms := slice .title -}}
+  {{- with .tag }}{{ $terms = $terms | append . }}{{ end -}}
+  {{- range $effects }}{{ $terms = $terms | append . }}{{ end -}}
+  {{- range .ingredients -}}
+    {{- $terms = $terms | append . -}}
+    {{- with index site.Data.skyrim.ingredients . }}{{ $terms = $terms | append .name }}{{ end -}}
+  {{- end -}}
+  {{- /* Variant ingredients count too, so searching "corkbulb" finds the recipe
+         that only mentions it as a swap. */ -}}
+  {{- range .variants -}}
+    {{- with .label }}{{ $terms = $terms | append . }}{{ end -}}
+    {{- range .ingredients -}}
+      {{- $terms = $terms | append . -}}
+      {{- with index site.Data.skyrim.ingredients . }}{{ $terms = $terms | append .name }}{{ end -}}
+    {{- end -}}
+  {{- end -}}
+  <article class="sky-card" data-sky-card data-search="{{ delimit $terms " " | lower }}">
+    {{ partial "skyrim-ingredients.html" (dict "slugs" .ingredients "page" $page) }}
+    <div class="sky-body">
+      <h3 class="sky-title">{{ .title }}</h3>
+      {{- if or .tag $effects }}
+      <ul class="sky-chips">
+        {{- with .tag }}<li class="sky-chip sky-chip--tag">{{ . }}</li>{{ end }}
+        {{- range $effects }}<li class="sky-chip">{{ . }}</li>{{ end }}
+      </ul>
+      {{- end }}
+      {{- with .value }}<p class="sky-value">≈ {{ . }}</p>{{ end }}
+      {{- if or .description .variants }}
+      <details class="sky-note">
+        <summary>
+          <svg class="sky-note__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+          <span>Notes</span>
+        </summary>
+        <div class="sky-note__body">
+          {{- with .description }}{{ $page.RenderString (dict "display" "block") . }}{{ end }}
+          {{- range .variants }}
+          {{- $vings := slice -}}
+          {{- range .ingredients }}{{ $vings = $vings | append (index site.Data.skyrim.ingredients .) }}{{ end -}}
+          {{- $veffects := .effects | default (partial "func/potion-effects.html" $vings) -}}
+          <div class="sky-variant">
+            <p class="sky-variant__label">{{ .label | default "Variant" }}</p>
+            {{ partial "skyrim-ingredients.html" (dict "slugs" .ingredients "page" $page) }}
+            {{- with $veffects }}
+            <ul class="sky-chips">{{ range . }}<li class="sky-chip">{{ . }}</li>{{ end }}</ul>
+            {{- end }}
+          </div>
+          {{- end }}
+        </div>
+      </details>
+      {{- end }}
+    </div>
+  </article>
+  {{- end }}
+</div>
+{{- end -}}

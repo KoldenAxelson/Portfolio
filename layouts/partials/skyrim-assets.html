@@ -1,0 +1,25 @@
+{{- /*
+  skyrim-assets — ship skyrim.css and the page bundle once, however many
+  shortcodes on the page ask for them. Same lazy, Scratch-guarded pattern as
+  partials/puzzle-assets.html and the term shortcode: a page that never mentions
+  Skyrim never downloads a byte of this.
+
+  Call with the page:                 {{ partial "skyrim-assets.html" .Page }}
+  Style only (no behaviour needed):   {{ partial "skyrim-assets.html" (dict "page" .Page "styleOnly" true) }}
+*/ -}}
+{{- $page := . -}}
+{{- $styleOnly := false -}}
+{{- if reflect.IsMap . -}}
+  {{- $page = .page -}}
+  {{- $styleOnly = .styleOnly -}}
+{{- end -}}
+{{- if not ($page.Scratch.Get "skyrimCss") -}}
+  {{- $css := resources.Get "css/skyrim.css" | minify | fingerprint -}}
+  <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" />
+  {{- $page.Scratch.Set "skyrimCss" true -}}
+{{- end -}}
+{{- if and (not $styleOnly) (not ($page.Scratch.Get "skyrimJs")) -}}
+  {{- $js := resources.Get "js/skyrim/main.ts" | js.Build (dict "minify" true "target" "es2018" "format" "iife") | fingerprint -}}
+  <script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
+  {{- $page.Scratch.Set "skyrimJs" true -}}
+{{- end -}}

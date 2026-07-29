@@ -38,4 +38,8 @@
   {{ .Content }}
 </article>
 {{- end }}
+
+{{/* Floating "jump to section" FAB, for long single pages that declare
+     `sections:` in front matter. Renders nothing on every other misc page. */}}
+{{ partial "section-nav.html" . }}
 {{ end }}

@@ -1,0 +1,56 @@
+{{- /*
+  skyrim-ingredients — the row of ingredient tiles at the top of a potion card.
+
+    {{ partial "skyrim-ingredients.html" (dict "slugs" $slugs "page" $.Page) }}
+
+  Params:
+    slugs  (required) slice of keys into data/skyrim/ingredients.yaml.
+    page   (required) the page, used only for the build warning on a bad slug.
+    names  (optional) false hides the name under each tile. Default true.
+
+  IMAGES. For each slug the partial looks in assets/skyrim/ingredients/ for
+  <slug>.png, then .webp, then .jpg / .jpeg, and uses the first that exists.
+  Anything wider than 192px is fitted down and converted to WebP by Hugo Pipes;
+  smaller art is passed through untouched so pixel-exact item icons stay crisp.
+  No image found means the accent-disc "?" placeholder — so every recipe can be
+  written today and the art can arrive one file at a time, with no edit here.
+*/ -}}
+{{- $slugs := .slugs -}}
+{{- $page := .page -}}
+{{- $showNames := true -}}
+{{- if isset . "names" }}{{ $showNames = .names }}{{ end -}}
+{{- $table := site.Data.skyrim.ingredients -}}
+<div class="sky-ings">
+  {{- range $slug := $slugs -}}
+  {{- $ing := index $table $slug -}}
+  {{- if not $ing -}}
+    {{- warnf "skyrim: ingredient %q is used by a recipe but is not in data/skyrim/ingredients.yaml (page: %s)" $slug $page.RelPermalink -}}
+  {{- end -}}
+  {{- $name := $slug | replaceRE "-" " " | title -}}
+  {{- with $ing }}{{ $name = .name | default $name }}{{ end -}}
+  {{- $img := "" -}}
+  {{- range $ext := slice "png" "webp" "jpg" "jpeg" -}}
+    {{- if not $img -}}
+      {{- with resources.Get (printf "skyrim/ingredients/%s.%s" $slug $ext) }}{{ $img = . }}{{ end -}}
+    {{- end -}}
+  {{- end -}}
+  <div class="sky-ing">
+    <span class="sky-tile">
+      {{- with $img -}}
+        {{- $r := . -}}
+        {{- if gt .Width 192 }}{{ $r = .Fit "192x192 webp q85" }}{{ end -}}
+        <img src="{{ $r.RelPermalink }}" width="{{ $r.Width }}" height="{{ $r.Height }}" alt="{{ $name }}" loading="lazy" decoding="async" />
+      {{- else -}}
+        {{- /* No art yet. aria-hidden because the name below already says it. */ -}}
+        <svg class="sky-ph" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+          <circle class="sky-ph__disc" cx="24" cy="24" r="22" />
+          <text class="sky-ph__mark" x="24" y="25" text-anchor="middle" dominant-baseline="central">?</text>
+        </svg>
+      {{- end -}}
+    </span>
+    {{- if $showNames }}
+    <span class="sky-ing__name">{{ $name }}{{ with $ing }}{{ with .dlc }}<span class="sky-ing__dlc" title="Added by {{ if eq . "CC" }}Creation Club{{ else if eq . "HF" }}Hearthfire{{ else if eq . "DG" }}Dawnguard{{ else if eq . "DB" }}Dragonborn{{ else }}{{ . }}{{ end }}">{{ . }}</span>{{ end }}{{ end }}</span>
+    {{- end }}
+  </div>
+  {{- end -}}
+</div>

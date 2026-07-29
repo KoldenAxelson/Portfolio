@@ -28,6 +28,19 @@
   {{- end -}}
   {{- $tools = $t -}}
 {{- end -}}
+{{- /* A long single page may declare `sections:` in front matter ({id,label,icon?})
+       for a "jump to section" menu. On mobile it drops from the navbar button
+       here; on desktop `desktopFab: true` suppresses the inline toolbar and the
+       floating FAB handles it (partials/section-nav.html). Emitted as data-attr
+       buttons rather than "#id" links so hx-boost never tries to fetch the hash;
+       js/section-nav.ts binds them. One `sections` list feeds both surfaces. */ -}}
+{{- if and (not $tools) .Params.sections -}}
+  {{- $t := slice -}}
+  {{- range .Params.sections -}}
+    {{- $t = $t | append (dict "icon" (.icon | default "") "label" .label "data" (dict "section-goto" .id)) -}}
+  {{- end -}}
+  {{- $tools = $t -}}
+{{- end -}}
 {{- $hasTools := false -}}
 {{- with $tools }}{{ $hasTools = gt (len .) 0 }}{{ end -}}
 {{- $cur := strings.TrimSuffix "/" .RelPermalink -}}

@@ -1,0 +1,105 @@
+# Apparel enchantments, grouped by the two things that decide the final number:
+# the BASE MAGNITUDE, and WHICH +25% perk applies to them.
+#
+# Everything inside a group lands on exactly the same percentage, so the picker
+# only really has as many distinct answers as there are groups here — the names
+# are there so you can find yours without knowing which bucket it is in.
+#
+#   base    — base magnitude from UESP's apparel enchantment table.
+#   perk    — the Enchanting perk that gives this group +25%, or blank for none.
+#   note    — optional caveat rendered under the picker.
+#
+# Source: https://en.uesp.net/wiki/Skyrim:Enchanting_Effects (apparel table) and
+# https://en.uesp.net/wiki/Skyrim:Enchanting (perk wording).
+#
+# Muffle and Waterbreathing are deliberately absent: they have no magnitude, so
+# there is nothing to hit a target with.
+
+- group: "Skill — casting cost & strength"
+  base: 8
+  perk: "Insightful Enchanter"
+  effects:
+    - "Fortify Destruction"
+    - "Fortify Alteration"
+    - "Fortify Conjuration"
+    - "Fortify Illusion"
+    - "Fortify Restoration"
+    - "Fortify Alchemy"
+    - "Fortify Smithing"
+    - "Fortify Heavy Armor"
+    - "Fortify Light Armor"
+
+- group: "Skill — combat & stealth"
+  base: 13
+  perk: "Insightful Enchanter"
+  effects:
+    - "Fortify One-Handed"
+    - "Fortify Two-Handed"
+    - "Fortify Marksman (Archery)"
+    - "Fortify Block"
+    - "Fortify Sneak"
+    - "Fortify Lockpicking"
+    - "Fortify Pickpocket"
+
+- group: "Elemental resistance"
+  base: 15
+  perk: "Fire / Frost / Storm Enchanter"
+  # No cap note here on purpose: 85% is the resistance ceiling in normal play,
+  # but vampirism carries a 100% fire weakness, so overshooting well past 85% is
+  # a real thing to want rather than a mistake to warn about.
+  effects:
+    - "Resist Fire"
+    - "Resist Frost"
+    - "Resist Shock"
+
+- group: "Attributes"
+  base: 20
+  perk: "Corpus Enchanter"
+  effects:
+    - "Fortify Health"
+    - "Fortify Magicka"
+    - "Fortify Stamina"
+
+- group: "No perk applies"
+  base: 8
+  perk: ""
+  effects:
+    - "Resist Magic"
+
+- group: "No perk applies — Resist Poison"
+  base: 15
+  perk: ""
+  effects:
+    - "Resist Poison"
+
+- group: "No perk applies — Resist Disease"
+  base: 25
+  perk: ""
+  effects:
+    - "Resist Disease"
+
+- group: "No perk applies — Carry Weight"
+  base: 15
+  perk: ""
+  note: >-
+    Carry Weight is neither a skill enchantment nor a health/magicka/stamina one,
+    so neither Insightful nor Corpus touches it.
+  effects:
+    - "Fortify Carry Weight"
+
+# Regeneration effects sit in a gap I could not close: Corpus Enchanter reads
+# "health, magicka, and stamina enchantments on armor", and no source I found
+# says whether the regen variants count. Left unperked, which is the
+# conservative reading — turn the perk toggle on to see the other case.
+- group: "Regeneration (perk status unconfirmed)"
+  base: 20
+  perk: "Corpus Enchanter — unconfirmed"
+  effects:
+    - "Fortify Magicka Regen"
+
+- group: "Regeneration, 10 base (perk status unconfirmed)"
+  base: 10
+  perk: "Corpus Enchanter — unconfirmed"
+  effects:
+    - "Fortify Healing Rate"
+    - "Fortify Stamina Regen"

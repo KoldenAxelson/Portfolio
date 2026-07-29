@@ -1,0 +1,1032 @@
+# Every Skyrim alchemy ingredient — the table the potion builder runs on.
+#
+# 183 ingredients: base game, Dawnguard, Hearthfire, Dragonborn and Creation
+# Club. Sourced from UESP's Skyrim:Ingredients table, with every row
+# cross-checked against that ingredient's own page. Two invariants hold and are
+# worth re-running if you edit this file: every ingredient has exactly four
+# distinct effects, and every effect is carried by at least two ingredients
+# (an effect on only one ingredient could never appear in a potion).
+#
+#   name    display name, exact UESP spelling
+#   value   gold, used as the "most valuable" ranking on the builder's results
+#   dlc     "" | DG (Dawnguard) | HF (Hearthfire) | DB (Dragonborn) | CC (Creation Club)
+#   avail   1-5, how easily you get it:
+#             5  super abundant — mountain flowers, lavender, cave mushrooms
+#             4  abundant in certain areas, if you know where to look
+#             3  around; you get one occasionally without planning for it
+#             2  rare. A deliberate trip, or a lucky drop off something nasty
+#             1  one spot, or a Creation Club Khajiit-caravan random roll
+#           THIS IS JUDGEMENT, not game data — assigned by hand, ingredient by
+#           ingredient. Edit freely; the builder's "easiest to gather" ranking
+#           sums it, and the dots on each result card show it.
+#   effects all four, IN GAME ORDER
+#
+# Slugs are also the image filenames — see assets/skyrim/ingredients/README.md.
+
+abecean-longfin:
+  name: "Abecean Longfin"
+  value: 15
+  avail: 4
+  effects: ["Weakness to Frost", "Fortify Sneak", "Weakness to Poison", "Fortify Restoration"]
+alocasia-fruit:
+  name: "Alocasia Fruit"
+  value: 22
+  dlc: "CC"
+  avail: 1
+  effects: ["Regenerate Stamina", "Light", "Ravage Magicka", "Regenerate Health"]
+aloe-vera-leaves:
+  name: "Aloe Vera Leaves"
+  value: 1
+  dlc: "CC"
+  avail: 1
+  effects: ["Restore Health", "Restore Stamina", "Damage Magicka", "Invisibility"]
+ambrosia:
+  name: "Ambrosia"
+  value: 15
+  dlc: "CC"
+  avail: 1
+  effects: ["Restore Health", "Regenerate Health", "Fortify Health", "Cure Poison"]
+ancestor-moth-wing:
+  name: "Ancestor Moth Wing"
+  value: 2
+  dlc: "DG"
+  avail: 2
+  effects: ["Damage Stamina", "Fortify Conjuration", "Damage Magicka Regen", "Fortify Enchanting"]
+angelfish:
+  name: "Angelfish"
+  value: 30
+  dlc: "CC"
+  avail: 1
+  effects: ["Regenerate Health", "Resist Fire", "Fortify Marksman", "Waterbreathing"]
+angler-larvae:
+  name: "Angler Larvae"
+  value: 1
+  dlc: "CC"
+  avail: 1
+  effects: ["Lingering Damage Health", "Regenerate Stamina", "Waterbreathing", "Fortify Two-Handed"]
+ash-creep-cluster:
+  name: "Ash Creep Cluster"
+  value: 20
+  dlc: "DB"
+  avail: 3
+  effects: ["Damage Stamina", "Invisibility", "Resist Fire", "Fortify Destruction"]
+ash-hopper-jelly:
+  name: "Ash Hopper Jelly"
+  value: 20
+  dlc: "DB"
+  avail: 3
+  effects: ["Restore Health", "Fortify Light Armor", "Resist Shock", "Weakness to Frost"]
+ashen-grass-pod:
+  name: "Ashen Grass Pod"
+  value: 1
+  dlc: "DB"
+  avail: 4
+  effects: ["Resist Fire", "Weakness to Shock", "Fortify Lockpicking", "Fortify Sneak"]
+aster-bloom-core:
+  name: "Aster Bloom Core"
+  value: 40
+  dlc: "CC"
+  avail: 1
+  effects: ["Resist Magic", "Fortify Light Armor", "Fortify Block", "Paralysis"]
+bear-claws:
+  name: "Bear Claws"
+  value: 2
+  avail: 3
+  effects: ["Restore Stamina", "Fortify Health", "Fortify One-Handed", "Damage Magicka Regen"]
+bee:
+  name: "Bee"
+  value: 3
+  avail: 4
+  effects: ["Restore Stamina", "Ravage Stamina", "Regenerate Stamina", "Weakness to Shock"]
+beehive-husk:
+  name: "Beehive Husk"
+  value: 5
+  avail: 3
+  effects: ["Resist Poison", "Fortify Light Armor", "Fortify Sneak", "Fortify Destruction"]
+bittergreen-petals:
+  name: "Bittergreen Petals"
+  value: 25
+  dlc: "CC"
+  avail: 1
+  effects: ["Lingering Damage Stamina", "Invisibility", "Cure Poison", "Damage Magicka"]
+bleeding-crown:
+  name: "Bleeding Crown"
+  value: 10
+  avail: 5
+  effects: ["Weakness to Fire", "Fortify Block", "Weakness to Poison", "Resist Magic"]
+blind-watchers-eye:
+  name: "Blind Watcher's Eye"
+  value: 9
+  dlc: "CC"
+  avail: 1
+  effects: ["Light", "Fortify Magicka", "Fortify Alteration", "Spell Absorption"]
+bliss-bug-thorax:
+  name: "Bliss Bug Thorax"
+  value: 1
+  dlc: "CC"
+  avail: 1
+  effects: ["Weakness to Fire", "Resist Fire", "Fortify Heavy Armor", "Fortify Illusion"]
+blister-pod-cap:
+  name: "Blister Pod Cap"
+  value: 25
+  dlc: "CC"
+  avail: 1
+  effects: ["Restore Magicka", "Fortify Magicka", "Night Eye", "Invisibility"]
+blisterwort:
+  name: "Blisterwort"
+  value: 12
+  avail: 4
+  effects: ["Damage Stamina", "Frenzy", "Restore Health", "Fortify Smithing"]
+bloodgrass:
+  name: "Bloodgrass"
+  value: 25
+  dlc: "CC"
+  avail: 1
+  effects: ["Invisibility", "Resist Poison", "Slow", "Fortify Health"]
+blue-butterfly-wing:
+  name: "Blue Butterfly Wing"
+  value: 2
+  avail: 5
+  effects: ["Damage Stamina", "Fortify Conjuration", "Damage Magicka Regen", "Fortify Enchanting"]
+blue-dartwing:
+  name: "Blue Dartwing"
+  value: 1
+  avail: 4
+  effects: ["Resist Shock", "Fortify Pickpocket", "Restore Health", "Fear"]
+blue-mountain-flower:
+  name: "Blue Mountain Flower"
+  value: 2
+  avail: 5
+  effects: ["Restore Health", "Fortify Conjuration", "Fortify Health", "Damage Magicka Regen"]
+boar-tusk:
+  name: "Boar Tusk"
+  value: 20
+  dlc: "DB"
+  avail: 3
+  effects: ["Fortify Stamina", "Fortify Health", "Fortify Block", "Frenzy"]
+bog-beacon:
+  name: "Bog Beacon"
+  value: 20
+  dlc: "CC"
+  avail: 1
+  effects: ["Restore Magicka", "Fortify Heavy Armor", "Fear", "Damage Stamina"]
+bone-meal:
+  name: "Bone Meal"
+  value: 5
+  avail: 4
+  effects: ["Damage Stamina", "Resist Fire", "Fortify Conjuration", "Ravage Stamina"]
+briar-heart:
+  name: "Briar Heart"
+  value: 20
+  avail: 3
+  effects: ["Restore Magicka", "Fortify Block", "Paralysis", "Fortify Magicka"]
+bunglers-bane:
+  name: "Bungler's Bane"
+  value: 50
+  dlc: "CC"
+  avail: 1
+  effects: ["Slow", "Ravage Stamina", "Damage Stamina Regen", "Resist Magic"]
+burnt-spriggan-wood:
+  name: "Burnt Spriggan Wood"
+  value: 20
+  dlc: "DB"
+  avail: 3
+  effects: ["Weakness to Fire", "Fortify Alteration", "Damage Magicka Regen", "Slow"]
+butterfly-wing:
+  name: "Butterfly Wing"
+  value: 3
+  avail: 5
+  effects: ["Restore Health", "Fortify Barter", "Lingering Damage Stamina", "Damage Magicka"]
+canis-root:
+  name: "Canis Root"
+  value: 5
+  avail: 4
+  effects: ["Damage Stamina", "Fortify One-Handed", "Fortify Marksman", "Paralysis"]
+charred-skeever-hide:
+  name: "Charred Skeever Hide"
+  value: 1
+  avail: 4
+  effects: ["Restore Stamina", "Cure Disease", "Resist Poison", "Restore Health"]
+chaurus-eggs:
+  name: "Chaurus Eggs"
+  value: 10
+  avail: 3
+  effects: ["Weakness to Poison", "Fortify Stamina", "Damage Magicka", "Invisibility"]
+chaurus-hunter-antennae:
+  name: "Chaurus Hunter Antennae"
+  value: 2
+  dlc: "DG"
+  avail: 2
+  effects: ["Damage Stamina", "Fortify Conjuration", "Damage Magicka Regen", "Fortify Enchanting"]
+chickens-egg:
+  name: "Chicken's Egg"
+  value: 2
+  avail: 5
+  effects: ["Resist Magic", "Damage Magicka Regen", "Waterbreathing", "Lingering Damage Stamina"]
+chokeberry:
+  name: "Chokeberry"
+  value: 15
+  dlc: "CC"
+  avail: 1
+  effects: ["Damage Health", "Ravage Health", "Lingering Damage Health", "Weakness to Poison"]
+chokeweed:
+  name: "Chokeweed"
+  value: 7
+  dlc: "CC"
+  avail: 1
+  effects: ["Weakness to Frost", "Restore Stamina", "Cure Disease", "Damage Magicka"]
+coda-flower:
+  name: "Coda Flower"
+  value: 30
+  dlc: "CC"
+  avail: 1
+  effects: ["Damage Health", "Lingering Damage Stamina", "Ravage Magicka", "Fortify Carry Weight"]
+comberry:
+  name: "Comberry"
+  value: 12
+  dlc: "CC"
+  avail: 1
+  effects: ["Damage Stamina", "Spell Absorption", "Restore Magicka", "Fortify Destruction"]
+congealed-putrescence:
+  name: "Congealed Putrescence"
+  value: 9
+  dlc: "CC"
+  avail: 1
+  effects: ["Ravage Health", "Restore Magicka", "Weakness to Fire", "Fortify Conjuration"]
+corkbulb-root:
+  name: "Corkbulb Root"
+  value: 30
+  dlc: "CC"
+  avail: 1
+  effects: ["Paralysis", "Restore Health", "Resist Shock", "Fortify Marksman"]
+creep-cluster:
+  name: "Creep Cluster"
+  value: 1
+  avail: 4
+  effects: ["Restore Magicka", "Damage Stamina Regen", "Fortify Carry Weight", "Weakness to Magic"]
+crimson-nirnroot:
+  name: "Crimson Nirnroot"
+  value: 10
+  avail: 3
+  effects: ["Damage Health", "Damage Stamina", "Invisibility", "Resist Magic"]
+cyrodilic-spadetail:
+  name: "Cyrodilic Spadetail"
+  value: 15
+  avail: 4
+  effects: ["Damage Stamina", "Fortify Restoration", "Fear", "Ravage Health"]
+daedra-heart:
+  name: "Daedra Heart"
+  value: 250
+  avail: 2
+  effects: ["Restore Health", "Damage Stamina Regen", "Damage Magicka", "Fear"]
+daedra-silk:
+  name: "Daedra Silk"
+  value: 50
+  dlc: "CC"
+  avail: 1
+  effects: ["Lingering Damage Stamina", "Paralysis", "Night Eye", "Invisibility"]
+daedra-venin:
+  name: "Daedra Venin"
+  value: 50
+  dlc: "CC"
+  avail: 1
+  effects: ["Ravage Health", "Paralysis", "Fortify Destruction", "Spell Absorption"]
+daedroth-teeth:
+  name: "Daedroth Teeth"
+  value: 50
+  dlc: "CC"
+  avail: 1
+  effects: ["Resist Frost", "Light", "Damage Magicka Regen", "Regenerate Stamina"]
+deathbell:
+  name: "Deathbell"
+  value: 4
+  avail: 4
+  effects: ["Damage Health", "Ravage Stamina", "Slow", "Weakness to Poison"]
+dragons-tongue:
+  name: "Dragon's Tongue"
+  value: 5
+  avail: 4
+  effects: ["Resist Fire", "Fortify Barter", "Fortify Illusion", "Fortify Two-Handed"]
+dreugh-wax:
+  name: "Dreugh Wax"
+  value: 25
+  dlc: "CC"
+  avail: 1
+  effects: ["Weakness to Magic", "Frenzy", "Fortify Enchanting", "Fortify Smithing"]
+dwarven-oil:
+  name: "Dwarven Oil"
+  value: 15
+  avail: 3
+  effects: ["Weakness to Magic", "Fortify Illusion", "Regenerate Magicka", "Restore Magicka"]
+ectoplasm:
+  name: "Ectoplasm"
+  value: 25
+  avail: 3
+  effects: ["Restore Magicka", "Fortify Destruction", "Fortify Magicka", "Damage Health"]
+elves-ear:
+  name: "Elves Ear"
+  value: 10
+  avail: 4
+  effects: ["Restore Magicka", "Fortify Marksman", "Weakness to Frost", "Resist Fire"]
+elytra-ichor:
+  name: "Elytra Ichor"
+  value: 30
+  dlc: "CC"
+  avail: 1
+  effects: ["Restore Magicka", "Invisibility", "Slow", "Fear"]
+emperor-parasol-moss:
+  name: "Emperor Parasol Moss"
+  value: 1
+  dlc: "DB"
+  avail: 4
+  effects: ["Damage Health", "Fortify Magicka", "Regenerate Health", "Fortify Two-Handed"]
+eye-of-sabre-cat:
+  name: "Eye of Sabre Cat"
+  value: 2
+  avail: 3
+  effects: ["Restore Stamina", "Ravage Health", "Damage Magicka", "Restore Health"]
+falmer-ear:
+  name: "Falmer Ear"
+  value: 10
+  avail: 3
+  effects: ["Damage Health", "Frenzy", "Resist Poison", "Fortify Lockpicking"]
+felsaad-tern-feathers:
+  name: "Felsaad Tern Feathers"
+  value: 15
+  dlc: "DB"
+  avail: 3
+  effects: ["Restore Health", "Fortify Light Armor", "Cure Disease", "Resist Magic"]
+fire-petal:
+  name: "Fire Petal"
+  value: 30
+  dlc: "CC"
+  avail: 1
+  effects: ["Damage Health", "Resist Fire", "Spell Absorption", "Paralysis"]
+fire-salts:
+  name: "Fire Salts"
+  value: 50
+  avail: 2
+  effects: ["Weakness to Frost", "Resist Fire", "Restore Magicka", "Regenerate Magicka"]
+flame-stalk:
+  name: "Flame Stalk"
+  value: 25
+  dlc: "CC"
+  avail: 1
+  effects: ["Restore Health", "Resist Frost", "Weakness to Fire", "Invisibility"]
+fly-amanita:
+  name: "Fly Amanita"
+  value: 2
+  avail: 5
+  effects: ["Resist Fire", "Fortify Two-Handed", "Frenzy", "Regenerate Stamina"]
+frost-mirriam:
+  name: "Frost Mirriam"
+  value: 1
+  avail: 4
+  effects: ["Resist Frost", "Fortify Sneak", "Ravage Magicka", "Damage Stamina Regen"]
+frost-salts:
+  name: "Frost Salts"
+  value: 100
+  avail: 2
+  effects: ["Weakness to Fire", "Resist Frost", "Restore Magicka", "Fortify Conjuration"]
+fungus-stalk:
+  name: "Fungus Stalk"
+  value: 30
+  dlc: "CC"
+  avail: 1
+  effects: ["Restore Magicka", "Fortify Health", "Fortify Stamina", "Waterbreathing"]
+garlic:
+  name: "Garlic"
+  value: 1
+  avail: 5
+  effects: ["Resist Poison", "Fortify Stamina", "Regenerate Magicka", "Regenerate Health"]
+giant-lichen:
+  name: "Giant Lichen"
+  value: 5
+  avail: 4
+  effects: ["Weakness to Shock", "Ravage Health", "Weakness to Poison", "Restore Magicka"]
+giants-toe:
+  name: "Giant's Toe"
+  value: 20
+  avail: 2
+  effects: ["Damage Stamina", "Fortify Health", "Fortify Carry Weight", "Damage Stamina Regen"]
+glassfish:
+  name: "Glassfish"
+  value: 1
+  dlc: "CC"
+  avail: 1
+  effects: ["Restore Magicka", "Invisibility", "Fortify Illusion", "Fortify Barter"]
+gleamblossom:
+  name: "Gleamblossom"
+  value: 5
+  dlc: "DG"
+  avail: 2
+  effects: ["Resist Magic", "Fear", "Regenerate Health", "Paralysis"]
+glow-dust:
+  name: "Glow Dust"
+  value: 20
+  avail: 3
+  effects: ["Damage Magicka", "Damage Magicka Regen", "Fortify Destruction", "Resist Shock"]
+glowing-mushroom:
+  name: "Glowing Mushroom"
+  value: 5
+  avail: 4
+  effects: ["Resist Shock", "Fortify Destruction", "Fortify Smithing", "Fortify Health"]
+gnarl-bark:
+  name: "Gnarl Bark"
+  value: 15
+  dlc: "CC"
+  avail: 1
+  effects: ["Damage Health", "Regenerate Health", "Fortify Heavy Armor", "Resist Fire"]
+gold-kanet:
+  name: "Gold Kanet"
+  value: 30
+  dlc: "CC"
+  avail: 1
+  effects: ["Paralysis", "Ravage Health", "Weakness to Frost", "Fortify Smithing"]
+goldfish:
+  name: "Goldfish"
+  value: 10
+  dlc: "CC"
+  avail: 1
+  effects: ["Restore Stamina", "Fortify Heavy Armor", "Waterbreathing", "Resist Frost"]
+grass-pod:
+  name: "Grass Pod"
+  value: 1
+  avail: 4
+  effects: ["Resist Poison", "Ravage Magicka", "Fortify Alteration", "Restore Magicka"]
+green-butterfly-wing:
+  name: "Green Butterfly Wing"
+  value: 25
+  dlc: "CC"
+  avail: 1
+  effects: ["Restore Magicka", "Fear", "Slow", "Invisibility"]
+hackle-lo-leaf:
+  name: "Hackle-Lo Leaf"
+  value: 30
+  dlc: "CC"
+  avail: 1
+  effects: ["Restore Stamina", "Paralysis", "Waterbreathing", "Fortify Restoration"]
+hagraven-claw:
+  name: "Hagraven Claw"
+  value: 20
+  avail: 3
+  effects: ["Resist Magic", "Lingering Damage Magicka", "Fortify Enchanting", "Fortify Barter"]
+hagraven-feathers:
+  name: "Hagraven Feathers"
+  value: 20
+  avail: 3
+  effects: ["Damage Magicka", "Fortify Conjuration", "Frenzy", "Weakness to Shock"]
+hanging-moss:
+  name: "Hanging Moss"
+  value: 1
+  avail: 4
+  effects: ["Damage Magicka", "Fortify Health", "Damage Magicka Regen", "Fortify One-Handed"]
+harrada:
+  name: "Harrada"
+  value: 25
+  dlc: "CC"
+  avail: 1
+  effects: ["Damage Health", "Damage Magicka", "Paralysis", "Damage Magicka Regen"]
+hawk-beak:
+  name: "Hawk Beak"
+  value: 15
+  avail: 3
+  effects: ["Restore Stamina", "Resist Frost", "Fortify Carry Weight", "Resist Shock"]
+hawk-feathers:
+  name: "Hawk Feathers"
+  value: 15
+  avail: 3
+  effects: ["Cure Disease", "Fortify Light Armor", "Fortify One-Handed", "Fortify Sneak"]
+hawks-egg:
+  name: "Hawk's Egg"
+  value: 5
+  dlc: "HF"
+  avail: 3
+  effects: ["Resist Magic", "Damage Magicka Regen", "Waterbreathing", "Lingering Damage Stamina"]
+heart-of-order:
+  name: "Heart of Order"
+  value: 40
+  dlc: "CC"
+  avail: 1
+  effects: ["Restore Health", "Fortify Health", "Fortify One-Handed", "Fortify Two-Handed"]
+histcarp:
+  name: "Histcarp"
+  value: 6
+  avail: 4
+  effects: ["Restore Stamina", "Fortify Magicka", "Damage Stamina Regen", "Waterbreathing"]
+honeycomb:
+  name: "Honeycomb"
+  value: 5
+  avail: 3
+  effects: ["Restore Stamina", "Fortify Block", "Fortify Light Armor", "Ravage Stamina"]
+human-flesh:
+  name: "Human Flesh"
+  value: 1
+  avail: 2
+  effects: ["Damage Health", "Paralysis", "Restore Magicka", "Fortify Sneak"]
+human-heart:
+  name: "Human Heart"
+  value: 0
+  avail: 2
+  effects: ["Damage Health", "Damage Magicka", "Damage Magicka Regen", "Frenzy"]
+hunger-tongue:
+  name: "Hunger Tongue"
+  value: 10
+  dlc: "CC"
+  avail: 1
+  effects: ["Weakness to Fire", "Cure Disease", "Cure Poison", "Fortify Magicka"]
+hydnum-azure-giant-spore:
+  name: "Hydnum Azure Giant Spore"
+  value: 30
+  dlc: "CC"
+  avail: 1
+  effects: ["Resist Frost", "Fortify Health", "Regenerate Health", "Light"]
+hypha-facia:
+  name: "Hypha Facia"
+  value: 23
+  dlc: "CC"
+  avail: 1
+  effects: ["Weakness to Poison", "Frenzy", "Ravage Stamina", "Resist Magic"]
+ice-wraith-teeth:
+  name: "Ice Wraith Teeth"
+  value: 30
+  avail: 3
+  effects: ["Weakness to Frost", "Fortify Heavy Armor", "Invisibility", "Weakness to Fire"]
+imp-gall:
+  name: "Imp Gall"
+  value: 15
+  dlc: "CC"
+  avail: 1
+  effects: ["Damage Health", "Weakness to Fire", "Fortify Barter", "Cure Poison"]
+imp-stool:
+  name: "Imp Stool"
+  value: 0
+  avail: 5
+  effects: ["Damage Health", "Lingering Damage Health", "Paralysis", "Restore Health"]
+ironwood-fruit:
+  name: "Ironwood Fruit"
+  value: 5
+  dlc: "CC"
+  avail: 1
+  effects: ["Restore Health", "Resist Fire", "Damage Stamina", "Restore Magicka"]
+jazbay-grapes:
+  name: "Jazbay Grapes"
+  value: 1
+  avail: 4
+  effects: ["Weakness to Magic", "Fortify Magicka", "Regenerate Magicka", "Ravage Health"]
+juniper-berries:
+  name: "Juniper Berries"
+  value: 1
+  avail: 4
+  effects: ["Weakness to Fire", "Fortify Marksman", "Regenerate Health", "Damage Stamina Regen"]
+juvenile-mudcrab:
+  name: "Juvenile Mudcrab"
+  value: 10
+  dlc: "CC"
+  avail: 1
+  effects: ["Regenerate Stamina", "Fortify Carry Weight", "Cure Disease", "Fortify Two-Handed"]
+kagouti-hide:
+  name: "Kagouti Hide"
+  value: 20
+  dlc: "CC"
+  avail: 1
+  effects: ["Lingering Damage Stamina", "Night Eye", "Fortify Carry Weight", "Resist Shock"]
+kresh-fiber:
+  name: "Kresh Fiber"
+  value: 30
+  dlc: "CC"
+  avail: 1
+  effects: ["Weakness to Magic", "Slow", "Fortify Sneak", "Fortify Pickpocket"]
+large-antlers:
+  name: "Large Antlers"
+  value: 2
+  avail: 3
+  effects: ["Restore Stamina", "Fortify Stamina", "Slow", "Damage Stamina Regen"]
+lavender:
+  name: "Lavender"
+  value: 1
+  avail: 5
+  effects: ["Resist Magic", "Fortify Stamina", "Ravage Magicka", "Fortify Conjuration"]
+lichor:
+  name: "Lichor"
+  value: 15
+  dlc: "CC"
+  avail: 1
+  effects: ["Restore Magicka", "Regenerate Magicka", "Fortify Magicka", "Spell Absorption"]
+luminous-russula:
+  name: "Luminous Russula"
+  value: 25
+  dlc: "CC"
+  avail: 1
+  effects: ["Lingering Damage Stamina", "Lingering Damage Health", "Waterbreathing", "Fear"]
+luna-moth-wing:
+  name: "Luna Moth Wing"
+  value: 5
+  avail: 3
+  effects: ["Damage Magicka", "Fortify Light Armor", "Regenerate Health", "Invisibility"]
+lyretail-anthias:
+  name: "Lyretail Anthias"
+  value: 30
+  dlc: "CC"
+  avail: 1
+  effects: ["Restore Magicka", "Fortify Alteration", "Fortify Conjuration", "Fortify Carry Weight"]
+marshmerrow:
+  name: "Marshmerrow"
+  value: 18
+  dlc: "CC"
+  avail: 1
+  effects: ["Restore Health", "Fortify Carry Weight", "Weakness to Magic", "Damage Stamina"]
+minotaur-horn:
+  name: "Minotaur Horn"
+  value: 55
+  dlc: "CC"
+  avail: 1
+  effects: ["Resist Poison", "Damage Magicka Regen", "Regenerate Health", "Regenerate Magicka"]
+moon-sugar:
+  name: "Moon Sugar"
+  value: 50
+  avail: 2
+  effects: ["Weakness to Fire", "Resist Frost", "Restore Magicka", "Regenerate Magicka"]
+mora-tapinella:
+  name: "Mora Tapinella"
+  value: 4
+  avail: 5
+  effects: ["Restore Magicka", "Lingering Damage Health", "Regenerate Stamina", "Fortify Illusion"]
+mort-flesh:
+  name: "Mort Flesh"
+  value: 2
+  dlc: "CC"
+  avail: 1
+  effects: ["Damage Health", "Damage Magicka", "Damage Magicka Regen", "Frenzy"]
+mudcrab-chitin:
+  name: "Mudcrab Chitin"
+  value: 2
+  avail: 4
+  effects: ["Restore Stamina", "Cure Disease", "Resist Poison", "Resist Fire"]
+namiras-rot:
+  name: "Namira's Rot"
+  value: 0
+  avail: 5
+  effects: ["Damage Magicka", "Fortify Lockpicking", "Fear", "Regenerate Health"]
+netch-jelly:
+  name: "Netch Jelly"
+  value: 20
+  dlc: "DB"
+  avail: 3
+  effects: ["Paralysis", "Fortify Carry Weight", "Restore Stamina", "Fear"]
+nightshade:
+  name: "Nightshade"
+  value: 8
+  avail: 4
+  effects: ["Damage Health", "Damage Magicka Regen", "Lingering Damage Stamina", "Fortify Destruction"]
+nirnroot:
+  name: "Nirnroot"
+  value: 10
+  avail: 3
+  effects: ["Damage Health", "Damage Stamina", "Invisibility", "Resist Magic"]
+nordic-barnacle:
+  name: "Nordic Barnacle"
+  value: 5
+  avail: 4
+  effects: ["Damage Magicka", "Waterbreathing", "Regenerate Health", "Fortify Pickpocket"]
+ogres-teeth:
+  name: "Ogre's Teeth"
+  value: 50
+  dlc: "CC"
+  avail: 1
+  effects: ["Weakness to Shock", "Resist Poison", "Lingering Damage Magicka", "Regenerate Health"]
+orange-dartwing:
+  name: "Orange Dartwing"
+  value: 1
+  avail: 4
+  effects: ["Restore Stamina", "Ravage Magicka", "Fortify Pickpocket", "Lingering Damage Health"]
+pearl:
+  name: "Pearl"
+  value: 2
+  avail: 3
+  effects: ["Restore Stamina", "Fortify Block", "Restore Magicka", "Resist Shock"]
+pearlfish:
+  name: "Pearlfish"
+  value: 15
+  dlc: "CC"
+  avail: 1
+  effects: ["Restore Stamina", "Resist Frost", "Fortify Smithing", "Fortify One-Handed"]
+pine-thrush-egg:
+  name: "Pine Thrush Egg"
+  value: 2
+  avail: 3
+  effects: ["Restore Stamina", "Fortify Lockpicking", "Weakness to Poison", "Resist Shock"]
+poison-bloom:
+  name: "Poison Bloom"
+  value: 5
+  dlc: "DG"
+  avail: 2
+  effects: ["Damage Health", "Slow", "Fortify Carry Weight", "Fear"]
+powdered-mammoth-tusk:
+  name: "Powdered Mammoth Tusk"
+  value: 2
+  avail: 3
+  effects: ["Restore Stamina", "Fortify Sneak", "Weakness to Fire", "Fear"]
+purple-butterfly-wing:
+  name: "Purple Butterfly Wing"
+  value: 25
+  dlc: "CC"
+  avail: 1
+  effects: ["Regenerate Health", "Regenerate Magicka", "Regenerate Stamina", "Paralysis"]
+purple-mountain-flower:
+  name: "Purple Mountain Flower"
+  value: 2
+  avail: 5
+  effects: ["Restore Stamina", "Fortify Sneak", "Lingering Damage Magicka", "Resist Frost"]
+pygmy-sunfish:
+  name: "Pygmy Sunfish"
+  value: 2
+  dlc: "CC"
+  avail: 1
+  effects: ["Restore Stamina", "Lingering Damage Magicka", "Damage Magicka Regen", "Fortify Restoration"]
+red-kelp-gas-bladder:
+  name: "Red Kelp Gas Bladder"
+  value: 20
+  dlc: "CC"
+  avail: 1
+  effects: ["Regenerate Stamina", "Waterbreathing", "Cure Disease", "Fortify Magicka"]
+red-mountain-flower:
+  name: "Red Mountain Flower"
+  value: 2
+  avail: 5
+  effects: ["Restore Magicka", "Ravage Magicka", "Fortify Magicka", "Damage Health"]
+redwort-flower:
+  name: "Redwort Flower"
+  value: 25
+  dlc: "CC"
+  avail: 1
+  effects: ["Resist Frost", "Cure Poison", "Damage Health", "Invisibility"]
+river-betty:
+  name: "River Betty"
+  value: 15
+  avail: 3
+  effects: ["Damage Health", "Fortify Alteration", "Slow", "Fortify Carry Weight"]
+rock-warbler-egg:
+  name: "Rock Warbler Egg"
+  value: 2
+  avail: 3
+  effects: ["Restore Health", "Fortify One-Handed", "Damage Stamina", "Weakness to Magic"]
+roobrush:
+  name: "Roobrush"
+  value: 20
+  dlc: "CC"
+  avail: 1
+  effects: ["Weakness to Magic", "Fortify Sneak", "Lingering Damage Health", "Cure Poison"]
+rot-scale:
+  name: "Rot Scale"
+  value: 20
+  dlc: "CC"
+  avail: 1
+  effects: ["Slow", "Lingering Damage Health", "Fear", "Paralysis"]
+sabre-cat-tooth:
+  name: "Sabre Cat Tooth"
+  value: 2
+  avail: 3
+  effects: ["Restore Stamina", "Fortify Heavy Armor", "Fortify Smithing", "Weakness to Poison"]
+salmon-roe:
+  name: "Salmon Roe"
+  value: 5
+  dlc: "HF"
+  avail: 4
+  effects: ["Restore Stamina", "Waterbreathing", "Fortify Magicka", "Regenerate Magicka"]
+salt-pile:
+  name: "Salt Pile"
+  value: 2
+  avail: 5
+  effects: ["Weakness to Magic", "Fortify Restoration", "Slow", "Regenerate Magicka"]
+saltrice:
+  name: "Saltrice"
+  value: 6
+  dlc: "CC"
+  avail: 1
+  effects: ["Restore Stamina", "Fortify Magicka", "Damage Stamina Regen", "Restore Health"]
+scalon-fin:
+  name: "Scalon Fin"
+  value: 25
+  dlc: "CC"
+  avail: 1
+  effects: ["Waterbreathing", "Damage Health", "Lingering Damage Magicka", "Damage Magicka Regen"]
+scaly-pholiota:
+  name: "Scaly Pholiota"
+  value: 4
+  avail: 5
+  effects: ["Weakness to Magic", "Fortify Illusion", "Regenerate Stamina", "Fortify Carry Weight"]
+scathecraw:
+  name: "Scathecraw"
+  value: 1
+  dlc: "DB"
+  avail: 4
+  effects: ["Ravage Health", "Ravage Stamina", "Ravage Magicka", "Lingering Damage Health"]
+screaming-maw:
+  name: "Screaming Maw"
+  value: 20
+  dlc: "CC"
+  avail: 1
+  effects: ["Regenerate Magicka", "Fortify Alteration", "Invisibility", "Regenerate Health"]
+scrib-jelly:
+  name: "Scrib Jelly"
+  value: 20
+  dlc: "CC"
+  avail: 1
+  effects: ["Regenerate Magicka", "Cure Poison", "Cure Disease", "Regenerate Stamina"]
+scrib-jerky:
+  name: "Scrib Jerky"
+  value: 15
+  dlc: "CC"
+  avail: 1
+  effects: ["Restore Stamina", "Fortify Stamina", "Paralysis", "Waterbreathing"]
+silverside-perch:
+  name: "Silverside Perch"
+  value: 15
+  avail: 4
+  effects: ["Restore Stamina", "Damage Stamina Regen", "Ravage Health", "Resist Frost"]
+skeever-tail:
+  name: "Skeever Tail"
+  value: 3
+  avail: 4
+  effects: ["Damage Stamina Regen", "Ravage Health", "Damage Health", "Fortify Light Armor"]
+slaughterfish-egg:
+  name: "Slaughterfish Egg"
+  value: 3
+  avail: 4
+  effects: ["Resist Poison", "Fortify Pickpocket", "Lingering Damage Health", "Fortify Stamina"]
+slaughterfish-scales:
+  name: "Slaughterfish Scales"
+  value: 3
+  avail: 4
+  effects: ["Resist Frost", "Lingering Damage Health", "Fortify Heavy Armor", "Fortify Block"]
+sload-soap:
+  name: "Sload Soap"
+  value: 30
+  dlc: "CC"
+  avail: 1
+  effects: ["Resist Fire", "Fear", "Fortify Conjuration", "Fortify Alteration"]
+small-antlers:
+  name: "Small Antlers"
+  value: 2
+  avail: 3
+  effects: ["Weakness to Poison", "Fortify Restoration", "Lingering Damage Stamina", "Damage Health"]
+small-pearl:
+  name: "Small Pearl"
+  value: 2
+  avail: 3
+  effects: ["Restore Stamina", "Fortify One-Handed", "Fortify Restoration", "Resist Frost"]
+snowberries:
+  name: "Snowberries"
+  value: 4
+  avail: 5
+  effects: ["Resist Fire", "Fortify Enchanting", "Resist Frost", "Resist Shock"]
+spadefish:
+  name: "Spadefish"
+  value: 15
+  dlc: "CC"
+  avail: 1
+  effects: ["Restore Health", "Fortify Lockpicking", "Fortify Pickpocket", "Cure Disease"]
+spawn-ash:
+  name: "Spawn Ash"
+  value: 20
+  dlc: "DB"
+  avail: 3
+  effects: ["Ravage Stamina", "Resist Fire", "Fortify Enchanting", "Ravage Magicka"]
+spiddal-stick:
+  name: "Spiddal Stick"
+  value: 25
+  dlc: "CC"
+  avail: 1
+  effects: ["Damage Health", "Damage Magicka", "Weakness to Fire", "Restore Stamina"]
+spider-egg:
+  name: "Spider Egg"
+  value: 5
+  avail: 3
+  effects: ["Damage Stamina", "Damage Magicka Regen", "Fortify Lockpicking", "Fortify Marksman"]
+spriggan-sap:
+  name: "Spriggan Sap"
+  value: 15
+  avail: 3
+  effects: ["Damage Magicka Regen", "Fortify Enchanting", "Fortify Smithing", "Fortify Alteration"]
+steel-blue-entoloma:
+  name: "Steel-Blue Entoloma"
+  value: 2
+  dlc: "CC"
+  avail: 1
+  effects: ["Restore Magicka", "Fortify Destruction", "Resist Frost", "Fortify Carry Weight"]
+stoneflower-petals:
+  name: "Stoneflower Petals"
+  value: 15
+  dlc: "CC"
+  avail: 1
+  effects: ["Weakness to Shock", "Fortify One-Handed", "Fortify Magicka", "Fortify Enchanting"]
+swamp-fungal-pod:
+  name: "Swamp Fungal Pod"
+  value: 5
+  avail: 4
+  effects: ["Resist Shock", "Lingering Damage Magicka", "Paralysis", "Restore Health"]
+taproot:
+  name: "Taproot"
+  value: 15
+  avail: 3
+  effects: ["Weakness to Magic", "Fortify Illusion", "Regenerate Magicka", "Restore Magicka"]
+thistle-branch:
+  name: "Thistle Branch"
+  value: 1
+  avail: 5
+  effects: ["Resist Frost", "Ravage Stamina", "Resist Poison", "Fortify Heavy Armor"]
+thorn-hook:
+  name: "Thorn Hook"
+  value: 20
+  dlc: "CC"
+  avail: 1
+  effects: ["Lingering Damage Health", "Paralysis", "Regenerate Magicka", "Regenerate Health"]
+torchbug-thorax:
+  name: "Torchbug Thorax"
+  value: 1
+  avail: 5
+  effects: ["Restore Stamina", "Lingering Damage Magicka", "Weakness to Magic", "Fortify Stamina"]
+trama-root:
+  name: "Trama Root"
+  value: 1
+  dlc: "DB"
+  avail: 4
+  effects: ["Weakness to Shock", "Fortify Carry Weight", "Damage Magicka", "Slow"]
+troll-fat:
+  name: "Troll Fat"
+  value: 15
+  avail: 3
+  effects: ["Resist Poison", "Fortify Two-Handed", "Frenzy", "Damage Health"]
+tundra-cotton:
+  name: "Tundra Cotton"
+  value: 1
+  avail: 5
+  effects: ["Resist Magic", "Fortify Magicka", "Fortify Block", "Fortify Barter"]
+vampire-dust:
+  name: "Vampire Dust"
+  value: 25
+  avail: 3
+  effects: ["Invisibility", "Restore Magicka", "Regenerate Health", "Cure Disease"]
+void-essence:
+  name: "Void Essence"
+  value: 60
+  dlc: "CC"
+  avail: 1
+  effects: ["Restore Health", "Fortify Health", "Fortify Stamina", "Regenerate Health"]
+void-salts:
+  name: "Void Salts"
+  value: 125
+  avail: 2
+  effects: ["Weakness to Shock", "Resist Magic", "Damage Health", "Fortify Magicka"]
+watchers-eye:
+  name: "Watcher's Eye"
+  value: 9
+  dlc: "CC"
+  avail: 1
+  effects: ["Night Eye", "Fortify Magicka", "Fortify Illusion", "Spell Absorption"]
+wheat:
+  name: "Wheat"
+  value: 5
+  avail: 5
+  effects: ["Restore Health", "Fortify Health", "Damage Stamina Regen", "Lingering Damage Magicka"]
+white-cap:
+  name: "White Cap"
+  value: 0
+  avail: 5
+  effects: ["Weakness to Frost", "Fortify Heavy Armor", "Restore Magicka", "Ravage Magicka"]
+wild-grass-pod:
+  name: "Wild Grass Pod"
+  value: 1
+  dlc: "CC"
+  avail: 1
+  effects: ["Resist Poison", "Ravage Magicka", "Fortify Alteration", "Restore Magicka"]
+wisp-stalk-caps:
+  name: "Wisp Stalk Caps"
+  value: 20
+  dlc: "CC"
+  avail: 1
+  effects: ["Damage Health", "Weakness to Poison", "Frenzy", "Regenerate Stamina"]
+wisp-wrappings:
+  name: "Wisp Wrappings"
+  value: 2
+  avail: 3
+  effects: ["Restore Stamina", "Fortify Destruction", "Fortify Carry Weight", "Resist Magic"]
+withering-moon:
+  name: "Withering Moon"
+  value: 5
+  dlc: "CC"
+  avail: 1
+  effects: ["Restore Magicka", "Spell Absorption", "Fortify Light Armor", "Cure Disease"]
+worms-head-cap:
+  name: "Worm's Head Cap"
+  value: 30
+  dlc: "CC"
+  avail: 1
+  effects: ["Fortify Lockpicking", "Night Eye", "Fortify Carry Weight", "Slow"]
+yellow-mountain-flower:
+  name: "Yellow Mountain Flower"
+  value: 2
+  dlc: "DG"
+  avail: 4
+  effects: ["Resist Poison", "Fortify Restoration", "Fortify Health", "Damage Stamina Regen"]

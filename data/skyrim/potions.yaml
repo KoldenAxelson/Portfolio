@@ -1,0 +1,63 @@
+# Skyrim potion recipes — the whole potions section of /misc/skyrim/ lives here.
+#
+# One flat list, rendered by a single {{< potions >}} call in
+# content/misc/skyrim.md. Cards appear in the order written below, so reorder by
+# moving entries.
+#
+# ── Fields ───────────────────────────────────────────────────────────────────
+#   title        (required) the name on the card.
+#   ingredients  (required) 2 or 3 slugs from data/skyrim/ingredients.yaml.
+#   description  (optional) markdown. Renders inside the collapsible note.
+#   tag          (optional) one accent chip shown before the effect chips —
+#                for a purpose the effect list does not state ("Money").
+#   effects      (optional) OVERRIDE. Leave it out and the card computes the
+#                real effects from the ingredients: an effect appears when two
+#                or more of the ingredients share it. Only set this by hand if
+#                the computed list is wrong, and say why when you do.
+#   variants     (optional) list of {label, ingredients} — alternate ingredient
+#                sets for the same idea, drawn inside the collapsible note with
+#                their own computed effects.
+#   value        (optional) rough gold each, free text.
+#
+# A slug that is not in ingredients.yaml raises a build warning and draws as a
+# placeholder tile, so a typo is loud but never breaks the page.
+
+- title: "Excaliboost"
+  ingredients: [canis-root, hanging-moss, elves-ear]
+  description: |
+    Due to a glitch, Fortify Marksman works on all weapons — effectively
+    doubling this potion's potency.
+
+    25 Canis Root on Ivar's Path. Corkbulb and Stoneflower can replace and
+    boost the other slots: swapping both in keeps Fortify One-Handed and
+    Fortify Marksman *and* adds Paralysis, because Canis Root and Corkbulb
+    Root share it.
+
+    Take **Purity** before brewing that one. Paralysis is a negative effect,
+    so the perk strips it on the way out — you get the two fortifies without
+    paralysing yourself for the first few seconds of the fight.
+  variants:
+    - label: "Rare Curios swap — brew with Purity"
+      ingredients: [canis-root, corkbulb-root, stoneflower-petals]
+
+- title: "Nord Blood"
+  ingredients: [fly-amanita, mora-tapinella, dragons-tongue]
+  description: |
+    The ideal Nord Power potion. Boosting that fear effect for higher levels
+    comes in handy more often than not. Fire traps and dragons also handled.
+
+    Note the fourth chip: Fly Amanita and Mora Tapinella both carry Regenerate
+    Stamina, so this brews as a four-effect potion rather than three.
+
+- title: "Elebane"
+  ingredients: [hawk-beak, snowberries, dragons-tongue]
+  description: |
+    Kyne's Peace Shout v2 will just have Hawks fall from the sky. Dupe them
+    though — they're a pain.
+
+- title: "Liquid Gold"
+  tag: "Money"
+  ingredients: [salmon-roe, garlic, nordic-barnacle]
+  description: |
+    Takes 250 with boosts to get to 100. Guardian Stones and Dragonsreach will
+    have what you need.

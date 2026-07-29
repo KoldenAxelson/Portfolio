@@ -1,0 +1,605 @@
+# The 59 alchemy effects: which side of the mortar they fall on, their base
+# strength, and every ingredient that deviates from it.
+#
+#   kind     "good" = a potion effect, "bad" = a poison effect. The builder's
+#            first screen filters on this.
+#   baseMag  base magnitude. 0 means the effect has no magnitude and its
+#            strength lives entirely in the duration (Paralysis, Invisibility,
+#            Waterbreathing, Light, Night Eye).
+#   baseDur  base duration in seconds. 0 = instantaneous.
+#   baseCost base gold cost, the multiplier behind a potion's sale value.
+#   mult     ingredients whose magnitude or duration deviates from the base,
+#            highest first. Anything not listed here is exactly 1.0.
+#
+# THE MULTIPLIERS ARE WHY CREATION CLUB INGREDIENTS ARE SILLY. Salmon Roe is
+# x12.5 magnitude on Fortify Magicka; Watcher's Eye is x5 on Fortify Illusion;
+# Screaming Maw is x4 on Regenerate Health; River Betty is x2.5 on Damage
+# Health. Those are the numbers behind the builder's "most potent" ranking.
+#
+# CAVEAT worth knowing: when two DEVIATING ingredients share an effect, the game
+# uses only the higher-priority one, and UESP believes priority is that
+# ingredient's cost for the effect rather than its magnitude — so the stronger
+# multiplier does not always win. The builder shows the best multiplier present,
+# which is right whenever at most one deviating ingredient carries the effect
+# (nearly always) and optimistic in the rare case where two do.
+#
+# Source: UESP effect pages, cross-checked against Skyrim:Alchemy Effects.
+# Jarrin Root (x100 Damage Health) is deliberately absent — it is the
+# Emperor's-assassination quest item and cannot be gathered.
+
+- name: "Cure Disease"
+  kind: "good"
+  baseMag: 5
+  baseDur: 0
+  baseCost: 0.5
+  mult: {}
+- name: "Cure Poison"
+  kind: "good"
+  baseMag: 2
+  baseDur: 0
+  baseCost: 0.2
+  mult: {}
+- name: "Damage Health"
+  kind: "bad"
+  baseMag: 2
+  baseDur: 1
+  baseCost: 3
+  mult:
+    crimson-nirnroot: {mag: 3}
+    river-betty: {mag: 2.5, dur: 0}
+    harrada: {mag: 2}
+    spiddal-stick: {mag: 2}
+    chokeberry: {mag: 1.5}
+    coda-flower: {mag: 1.5}
+    deathbell: {mag: 1.5}
+    fire-petal: {mag: 1.5}
+    gnarl-bark: {mag: 1.5}
+    imp-gall: {mag: 1.5}
+    poison-bloom: {mag: 1.5}
+    redwort-flower: {mag: 1.5}
+    scalon-fin: {mag: 1.5}
+    wisp-stalk-caps: {mag: 1.5}
+    emperor-parasol-moss: {mag: 1.5, dur: 0}
+    nirnroot: {dur: 0}
+- name: "Damage Magicka"
+  kind: "bad"
+  baseMag: 3
+  baseDur: 0
+  baseCost: 2.2
+  mult:
+    bittergreen-petals: {mag: 1.33}
+    chokeweed: {mag: 1.33}
+    harrada: {mag: 1.33}
+    spiddal-stick: {mag: 1.33}
+- name: "Damage Magicka Regen"
+  kind: "bad"
+  baseMag: 100
+  baseDur: 5
+  baseCost: 0.5
+  mult:
+    daedroth-teeth: {mag: 2}
+    minotaur-horn: {mag: 2}
+    scalon-fin: {mag: 2}
+- name: "Damage Stamina"
+  kind: "bad"
+  baseMag: 3
+  baseDur: 0
+  baseCost: 1.8
+  mult:
+    crimson-nirnroot: {mag: 3}
+    bog-beacon: {mag: 1.33}
+    comberry: {mag: 1.33}
+    marshmerrow: {mag: 1.33}
+- name: "Damage Stamina Regen"
+  kind: "bad"
+  baseMag: 100
+  baseDur: 5
+  baseCost: 0.3
+  mult:
+    bunglers-bane: {mag: 2}
+    saltrice: {mag: 2}
+- name: "Fear"
+  kind: "bad"
+  baseMag: 1
+  baseDur: 30
+  baseCost: 5
+  mult:
+    bog-beacon: {mag: 2.0}
+    elytra-ichor: {mag: 2.0}
+    luminous-russula: {mag: 2.0}
+    sload-soap: {mag: 2.0}
+    rot-scale: {dur: 0.16}
+- name: "Fortify Alteration"
+  kind: "good"
+  baseMag: 4
+  baseDur: 60
+  baseCost: 0.2
+  mult:
+    blind-watchers-eye: {mag: 1.25}
+    screaming-maw: {mag: 1.25}
+    sload-soap: {mag: 1.25}
+- name: "Fortify Barter"
+  kind: "good"
+  baseMag: 1
+  baseDur: 30
+  baseCost: 2
+  mult:
+    imp-gall: {mag: 2.0}
+- name: "Fortify Block"
+  kind: "good"
+  baseMag: 4
+  baseDur: 60
+  baseCost: 0.5
+  mult:
+    aster-bloom-core: {mag: 1.25}
+    briar-heart: {mag: 0.5}
+    honeycomb: {mag: 0.5}
+- name: "Fortify Carry Weight"
+  kind: "good"
+  baseMag: 4
+  baseDur: 300
+  baseCost: 0.15
+  mult:
+    coda-flower: {mag: 1.25}
+    kagouti-hide: {mag: 1.25}
+    marshmerrow: {mag: 1.25}
+    worms-head-cap: {mag: 1.25}
+- name: "Fortify Conjuration"
+  kind: "good"
+  baseMag: 5
+  baseDur: 60
+  baseCost: 0.25
+  mult:
+    congealed-putrescence: {mag: 1.2}
+    sload-soap: {mag: 1.2}
+- name: "Fortify Destruction"
+  kind: "good"
+  baseMag: 5
+  baseDur: 60
+  baseCost: 0.5
+  mult:
+    comberry: {mag: 1.2}
+    daedra-venin: {mag: 1.2}
+    ectoplasm: {mag: 0.8}
+    nightshade: {mag: 0.8}
+- name: "Fortify Enchanting"
+  kind: "good"
+  baseMag: 1
+  baseDur: 30
+  baseCost: 0.6
+  mult:
+    dreugh-wax: {mag: 2.0}
+    stoneflower-petals: {mag: 2.0}
+- name: "Fortify Health"
+  kind: "good"
+  baseMag: 4
+  baseDur: 60
+  baseCost: 0.35
+  mult:
+    fungus-stalk: {mag: 1.25, dur: 5.0}
+    heart-of-order: {mag: 1.25, dur: 5.0}
+    hydnum-azure-giant-spore: {mag: 1.25, dur: 5.0}
+    void-essence: {mag: 1.25, dur: 5.0}
+    ambrosia: {mag: 1.25}
+    bloodgrass: {mag: 1.25}
+    boar-tusk: {dur: 5.0}
+    giants-toe: {dur: 5.0}
+- name: "Fortify Heavy Armor"
+  kind: "good"
+  baseMag: 2
+  baseDur: 60
+  baseCost: 0.5
+  mult:
+    bog-beacon: {mag: 1.5}
+    gnarl-bark: {mag: 1.5}
+- name: "Fortify Illusion"
+  kind: "good"
+  baseMag: 4
+  baseDur: 60
+  baseCost: 0.4
+  mult:
+    watchers-eye: {mag: 5.0}
+    bliss-bug-thorax: {mag: 0.25}
+    glassfish: {mag: 0.25}
+- name: "Fortify Light Armor"
+  kind: "good"
+  baseMag: 2
+  baseDur: 60
+  baseCost: 0.5
+  mult:
+    aster-bloom-core: {mag: 2.0}
+    withering-moon: {mag: 1.5}
+- name: "Fortify Lockpicking"
+  kind: "good"
+  baseMag: 2
+  baseDur: 30
+  baseCost: 0.5
+  mult:
+    worms-head-cap: {mag: 1.5}
+- name: "Fortify Magicka"
+  kind: "good"
+  baseMag: 4
+  baseDur: 60
+  baseCost: 0.3
+  mult:
+    salmon-roe: {mag: 12.5, dur: 0.08}
+    blind-watchers-eye: {mag: 1.25}
+    blister-pod-cap: {mag: 1.25}
+    hunger-tongue: {mag: 1.25}
+    lichor: {mag: 1.25}
+    red-kelp-gas-bladder: {mag: 1.25}
+    saltrice: {mag: 1.25}
+    stoneflower-petals: {mag: 1.25}
+    watchers-eye: {mag: 1.25}
+- name: "Fortify Marksman"
+  kind: "good"
+  baseMag: 4
+  baseDur: 60
+  baseCost: 0.5
+  mult:
+    corkbulb-root: {mag: 1.25}
+- name: "Fortify One-Handed"
+  kind: "good"
+  baseMag: 4
+  baseDur: 60
+  baseCost: 0.5
+  mult:
+    heart-of-order: {mag: 1.25}
+    stoneflower-petals: {mag: 1.25}
+- name: "Fortify Pickpocket"
+  kind: "good"
+  baseMag: 4
+  baseDur: 60
+  baseCost: 0.5
+  mult:
+    kresh-fiber: {mag: 1.25}
+- name: "Fortify Restoration"
+  kind: "good"
+  baseMag: 4
+  baseDur: 60
+  baseCost: 0.5
+  mult:
+    hackle-lo-leaf: {mag: 1.25}
+    yellow-mountain-flower: {mag: 1.25}
+- name: "Fortify Smithing"
+  kind: "good"
+  baseMag: 4
+  baseDur: 30
+  baseCost: 0.75
+  mult:
+    dreugh-wax: {mag: 1.25}
+    gold-kanet: {mag: 1.25}
+- name: "Fortify Sneak"
+  kind: "good"
+  baseMag: 4
+  baseDur: 60
+  baseCost: 0.5
+  mult:
+    kresh-fiber: {mag: 1.25}
+    roobrush: {mag: 1.25}
+- name: "Fortify Stamina"
+  kind: "good"
+  baseMag: 4
+  baseDur: 60
+  baseCost: 0.3
+  mult:
+    boar-tusk: {mag: 1.25, dur: 5}
+    fungus-stalk: {mag: 1.25, dur: 5}
+    void-essence: {mag: 1.25, dur: 5}
+    scrib-jerky: {mag: 1.25}
+- name: "Fortify Two-Handed"
+  kind: "good"
+  baseMag: 4
+  baseDur: 60
+  baseCost: 0.5
+  mult:
+    heart-of-order: {mag: 1.25}
+- name: "Frenzy"
+  kind: "bad"
+  baseMag: 1
+  baseDur: 10
+  baseCost: 15
+  mult:
+    dreugh-wax: {dur: 2.0}
+    hypha-facia: {dur: 2.0}
+    wisp-stalk-caps: {dur: 2.0}
+- name: "Invisibility"
+  kind: "good"
+  baseMag: 0
+  baseDur: 4
+  baseCost: 100
+  mult:
+    bittergreen-petals: {dur: 1.5}
+    blister-pod-cap: {dur: 1.5}
+    daedra-silk: {dur: 1.5}
+    elytra-ichor: {dur: 1.5}
+    flame-stalk: {dur: 1.5}
+    redwort-flower: {dur: 1.5}
+    screaming-maw: {dur: 0.25}
+- name: "Light"
+  kind: "good"
+  baseMag: 0
+  baseDur: 60
+  baseCost: 0.5
+  mult: {}
+- name: "Lingering Damage Health"
+  kind: "bad"
+  baseMag: 1
+  baseDur: 10
+  baseCost: 12
+  mult:
+    rot-scale: {mag: 3}
+    chokeberry: {mag: 2}
+    luminous-russula: {mag: 2}
+    roobrush: {mag: 2}
+- name: "Lingering Damage Magicka"
+  kind: "bad"
+  baseMag: 1
+  baseDur: 10
+  baseCost: 10
+  mult:
+    ogres-teeth: {mag: 2}
+    scalon-fin: {mag: 2}
+- name: "Lingering Damage Stamina"
+  kind: "bad"
+  baseMag: 1
+  baseDur: 10
+  baseCost: 1.8
+  mult:
+    bittergreen-petals: {mag: 2}
+    coda-flower: {mag: 2}
+    daedra-silk: {mag: 2}
+    kagouti-hide: {mag: 2}
+    luminous-russula: {mag: 2}
+- name: "Night Eye"
+  kind: "good"
+  baseMag: 0
+  baseDur: 60
+  baseCost: 0.75
+  mult: {}
+- name: "Paralysis"
+  kind: "bad"
+  baseMag: 0
+  baseDur: 1
+  baseCost: 500
+  mult:
+    aster-bloom-core: {dur: 1.5}
+    corkbulb-root: {dur: 1.5}
+    daedra-silk: {dur: 1.5}
+    daedra-venin: {dur: 1.5}
+    fire-petal: {dur: 1.5}
+    gold-kanet: {dur: 1.5}
+    hackle-lo-leaf: {dur: 1.5}
+    scrib-jerky: {dur: 1.5}
+- name: "Ravage Health"
+  kind: "bad"
+  baseMag: 2
+  baseDur: 10
+  baseCost: 0.4
+  mult:
+    chokeberry: {mag: 1.5, dur: 2.0}
+    congealed-putrescence: {mag: 1.5, dur: 2.0}
+    daedra-venin: {mag: 1.5, dur: 2.0}
+    gold-kanet: {mag: 1.5, dur: 2.0}
+- name: "Ravage Magicka"
+  kind: "bad"
+  baseMag: 2
+  baseDur: 10
+  baseCost: 1
+  mult:
+    alocasia-fruit: {mag: 1.5}
+    coda-flower: {mag: 1.5}
+- name: "Ravage Stamina"
+  kind: "bad"
+  baseMag: 2
+  baseDur: 10
+  baseCost: 1.6
+  mult:
+    bunglers-bane: {mag: 1.5, dur: 2.0}
+    hypha-facia: {mag: 1.5, dur: 2.0}
+    deathbell: {dur: 2.0}
+- name: "Regenerate Health"
+  kind: "good"
+  baseMag: 5
+  baseDur: 300
+  baseCost: 0.1
+  mult:
+    screaming-maw: {mag: 4.0, dur: 0.03}
+    alocasia-fruit: {mag: 1.2}
+    ambrosia: {mag: 1.2}
+    gnarl-bark: {mag: 1.2}
+    hydnum-azure-giant-spore: {mag: 1.2}
+    minotaur-horn: {mag: 1.2}
+    ogres-teeth: {mag: 1.2}
+    void-essence: {mag: 1.2}
+    thorn-hook: {mag: 0.6, dur: 0.6}
+- name: "Regenerate Magicka"
+  kind: "good"
+  baseMag: 5
+  baseDur: 300
+  baseCost: 0.1
+  mult:
+    screaming-maw: {mag: 4.0, dur: 0.2}
+    lichor: {mag: 1.2}
+    minotaur-horn: {mag: 1.2}
+    scrib-jelly: {mag: 1.2}
+    thorn-hook: {mag: 0.6, dur: 0.6}
+- name: "Regenerate Stamina"
+  kind: "good"
+  baseMag: 5
+  baseDur: 300
+  baseCost: 0.1
+  mult:
+    alocasia-fruit: {mag: 1.2}
+    daedroth-teeth: {mag: 1.2}
+    red-kelp-gas-bladder: {mag: 1.2}
+    scrib-jelly: {mag: 1.2}
+    wisp-stalk-caps: {mag: 1.2}
+- name: "Resist Fire"
+  kind: "good"
+  baseMag: 3
+  baseDur: 60
+  baseCost: 0.5
+  mult:
+    ashen-grass-pod: {mag: 1.33}
+    fire-petal: {mag: 1.33}
+    gnarl-bark: {mag: 1.33}
+    sload-soap: {mag: 1.33}
+- name: "Resist Frost"
+  kind: "good"
+  baseMag: 3
+  baseDur: 60
+  baseCost: 0.5
+  mult:
+    daedroth-teeth: {mag: 1.33}
+    flame-stalk: {mag: 1.33}
+    hydnum-azure-giant-spore: {mag: 1.33}
+    redwort-flower: {mag: 1.33}
+- name: "Resist Magic"
+  kind: "good"
+  baseMag: 1
+  baseDur: 60
+  baseCost: 1
+  mult:
+    aster-bloom-core: {mag: 1.2}
+    bunglers-bane: {mag: 1.2}
+    hypha-facia: {mag: 1.2}
+- name: "Resist Poison"
+  kind: "good"
+  baseMag: 4
+  baseDur: 60
+  baseCost: 0.5
+  mult:
+    minotaur-horn: {mag: 1.25}
+    ogres-teeth: {mag: 1.25}
+    thistle-branch: {mag: 0.75, dur: 0}
+    beehive-husk: {mag: 0.5}
+- name: "Resist Shock"
+  kind: "good"
+  baseMag: 3
+  baseDur: 60
+  baseCost: 0.5
+  mult:
+    corkbulb-root: {mag: 1.33}
+    kagouti-hide: {mag: 1.33}
+- name: "Restore Health"
+  kind: "good"
+  baseMag: 5
+  baseDur: 0
+  baseCost: 0.5
+  mult:
+    ambrosia: {mag: 1.2}
+    corkbulb-root: {mag: 1.2}
+    flame-stalk: {mag: 1.2}
+    heart-of-order: {mag: 1.2}
+    marshmerrow: {mag: 1.2}
+    saltrice: {mag: 1.2}
+    void-essence: {mag: 1.2}
+    blisterwort: {mag: 0.6}
+    imp-stool: {mag: 0.6}
+- name: "Restore Magicka"
+  kind: "good"
+  baseMag: 5
+  baseDur: 0
+  baseCost: 0.6
+  mult:
+    blister-pod-cap: {mag: 1.2}
+    bog-beacon: {mag: 1.2}
+    comberry: {mag: 1.2}
+    congealed-putrescence: {mag: 1.2}
+    elytra-ichor: {mag: 1.2}
+    fungus-stalk: {mag: 1.2}
+    lichor: {mag: 1.2}
+    withering-moon: {mag: 1.2}
+- name: "Restore Stamina"
+  kind: "good"
+  baseMag: 5
+  baseDur: 0
+  baseCost: 0.6
+  mult:
+    netch-jelly: {mag: 2.0}
+    chokeweed: {mag: 1.2}
+    hackle-lo-leaf: {mag: 1.2}
+    saltrice: {mag: 1.2}
+    scrib-jerky: {mag: 1.2}
+    bear-claws: {mag: 0.8}
+    salmon-roe: {mag: 0.4}
+    spiddal-stick: {mag: 0.4}
+- name: "Slow"
+  kind: "bad"
+  baseMag: 50
+  baseDur: 5
+  baseCost: 1
+  mult:
+    large-antlers: {mag: 6}
+    bloodgrass: {mag: 6, dur: 0.1}
+    green-butterfly-wing: {mag: 6, dur: 0.1}
+    rot-scale: {mag: 3, dur: 0.1}
+    bunglers-bane: {mag: 2}
+    elytra-ichor: {mag: 2}
+    kresh-fiber: {mag: 2}
+    worms-head-cap: {mag: 2}
+- name: "Spell Absorption"
+  kind: "good"
+  baseMag: 50
+  baseDur: 60
+  baseCost: 0.1
+  mult: {}
+- name: "Waterbreathing"
+  kind: "good"
+  baseMag: 0
+  baseDur: 5
+  baseCost: 30
+  mult:
+    salmon-roe: {dur: 12}
+    fungus-stalk: {dur: 1.6}
+    hackle-lo-leaf: {dur: 1.6}
+    luminous-russula: {dur: 1.6}
+    red-kelp-gas-bladder: {dur: 1.6}
+    scalon-fin: {dur: 1.6}
+    scrib-jerky: {dur: 1.6}
+- name: "Weakness to Fire"
+  kind: "bad"
+  baseMag: 3
+  baseDur: 30
+  baseCost: 0.6
+  mult:
+    hunger-tongue: {mag: 1.33, dur: 2.0}
+    congealed-putrescence: {mag: 1.33}
+    flame-stalk: {mag: 1.33}
+    imp-gall: {mag: 1.33}
+- name: "Weakness to Frost"
+  kind: "bad"
+  baseMag: 3
+  baseDur: 30
+  baseCost: 0.5
+  mult:
+    chokeweed: {mag: 1.33}
+    gold-kanet: {mag: 1.33}
+- name: "Weakness to Magic"
+  kind: "bad"
+  baseMag: 2
+  baseDur: 30
+  baseCost: 1
+  mult:
+    dreugh-wax: {mag: 1.5}
+    kresh-fiber: {mag: 1.5}
+    marshmerrow: {mag: 1.5}
+    roobrush: {mag: 1.5}
+- name: "Weakness to Poison"
+  kind: "bad"
+  baseMag: 2
+  baseDur: 30
+  baseCost: 1
+  mult:
+    chokeberry: {mag: 1.5}
+    hypha-facia: {mag: 1.5}
+    wisp-stalk-caps: {mag: 1.5}
+- name: "Weakness to Shock"
+  kind: "bad"
+  baseMag: 3
+  baseDur: 30
+  baseCost: 0.7
+  mult:
+    ogres-teeth: {mag: 1.33}
+    stoneflower-petals: {mag: 1.33}
