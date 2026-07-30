@@ -1,0 +1,44 @@
+{{- /*
+  skyrim-verify — assert the properties the potion builder depends on, at build
+  time. Called once from skyrim-assets.html.
+
+  These two invariants were checked by hand when the 183-ingredient table was
+  compiled, then not again. A hand-edit that broke either would have shipped
+  silently and shown up as a builder that quietly omits an effect or produces
+  mixtures the game cannot make. `errorf` fails the build instead.
+
+    1. Every ingredient has exactly four DISTINCT effects. Alchemy has no notion
+       of a fifth, and a duplicate would let one ingredient satisfy the
+       two-carriers rule on its own.
+    2. Every effect is carried by at least two ingredients. An effect on only one
+       could never reach a bottle, so offering it in the picker is a dead end.
+
+  Also checks that every effect an ingredient names actually exists in
+  effects.yaml, which is what keeps the payload's numeric indices meaningful.
+*/ -}}
+{{- $known := dict -}}
+{{- range site.Data.skyrim.effects }}{{ $known = merge $known (dict .name true) }}{{ end -}}
+
+{{- $carriers := dict -}}
+{{- range $slug, $ing := site.Data.skyrim.ingredients -}}
+  {{- $effects := $ing.effects | default slice -}}
+  {{- if ne (len $effects) 4 -}}
+    {{- errorf "skyrim data: %q has %d effects, expected exactly 4" $slug (len $effects) -}}
+  {{- end -}}
+  {{- if ne (len $effects) (len (uniq $effects)) -}}
+    {{- errorf "skyrim data: %q lists the same effect twice: %v" $slug $effects -}}
+  {{- end -}}
+  {{- range $effects -}}
+    {{- if not (index $known .) -}}
+      {{- errorf "skyrim data: %q lists effect %q, which is not in effects.yaml" $slug . -}}
+    {{- end -}}
+    {{- $carriers = merge $carriers (dict . (add (int (index $carriers . | default 0)) 1)) -}}
+  {{- end -}}
+{{- end -}}
+
+{{- range site.Data.skyrim.effects -}}
+  {{- $count := int (index $carriers .name | default 0) -}}
+  {{- if lt $count 2 -}}
+    {{- errorf "skyrim data: effect %q is carried by %d ingredient(s); it needs 2 to ever appear in a potion" .name $count -}}
+  {{- end -}}
+{{- end -}}

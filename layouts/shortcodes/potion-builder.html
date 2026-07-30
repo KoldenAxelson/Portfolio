@@ -6,7 +6,7 @@
   1. Potion, poison, or either.
   2. The effects you want. Anything that cannot share a bottle with what you
      have already picked greys out as you go.
-  3. The brews, ranked three ways, with the rest behind a "show more".
+  3. The brews, ranked five ways, with the rest behind a "show more".
 
   Everything is server-rendered — the effect list is real markup, and the
   ingredient table ships as one JSON blob that assets/js/skyrim/builder.ts reads.
@@ -48,7 +48,7 @@
       {{- end }}
     </ul>
     <div class="sky-scr__foot">
-      <p class="sky-hint" data-picked></p>
+      <p class="sky-hint" data-picked aria-live="polite"></p>
       <button type="button" class="sky-go" data-brew disabled>Brew</button>
     </div>
   </section>
@@ -59,7 +59,10 @@
       <button type="button" class="sky-back" data-back>&larr; Back</button>
       <p class="sky-scr__q sky-scr__q--tight" data-result-head></p>
     </div>
-    <div data-results></div>
+    {{- /* The results are rewritten in place with no page load, so they need to
+           announce themselves. `polite` because the reader has just pressed Brew
+           and is expecting the answer. */ -}}
+    <div data-results aria-live="polite" aria-atomic="true"></div>
   </section>
 
   {{- /* Effect names, plus the magnitude/duration multipliers that make Creation
@@ -70,18 +73,18 @@
        would come apart) — the builder only needs it to tell whether an
        effect's strength lives in its magnitude or, when that is 0, its
        duration. */ -}}
-{{- $payload := dict "e" (apply $fx "index" "." "name") -}}
-{{- $mults := slice -}}
-{{- $baseMag := slice -}}
-{{- range $e := $fx -}}
-  {{- $m := dict -}}
-  {{- range $slug, $v := $e.mult -}}
-    {{- $m = merge $m (dict $slug (slice (float ($v.mag | default 1)) (float ($v.dur | default 1)))) -}}
+  {{- $payload := dict "e" (apply $fx "index" "." "name") -}}
+  {{- $mults := slice -}}
+  {{- $baseMag := slice -}}
+  {{- range $e := $fx -}}
+    {{- $m := dict -}}
+    {{- range $slug, $v := $e.mult -}}
+      {{- $m = merge $m (dict $slug (slice (float ($v.mag | default 1)) (float ($v.dur | default 1)))) -}}
+    {{- end -}}
+    {{- $mults = $mults | append $m -}}
+    {{- $baseMag = $baseMag | append (float $e.baseMag) -}}
   {{- end -}}
-  {{- $mults = $mults | append $m -}}
-  {{- $baseMag = $baseMag | append (float $e.baseMag) -}}
-{{- end -}}
-{{- $payload = merge $payload (dict "x" $mults "bm" $baseMag) -}}
+  {{- $payload = merge $payload (dict "x" $mults "bm" $baseMag) -}}
   {{- $rows := slice -}}
   {{- range $slug, $ing := site.Data.skyrim.ingredients -}}
     {{- $ids := slice -}}

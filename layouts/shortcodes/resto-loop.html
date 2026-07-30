@@ -81,5 +81,6 @@
   </div>
   <p class="sky-bar__note" data-resto-group-note></p>
 
-  <div class="sky-plan" data-resto-plan></div>
+  {{- /* Recomputed on every input with no page load, so it announces itself. */ -}}
+  <div class="sky-plan" data-resto-plan aria-live="polite"></div>
 </div>

@@ -1,38 +1,32 @@
 {{- /*
-  func/potion-effects — work out what a potion actually does.
+  func/potion-effects — what a set of ingredients actually brews.
 
-    {{ $effects := partial "func/potion-effects.html" $ingredients }}
+    {{ $effects := partial "func/potion-effects.html" (slice "canis-root" "hanging-moss") }}
 
-  Takes a slice of ingredient dicts (entries from data/skyrim/ingredients.yaml;
-  nil entries are skipped) and returns the ordered slice of effects the brew
-  carries. Skyrim's rule is the whole of it: an effect makes it into the potion
-  when TWO OR MORE of the ingredients in the mortar share it. A fourth effect
-  nobody planned for is normal — see Nord Blood, where Fly Amanita and Mora
-  Tapinella quietly both carry Regenerate Stamina.
+  Takes ingredient SLUGS and returns the ordered slice of effects the mixture
+  carries. Skyrim's rule is the whole of it: an effect reaches the bottle when
+  TWO OR MORE of the ingredients share it. A fourth effect nobody planned for is
+  normal — see Nord Blood, where Fly Amanita and Mora Tapinella quietly both
+  carry Regenerate Stamina.
 
-  Order is first appearance across the ingredient list, which reads the way you
-  would say the recipe out loud.
+  Order is first appearance, which reads the way you would say the recipe aloud.
 
-  Counting is done by scanning the flat list rather than accumulating into a
-  dict, because `merge` normalises map keys and these keys are Title Case effect
-  names with spaces in them. Twelve effects at most, so the nested scan is free.
+  Counting scans the flat list rather than accumulating into a dict, because
+  `merge` normalises map keys and these are Title Case names with spaces in them.
+  Twelve effects at most, so the nested scan costs nothing.
 */ -}}
 {{- $all := slice -}}
 {{- range . -}}
-  {{- with . -}}
-    {{- range .effects -}}
-      {{- $all = $all | append . -}}
-    {{- end -}}
+  {{- with index site.Data.skyrim.ingredients . -}}
+    {{- range .effects }}{{ $all = $all | append . }}{{ end -}}
   {{- end -}}
 {{- end -}}
 {{- $shared := slice -}}
-{{- range $e := $all -}}
-  {{- if not (in $shared $e) -}}
-    {{- $n := 0 -}}
-    {{- range $all -}}
-      {{- if eq . $e -}}{{- $n = add $n 1 -}}{{- end -}}
-    {{- end -}}
-    {{- if ge $n 2 -}}{{- $shared = $shared | append $e -}}{{- end -}}
+{{- range $effect := $all -}}
+  {{- if not (in $shared $effect) -}}
+    {{- $count := 0 -}}
+    {{- range $all }}{{ if eq . $effect }}{{ $count = add $count 1 }}{{ end }}{{ end -}}
+    {{- if ge $count 2 }}{{ $shared = $shared | append $effect }}{{ end -}}
   {{- end -}}
 {{- end -}}
 {{- return $shared -}}

@@ -68,6 +68,9 @@
   color: rgb(var(--c-muted)); border: 1px solid rgb(var(--c-border));
 }
 .sky-chip--tag { color: rgb(var(--c-accent)); border-color: rgb(var(--c-accent) / 0.45); background: rgb(var(--c-accent) / 0.08); }
+/* The builder marks a chip whose magnitude a Creation Club ingredient inflates. */
+.sky-chip.is-boosted { border-color: rgb(var(--c-accent) / 0.55); color: rgb(var(--c-fg)); }
+.sky-chip b { margin-left: 0.3rem; font-weight: 700; color: rgb(var(--c-accent)); }
 .sky-value { margin: 0; font: 0.7rem var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-muted)); }
 
 /* ── Collapsible note ───────────────────────────────────────────────────── */
@@ -171,24 +174,25 @@
 .sky-plan__meta i { font-style: normal; margin: 0 0.5rem; opacity: 0.5; }
 .sky-plan__note { margin: 0.8rem 0 0; font-size: 0.78rem; line-height: 1.55; color: rgb(var(--c-muted)); }
 
-/* Timeline of rounds, ending in the cash-out. */
-.sky-flow { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0; padding: 0; list-style: none; }
-.sky-flow__s {
-  display: inline-flex; align-items: center; gap: 0.45rem; cursor: pointer;
-  padding: 0.35rem 0.7rem 0.35rem 0.35rem; border: 1px solid rgb(var(--c-border));
-  border-radius: 999px; background: rgb(var(--c-bg));
-  font: 600 0.8rem var(--font-mono, ui-monospace, monospace); letter-spacing: 0.06em; color: rgb(var(--c-fg));
+/* The steps, written out and tappable. */
+.sky-steps { display: flex; flex-direction: column; gap: 0.35rem; margin: 0; padding: 0; list-style: none; counter-reset: none; }
+.sky-step {
+  display: flex; align-items: flex-start; gap: 0.6rem; width: 100%; text-align: left; cursor: pointer;
+  padding: 0.55rem 0.7rem; border: 1px solid rgb(var(--c-border)); border-radius: 0.55rem;
+  background: rgb(var(--c-bg)); font: inherit; font-size: 0.86rem; line-height: 1.5; color: rgb(var(--c-muted));
   transition: border-color 0.15s ease, background 0.15s ease;
 }
-.sky-flow__s:hover { border-color: rgb(var(--c-accent) / 0.6); }
-.sky-flow__s:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.5); outline-offset: 2px; }
-.sky-flow__s.is-open { border-color: rgb(var(--c-accent)); background: rgb(var(--c-accent) / 0.1); }
-.sky-flow__s b {
-  display: grid; place-items: center; width: 1.3rem; height: 1.3rem; border-radius: 999px; flex: none;
-  background: rgb(var(--c-accent)); color: rgb(var(--c-bg)); font-size: 0.62rem; font-weight: 700; letter-spacing: 0;
+.sky-step:hover { border-color: rgb(var(--c-accent) / 0.6); }
+.sky-step:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.5); outline-offset: 2px; }
+.sky-step.is-open { border-color: rgb(var(--c-accent)); background: rgb(var(--c-accent) / 0.08); }
+.sky-step > b {
+  display: grid; place-items: center; flex: none; width: 1.4rem; height: 1.4rem; margin-top: 0.05rem;
+  border-radius: 999px; background: rgb(var(--c-accent)); color: rgb(var(--c-bg));
+  font: 700 0.68rem var(--font-mono, ui-monospace, monospace);
 }
-.sky-flow__s--brew { border-style: dashed; }
-.sky-flow__s--brew b { background: rgb(var(--c-fg)); }
+.sky-step--brew > b { background: rgb(var(--c-fg)); }
+.sky-step > span { flex: 1; }
+.sky-step > span b { color: rgb(var(--c-fg)); font-weight: 600; font-variant-numeric: tabular-nums; }
 
 /* The card that opens under the timeline. */
 .sky-detail { margin: 0; }
@@ -222,7 +226,7 @@
 .sky-gear__p span i { font-style: normal; font-size: 0.65rem; opacity: 0.7; }
 .sky-gear__p em { font-size: 0.6rem; font-style: normal; color: rgb(var(--c-muted)); opacity: 0.8; }
 
-@media (prefers-reduced-motion: reduce) { .sky-flow__s, .sky-plan { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .sky-step, .sky-plan { transition: none; } }
 
 /* Collapsed prose block under the planner — the derivation, for when you want
    it. Sits inside a `prose: true` page, so the body keeps Typography styling. */
@@ -284,7 +288,15 @@
 .sky-fx__b:hover:not(:disabled) { border-color: rgb(var(--c-accent) / 0.7); }
 .sky-fx__b:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.5); outline-offset: 2px; }
 .sky-fx__b.is-on { background: rgb(var(--c-accent)); border-color: rgb(var(--c-accent)); color: rgb(var(--c-bg)); font-weight: 600; }
-.sky-fx__b:disabled { opacity: 0.28; cursor: not-allowed; text-decoration: line-through; }
+/* Opacity 0.28 put this under any reasonable contrast floor, and struck-through
+   grey was the only signal. Now it keeps readable contrast and carries a real
+   border change, so the state survives both low vision and greyscale. */
+.sky-fx__b:disabled {
+  cursor: not-allowed; text-decoration: line-through;
+  color: rgb(var(--c-muted)); opacity: 0.7;
+  border-style: dashed; border-color: rgb(var(--c-border));
+  background: rgb(var(--c-border) / 0.25);
+}
 
 .sky-go {
   cursor: pointer; padding: 0.45rem 1.2rem; border-radius: 0.5rem; border: 1px solid rgb(var(--c-accent));
@@ -314,5 +326,15 @@
 .sky-brew .sky-chip { font-size: 0.58rem; padding: 0.18rem 0.4rem; }
 
 @media (prefers-reduced-motion: reduce) { .sky-pick__b, .sky-fx__b, .sky-go, .sky-back { transition: none; } }
-.sky-chip.is-boosted { border-color: rgb(var(--c-accent) / 0.55); color: rgb(var(--c-fg)); }
-.sky-chip b { margin-left: 0.3rem; font-weight: 700; color: rgb(var(--c-accent)); }
+
+/* ── Self-check page ────────────────────────────────────────────────────── */
+.sky-chk__sum { margin: 0 0 0.75rem; font: 700 1.1rem var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-accent)); }
+.sky-chk__sum.is-bad { color: #c0392b; }
+.sky-chks { display: flex; flex-direction: column; gap: 0.2rem; margin: 0; padding: 0; list-style: none; }
+.sky-chk { display: flex; align-items: baseline; gap: 0.6rem; padding: 0.3rem 0.5rem; border-radius: 0.35rem; font-size: 0.82rem; }
+.sky-chk:nth-child(odd) { background: rgb(var(--c-border) / 0.2); }
+.sky-chk b { flex: none; width: 3rem; font: 700 0.62rem var(--font-mono, ui-monospace, monospace); letter-spacing: 0.08em; color: rgb(var(--c-accent)); }
+.sky-chk.is-bad { background: rgb(192 57 43 / 0.12); }
+.sky-chk.is-bad b { color: #c0392b; }
+.sky-chk span { flex: 1; color: rgb(var(--c-fg)); }
+.sky-chk em { font-style: normal; font: 0.72rem var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-muted)); }

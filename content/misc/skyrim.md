@@ -74,19 +74,21 @@ attributes — which is what the picker's groups are.
 
 **The loop.** Every `Fortify <Skill>` effect, potion and apparel enchantment
 alike, is internally school-of-Restoration. So a Fortify Restoration potion
-boosts them, and re-equipping gear while one is active bakes the larger value in.
-With `x` the active fraction and `e` the summed gear:
+boosts them. With `x` the active boost and `e` the summed gear, both as fractions:
 
 ```text
-x[n+1] = r × (1 + e(1 + x[n])) × (1 + x[n])          x[0] = 0
-             \____ brewed ____/   \__ applied __/
+x[n+1] = r × (1 + e) × (1 + x[n])          x[0] = 0
+             \_ brewed _/   \_ applied _/
 ```
 
-Two compounding factors per round — the gear you re-equip is worth more, *and*
+Two compounding factors per round — the gear you are wearing is worth more, *and*
 the new potion is itself a Restoration effect so drinking it on top of the live
-one multiplies it again. Growth is quadratic, not geometric. The gear recomputes
-from its own base each time rather than stacking on itself; all the compounding
-lives in `x`.
+one multiplies it again. Growth is quadratic, not geometric.
+
+**A piece has no memory.** Drinking recomputes the Fortify Alchemy magnitude of
+everything you are wearing *at that moment*, from its base. So a piece is worth
+either 25% × (1 + current boost) or a flat 25% — never some stale value from an
+earlier, smaller boost. You cannot bank a 243% item and come back to it.
 
 That recurrence is a derivation, not something published. Solving `x[n+1] = x[n]`
 gives a discriminant of `(1−r)² − 4re`, so "no fixed point" is exactly UESP's
@@ -94,11 +96,11 @@ documented divergence condition `e > (1−r)²/(4r)`. It also reproduces all thr
 of UESP's worked examples.
 
 **The throttle.** Wearing everything every round overshoots wildly — 121% at
-three rounds, 9,874% at four. What you control is how many pieces are on your
-body *while you brew*. And a piece only takes the boost if it is worn at the
-re-equip, so one you leave off keeps whatever it was worth last time. The four
-drift apart in value, which is why plans name pieces rather than counting them,
-and why round 3 wearing `AC` is a different move from round 3 wearing `AB`.
+three rounds, 9,874% at four. Each round you choose two separate things: what you
+wear **while brewing**, which sets the potion's strength, and what you wear
+**before drinking**, which decides only which pieces come out boosted. Dropping a
+piece for a round costs you its boost entirely, and that is what makes fine
+targets reachable.
 
 **Two ways this is wrong for you.** If you run the Unofficial Patch none of it
 works: USSEP takes the Fortify effects out of the Restoration school and
