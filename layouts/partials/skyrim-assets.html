@@ -7,6 +7,9 @@
   Call with the page:                 {{ partial "skyrim-assets.html" .Page }}
   Style only (no behaviour needed):   {{ partial "skyrim-assets.html" (dict "page" .Page "styleOnly" true) }}
 */ -}}
+{{- /* Data invariants are asserted here rather than in the shortcodes so they
+       run once per page however many widgets are on it. */ -}}
+{{- partial "skyrim-verify.html" . -}}
 {{- $page := . -}}
 {{- $styleOnly := false -}}
 {{- if reflect.IsMap . -}}

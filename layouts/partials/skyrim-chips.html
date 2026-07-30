@@ -1,0 +1,9 @@
+{{- /* A row of effect chips. `tag` renders first in the accent style, for a
+       purpose the effect names do not state on their own ("Money"). */ -}}
+{{- $tag := .tag | default "" -}}
+{{- if or $tag .effects -}}
+<ul class="sky-chips">
+  {{- with $tag }}<li class="sky-chip sky-chip--tag">{{ . }}</li>{{ end }}
+  {{- range .effects }}<li class="sky-chip">{{ . }}</li>{{ end }}
+</ul>
+{{- end -}}

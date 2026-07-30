@@ -277,7 +277,7 @@ cyrodilic-spadetail:
 daedra-heart:
   name: "Daedra Heart"
   value: 250
-  avail: 2
+  avail: 1
   effects: ["Restore Health", "Damage Stamina Regen", "Damage Magicka", "Fear"]
 daedra-silk:
   name: "Daedra Silk"
@@ -490,7 +490,7 @@ harrada:
 hawk-beak:
   name: "Hawk Beak"
   value: 15
-  avail: 3
+  avail: 1
   effects: ["Restore Stamina", "Resist Frost", "Fortify Carry Weight", "Resist Shock"]
 hawk-feathers:
   name: "Hawk Feathers"
