@@ -7,9 +7,8 @@
 //   mag = BaseMag × 4 × (1 + Skill/200) × (1 + Gear/100) × (1 + Alchemist/100)
 //                 × (1 + Benefactor/100) × (1 + Seeker/100)
 //   Gear is the SUMMED Fortify Alchemy across worn pieces. Fortify Restoration
-//   has BaseMag 4 and Fortify Enchanting BaseMag 1, so the restoration potion is
-//   always exactly four times the enchanting one. Duration never binds:
-//   re-equipping resets the Fortify Restoration timer, so no round is timed.
+//   has BaseMag 4 and Fortify Enchanting BaseMag 1, so on plain carriers the
+//   restoration potion is exactly four times the enchanting one on plain carriers.
 //
 // ENCHANTING — UESP, Skyrim:Enchanting Effects, vanilla branch
 //   mag = floor(BaseMag × skillMult × (1 + Enchanter) × (1 + categoryPerk) × (1 + Sorcery))
@@ -20,60 +19,83 @@
 //   flat outer multiplier and also takes the Fortify effects out of the
 //   Restoration school, which kills the loop — none of this applies if you run it.
 //
-// THE LOOP — with x the active boost and e the summed gear, both as fractions:
+// THE LOOP — the whole model, and it is one line
+//   A Fortify Restoration potion boosts every Fortify Alchemy enchantment you are
+//   WEARING while it runs. Not the ones in your pack, and it does not matter which
+//   pieces or in what order you put them on: if it is on your body, it reads
+//   base × (1 + the live boost). There is no per-piece history to keep.
 //
-//     x[n+1] = r × (1 + e(1 + x[n])) × (1 + x[n]),   x[0] = 0
-//                  \____ brewed ____/  \_ applied _/
+//   And because you never wait for the potion to expire, one is always live, which is
+//   what makes it compound — the potion you drink is scaled by the one already running:
 //
-//   Two compounding factors per round: the re-equipped gear is worth more, and
-//   the new potion is itself a Restoration effect so drinking it on top of the
-//   live one multiplies it again. Growth is quadratic, not geometric.
+//     piece  = base × (1 + x)
+//     x[n+1] = r × (1 + wear × base × (1 + x[n])) × (1 + x[n])
 //
-//   A piece has NO private history. Drinking recomputes the Fortify Alchemy
-//   magnitude of everything WORN AT THAT MOMENT from its base; anything not worn
-//   sits at base. So at any point a piece is worth either base × (1 + x) or just
-//   base — never some stale value from an earlier, smaller boost. (An earlier
-//   version let pieces freeze at old boosted values, which produced plans holding
-//   a 243.7% item that the game will not give you. It went unnoticed because
-//   wearing everything every round cannot diverge, so every validated anchor
-//   passed regardless.)
+//   So a round offers exactly ONE choice: how many pieces you have on while you brew.
+//   Fewer pieces, weaker potion. That is the only brake, and with growth this violent
+//   it is the only reason an exact landing is possible at all.
 //
-//   State is therefore just (x, how many pieces are currently boosted) — boosted
-//   pieces are all equal and base pieces are all equal, so only counts matter.
+//   MEASURED IN GAME, four 25% pieces, plain ingredients, all four worn every round.
+//   Observed / modelled:
+//     gear   100%  ->     120% /     120% potion  ->    54% /    55% a piece
+//     gear   220%  ->     422% /     422% potion  ->   130% /   131% a piece
+//     gear   522%  ->   1,948% /   1,951% potion  ->   512% /   513% a piece
+//     gear 2,051%  ->  26,405% /  26,466% potion  -> 6,626% / 6,642% a piece
+//     cash out     ->   3,991% /   4,000% Fortify Enchanting -> 9,831% / 9,874% PLACED
+//   Every line inside 0.5%, drifting slightly high because the game floors each
+//   magnitude and this does not. The 9,831% is the strongest check in here: it exercises
+//   the enchanting quadratic four orders of magnitude past any published example.
 //
-//   This recurrence is a derivation, not a published formula. Solving
-//   x[n+1] = x[n] yields a discriminant of (1−r)² − 4re, so "no fixed point" is
-//   exactly UESP's documented divergence condition e > (1−r)²/(4r). It also
-//   reproduces all three of UESP's worked examples and a 122% field report.
+// WHAT THIS MODULE DELIBERATELY DOES NOT COVER
+//   WAITING for the potion to lapse. Do that and the boost stops compounding, growth
+//   goes linear, and four 25% pieces converge on a hard 36.6% ceiling — measured too:
+//   120% -> 192% -> 235% -> 261%. It also brings back per-piece history, because a value
+//   written while a potion was up STICKS after it expires (a piece boosted to 47.5% and
+//   then worn alongside untouched 25% ones read 47.5 + 47.5 + 25 + 25 = 145%). That is a
+//   different, slower routine and modelling both in one place is what produced five
+//   wrong models in a row. This one assumes you never wait.
 //
-// ── THE TWO CHOICES PER ROUND ───────────────────────────────────────────────
-//   Wearing everything every round overshoots wildly — 121% at three rounds,
-//   9,874% at four. Each round you pick two things, and they are not the same set:
+//   Also out, each having been tried and cut: potions stacking additively, pieces
+//   ratcheting from their boosted value, repeated off-on cycles under one potion,
+//   ingredient magnitude multipliers, and re-enchanting the set mid-plan.
 //
-//     what you wear WHILE BREWING   sets the potion's strength, because Fortify
-//                                   Alchemy only applies to brewing
-//     what you wear BEFORE DRINKING decides which pieces come out boosted, and
-//                                   nothing else
-//
-//   Pieces are interchangeable within their tier, so a plan only has to say how
-//   many boosted and how many base ones to wear. Letters are assigned so the
-//   boosted ones are always the leading run — A B C D — which keeps the written
-//   steps followable.
+//   THE 235% THAT WAS NOT THERE. Three of those wrong models were chasing a remembered
+//   "235%" off a 25% set. It was the third WAITING round's potion, not an enchantment;
+//   that run places about 33%. The enchanting formula feeds the potion into a quadratic
+//   on effective skill, so a potion percentage and an enchantment percentage are never
+//   close. Every step names which it is.
 //
 // ── ACCURACY ────────────────────────────────────────────────────────────────
-//   Every documented anchor reproduces exactly: a 15% Fortify Enchanting potion
-//   bare, the 25% natural cap on base-8 skill enchantments, 29% Fortify Alchemy
-//   from a 32% potion, 32% back out of 4×29% gear. Against a 122% field report at
-//   three rounds it gives 121.6%. UESP flags the 0.14 and 3.4 as an empirical fit
-//   rather than engine constants — moving 3.4 to 3.3 moves that to 124 — so the
-//   last digit is soft. Everything upstream of the enchanting step is exact.
+//   CONFIRMED END TO END. The five-round plan this file produces for 235% Fortify
+//   Alchemy was executed in game off a fixed 4×25% set with plain ingredients, and it
+//   placed 235% on a pair of gloves. Brewing in 0, 2, 2, 2, 2 pieces for potions of 60,
+//   173, 387, 1,003 and 4,315%, then cashing out in 3 pieces for a 511.7% Fortify
+//   Enchanting potion. That plan is pinned move by move in the self-check, because it is
+//   the one thing in here that has been verified against reality rather than fitted to
+//   it, and any drift in the model would silently change it.
+//
+//   The documented anchors also reproduce exactly: a 15% Fortify Enchanting potion bare,
+//   the 25% natural cap on base-8 skill enchantments, 29% Fortify Alchemy from a 32%
+//   potion, 32% back out of 4×29% gear. And the measured four-round ladder above holds
+//   inside 0.5% end to end, including a 9,831% enchantment — which exercises the
+//   enchanting quadratic four orders of magnitude past any published example.
+//
+//   UESP flags the 0.14 and 3.4 as an empirical fit rather than engine constants, so
+//   treat the last digit of any enchantment as soft. Everything upstream of the
+//   enchanting step is exact.
 
-import { debounce, escapeHtml, findField, formatNumber, formatPrecise, formatWhole, queryAll, readFlag, readNumber } from './util';
+import { debounce, findField, formatNumber, formatPrecise, formatWhole, queryAll, readFlag, readNumber } from './util';
 
 const RESTORATION_BASE = 4;
 const ENCHANTING_BASE = 1;
-const PIECE_LETTERS = 'ABCDE'; // a fifth slot is reachable via the helmet + circlet bug
-const MAX_ROUNDS = 6;
+/** Four apparel slots take Fortify Alchemy; a fifth needs the helmet + circlet bug. */
+const MAX_PIECES = 5;
+/**
+ * How many rounds deep to plan. Twelve because a real run is a dozen-odd steps
+ * when it is being throttled toward an exact number, not the four or five a
+ * wear-everything plan needs.
+ */
+const MAX_ROUNDS = 12;
 const MAX_STATES = 90000;
 /** Stop exploring past ~30,000% gear; far beyond anything the game survives. */
 const GEAR_CEILING = 300;
@@ -118,58 +140,51 @@ function enchantmentMagnitude(s: Settings, potionPercent: number): number {
 }
 
 
+/** The Fortify Enchanting potion a given summed Fortify Alchemy brews, as a percent. */
+export function potionOf(s: Settings, gearPercent: number): number {
+  return ENCHANTING_BASE * potionMultiplier(s, gearPercent);
+}
+
+/** The enchantment magnitude a given Fortify Enchanting potion can place. */
+export function placeableFrom(s: Settings, potionPercent: number): number {
+  return enchantmentMagnitude(s, potionPercent);
+}
+
 /**
- * One node of the loop. `boostedCount` is how many pieces currently sit at
- * base × (1 + activeBoost); the rest sit at base.
+ * One node of the loop. State is JUST the live boost — see the header for why there is
+ * no per-piece bookkeeping in the no-wait routine.
  */
 interface LoopState {
   activeBoost: number;
-  boostedCount: number;
-  /** The choice that produced this node, for replaying the plan. */
-  move: Move | null;
+  /** Pieces worn while brewing, which is the only choice a round offers. */
+  move: number | null;
   parent: LoopState | null;
   rounds: number;
 }
 
-/** What you do in one round. */
-interface Move {
-  /** Boosted pieces worn while brewing. */
-  brewBoosted: number;
-  /** Base pieces worn while brewing. */
-  brewBase: number;
-  /** Pieces equipped before drinking — they are what comes out boosted. */
-  equip: number;
-}
+/** What you do in one round: how many pieces you have on while you brew. */
+export type Move = number;
 
 export interface Round {
   index: number;
-  /** Pieces to wear while brewing, as letters. */
-  brewWith: string;
-  /** The same split out, so a mixed wear can be described as one. */
-  brewBoostedLetters: string;
-  brewBaseLetters: string;
+  /** How many pieces to wear while brewing. Which ones does not matter. */
+  wear: number;
   /** Summed Fortify Alchemy that gives you. */
   brewGearPercent: number;
-  /** The Fortify Restoration potion it yields. */
+  /** What the bottle reads — already scaled by the live effect. */
   brewedPercent: number;
-  /** Pieces to be wearing when you drink it. */
-  equip: string;
-  /** What the potion is worth once drunk on top of the one still running. */
-  appliedPercent: number;
-  /** Each piece afterwards: boosted ones first, then any left at base. */
-  piecePercents: number[];
-  boostedCount: number;
+  /** What every worn piece reads once you have drunk it. */
+  piecePercent: number;
 }
 
 export interface Plan {
   value: number;
   rounds: number;
   /** Pieces to wear for the final Fortify Enchanting brew. */
-  brew: string;
+  cashOutWear: number;
   gearPercent: number;
   potionPercent: number;
   state: LoopState | null;
-  cashOut: { boosted: number; base: number };
   pieceCount: number;
   perPieceFraction: number;
   baseRestoration: number;
@@ -185,71 +200,70 @@ export interface Solution {
   truncated: boolean;
 }
 
-/** Letters for `count` pieces starting at `from`, e.g. (1, 2) -> "B C". */
-function letters(from: number, count: number): string {
-  const picked: string[] = [];
-  for (let i = from; i < from + count; i++) picked.push(PIECE_LETTERS[i]);
-  return picked.join(' ') || 'nothing';
+/** The Fortify Restoration potion a bare, gearless brew gives you, as a fraction. */
+function baseRestorationOf(s: Settings): number {
+  return (RESTORATION_BASE * potionMultiplier(s, 0)) / 100;
 }
 
-/** Summed Fortify Alchemy from wearing `boosted` boosted pieces and `base` base ones. */
-function gearWorn(boosted: number, base: number, activeBoost: number, perPiece: number): number {
-  return boosted * perPiece * (1 + activeBoost) + base * perPiece;
+/** Summed Fortify Alchemy from wearing `wear` pieces while the boost is `activeBoost`. */
+function gearOf(wear: number, activeBoost: number, perPiece: number): number {
+  return wear * perPiece * (1 + activeBoost);
 }
 
 /**
- * Replay a plan into per-round instructions.
- *
- * Not computed during the search — the search evaluates hundreds of thousands of
- * cash-outs and only displayed plans need this.
+ * One round applied to a state. The recurrence lives here and nowhere else, so the
+ * search and the replay used by the self-check cannot drift apart.
  */
+function advance(state: LoopState, wear: Move, s: Settings, baseRestoration: number): LoopState {
+  const gear = gearOf(wear, state.activeBoost, s.perPiece / 100);
+  const brewed = baseRestoration * (1 + gear);
+  return {
+    // The live effect scales the potion you drink on top of it. That is the whole engine.
+    activeBoost: brewed * (1 + state.activeBoost),
+    move: wear,
+    parent: state,
+    rounds: state.rounds + 1,
+  };
+}
+
+/** Run an explicit sequence of rounds — how a field run gets pinned in the self-check. */
+export function replay(s: Settings, moves: Move[]): Round[] {
+  const pieceCount = Math.max(1, Math.min(MAX_PIECES, Math.round(s.pieces)));
+  const baseRestoration = baseRestorationOf(s);
+  let state: LoopState = { activeBoost: 0, move: null, parent: null, rounds: 0 };
+  for (const move of moves) state = advance(state, move, s, baseRestoration);
+  return roundsOf({
+    value: 0, rounds: moves.length, cashOutWear: 0, gearPercent: 0, potionPercent: 0,
+    state, pieceCount, perPieceFraction: s.perPiece / 100, baseRestoration,
+  });
+}
+
+/** Replay a plan into per-round instructions. */
 export function roundsOf(plan: Plan): Round[] {
   const chain: LoopState[] = [];
   for (let node = plan.state; node && node.parent; node = node.parent) chain.unshift(node);
 
   return chain.map((node, i) => {
     const previous = node.parent as LoopState;
-    const move = node.move as Move;
-    const gear = gearWorn(move.brewBoosted, move.brewBase, previous.activeBoost, plan.perPieceFraction);
-    const boostedValue = plan.perPieceFraction * (1 + node.activeBoost) * 100;
-    const baseValue = plan.perPieceFraction * 100;
-    const pieces: number[] = [];
-    for (let piece = 0; piece < plan.pieceCount; piece++) {
-      pieces.push(piece < node.boostedCount ? boostedValue : baseValue);
-    }
-    // Boosted pieces are the leading run, so brewing with `brewBoosted` of them
-    // plus `brewBase` base ones is two adjacent slices of the same alphabet.
-    const boostedPart = move.brewBoosted ? letters(0, move.brewBoosted) : '';
-    const basePart = move.brewBase ? letters(previous.boostedCount, move.brewBase) : '';
+    const wear = node.move as number;
     return {
       index: i + 1,
-      brewWith: [boostedPart, basePart].filter(Boolean).join(' ') || 'nothing',
-      brewBoostedLetters: boostedPart,
-      brewBaseLetters: basePart,
-      brewGearPercent: gear * 100,
-      brewedPercent: plan.baseRestoration * (1 + gear) * 100,
-      equip: letters(0, move.equip),
-      appliedPercent: node.activeBoost * 100,
-      piecePercents: pieces,
-      boostedCount: node.boostedCount,
+      wear,
+      brewGearPercent: gearOf(wear, previous.activeBoost, plan.perPieceFraction) * 100,
+      brewedPercent: node.activeBoost * 100,
+      piecePercent: plan.perPieceFraction * (1 + node.activeBoost) * 100,
     };
   });
 }
 
-export function piecePercentsAt(plan: Plan): number[] {
-  if (!plan.state) return [];
-  const boostedValue = plan.perPieceFraction * (1 + plan.state.activeBoost) * 100;
-  const baseValue = plan.perPieceFraction * 100;
-  const pieces: number[] = [];
-  for (let piece = 0; piece < plan.pieceCount; piece++) {
-    pieces.push(piece < plan.state.boostedCount ? boostedValue : baseValue);
-  }
-  return pieces;
+/** What one piece reads at the end of a plan. */
+function piecePercentAt(plan: Plan): number {
+  return plan.perPieceFraction * (1 + (plan.state ? plan.state.activeBoost : 0)) * 100;
 }
 
 export function solve(s: Settings, target: number): Solution {
-  const baseRestoration = (RESTORATION_BASE * potionMultiplier(s, 0)) / 100;
-  const pieceCount = Math.max(1, Math.min(PIECE_LETTERS.length, Math.round(s.pieces)));
+  const baseRestoration = baseRestorationOf(s);
+  const pieceCount = Math.max(1, Math.min(MAX_PIECES, Math.round(s.pieces)));
   const perPiece = s.perPiece / 100;
 
   const natural = enchantmentMagnitude(s, 0);
@@ -257,9 +271,9 @@ export function solve(s: Settings, target: number): Solution {
   let under: Plan | null = null;
   let over: Plan | null = null;
 
-  // The game FLOORS the enchantment, so 200.04 (reads 200%) beats 199.96 (reads
-  // 199%) even though both are 0.04 away. Match the displayed integer first, then
-  // prefer fewer rounds, then close the gap.
+  // The game FLOORS the enchantment, so 200.04 (reads 200%) beats 199.96 (reads 199%)
+  // even though both are 0.04 away. Match the displayed integer first, then prefer
+  // fewer rounds, then close the gap.
   const displaysTarget = (value: number): boolean => Math.floor(value) === Math.floor(target);
   const rank = (plan: Plan): number =>
     displaysTarget(plan.value)
@@ -273,36 +287,23 @@ export function solve(s: Settings, target: number): Solution {
   };
 
   const shell = { pieceCount, perPieceFraction: perPiece, baseRestoration };
-  consider({
-    value: natural, rounds: 0, brew: 'nothing', gearPercent: 0, potionPercent: 0,
-    state: null, cashOut: { boosted: 0, base: 0 }, ...shell,
-  });
 
-  /** Every wear split for the final Fortify Enchanting brew. */
+  /** Every wear count for the final Fortify Enchanting brew. */
   const cashOut = (state: LoopState): void => {
-    for (let boosted = 0; boosted <= state.boostedCount; boosted++) {
-      for (let base = 0; base <= pieceCount - state.boostedCount; base++) {
-        const gear = gearWorn(boosted, base, state.activeBoost, perPiece);
-        const potionPercent = ENCHANTING_BASE * potionMultiplier(s, gear * 100);
-        const value = enchantmentMagnitude(s, potionPercent);
-        if (!Number.isFinite(value) || value <= 0) continue;
-        consider({
-          value,
-          rounds: state.rounds,
-          brew: [letters(0, boosted), letters(state.boostedCount, base)]
-            .filter((part) => part !== 'nothing').join(' ') || 'nothing',
-          gearPercent: gear * 100,
-          potionPercent,
-          state,
-          cashOut: { boosted, base },
-          ...shell,
-        });
-      }
+    for (let wear = 0; wear <= pieceCount; wear++) {
+      const gear = gearOf(wear, state.activeBoost, perPiece);
+      const potionPercent = ENCHANTING_BASE * potionMultiplier(s, gear * 100);
+      const value = enchantmentMagnitude(s, potionPercent);
+      if (!Number.isFinite(value) || value <= 0) continue;
+      consider({
+        value, rounds: state.rounds, cashOutWear: wear,
+        gearPercent: gear * 100, potionPercent, state, ...shell,
+      });
     }
   };
 
-  const root: LoopState = { activeBoost: 0, boostedCount: 0, move: null, parent: null, rounds: 0 };
-  const visited = new Set<string>(['0|0']);
+  const root: LoopState = { activeBoost: 0, move: null, parent: null, rounds: 0 };
+  const visited = new Set<string>(['0']);
   let frontier: LoopState[] = [root];
   let stateCount = 1;
   let truncated = false;
@@ -311,32 +312,22 @@ export function solve(s: Settings, target: number): Solution {
   for (let depth = 0; depth < MAX_ROUNDS && !truncated; depth++) {
     const next: LoopState[] = [];
     for (const state of frontier) {
-      for (let brewBoosted = 0; brewBoosted <= state.boostedCount && !truncated; brewBoosted++) {
-        for (let brewBase = 0; brewBase <= pieceCount - state.boostedCount && !truncated; brewBase++) {
-          const gear = gearWorn(brewBoosted, brewBase, state.activeBoost, perPiece);
-          const activeBoost = baseRestoration * (1 + gear) * (1 + state.activeBoost);
-          if (activeBoost * perPiece * pieceCount > GEAR_CEILING) continue;
-          for (let equip = 0; equip <= pieceCount; equip++) {
-            const key = `${activeBoost.toFixed(6)}|${equip}`;
-            if (visited.has(key)) continue;
-            visited.add(key);
-            next.push({
-              activeBoost,
-              boostedCount: equip,
-              move: { brewBoosted, brewBase, equip },
-              parent: state,
-              rounds: state.rounds + 1,
-            });
-            truncated = ++stateCount >= MAX_STATES;
-          }
-        }
+      for (let wear = 0; wear <= pieceCount && !truncated; wear++) {
+        const candidate = advance(state, wear, s, baseRestoration);
+        if (!Number.isFinite(candidate.activeBoost)) continue;
+        if (gearOf(pieceCount, candidate.activeBoost, perPiece) > GEAR_CEILING) continue;
+        const key = candidate.activeBoost.toFixed(6);
+        if (visited.has(key)) continue;
+        visited.add(key);
+        next.push(candidate);
+        truncated = ++stateCount >= MAX_STATES;
       }
       if (truncated) break;
     }
     next.forEach(cashOut);
     frontier = next;
-    // Landed on the number in the fewest rounds that can reach it; searching
-    // deeper can only turn up longer plans for the same result.
+    // Landed on the number in the fewest rounds that can reach it; searching deeper can
+    // only turn up longer plans for the same result.
     if (best && displaysTarget(best.value)) break;
   }
 
@@ -345,70 +336,59 @@ export function solve(s: Settings, target: number): Solution {
 
 // ── Rendering ───────────────────────────────────────────────────────────────
 
-function gearTiles(percents: number[], boostedCount: number): string {
-  const tiles = percents.map((percent, i) => {
-    const boosted = i < boostedCount;
-    return (
-      `<li class="sky-gear__p${boosted ? ' is-on' : ''}">` +
-      `<b>${PIECE_LETTERS[i]}</b><span>${formatNumber(percent)}<i>%</i></span>` +
-      `<em>${boosted ? 'boosted' : 'back to base'}</em></li>`
-    );
-  });
-  return `<ul class="sky-gear">${tiles.join('')}</ul>`;
-}
-
-function roundDetail(round: Round, perPiecePercent: number): string {
+function roundDetail(round: Round, pieceCount: number): string {
+  // The badge is a single-glyph circle, so it carries the piece COUNT and the wording
+  // goes underneath. "Each" in there rendered as "Eac".
+  const tile = (badge: string, percent: number, label: string): string =>
+    `<li class="sky-gear__p is-on"><b>${badge}</b>` +
+    `<span>${formatNumber(percent)}<i>%</i></span><em>${label}</em></li>`;
   return [
     `<p class="sky-detail__head">After round ${round.index}</p>`,
-    gearTiles(round.piecePercents, round.boostedCount),
-    `<p class="sky-detail__foot">Wearing <b>${escapeHtml(round.brewWith)}</b> puts `,
-    `<b>${formatNumber(round.brewGearPercent)}%</b> Fortify Alchemy on you, which is what makes the potion `,
-    `<b>${formatNumber(round.brewedPercent)}%</b>. Drunk on top of the one still running it is worth `,
-    `<b>${formatNumber(round.appliedPercent)}%</b>. Whatever you had on <em>at the moment you drank</em> — `,
-    `<b>${escapeHtml(round.equip)}</b> — is scaled to that from its base. Everything else sits at `,
-    `${formatNumber(perPiecePercent)}%.</p>`,
+    `<ul class="sky-gear">`,
+    tile('1', round.piecePercent, 'one piece'),
+    tile(String(pieceCount), round.piecePercent * pieceCount, 'wearing them all'),
+    `</ul>`,
+    `<p class="sky-detail__foot">Brewing in <b>${round.wear}</b> piece${round.wear === 1 ? '' : 's'} gives you `,
+    `<b>${formatNumber(round.brewGearPercent)}%</b> Fortify Alchemy, which makes a `,
+    `<b>${formatNumber(round.brewedPercent)}%</b> potion. Drink it and every piece you have on reads `,
+    `<b>${formatNumber(round.piecePercent)}%</b> — so wearing fewer pieces while brewing is the only brake `,
+    `there is.</p>`,
   ].join('');
 }
 
 function cashOutDetail(plan: Plan): string {
   return [
-    `<p class="sky-detail__head">Cash out — wear <b>${escapeHtml(plan.brew)}</b></p>`,
-    gearTiles(piecePercentsAt(plan), plan.state ? plan.state.boostedCount : 0),
-    `<p class="sky-detail__foot">That is <b>${formatNumber(plan.gearPercent)}%</b> Fortify Alchemy on your body, `,
-    `which brews a <b>${formatNumber(plan.potionPercent)}%</b> Fortify Enchanting potion. Drink it at the arcane `,
-    `enchanter and place the enchantment.</p>`,
+    `<p class="sky-detail__head">Cash out — wear ${plan.cashOutWear} piece${plan.cashOutWear === 1 ? '' : 's'}</p>`,
+    `<p class="sky-detail__foot">Each reads <b>${formatNumber(piecePercentAt(plan))}%</b>, so that is `,
+    `<b>${formatNumber(plan.gearPercent)}%</b> Fortify Alchemy, which brews a `,
+    `<b>${formatNumber(plan.potionPercent)}%</b> Fortify Enchanting potion. Drink it at the arcane enchanter `,
+    `and place the enchantment.</p>`,
   ].join('');
 }
 
 /**
  * The steps, written out.
  *
- * Chips reading "3 AC" said nothing about what to actually do with them. Each
- * round is two distinct actions on two possibly-different sets of pieces, so it
- * gets a sentence naming both.
+ * Counts, not letters. Which pieces you wear does not matter — anything on your body
+ * while the potion is up reads the same number — and an earlier lettered notation with
+ * a lowercase-means-base convention cost a whole run to ambiguity.
  */
 function stepList(plan: Plan, rounds: Round[]): string {
-  const basePercent = plan.perPieceFraction * 100;
+  const pieces = (n: number): string => `<b>${n}</b> piece${n === 1 ? '' : 's'}`;
   const steps = rounds.map((round) => {
-    // Mixing boosted pieces with ones sitting at base is a real lever — three at
-    // 300% plus one at 25% is 925% rather than 900% or 1,200% — so a mixed wear
-    // says so rather than leaving you to work it out from the letters.
-    const mixed = round.brewBoostedLetters && round.brewBaseLetters;
-    const wearing = mixed
-      ? `<b>${escapeHtml(round.brewBoostedLetters)}</b> (boosted) with ` +
-        `<b>${escapeHtml(round.brewBaseLetters)}</b> (still ${formatNumber(basePercent)}%)`
-      : `only <b>${escapeHtml(round.brewWith)}</b>`;
+    const wearing = round.wear === 0
+      ? 'wearing <b>nothing</b>'
+      : `wearing any ${pieces(round.wear)} (<b>${formatNumber(round.brewGearPercent)}%</b> Fortify Alchemy)`;
     const text =
-      `Brew a <b>${formatNumber(round.brewedPercent)}%</b> potion wearing ${wearing} — ` +
-      `<b>${formatNumber(round.brewGearPercent)}%</b> Fortify Alchemy. ` +
-      `Equip <b>${escapeHtml(round.equip)}</b>, then drink it.`;
+      `Brew a <b>${formatNumber(round.brewedPercent)}%</b> potion ${wearing}. Drink it. ` +
+      `Every piece you put on now reads <b>${formatNumber(round.piecePercent)}%</b>.`;
     return `<li><button type="button" class="sky-step" data-step="${round.index - 1}">` +
       `<b>${round.index}</b><span>${text}</span></button></li>`;
   });
   steps.push(
     `<li><button type="button" class="sky-step sky-step--brew" data-step="${rounds.length}">` +
-      `<b>&#9670;</b><span>Brew a <b>${formatNumber(plan.potionPercent)}%</b> Fortify Enchanting potion wearing ` +
-      `<b>${escapeHtml(plan.brew)}</b> — <b>${formatNumber(plan.gearPercent)}%</b> Fortify Alchemy. ` +
+      `<b>&#9670;</b><span>Wearing ${pieces(plan.cashOutWear)} (<b>${formatNumber(plan.gearPercent)}%</b> ` +
+      `Fortify Alchemy), brew a <b>${formatNumber(plan.potionPercent)}%</b> Fortify Enchanting potion. ` +
       `Drink it at an arcane enchanter and place the enchantment.</span></button></li>`,
   );
   return `<ol class="sky-steps">${steps.join('')}</ol>`;
@@ -497,7 +477,7 @@ function setUp(root: HTMLElement): void {
     }
     slot.innerHTML = openStep >= rounds.length
       ? cashOutDetail(plan)
-      : roundDetail(rounds[openStep], readNumber(root, 'perPiece', 25));
+      : roundDetail(rounds[openStep], readNumber(root, 'pieces', 4));
   };
 
   const openStepAt = (step: number): void => {
