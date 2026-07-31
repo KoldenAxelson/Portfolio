@@ -24,6 +24,7 @@ sections:
   - { id: "potions", label: "Potions",    icon: "sparkles" }
   - { id: "builder", label: "Builder",    icon: "puzzle-piece" }
   - { id: "resto",   label: "Resto loop", icon: "fire" }
+  - { id: "ceiling", label: "Enchant max", icon: "arrow-trending-up" }
 ---
 
 Anniversary Edition, Creation Club on, no mods. Rare Curios ingredients are
@@ -42,7 +43,7 @@ typed in, so they cannot drift.
 
 ## Resto loop {#resto}
 
-{{< resto-loop target="200" effect="Fortify Destruction" >}}
+{{< resto-loop target="235" effect="Fortify Alchemy" >}}
 
 <details class="sky-more">
 <summary>The formulae, and why the gear count is the throttle</summary>
@@ -72,41 +73,94 @@ enchantment comes out quadratic in potion strength. `BaseMag` is 8 for Fortify
 Destruction, 13 for Fortify One-Handed, 15 for the elemental resists, 20 for the
 attributes — which is what the picker's groups are.
 
-**The loop.** Every `Fortify <Skill>` effect, potion and apparel enchantment
-alike, is internally school-of-Restoration. So a Fortify Restoration potion
-boosts them. With `x` the active boost and `e` the summed gear, both as fractions:
+**The loop.** A Fortify Restoration potion boosts every `Fortify <Skill>` enchantment
+you are **wearing** while it runs, because those enchantments are internally
+school-of-Restoration. Not the ones in your pack, and it does not matter which pieces or
+in what order you put them on — if it is on your body it reads `base × (1 + the live
+boost)`. There is no per-piece history to keep track of.
+
+And because you never wait for the potion to expire, one is always live, which is what
+makes it compound: the potion you drink is scaled by the one already running.
 
 ```text
-x[n+1] = r × (1 + e) × (1 + x[n])          x[0] = 0
-             \_ brewed _/   \_ applied _/
+piece  = 25% × (1 + x)
+x[n+1] = 0.6 × (1 + wear × 25% × (1 + x[n])) × (1 + x[n])
 ```
 
-Two compounding factors per round — the gear you are wearing is worth more, *and*
-the new potion is itself a Restoration effect so drinking it on top of the live
-one multiplies it again. Growth is quadratic, not geometric.
+So a round offers exactly **one** choice: how many pieces you have on while you brew.
+Fewer pieces, weaker potion. That is the only brake there is, and with growth this
+violent it is the only reason landing on an exact number is possible at all.
 
-**A piece has no memory.** Drinking recomputes the Fortify Alchemy magnitude of
-everything you are wearing *at that moment*, from its base. So a piece is worth
-either 25% × (1 + current boost) or a flat 25% — never some stale value from an
-earlier, smaller boost. You cannot bank a 243% item and come back to it.
+Measured in game — four 25% pieces, plain ingredients, all four worn every round:
 
-That recurrence is a derivation, not something published. Solving `x[n+1] = x[n]`
-gives a discriminant of `(1−r)² − 4re`, so "no fixed point" is exactly UESP's
-documented divergence condition `e > (1−r)²/(4r)`. It also reproduces all three
-of UESP's worked examples.
+```text
+observed                    modelled
+  100% gear →    120%         120%      → 54% a piece   (55%)
+  220% gear →    422%         422%      → 130%          (131%)
+  522% gear →  1,948%       1,951%      → 512%          (513%)
+2,051% gear → 26,405%      26,466%      → 6,626%        (6,642%)
+cash out    →  3,991% Fortify Enchanting → 9,831% placed
+                4,000%                     9,874%
+```
 
-**The throttle.** Wearing everything every round overshoots wildly — 121% at
-three rounds, 9,874% at four. Each round you choose two separate things: what you
-wear **while brewing**, which sets the potion's strength, and what you wear
-**before drinking**, which decides only which pieces come out boosted. Dropping a
-piece for a round costs you its boost entirely, and that is what makes fine
-targets reachable.
+Everything inside half a percent, drifting slightly high because the game floors each
+magnitude and the model does not.
+
+**The five-round plan below has been run.** Brewing in 0, 2, 2, 2, 2 pieces, then cashing
+out in three for a 511.7% Fortify Enchanting potion, it placed **235% Fortify Alchemy** on
+a pair of gloves. That exact sequence is pinned in the module's self-check, so if the
+maths ever drifts the plan stops matching and something goes red.
+
+**One thing this deliberately does not cover: waiting.** Let the potion lapse between
+rounds and the boost stops compounding, growth goes linear, and four 25% pieces converge
+on a hard **36.6%** ceiling — 120% → 192% → 235% → 261% and no further. Waiting also
+brings back per-piece history, because a value written while a potion was up *sticks*
+after it expires. That is a different, slower routine.
+
+That 235% in the waiting sequence is a *potion*, and it is the number this module spent
+several wrong models chasing as though it were an enchantment; the same run places about
+33%. The enchanting formula feeds the potion into a quadratic on effective skill, so a
+potion percentage and an enchantment percentage are never close.
 
 **Two ways this is wrong for you.** If you run the Unofficial Patch none of it
 works: USSEP takes the Fortify effects out of the Restoration school and
 separately turns the enchanting potion into a flat multiplier. And the `0.14` and
 `3.4` above are UESP's empirical fit rather than extracted engine values — moving
-`3.4` to `3.3` shifts a 121% result to 124%, so treat the last digit as soft.
-Everything upstream of the enchanting step is exact.
+`3.4` to `3.3` shifts a 121% result to 124% — so treat the last digit of any
+enchantment as soft. Everything upstream of the enchanting step is exact.
 
 </details>
+
+## Enchant max {#ceiling}
+
+Every trick that makes an enchantment come out stronger, and — the part worth having —
+what each one is actually worth once the others are already on. Tick what you have.
+
+{{< enchant-max effect="Fortify Alchemy" >}}
+
+**The fair loop is most of it.** No glitch: brew the best Fortify Enchanting potion you
+can, place better Fortify Alchemy gear with it, and that gear brews a better potion. It
+converges, which is exactly what makes it fair — plain, on 29% pieces and a 32.4% potion,
+which are UESP's own figures. The Anniversary ingredients move it a long way:
+
+```text
+plain                       29% a piece    32.4% potion   places 29.2%
++ Dreugh Wax (×2 base)      35%            72.0%          places 36.0%
++ Necromage                 39%            48.0%          places 39.6%
+Dreugh + Necromage          60%           127.5%          places 60.7%
++ Seeker of Sorcery         74%           148.5%          places 74.6%
+everything, Ahzidal too     97%           183.0%          places 98.0%
+on FIVE slots               runaway — no fixed point, no glitch involved
+```
+
+**Both Seeker boons compound, and Sorcery wins.** Shadows is inside the loop so it brews
+a better potion; Sorcery boosts every enchantment you place, *including the Fortify
+Alchemy gear the loop is building*, so it compounds too — and by more, 74.6% against
+70.8%. You can only hold one, and the module enforces that. I had this backwards until
+the self-check caught it.
+
+The ordering in the breakdown is the point. A flat +10% is a flat +10%, but the Fortify
+Enchanting potion scales your *skill* inside a quadratic, so it is worth a couple of
+points on a bare character and hundreds on a looped one. Anything that adds skill
+*points* rather than a percentage lands in that same privileged spot, which is why it
+matters whether Ahzidal's Genius is +10% or +10 skill — and nobody seems to know.

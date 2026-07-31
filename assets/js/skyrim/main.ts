@@ -8,6 +8,7 @@
 
 import { initFilter } from './filter';
 import { initResto } from './resto';
+import { initEnchantMax } from './enchant';
 import { initBuilder } from './builder';
 
 function start(name: string, init: () => void): void {
@@ -24,6 +25,7 @@ function init(): void {
   start('potion filter', initFilter);
   start('resto planner', initResto);
   start('potion builder', initBuilder);
+  start('enchant max', initEnchantMax);
 }
 
 if (document.readyState === 'loading') {

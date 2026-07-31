@@ -7,9 +7,14 @@
   Two inputs in the open: what you are enchanting, and the number you want. Out
   comes the wear pattern that lands closest and how many rounds it takes.
   Everything else sits behind Configuration with defaults describing a finished
-  character — skills 100, perks maxed, four Fortify Alchemy pieces at the
-  natural 25% — but all of it is editable, so the planner still works for a
-  half-built character or for gear you have already bootstrapped past 25%.
+  character — skills 100, perks maxed, four Fortify Alchemy pieces at the natural 25% —
+  but all of it is editable, so the planner still works for a half-built character or
+  for gear you have already bootstrapped past 25%.
+
+  Assumes you never wait for a Fortify Restoration potion to expire; that is a slower
+  routine with a hard 36.6% ceiling and this module does not model it. The set is never
+  changed underneath a plan and the recipes are always plain. See the header of
+  assets/js/skyrim/resto.ts for the measured run all of it is fitted to.
 
   The enchantment picker is built from data/skyrim/enchantments.yaml, grouped by
   the two things that decide the answer: base magnitude, and which +25% perk
@@ -75,8 +80,9 @@
         <legend>Fortify Alchemy gear</legend>
         <label class="sky-in"><span>Pieces worn</span><input type="number" min="1" max="5" step="1" value="4" data-f="pieces" /></label>
         <label class="sky-in"><span>Each, %</span><input type="number" min="1" max="200" step="1" value="25" data-f="perPiece" /></label>
-        <p class="sky-set__hint">25% is the natural cap — what you can enchant without drinking anything. Raise it if your pieces are already bootstrapped. A fifth slot needs the helmet + circlet bug.</p>
+        <p class="sky-set__hint">25% is the natural cap — what you can enchant without drinking anything. Raise it if your pieces are already bootstrapped. A fifth slot needs the helmet + circlet bug. <b>Which</b> pieces you wear never matters, only how many.</p>
       </fieldset>
+
     </div>
   </div>
   <p class="sky-bar__note" data-resto-group-note></p>

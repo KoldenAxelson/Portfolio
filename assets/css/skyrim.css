@@ -338,3 +338,50 @@
 .sky-chk.is-bad b { color: #c0392b; }
 .sky-chk span { flex: 1; color: rgb(var(--c-fg)); }
 .sky-chk em { font-style: normal; font: 0.72rem var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-muted)); }
+
+/* A gear generation to build before the target is in range — same shape as a
+   step but inert, so it reads as a prerequisite rather than something to tap. */
+.sky-gen {
+  display: flex; align-items: flex-start; gap: 0.6rem;
+  padding: 0.55rem 0.7rem; border: 1px dashed rgb(var(--c-border)); border-radius: 0.55rem;
+  font-size: 0.86rem; line-height: 1.5; color: rgb(var(--c-muted));
+}
+.sky-gen > b {
+  display: grid; place-items: center; flex: none; width: 1.4rem; height: 1.4rem; margin-top: 0.05rem;
+  border-radius: 999px; background: rgb(var(--c-muted) / 0.25); color: rgb(var(--c-fg));
+  font: 700 0.68rem var(--font-mono, ui-monospace, monospace);
+}
+
+/* Enchant max — the trick list, and what each one is worth. */
+.sky-set--wide { grid-column: 1 / -1; }
+.sky-trick {
+  display: grid; grid-template-columns: auto 1fr; gap: 0.15rem 0.55rem; align-items: start;
+  padding: 0.45rem 0; cursor: pointer;
+}
+.sky-trick + .sky-trick { border-top: 1px solid rgb(var(--c-border) / 0.6); }
+.sky-trick > input { margin-top: 0.25rem; }
+.sky-trick__name { font-size: 0.9rem; font-weight: 600; }
+.sky-trick__note { grid-column: 2; font-size: 0.78rem; line-height: 1.5; color: rgb(var(--c-muted)); font-style: normal; }
+
+.sky-worths { display: flex; flex-direction: column; gap: 0.35rem; margin: 0; padding: 0; list-style: none; }
+/* The bar is a background wash rather than a separate element, so a long label never
+   pushes it out of line. --w is the share of the total this lever accounts for. */
+.sky-worth {
+  position: relative; overflow: hidden;
+  display: grid; grid-template-columns: 1fr auto; gap: 0.1rem 0.6rem;
+  padding: 0.5rem 0.7rem; border: 1px solid rgb(var(--c-border)); border-radius: 0.55rem;
+  background: rgb(var(--c-bg));
+}
+.sky-worth__bar {
+  position: absolute; inset: 0 auto 0 0; width: var(--w); z-index: 0;
+  background: rgb(var(--c-accent) / 0.1);
+}
+/* Not `> *`: that re-positioned the absolutely-placed bar back into the grid, where it
+   took a cell and shunted every label out of order. */
+.sky-worth > :not(.sky-worth__bar) { position: relative; z-index: 1; }
+.sky-worth > b { font-size: 0.88rem; }
+.sky-worth__gain { font: 700 0.95rem var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-accent)); }
+.sky-worth__gain > i { font-size: 0.7em; font-style: normal; }
+.sky-worth > em { grid-column: 1; font-size: 0.76rem; font-style: normal; color: rgb(var(--c-muted)); }
+.sky-worth__without { font-size: 0.72rem; color: rgb(var(--c-muted)); text-align: right; }
+.sky-worth.is-unsure { border-style: dashed; }

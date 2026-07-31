@@ -1,0 +1,96 @@
+# Everything that makes an enchantment you CREATE come out stronger.
+#
+# The formulae and where they came from live in the header of
+# assets/js/skyrim/enchant.ts. This file is just the list of levers, so a trick
+# can be added or a number corrected without touching code.
+#
+#   id       must match the `data-f` the shortcode renders. Lowercase, no spaces.
+#   label    the checkbox text.
+#   note     one line under it. Say where it comes from and what it costs.
+#   side     which half of the chain it lands on:
+#              "enchant" — multiplies the enchantment you place
+#              "alchemy" — makes the Fortify Enchanting potion stronger
+#              "both"    — does both, and compounds through the loop
+#   kind     "mult"       — a flat multiplier on that side
+#            "skill"      — points of Enchanting skill, which land INSIDE the
+#                           quadratic and are therefore worth far more
+#            "potionbase" — multiplies the potion's BASE magnitude, i.e. the
+#                           ingredients rather than the alchemist
+#   value    the multiplier, or the skill points
+#   excludes ids that cannot be held at the same time
+#   dlc      "" | DG | DB | CC — shown as a tag so you know what you need
+#   sure     false marks a number this page is NOT confident in. It renders with
+#            a warning rather than pretending, because the difference matters.
+#
+# WHY SIDE MATTERS MORE THAN THE NUMBER
+#   Both sides feed the fair loop, but by different routes. An "alchemy" trick
+#   makes a stronger potion, which places better Fortify Alchemy gear, which
+#   brews a stronger potion. An "enchant" trick makes every enchantment stronger
+#   — including that same Fortify Alchemy gear — so it compounds too. Which is
+#   why the two Seeker boons are NOT interchangeable at +10% each, and why
+#   Sorcery edges it. Assuming "enchant" tricks only apply once at the end is
+#   wrong, and was wrong here until the self-check caught it.
+#
+# WHAT IS DELIBERATELY ABSENT
+#   Extra Effect — two enchantments on one item, not a bigger one.
+#   Well Rested, Lover's Comfort, standing stones — those change how fast the
+#     SKILL rises, not what a finished enchantment reads.
+#   Blessings — no shrine carries Fortify Enchanting.
+#   The Notched Pickaxe — +5 Smithing, nothing to do with enchanting.
+#   Jarrin Root — quest-only, cannot be gathered.
+#
+# Sources: UESP Skyrim:Enchanting (perk wording and percentages), UESP
+# Skyrim:Enchanting Effects, the Sallow Regent and Ahzidal pages, and
+# data/skyrim/effects.yaml for the ingredient multipliers. Necromage's vampire
+# interaction is documented on UESP and the Elder Scrolls wiki; the Ahzidal
+# caveat is an open question on UESP's own talk page.
+
+- id: "shadows"
+  label: "Seeker of Shadows"
+  note: "Black Book: The Sallow Regent, Dragonborn. +10% on every potion you brew, so it compounds through the fair loop. Loses narrowly to Seeker of Sorcery, which compounds on the other side — you can only hold one boon at a time."
+  side: "alchemy"
+  kind: "mult"
+  value: 1.1
+  excludes: ["sorcery"]
+  dlc: "DB"
+  sure: true
+
+- id: "sorcery"
+  label: "Seeker of Sorcery"
+  note: "The same Black Book, the other boon. +10% on every enchantment you place — which includes the Fortify Alchemy gear the fair loop is building, so it compounds as well, and by slightly more than Shadows: 74.6% against 70.8% on the same setup."
+  side: "enchant"
+  kind: "mult"
+  value: 1.1
+  excludes: ["shadows"]
+  dlc: "DB"
+  sure: true
+
+- id: "dreugh"
+  label: "Dreugh Wax or Stoneflower Petals"
+  note: "Rare Curios. Both carry Fortify Enchanting at ×2 base magnitude, which doubles the potion before any of the alchemist multipliers touch it. The single biggest fair lever there is."
+  side: "alchemy"
+  kind: "potionbase"
+  value: 2
+  excludes: []
+  dlc: "CC"
+  sure: true
+
+- id: "necromage"
+  label: "Necromage, as a vampire"
+  note: "Restoration 70. Necromage makes effects on undead 25% stronger and a vampire counts as undead, so it lands on your potions AND your enchantments — the only trick here that compounds on both sides. Whole-build decision: vampirism brings the sun and the feeding with it."
+  side: "both"
+  kind: "mult"
+  value: 1.25
+  excludes: []
+  dlc: ""
+  sure: true
+
+- id: "ahzidal"
+  label: "Ahzidal's Genius"
+  note: "Wear four pieces of Ahzidal's relics (Dragonborn). Sources word this as \"+10% Enchanting\" — modelled here as a flat +10% on the result. UESP's own talk page asks whether it is instead +10 points of skill and never answers; if it is, it is worth far MORE than this with a strong potion, because skill goes inside the quadratic."
+  side: "enchant"
+  kind: "mult"
+  value: 1.1
+  excludes: []
+  dlc: "DB"
+  sure: false
