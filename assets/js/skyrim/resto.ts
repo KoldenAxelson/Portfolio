@@ -29,11 +29,22 @@
 //   what makes it compound — the potion you drink is scaled by the one already running:
 //
 //     piece  = base × (1 + x)
-//     x[n+1] = r × (1 + wear × base × (1 + x[n])) × (1 + x[n])
+//     x[n+1] = max( x[n], r × (1 + wear × base × (1 + x[n])) × (1 + x[n]) )
 //
 //   So a round offers exactly ONE choice: how many pieces you have on while you brew.
-//   Fewer pieces, weaker potion. That is the only brake, and with growth this violent
-//   it is the only reason an exact landing is possible at all.
+//   Fewer pieces, weaker potion, smaller step. That is the only brake, and with growth
+//   this violent it is the only reason an exact landing is possible at all.
+//
+//   THE max() IS NOT DECORATION. Two potions of the same effect do not stack and the new
+//   one only supersedes the old if it BEATS it, so the boost can never go down. Once the
+//   live boost passes 150%, brewing with nothing on produces a potion weaker than what is
+//   already running and the round simply does nothing.
+//
+//   This module used to treat a weak brew as a way to step BACKWARDS, and built plans on
+//   it. A 600% target came out as a five-round plan whose third round brewed in nothing
+//   to drop the boost from 277% to 226%; in game that round did nothing, the remaining
+//   rounds compounded off the higher number, and it landed at about 1,313% instead of
+//   600%. The search now refuses to emit a round that does not raise the boost.
 //
 //   MEASURED IN GAME, four 25% pieces, plain ingredients, all four worn every round.
 //   Observed / modelled:
@@ -156,6 +167,8 @@ export function placeableFrom(s: Settings, potionPercent: number): number {
  */
 interface LoopState {
   activeBoost: number;
+  /** What the bottle read. Equals activeBoost unless the potion was too weak to take. */
+  applied: number;
   /** Pieces worn while brewing, which is the only choice a round offers. */
   move: number | null;
   parent: LoopState | null;
@@ -173,6 +186,8 @@ export interface Round {
   brewGearPercent: number;
   /** What the bottle reads — already scaled by the live effect. */
   brewedPercent: number;
+  /** True when the brew came out weaker than what was already running, so it did nothing. */
+  wasted: boolean;
   /** What every worn piece reads once you have drunk it. */
   piecePercent: number;
 }
@@ -217,9 +232,13 @@ function gearOf(wear: number, activeBoost: number, perPiece: number): number {
 function advance(state: LoopState, wear: Move, s: Settings, baseRestoration: number): LoopState {
   const gear = gearOf(wear, state.activeBoost, s.perPiece / 100);
   const brewed = baseRestoration * (1 + gear);
+  // The live effect scales the potion you drink on top of it. That is the whole engine.
+  const applied = brewed * (1 + state.activeBoost);
   return {
-    // The live effect scales the potion you drink on top of it. That is the whole engine.
-    activeBoost: brewed * (1 + state.activeBoost),
+    // A WEAKER POTION DOES NOT TAKE. Two potions of the same effect do not stack, and the
+    // new one only supersedes the old if it beats it — so the boost can never go DOWN.
+    activeBoost: Math.max(state.activeBoost, applied),
+    applied,
     move: wear,
     parent: state,
     rounds: state.rounds + 1,
@@ -230,7 +249,7 @@ function advance(state: LoopState, wear: Move, s: Settings, baseRestoration: num
 export function replay(s: Settings, moves: Move[]): Round[] {
   const pieceCount = Math.max(1, Math.min(MAX_PIECES, Math.round(s.pieces)));
   const baseRestoration = baseRestorationOf(s);
-  let state: LoopState = { activeBoost: 0, move: null, parent: null, rounds: 0 };
+  let state: LoopState = { activeBoost: 0, applied: 0, move: null, parent: null, rounds: 0 };
   for (const move of moves) state = advance(state, move, s, baseRestoration);
   return roundsOf({
     value: 0, rounds: moves.length, cashOutWear: 0, gearPercent: 0, potionPercent: 0,
@@ -250,7 +269,8 @@ export function roundsOf(plan: Plan): Round[] {
       index: i + 1,
       wear,
       brewGearPercent: gearOf(wear, previous.activeBoost, plan.perPieceFraction) * 100,
-      brewedPercent: node.activeBoost * 100,
+      brewedPercent: node.applied * 100,
+      wasted: node.applied <= previous.activeBoost,
       piecePercent: plan.perPieceFraction * (1 + node.activeBoost) * 100,
     };
   });
@@ -302,7 +322,7 @@ export function solve(s: Settings, target: number): Solution {
     }
   };
 
-  const root: LoopState = { activeBoost: 0, move: null, parent: null, rounds: 0 };
+  const root: LoopState = { activeBoost: 0, applied: 0, move: null, parent: null, rounds: 0 };
   const visited = new Set<string>(['0']);
   let frontier: LoopState[] = [root];
   let stateCount = 1;
@@ -315,6 +335,10 @@ export function solve(s: Settings, target: number): Solution {
       for (let wear = 0; wear <= pieceCount && !truncated; wear++) {
         const candidate = advance(state, wear, s, baseRestoration);
         if (!Number.isFinite(candidate.activeBoost)) continue;
+        // A round that does not raise the boost is a round wasted — it cannot be a step
+        // in a plan, and letting it through would put "brew a potion, nothing happens"
+        // in the written instructions.
+        if (candidate.activeBoost <= state.activeBoost) continue;
         if (gearOf(pieceCount, candidate.activeBoost, perPiece) > GEAR_CEILING) continue;
         const key = candidate.activeBoost.toFixed(6);
         if (visited.has(key)) continue;
