@@ -105,6 +105,26 @@ function checkRestoMaths(): void {
       `${found.best?.value.toFixed(2)}% in ${found.best?.rounds} rounds`);
   }
 
+  // A WEAKER POTION DOES NOT TAKE, so no plan may ever step the boost backwards. This is
+  // the bug that turned a 600% target into about 1,313% in game: the plan's third round
+  // brewed in nothing to drop the boost, which the game ignored, and everything after it
+  // compounded off the higher number.
+  for (const target of [122, 200, 235, 300, 400, 500, 600, 800, 1000]) {
+    const plan = solve(MAXED, target);
+    const rounds = roundsOf(plan.best as Plan);
+    const rising = rounds.every((round, i) => i === 0 || round.brewedPercent > rounds[i - 1].brewedPercent);
+    check(`the ${target}% plan only ever raises the boost`, rising && !rounds.some((r) => r.wasted),
+      rounds.map((r) => Math.round(r.brewedPercent)).join(' -> '));
+    check(`and ${target}% still reads ${target}%`, Math.floor(plan.best?.value ?? 0) === target,
+      `${plan.best?.value.toFixed(2)}%`);
+  }
+
+  // The rule itself, in isolation: past ~150% live, brewing in nothing does nothing.
+  const noop = replay(MAXED, [4, 4, 0]);
+  near('a third round brewed in nothing cannot lower a 422% boost',
+    noop[2].piecePercent, noop[1].piecePercent, 0.01);
+  check('and is reported as wasted rather than as a step', noop[2].wasted);
+
   // A target under the natural cap should need no loop at all.
   const trivial = solve(MAXED, 25);
   check('a 25% target needs no rounds', trivial.best?.rounds === 0, `rounds=${trivial.best?.rounds}`);

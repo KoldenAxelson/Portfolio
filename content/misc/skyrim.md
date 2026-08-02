@@ -84,12 +84,20 @@ makes it compound: the potion you drink is scaled by the one already running.
 
 ```text
 piece  = 25% × (1 + x)
-x[n+1] = 0.6 × (1 + wear × 25% × (1 + x[n])) × (1 + x[n])
+x[n+1] = max( x[n],  0.6 × (1 + wear × 25% × (1 + x[n])) × (1 + x[n]) )
 ```
 
 So a round offers exactly **one** choice: how many pieces you have on while you brew.
-Fewer pieces, weaker potion. That is the only brake there is, and with growth this
-violent it is the only reason landing on an exact number is possible at all.
+Fewer pieces, weaker potion, smaller step. That is the only brake there is, and with
+growth this violent it is the only reason landing on an exact number is possible at all.
+
+**The `max` is load-bearing.** Two potions of the same effect do not stack, and a new one
+only supersedes the old if it *beats* it — so the boost never goes down. Past about 150%
+live, brewing with nothing on gives a potion weaker than what is already running and the
+round does nothing at all. This module used to treat that as a way to step backwards and
+built plans on it: a 600% target came out as a plan whose third round dropped the boost
+from 277% to 226%, which in game simply did not happen, and the run landed near 1,313%
+instead. Plans now only ever go up.
 
 Measured in game — four 25% pieces, plain ingredients, all four worn every round:
 
