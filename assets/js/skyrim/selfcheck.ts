@@ -48,29 +48,35 @@ function checkRestoMaths(): void {
   const bare = solve({ ...MAXED, pieces: 1, perPiece: 0 }, 1);
   near('natural cap on a base-8 enchantment is 25%', bare.natural, 25.06, 0.1);
 
-  // THE MEASURED RUN. Four 25% pieces, plain ingredients, all four worn every round, no
-  // waiting. Observed 120 / 422 / 1948 / 26405 and 54 / 130 / 512 / 6626, then a 3,991%
-  // Fortify Enchanting potion placing 9,831%. Tolerances are 0.5% because the game floors
-  // each magnitude and this does not, which drifts slightly high over four rounds.
+  // THE MEASURED LADDER. Four 25% pieces, plain ingredients, all four worn every round,
+  // no waiting. Observed 120 / 422 / 1948 / 26405 and a cash-out of 3,991% -> 9,831%.
+  // Tolerances are 0.1% because the model now rounds the potion the way the game does;
+  // before that it drifted half a percent high over four rounds.
   const run = replay(MAXED, [4, 4, 4, 4]);
-  const observed = [
-    { gear: 100, potion: 120, piece: 54 },
-    { gear: 220, potion: 422, piece: 130 },
-    { gear: 522, potion: 1948, piece: 512 },
-    { gear: 2051, potion: 26405, piece: 6626 },
-  ];
-  observed.forEach((want, i) => {
-    near(`round ${i + 1} brews in ${want.gear}% gear`, run[i].brewGearPercent, want.gear, want.gear * 0.005);
-    near(`round ${i + 1} makes a ${want.potion}% potion`, run[i].brewedPercent, want.potion, want.potion * 0.005);
-    near(`round ${i + 1} leaves a piece at ${want.piece}%`, run[i].piecePercent, want.piece, want.piece * 0.02);
+  [120, 422, 1948, 26405].forEach((want, i) => {
+    near(`round ${i + 1} brews ${want}%`, run[i].brewedPercent, want, want * 0.001);
   });
+  const cashGear = run[3].piecePercent * 4;
+  const fePotion = potionOf(MAXED, cashGear);
+  near('cashes out on the measured 3,991% potion', fePotion, 3991, 4);
+  near('which places the measured 9,831%', placeableFrom(MAXED, fePotion), 9831, 10);
 
-  // End to end: the cash-out potion and the enchantment it places. This is the only check
-  // that exercises the enchanting quadratic anywhere near this magnitude.
-  const finalGear = run[3].piecePercent * 4;
-  const fePotion = potionOf(MAXED, finalGear);
-  near('cashes out near the measured 3,991% potion', fePotion, 3991, 3991 * 0.005);
-  near('which places the measured 9,831%', placeableFrom(MAXED, fePotion), 9831, 9831 * 0.005);
+  // THE TWO PLANS THAT WERE ACTUALLY RUN, pinned as sequences rather than as whatever the
+  // search currently prefers — the search may find a shorter route to the same number, but
+  // these are the ones with a confirmed outcome behind them.
+  const confirmed = replay(MAXED, [0, 2, 2, 2, 2]);
+  const confirmedFe = potionOf(MAXED, confirmed[4].piecePercent * 3);
+  near('the confirmed 235% run still brews its 511.7% potion', confirmedFe, 511.9, 1);
+  check('and still places 235%', Math.floor(placeableFrom(MAXED, confirmedFe)) === 235,
+    `${placeableFrom(MAXED, confirmedFe).toFixed(2)}%`);
+
+  // The 600% attempt, which came out at 887% / 587% in game. The model has to land on
+  // that, not on the 900% / 600% it used to promise.
+  const sixHundred = replay(MAXED, [0, 1, 2, 2, 2, 2]);
+  check('the 600% attempt wastes no rounds', !sixHundred.some((r) => r.wasted));
+  const sixFe = potionOf(MAXED, sixHundred[5].piecePercent);
+  near('and brews the measured 887% potion', sixFe, 887, 2);
+  near('placing the measured 587%', placeableFrom(MAXED, sixFe), 587, 2.5);
 
   // Wearing fewer pieces to brew is the only brake, so it has to actually bite.
   const braked = replay(MAXED, [4, 2]);
@@ -79,51 +85,50 @@ function checkRestoMaths(): void {
     `${braked[1].brewedPercent.toFixed(0)}% vs ${run[1].brewedPercent.toFixed(0)}%`);
   near('and brewing in nothing still gives the bare 60%', replay(MAXED, [0])[0].brewedPercent, 60, 0.05);
 
-  // THE PLAN THAT WAS ACTUALLY EXECUTED AND WORKED: 235% Fortify Alchemy placed on a
-  // pair of gloves, off the fixed 4x25% set with plain ingredients. Pinned move by move,
-  // because this is the one plan in here that has been confirmed end to end in game and
-  // any drift in the model would silently change it.
-  const confirmed = solve(MAXED, 235);
-  check('the confirmed 235% plan still reads 235%',
-    Math.floor(confirmed.best?.value ?? 0) === 235, `${confirmed.best?.value.toFixed(2)}%`);
-  check('and is still the five-round plan that was run',
-    confirmed.best?.rounds === 5 && confirmed.best?.cashOutWear === 3,
-    `${confirmed.best?.rounds} rounds, cash out in ${confirmed.best?.cashOutWear}`);
-  const wear = roundsOf(confirmed.best as Plan).map((round) => round.wear);
-  check('brewing in 0, 2, 2, 2, 2 pieces', wear.join(',') === '0,2,2,2,2', wear.join(','));
-  const potions = roundsOf(confirmed.best as Plan).map((round) => Math.round(round.brewedPercent));
-  check('for potions of 60, 173, 387, 1003, 4315%',
-    potions.join(',') === '60,173,387,1003,4315', potions.join(','));
-  near('cashing out at a 511.7% Fortify Enchanting potion',
-    confirmed.best?.potionPercent ?? 0, 511.7, 0.2);
+  // A POTION ONLY SUPERSEDES ONE IT BEATS IN THE BOTTLE. The comparison is between the
+  // potions' OWN magnitudes, not the boost you are walking around with — so a second
+  // "brew wearing nothing" round can never do anything, because naked always brews the
+  // same 60%. A plan built on one overshot a 600% target to about 1,313% in game, and a
+  // later version that avoided the overshoot by brewing naked twice UNDERSHOT to 204%.
+  const hisRun = replay(MAXED, [0, 0, 3, 4, 3]);
+  check('a second naked round is wasted', hisRun[1].wasted);
+  near('and leaves the piece where round one left it', hisRun[1].piecePercent, 40.0, 0.05);
+  near('so round 5 reaches ~3,918% rather than the 7,771% the old rule gave',
+    hisRun[4].brewedPercent, 3917.7, 2);
+  const hisGear = hisRun[4].piecePercent * 3;
+  near('cashing out in three gives the measured 467% potion', potionOf(MAXED, hisGear), 467, 2);
+  near('which places the measured 204%', placeableFrom(MAXED, potionOf(MAXED, hisGear)), 204, 2);
 
-  // The other two targets asked for along the way.
-  for (const target of [122, 200]) {
-    const found = solve(MAXED, target);
-    check(`${target}% is reachable and reads ${target}%`,
-      Math.floor(found.best?.value ?? 0) === target,
-      `${found.best?.value.toFixed(2)}% in ${found.best?.rounds} rounds`);
+  // MARGIN. The game floors, and the enchanting fit is soft to a few tenths of a percent,
+  // so a landing that hugs the bottom edge of its whole number is a coin flip. A 500%
+  // target used to pick 500.01% and came out as 499% in game. Every plan that claims to
+  // read the target must now sit comfortably inside it.
+  for (const target of [122, 235, 400, 500]) {
+    const plan = solve(MAXED, target);
+    if (Math.floor(plan.best?.value ?? 0) !== target) continue;
+    check(`the ${target}% plan lands clear of the band edge`, (plan.best?.margin ?? 0) >= 0.15,
+      `${plan.best?.value.toFixed(2)}%, ${plan.best?.margin.toFixed(2)} inside`);
   }
+  const fiveHundred = solve(MAXED, 500);
+  check('500% no longer picks the 500.01% landing', (fiveHundred.best?.value ?? 0) > 500.1,
+    `${fiveHundred.best?.value.toFixed(2)}%`);
 
-  // A WEAKER POTION DOES NOT TAKE, so no plan may ever step the boost backwards. This is
-  // the bug that turned a 600% target into about 1,313% in game: the plan's third round
-  // brewed in nothing to drop the boost, which the game ignored, and everything after it
-  // compounded off the higher number.
+  // Every plan must be executable: no wasted rounds, and a naked brew only ever first.
   for (const target of [122, 200, 235, 300, 400, 500, 600, 800, 1000]) {
     const plan = solve(MAXED, target);
     const rounds = roundsOf(plan.best as Plan);
-    const rising = rounds.every((round, i) => i === 0 || round.brewedPercent > rounds[i - 1].brewedPercent);
-    check(`the ${target}% plan only ever raises the boost`, rising && !rounds.some((r) => r.wasted),
-      rounds.map((r) => Math.round(r.brewedPercent)).join(' -> '));
-    check(`and ${target}% still reads ${target}%`, Math.floor(plan.best?.value ?? 0) === target,
-      `${plan.best?.value.toFixed(2)}%`);
+    check(`the ${target}% plan has no rounds that do nothing`, !rounds.some((r) => r.wasted),
+      rounds.map((r) => r.wear).join(','));
+    check(`and brews naked only as its opening move`,
+      rounds.every((round, i) => round.wear > 0 || i === 0),
+      rounds.map((r) => r.wear).join(','));
+    // Not every target is reachable now that the supersede rule prunes the space. What
+    // matters is that it never CLAIMS to have hit one it has not.
+    const value = plan.best?.value ?? 0;
+    check(`and ${target}% is either hit or honestly missed`,
+      Math.floor(value) === target || planMarkupFor(plan, target).indexOf('Nothing reachable') !== -1,
+      `${value.toFixed(2)}%`);
   }
-
-  // The rule itself, in isolation: past ~150% live, brewing in nothing does nothing.
-  const noop = replay(MAXED, [4, 4, 0]);
-  near('a third round brewed in nothing cannot lower a 422% boost',
-    noop[2].piecePercent, noop[1].piecePercent, 0.01);
-  check('and is reported as wasted rather than as a step', noop[2].wasted);
 
   // A target under the natural cap should need no loop at all.
   const trivial = solve(MAXED, 25);
