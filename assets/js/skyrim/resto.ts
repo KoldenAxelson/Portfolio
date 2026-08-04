@@ -35,27 +35,43 @@
 //   Fewer pieces, weaker potion, smaller step. That is the only brake, and with growth
 //   this violent it is the only reason an exact landing is possible at all.
 //
-//   THE max() IS NOT DECORATION. Two potions of the same effect do not stack and the new
-//   one only supersedes the old if it BEATS it, so the boost can never go down. Once the
-//   live boost passes 150%, brewing with nothing on produces a potion weaker than what is
-//   already running and the round simply does nothing.
+//   WHETHER A ROUND TAKES AT ALL is decided on the potions' OWN magnitudes — bottle
+//   against bottle — not on the boost you are walking around with. Two potions of the
+//   same effect do not stack, and the new one only supersedes the old if it beats it:
 //
-//   This module used to treat a weak brew as a way to step BACKWARDS, and built plans on
-//   it. A 600% target came out as a five-round plan whose third round brewed in nothing
-//   to drop the boost from 277% to 226%; in game that round did nothing, the remaining
-//   rounds compounded off the higher number, and it landed at about 1,313% instead of
-//   600%. The search now refuses to emit a round that does not raise the boost.
+//       takes  <=>  r × (1 + wear × base × (1 + x))  >  the last potion's own magnitude
+//
+//   The practical consequence, and it is a sharp one: brewing with NOTHING ON always
+//   produces the same bare potion, so it can only ever be the opening move. A second
+//   naked round does nothing whatsoever.
+//
+//   TWO WRONG VERSIONS DIED HERE, both caught in play on a 600% target:
+//     - treating a weak brew as a way to step BACKWARDS. The plan dropped the boost from
+//       277% to 226% mid-run; in game that round did nothing, the rest compounded off the
+//       higher number, and it landed near 1,313%.
+//     - then testing "does it beat the live boost", which let a plan open with two naked
+//       rounds. The second did nothing, everything after it ran a step behind, and the
+//       same target came out at 204% — measured, along with the 467% potion behind it.
+//   The bottle-against-bottle rule reproduces both of those runs and is what ships.
+//
+//   THE GAME ROUNDS THE POTION to a whole percent as you brew it, and everything after is
+//   exact. That one rounding matters more than it looks: leaving it out drifted 0.5% high
+//   over four rounds and 1.5% over six, which turned a 600% plan into a measured 587%.
 //
 //   MEASURED IN GAME, four 25% pieces, plain ingredients, all four worn every round.
 //   Observed / modelled:
-//     gear   100%  ->     120% /     120% potion  ->    54% /    55% a piece
-//     gear   220%  ->     422% /     422% potion  ->   130% /   131% a piece
-//     gear   522%  ->   1,948% /   1,951% potion  ->   512% /   513% a piece
-//     gear 2,051%  ->  26,405% /  26,466% potion  -> 6,626% / 6,642% a piece
-//     cash out     ->   3,991% /   4,000% Fortify Enchanting -> 9,831% / 9,874% PLACED
-//   Every line inside 0.5%, drifting slightly high because the game floors each
-//   magnitude and this does not. The 9,831% is the strongest check in here: it exercises
-//   the enchanting quadratic four orders of magnitude past any published example.
+//     gear   100%  ->     120% /     120.0% potion
+//     gear   220%  ->     422% /     422.4% potion
+//     gear   522%  ->   1,948% /   1,948.6% potion
+//     gear 2,051%  ->  26,405% /  26,405.8% potion
+//     cash out     ->   3,991% /   3,990.9% Fortify Enchanting -> 9,831% / 9,831% PLACED
+//   The 9,831% is the strongest check in here: it exercises the enchanting quadratic four
+//   orders of magnitude past any published example, and lands on the nose.
+//
+//   The enchanting step is the soft one. A second run cashed out at a measured 887%
+//   potion — the model says 887.4 — and placed 587% where the model says 585.3. UESP
+//   flags the 0.14 and 3.4 as an empirical fit, and that is about the size of it: a few
+//   tenths of a percent, which is a couple of points once you are up at 600.
 //
 // WHAT THIS MODULE DELIBERATELY DOES NOT COVER
 //   WAITING for the potion to lapse. Do that and the boost stops compounding, growth
@@ -167,6 +183,12 @@ export function placeableFrom(s: Settings, potionPercent: number): number {
  */
 interface LoopState {
   activeBoost: number;
+  /**
+   * The OWN magnitude of the potion currently running — what it was worth in the bottle
+   * before the live effect inflated it. This is what the game compares against, not the
+   * boost you are walking around with.
+   */
+  brewedBase: number;
   /** What the bottle read. Equals activeBoost unless the potion was too weak to take. */
   applied: number;
   /** Pieces worn while brewing, which is the only choice a round offers. */
@@ -197,6 +219,8 @@ export interface Plan {
   rounds: number;
   /** Pieces to wear for the final Fortify Enchanting brew. */
   cashOutWear: number;
+  /** How far inside its whole number this lands — under ~0.1 is a coin flip. */
+  margin: number;
   gearPercent: number;
   potionPercent: number;
   state: LoopState | null;
@@ -231,13 +255,21 @@ function gearOf(wear: number, activeBoost: number, perPiece: number): number {
  */
 function advance(state: LoopState, wear: Move, s: Settings, baseRestoration: number): LoopState {
   const gear = gearOf(wear, state.activeBoost, s.perPiece / 100);
-  const brewed = baseRestoration * (1 + gear);
+  // THE GAME ROUNDS THE POTION to a whole percent when you brew it, and everything after
+  // is exact. Leaving this out made the model drift ~0.5% high over four rounds and 1.5%
+  // over six — enough to turn a 600% plan into a measured 587%. With it, a four-round
+  // ladder reproduces as 120 / 422.4 / 1948.6 / 26405.8 against an observed
+  // 120 / 422 / 1948 / 26405, and its cash-out lands on 3,991% and 9,831% exactly.
+  const brewed = Math.round(baseRestoration * (1 + gear) * 100) / 100;
   // The live effect scales the potion you drink on top of it. That is the whole engine.
   const applied = brewed * (1 + state.activeBoost);
+  // WHETHER IT TAKES AT ALL is decided on the potions' OWN magnitudes, not on what you
+  // are walking around with. Two potions of the same effect do not stack, and the new one
+  // only supersedes the old if the bottle beats the bottle.
+  const takes = brewed > state.brewedBase;
   return {
-    // A WEAKER POTION DOES NOT TAKE. Two potions of the same effect do not stack, and the
-    // new one only supersedes the old if it beats it — so the boost can never go DOWN.
-    activeBoost: Math.max(state.activeBoost, applied),
+    activeBoost: takes ? applied : state.activeBoost,
+    brewedBase: takes ? brewed : state.brewedBase,
     applied,
     move: wear,
     parent: state,
@@ -249,10 +281,10 @@ function advance(state: LoopState, wear: Move, s: Settings, baseRestoration: num
 export function replay(s: Settings, moves: Move[]): Round[] {
   const pieceCount = Math.max(1, Math.min(MAX_PIECES, Math.round(s.pieces)));
   const baseRestoration = baseRestorationOf(s);
-  let state: LoopState = { activeBoost: 0, applied: 0, move: null, parent: null, rounds: 0 };
+  let state: LoopState = { activeBoost: 0, brewedBase: 0, applied: 0, move: null, parent: null, rounds: 0 };
   for (const move of moves) state = advance(state, move, s, baseRestoration);
   return roundsOf({
-    value: 0, rounds: moves.length, cashOutWear: 0, gearPercent: 0, potionPercent: 0,
+    value: 0, rounds: moves.length, cashOutWear: 0, margin: 0, gearPercent: 0, potionPercent: 0,
     state, pieceCount, perPieceFraction: s.perPiece / 100, baseRestoration,
   });
 }
@@ -270,7 +302,7 @@ export function roundsOf(plan: Plan): Round[] {
       wear,
       brewGearPercent: gearOf(wear, previous.activeBoost, plan.perPieceFraction) * 100,
       brewedPercent: node.applied * 100,
-      wasted: node.applied <= previous.activeBoost,
+      wasted: node.brewedBase <= previous.brewedBase,
       piecePercent: plan.perPieceFraction * (1 + node.activeBoost) * 100,
     };
   });
@@ -291,14 +323,30 @@ export function solve(s: Settings, target: number): Solution {
   let under: Plan | null = null;
   let over: Plan | null = null;
 
-  // The game FLOORS the enchantment, so 200.04 (reads 200%) beats 199.96 (reads 199%)
-  // even though both are 0.04 away. Match the displayed integer first, then prefer
-  // fewer rounds, then close the gap.
+  // The game FLOORS the enchantment, so what matters is landing inside the target's whole
+  // number, and landing WELL inside it. Ranking by closeness to the target itself picks
+  // the value hugging the bottom edge of the band — a 500% target once chose 500.01%,
+  // which came out as 499% in game, because the enchanting fit is soft to a few tenths of
+  // a percent. So among plans that read the target, prefer the one nearest the MIDDLE of
+  // the band; only then prefer fewer rounds.
+  const band = Math.floor(target) + 0.5;
   const displaysTarget = (value: number): boolean => Math.floor(value) === Math.floor(target);
+  const marginOf = (value: number): number =>
+    Math.min(value - Math.floor(value), 1 - (value - Math.floor(value)));
   const rank = (plan: Plan): number =>
     displaysTarget(plan.value)
-      ? plan.rounds * 1e6 + Math.abs(plan.value - target)
+      ? Math.abs(plan.value - band) * 1e6 + plan.rounds
       : 1e12 + Math.abs(plan.value - target);
+
+  /**
+   * Read inside a closure on purpose: `best` is only ever assigned from one, so control
+   * flow analysis still has it narrowed to `null` out here and any direct read is a type
+   * error. A captured `let` widens back to its declared type inside a function body.
+   */
+  const settled = (): boolean => {
+    const plan = best;
+    return !!plan && displaysTarget(plan.value) && marginOf(plan.value) >= 0.2;
+  };
 
   const consider = (plan: Plan): void => {
     if (!best || rank(plan) < rank(best)) best = plan;
@@ -316,14 +364,14 @@ export function solve(s: Settings, target: number): Solution {
       const value = enchantmentMagnitude(s, potionPercent);
       if (!Number.isFinite(value) || value <= 0) continue;
       consider({
-        value, rounds: state.rounds, cashOutWear: wear,
+        value, rounds: state.rounds, cashOutWear: wear, margin: marginOf(value),
         gearPercent: gear * 100, potionPercent, state, ...shell,
       });
     }
   };
 
-  const root: LoopState = { activeBoost: 0, applied: 0, move: null, parent: null, rounds: 0 };
-  const visited = new Set<string>(['0']);
+  const root: LoopState = { activeBoost: 0, brewedBase: 0, applied: 0, move: null, parent: null, rounds: 0 };
+  const visited = new Set<string>(['0|0']);
   let frontier: LoopState[] = [root];
   let stateCount = 1;
   let truncated = false;
@@ -335,12 +383,13 @@ export function solve(s: Settings, target: number): Solution {
       for (let wear = 0; wear <= pieceCount && !truncated; wear++) {
         const candidate = advance(state, wear, s, baseRestoration);
         if (!Number.isFinite(candidate.activeBoost)) continue;
-        // A round that does not raise the boost is a round wasted — it cannot be a step
-        // in a plan, and letting it through would put "brew a potion, nothing happens"
-        // in the written instructions.
-        if (candidate.activeBoost <= state.activeBoost) continue;
+        // A round whose potion does not beat the last one does nothing at all, so it
+        // cannot be a step in a plan. This is what stops the search proposing a second
+        // "brew wearing nothing": naked always brews the same 60%, so it can only ever
+        // be the opening move.
+        if (candidate.brewedBase <= state.brewedBase) continue;
         if (gearOf(pieceCount, candidate.activeBoost, perPiece) > GEAR_CEILING) continue;
-        const key = candidate.activeBoost.toFixed(6);
+        const key = `${candidate.activeBoost.toFixed(6)}|${candidate.brewedBase.toFixed(6)}`;
         if (visited.has(key)) continue;
         visited.add(key);
         next.push(candidate);
@@ -350,9 +399,10 @@ export function solve(s: Settings, target: number): Solution {
     }
     next.forEach(cashOut);
     frontier = next;
-    // Landed on the number in the fewest rounds that can reach it; searching deeper can
-    // only turn up longer plans for the same result.
-    if (best && displaysTarget(best.value)) break;
+    // Stop once the number is not just reached but reached with room to spare. A landing
+    // within a tenth of a percent of the band edge is a coin flip against the model's own
+    // uncertainty, so it is worth another depth to look for a safer one.
+    if (settled()) break;
   }
 
   return { best, under, over, natural, truncated };
@@ -430,6 +480,8 @@ function planMarkup(plan: Plan, solution: Solution, target: number, rounds: Roun
     `reads <b>${Math.floor(plan.value)}%</b> in game`,
     plan.rounds ? `<b>${plan.rounds}</b> round${plan.rounds === 1 ? '' : 's'}` : 'no loops needed',
     granularity ? `finest step <b>${formatPrecise(granularity)}%</b>` : '',
+    Math.floor(plan.value) === Math.floor(target)
+      ? `<b>${formatPrecise(plan.margin)}%</b> inside ${Math.floor(plan.value)}%` : '',
   ].filter(Boolean).join('<i>·</i>');
 
   const caveats = [

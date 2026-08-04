@@ -83,36 +83,54 @@ And because you never wait for the potion to expire, one is always live, which i
 makes it compound: the potion you drink is scaled by the one already running.
 
 ```text
+brewed = round( 0.6 × (1 + wear × 25% × (1 + x)) )   the potion's OWN magnitude
+takes  = brewed > the last potion's own magnitude
 piece  = 25% × (1 + x)
-x[n+1] = max( x[n],  0.6 × (1 + wear × 25% × (1 + x[n])) × (1 + x[n]) )
+x      = brewed × (1 + x)                            only if it takes
 ```
+
+That `round` is the game rounding the potion to a whole percent as you brew it, and it is
+worth more than it looks — leaving it out drifts half a percent high over four rounds and
+one and a half over six, which is the difference between a plan reading 600% and one
+reading 587%.
 
 So a round offers exactly **one** choice: how many pieces you have on while you brew.
 Fewer pieces, weaker potion, smaller step. That is the only brake there is, and with
 growth this violent it is the only reason landing on an exact number is possible at all.
 
-**The `max` is load-bearing.** Two potions of the same effect do not stack, and a new one
-only supersedes the old if it *beats* it — so the boost never goes down. Past about 150%
-live, brewing with nothing on gives a potion weaker than what is already running and the
-round does nothing at all. This module used to treat that as a way to step backwards and
-built plans on it: a 600% target came out as a plan whose third round dropped the boost
-from 277% to 226%, which in game simply did not happen, and the run landed near 1,313%
-instead. Plans now only ever go up.
+**Whether a round takes at all is bottle against bottle.** Two potions of the same effect
+do not stack, and the new one only supersedes the old if *its own magnitude* beats the old
+one's — not the boost you are walking around with. Which means brewing with **nothing on**
+always makes the same bare 60% potion, so it can only ever be the opening move; a second
+naked round does nothing whatsoever.
+
+Two wrong versions of this died on a 600% target, both caught in play. The first treated a
+weak brew as a way to step *backwards*: the plan dropped the boost from 277% to 226%
+mid-run, that round did nothing in game, the rest compounded off the higher number and it
+landed near **1,313%**. The second tested the new potion against the live boost instead of
+against the last bottle, which let a plan open with two naked rounds — the second did
+nothing, everything after ran a step behind, and the same target came out at **204%** off a
+467% potion. Both runs are now pinned as assertions.
 
 Measured in game — four 25% pieces, plain ingredients, all four worn every round:
 
 ```text
-observed                    modelled
-  100% gear →    120%         120%      → 54% a piece   (55%)
-  220% gear →    422%         422%      → 130%          (131%)
-  522% gear →  1,948%       1,951%      → 512%          (513%)
-2,051% gear → 26,405%      26,466%      → 6,626%        (6,642%)
-cash out    →  3,991% Fortify Enchanting → 9,831% placed
-                4,000%                     9,874%
+observed        modelled
+  100% gear →     120%        120.0%
+  220% gear →     422%        422.4%
+  522% gear →   1,948%      1,948.6%
+2,051% gear →  26,405%     26,405.8%
+cash out   →    3,991%      3,990.9% Fortify Enchanting
+               9,831%       9,831%   placed
 ```
 
-Everything inside half a percent, drifting slightly high because the game floors each
-magnitude and the model does not.
+The 9,831% is the strongest check here — it exercises the enchanting quadratic four orders
+of magnitude past any published example and lands on the nose.
+
+The enchanting step is the soft one. A second run cashed out at a measured **887%** potion
+against a modelled 887.4, and placed **587%** against a modelled 585.3. UESP flags the
+`0.14` and `3.4` as an empirical fit and that is about its size: a few tenths of a percent,
+which becomes a couple of points once you are up at 600.
 
 **The five-round plan below has been run.** Brewing in 0, 2, 2, 2, 2 pieces, then cashing
 out in three for a 511.7% Fortify Enchanting potion, it placed **235% Fortify Alchemy** on
