@@ -18,7 +18,7 @@
 //   Numbers that are documented somewhere (UESP's anchors, a measured field
 //   report) and structure that a refactor could silently drop. Not appearance.
 
-import { buildCatalogue, resultsMarkup, search, type Catalogue } from './builder';
+import { buildCatalogue, contributesTo, liveMarkup, liveMixture, mortarMarkup, resultsMarkup, search, type Catalogue } from './builder';
 import { placeableFrom, planMarkupFor, potionOf, replay, roundsOf, solve, type Plan, type Settings } from './resto';
 import { fairLoop, magnitudeOf, maximise, type MaxSettings, type Trick } from './enchant';
 
@@ -40,7 +40,13 @@ const MAXED: Settings = {
   alchemy: 100, alchemist: 5, benefactor: true, seekerShadows: false,
   enchanting: 100, enchanter: 5, seekerSorcery: false,
   pieces: 4, perPiece: 25, baseMagnitude: 8, categoryPerk: true,
+  // Grand unless a check says otherwise: every measured run used one, and pinning it keeps
+  // the anchors comparable now that the gem is a lever.
+  soulCharges: 3000,
 };
+
+/** Let the planner choose the gem — which is the shipping default. */
+const ANY_SOUL: Settings = { ...MAXED, soulCharges: 0 };
 
 function checkRestoMaths(): void {
   // UESP: a fully perked alchemist with no gear brews a 15% Fortify Enchanting potion,
@@ -98,6 +104,32 @@ function checkRestoMaths(): void {
   const hisGear = hisRun[4].piecePercent * 3;
   near('cashing out in three gives the measured 467% potion', potionOf(MAXED, hisGear), 467, 2);
   near('which places the measured 204%', placeableFrom(MAXED, potionOf(MAXED, hisGear)), 204, 2);
+
+  // SOUL GEMS. On apparel the gem scales the magnitude by charges/3000, which gives the
+  // planner five overlapping copies of an otherwise lumpy set. It is not a small effect:
+  // several targets have NO landing on a grand soul and a comfortable one on another gem.
+  for (const target of [200, 300, 600, 800, 1000, 1500]) {
+    const grand = solve(MAXED, target);
+    const any = solve(ANY_SOUL, target);
+    check(`${target}% has no grand-soul landing`, Math.floor(grand.best?.value ?? 0) !== target,
+      `${grand.best?.value.toFixed(2)}%`);
+    check(`but lands on a ${any.best?.soulLabel} soul`, Math.floor(any.best?.value ?? 0) === target,
+      `${any.best?.value.toFixed(2)}%, ${any.best?.margin.toFixed(2)} inside`);
+  }
+  // The petty landing on 600% only exists above the old 30,000% gear ceiling, so it also
+  // guards against that being tightened back down.
+  const petty = solve({ ...MAXED, soulCharges: 250 }, 600);
+  near('a petty soul reaches 600% from 22,580% gear', petty.best?.gearPercent ?? 0, 22580, 50);
+  check('and lands 0.42 inside it', (petty.best?.margin ?? 0) > 0.4, `${petty.best?.value.toFixed(2)}%`);
+
+  // And it never picks a gem that makes the landing worse than grand would.
+  for (const target of [122, 235, 400, 500]) {
+    const grand = solve(MAXED, target);
+    const any = solve(ANY_SOUL, target);
+    check(`${target}% is no worse for having the choice`,
+      (any.best?.margin ?? 0) >= (grand.best?.margin ?? 0) - 1e-9,
+      `${any.best?.soulLabel} ${any.best?.margin.toFixed(2)} vs grand ${grand.best?.margin.toFixed(2)}`);
+  }
 
   // MARGIN. The game floors, and the enchanting fit is soft to a few tenths of a percent,
   // so a landing that hugs the bottom edge of its whole number is a coin flip. A 500%
@@ -289,6 +321,58 @@ function checkBuilder(catalogue: Catalogue): void {
 
   const markup = resultsMarkup(catalogue.effectNames, resists, [idOf('Resist Fire')], false);
   check('results markup renders a card per ranking', (markup.match(/sky-brew__badge/g) || []).length >= 3);
+
+  // ── The mortar: what a specific handful actually makes ────────────────────
+  const bySlug = (slug: string) => catalogue.ingredients.filter((i) => i.slug === slug)[0];
+  const garlic = bySlug('garlic');
+  const salmon = bySlug('salmon-roe');
+  const histcarp = bySlug('histcarp');
+
+  check('one ingredient makes nothing', liveMixture(catalogue, [garlic]) === null);
+  // Show, do not tell: the tile goes up, the chip row stays empty. No prose either way.
+  check('but its tile still goes in the mortar', mortarMarkup(catalogue, [garlic]).indexOf('sky-tile') !== -1);
+  check('and the bottle stays empty rather than explaining itself',
+    liveMarkup(catalogue, [garlic]) === '');
+  check('an empty mortar renders nothing at all', mortarMarkup(catalogue, []) === '');
+
+  // Salmon Roe + Histcarp share Fortify Magicka and Waterbreathing — and Salmon Roe
+  // carries the x12.5, which is the whole reason the multiplier column exists.
+  const pair = liveMixture(catalogue, [salmon, histcarp]);
+  check('two that share an effect make a potion', !!pair, `${pair?.effects.length} effects`);
+  check('and the mortar applies Salmon Roe\'s x12.5',
+    pair?.multipliers[idOf('Fortify Magicka')] === 12.5,
+    String(pair?.multipliers[idOf('Fortify Magicka')]));
+
+  // Two strangers make nothing, and the module has to say why rather than go blank.
+  const strangers = catalogue.ingredients.filter((a) =>
+    catalogue.ingredients.some((b) => a !== b && !(a.mask.low & b.mask.low) && !(a.mask.high & b.mask.high)));
+  if (strangers.length >= 2) {
+    const a = strangers[0];
+    const b = catalogue.ingredients.filter((c) =>
+      c !== a && !(a.mask.low & c.mask.low) && !(a.mask.high & c.mask.high))[0];
+    check('two that share nothing make nothing', liveMixture(catalogue, [a, b]) === null);
+    check('and both tiles are still shown', (mortarMarkup(catalogue, [a, b]).match(/sky-tile/g) || []).length === 2);
+    check('and such an ingredient greys out once the first is picked', !contributesTo([a], b));
+  }
+  check('anything is allowed while the mortar is empty', contributesTo([], garlic));
+  check('and a sharer stays enabled', contributesTo([salmon], histcarp));
+
+  // A tile draws its art when the file is there and falls back to the "?" disc until it
+  // lands. WHICH branch a given ingredient takes depends on what is sitting in
+  // assets/skyrim/ingredients today, so pin both against a catalogue with the images map
+  // swapped rather than against whatever art happens to exist — asserting "salmon roe has
+  // no art" was true right up until the art arrived, and then this went red for no reason.
+  const bare = { ...catalogue, images: {} };
+  const dressed = { ...catalogue, images: { [salmon.slug]: '/skyrim/ingredients/salmon-roe.png' } };
+  check('a tile without art uses the placeholder',
+    mortarMarkup(bare, [salmon]).indexOf('sky-ph__disc') !== -1);
+  check('and draws the image once the file is there',
+    mortarMarkup(dressed, [salmon]).indexOf('src="/skyrim/ingredients/salmon-roe.png"') !== -1);
+  // The DLC badge is on the tile either way — it is what tints the name to match the pill.
+  const salmonTile = mortarMarkup(catalogue, [salmon]);
+  check('and tags its DLC for the colour coding', salmonTile.indexOf('data-dlc="HF"') !== -1);
+  check('a base-game ingredient carries no DLC tag',
+    mortarMarkup(catalogue, [garlic]).indexOf('data-dlc') === -1);
 }
 
 export function runSelfCheck(mount: HTMLElement): void {

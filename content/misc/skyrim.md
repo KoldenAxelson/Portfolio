@@ -148,6 +148,26 @@ several wrong models chasing as though it were an enchantment; the same run plac
 33%. The enchanting formula feeds the potion into a quadratic on effective skill, so a
 potion percentage and an enchantment percentage are never close.
 
+**The soul gem is the finest control there is.** On apparel the gem scales the magnitude
+directly — the engine's term is `soulCharges / 3000`, so a common soul places exactly a
+third of a grand one, and a petty soul a twelfth. (On weapons it buys charges instead,
+which is where the "always use grand" habit comes from.) Since the set of reachable
+numbers is discrete and lumpy, five gems give five overlapping copies of it, and that
+turns targets with *no* landing into comfortable ones:
+
+```text
+target   grand soul only        best gem
+  200%   no landing             200.70   0.30 inside   Greater
+  300%   no landing             300.55   0.45 inside   Greater
+  400%   400.82, 0.18 inside    400.40   0.40 inside   Petty
+  600%   no landing             600.42   0.42 inside   Petty
+ 1000%   no landing            1000.48   0.48 inside   Common
+ 1500%   no landing            1500.52   0.48 inside   Lesser
+```
+
+The planner picks the gem for you by default and names it in the last step. It applies to
+the final enchantment only — the Fortify Alchemy gear you wear is whatever you made it.
+
 **Two ways this is wrong for you.** If you run the Unofficial Patch none of it
 works: USSEP takes the Fortify effects out of the Restoration school and
 separately turns the enchanting potion into a flat multiplier. And the `0.14` and

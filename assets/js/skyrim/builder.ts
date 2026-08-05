@@ -112,6 +112,8 @@ interface Payload {
   bm: number[];
   x: Record<string, [number, number]>[];
   i: { s: string; n: string; v: number; a: number; d: string; f: number[] }[];
+  /** slug -> resolved image URL, for the few that have art yet. */
+  g?: Record<string, string>;
 }
 
 export interface Catalogue {
@@ -121,6 +123,7 @@ export interface Catalogue {
   ingredients: Ingredient[];
   /** Effect index to the ingredients carrying it. */
   carriersOf: Ingredient[][];
+  images: Record<string, string>;
 }
 
 function maskOf(effects: number[]): EffectMask {
@@ -152,6 +155,7 @@ export function buildCatalogue(payload: Payload): Catalogue {
     deviations: payload.x || [],
     ingredients,
     carriersOf,
+    images: payload.g || {},
   };
 }
 
@@ -329,6 +333,73 @@ function headlines(winners: (Mixture | null)[]): { mixture: Mixture; labels: str
   return cards;
 }
 
+/**
+ * What a specific handful of ingredients actually makes.
+ *
+ * The other three modes ask what you WANT and search for it; this one is the mortar
+ * itself — you put things in and the bottle updates. No search, no ranking, no Brew
+ * button, because there is nothing to choose between.
+ */
+export function liveMixture(catalogue: Catalogue, chosen: Ingredient[]): Mixture | null {
+  if (chosen.length < 2) return null;
+  const produced = effectsProducedBy(chosen);
+  if (!produced.low && !produced.high) return null;
+  return describe(catalogue, chosen, produced, []);
+}
+
+/**
+ * Would adding this ingredient contribute anything?
+ *
+ * An effect only reaches the bottle when two ingredients share it, so an ingredient that
+ * shares nothing with what is already in the mortar is a wasted third slot. The game
+ * would let you do it; there is no reason to want to.
+ */
+export function contributesTo(chosen: Ingredient[], candidate: Ingredient): boolean {
+  if (!chosen.length) return true;
+  return chosen.some((ingredient) =>
+    (ingredient.mask.low & candidate.mask.low) !== 0 ||
+    (ingredient.mask.high & candidate.mask.high) !== 0);
+}
+
+/**
+ * One ingredient tile, matching partials/skyrim-ingredients.html so the two share their
+ * CSS and a recipe card and the mortar look like the same thing.
+ */
+function tileMarkup(catalogue: Catalogue, ingredient: Ingredient): string {
+  const url = catalogue.images[ingredient.slug];
+  const art = url
+    ? `<img src="${escapeHtml(url)}" alt="${escapeHtml(ingredient.name)}" loading="lazy" decoding="async" />`
+    // No art yet. aria-hidden because the name below already says it.
+    : '<svg class="sky-ph" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" ' +
+      'focusable="false"><circle class="sky-ph__disc" cx="24" cy="24" r="22" />' +
+      '<text class="sky-ph__mark" x="24" y="25" text-anchor="middle" dominant-baseline="central">?</text></svg>';
+  const dlc = ingredient.dlc
+    ? `<span class="sky-ing__dlc" data-dlc="${escapeHtml(ingredient.dlc)}">${escapeHtml(ingredient.dlc)}</span>`
+    : '';
+  return (
+    `<div class="sky-ing"><span class="sky-tile">${art}</span>` +
+    `<span class="sky-ing__name">${escapeHtml(ingredient.name)}${dlc}</span></div>`
+  );
+}
+
+/** The tiles of whatever is in the mortar. Empty is empty — the grid below says the rest. */
+export function mortarMarkup(catalogue: Catalogue, chosen: Ingredient[]): string {
+  if (!chosen.length) return '';
+  return `<div class="sky-ings">${chosen.map((i) => tileMarkup(catalogue, i)).join('')}</div>`;
+}
+
+/**
+ * What the bottle currently holds. Nothing to say when it holds nothing: the tiles above
+ * show what is in, and an absent chip row shows that it makes nothing yet.
+ */
+export function liveMarkup(catalogue: Catalogue, chosen: Ingredient[]): string {
+  const mixture = liveMixture(catalogue, chosen);
+  if (!mixture) return '';
+  return `<ul class="sky-chips">${mixture.effects
+    .map((effect) => effectChip(catalogue.effectNames, mixture, effect, []))
+    .join('')}</ul>`;
+}
+
 export function resultsMarkup(names: string[], result: SearchResult, wanted: number[], showExtra: boolean): string {
   const cards = headlines(result.winners);
   const extra = showExtra
@@ -368,8 +439,14 @@ function setUp(root: HTMLElement): void {
   const catalogue = buildCatalogue(JSON.parse(payloadScript.textContent || '{}') as Payload);
 
   const effectButtons = queryAll<HTMLButtonElement>(root, '[data-fx]');
+  const ingredientButtons = queryAll<HTMLButtonElement>(root, '[data-ing]');
+  const live = root.querySelector<HTMLElement>('[data-live]');
+  const mortar = root.querySelector<HTMLElement>('[data-mortar]');
+  const filter = root.querySelector<HTMLInputElement>('[data-ing-filter]');
+  const bySlug = new Map(catalogue.ingredients.map((ingredient) => [ingredient.slug, ingredient]));
   let kind: Kind = 'any';
   let wanted: number[] = [];
+  let chosen: Ingredient[] = [];
   let showExtra = false;
 
   const showScreen = (screen: number): void => {
@@ -395,6 +472,23 @@ function setUp(root: HTMLElement): void {
     brewButton.disabled = !wanted.length;
   };
 
+  /** The mortar: three slots, live, with everything useless greyed out. */
+  const refreshIngredients = (): void => {
+    const needle = (filter?.value || '').trim().toLowerCase();
+    const full = chosen.length >= 3;
+    for (const button of ingredientButtons) {
+      const ingredient = bySlug.get(button.dataset.ing || '');
+      if (!ingredient) continue;
+      const picked = chosen.indexOf(ingredient) !== -1;
+      const item = button.closest('li');
+      if (item) item.hidden = !!needle && ingredient.name.toLowerCase().indexOf(needle) === -1;
+      button.classList.toggle('is-on', picked);
+      button.disabled = !picked && (full || !contributesTo(chosen, ingredient));
+    }
+    if (mortar) mortar.innerHTML = mortarMarkup(catalogue, chosen);
+    if (live) live.innerHTML = liveMarkup(catalogue, chosen);
+  };
+
   const renderResults = (): void => {
     if (heading) heading.textContent = wanted.map((effect) => catalogue.effectNames[effect]).join(' + ');
     const result = search(catalogue, wanted);
@@ -418,6 +512,32 @@ function setUp(root: HTMLElement): void {
     });
   }
 
+  for (const button of queryAll<HTMLButtonElement>(root, '.sky-pick__b[data-mode="ingredient"]')) {
+    button.addEventListener('click', () => {
+      chosen = [];
+      if (filter) filter.value = '';
+      refreshIngredients();
+      showScreen(4);
+    });
+  }
+
+  for (const button of ingredientButtons) {
+    button.addEventListener('click', () => {
+      const ingredient = bySlug.get(button.dataset.ing || '');
+      if (!ingredient) return;
+      const at = chosen.indexOf(ingredient);
+      if (at === -1) {
+        if (chosen.length >= 3) return;
+        chosen.push(ingredient);
+      } else {
+        chosen.splice(at, 1);
+      }
+      refreshIngredients();
+    });
+  }
+
+  filter?.addEventListener('input', refreshIngredients);
+
   for (const button of effectButtons) {
     button.addEventListener('click', () => {
       const effect = Number(button.dataset.fx);
@@ -436,11 +556,15 @@ function setUp(root: HTMLElement): void {
 
   for (const button of queryAll<HTMLButtonElement>(root, '[data-back]')) {
     button.addEventListener('click', () => {
+      // The ingredient screen hangs off screen 1 rather than following screen 3, so it
+      // says where it goes instead of stepping back one.
+      const explicit = button.dataset.back;
       const current = Number(root.getAttribute('data-screen')) || 1;
-      showScreen(Math.max(1, current - 1));
+      showScreen(explicit ? Number(explicit) : Math.max(1, current - 1));
     });
   }
 
   refreshEffectGrid();
+  refreshIngredients();
   showScreen(1);
 }

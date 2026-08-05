@@ -385,3 +385,34 @@
 .sky-worth > em { grid-column: 1; font-size: 0.76rem; font-style: normal; color: rgb(var(--c-muted)); }
 .sky-worth__without { font-size: 0.72rem; color: rgb(var(--c-muted)); text-align: right; }
 .sky-worth.is-unsure { border-style: dashed; }
+
+/* The mortar. 183 pills need to be denser than the 59-effect grid, and the live
+   bottle sits under them rather than behind a Brew button. */
+.sky-fx--ings { max-height: 22rem; overflow-y: auto; }
+.sky-scr__foot--live { display: block; min-height: 3rem; }
+
+/* DLC tint on the ingredient pills. A left edge rather than a fill, so it survives the
+   accent takeover when a pill is selected and never competes with it for meaning:
+   colour says where it came from, filled says it is in the mortar. */
+.sky-fx--ings .sky-fx__b { border-left-width: 3px; }
+/* Scoped to the grid so these outrank .is-on and :disabled, both of which set
+   border-color on all four sides. Base game keeps the neutral border. */
+.sky-fx--ings .sky-fx__b[data-dlc="DG"] { border-left-color: rgb(139 92 246 / 0.85); }  /* Dawnguard */
+.sky-fx--ings .sky-fx__b[data-dlc="HF"] { border-left-color: rgb(217 119 6 / 0.85); }   /* Hearthfire */
+.sky-fx--ings .sky-fx__b[data-dlc="DB"] { border-left-color: rgb(13 148 136 / 0.85); }  /* Dragonborn */
+.sky-fx--ings .sky-fx__b[data-dlc="CC"] { border-left-color: rgb(219 39 119 / 0.85); }  /* Creation Club */
+/* The same five colours on the DLC badge under a tile, so the pill grid and the tiles
+   agree without either needing a legend. */
+.sky-ing__dlc[data-dlc="DG"] { border-color: rgb(139 92 246 / 0.85); color: rgb(139 92 246); }
+.sky-ing__dlc[data-dlc="HF"] { border-color: rgb(217 119 6 / 0.85); color: rgb(217 119 6); }
+.sky-ing__dlc[data-dlc="DB"] { border-color: rgb(13 148 136 / 0.85); color: rgb(13 148 136); }
+.sky-ing__dlc[data-dlc="CC"] { border-color: rgb(219 39 119 / 0.85); color: rgb(219 39 119); }
+
+/* The mortar's tiles sit above the grid. `.sky-ing` is `flex: 1 1 0` so that a recipe
+   card's three tiles share its narrow width evenly — across the builder's full width that
+   balloons them to 350px each, so here they are pinned to a fixed size instead.
+   No reserved height: adding the first ingredient shifts the grid once and never again,
+   which beats a permanent empty band above it. */
+.sky-mortar { margin-bottom: 0.6rem; }
+.sky-mortar .sky-ings { justify-content: flex-start; border-radius: 0.6rem; }
+.sky-mortar .sky-ing { flex: 0 0 4.5rem; }
