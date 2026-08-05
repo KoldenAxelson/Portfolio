@@ -18,7 +18,7 @@
 //   Numbers that are documented somewhere (UESP's anchors, a measured field
 //   report) and structure that a refactor could silently drop. Not appearance.
 
-import { buildCatalogue, contributesTo, liveMarkup, liveMixture, mortarMarkup, resultsMarkup, search, type Catalogue } from './builder';
+import { buildCatalogue, contributesTo, liveMarkup, liveMixture, maskToIndices, mortarMarkup, resultsMarkup, search, type Catalogue } from './builder';
 import { placeableFrom, planMarkupFor, potionOf, replay, roundsOf, solve, type Plan, type Settings } from './resto';
 import { fairLoop, magnitudeOf, maximise, type MaxSettings, type Trick } from './enchant';
 
@@ -68,11 +68,13 @@ function checkRestoMaths(): void {
   near('which places the measured 9,831%', placeableFrom(MAXED, fePotion), 9831, 10);
 
   // THE TWO PLANS THAT WERE ACTUALLY RUN, pinned as sequences rather than as whatever the
-  // search currently prefers — the search may find a shorter route to the same number, but
-  // these are the ones with a confirmed outcome behind them.
+  // search currently prefers. `solve` now proposes a four-round route to 235% instead of
+  // this five-round one; both are correct, but only this one has a confirmed outcome
+  // behind it. If it ever disagrees with the search, the search is not the authority —
+  // do not "resync" this to match it.
   const confirmed = replay(MAXED, [0, 2, 2, 2, 2]);
   const confirmedFe = potionOf(MAXED, confirmed[4].piecePercent * 3);
-  near('the confirmed 235% run still brews its 511.7% potion', confirmedFe, 511.9, 1);
+  near('the confirmed 235% run still brews its 511.9% potion', confirmedFe, 511.9, 1);
   check('and still places 235%', Math.floor(placeableFrom(MAXED, confirmedFe)) === 235,
     `${placeableFrom(MAXED, confirmedFe).toFixed(2)}%`);
 
@@ -111,8 +113,11 @@ function checkRestoMaths(): void {
   for (const target of [200, 300, 600, 800, 1000, 1500]) {
     const grand = solve(MAXED, target);
     const any = solve(ANY_SOUL, target);
-    check(`${target}% has no grand-soul landing`, Math.floor(grand.best?.value ?? 0) !== target,
-      `${grand.best?.value.toFixed(2)}%`);
+    // !!grand.best first: `Math.floor(undefined ?? 0) !== target` is true for every
+    // target, so this passed just as happily when solve returned nothing at all — a
+    // different and much worse fact than "no landing on this gem".
+    check(`${target}% has no grand-soul landing`,
+      !!grand.best && Math.floor(grand.best.value) !== target, `${grand.best?.value.toFixed(2)}%`);
     check(`but lands on a ${any.best?.soulLabel} soul`, Math.floor(any.best?.value ?? 0) === target,
       `${any.best?.value.toFixed(2)}%, ${any.best?.margin.toFixed(2)} inside`);
   }
@@ -127,7 +132,7 @@ function checkRestoMaths(): void {
     const grand = solve(MAXED, target);
     const any = solve(ANY_SOUL, target);
     check(`${target}% is no worse for having the choice`,
-      (any.best?.margin ?? 0) >= (grand.best?.margin ?? 0) - 1e-9,
+      !!any.best && !!grand.best && any.best.margin >= grand.best.margin - 1e-9,
       `${any.best?.soulLabel} ${any.best?.margin.toFixed(2)} vs grand ${grand.best?.margin.toFixed(2)}`);
   }
 
@@ -141,6 +146,26 @@ function checkRestoMaths(): void {
     check(`the ${target}% plan lands clear of the band edge`, (plan.best?.margin ?? 0) >= 0.15,
       `${plan.best?.value.toFixed(2)}%, ${plan.best?.margin.toFixed(2)} inside`);
   }
+  // PLACING IT SOBER. `cashOut` always brews something — a maxed alchemist wearing nothing
+  // still makes a 15% potion — so the potion-free placement has to be offered separately.
+  // Without it the planner called the one number you get for free unreachable, on every
+  // group, and then printed "place it with no potion at all" over a plan that wanted one.
+  for (const [base, target] of [[8, 25], [13, 40], [15, 46], [20, 62]]) {
+    const free = solve({ ...MAXED, baseMagnitude: base }, target);
+    check(`base ${base} reaches ${target}% with no potion at all`,
+      Math.floor(free.best?.value ?? 0) === target && free.best?.potionPercent === 0,
+      `${free.best?.value.toFixed(2)}%, potion ${free.best?.potionPercent.toFixed(1)}%`);
+    check(`and says so rather than listing a brew`,
+      planMarkupFor(free, target).indexOf('Nothing to brew') !== -1);
+  }
+  // The converse: a plan that needs no LOOPS can still need a potion, and must print the
+  // cash-out step. Gating the step list on plan.rounds dropped it silently.
+  const oneBrew = solve({ ...MAXED, baseMagnitude: 8 }, 26);
+  check('a no-loop plan that needs a potion still lists its brew',
+    (oneBrew.best?.rounds ?? -1) === 0 && (oneBrew.best?.potionPercent ?? 0) > 0 &&
+    planMarkupFor(oneBrew, 26).indexOf('sky-step--brew') !== -1,
+    `${oneBrew.best?.value.toFixed(2)}%, potion ${oneBrew.best?.potionPercent.toFixed(1)}%`);
+
   const fiveHundred = solve(MAXED, 500);
   check('500% no longer picks the 500.01% landing', (fiveHundred.best?.value ?? 0) > 500.1,
     `${fiveHundred.best?.value.toFixed(2)}%`);
@@ -167,7 +192,13 @@ function checkRestoMaths(): void {
   check('a 25% target needs no rounds', trivial.best?.rounds === 0, `rounds=${trivial.best?.rounds}`);
 }
 
-/** The tricks as data/skyrim/enchant-tricks.yaml ships them. */
+/**
+ * A HAND-MIRRORED COPY of data/skyrim/enchant-tricks.yaml, not a read of it — this module
+ * never touches the page's [data-tricks] payload. So correcting a `value` in the YAML
+ * leaves these assertions green against the old number, which is the one drift this file
+ * cannot catch. Mirror any edit to that file here, or the alarm is off. (Labels are
+ * shortened on purpose; only the numeric and side/kind fields are load-bearing.)
+ */
 const TRICKS: Trick[] = [
   { id: 'shadows', label: 'Seeker of Shadows', note: '', side: 'alchemy', kind: 'mult', value: 1.1, excludes: ['sorcery'], dlc: 'DB', sure: true },
   { id: 'sorcery', label: 'Seeker of Sorcery', note: '', side: 'enchant', kind: 'mult', value: 1.1, excludes: ['shadows'], dlc: 'DB', sure: true },
@@ -191,7 +222,7 @@ function checkEnchantMax(): void {
   // land on the same 235% here. Two modules, two code paths, one number that was placed
   // on a pair of gloves in game.
   const looped = { ...MAX_BASE, potionPercent: 511.7 };
-  near('the confirmed 511.7% potion places 235%', magnitudeOf(looped, TRICKS), 235.0, 0.5);
+  near('the confirmed 511.9% potion places 235%', magnitudeOf(looped, TRICKS), 235.0, 0.5);
   const solved = solve(MAXED, 235);
   near('and the resto planner agrees to within a rounding error',
     magnitudeOf({ ...MAX_BASE, potionPercent: solved.best?.potionPercent ?? 0 }, TRICKS),
@@ -282,18 +313,37 @@ function checkBuilder(catalogue: Catalogue): void {
   check('the catalogue has 183 ingredients', catalogue.ingredients.length === 183, `${catalogue.ingredients.length}`);
   check('the catalogue has 59 effects', catalogue.effectNames.length === 59, `${catalogue.effectNames.length}`);
 
+  // River Betty makes Damage Health INSTANTANEOUS — `dur: 0` in effects.yaml. Hugo's
+  // `default` treats 0 as empty, so the payload shipped it as 1 for a while, which is a
+  // factor of ~12.6 on the duration term of the gold cost and flipped 1,448 verdicts.
+  // Pinned here because the template is the only thing standing between the YAML and this.
+  const riverBetty = catalogue.deviations[idOf('Damage Health')]?.['river-betty'];
+  check('a deliberate dur:0 survives the payload', riverBetty?.[1] === 0, `dur ${riverBetty?.[1]}`);
+  check('and its x2.5 magnitude comes through with it', riverBetty?.[0] === 2.5, `mag ${riverBetty?.[0]}`);
+
   // Every effect must have two carriers or it could never reach a bottle. The
   // build asserts this too; here it guards the payload, not the YAML.
   const orphans = catalogue.effectNames.filter((_, i) => catalogue.carriersOf[i].length < 2);
   check('every effect has at least two carriers', orphans.length === 0, orphans.join(', '));
 
-  // Each ingredient's bitmask must agree with its own effect list.
+  // Each ingredient's bitmask must agree with its own effect list, decoded by the OTHER
+  // decoder. This used to re-derive the mask with maskOf's own `1 << index` expression,
+  // so it could not fail whatever arithmetic maskOf did — and because JS shifts are mod
+  // 32, `1 << (i - 32)` and `1 << i` are the same value for i in 32..58, which made the
+  // one off-by-32 the two halves exist to prevent invisible to it.
   const mismatched = catalogue.ingredients.filter((ingredient) => {
-    const bits = ingredient.effects.filter((index) =>
-      index < 32 ? ingredient.mask.low & (1 << index) : ingredient.mask.high & (1 << (index - 32)));
-    return bits.length !== ingredient.effects.length;
+    const decoded = maskToIndices(ingredient.mask, catalogue.effectNames.length);
+    const listed = ingredient.effects.slice().sort((a, b) => a - b);
+    return decoded.length !== listed.length || decoded.some((v, i) => v !== listed[i]);
   });
-  check('effect bitmasks match the effect lists', mismatched.length === 0, mismatched.map((i) => i.slug).join(', '));
+  check('effect bitmasks round-trip through the other decoder', mismatched.length === 0,
+    mismatched.map((i) => i.slug).join(', '));
+  // And one that actually straddles the boundary, which is the point of the split: an
+  // ingredient carrying both a low and a high effect must set a bit in each half.
+  const straddler = catalogue.ingredients.filter((i) =>
+    i.effects.some((e) => e < 32) && i.effects.some((e) => e >= 32))[0];
+  check('an ingredient spanning both halves sets bits in both',
+    !!straddler && straddler.mask.low !== 0 && straddler.mask.high !== 0, straddler?.slug || 'none found');
 
   // The impossible pair, which is the clearest expression of the two-carrier rule.
   const impossible = search(catalogue, [idOf('Fortify Sneak'), idOf('Fortify Marksman')]);
@@ -315,9 +365,25 @@ function checkBuilder(catalogue: Catalogue): void {
   check('and reports its x12.5', potent?.multipliers[idOf('Fortify Magicka')] === 12.5,
     String(potent?.multipliers[idOf('Fortify Magicka')]));
 
-  // Duration-only effects read the duration multiplier, magnitude being 0.
+  // Duration-only effects read the DURATION multiplier, magnitude being 0. Nothing used to
+  // exercise that branch — both multiplier assertions pinned Fortify Magicka, whose base
+  // magnitude is 4 — so inverting the ternary in `multiplierFor` left every assertion
+  // green while each Paralysis and Waterbreathing multiplier vanished from the page.
   const paralysis = search(catalogue, [idOf('Paralysis')]);
   check('Paralysis is reachable', paralysis.total > 0, `${paralysis.total}`);
+  check('and Paralysis has no base magnitude, so its strength is duration',
+    catalogue.baseMagnitudes[idOf('Paralysis')] === 0);
+
+  // CONTESTED means the deviating ingredients DISAGREE, not that there are several. Six of
+  // Invisibility's seven deviators all carry the same x1.5, so a mixture holding two of
+  // them is not contested — and counting rows instead of values used to demote the
+  // gather-5 winner in favour of a gather-3 one with identical potency.
+  const invisible = search(catalogue, [idOf('Invisibility')]);
+  const potentInvisible = invisible.winners[3];
+  check('agreeing deviators are not contested', potentInvisible?.contested === false);
+  check('so "Most potent" Invisibility takes the easiest to gather',
+    potentInvisible?.gatherScore === 5, `gather ${potentInvisible?.gatherScore}`);
+  check('and still reports the x1.5', potentInvisible?.multipliers[idOf('Invisibility')] === 1.5);
 
   const markup = resultsMarkup(catalogue.effectNames, resists, [idOf('Resist Fire')], false);
   check('results markup renders a card per ranking', (markup.match(/sky-brew__badge/g) || []).length >= 3);
@@ -351,7 +417,9 @@ function checkBuilder(catalogue: Catalogue): void {
     const b = catalogue.ingredients.filter((c) =>
       c !== a && !(a.mask.low & c.mask.low) && !(a.mask.high & c.mask.high))[0];
     check('two that share nothing make nothing', liveMixture(catalogue, [a, b]) === null);
-    check('and both tiles are still shown', (mortarMarkup(catalogue, [a, b]).match(/sky-tile/g) || []).length === 2);
+    // data-drop, not sky-tile: a tile carries `sky-tile sky-tile--drop`, so counting the
+    // bare class name found two per tile and made this read four.
+    check('and both tiles are still shown', (mortarMarkup(catalogue, [a, b]).match(/data-drop=/g) || []).length === 2);
     check('and such an ingredient greys out once the first is picked', !contributesTo([a], b));
   }
   check('anything is allowed while the mortar is empty', contributesTo([], garlic));
@@ -373,6 +441,50 @@ function checkBuilder(catalogue: Catalogue): void {
   check('and tags its DLC for the colour coding', salmonTile.indexOf('data-dlc="HF"') !== -1);
   check('a base-game ingredient carries no DLC tag',
     mortarMarkup(catalogue, [garlic]).indexOf('data-dlc') === -1);
+
+  // In the mortar the tile is how you take something back out, so it has to be a real
+  // button with a real label — not a div with a click handler bolted on.
+  const garlicTile = mortarMarkup(catalogue, [garlic]);
+  check('a mortar tile is a button that drops its ingredient',
+    garlicTile.indexOf('<button') !== -1 && garlicTile.indexOf('data-drop="garlic"') !== -1);
+  check('and says so to a screen reader', garlicTile.indexOf('aria-label="Take Garlic out') !== -1);
+
+  // ── Potion or poison ─────────────────────────────────────────────────────
+  //
+  // The costliest effect in the bottle decides, and it does not care how many effects are
+  // on each side. Every case below is the classifier's whole job in one line.
+  const verdict = (slugs: string[]): string => {
+    const mixture = liveMixture(catalogue, slugs.map(bySlug));
+    if (!mixture) return 'nothing';
+    if (mixture.undecided) return 'either';
+    return mixture.poison ? 'poison' : 'potion';
+  };
+  const boss = (slugs: string[]): string => {
+    const mixture = liveMixture(catalogue, slugs.map(bySlug));
+    return mixture ? catalogue.effectNames[mixture.dominant] : '';
+  };
+
+  check('all-good comes out a potion', verdict(['blue-mountain-flower', 'wheat']) === 'potion');
+  check('and Fortify Health is what makes it one',
+    boss(['blue-mountain-flower', 'wheat']) === 'Fortify Health');
+  check('all-bad comes out a poison', verdict(['deathbell', 'nightshade']) === 'poison');
+  // The two that matter: a mixture with effects on BOTH sides is decided by cost alone.
+  check('a poison effect can outweigh a good one',
+    verdict(['aloe-vera-leaves', 'butterfly-wing']) === 'poison');
+  check('and Damage Magicka is why, not Restore Health',
+    boss(['aloe-vera-leaves', 'butterfly-wing']) === 'Damage Magicka');
+  check('a good effect can outweigh a poison one',
+    verdict(['abecean-longfin', 'small-antlers']) === 'potion');
+  check('and it is Fortify Restoration doing it',
+    boss(['abecean-longfin', 'small-antlers']) === 'Fortify Restoration');
+  // The single exact tie in the whole table, reachable 65 ways. Reported, not guessed.
+  check('the Resist Magic / Weakness to Poison tie is reported as undecided',
+    verdict(['abecean-longfin', 'bleeding-crown', 'chickens-egg']) === 'either');
+  check('a mixture that makes nothing has no verdict', verdict(['garlic']) === 'nothing');
+
+  const bottle = liveMarkup(catalogue, [bySlug('deathbell'), bySlug('nightshade')]);
+  check('the live bottle prints the verdict', bottle.indexOf('data-kind="bad"') !== -1);
+  check('and marks the chip that decided it', bottle.indexOf('is-dominant') !== -1);
 }
 
 export function runSelfCheck(mount: HTMLElement): void {

@@ -7,14 +7,20 @@
   Call with the page:                 {{ partial "skyrim-assets.html" .Page }}
   Style only (no behaviour needed):   {{ partial "skyrim-assets.html" (dict "page" .Page "styleOnly" true) }}
 */ -}}
-{{- /* Data invariants are asserted here rather than in the shortcodes so they
-       run once per page however many widgets are on it. */ -}}
-{{- partial "skyrim-verify.html" . -}}
 {{- $page := . -}}
 {{- $styleOnly := false -}}
 {{- if reflect.IsMap . -}}
   {{- $page = .page -}}
   {{- $styleOnly = .styleOnly -}}
+{{- end -}}
+{{- /* Data invariants are asserted here rather than in the shortcodes so they run once
+       per page however many widgets ask. It has to sit BEHIND the Scratch guard to do
+       that — /misc/skyrim/ calls five shortcodes, and this partial's carrier count builds
+       a dict with `merge` inside a 732-iteration loop, so running it per shortcode was
+       five quadratic passes over 183 ingredients for one answer. */ -}}
+{{- if not ($page.Scratch.Get "skyrimVerified") -}}
+  {{- partial "skyrim-verify.html" $page -}}
+  {{- $page.Scratch.Set "skyrimVerified" true -}}
 {{- end -}}
 {{- if not ($page.Scratch.Get "skyrimCss") -}}
   {{- $css := resources.Get "css/skyrim.css" | minify | fingerprint -}}

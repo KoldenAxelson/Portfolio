@@ -1,10 +1,21 @@
-// Shared by the Skyrim modules on /misc/skyrim/. Both the resto planner and the
-// potion builder render themselves by assembling HTML strings and both read
-// their settings out of `data-f` inputs, so the escaping, the number formats and
-// the field readers live here rather than once per module.
+// Shared by the Skyrim modules on /misc/skyrim/. All four render themselves by
+// assembling HTML strings, and two of them — the resto planner and the enchant-max
+// calculator — read their settings out of `data-f` inputs, so the escaping, the number
+// formats and the field readers live here rather than once per module. The builder and
+// the filter use the rendering and query helpers only.
 
+/**
+ * Safe in an ATTRIBUTE as well as in text, which is the case that matters: most call
+ * sites here interpolate into `data-*`, `alt` and `aria-label`. Escaping only `&` and `<`
+ * would let a quote in an ingredient name close the attribute and open a tag.
+ */
 export function escapeHtml(text: string): string {
-  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 /** Thousands separators, one decimal below 1000 and none above. */

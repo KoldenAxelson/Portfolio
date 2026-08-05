@@ -8,7 +8,8 @@
 # (an effect on only one ingredient could never appear in a potion).
 #
 #   name    display name, exact UESP spelling
-#   value   gold, used as the "most valuable" ranking on the builder's results
+#   value   gold. Shipped in the builder's payload as `v` but currently unused —
+#           none of the five rankings sorts on gold. Kept because it is real data.
 #   dlc     "" | DG (Dawnguard) | HF (Hearthfire) | DB (Dragonborn) | CC (Creation Club)
 #   avail   1-5, how easily you get it:
 #             5  super abundant — mountain flowers, lavender, cave mushrooms

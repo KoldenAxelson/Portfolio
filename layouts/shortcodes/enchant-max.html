@@ -30,15 +30,7 @@
   <div class="sky-bar">
     <label class="sky-bar__field sky-bar__field--grow">
       <span class="sky-bar__label">Enchanting</span>
-      <select data-f="effect">
-        {{- range $g := site.Data.skyrim.enchantments }}
-        <optgroup label="base {{ $g.base }}{{ with $g.perk }} · {{ . }}{{ else }} · no perk{{ end }}">
-          {{- range $e := $g.effects }}
-          <option data-base="{{ $g.base }}" data-perk="{{ $g.perk }}"{{ if eq $e $want }} selected{{ end }}>{{ $e }}</option>
-          {{- end }}
-        </optgroup>
-        {{- end }}
-      </select>
+      {{ partial "skyrim-enchant-picker.html" (dict "want" $want) }}
     </label>
     <label class="sky-bar__field">
       {{- /* The % lives in the label, not the box — a number input's spinner arrows
@@ -48,6 +40,7 @@
       <input type="number" min="0" step="1" value="{{ $potion }}" data-f="potion" />
     </label>
   </div>
+  <p class="sky-bar__note" data-enchant-group-note></p>
 
   <div class="sky-config">
     <div class="sky-config__grid">

@@ -11,6 +11,9 @@
 #              "enchant" — multiplies the enchantment you place
 #              "alchemy" — makes the Fortify Enchanting potion stronger
 #              "both"    — does both, and compounds through the loop
+#            NOTE: `side` is honoured only for kind "mult". A "skill" trick is always
+#            Enchanting skill and a "potionbase" trick always multiplies the potion,
+#            whatever `side` says — see skillBonus/potionBase in enchant.ts.
 #   kind     "mult"       — a flat multiplier on that side
 #            "skill"      — points of Enchanting skill, which land INSIDE the
 #                           quadratic and are therefore worth far more
@@ -67,7 +70,7 @@
 
 - id: "dreugh"
   label: "Dreugh Wax or Stoneflower Petals"
-  note: "Rare Curios. Both carry Fortify Enchanting at ×2 base magnitude, which doubles the potion before any of the alchemist multipliers touch it. The single biggest fair lever there is."
+  note: "Rare Curios. Both carry Fortify Enchanting at ×2 base magnitude, which doubles the potion before any of the alchemist multipliers touch it. The biggest lever that costs you nothing but the ingredient — Necromage places more, but wants vampirism."
   side: "alchemy"
   kind: "potionbase"
   value: 2

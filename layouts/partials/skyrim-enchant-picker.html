@@ -1,0 +1,38 @@
+{{- /*
+  skyrim-enchant-picker — the "what are you enchanting" <select>, shared by the resto
+  planner and the enchant-max calculator.
+
+    {{ partial "skyrim-enchant-picker.html" (dict "want" $want) }}
+
+    want   the effect name to preselect. Warns if it names nothing.
+
+  Each option carries data-base, data-perk and data-note. The caller decides what to do
+  with them: both widgets read base and perk, and both render `note` into their own
+  `[data-*-group-note]` paragraph.
+
+  Built from data/skyrim/enchantments.yaml, grouped by the two things that decide the
+  answer: base magnitude, and which +25% perk applies. Everything inside a group lands on
+  the same number, which is why the groups are the groups.
+
+  This exists because there were two copies and they drifted: enchant-max's had quietly
+  lost `data-note`, so the one group that carries a caveat ("no perk applies — neither
+  Insightful nor Corpus touches Carry Weight") rendered nowhere on that widget.
+*/ -}}
+{{- $want := .want -}}
+{{- $found := false -}}
+{{- range $g := site.Data.skyrim.enchantments }}{{ range $e := $g.effects }}{{ if eq $e $want }}{{ $found = true }}{{ end }}{{ end }}{{ end -}}
+{{- if not $found -}}
+  {{- /* Silent otherwise: no option gets `selected`, the browser picks the first, and the
+         widget confidently answers a different question. The live trap is that the alchemy
+         effect is "Fortify Marksman" while the enchantment is "Fortify Marksman (Archery)". */ -}}
+  {{- warnf "skyrim-enchant-picker: effect %q is not in data/skyrim/enchantments.yaml — the picker will fall back to the first option" $want -}}
+{{- end -}}
+<select data-f="effect">
+  {{- range $g := site.Data.skyrim.enchantments }}
+  <optgroup label="base {{ $g.base }}{{ with $g.perk }} · {{ . }}{{ else }} · no perk{{ end }}">
+    {{- range $e := $g.effects }}
+    <option data-base="{{ $g.base }}" data-perk="{{ $g.perk }}" data-note="{{ $g.note }}"{{ if eq $e $want }} selected{{ end }}>{{ $e }}</option>
+    {{- end }}
+  </optgroup>
+  {{- end }}
+</select>
