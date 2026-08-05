@@ -111,7 +111,7 @@
 //   treat the last digit of any enchantment as soft. Everything upstream of the
 //   enchanting step is exact.
 
-import { debounce, findField, formatNumber, formatPrecise, formatWhole, queryAll, readFlag, readNumber } from './util';
+import { debounce, escapeHtml, findField, formatNumber, formatPrecise, formatWhole, queryAll, readFlag, readNumber } from './util';
 
 const RESTORATION_BASE = 4;
 const ENCHANTING_BASE = 1;
@@ -123,9 +123,37 @@ const MAX_PIECES = 5;
  * wear-everything plan needs.
  */
 const MAX_ROUNDS = 12;
+/**
+ * Soul gems, by the charge each holds. On APPAREL the gem scales the magnitude directly —
+ * the engine's term is SoulGemUsedCharges / GrandSoulGemCharges — so a common soul places
+ * exactly a third of what a grand one does. (On weapons it buys charges instead, which is
+ * where the "always use grand" habit comes from; for armour it is simply a fifth lever.)
+ *
+ * It is the finest control in the whole module. The reachable set is discrete and lumpy,
+ * and multiplying it by five different fractions gives five overlapping copies — which is
+ * the difference between "no plan reads 600%" and one that lands 0.42 inside it.
+ *
+ * Black soul gems hold a grand charge, so they are the same row.
+ */
+const SOUL_GEMS: { label: string; charges: number }[] = [
+  { label: 'Petty', charges: 250 },
+  { label: 'Lesser', charges: 500 },
+  { label: 'Common', charges: 1000 },
+  { label: 'Greater', charges: 2000 },
+  { label: 'Grand or Black', charges: 3000 },
+];
+const GRAND_CHARGES = 3000;
 const MAX_STATES = 90000;
-/** Stop exploring past ~30,000% gear; far beyond anything the game survives. */
-const GEAR_CEILING = 300;
+/**
+ * Stop exploring past ~300,000% summed Fortify Alchemy.
+ *
+ * This was 30,000% on the reasoning that nothing sane goes higher — which was fine until
+ * soul gems became a lever. A petty soul places a twelfth of a grand one, so reaching the
+ * same number needs twelve times the potion behind it, and the old ceiling pruned exactly
+ * the states the small gems need. Raising it turned a 600% target from "no landing" into
+ * one sitting 0.42 inside its band, and costs about 20ms.
+ */
+const GEAR_CEILING = 3000;
 
 export interface Settings {
   alchemy: number;
@@ -141,6 +169,12 @@ export interface Settings {
   baseMagnitude: number;
   /** The group's +25% perk exists and has been taken. */
   categoryPerk: boolean;
+  /**
+   * Charges of the soul gem to place the final enchantment with, or 0 to let the planner
+   * pick whichever lands closest. Only the LAST enchantment — the Fortify Alchemy gear you
+   * are wearing is whatever `perPiece` says it is.
+   */
+  soulCharges: number;
 }
 
 /** Multiplier applied to a potion effect's base magnitude. `gearPercent` is summed Fortify Alchemy. */
@@ -219,6 +253,9 @@ export interface Plan {
   rounds: number;
   /** Pieces to wear for the final Fortify Enchanting brew. */
   cashOutWear: number;
+  /** The soul gem this landing needs. */
+  soulCharges: number;
+  soulLabel: string;
   /** How far inside its whole number this lands — under ~0.1 is a coin flip. */
   margin: number;
   gearPercent: number;
@@ -284,7 +321,8 @@ export function replay(s: Settings, moves: Move[]): Round[] {
   let state: LoopState = { activeBoost: 0, brewedBase: 0, applied: 0, move: null, parent: null, rounds: 0 };
   for (const move of moves) state = advance(state, move, s, baseRestoration);
   return roundsOf({
-    value: 0, rounds: moves.length, cashOutWear: 0, margin: 0, gearPercent: 0, potionPercent: 0,
+    value: 0, rounds: moves.length, cashOutWear: 0, margin: 0, soulCharges: GRAND_CHARGES,
+    soulLabel: 'Grand or Black', gearPercent: 0, potionPercent: 0,
     state, pieceCount, perPieceFraction: s.perPiece / 100, baseRestoration,
   });
 }
@@ -356,17 +394,27 @@ export function solve(s: Settings, target: number): Solution {
 
   const shell = { pieceCount, perPieceFraction: perPiece, baseRestoration };
 
-  /** Every wear count for the final Fortify Enchanting brew. */
+  // Either the one gem asked for, or all five and let the search pick.
+  const gems = s.soulCharges
+    ? SOUL_GEMS.filter((gem) => gem.charges === s.soulCharges)
+    : SOUL_GEMS;
+
+  /** Every wear count for the final Fortify Enchanting brew, against every soul gem. */
   const cashOut = (state: LoopState): void => {
     for (let wear = 0; wear <= pieceCount; wear++) {
       const gear = gearOf(wear, state.activeBoost, perPiece);
       const potionPercent = ENCHANTING_BASE * potionMultiplier(s, gear * 100);
-      const value = enchantmentMagnitude(s, potionPercent);
-      if (!Number.isFinite(value) || value <= 0) continue;
-      consider({
-        value, rounds: state.rounds, cashOutWear: wear, margin: marginOf(value),
-        gearPercent: gear * 100, potionPercent, state, ...shell,
-      });
+      const full = enchantmentMagnitude(s, potionPercent);
+      if (!Number.isFinite(full) || full <= 0) continue;
+      for (const gem of gems) {
+        const value = (full * gem.charges) / GRAND_CHARGES;
+        if (value <= 0) continue;
+        consider({
+          value, rounds: state.rounds, cashOutWear: wear, margin: marginOf(value),
+          soulCharges: gem.charges, soulLabel: gem.label,
+          gearPercent: gear * 100, potionPercent, state, ...shell,
+        });
+      }
     }
   };
 
@@ -463,7 +511,8 @@ function stepList(plan: Plan, rounds: Round[]): string {
     `<li><button type="button" class="sky-step sky-step--brew" data-step="${rounds.length}">` +
       `<b>&#9670;</b><span>Wearing ${pieces(plan.cashOutWear)} (<b>${formatNumber(plan.gearPercent)}%</b> ` +
       `Fortify Alchemy), brew a <b>${formatNumber(plan.potionPercent)}%</b> Fortify Enchanting potion. ` +
-      `Drink it at an arcane enchanter and place the enchantment.</span></button></li>`,
+      `Drink it at an arcane enchanter and place the enchantment with a ` +
+      `<b>${escapeHtml(plan.soulLabel)}</b> soul gem.</span></button></li>`,
   );
   return `<ol class="sky-steps">${steps.join('')}</ol>`;
 }
@@ -482,6 +531,7 @@ function planMarkup(plan: Plan, solution: Solution, target: number, rounds: Roun
     granularity ? `finest step <b>${formatPrecise(granularity)}%</b>` : '',
     Math.floor(plan.value) === Math.floor(target)
       ? `<b>${formatPrecise(plan.margin)}%</b> inside ${Math.floor(plan.value)}%` : '',
+    `<b>${escapeHtml(plan.soulLabel)}</b> soul`,
   ].filter(Boolean).join('<i>·</i>');
 
   const caveats = [
@@ -541,6 +591,7 @@ function setUp(root: HTMLElement): void {
       perPiece: readNumber(root, 'perPiece', 25),
       baseMagnitude: parseFloat(option?.dataset.base || '8'),
       categoryPerk: !!option?.dataset.perk && readFlag(root, 'perk'),
+      soulCharges: readNumber(root, 'soul', 0),
     };
   };
 

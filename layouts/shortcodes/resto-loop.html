@@ -80,6 +80,16 @@
         <legend>Fortify Alchemy gear</legend>
         <label class="sky-in"><span>Pieces worn</span><input type="number" min="1" max="5" step="1" value="4" data-f="pieces" /></label>
         <label class="sky-in"><span>Each, %</span><input type="number" min="1" max="200" step="1" value="25" data-f="perPiece" /></label>
+        <label class="sky-in"><span>Soul gem</span>
+          <select data-f="soul">
+            <option value="0" selected>Best available</option>
+            <option value="250">Petty</option>
+            <option value="500">Lesser</option>
+            <option value="1000">Common</option>
+            <option value="2000">Greater</option>
+            <option value="3000">Grand / Black</option>
+          </select></label>
+        <p class="sky-set__hint">On apparel the soul gem scales the magnitude directly &mdash; a common soul places exactly a third of a grand one. It is the finest control here, because it gives the planner five overlapping copies of an otherwise lumpy set of reachable numbers. Applies to the final enchantment only; the gear you wear is whatever &ldquo;Each, %&rdquo; says.</p>
         <p class="sky-set__hint">25% is the natural cap — what you can enchant without drinking anything. Raise it if your pieces are already bootstrapped. A fifth slot needs the helmet + circlet bug. <b>Which</b> pieces you wear never matters, only how many.</p>
       </fieldset>
 

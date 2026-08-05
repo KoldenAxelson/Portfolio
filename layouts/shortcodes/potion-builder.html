@@ -3,10 +3,13 @@
 
     {{< potion-builder >}}
 
-  1. Potion, poison, or either.
+  1. Potion, poison, either — or "by ingredient", which is a different question.
   2. The effects you want. Anything that cannot share a bottle with what you
      have already picked greys out as you go.
   3. The brews, ranked five ways, with the rest behind a "show more".
+  4. The mortar, live: pick up to three ingredients and the bottle updates as you
+     go. No Brew button because there is nothing to choose between — this asks
+     "what does this make", where 1-3 ask "what makes this".
 
   Everything is server-rendered — the effect list is real markup, and the
   ingredient table ships as one JSON blob that assets/js/skyrim/builder.ts reads.
@@ -33,6 +36,7 @@
       <button type="button" class="sky-pick__b" data-kind="good"><b>Potion</b><span>Restore, Fortify, Resist, Regenerate, Cure</span></button>
       <button type="button" class="sky-pick__b" data-kind="bad"><b>Poison</b><span>Damage, Ravage, Lingering, Weakness, Fear</span></button>
       <button type="button" class="sky-pick__b" data-kind="any"><b>Either</b><span>Every effect, mixed however they fall</span></button>
+      <button type="button" class="sky-pick__b" data-mode="ingredient"><b>By ingredient</b><span>Put things in the mortar and watch the bottle</span></button>
     </div>
   </section>
 
@@ -63,6 +67,24 @@
            announce themselves. `polite` because the reader has just pressed Brew
            and is expecting the answer. */ -}}
     <div data-results aria-live="polite" aria-atomic="true"></div>
+  </section>
+
+  {{- /* ── 4 ────────────────────────────────────────────────────────────── */}}
+  {{- /* Hangs off screen 1 rather than following 3, so its Back says where to go. */}}
+  <section class="sky-scr" data-scr="4" hidden>
+    <div class="sky-scr__head">
+      <button type="button" class="sky-back" data-back="1">&larr; Back</button>
+    </div>
+    {{- /* The tiles of whatever is currently in the mortar, above the grid. */}}
+    <div class="sky-mortar" data-mortar aria-live="polite"></div>
+    <input type="search" class="sky-search" data-ing-filter placeholder="Filter ingredients" aria-label="Filter ingredients" />
+    <ul class="sky-fx sky-fx--ings">
+      {{- range $slug, $ing := site.Data.skyrim.ingredients }}
+      <li><button type="button" class="sky-fx__b" data-ing="{{ $slug }}" data-dlc="{{ $ing.dlc | default "" }}">{{ $ing.name }}</button></li>
+      {{- end }}
+    </ul>
+    {{- /* Rewritten on every pick with no page load, so it announces itself. */}}
+    <div class="sky-scr__foot sky-scr__foot--live" data-live aria-live="polite"></div>
   </section>
 
   {{- /* Effect names, plus the magnitude/duration multipliers that make Creation
@@ -106,7 +128,23 @@
         "d" ($ing.dlc | default "")
         "f" $ids) -}}
   {{- end -}}
-  {{- $payload = merge $payload (dict "i" $rows) }}
+  {{- /* Ingredient art, resolved and fingerprinted here because JS cannot reach Hugo
+         Pipes. Same lookup order as partials/skyrim-ingredients.html. Only slugs that
+         actually have a file appear, so the map stays empty until art arrives and the
+         builder falls back to the same "?" placeholder the recipe cards use. */ -}}
+  {{- $imgs := dict -}}
+  {{- range $slug, $ing := site.Data.skyrim.ingredients -}}
+    {{- $img := "" -}}
+    {{- range $ext := slice "png" "webp" "jpg" "jpeg" -}}
+      {{- if not $img }}{{ with resources.Get (printf "skyrim/ingredients/%s.%s" $slug $ext) }}{{ $img = . }}{{ end }}{{ end -}}
+    {{- end -}}
+    {{- with $img -}}
+      {{- $r := . -}}
+      {{- if gt .Width 192 }}{{ $r = .Fit "192x192 webp q85" }}{{ end -}}
+      {{- $imgs = merge $imgs (dict $slug $r.RelPermalink) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $payload = merge $payload (dict "i" $rows "g" $imgs) }}
   {{- /* safeJS: Go's contextual escaper treats a <script> body as JavaScript and
          would re-encode the JSON as a quoted string. The payload is built from
          our own data files, never user input. */ -}}
