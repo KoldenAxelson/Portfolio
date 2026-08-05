@@ -6,6 +6,11 @@
    The page sets `prose: true`, so each root below also carries `not-prose` in
    the markup to keep Tailwind Typography off the widget internals. */
 
+/* The one colour in here that is not a site token: an error red for a failed check and
+   for a poison verdict. Kept as channels so the /alpha forms work, and declared once
+   because it used to be hand-copied five times in two different spellings. */
+.sky-build, .sky-calc, .sky-check { --sky-bad: 192 57 43; }
+
 /* ── Filter bar ─────────────────────────────────────────────────────────── */
 .sky-tools { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin: 1.5rem 0 0.5rem; }
 .sky-search {
@@ -29,6 +34,10 @@
   background: rgb(var(--c-bg)); transition: border-color 0.2s ease;
 }
 .sky-card:hover { border-color: rgb(var(--c-accent) / 0.5); }
+/* The site's Tailwind preflight already ships `[hidden] { display: none !important }`, so
+   this and the three like it (.sky-config, .sky-scr, .sky-fx > li) are belt-and-braces
+   rather than load-bearing. That is why .sky-tools and .sky-grid, which also ship or get
+   toggled hidden, do not need one. */
 .sky-card[hidden] { display: none; }
 
 /* ── Ingredient box ─────────────────────────────────────────────────────── */
@@ -99,7 +108,7 @@
 .sky-variant .sky-chips { margin-top: 0.5rem; }
 
 @media (prefers-reduced-motion: reduce) {
-  .sky-card, .sky-note__chev, .sky-note > summary, .sky-search { transition: none; }
+  .sky-card, .sky-note__chev, .sky-note > summary { transition: none; }
 }
 
 /* ── Restoration-loop planner ───────────────────────────────────────────── */
@@ -172,10 +181,11 @@
 .sky-plan__meta { margin: 0 0 0.9rem; font-size: 0.8rem; color: rgb(var(--c-muted)); }
 .sky-plan__meta b { color: rgb(var(--c-fg)); font-weight: 600; font-variant-numeric: tabular-nums; }
 .sky-plan__meta i { font-style: normal; margin: 0 0.5rem; opacity: 0.5; }
+.sky-plan__count { margin: 0 0 0.5rem; font-size: 0.78rem; line-height: 1.5; color: rgb(var(--c-muted)); }
 .sky-plan__note { margin: 0.8rem 0 0; font-size: 0.78rem; line-height: 1.55; color: rgb(var(--c-muted)); }
 
 /* The steps, written out and tappable. */
-.sky-steps { display: flex; flex-direction: column; gap: 0.35rem; margin: 0; padding: 0; list-style: none; counter-reset: none; }
+.sky-steps { display: flex; flex-direction: column; gap: 0.35rem; margin: 0; padding: 0; list-style: none; }
 .sky-step {
   display: flex; align-items: flex-start; gap: 0.6rem; width: 100%; text-align: left; cursor: pointer;
   padding: 0.55rem 0.7rem; border: 1px solid rgb(var(--c-border)); border-radius: 0.55rem;
@@ -226,7 +236,12 @@
 .sky-gear__p span i { font-style: normal; font-size: 0.65rem; opacity: 0.7; }
 .sky-gear__p em { font-size: 0.6rem; font-style: normal; color: rgb(var(--c-muted)); opacity: 0.8; }
 
-@media (prefers-reduced-motion: reduce) { .sky-step, .sky-plan { transition: none; } }
+/* .sky-plan[data-busy], not .sky-plan: the busy fade is the element's ONLY transition and
+   it is set at (0,2,0), so a bare .sky-plan override loses on specificity and this block
+   was a no-op for it. resto.ts toggles data-busy on every keystroke. */
+@media (prefers-reduced-motion: reduce) {
+  .sky-step, .sky-plan[data-busy], .sky-bar__toggle, .sky-bar__toggle span { transition: none; }
+}
 
 /* Collapsed prose block under the planner — the derivation, for when you want
    it. Sits inside a `prose: true` page, so the body keeps Typography styling. */
@@ -244,7 +259,7 @@
 .sky-more > summary:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.5); outline-offset: 3px; border-radius: 0.3rem; }
 @media (prefers-reduced-motion: reduce) { .sky-more > summary, .sky-more > summary::before { transition: none; } }
 
-/* ── Potion builder: three screens, one question each ───────────────────── */
+/* ── Potion builder: four screens, one question each ────────────────────── */
 .sky-build { margin: 1.5rem 0 0; border: 1px solid rgb(var(--c-border)); border-radius: 0.9rem; background: rgb(var(--c-bg)); overflow: hidden; }
 .sky-scr { padding: 1.1rem 1.1rem 1.2rem; }
 .sky-scr[hidden] { display: none; }
@@ -264,8 +279,9 @@
 .sky-back:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.5); outline-offset: 2px; }
 
 /* Screen 1 */
+/* 2x2 for the four choices. Three columns left the fourth stranded on its own row. */
 .sky-pick { display: grid; gap: 0.6rem; grid-template-columns: 1fr; }
-@media (min-width: 620px) { .sky-pick { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 620px) { .sky-pick { grid-template-columns: repeat(2, 1fr); } }
 .sky-pick__b {
   display: flex; flex-direction: column; gap: 0.25rem; align-items: flex-start; text-align: left; cursor: pointer;
   padding: 0.9rem 1rem; border: 1px solid rgb(var(--c-border)); border-radius: 0.7rem; background: rgb(var(--c-bg));
@@ -316,7 +332,25 @@
 .sky-brews--rest { margin-top: 0.6rem; }
 .sky-brew { padding: 0.75rem 0.85rem 0.8rem; border: 1px solid rgb(var(--c-border)); border-radius: 0.7rem; background: rgb(var(--c-bg)); }
 .sky-brews:not(.sky-brews--rest) .sky-brew { border-color: rgb(var(--c-accent) / 0.4); background: rgb(var(--c-accent) / 0.05); }
-.sky-brew__badge { margin: 0 0 0.5rem; font: 600 0.58rem var(--font-mono, ui-monospace, monospace); letter-spacing: 0.12em; text-transform: uppercase; color: rgb(var(--c-accent)); }
+.sky-brew__head { display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
+.sky-brew__head:empty { display: none; }
+.sky-brew__badge { margin: 0; font: 600 0.58rem var(--font-mono, ui-monospace, monospace); letter-spacing: 0.12em; text-transform: uppercase; color: rgb(var(--c-accent)); }
+
+/* Potion or poison. The verdict is a word; the chip that caused it is outlined below. */
+.sky-brew__kind {
+  margin: 0 0 0 auto; padding: 0.1rem 0.4rem; border-radius: 0.3rem;
+  font: 700 0.58rem var(--font-mono, ui-monospace, monospace); letter-spacing: 0.1em; text-transform: uppercase;
+  border: 1px solid currentColor; color: rgb(var(--c-muted));
+}
+.sky-brew__kind[data-kind="good"] { color: rgb(var(--c-accent)); }
+.sky-brew__kind[data-kind="bad"] { color: rgb(var(--sky-bad)); }
+
+/* The one chip that decided it, filled to match the verdict above. It outranks
+   .sky-chip--tag on specificity, but only beats .is-boosted (line 72) on SOURCE ORDER —
+   both are (0,2,0), and builder.ts can put both classes on the same chip. Keep this rule
+   below that one. Being in charge should read louder than being asked for or inflated. */
+.sky-chip.is-dominant { border-color: rgb(var(--c-accent)); color: rgb(var(--c-fg)); background: rgb(var(--c-accent) / 0.16); }
+.sky-chips[data-kind="bad"] .sky-chip.is-dominant { border-color: rgb(var(--sky-bad)); background: rgb(var(--sky-bad) / 0.18); }
 .sky-bis { display: flex; flex-direction: column; gap: 0.2rem; margin: 0 0 0.6rem; padding: 0; list-style: none; }
 .sky-bi { display: flex; align-items: baseline; gap: 0.4rem; font-size: 0.85rem; color: rgb(var(--c-fg)); }
 .sky-bi b { font-weight: 500; }
@@ -329,28 +363,15 @@
 
 /* ── Self-check page ────────────────────────────────────────────────────── */
 .sky-chk__sum { margin: 0 0 0.75rem; font: 700 1.1rem var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-accent)); }
-.sky-chk__sum.is-bad { color: #c0392b; }
+.sky-chk__sum.is-bad { color: rgb(var(--sky-bad)); }
 .sky-chks { display: flex; flex-direction: column; gap: 0.2rem; margin: 0; padding: 0; list-style: none; }
 .sky-chk { display: flex; align-items: baseline; gap: 0.6rem; padding: 0.3rem 0.5rem; border-radius: 0.35rem; font-size: 0.82rem; }
 .sky-chk:nth-child(odd) { background: rgb(var(--c-border) / 0.2); }
 .sky-chk b { flex: none; width: 3rem; font: 700 0.62rem var(--font-mono, ui-monospace, monospace); letter-spacing: 0.08em; color: rgb(var(--c-accent)); }
-.sky-chk.is-bad { background: rgb(192 57 43 / 0.12); }
-.sky-chk.is-bad b { color: #c0392b; }
+.sky-chk.is-bad { background: rgb(var(--sky-bad) / 0.12); }
+.sky-chk.is-bad b { color: rgb(var(--sky-bad)); }
 .sky-chk span { flex: 1; color: rgb(var(--c-fg)); }
 .sky-chk em { font-style: normal; font: 0.72rem var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-muted)); }
-
-/* A gear generation to build before the target is in range — same shape as a
-   step but inert, so it reads as a prerequisite rather than something to tap. */
-.sky-gen {
-  display: flex; align-items: flex-start; gap: 0.6rem;
-  padding: 0.55rem 0.7rem; border: 1px dashed rgb(var(--c-border)); border-radius: 0.55rem;
-  font-size: 0.86rem; line-height: 1.5; color: rgb(var(--c-muted));
-}
-.sky-gen > b {
-  display: grid; place-items: center; flex: none; width: 1.4rem; height: 1.4rem; margin-top: 0.05rem;
-  border-radius: 999px; background: rgb(var(--c-muted) / 0.25); color: rgb(var(--c-fg));
-  font: 700 0.68rem var(--font-mono, ui-monospace, monospace);
-}
 
 /* Enchant max — the trick list, and what each one is worth. */
 .sky-set--wide { grid-column: 1 / -1; }
@@ -416,3 +437,19 @@
 .sky-mortar { margin-bottom: 0.6rem; }
 .sky-mortar .sky-ings { justify-content: flex-start; border-radius: 0.6rem; }
 .sky-mortar .sky-ing { flex: 0 0 4.5rem; }
+
+/* In the mortar the picture is the way back out. The x only appears on hover or focus, so
+   at rest the tiles read exactly like a recipe card's; the pointer says the rest. */
+.sky-tile--drop { position: relative; padding: 0; cursor: pointer; font: inherit; color: inherit; appearance: none; }
+.sky-tile--drop::after {
+  content: "\00d7"; position: absolute; inset: 0; display: grid; place-items: center;
+  font: 700 1.5rem var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-bg));
+  background: rgb(var(--c-accent) / 0.85); opacity: 0; transition: opacity 0.12s ease;
+}
+.sky-tile--drop:hover::after, .sky-tile--drop:focus-visible::after { opacity: 1; }
+.sky-tile--drop:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.5); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .sky-tile--drop::after { transition: none; } }
+
+/* The live foot is `display: block`, so the verdict has to shrink-wrap itself rather than
+   stretching into a full-width bordered bar under the chips. */
+.sky-scr__foot--live .sky-brew__kind { display: inline-block; margin: 0.45rem 0 0; }

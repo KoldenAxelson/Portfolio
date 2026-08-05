@@ -1,10 +1,11 @@
-// The three-screen potion builder on /misc/skyrim/.
+// The four-screen potion builder on /misc/skyrim/. Screens 1-3 ask what you want and
+// search for it; screen 4 is the mortar itself and tells you what a handful makes.
 //
 // WHY THE SEARCH IS SHAPED LIKE THIS
 //   An effect only reaches the bottle when two or more ingredients in the mortar
 //   carry it. So every valid mixture must contain two carriers of the rarest
 //   effect you asked for — which means we can enumerate from that effect's
-//   carriers (6-31 ingredients) instead of all 183. Worst case is ~85,000
+//   carriers (4-31 ingredients) instead of all 183. Worst case is ~85,000
 //   candidate triples rather than C(183,3) = 1,004,731.
 //
 //   That same rule is why "Fortify Sneak + Fortify Marksman" has no answer: no
@@ -20,7 +21,7 @@
 import { escapeHtml, formatMultiplier, queryAll } from './util';
 
 /** Effect indices are packed into two 32-bit halves — JS bitwise ops are 32-bit and there are 59 effects. */
-interface EffectMask { low: number; high: number }
+export interface EffectMask { low: number; high: number }
 
 export interface Ingredient {
   slug: string;
@@ -40,13 +41,21 @@ export interface Mixture {
   /** Summed multipliers on the effects that were asked for. */
   potency: number;
   /**
-   * Two or more DEVIATING ingredients carry a requested effect. The game then
-   * uses only the higher-priority one, and priority is that ingredient's cost
-   * for the effect rather than its magnitude — so the larger multiplier can
-   * lose. Ranked below unambiguous mixtures so a printed multiplier is one the
-   * mortar will actually deliver.
+   * Two DISAGREEING ingredients carry a requested effect. The game then uses only the
+   * higher-priority one, and priority is that ingredient's cost for the effect rather
+   * than its magnitude — so the larger multiplier can lose. Ranked below unambiguous
+   * mixtures so a printed multiplier is one the mortar will actually deliver.
+   *
+   * Deviators that AGREE are not contested: whichever the game picks, the number is the
+   * same. See `describe` for why that distinction is load-bearing.
    */
   contested: boolean;
+  /** Index of the effect with the largest gold cost — the one in charge. -1 when empty. */
+  dominant: number;
+  /** True when that dominant effect is harmful, i.e. this comes out of the mortar as a poison. */
+  poison: boolean;
+  /** The top two costs are equal and disagree on side, so which you get is genuinely unknown. */
+  undecided: boolean;
 }
 
 interface Ranking {
@@ -98,18 +107,24 @@ const RANKINGS: Ranking[] = [
  * times full key names is several KB of repeated text for nothing. The mapping,
  * which is the one place all three layers have to agree:
  *
- *   YAML            payload   catalogue
- *   name            n         name
- *   value           v         (dropped — nothing ranks on gold)
- *   avail           a         gatherScore
- *   dlc             d         dlc
- *   effects         f         effects (indices into `e`)
- *   effects.mult    x         deviations
- *   effects.baseMag bm        baseMagnitudes
+ *   YAML             payload   catalogue
+ *   name             n         name
+ *   value            v         (dropped — nothing ranks on gold)
+ *   avail            a         gatherScore
+ *   dlc              d         dlc
+ *   effects          f         effects (indices into `e`)
+ *   effects.mult     x         deviations
+ *   effects.baseMag  bm        baseMagnitudes
+ *   effects.baseDur  bd        baseDurations
+ *   effects.baseCost bc        baseCosts
+ *   effects.kind     k         harmful (kind === "bad")
  */
 interface Payload {
   e: string[];
   bm: number[];
+  bd: number[];
+  bc: number[];
+  k: boolean[];
   x: Record<string, [number, number]>[];
   i: { s: string; n: string; v: number; a: number; d: string; f: number[] }[];
   /** slug -> resolved image URL, for the few that have art yet. */
@@ -119,6 +134,10 @@ interface Payload {
 export interface Catalogue {
   effectNames: string[];
   baseMagnitudes: number[];
+  baseDurations: number[];
+  baseCosts: number[];
+  /** kind === "bad" in data/skyrim/effects.yaml. */
+  harmful: boolean[];
   deviations: Record<string, [number, number]>[];
   ingredients: Ingredient[];
   /** Effect index to the ingredients carrying it. */
@@ -152,6 +171,9 @@ export function buildCatalogue(payload: Payload): Catalogue {
   return {
     effectNames: payload.e,
     baseMagnitudes: payload.bm || [],
+    baseDurations: payload.bd || [],
+    baseCosts: payload.bc || [],
+    harmful: payload.k || [],
     deviations: payload.x || [],
     ingredients,
     carriersOf,
@@ -177,7 +199,7 @@ function effectsProducedBy(mixture: Ingredient[]): EffectMask {
 const covers = (outer: EffectMask, inner: EffectMask): boolean =>
   (outer.low & inner.low) === inner.low && (outer.high & inner.high) === inner.high;
 
-function maskToIndices(mask: EffectMask, effectCount: number): number[] {
+export function maskToIndices(mask: EffectMask, effectCount: number): number[] {
   const indices: number[] = [];
   for (let index = 0; index < effectCount; index++) {
     const bit = index < 32 ? mask.low & (1 << index) : mask.high & (1 << (index - 32));
@@ -195,18 +217,83 @@ function maskToIndices(mask: EffectMask, effectCount: number): number[] {
  * the furthest from 1.0; see `Mixture.contested` for why that is only sometimes
  * the number the game uses.
  */
-function multiplierFor(catalogue: Catalogue, mixture: Ingredient[], effect: number): number {
+function deviationOf(catalogue: Catalogue, mixture: Ingredient[], effect: number): [number, number] {
   const table = catalogue.deviations[effect];
-  if (!table) return 1;
-  const readDuration = catalogue.baseMagnitudes[effect] === 0;
-  let applied = 1;
+  if (!table) return [1, 1];
+  let magnitude = 1;
+  let duration = 1;
   for (const ingredient of mixture) {
     const row = table[ingredient.slug];
     if (!row) continue;
-    const candidate = readDuration ? row[1] : row[0];
-    if (Math.abs(candidate - 1) > Math.abs(applied - 1)) applied = candidate;
+    if (Math.abs(row[0] - 1) > Math.abs(magnitude - 1)) magnitude = row[0];
+    if (Math.abs(row[1] - 1) > Math.abs(duration - 1)) duration = row[1];
   }
-  return applied;
+  return [magnitude, duration];
+}
+
+function multiplierFor(catalogue: Catalogue, mixture: Ingredient[], effect: number): number {
+  const [magnitude, duration] = deviationOf(catalogue, mixture, effect);
+  return catalogue.baseMagnitudes[effect] === 0 ? duration : magnitude;
+}
+
+// ── Potion or poison ────────────────────────────────────────────────────────
+//
+// UESP, Skyrim:Alchemy Effects: "The effect with the largest individual gold cost is the
+// effect that controls the overall properties of the mixture. That effect is used for
+// naming, and it determines whether the result is considered to be a potion or a poison."
+// So a bottle with four good effects and one Damage Health comes out as a poison if
+// Damage Health is the expensive one, which is not what the mortar looks like it is doing.
+//
+//   cost = floor( baseCost x max(magnitude^1.1, 1) x (duration/10)^1.1 )
+//
+// with the duration term dropped when the effect is instantaneous.
+
+/**
+ * An effect's gold cost in this mixture, up to a constant — enough to rank them, which is
+ * all the classification needs.
+ *
+ * YOUR ALCHEMY STRENGTH IS DELIBERATELY LEFT OUT, and that is exact rather than a
+ * simplification. Skill, gear and perks multiply an effect's magnitude, or its duration
+ * when it has no magnitude, by the same M; either route puts an M^1.1 in front of the
+ * cost, so it is a common factor and cannot change which effect is largest. (The
+ * `max(…, 1)` never binds here: every effect with a magnitude has a base of at least 1.)
+ *
+ * PERKS are left out because the game leaves them out — UESP again: "The determination of
+ * the strongest effect is actually done before the perks are factored into the gold cost."
+ * That is what stops Benefactor from quietly turning a poison into a potion.
+ */
+function relativeCostOf(catalogue: Catalogue, mixture: Ingredient[], effect: number): number {
+  const [magnitudeMultiplier, durationMultiplier] = deviationOf(catalogue, mixture, effect);
+  const magnitude = (catalogue.baseMagnitudes[effect] || 0) * magnitudeMultiplier;
+  const duration = (catalogue.baseDurations[effect] || 0) * durationMultiplier;
+  const magnitudeTerm = Math.max(Math.pow(magnitude, 1.1), 1);
+  const durationTerm = duration ? Math.pow(duration / 10, 1.1) : 1;
+  return (catalogue.baseCosts[effect] || 0) * magnitudeTerm * durationTerm;
+}
+
+/**
+ * Which effect is in charge, and whether the top two are tied across the potion/poison
+ * line. TWO such collisions exist in the table: Resist Magic ties both Weakness to Poison
+ * and Weakness to Magic, all three costing 7.1774 to the last decimal. Only the first is
+ * reachable — no ingredient carries Resist Magic and Weakness to Magic together, so
+ * producing both would need a fourth slot — and it turns up in 65 of the 635,068 triples
+ * that make anything. Nothing documents what the game does with a tie, so those are
+ * reported as undecided rather than guessed at. Add one ingredient carrying Resist Magic
+ * and Weakness to Magic and the second collision becomes reachable too.
+ */
+function dominanceOf(catalogue: Catalogue, mixture: Ingredient[], effects: number[]):
+  { dominant: number; poison: boolean; undecided: boolean } {
+  if (!effects.length) return { dominant: -1, poison: false, undecided: false };
+  const ranked = effects
+    .map((effect) => ({ effect, cost: relativeCostOf(catalogue, mixture, effect) }))
+    .sort((a, b) => b.cost - a.cost);
+  const top = ranked[0];
+  const runnerUp = ranked[1];
+  const poison = !!catalogue.harmful[top.effect];
+  const undecided = !!runnerUp &&
+    Math.abs(runnerUp.cost - top.cost) < 1e-9 &&
+    !!catalogue.harmful[runnerUp.effect] !== poison;
+  return { dominant: top.effect, poison, undecided };
 }
 
 function describe(catalogue: Catalogue, mixture: Ingredient[], produced: EffectMask, wanted: number[]): Mixture {
@@ -216,16 +303,32 @@ function describe(catalogue: Catalogue, mixture: Ingredient[], produced: EffectM
     const applied = multiplierFor(catalogue, mixture, effect);
     if (applied !== 1) multipliers[effect] = applied;
   }
+  const { dominant, poison, undecided } = dominanceOf(catalogue, mixture, effects);
   return {
     ingredients: mixture,
     effects,
     gatherScore: mixture.reduce((total, i) => total + i.gatherScore, 0),
     multipliers,
     potency: wanted.reduce((total, effect) => total + (multipliers[effect] || 1), 0),
+    // DISAGREEING deviators, not merely several of them. Six of Invisibility's seven
+    // carriers all deviate by the same x1.5, and when they agree there is nothing to lose
+    // — the printed multiplier is delivered whichever one the game picks. Counting rows
+    // instead of values demoted provably-correct "Most potent" winners in favour of
+    // harder-to-gather mixtures that happened to hold only one deviator.
     contested: wanted.some((effect) => {
       const table = catalogue.deviations[effect];
-      return !!table && mixture.filter((i) => table[i.slug]).length > 1;
+      if (!table) return false;
+      const readDuration = catalogue.baseMagnitudes[effect] === 0;
+      const values: number[] = [];
+      for (const ingredient of mixture) {
+        const row = table[ingredient.slug];
+        if (row && values.indexOf(row[readDuration ? 1 : 0]) === -1) values.push(row[readDuration ? 1 : 0]);
+      }
+      return values.length > 1;
     }),
+    dominant,
+    poison,
+    undecided,
   };
 }
 
@@ -297,7 +400,7 @@ function gatherDots(score: number): string {
 }
 
 function ingredientRow(ingredient: Ingredient): string {
-  const dlc = ingredient.dlc ? `<i>${ingredient.dlc}</i>` : '';
+  const dlc = ingredient.dlc ? `<i>${escapeHtml(ingredient.dlc)}</i>` : '';
   return `<li class="sky-bi"><b>${escapeHtml(ingredient.name)}</b>${dlc}<em>${gatherDots(ingredient.gatherScore)}</em></li>`;
 }
 
@@ -306,16 +409,42 @@ function effectChip(names: string[], mixture: Mixture, effect: number, wanted: n
   const classes = ['sky-chip'];
   if (wanted.indexOf(effect) !== -1) classes.push('sky-chip--tag');
   if (applied > 1) classes.push('is-boosted');
+  // The effect that decided potion-or-poison. Marked rather than explained: the verdict is
+  // right there above it, and this says which of the four is responsible for it.
+  if (effect === mixture.dominant) classes.push('is-dominant');
   const suffix = applied ? `<b>×${formatMultiplier(applied)}</b>` : '';
   return `<li class="${classes.join(' ')}">${escapeHtml(names[effect])}${suffix}</li>`;
+}
+
+const verdictKind = (mixture: Mixture): string =>
+  mixture.undecided ? 'either' : mixture.poison ? 'bad' : 'good';
+
+/** One word for what comes out of the mortar. Empty when the mixture makes nothing at all. */
+function verdictTag(mixture: Mixture): string {
+  if (mixture.dominant === -1) return '';
+  const label = mixture.undecided ? 'Potion or poison' : mixture.poison ? 'Poison' : 'Potion';
+  return `<p class="sky-brew__kind" data-kind="${verdictKind(mixture)}">${label}</p>`;
+}
+
+/**
+ * The effect chips, tagged with the verdict so the chip that caused it can be tinted to
+ * match — the word at the top says WHAT, this says WHICH.
+ */
+function chipsMarkup(names: string[], mixture: Mixture, wanted: number[]): string {
+  return `<ul class="sky-chips" data-kind="${verdictKind(mixture)}">${mixture.effects
+    .map((effect) => effectChip(names, mixture, effect, wanted))
+    .join('')}</ul>`;
 }
 
 function mixtureCard(names: string[], mixture: Mixture, wanted: number[], badge?: string): string {
   return [
     '<article class="sky-brew">',
+    '<div class="sky-brew__head">',
     badge ? `<p class="sky-brew__badge">${escapeHtml(badge)}</p>` : '',
+    verdictTag(mixture),
+    '</div>',
     `<ul class="sky-bis">${mixture.ingredients.map(ingredientRow).join('')}</ul>`,
-    `<ul class="sky-chips">${mixture.effects.map((e) => effectChip(names, mixture, e, wanted)).join('')}</ul>`,
+    chipsMarkup(names, mixture, wanted),
     '</article>',
   ].join('');
 }
@@ -365,7 +494,7 @@ export function contributesTo(chosen: Ingredient[], candidate: Ingredient): bool
  * One ingredient tile, matching partials/skyrim-ingredients.html so the two share their
  * CSS and a recipe card and the mortar look like the same thing.
  */
-function tileMarkup(catalogue: Catalogue, ingredient: Ingredient): string {
+function tileMarkup(catalogue: Catalogue, ingredient: Ingredient, removable = false): string {
   const url = catalogue.images[ingredient.slug];
   const art = url
     ? `<img src="${escapeHtml(url)}" alt="${escapeHtml(ingredient.name)}" loading="lazy" decoding="async" />`
@@ -376,8 +505,14 @@ function tileMarkup(catalogue: Catalogue, ingredient: Ingredient): string {
   const dlc = ingredient.dlc
     ? `<span class="sky-ing__dlc" data-dlc="${escapeHtml(ingredient.dlc)}">${escapeHtml(ingredient.dlc)}</span>`
     : '';
+  // In the mortar the tile IS the way back out, so it is a real button with a real label.
+  // On a recipe card there is nothing to take out, so it stays an inert span.
+  const tile = removable
+    ? `<button type="button" class="sky-tile sky-tile--drop" data-drop="${escapeHtml(ingredient.slug)}"` +
+      ` aria-label="Take ${escapeHtml(ingredient.name)} out of the mortar">${art}</button>`
+    : `<span class="sky-tile">${art}</span>`;
   return (
-    `<div class="sky-ing"><span class="sky-tile">${art}</span>` +
+    `<div class="sky-ing">${tile}` +
     `<span class="sky-ing__name">${escapeHtml(ingredient.name)}${dlc}</span></div>`
   );
 }
@@ -385,7 +520,7 @@ function tileMarkup(catalogue: Catalogue, ingredient: Ingredient): string {
 /** The tiles of whatever is in the mortar. Empty is empty — the grid below says the rest. */
 export function mortarMarkup(catalogue: Catalogue, chosen: Ingredient[]): string {
   if (!chosen.length) return '';
-  return `<div class="sky-ings">${chosen.map((i) => tileMarkup(catalogue, i)).join('')}</div>`;
+  return `<div class="sky-ings">${chosen.map((i) => tileMarkup(catalogue, i, true)).join('')}</div>`;
 }
 
 /**
@@ -395,9 +530,7 @@ export function mortarMarkup(catalogue: Catalogue, chosen: Ingredient[]): string
 export function liveMarkup(catalogue: Catalogue, chosen: Ingredient[]): string {
   const mixture = liveMixture(catalogue, chosen);
   if (!mixture) return '';
-  return `<ul class="sky-chips">${mixture.effects
-    .map((effect) => effectChip(catalogue.effectNames, mixture, effect, []))
-    .join('')}</ul>`;
+  return chipsMarkup(catalogue.effectNames, mixture, []) + verdictTag(mixture);
 }
 
 export function resultsMarkup(names: string[], result: SearchResult, wanted: number[], showExtra: boolean): string {
@@ -521,20 +654,33 @@ function setUp(root: HTMLElement): void {
     });
   }
 
+  const toggleIngredient = (ingredient: Ingredient): void => {
+    const at = chosen.indexOf(ingredient);
+    if (at === -1) {
+      if (chosen.length >= 3) return;
+      chosen.push(ingredient);
+    } else {
+      chosen.splice(at, 1);
+    }
+    refreshIngredients();
+  };
+
   for (const button of ingredientButtons) {
     button.addEventListener('click', () => {
       const ingredient = bySlug.get(button.dataset.ing || '');
-      if (!ingredient) return;
-      const at = chosen.indexOf(ingredient);
-      if (at === -1) {
-        if (chosen.length >= 3) return;
-        chosen.push(ingredient);
-      } else {
-        chosen.splice(at, 1);
-      }
-      refreshIngredients();
+      if (ingredient) toggleIngredient(ingredient);
     });
   }
+
+  // The tiles are rewritten on every change, so this is delegated to the container that
+  // survives. Clicking the picture takes that ingredient back out — the same thing the
+  // pill below does, in the place you are already looking.
+  mortar?.addEventListener('click', (event) => {
+    const tile = (event.target as HTMLElement | null)?.closest<HTMLElement>('[data-drop]');
+    if (!tile) return;
+    const ingredient = bySlug.get(tile.dataset.drop || '');
+    if (ingredient) toggleIngredient(ingredient);
+  });
 
   filter?.addEventListener('input', refreshIngredients);
 

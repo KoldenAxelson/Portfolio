@@ -8,7 +8,7 @@
 //                 × (1 + Benefactor/100) × (1 + Seeker/100)
 //   Gear is the SUMMED Fortify Alchemy across worn pieces. Fortify Restoration
 //   has BaseMag 4 and Fortify Enchanting BaseMag 1, so on plain carriers the
-//   restoration potion is exactly four times the enchanting one on plain carriers.
+//   restoration potion is exactly four times the enchanting one.
 //
 // ENCHANTING — UESP, Skyrim:Enchanting Effects, vanilla branch
 //   mag = floor(BaseMag × skillMult × (1 + Enchanter) × (1 + categoryPerk) × (1 + Sorcery))
@@ -28,8 +28,14 @@
 //   And because you never wait for the potion to expire, one is always live, which is
 //   what makes it compound — the potion you drink is scaled by the one already running:
 //
-//     piece  = base × (1 + x)
-//     x[n+1] = max( x[n], r × (1 + wear × base × (1 + x[n])) × (1 + x[n]) )
+//     b[n+1] = round( r × (1 + wear × base × (1 + x[n])) )      the new bottle
+//     x[n+1] = b[n+1] > b[n] ? b[n+1] × (1 + x[n]) : x[n]        it only takes if it wins
+//     piece  = base × (1 + x[n+1])                               after you drink it
+//
+//   where r is the plain Fortify Restoration potion (0.6 for a maxed alchemist with no
+//   gear on), base is one piece's natural Fortify Alchemy (0.25), and x is the live boost.
+//   Note what the second line is NOT: `max(x[n], ...)`. Comparing the new bottle against
+//   the LIVE BOOST is one of the two models that died in play — see below.
 //
 //   So a round offers exactly ONE choice: how many pieces you have on while you brew.
 //   Fewer pieces, weaker potion, smaller step. That is the only brake, and with growth
@@ -63,7 +69,7 @@
 //     gear   100%  ->     120% /     120.0% potion
 //     gear   220%  ->     422% /     422.4% potion
 //     gear   522%  ->   1,948% /   1,948.6% potion
-//     gear 2,051%  ->  26,405% /  26,405.8% potion
+//     gear 2,049%  ->  26,405% /  26,405.8% potion
 //     cash out     ->   3,991% /   3,990.9% Fortify Enchanting -> 9,831% / 9,831% PLACED
 //   The 9,831% is the strongest check in here: it exercises the enchanting quadratic four
 //   orders of magnitude past any published example, and lands on the nose.
@@ -74,9 +80,11 @@
 //   tenths of a percent, which is a couple of points once you are up at 600.
 //
 // WHAT THIS MODULE DELIBERATELY DOES NOT COVER
-//   WAITING for the potion to lapse. Do that and the boost stops compounding, growth
-//   goes linear, and four 25% pieces converge on a hard 36.6% ceiling — measured too:
-//   120% -> 192% -> 235% -> 261%. It also brings back per-piece history, because a value
+//   WAITING for the potion to lapse. Do that and the boost stops compounding and the
+//   potions converge geometrically on 300% — 120% -> 192% -> 235% -> 261% -> 277% -> 286%
+//   -> ... (measured through the first four). Mind the units: what converges on a hard
+//   36.6% is the ENCHANTMENT you can place off the settled 400% gear, not the potion
+//   series. It also brings back per-piece history, because a value
 //   written while a potion was up STICKS after it expires (a piece boosted to 47.5% and
 //   then worn alongside untouched 25% ones read 47.5 + 47.5 + 25 + 25 = 145%). That is a
 //   different, slower routine and modelling both in one place is what produced five
@@ -93,13 +101,17 @@
 //   close. Every step names which it is.
 //
 // ── ACCURACY ────────────────────────────────────────────────────────────────
-//   CONFIRMED END TO END. The five-round plan this file produces for 235% Fortify
-//   Alchemy was executed in game off a fixed 4×25% set with plain ingredients, and it
-//   placed 235% on a pair of gloves. Brewing in 0, 2, 2, 2, 2 pieces for potions of 60,
-//   173, 387, 1,003 and 4,315%, then cashing out in 3 pieces for a 511.7% Fortify
-//   Enchanting potion. That plan is pinned move by move in the self-check, because it is
-//   the one thing in here that has been verified against reality rather than fitted to
-//   it, and any drift in the model would silently change it.
+//   CONFIRMED END TO END. A five-round plan for 235% Fortify Alchemy was executed in game
+//   off a fixed 4×25% set with plain ingredients, and it placed 235% on a pair of gloves.
+//   Brewing in 0, 2, 2, 2, 2 pieces for potions of 60, 172.8, 387.4, 1,004 and 4,317%,
+//   then cashing out in 3 pieces for a 511.9% Fortify Enchanting potion.
+//
+//   That run is pinned move by move in the self-check as a REPLAY, not as whatever the
+//   search currently prefers — `solve` now proposes a shorter four-round route to the same
+//   number (wear 2, 2, 4, 3, cash out in 3, 512.3% potion, 235.52%). Both are correct; the
+//   replay is the one verified against reality rather than fitted to it, so it is the one
+//   that would catch a drift in the model. Do not "fix" the self-check to match the
+//   search — that is backwards, and it is the only in-game anchor this file has.
 //
 //   The documented anchors also reproduce exactly: a 15% Fortify Enchanting potion bare,
 //   the 25% natural cap on base-8 skill enchantments, 29% Fortify Alchemy from a 32%
@@ -143,6 +155,14 @@ const SOUL_GEMS: { label: string; charges: number }[] = [
   { label: 'Grand or Black', charges: 3000 },
 ];
 const GRAND_CHARGES = 3000;
+/**
+ * Give up after 90,000 distinct states and say so rather than quietly returning the best
+ * of a truncated search — `Solution.truncated` drives that caveat in the markup.
+ *
+ * A performance guard, not a correctness one: nothing in the self-check comes close, and
+ * it only fires on configurations where the branching factor stays high for many rounds
+ * (roughly 1 in 2,000 random ones). Raise it if you meet a real plan that trips it.
+ */
 const MAX_STATES = 90000;
 /**
  * Stop exploring past ~300,000% summed Fortify Alchemy.
@@ -261,9 +281,9 @@ export interface Plan {
   gearPercent: number;
   potionPercent: number;
   state: LoopState | null;
+  /** Pieces the plan was solved for, already clamped to 1..MAX_PIECES. */
   pieceCount: number;
   perPieceFraction: number;
-  baseRestoration: number;
 }
 
 export interface Solution {
@@ -323,7 +343,7 @@ export function replay(s: Settings, moves: Move[]): Round[] {
   return roundsOf({
     value: 0, rounds: moves.length, cashOutWear: 0, margin: 0, soulCharges: GRAND_CHARGES,
     soulLabel: 'Grand or Black', gearPercent: 0, potionPercent: 0,
-    state, pieceCount, perPieceFraction: s.perPiece / 100, baseRestoration,
+    state, pieceCount, perPieceFraction: s.perPiece / 100,
   });
 }
 
@@ -392,12 +412,28 @@ export function solve(s: Settings, target: number): Solution {
     if (plan.value >= target && (!over || plan.value < over.value)) over = plan;
   };
 
-  const shell = { pieceCount, perPieceFraction: perPiece, baseRestoration };
+  const shell = { pieceCount, perPieceFraction: perPiece };
 
   // Either the one gem asked for, or all five and let the search pick.
   const gems = s.soulCharges
     ? SOUL_GEMS.filter((gem) => gem.charges === s.soulCharges)
     : SOUL_GEMS;
+
+  // Placing it stone cold sober, which is the floor of the whole space and the cheapest
+  // plan there is. It has to be offered explicitly: `cashOut` always brews something,
+  // because a maxed alchemist wearing nothing still makes a 15% Fortify Enchanting potion.
+  // Without this the planner said "nothing reachable reads exactly 25%" about the one
+  // number you get for free, on every enchantment group.
+  for (const gem of gems) {
+    const value = (natural * gem.charges) / GRAND_CHARGES;
+    if (value > 0) {
+      consider({
+        value, rounds: 0, cashOutWear: 0, margin: marginOf(value),
+        soulCharges: gem.charges, soulLabel: gem.label,
+        gearPercent: 0, potionPercent: 0, state: null, ...shell,
+      });
+    }
+  }
 
   /** Every wear count for the final Fortify Enchanting brew, against every soul gem. */
   const cashOut = (state: LoopState): void => {
@@ -419,7 +455,9 @@ export function solve(s: Settings, target: number): Solution {
   };
 
   const root: LoopState = { activeBoost: 0, brewedBase: 0, applied: 0, move: null, parent: null, rounds: 0 };
-  const visited = new Set<string>(['0|0']);
+  // No seed: every key is `toFixed(6)|toFixed(6)`, and `advance` always produces a
+  // brewedBase above zero, so the root is unreachable by construction and cannot collide.
+  const visited = new Set<string>();
   let frontier: LoopState[] = [root];
   let stateCount = 1;
   let truncated = false;
@@ -543,9 +581,15 @@ function planMarkup(plan: Plan, solution: Solution, target: number, rounds: Roun
     `<p class="sky-plan__head">Closest landing on ${formatWhole(target)}%</p>`,
     `<p class="sky-plan__value">${formatPrecise(plan.value)}<i>%</i></p>`,
     `<p class="sky-plan__meta">${meta}</p>`,
-    plan.rounds
-      ? `<p class="sky-plan__count">Tap a step to see where every piece stands after it.</p>${stepList(plan, rounds)}`
-      : '<p class="sky-plan__count">No restoration loops needed — place it with no potion at all.</p>',
+    // Gate on the POTION, not on the round count. A plan can need zero loops and still
+    // need a potion — and it used to print "place it with no potion at all" over a plan
+    // that wanted a 15% one, with the cash-out step silently dropped along with the list,
+    // so the instruction on screen produced a different number from the headline above it.
+    plan.potionPercent > 0
+      ? `<p class="sky-plan__count">${plan.rounds
+        ? 'Tap a step to see where every piece stands after it.'
+        : 'No restoration loops needed — one brew and place it.'}</p>${stepList(plan, rounds)}`
+      : '<p class="sky-plan__count">Nothing to brew: put the set on and place it.</p>',
     `<div class="sky-detail" data-slot></div>`,
     caveats ? `<p class="sky-plan__note">${caveats}</p>` : '',
   ].join('');
@@ -604,7 +648,7 @@ function setUp(root: HTMLElement): void {
     }
     slot.innerHTML = openStep >= rounds.length
       ? cashOutDetail(plan)
-      : roundDetail(rounds[openStep], readNumber(root, 'pieces', 4));
+      : roundDetail(rounds[openStep], plan.pieceCount);
   };
 
   const openStepAt = (step: number): void => {

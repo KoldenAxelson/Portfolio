@@ -69,7 +69,16 @@ export interface Trick {
   id: string;
   label: string;
   note: string;
-  /** Which half of the chain it lands on. "alchemy" compounds; "enchant" applies once. */
+  /**
+   * Which half of the chain it lands on. BOTH sides compound through the fair loop:
+   * "alchemy" by brewing a stronger potion, "enchant" by strengthening every enchantment
+   * placed — INCLUDING the Fortify Alchemy gear the loop is building. Assuming "enchant"
+   * applies once at the end is the specific error this module already shipped and fixed;
+   * it is why Sorcery (74.6%) beats Shadows (70.8%) on the same build.
+   *
+   * Honoured only for `kind: "mult"`. A `skill` trick is always Enchanting skill and a
+   * `potionbase` trick always multiplies the potion, whatever `side` says.
+   */
   side: 'enchant' | 'alchemy' | 'both';
   kind: 'mult' | 'skill' | 'potionbase';
   value: number;
@@ -168,6 +177,12 @@ function potionFrom(s: MaxSettings, tricks: Trick[], gearPercent: number): numbe
  * `runaway` says so rather than returning a number off a truncated iteration.
  */
 export function fairLoop(s: MaxSettings, tricks: Trick[]): FairLoop {
+  // The gear this loop places is always Fortify Alchemy, whatever effect the picker is
+  // pointed at — so it takes base magnitude 8 and the Insightful Enchanter perk regardless
+  // of the selected effect's own base and perk. DELIBERATE, and worth knowing: with
+  // Fortify Alchemy selected the perk checkbox is literally "Insightful Enchanter", and
+  // unticking it will not move the loop. Change this and every published figure in the
+  // header table, the page prose and the self-check moves with it.
   const alchemySide: MaxSettings = { ...s, baseMagnitude: 8, categoryPerk: true };
   let gearPercent = 0;
   let potionPercent = 0;
@@ -188,7 +203,7 @@ export function fairLoop(s: MaxSettings, tricks: Trick[]): FairLoop {
 }
 
 /** The potion this configuration actually has, fair loop or hand-entered. */
-export function potionFor(s: MaxSettings, tricks: Trick[]): number {
+function potionFor(s: MaxSettings, tricks: Trick[]): number {
   if (!s.fairLoop) return s.potionPercent;
   const loop = fairLoop(s, tricks);
   return loop.runaway ? Infinity : loop.potionPercent;
@@ -315,6 +330,7 @@ function setUp(root: HTMLElement): void {
   const payload = root.querySelector('[data-tricks]');
   const picker = findField(root, 'effect');
   const perkLabel = root.querySelector<HTMLElement>('[data-enchant-perk-label]');
+  const groupNote = root.querySelector<HTMLElement>('[data-enchant-group-note]');
   if (!output || !payload || !(picker instanceof HTMLSelectElement)) return;
 
   const tricks = JSON.parse(payload.textContent || '[]') as Trick[];
@@ -370,6 +386,8 @@ function setUp(root: HTMLElement): void {
     const perk = option?.dataset.perk || '';
     const checkbox = findField(root, 'perk');
     if (perkLabel) perkLabel.textContent = perk || 'No perk applies';
+    // The group's caveat, same sink the resto planner uses. It used to be dropped here.
+    if (groupNote) groupNote.textContent = option?.dataset.note || '';
     if (checkbox instanceof HTMLInputElement) {
       if (!checkbox.disabled) perkWanted = checkbox.checked;
       checkbox.disabled = !perk;

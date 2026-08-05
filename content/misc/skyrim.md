@@ -41,6 +41,41 @@ typed in, so they cannot drift.
 
 {{< potion-builder >}}
 
+<details class="sky-more">
+<summary>Why some of those come out as poisons</summary>
+
+Not the number of good effects against bad ones, and not which pills you picked on the
+first screen. **The single costliest effect in the bottle is in charge** — it names the
+result, and if it is a harmful one the mortar hands you a poison no matter what else is in
+there. Each card says which it is, and outlines the effect responsible.
+
+```text
+cost = floor( baseCost × max(magnitude^1.1, 1) × (duration/10)^1.1 )
+```
+
+The duration term drops out for an instantaneous effect. Aloe Vera Leaves and Butterfly
+Wing share Restore Health and Damage Magicka; Damage Magicka costs 7.37 against 2.94, so
+that is a **poison** with a Restore Health passenger. It runs the other way too — Abecean
+Longfin with Small Antlers carries Weakness to Poison and is still a potion, because
+Fortify Restoration is worth more than twice as much.
+
+**Your alchemy is deliberately not in that formula**, and that is exact rather than a
+shortcut. Skill, gear and Fortify Alchemy multiply an effect's magnitude — or its
+duration, for the five effects that have no magnitude — and either route puts the same
+`M^1.1` in front of every effect's cost. A common factor cannot change which one is
+largest, so a level 15 alchemist and a looped one get the same verdict. Perks are out for
+a better reason: the game leaves them out too, which is what stops Benefactor from
+silently converting a poison into a potion.
+
+Two pairs collide, and only one of them matters. Resist Magic costs *exactly* the same as
+Weakness to Poison **and** as Weakness to Magic, all three at 7.1774. No ingredient carries
+Resist Magic and Weakness to Magic together, so that pair needs a fourth slot and never
+comes up; the other turns up as the costliest pair in 65 of the 635,068 three-ingredient
+mixtures that make anything. Nothing documents what the game does with a tie, so those read
+**Potion or poison** rather than a guess.
+
+</details>
+
 ## Resto loop {#resto}
 
 {{< resto-loop target="235" effect="Fortify Alchemy" >}}
@@ -69,9 +104,11 @@ skillMult = 1 + x(x − 0.14)/3.4      where  x = Skill × (1 + potion/100) / 10
 
 The load-bearing detail: **the potion does not multiply the finished
 enchantment.** It scales your effective skill *inside* a quadratic, so the
-enchantment comes out quadratic in potion strength. `BaseMag` is 8 for Fortify
-Destruction, 13 for Fortify One-Handed, 15 for the elemental resists, 20 for the
-attributes — which is what the picker's groups are.
+enchantment comes out quadratic in potion strength. `BaseMag` runs 8 / 10 / 13 / 15 / 20 / 25
+across the picker's ten groups — 8 for Fortify Destruction, 13 for Fortify One-Handed, 15
+for the elemental resists, 20 for the attributes, 25 for Resist Disease — and the groups
+are split by base *and* by which +25% perk applies, because three of them (Resist Magic,
+Carry Weight, Fortify Magicka Regen) take no perk at all.
 
 **The loop.** A Fortify Restoration potion boosts every `Fortify <Skill>` enchantment
 you are **wearing** while it runs, because those enchantments are internally
@@ -119,7 +156,7 @@ observed        modelled
   100% gear →     120%        120.0%
   220% gear →     422%        422.4%
   522% gear →   1,948%      1,948.6%
-2,051% gear →  26,405%     26,405.8%
+2,049% gear →  26,405%     26,405.8%
 cash out   →    3,991%      3,990.9% Fortify Enchanting
                9,831%       9,831%   placed
 ```
@@ -132,16 +169,20 @@ against a modelled 887.4, and placed **587%** against a modelled 585.3. UESP fla
 `0.14` and `3.4` as an empirical fit and that is about its size: a few tenths of a percent,
 which becomes a couple of points once you are up at 600.
 
-**The five-round plan below has been run.** Brewing in 0, 2, 2, 2, 2 pieces, then cashing
-out in three for a 511.7% Fortify Enchanting potion, it placed **235% Fortify Alchemy** on
-a pair of gloves. That exact sequence is pinned in the module's self-check, so if the
-maths ever drifts the plan stops matching and something goes red.
+**A five-round plan has been run.** Brewing in 0, 2, 2, 2, 2 pieces, then cashing out in
+three for a 511.9% Fortify Enchanting potion, it placed **235% Fortify Alchemy** on a pair
+of gloves. That exact sequence is pinned in the module's self-check as a replay, so if the
+maths ever drifts the plan stops matching and something goes red. The planner above now
+proposes a shorter four-round route to the same number — both are right, but only the
+five-round one has an in-game outcome behind it.
 
 **One thing this deliberately does not cover: waiting.** Let the potion lapse between
-rounds and the boost stops compounding, growth goes linear, and four 25% pieces converge
-on a hard **36.6%** ceiling — 120% → 192% → 235% → 261% and no further. Waiting also
-brings back per-piece history, because a value written while a potion was up *sticks*
-after it expires. That is a different, slower routine.
+rounds and the boost stops compounding. The potions still climb, just geometrically rather
+than explosively — 120% → 192% → 235% → 261% → 277% → 286% → … converging on **300%**, off
+gear that settles at 4 × 100%. Mind which number is which: what converges on a hard
+**36.6%** is the *enchantment* you can place off that settled set, not the potion series.
+Waiting also brings back per-piece history, because a value written while a potion was up
+*sticks* after it expires. That is a different, slower routine.
 
 That 235% in the waiting sequence is a *potion*, and it is the number this module spent
 several wrong models chasing as though it were an enchantment; the same run places about

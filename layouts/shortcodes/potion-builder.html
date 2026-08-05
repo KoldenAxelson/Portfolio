@@ -1,5 +1,6 @@
 {{- /*
-  potion-builder — three screens, one question each.
+  potion-builder — four screens, one question each. 1-3 ask what you want and search
+  for it; 4 is the mortar itself and answers the other direction.
 
     {{< potion-builder >}}
 
@@ -30,8 +31,9 @@
 <div class="sky-build not-prose" data-builder data-screen="1">
 
   {{- /* ── 1 ────────────────────────────────────────────────────────────── */}}
+  {{- /* No heading: four labelled choices under a "Builder" heading are already the
+         question. They sit 2x2 on desktop, which is why there are four and not three. */}}
   <section class="sky-scr" data-scr="1">
-    <p class="sky-scr__q">What are you making?</p>
     <div class="sky-pick">
       <button type="button" class="sky-pick__b" data-kind="good"><b>Potion</b><span>Restore, Fortify, Resist, Regenerate, Cure</span></button>
       <button type="button" class="sky-pick__b" data-kind="bad"><b>Poison</b><span>Damage, Ravage, Lingering, Weakness, Fear</span></button>
@@ -90,23 +92,40 @@
   {{- /* Effect names, plus the magnitude/duration multipliers that make Creation
        Club ingredients silly. `x` runs parallel to `e`: for each effect, a map
        of ingredient slug -> [magnitude multiplier, duration multiplier]. Most
-       are empty. `bm` is each effect's base magnitude, kept as its own flat
-       array (Hugo's `append` flattens a slice argument, so a list of pairs
-       would come apart) — the builder only needs it to tell whether an
-       effect's strength lives in its magnitude or, when that is 0, its
-       duration. */ -}}
+       are empty.
+
+       `bm`/`bd`/`bc`/`k` are each effect's base magnitude, base duration, base
+       gold cost and whether it is harmful, each kept as its own flat array
+       (Hugo's `append` flattens a slice argument, so a list of tuples would
+       come apart). Magnitude tells the builder whether an effect's strength
+       lives in its magnitude or, when that is 0, its duration. The other three
+       decide potion-or-poison: the costliest effect in the bottle is the one in
+       charge, and if it is harmful the mortar hands you a poison. */ -}}
   {{- $payload := dict "e" (apply $fx "index" "." "name") -}}
   {{- $mults := slice -}}
   {{- $baseMag := slice -}}
+  {{- $baseDur := slice -}}
+  {{- $baseCost := slice -}}
+  {{- $harmful := slice -}}
   {{- range $e := $fx -}}
     {{- $m := dict -}}
     {{- range $slug, $v := $e.mult -}}
-      {{- $m = merge $m (dict $slug (slice (float ($v.mag | default 1)) (float ($v.dur | default 1)))) -}}
+      {{- /* isset, NOT `| default 1`: Hugo's `default` treats 0 as empty, so the four
+             deliberate `dur: 0` rows in effects.yaml (River Betty, Emperor Parasol Moss,
+             Nirnroot, Thistle Branch — "this ingredient makes the effect instantaneous")
+             were silently shipping as 1. That is a factor of ~12.6 on the duration term
+             of the gold cost, and it flipped 1,448 potion/poison verdicts. */ -}}
+      {{- $mag := 1.0 -}}{{ if isset $v "mag" }}{{ $mag = float $v.mag }}{{ end -}}
+      {{- $dur := 1.0 -}}{{ if isset $v "dur" }}{{ $dur = float $v.dur }}{{ end -}}
+      {{- $m = merge $m (dict $slug (slice $mag $dur)) -}}
     {{- end -}}
     {{- $mults = $mults | append $m -}}
     {{- $baseMag = $baseMag | append (float $e.baseMag) -}}
+    {{- $baseDur = $baseDur | append (float $e.baseDur) -}}
+    {{- $baseCost = $baseCost | append (float $e.baseCost) -}}
+    {{- $harmful = $harmful | append (eq $e.kind "bad") -}}
   {{- end -}}
-  {{- $payload = merge $payload (dict "x" $mults "bm" $baseMag) -}}
+  {{- $payload = merge $payload (dict "x" $mults "bm" $baseMag "bd" $baseDur "bc" $baseCost "k" $harmful) -}}
   {{- $rows := slice -}}
   {{- range $slug, $ing := site.Data.skyrim.ingredients -}}
     {{- $ids := slice -}}

@@ -1,9 +1,14 @@
 {{- /*
-  skyrim-selfcheck — runs assets/js/skyrim/selfcheck.ts against the same bundle
-  the site ships and prints the results.
+  skyrim-selfcheck — runs assets/js/skyrim/selfcheck.ts against the same modules the site
+  ships and prints the results.
 
-  Needs a builder payload on the page to check the catalogue, so put
-  {{< potion-builder >}} above it — this page keeps that hidden.
+  The same MODULES, not the same bundle: this is a second esbuild pass with minify off,
+  where skyrim-assets.html ships the page bundle minified. A minifier-induced regression
+  would therefore NOT show up here.
+
+  Needs a builder payload somewhere on the page to check the catalogue. Order does not
+  matter — selfcheck-entry.ts runs on a deferred script and queries the whole document —
+  so {{< potion-builder >}} can sit anywhere, hidden or not.
 */ -}}
 {{ partial "skyrim-assets.html" .Page }}
 <div class="sky-check not-prose" data-selfcheck>
