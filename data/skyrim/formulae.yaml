@@ -1,0 +1,73 @@
+# The maths behind the four modules, rendered by shortcodes/formula.html.
+#
+# Here rather than in the markdown so the expression and the meaning of each symbol stay
+# together, and so the page's prose does not have to define them a second time in
+# sentences. A term listed under `terms` is marked in the expression AND gets a legend
+# row; the underline is what says "there is a row for this below", so a term with nothing
+# worth saying about it should simply be left out and rendered plain.
+#
+# `consts` marks a literal in the expression. A note is optional there — the marking alone
+# is often enough to say "this number is not structural".
+#
+# `note` is for a catch the expression genuinely cannot state. Not for saying what the
+# formula is NOT, and not for restating the legend in sentences.
+#
+# Term names are matched on word boundaries, longest first, so `skillMult` is marked
+# before `Skill` can eat its first five characters. Names must be alphanumeric (a dot is
+# escaped for you, for constants like 1.1); anything else will be read as a regex.
+
+gold-cost:
+  name: Gold cost
+  lines:
+    - "cost = floor( baseCost × max(magnitude^1.1, 1) × (duration/10)^1.1 )"
+  terms:
+    - name: baseCost
+      note: the effect's own gold value
+    - name: magnitude
+      note: strength, after every multiplier
+    - name: duration
+      note: seconds — the whole term drops out when the effect is instantaneous
+  consts:
+    - name: "1.1"
+
+alchemy-magnitude:
+  name: Alchemy magnitude
+  lines:
+    - "mag = BaseMag × 4 × (1 + Skill/200) × (1 + Gear/100)"
+    - "            × (1 + Alchemist/100) × (1 + Benefactor/100) × (1 + Seeker/100)"
+  terms:
+    - name: BaseMag
+      note: "4 for Fortify Restoration, 1 for Fortify Enchanting — which is why the restoration potion is always exactly four times the enchanting one"
+    - name: Gear
+      note: Fortify Alchemy **summed** across everything worn
+
+enchanting-magnitude:
+  name: Enchanting magnitude
+  lines:
+    - "mag       = floor( BaseMag × skillMult × (1 + Enchanter) × (1 + categoryPerk) × (1 + Sorcery) )"
+    - "skillMult = 1 + x(x − 0.14) / 3.4"
+    - "x         = Skill × (1 + potion/100) / 100"
+  terms:
+    - name: BaseMag
+      note: 8 to 25, across the picker's ten groups
+    - name: potion
+      note: the Fortify Enchanting potion, as a percentage
+  consts:
+    - name: "0.14"
+    - name: "3.4"
+      note: "with 0.14, an empirical fit rather than extracted engine values — moving it to 3.3 shifts a 121% result to 124%"
+  note: The potion does not multiply the finished enchantment. It scales effective skill **inside** the quadratic, so the enchantment comes out quadratic in potion strength.
+
+resto-round:
+  name: One loop round
+  lines:
+    - "brewed = round( 0.6 × (1 + wear × 25% × (1 + x)) )"
+    - "takes  = brewed > the last potion’s own magnitude"
+    - "piece  = 25% × (1 + x)"
+    - "x      = brewed × (1 + x)          only if it takes"
+  terms:
+    - name: wear
+      note: pieces on your body while brewing — fewer is a weaker potion, and it is the only brake there is
+    - name: x
+      note: the Fortify Restoration boost currently running, which is what makes the loop compound
+  note: That `round` is the game rounding the potion to a whole percent as you brew it. Leaving it out drifts a plan reading 600% to one reading 587% over six rounds.

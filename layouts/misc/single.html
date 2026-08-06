@@ -29,8 +29,22 @@
 </p>
 {{- end }}
 
+{{- /* Skyrim widget assets, emitted once here rather than by each shortcode.
+       `.HasShortcode` is exact and evaluated per build, so there is no flag to go stale
+       and no dependence on which shortcodes Hugo chose to re-render. The previous shape
+       — every shortcode calling the partial behind a `.Scratch` guard — silently shipped
+       no CSS and no JS after any dev-server rebuild. See partials/skyrim-assets.html. */ -}}
+{{- $skyrim := false -}}
+{{- range slice "potions" "potion-filter" "potion-builder" "resto-loop" "enchant-max" "skyrim-selfcheck" -}}
+  {{- if $.HasShortcode . }}{{ $skyrim = true }}{{ end -}}
+{{- end -}}
+{{- if $skyrim }}{{ partial "skyrim-assets.html" . }}{{ end }}
+
+{{- /* `prose-measure` caps the running text at a readable measure when the page has
+       asked for a wide column. Without it the prose inherits the grid's width and sets
+       to ~105 characters. See assets/css/base.css. */ -}}
 {{- if .Params.prose }}
-<article class="prose prose-lg max-w-none">
+<article class="prose prose-lg max-w-none{{ if eq .Params.container "wide" }} prose-measure{{ end }}">
   {{ .Content }}
 </article>
 {{- else }}

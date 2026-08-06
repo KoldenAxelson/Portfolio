@@ -188,6 +188,19 @@
         </div>
       </div>
 
+      {{/* Note mode — a recipe's notes and variant ingredient sets on /misc/skyrim/,
+           tapped from the card's note button. Desktop opens the sky-note drawer instead
+           (ts/skyrim-notes.ts); both are filled by the same populateNoteCard, so the two
+           views cannot drift. The body keeps the .sky-note__body class because the markup
+           poured into it is the card's own — ingredient tiles and effect chips — and
+           skyrim.css is on the page. */}}
+      <div data-mobile-panel-note class="mx-auto max-w-screen-xl px-6 py-5">
+        <div class="opacity-0 transition-opacity duration-200 ease-out motion-reduce:transition-none">
+          <p data-note-mobile-title></p>
+          <div data-note-mobile-body class="sky-note__body"></div>
+        </div>
+      </div>
+
       {{- if $hasTools }}
       <ul data-mobile-panel-tools class="mx-auto flex max-w-screen-xl flex-col gap-1 px-6 py-4 opacity-0 transition-opacity duration-200 ease-out motion-reduce:transition-none">
         {{- range $tools }}
@@ -257,17 +270,20 @@
   [data-mobile-panel-bio],
   [data-mobile-panel-tools],
   [data-mobile-panel-game],
-  [data-mobile-panel-definition] { display: none; }
+  [data-mobile-panel-definition],
+  [data-mobile-panel-note] { display: none; }
   [data-mobile-panel][data-mode='nav'] [data-mobile-panel-nav],
   [data-mobile-panel][data-mode='bio'] [data-mobile-panel-bio],
   [data-mobile-panel][data-mode='tools'] [data-mobile-panel-tools],
   [data-mobile-panel][data-mode='game'] [data-mobile-panel-game],
-  [data-mobile-panel][data-mode='definition'] [data-mobile-panel-definition] { display: block; }
+  [data-mobile-panel][data-mode='definition'] [data-mobile-panel-definition],
+  [data-mobile-panel][data-mode='note'] [data-mobile-panel-note] { display: block; }
   [data-mobile-panel].is-open [data-mobile-panel-nav] ul,
   [data-mobile-panel].is-open [data-mobile-panel-bio] p,
   [data-mobile-panel].is-open [data-mobile-panel-tools],
   [data-mobile-panel].is-open [data-mobile-panel-game] > div,
-  [data-mobile-panel].is-open [data-mobile-panel-definition] > div {
+  [data-mobile-panel].is-open [data-mobile-panel-definition] > div,
+  [data-mobile-panel].is-open [data-mobile-panel-note] > div {
     opacity: 1;
     transition-delay: 200ms;
   }
@@ -283,6 +299,15 @@
     margin: 0;
     font-size: 1.05rem;
     line-height: 1.55;
+    color: rgb(var(--c-fg));
+  }
+  /* Note mode — a recipe name tapped on mobile (see ts/nav.ts). Same register as the
+     definition label above: this is a title, and the body under it is the card's own. */
+  [data-note-mobile-title] {
+    margin: 0 0 0.6rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    line-height: 1.3;
     color: rgb(var(--c-fg));
   }
   [data-mobile-tools-trigger] {

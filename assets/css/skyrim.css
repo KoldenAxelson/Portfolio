@@ -6,33 +6,88 @@
    The page sets `prose: true`, so each root below also carries `not-prose` in
    the markup to keep Tailwind Typography off the widget internals. */
 
-/* The one colour in here that is not a site token: an error red for a failed check and
-   for a poison verdict. Kept as channels so the /alpha forms work, and declared once
-   because it used to be hand-copied five times in two different spellings. */
-.sky-build, .sky-calc, .sky-check { --sky-bad: 192 57 43; }
+/* The colours in here that are not site tokens: an error red for a failed check and for a
+   poison verdict, and one hue per DLC. Kept as channels so the /alpha forms work, and
+   declared once because they used to be hand-copied at eight call sites.
+
+   Both halves need a per-theme value, and both used to ship a single one. The poison red
+   measured 3.66:1 on the dark page and the four DLC hues measured 3.05-4.40:1 on the light
+   one — so the word telling you a brew would hurt you, and the badge saying which DLC an
+   ingredient needs, were the only text on this page below the AA floor the rest of the site
+   holds. Light values are the 700/800 steps, dark are the 400s; every pairing below clears
+   4.5:1 against its own page background. */
+/* Type ramp. This file used to carry 25 distinct font sizes, 16 of them packed between
+   0.55rem and 0.9rem — roles separated by a third of a pixel, which is no separation at
+   all. Five roles now, each at least a 1.15x step from its neighbour, so a label reads as
+   a label and an answer reads as an answer without anyone having to measure.
+
+   11px is the floor: 43 visible elements used to sit below it.
+
+   --sky-t-answer is the shared "here is your answer" register. Four widgets used to reply
+   in four different voices — 41.6px for the resto plan, 9.3px for the mortar's verdict,
+   for the same kind of statement. One token, one voice. */
+:root {
+  --sky-t-micro: 0.6875rem;  /* 11px · uppercase mono labels, legends, badges, chips */
+  --sky-t-small: 0.8125rem;  /* 13px · hints, notes, metadata, secondary control text */
+  --sky-t-body: 0.9375rem;   /* 15px · widget body, ingredient names, inputs, checkboxes */
+  --sky-t-lead: 1.125rem;    /* 18px · card titles, trick names, sub-answers */
+  --sky-t-answer: 2.25rem;   /* 36px · the one answer a widget produces */
+
+  --sky-bad: 192 57 43;    /* 5.20:1 on --c-bg — an ERROR: a failed check, a refused tap.
+                              Deliberately not the poison hue any more; a self-check row
+                              reading FAIL in green would be a worse lie than a loud one. */
+  /* The verdict set. Hue says how clean the bottle is, the glyph inside says which way it
+     fell — so "poison" and "poison that also restores your health" can differ on screen.
+     Same per-theme discipline as the DLC codes below: 700/800 on the light page, 400s on
+     the dark one, every pairing over 4.5:1 against its own background. */
+  --sky-potion: 29 78 216;  /* blue-700   · 6.30:1 */
+  --sky-poison: 21 128 61;  /* green-700  · 5.15:1 */
+  --sky-mixed: 126 34 206;  /* purple-700 · 7.02:1 */
+  --sky-dg: 109 40 217;    /* Dawnguard      · violet-700 · 6.79:1 */
+  --sky-hf: 146 64 14;     /* Hearthfire     · amber-800  · 6.78:1 */
+  --sky-db: 15 118 110;    /* Dragonborn     · teal-700   · 5.23:1 */
+  --sky-cc: 190 24 93;     /* Creation Club  · pink-700   · 5.77:1 */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --sky-bad: 248 113 113; /* red-400    · 7.19:1 on --c-bg */
+    --sky-potion: 96 165 250; /* blue-400   · 8.01:1 */
+    --sky-poison: 74 222 128; /* green-400  · 11.51:1 */
+    --sky-mixed: 192 132 252; /* purple-400 · 7.53:1 */
+    --sky-dg: 167 139 250;  /* violet-400 · 7.31:1 */
+    --sky-hf: 251 191 36;   /* amber-400  · 11.92:1 */
+    --sky-db: 45 212 191;   /* teal-400   · 10.69:1 */
+    --sky-cc: 244 114 182;  /* pink-400   · 7.51:1 */
+  }
+}
 
 /* ── Filter bar ─────────────────────────────────────────────────────────── */
 .sky-tools { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin: 1.5rem 0 0.5rem; }
+/* Inside a builder screen the filter follows the thing above it rather than opening a
+   section, so it does not need the standalone bar's 24px of air above. */
+.sky-scr .sky-tools { margin: 0.75rem 0 0.5rem; }
 .sky-search {
-  flex: 1 1 16rem; min-width: 0; padding: 0.55rem 0.85rem; font-size: 0.9rem;
+  flex: 1 1 16rem; min-width: 0; padding: 0.55rem 0.85rem; font-size: var(--sky-t-body);
   color: rgb(var(--c-fg)); background: rgb(var(--c-bg));
   border: 1px solid rgb(var(--c-border)); border-radius: 0.6rem;
   -webkit-appearance: none; appearance: none;
 }
 .sky-search::placeholder { color: rgb(var(--c-muted)); }
 .sky-search:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.5); outline-offset: 1px; border-color: rgb(var(--c-accent) / 0.6); }
-.sky-count { margin: 0; font: 0.68rem var(--font-mono, ui-monospace, monospace); letter-spacing: 0.06em; text-transform: uppercase; color: rgb(var(--c-muted)); }
+.sky-count { margin: 0; font: var(--sky-t-small) var(--font-mono, ui-monospace, monospace); letter-spacing: 0.06em; text-transform: uppercase; color: rgb(var(--c-muted)); }
 
 /* ── Card grid ──────────────────────────────────────────────────────────── */
 .sky-grid { display: grid; gap: 1rem; margin: 1rem 0 0; grid-template-columns: 1fr; }
 @media (min-width: 640px) { .sky-grid { grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr)); } }
-.sky-empty { margin: 1rem 0 0; font-size: 0.9rem; color: rgb(var(--c-muted)); }
+.sky-empty { margin: 1rem 0 0; font-size: var(--sky-t-body); color: rgb(var(--c-muted)); }
 
 .sky-card {
   display: flex; flex-direction: column; overflow: hidden;
   border: 1px solid rgb(var(--c-border)); border-radius: 0.9rem;
   background: rgb(var(--c-bg)); transition: border-color 0.2s ease;
 }
+.sky-card { position: relative; }
 .sky-card:hover { border-color: rgb(var(--c-accent) / 0.5); }
 /* The site's Tailwind preflight already ships `[hidden] { display: none !important }`, so
    this and the three like it (.sky-config, .sky-scr, .sky-fx > li) are belt-and-braces
@@ -41,9 +96,12 @@
 .sky-card[hidden] { display: none; }
 
 /* ── Ingredient box ─────────────────────────────────────────────────────── */
+/* A flat tint, not a radial wash. The gradient was a decorative spotlight behind the
+   tiles — no material, no light source, nothing it was describing — and a tinted tray is
+   the honest version of what it was pretending to be. */
 .sky-ings {
   display: flex; gap: 0.5rem; padding: 0.9rem;
-  background: radial-gradient(120% 120% at 50% 0%, rgb(var(--c-border) / 0.35), rgb(var(--c-bg)));
+  background: rgb(var(--c-border) / 0.18);
   border-bottom: 1px solid rgb(var(--c-border) / 0.6);
 }
 .sky-ing { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 0.4rem; }
@@ -60,33 +118,36 @@
 .sky-ph__disc { fill: rgb(var(--c-accent)); }
 .sky-ph__mark { fill: rgb(var(--c-bg)); font: 700 26px var(--font-mono, ui-monospace, monospace); }
 
-.sky-ing__name { font-size: 0.68rem; line-height: 1.25; text-align: center; color: rgb(var(--c-muted)); overflow-wrap: anywhere; }
+.sky-ing__name { font-size: var(--sky-t-small); line-height: 1.25; text-align: center; color: rgb(var(--c-muted)); overflow-wrap: anywhere; }
 .sky-ing__dlc {
   display: inline-block; margin-left: 0.25rem; padding: 0 0.25rem; border-radius: 0.25rem;
-  font: 600 0.55rem var(--font-mono, ui-monospace, monospace); letter-spacing: 0.06em;
+  font: 600 var(--sky-t-micro) var(--font-mono, ui-monospace, monospace); letter-spacing: 0.06em;
   color: rgb(var(--c-muted)); border: 1px solid rgb(var(--c-border));
 }
 
 /* ── Card body ──────────────────────────────────────────────────────────── */
 .sky-body { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.9rem 1.05rem 1rem; }
-.sky-title { margin: 0; font-size: 1.02rem; font-weight: 600; line-height: 1.3; color: rgb(var(--c-fg)); }
+.sky-title { margin: 0; font-size: var(--sky-t-lead); font-weight: 600; line-height: 1.3; color: rgb(var(--c-fg)); }
 .sky-chips { display: flex; flex-wrap: wrap; gap: 0.3rem; list-style: none; margin: 0; padding: 0; }
 .sky-chip {
   padding: 0.22rem 0.5rem; border-radius: 999px;
-  font: 0.62rem var(--font-mono, ui-monospace, monospace); letter-spacing: 0.06em; text-transform: uppercase;
+  font: var(--sky-t-micro) var(--font-mono, ui-monospace, monospace); letter-spacing: 0.06em; text-transform: uppercase;
   color: rgb(var(--c-muted)); border: 1px solid rgb(var(--c-border));
 }
 .sky-chip--tag { color: rgb(var(--c-accent)); border-color: rgb(var(--c-accent) / 0.45); background: rgb(var(--c-accent) / 0.08); }
 /* The builder marks a chip whose magnitude a Creation Club ingredient inflates. */
 .sky-chip.is-boosted { border-color: rgb(var(--c-accent) / 0.55); color: rgb(var(--c-fg)); }
 .sky-chip b { margin-left: 0.3rem; font-weight: 700; color: rgb(var(--c-accent)); }
-.sky-value { margin: 0; font: 0.7rem var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-muted)); }
+.sky-value { margin: 0; font: var(--sky-t-small) var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-muted)); }
 
 /* ── Collapsible note ───────────────────────────────────────────────────── */
 .sky-note { margin-top: 0.15rem; border-top: 1px solid rgb(var(--c-border) / 0.6); padding-top: 0.6rem; }
+/* min-height, not padding: this is the only way into a recipe's notes and variants and it
+   measured 17px tall, under WCAG 2.5.8's 24px floor. Padding would push the chevron off
+   the title it belongs to; a min-height grows the hit box around the centred row. */
 .sky-note > summary {
-  display: flex; align-items: center; gap: 0.4rem; cursor: pointer; list-style: none;
-  font: 0.72rem var(--font-mono, ui-monospace, monospace); letter-spacing: 0.08em; text-transform: uppercase;
+  display: flex; align-items: center; gap: 0.4rem; min-height: 1.5rem; cursor: pointer; list-style: none;
+  font: var(--sky-t-small) var(--font-mono, ui-monospace, monospace); letter-spacing: 0.08em; text-transform: uppercase;
   color: rgb(var(--c-muted)); transition: color 0.15s ease;
 }
 .sky-note > summary::-webkit-details-marker { display: none; }
@@ -95,14 +156,20 @@
 .sky-note > summary:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.5); outline-offset: 2px; border-radius: 0.3rem; }
 .sky-note__chev { width: 0.85rem; height: 0.85rem; flex-shrink: 0; transition: transform 0.2s ease; }
 .sky-note[open] .sky-note__chev { transform: rotate(90deg); }
-.sky-note__body { margin-top: 0.55rem; font-size: 0.86rem; line-height: 1.6; color: rgb(var(--c-muted)); }
+.sky-note__body { margin-top: 0.55rem; font-size: var(--sky-t-body); line-height: 1.6; color: rgb(var(--c-muted)); }
 .sky-note__body > p { margin: 0 0 0.6rem; }
 .sky-note__body > p:last-child { margin-bottom: 0; }
 .sky-note__body em { color: rgb(var(--c-fg)); font-style: italic; }
 
 /* Alternate ingredient sets, drawn inside the open note. */
 .sky-variant { margin-top: 0.75rem; padding-top: 0.65rem; border-top: 1px dashed rgb(var(--c-border)); }
-.sky-variant__label { margin: 0 0 0.4rem; font: 600 0.62rem var(--font-mono, ui-monospace, monospace); letter-spacing: 0.1em; text-transform: uppercase; color: rgb(var(--c-muted)); }
+/* These carry sentences as well — "Rare Curios swap — brews the same thing" — so they
+   take the same treatment. What keeps the mono/uppercase register on this page is the
+   things that are genuinely labels or data: chips, legends, counts, field labels. */
+.sky-variant__label {
+  margin: 0 0 0.4rem; font-size: var(--sky-t-small); font-weight: 600; line-height: 1.4;
+  letter-spacing: normal; text-transform: none; color: rgb(var(--c-muted));
+}
 .sky-variant .sky-ings { padding: 0; background: none; border-bottom: none; }
 .sky-variant .sky-tile { border-radius: 0.45rem; }
 .sky-variant .sky-chips { margin-top: 0.5rem; }
@@ -110,6 +177,69 @@
 @media (prefers-reduced-motion: reduce) {
   .sky-card, .sky-note__chev, .sky-note > summary { transition: none; }
 }
+/* ── The way into a recipe's notes ──────────────────────────────────────── */
+/* The whole card. A 28px icon met WCAG 2.5.8 and was still a small thing to aim at when
+   the 300px card behind it was doing nothing — so the target is the card, and there is no
+   icon to find. Stretched over the content rather than wrapping it: a <button> cannot
+   legally contain the <details> that is the no-JS fallback. */
+.sky-card__hit {
+  position: absolute; inset: 0; z-index: 2; cursor: pointer;
+  padding: 0; border: 0; background: transparent; font: inherit;
+}
+/* Inset, so the ring reads as the card's own rather than a second box around it. */
+.sky-card__hit:focus-visible { outline: 2px solid rgb(var(--c-accent)); outline-offset: -3px; border-radius: 0.9rem; }
+/* Only a card that opens something says so. `is-clickable` is written by
+   ts/skyrim-notes.ts at the moment it reveals the hit area, so a card with no note — and
+   every card at all when JavaScript is off — keeps the quiet default hover. */
+.sky-card.is-clickable:hover { border-color: rgb(var(--c-accent)); background: rgb(var(--c-accent) / 0.04); }
+.sky-card.is-clickable:has(.sky-card__hit[aria-expanded="true"]) { border-color: rgb(var(--c-accent)); }
+
+/* ── The notes drawer ───────────────────────────────────────────────────── */
+/* Desktop only — mobile routes into the top-nav panel, the same split definitions.css
+   makes. Wider than the glossary card because a note carries ingredient tiles and chip
+   rows rather than a sentence. */
+.sky-drawer { position: fixed; inset: 0; z-index: 60; pointer-events: none; }
+@media (max-width: 1023px) { .sky-drawer { display: none; } }
+.sky-drawer__card {
+  box-sizing: border-box; position: absolute; top: 50%; right: 1.5rem;
+  pointer-events: none; width: 24rem; max-width: calc(100vw - 3rem);
+  max-height: calc(100dvh - 3rem); overflow-y: auto; overscroll-behavior: contain;
+  padding: 1.1rem 1.2rem 1.2rem; border-radius: 1rem;
+  background: rgb(var(--glass-bg) / 0.92); border: 1px solid rgb(var(--c-border));
+  -webkit-backdrop-filter: blur(14px) saturate(160%); backdrop-filter: blur(14px) saturate(160%);
+  box-shadow: inset 0 1px 0 0 rgb(var(--glass-hi) / 0.5), 0 18px 44px -16px rgb(0 0 0 / 0.28);
+  transform: translate(calc(100% + 2rem), -50%); opacity: 0;
+  /* 320ms is drawer.ts's SLIDE_MS — the delay it waits before setting [hidden]. Change
+     one and the card either vanishes mid-slide or lingers as a dead layer. */
+  transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1), opacity 240ms ease;
+}
+@media (prefers-color-scheme: dark) {
+  .sky-drawer__card { box-shadow: inset 0 1px 0 0 rgb(var(--glass-hi) / 0.1), 0 18px 44px -16px rgb(0 0 0 / 0.75); }
+}
+.sky-drawer[data-open] .sky-drawer__card { transform: translate(0, -50%); opacity: 1; pointer-events: auto; }
+/* Takes focus on open so Escape and the close button are reachable; never a tab stop. */
+.sky-drawer__card:focus { outline: none; }
+.sky-drawer__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.7rem; }
+.sky-drawer__title { margin: 0; font-size: var(--sky-t-lead); font-weight: 600; line-height: 1.3; color: rgb(var(--c-fg)); }
+/* The card's own title is the heading here, so the drawer does not repeat "Notes". */
+.sky-drawer__close {
+  flex: none; display: inline-flex; align-items: center; justify-content: center;
+  width: 1.9rem; height: 1.9rem; border-radius: 999px; cursor: pointer;
+  border: 1px solid rgb(var(--c-border)); background: rgb(var(--c-bg) / 0.6); color: rgb(var(--c-muted));
+  transition: color 0.12s ease, border-color 0.12s ease;
+}
+.sky-drawer__close:hover { color: rgb(var(--c-accent)); border-color: rgb(var(--c-accent)); }
+.sky-drawer__close:focus-visible { outline: 2px solid rgb(var(--c-accent)); outline-offset: 2px; }
+/* It also carries .sky-note__body, so the tiles, chips and variant rules above apply
+   unchanged. Only the disclosure's own top gap has to go. */
+.sky-drawer__body { margin-top: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sky-drawer__card { transition: opacity 0.01s; }
+  .sky-drawer[data-open] .sky-drawer__card { transform: translate(0, -50%); }
+  .sky-card, .sky-drawer__close { transition: none; }
+}
+
 
 /* ── Restoration-loop planner ───────────────────────────────────────────── */
 .sky-calc { margin: 1.5rem 0 0; border: 1px solid rgb(var(--c-border)); border-radius: 0.9rem; overflow: hidden; background: rgb(var(--c-bg)); }
@@ -121,20 +251,30 @@
 }
 .sky-bar__field { display: flex; flex-direction: column; gap: 0.3rem; min-width: 0; }
 .sky-bar__field--grow { flex: 1 1 14rem; }
-.sky-bar__label { font: 600 0.58rem var(--font-mono, ui-monospace, monospace); letter-spacing: 0.14em; text-transform: uppercase; color: rgb(var(--c-muted)); }
+.sky-bar__label { font: 600 var(--sky-t-micro) var(--font-mono, ui-monospace, monospace); letter-spacing: 0.14em; text-transform: uppercase; color: rgb(var(--c-muted)); }
 .sky-bar select, .sky-bar input[type="number"] {
-  font: 0.9rem/1.3 var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-fg));
+  font: var(--sky-t-body)/1.3 var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-fg));
   background: rgb(var(--c-bg)); border: 1px solid rgb(var(--c-border)); border-radius: 0.5rem;
   padding: 0.45rem 0.6rem;
 }
 .sky-bar select { width: 100%; }
 .sky-bar input[type="number"] { width: 6rem; text-align: right; }
 .sky-bar select:focus-visible, .sky-bar input:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.5); outline-offset: 1px; }
+/* A disabled field here used to be byte-identical to an editable one — same colour,
+   background, border and opacity — so "Potion %" sat there looking typeable, rejecting
+   every keystroke, and reading 0 while the sentence below it said 32.4%. It is not inert:
+   enchant.ts now mirrors the loop's live answer into it, so it is a value being READ.
+   That is why it keeps --c-muted at full strength rather than being faded out; the dashed
+   border and the tinted fill are what say "not yours to type in". */
+.sky-bar input:disabled, .sky-bar select:disabled {
+  color: rgb(var(--c-muted)); cursor: not-allowed;
+  border-style: dashed; background: rgb(var(--c-border) / 0.25);
+}
 .sky-bar__toggle {
   display: inline-flex; align-items: center; gap: 0.35rem; cursor: pointer; white-space: nowrap;
   padding: 0.45rem 0.75rem; border: 1px dashed rgb(var(--c-border)); border-radius: 0.5rem;
   background: transparent; color: rgb(var(--c-muted));
-  font: 0.78rem var(--font-mono, ui-monospace, monospace); letter-spacing: 0.04em;
+  font: var(--sky-t-body) var(--font-mono, ui-monospace, monospace); letter-spacing: 0.04em;
   transition: border-color 0.15s ease, color 0.15s ease;
 }
 .sky-bar__toggle:hover { border-color: rgb(var(--c-accent) / 0.6); color: rgb(var(--c-fg)); }
@@ -147,74 +287,168 @@
    reads correctly with JavaScript off. */
 .sky-config { padding: 0.9rem 1.1rem 1rem; border-bottom: 1px solid rgb(var(--c-border)); background: rgb(var(--c-border) / 0.14); }
 .sky-config[hidden] { display: none; }
+/* Tricks, in enchant-max. Same container, no tint: the tinted band reads as "assumptions
+   you can fold away", and this is the question the widget exists to answer. Sitting it on
+   the plain background is what stops two stacked panels reading as one long settings wall. */
+.sky-config--open { background: none; }
 .sky-config__grid { display: grid; gap: 0.9rem; grid-template-columns: 1fr; }
 @media (min-width: 700px) { .sky-config__grid { grid-template-columns: repeat(3, 1fr); gap: 1.4rem; } }
 .sky-set { margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 0.4rem; min-width: 0; }
-.sky-set legend { padding: 0 0 0.15rem; font: 600 0.58rem var(--font-mono, ui-monospace, monospace); letter-spacing: 0.14em; text-transform: uppercase; color: rgb(var(--c-muted)); }
-.sky-set__hint { margin: 0.15rem 0 0; font-size: 0.68rem; line-height: 1.5; color: rgb(var(--c-muted)); opacity: 0.85; }
-.sky-in { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; font-size: 0.78rem; color: rgb(var(--c-muted)); }
+.sky-set legend { padding: 0 0 0.15rem; font: 600 var(--sky-t-micro) var(--font-mono, ui-monospace, monospace); letter-spacing: 0.14em; text-transform: uppercase; color: rgb(var(--c-muted)); }
+.sky-set__hint { margin: 0.15rem 0 0; font-size: var(--sky-t-small); line-height: 1.5; color: rgb(var(--c-muted)); opacity: 0.85; }
+.sky-in { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; font-size: var(--sky-t-body); color: rgb(var(--c-muted)); }
 .sky-in input, .sky-in select {
-  width: 4.6rem; flex: none; padding: 0.28rem 0.4rem;
-  font: 0.78rem var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-fg));
+  flex: none; padding: 0.28rem 0.4rem;
+  font: var(--sky-t-body) var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-fg));
   background: rgb(var(--c-bg)); border: 1px solid rgb(var(--c-border)); border-radius: 0.35rem;
 }
-.sky-in input { text-align: right; }
+.sky-in input { width: 4.6rem; text-align: right; }
+/* A select is as wide as its longest option needs; a number box is not. These shared one
+   `width: 4.6rem`, which is right for "0/5" and catastrophic for the soul gem picker —
+   73.6px of box is 40.8px of usable width once padding, border and the native chevron are
+   out, and ALL SIX of its options are wider than that. Its default, "Best available", is
+   126px. So the one control this module's own prose calls "the finest control there is"
+   could not display a single one of its values, and failed silently while doing it. */
+.sky-in select { width: auto; min-width: 4.6rem; max-width: 100%; }
+/* min-width: 0 so the label can actually give the select its width on a narrow column
+   rather than the text refusing to shrink and pushing it back out. */
+.sky-in > span { min-width: 0; }
 .sky-in input:focus-visible, .sky-in select:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.5); outline-offset: 1px; }
-.sky-ck { display: flex; align-items: center; gap: 0.45rem; font-size: 0.78rem; color: rgb(var(--c-muted)); cursor: pointer; }
-.sky-ck input { accent-color: rgb(var(--c-accent)); width: 0.9rem; height: 0.9rem; flex: none; }
+/* The label is the hit target, not the box, so the size that matters is this row's — the
+   box itself was 13px and the row 22px tall, both under WCAG 2.5.8's 24px minimum. 1.5rem
+   clears it on a mouse; a coarse pointer gets the full 44px, where the cost of a stray tap
+   is a silently wrong plan rather than a corrected click. */
+.sky-ck { display: flex; align-items: center; gap: 0.45rem; min-height: 1.5rem; font-size: var(--sky-t-body); color: rgb(var(--c-muted)); cursor: pointer; }
+.sky-ck input { accent-color: rgb(var(--c-accent)); width: 1.05rem; height: 1.05rem; flex: none; }
 .sky-ck input:disabled { opacity: 0.4; }
 .sky-ck input:disabled + span { opacity: 0.45; }
+/* The two disclosure summaries take the same treatment as the checkboxes: they are the
+   only way into a recipe's notes and into the derivations, and both were the smallest
+   targets on the page. This block used to cover the checkboxes and miss the summaries. */
+@media (pointer: coarse) {
+  .sky-ck { min-height: 2.75rem; }
+  .sky-trick { padding: 0.7rem 0; }
+  .sky-note > summary, .sky-more > summary { min-height: 2.75rem; }
+}
 
-.sky-bar__note { margin: 0; padding: 0.7rem 1.1rem; border-bottom: 1px solid rgb(var(--c-border)); font-size: 0.76rem; line-height: 1.55; color: rgb(var(--c-muted)); background: rgb(var(--c-accent) / 0.07); }
+.sky-bar__note { margin: 0; padding: 0.7rem 1.1rem; border-bottom: 1px solid rgb(var(--c-border)); font-size: var(--sky-t-small); line-height: 1.55; color: rgb(var(--c-muted)); background: rgb(var(--c-accent) / 0.07); }
 .sky-bar__note:empty { display: none; }
 
 /* Result. */
 .sky-plan { padding: 1.1rem 1.1rem 1.15rem; }
 .sky-plan:empty { display: none; }
 .sky-plan[data-busy] { opacity: 0.4; transition: opacity 0.15s ease; }
-.sky-plan__head { margin: 0; font: 600 0.58rem var(--font-mono, ui-monospace, monospace); letter-spacing: 0.14em; text-transform: uppercase; color: rgb(var(--c-muted)); }
+/* Sentence case, body face, reading size — the same call this file already made for
+   `.sky-more > summary`, applied consistently: uppercase tracked mono is a treatment for
+   a two-word label, and "Closest landing on 235%" is a sentence.
+   It also retires the shape this was half of. An 11px uppercase 0.14em-tracked label
+   sitting directly above a 36px bold accent number, over a dot-separated row of five
+   stats, IS the hero-metric template — big number, small label, supporting stats, accent —
+   and the label above the number is the eyebrow the craft floor bans outright. A real
+   heading in the page's own voice, with the answer under it, is not that. */
+.sky-plan__head {
+  margin: 0; font-size: var(--sky-t-body); font-weight: 400; line-height: 1.4;
+  letter-spacing: normal; text-transform: none; color: rgb(var(--c-muted));
+}
+/* Shared with the enchant calculator, which still has a heading above it and reads left.
+   The resto planner's centring lives on `.sky-plan__answer` below, so centring this rule
+   would have quietly re-laid-out the other widget too. */
 .sky-plan__value {
-  margin: 0.1rem 0 0.25rem; font: 700 2.6rem/1 var(--font-mono, ui-monospace, monospace);
+  margin: 0.1rem 0 0.25rem;
+  font: 700 var(--sky-t-answer)/1 var(--font-mono, ui-monospace, monospace);
   letter-spacing: -0.03em; color: rgb(var(--c-accent)); font-variant-numeric: tabular-nums;
 }
-.sky-plan__value i { font-style: normal; font-size: 1.3rem; margin-left: 0.1rem; }
-.sky-plan__meta { margin: 0 0 0.9rem; font-size: 0.8rem; color: rgb(var(--c-muted)); }
+/* The two facts about the whole plan: what it lands on, and what places it. Half each,
+   because neither is the other's caption. */
+.sky-plan__answer { display: flex; align-items: center; margin: 0.75rem 0 1.5rem; }
+.sky-plan__answer > * {
+  flex: 1 1 0; min-width: 0; margin: 0;
+  display: flex; align-items: center; justify-content: center; gap: 0.55rem;
+}
+/* A hairline, so the halves read as two answers rather than one long line. */
+.sky-plan__gem { border-left: 1px solid rgb(var(--c-border)); }
+.sky-plan__gem img { width: 2.4rem; height: 2.4rem; object-fit: contain; flex: none; }
+.sky-plan__gem b { font-size: var(--sky-t-lead); font-weight: 600; color: rgb(var(--c-fg)); }
+/* --c-fg, not the accent the number carries: two accents side by side would make the icon
+   compete with the figure it introduces. */
+.sky-plan__icon { width: 1.75rem; height: 1.75rem; flex: none; color: rgb(var(--c-fg)); }
+/* Stacked on a phone — 36px of tabular figures and a 38px gem do not share 320px. */
+@media (max-width: 30rem) {
+  .sky-plan__answer { flex-direction: column; gap: 0.6rem; }
+  .sky-plan__gem { border-left: 0; border-top: 1px solid rgb(var(--c-border)); padding-top: 0.6rem; width: 100%; }
+}
+/* `em`, not a fixed size: the unit rides the answer rather than drifting from it. */
+.sky-plan__value i { font-style: normal; font-size: 0.5em; margin-left: 0.1rem; }
+.sky-plan__meta { margin: 0 0 0.9rem; font-size: var(--sky-t-body); color: rgb(var(--c-muted)); }
 .sky-plan__meta b { color: rgb(var(--c-fg)); font-weight: 600; font-variant-numeric: tabular-nums; }
 .sky-plan__meta i { font-style: normal; margin: 0 0.5rem; opacity: 0.5; }
-.sky-plan__count { margin: 0 0 0.5rem; font-size: 0.78rem; line-height: 1.5; color: rgb(var(--c-muted)); }
-.sky-plan__note { margin: 0.8rem 0 0; font-size: 0.78rem; line-height: 1.55; color: rgb(var(--c-muted)); }
+/* Each field wraps as a unit. Five of them on one run-on line broke mid-field at phone
+   width — "· 4" ending a line and "rounds ·" starting the next — which reads as five
+   fragments rather than five facts. */
+.sky-plan__meta span { display: inline-block; }
+.sky-plan__count { margin: 0 0 0.5rem; font-size: var(--sky-t-body); line-height: 1.5; color: rgb(var(--c-muted)); }
+.sky-plan__note { margin: 0.8rem 0 0; font-size: var(--sky-t-body); line-height: 1.55; color: rgb(var(--c-muted)); }
 
 /* The steps, written out and tappable. */
 .sky-steps { display: flex; flex-direction: column; gap: 0.35rem; margin: 0; padding: 0; list-style: none; }
+/* Three columns — round, wear, brew — so the marks line up down the list and the eye reads
+   a column instead of re-parsing a sentence per row. The gem used to be a fourth; it is a
+   property of the plan rather than of a round, and now sits beside the answer. */
 .sky-step {
-  display: flex; align-items: flex-start; gap: 0.6rem; width: 100%; text-align: left; cursor: pointer;
-  padding: 0.55rem 0.7rem; border: 1px solid rgb(var(--c-border)); border-radius: 0.55rem;
-  background: rgb(var(--c-bg)); font: inherit; font-size: 0.86rem; line-height: 1.5; color: rgb(var(--c-muted));
+  display: grid; grid-template-columns: 1.4rem auto 1fr; align-items: center; gap: 0.9rem;
+  width: 100%; text-align: left; cursor: pointer;
+  padding: 0.6rem 0.85rem; border: 1px solid rgb(var(--c-border)); border-radius: 0.55rem;
+  background: rgb(var(--c-bg)); font: inherit; font-size: var(--sky-t-body); line-height: 1.5; color: rgb(var(--c-muted));
   transition: border-color 0.15s ease, background 0.15s ease;
 }
 .sky-step:hover { border-color: rgb(var(--c-accent) / 0.6); }
 .sky-step:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.5); outline-offset: 2px; }
 .sky-step.is-open { border-color: rgb(var(--c-accent)); background: rgb(var(--c-accent) / 0.08); }
 .sky-step > b {
-  display: grid; place-items: center; flex: none; width: 1.4rem; height: 1.4rem; margin-top: 0.05rem;
+  display: grid; place-items: center; width: 1.4rem; height: 1.4rem;
   border-radius: 999px; background: rgb(var(--c-accent)); color: rgb(var(--c-bg));
-  font: 700 0.68rem var(--font-mono, ui-monospace, monospace);
+  font: 700 var(--sky-t-small) var(--font-mono, ui-monospace, monospace);
 }
 .sky-step--brew > b { background: rgb(var(--c-fg)); }
-.sky-step > span { flex: 1; }
-.sky-step > span b { color: rgb(var(--c-fg)); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* How many pieces to have on, as filled pips out of the set you own. A naked round is a
+   row of empty rings, which is the state no wording ever made this obvious.
+   --c-muted for the empty ring rather than --c-border: the border token measures 1.4:1 on
+   the dark page, and a mark carrying information has to clear 3:1 like any other
+   non-text graphic. */
+.sky-step__pips { display: inline-flex; gap: 0.3rem; }
+.sky-step__pips i {
+  width: 0.55rem; height: 0.55rem; border-radius: 999px;
+  border: 1.5px solid rgb(var(--c-muted)); background: transparent;
+}
+.sky-step__pips i.is-on { background: rgb(var(--c-accent)); border-color: rgb(var(--c-accent)); }
+
+/* The only number on the row, so it can carry weight without competing with anything. */
+.sky-step__brew {
+  font: 600 var(--sky-t-lead)/1 var(--font-mono, ui-monospace, monospace);
+  color: rgb(var(--c-fg)); font-variant-numeric: tabular-nums;
+}
+.sky-step__brew i { font-style: normal; font-size: 0.62em; opacity: 0.7; margin-left: 0.06rem; }
+
 
 /* The card that opens under the timeline. */
 .sky-detail { margin: 0; }
 .sky-detail:empty { display: none; }
+/* Uniform 1px. The 3px accent left edge this used to carry is the side-tab tell — the
+   detector files it under `slop`, and it was doing no work the tinted background was not
+   already doing. */
 .sky-detail:not(:empty) {
   margin-top: 0.75rem; padding: 0.8rem 0.9rem 0.85rem;
-  border: 1px solid rgb(var(--c-accent) / 0.35); border-left-width: 3px;
+  border: 1px solid rgb(var(--c-accent) / 0.35);
   border-radius: 0.6rem; background: rgb(var(--c-accent) / 0.05);
 }
-.sky-detail__head { margin: 0 0 0.6rem; font: 600 0.58rem var(--font-mono, ui-monospace, monospace); letter-spacing: 0.14em; text-transform: uppercase; color: rgb(var(--c-muted)); }
-.sky-detail__head b { color: rgb(var(--c-accent)); letter-spacing: 0.1em; }
-.sky-detail__foot { margin: 0.65rem 0 0; font-size: 0.78rem; line-height: 1.6; color: rgb(var(--c-muted)); }
+/* "Cash out — wear 3 pieces" is a sentence too. Same rule as .sky-plan__head. */
+.sky-detail__head {
+  margin: 0 0 0.6rem; font-size: var(--sky-t-small); font-weight: 600; line-height: 1.4;
+  letter-spacing: normal; text-transform: none; color: rgb(var(--c-muted));
+}
+.sky-detail__head b { color: rgb(var(--c-accent)); }
+.sky-detail__foot { margin: 0.65rem 0 0; font-size: var(--sky-t-body); line-height: 1.6; color: rgb(var(--c-muted)); }
 .sky-detail__foot b { color: rgb(var(--c-fg)); font-weight: 600; font-variant-numeric: tabular-nums; }
 
 /* Four gear tiles. */
@@ -228,13 +462,13 @@
 .sky-gear__p b {
   display: grid; place-items: center; width: 1.05rem; height: 1.05rem; border-radius: 0.25rem;
   background: rgb(var(--c-border)); color: rgb(var(--c-muted));
-  font: 700 0.58rem var(--font-mono, ui-monospace, monospace);
+  font: 700 var(--sky-t-micro) var(--font-mono, ui-monospace, monospace);
 }
 .sky-gear__p.is-on b { background: rgb(var(--c-accent)); color: rgb(var(--c-bg)); }
-.sky-gear__p span { font: 600 0.95rem var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-muted)); font-variant-numeric: tabular-nums; margin-top: 0.15rem; }
+.sky-gear__p span { font: 600 var(--sky-t-lead) var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-muted)); font-variant-numeric: tabular-nums; margin-top: 0.15rem; }
 .sky-gear__p.is-on span { color: rgb(var(--c-fg)); }
-.sky-gear__p span i { font-style: normal; font-size: 0.65rem; opacity: 0.7; }
-.sky-gear__p em { font-size: 0.6rem; font-style: normal; color: rgb(var(--c-muted)); opacity: 0.8; }
+.sky-gear__p span i { font-style: normal; font-size: var(--sky-t-micro); opacity: 0.7; }
+.sky-gear__p em { font-size: var(--sky-t-micro); font-style: normal; color: rgb(var(--c-muted)); opacity: 0.8; }
 
 /* .sky-plan[data-busy], not .sky-plan: the busy fade is the element's ONLY transition and
    it is set at (0,2,0), so a bare .sky-plan override loses on specificity and this block
@@ -246,9 +480,14 @@
 /* Collapsed prose block under the planner — the derivation, for when you want
    it. Sits inside a `prose: true` page, so the body keeps Typography styling. */
 .sky-more { margin: 1.25rem 0 0; border-top: 1px solid rgb(var(--c-border)); padding-top: 0.75rem; }
+/* These summaries are sentences — "the formulae, and why the gear count is the throttle"
+   is 50 characters. Uppercase mono with 0.08em tracking is a treatment for a two-word
+   label; asked to carry a sentence it stops being readable and starts being texture.
+   Sentence case, body face, at reading size. The `+` and the rule above still say it
+   opens, so the shouting was carrying no information the affordance did not. */
 .sky-more > summary {
-  display: flex; align-items: center; gap: 0.45rem; cursor: pointer; list-style: none;
-  font: 0.72rem var(--font-mono, ui-monospace, monospace); letter-spacing: 0.08em; text-transform: uppercase;
+  display: flex; align-items: baseline; gap: 0.45rem; min-height: 1.5rem; cursor: pointer; list-style: none;
+  font-size: var(--sky-t-body); line-height: 1.45;
   color: rgb(var(--c-muted)); transition: color 0.15s ease;
 }
 .sky-more > summary::-webkit-details-marker { display: none; }
@@ -258,39 +497,168 @@
 .sky-more > summary:hover { color: rgb(var(--c-accent)); }
 .sky-more > summary:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.5); outline-offset: 3px; border-radius: 0.3rem; }
 @media (prefers-reduced-motion: reduce) { .sky-more > summary, .sky-more > summary::before { transition: none; } }
+/* ── Formulae ───────────────────────────────────────────────────────────── */
+/* The maths is the reason most of the prose around it existed. Given a block of its own,
+   the paragraphs that defined each symbol become legend rows — attached to the symbol
+   rather than three sentences away from it.
+
+   Lives inside `.sky-more`, so only a reader who opened the derivation ever sees one.
+   That is deliberate: the modules are for using, and this is for whoever wants to know
+   what they are doing. */
+.sky-formula {
+  margin: 1.25rem 0; overflow: hidden; border-radius: 0.8rem;
+  border: 1px solid rgb(var(--c-accent) / 0.28); background: rgb(var(--c-accent) / 0.05);
+}
+/* Two words naming the formula, in the label register `.sky-set legend` already uses.
+   Genuinely a label, unlike the summaries above it, which is why it keeps mono caps. */
+.sky-formula__name {
+  margin: 0; padding: 0.7rem 1.05rem 0;
+  font: 600 var(--sky-t-micro) var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.14em; text-transform: uppercase; color: rgb(var(--c-muted));
+}
+/* Scrolls rather than wraps: a wrapped formula is a different formula. */
+.sky-formula__expr {
+  margin: 0; padding: 0.8rem 1.05rem 0.9rem; overflow-x: auto; overscroll-behavior-x: contain;
+  font: 400 var(--sky-t-lead)/1.85 var(--font-mono, ui-monospace, monospace);
+  white-space: pre; color: rgb(var(--c-fg) / 0.72); font-variant-numeric: tabular-nums;
+}
+@media (max-width: 34rem) { .sky-formula__expr { font-size: var(--sky-t-body); } }
+/* Three registers, and no new palette. This file already spends its hues on the four DLC
+   codes and the poison red, and every one of those needed a per-theme value to clear
+   4.5:1 — six more, for formula terms, would be a rainbow and a second contrast audit.
+
+   __out is every quantity the formula DEFINES, including references to it further down,
+   so `skillMult` in line 1 reads as the thing line 2 is about to define. */
+.sky-formula__out { color: rgb(var(--c-accent)); font-weight: 700; }
+/* Underlined only where there is a legend row to land on, which is what the underline
+   means. A self-describing input — Skill, Benefactor — is left plain. */
+.sky-formula__t {
+  color: rgb(var(--c-fg)); font-weight: 600; border-bottom: 1px dashed rgb(var(--c-accent) / 0.5);
+}
+.sky-formula__k { color: rgb(var(--c-fg) / 0.9); }
+.sky-formula__legend {
+  display: grid; grid-template-columns: auto 1fr; gap: 0.3rem 0.9rem;
+  margin: 0; padding: 0.75rem 1.05rem 0.85rem;
+  border-top: 1px solid rgb(var(--c-accent) / 0.2); background: rgb(var(--c-bg) / 0.5);
+}
+.sky-formula__legend dt {
+  font: 600 var(--sky-t-small)/1.6 var(--font-mono, ui-monospace, monospace);
+  color: rgb(var(--c-fg)); white-space: nowrap;
+}
+.sky-formula__legend dd { margin: 0; font-size: var(--sky-t-small); line-height: 1.6; color: rgb(var(--c-muted)); }
+/* Stacked below the term rather than beside it: `auto 1fr` on a narrow column gives the
+   note about 11 characters. */
+@media (max-width: 30rem) {
+  .sky-formula__legend { grid-template-columns: 1fr; gap: 0; }
+  .sky-formula__legend dd { margin: 0 0 0.5rem; }
+}
+/* For a catch the expression genuinely cannot state. Not for saying what it is not. */
+.sky-formula__note {
+  margin: 0; padding: 0.65rem 1.05rem 0.8rem; border-top: 1px solid rgb(var(--c-accent) / 0.2);
+  font-size: var(--sky-t-small); line-height: 1.6; color: rgb(var(--c-muted));
+}
+.sky-formula__note strong { color: rgb(var(--c-fg)); font-weight: 600; }
+/* The notes are rendered through RenderString, so a backtick in the data file arrives as
+   `code`. Typography is off in here — give it the page's mono rather than the browser's. */
+.sky-formula__note code, .sky-formula__legend code {
+  font: 600 0.92em var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-fg));
+}
+
 
 /* ── Potion builder: four screens, one question each ────────────────────── */
 .sky-build { margin: 1.5rem 0 0; border: 1px solid rgb(var(--c-border)); border-radius: 0.9rem; background: rgb(var(--c-bg)); overflow: hidden; }
 .sky-scr { padding: 1.1rem 1.1rem 1.2rem; }
 .sky-scr[hidden] { display: none; }
-.sky-scr__q { margin: 0 0 0.85rem; font-size: 1.05rem; font-weight: 600; color: rgb(var(--c-fg)); }
-.sky-scr__q--tight { margin: 0; font-size: 0.95rem; }
+.sky-scr__q { margin: 0 0 0.85rem; font-size: var(--sky-t-lead); font-weight: 600; color: rgb(var(--c-fg)); }
+.sky-scr__q--tight { margin: 0; font-size: var(--sky-t-lead); }
 .sky-scr__head { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.85rem; }
 .sky-scr__foot { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem; }
-.sky-hint { margin: 0; font-size: 0.78rem; line-height: 1.5; color: rgb(var(--c-muted)); }
+.sky-hint { margin: 0; font-size: var(--sky-t-body); line-height: 1.5; color: rgb(var(--c-muted)); }
 
 .sky-back {
   display: inline-flex; align-items: center; cursor: pointer; padding: 0.3rem 0.6rem;
   border: 1px solid rgb(var(--c-border)); border-radius: 0.4rem; background: transparent;
-  font: 0.72rem var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-muted));
+  font: var(--sky-t-small) var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-muted));
   transition: border-color 0.15s ease, color 0.15s ease;
 }
 .sky-back:hover { border-color: rgb(var(--c-accent) / 0.6); color: rgb(var(--c-fg)); }
 .sky-back:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.5); outline-offset: 2px; }
+/* The screen-to-screen back control: the same circular icon button .sky-drawer__close and
+   .def-close use, so "a quiet way out" looks like one thing across the site. The base
+   class is kept separate for any future text-labelled variant. The arrow is the whole
+   label, so the button carries aria-label="Back". */
+.sky-back--icon {
+  padding: 0; width: 2.1rem; height: 2.1rem; flex: none;
+  align-items: center; justify-content: center; border-radius: 999px;
+  background: rgb(var(--c-bg) / 0.6);
+}
+.sky-back--icon svg { width: 1.05rem; height: 1.05rem; }
+/* 34px clears WCAG 2.5.8 on a mouse; a coarse pointer gets the full 44, the call this file
+   already makes for the checkboxes, the summaries and the note button. */
+@media (pointer: coarse) { .sky-back--icon { width: 2.75rem; height: 2.75rem; } }
 
 /* Screen 1 */
-/* 2x2 for the four choices. Three columns left the fourth stranded on its own row. */
-.sky-pick { display: grid; gap: 0.6rem; grid-template-columns: 1fr; }
-@media (min-width: 620px) { .sky-pick { grid-template-columns: repeat(2, 1fr); } }
+/* auto-fit, not a fixed 2x2: the tiles are an icon and one word now, so four fit on a row
+   at reading width, two on a phone — and a fifth or sixth option lands without anyone
+   having to retune a breakpoint. */
+.sky-pick { display: grid; gap: 0.6rem; grid-template-columns: repeat(auto-fit, minmax(8.5rem, 1fr)); }
 .sky-pick__b {
-  display: flex; flex-direction: column; gap: 0.25rem; align-items: flex-start; text-align: left; cursor: pointer;
-  padding: 0.9rem 1rem; border: 1px solid rgb(var(--c-border)); border-radius: 0.7rem; background: rgb(var(--c-bg));
-  transition: border-color 0.15s ease, background 0.15s ease;
+  display: flex; flex-direction: column; gap: 0.5rem; align-items: center; text-align: center; cursor: pointer;
+  padding: 1.1rem 0.75rem 0.95rem; border: 1px solid rgb(var(--c-border)); border-radius: 0.7rem; background: rgb(var(--c-bg));
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+  color: rgb(var(--c-muted));
 }
+.sky-pick__b svg { width: 1.75rem; height: 1.75rem; }
+.sky-pick__b:hover svg { color: rgb(var(--c-accent)); }
 .sky-pick__b:hover { border-color: rgb(var(--c-accent)); background: rgb(var(--c-accent) / 0.06); }
 .sky-pick__b:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.5); outline-offset: 2px; }
-.sky-pick__b b { font-size: 1rem; font-weight: 600; color: rgb(var(--c-fg)); }
-.sky-pick__b span { font-size: 0.74rem; line-height: 1.45; color: rgb(var(--c-muted)); }
+.sky-pick__b b { font-size: var(--sky-t-lead); font-weight: 600; color: rgb(var(--c-fg)); }
+
+/* Which add-ons are in your game, on the Ingredients screen's title row. This doubles as
+   the legend the page never had, which is why each label carries its own DLC hue: the
+   word Dawnguard reads in the colour of the DG badge it controls. */
+.sky-dlc { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; margin-left: auto; }
+.sky-dlc[hidden] { display: none; }
+/* The badge, made a control. It is already this page's word for a DLC — on 92 pills and
+   every recipe tile — so the toggle is that mark rather than a sentence about it. */
+.sky-dlc__b {
+  display: grid; place-items: center; width: 2rem; height: 2rem; padding: 0; cursor: pointer;
+  border: 1.5px solid; border-radius: 999px; background: transparent;
+  font: 600 var(--sky-t-micro) var(--font-mono, ui-monospace, monospace); letter-spacing: 0.04em;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+/* TWO channels, not one. Colour alone would leave the on/off state invisible in greyscale
+   and to a colour-blind reader, so pressed is also a SOLID ring over a tint and unpressed
+   is a dashed ring over nothing — the same dashed-means-inactive vocabulary the effect
+   pills and the gear tiles already use on this page. */
+.sky-dlc__b[aria-pressed="false"] { color: rgb(var(--c-muted)); border-color: rgb(var(--c-border)); border-style: dashed; }
+.sky-dlc__b[aria-pressed="true"][data-dlc="DG"] { color: rgb(var(--sky-dg)); border-color: currentColor; background: rgb(var(--sky-dg) / 0.14); }
+.sky-dlc__b[aria-pressed="true"][data-dlc="HF"] { color: rgb(var(--sky-hf)); border-color: currentColor; background: rgb(var(--sky-hf) / 0.14); }
+.sky-dlc__b[aria-pressed="true"][data-dlc="DB"] { color: rgb(var(--sky-db)); border-color: currentColor; background: rgb(var(--sky-db) / 0.14); }
+.sky-dlc__b[aria-pressed="true"][data-dlc="CC"] { color: rgb(var(--sky-cc)); border-color: currentColor; background: rgb(var(--sky-cc) / 0.14); }
+.sky-dlc__b:hover { border-color: rgb(var(--c-accent)); }
+.sky-dlc__b:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.5); outline-offset: 2px; }
+/* 32px clears WCAG 2.5.8 on a mouse; a coarse pointer gets the full 44, the call this file
+   makes for every other small control. */
+@media (pointer: coarse) { .sky-dlc__b { width: 2.75rem; height: 2.75rem; } }
+@media (prefers-reduced-motion: reduce) { .sky-dlc__b { transition: none; } }
+
+/* Quick-or-deep, beside the ingredient filter. Same two-channel treatment as the DLC
+   circles: pressed is a solid ring over an accent tint, unpressed is a dashed ring over
+   nothing, so the state survives greyscale. */
+.sky-quick {
+  display: grid; place-items: center; width: 2.4rem; height: 2.4rem; flex: none; padding: 0; cursor: pointer;
+  border: 1.5px solid; border-radius: 0.6rem; background: transparent;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+.sky-quick[hidden] { display: none; }
+.sky-quick svg { width: 1.2rem; height: 1.2rem; }
+.sky-quick[aria-pressed="true"] { color: rgb(var(--c-accent)); border-color: currentColor; background: rgb(var(--c-accent) / 0.12); }
+.sky-quick[aria-pressed="false"] { color: rgb(var(--c-muted)); border-color: rgb(var(--c-border)); border-style: dashed; }
+.sky-quick:hover { border-color: rgb(var(--c-accent)); }
+.sky-quick:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.5); outline-offset: 2px; }
+@media (pointer: coarse) { .sky-quick { width: 2.75rem; height: 2.75rem; } }
+@media (prefers-reduced-motion: reduce) { .sky-quick { transition: none; } }
 
 /* Screen 2 — the effect grid */
 .sky-fx { display: flex; flex-wrap: wrap; gap: 0.35rem; margin: 0; padding: 0; list-style: none; }
@@ -298,18 +666,30 @@
 .sky-fx__b {
   cursor: pointer; padding: 0.3rem 0.6rem; border: 1px solid rgb(var(--c-border)); border-radius: 999px;
   background: rgb(var(--c-bg)); color: rgb(var(--c-fg));
-  font: 0.74rem var(--font-mono, ui-monospace, monospace); letter-spacing: 0.02em;
+  font: var(--sky-t-small) var(--font-mono, ui-monospace, monospace); letter-spacing: 0.02em;
   transition: border-color 0.12s ease, background 0.12s ease, color 0.12s ease;
 }
-.sky-fx__b:hover:not(:disabled) { border-color: rgb(var(--c-accent) / 0.7); }
+.sky-fx__b:hover:not(:disabled):not([aria-disabled="true"]) { border-color: rgb(var(--c-accent) / 0.7); }
 .sky-fx__b:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.5); outline-offset: 2px; }
 .sky-fx__b.is-on { background: rgb(var(--c-accent)); border-color: rgb(var(--c-accent)); color: rgb(var(--c-bg)); font-weight: 600; }
 /* Opacity 0.28 put this under any reasonable contrast floor, and struck-through
    grey was the only signal. Now it keeps readable contrast and carries a real
-   border change, so the state survives both low vision and greyscale. */
-.sky-fx__b:disabled {
+   border change, so the state survives both low vision and greyscale.
+
+   NO OPACITY. A residual 0.7 washed --c-muted down to 4.18:1 on the dark page and 3.45:1
+   on the light one — under the 4.5:1 floor in both, on the one state whose entire job is
+   to be read rather than glanced at. The 1.4.3 exemption for inactive components does not
+   apply, because these are deliberately not `disabled` (see below) and stay focusable.
+   Muted colour, dashed border and the strikethrough are three independent channels and
+   they carry the state on their own.
+
+   `aria-disabled` rather than `disabled`: a disabled button leaves the tab order, so
+   picking one effect used to make twenty others silently cease to exist for a screen
+   reader — no announcement, nothing left to land on, no way to find out why. These stay
+   focusable and carry their own reason; the click handler is what refuses. */
+.sky-fx__b:disabled, .sky-fx__b[aria-disabled="true"] {
   cursor: not-allowed; text-decoration: line-through;
-  color: rgb(var(--c-muted)); opacity: 0.7;
+  color: rgb(var(--c-muted));
   border-style: dashed; border-color: rgb(var(--c-border));
   background: rgb(var(--c-border) / 0.25);
 }
@@ -317,7 +697,7 @@
 .sky-go {
   cursor: pointer; padding: 0.45rem 1.2rem; border-radius: 0.5rem; border: 1px solid rgb(var(--c-accent));
   background: rgb(var(--c-accent)); color: rgb(var(--c-bg));
-  font: 600 0.85rem var(--font-mono, ui-monospace, monospace); letter-spacing: 0.06em;
+  font: 600 var(--sky-t-body) var(--font-mono, ui-monospace, monospace); letter-spacing: 0.06em;
   transition: filter 0.15s ease;
 }
 .sky-go:hover:not(:disabled) { filter: brightness(1.08); }
@@ -334,44 +714,61 @@
 .sky-brews:not(.sky-brews--rest) .sky-brew { border-color: rgb(var(--c-accent) / 0.4); background: rgb(var(--c-accent) / 0.05); }
 .sky-brew__head { display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
 .sky-brew__head:empty { display: none; }
-.sky-brew__badge { margin: 0; font: 600 0.58rem var(--font-mono, ui-monospace, monospace); letter-spacing: 0.12em; text-transform: uppercase; color: rgb(var(--c-accent)); }
+.sky-brew__badge { margin: 0; font: 600 var(--sky-t-micro) var(--font-mono, ui-monospace, monospace); letter-spacing: 0.12em; text-transform: uppercase; color: rgb(var(--c-accent)); }
 
 /* Potion or poison. The verdict is a word; the chip that caused it is outlined below. */
 .sky-brew__kind {
   margin: 0 0 0 auto; padding: 0.1rem 0.4rem; border-radius: 0.3rem;
-  font: 700 0.58rem var(--font-mono, ui-monospace, monospace); letter-spacing: 0.1em; text-transform: uppercase;
+  font: 700 var(--sky-t-micro) var(--font-mono, ui-monospace, monospace); letter-spacing: 0.1em; text-transform: uppercase;
   border: 1px solid currentColor; color: rgb(var(--c-muted));
 }
-.sky-brew__kind[data-kind="good"] { color: rgb(var(--c-accent)); }
-.sky-brew__kind[data-kind="bad"] { color: rgb(var(--sky-bad)); }
+.sky-brew__kind[data-tone="good"] { color: rgb(var(--sky-potion)); }
+.sky-brew__kind[data-tone="bad"] { color: rgb(var(--sky-poison)); }
+.sky-brew__kind[data-tone="mixed"] { color: rgb(var(--sky-mixed)); }
 
 /* The one chip that decided it, filled to match the verdict above. It outranks
    .sky-chip--tag on specificity, but only beats .is-boosted (line 72) on SOURCE ORDER —
    both are (0,2,0), and builder.ts can put both classes on the same chip. Keep this rule
    below that one. Being in charge should read louder than being asked for or inflated. */
+/* The chip that decided it, filled to match the tray. Tone, not kind, so the chip and the
+   ring around the bottle always agree. */
 .sky-chip.is-dominant { border-color: rgb(var(--c-accent)); color: rgb(var(--c-fg)); background: rgb(var(--c-accent) / 0.16); }
-.sky-chips[data-kind="bad"] .sky-chip.is-dominant { border-color: rgb(var(--sky-bad)); background: rgb(var(--sky-bad) / 0.18); }
+.sky-chips[data-tone="good"] .sky-chip.is-dominant { border-color: rgb(var(--sky-potion)); background: rgb(var(--sky-potion) / 0.16); }
+.sky-chips[data-tone="bad"] .sky-chip.is-dominant { border-color: rgb(var(--sky-poison)); background: rgb(var(--sky-poison) / 0.16); }
+.sky-chips[data-tone="mixed"] .sky-chip.is-dominant { border-color: rgb(var(--sky-mixed)); background: rgb(var(--sky-mixed) / 0.18); }
+/* Screen 6 reuses the result card, but nothing here is a winner, so it does not take the
+   accent tint the headline brews get. Same specificity as that rule (0,2,0) — it wins on
+   SOURCE ORDER, so it has to stay below it. */
+.sky-brews--plain .sky-brew { border-color: rgb(var(--c-border)); background: rgb(var(--c-bg)); }
 .sky-bis { display: flex; flex-direction: column; gap: 0.2rem; margin: 0 0 0.6rem; padding: 0; list-style: none; }
-.sky-bi { display: flex; align-items: baseline; gap: 0.4rem; font-size: 0.85rem; color: rgb(var(--c-fg)); }
+/* center, not baseline: the row carries a picture now, and a baseline-aligned 28px tile
+   hangs below the text it belongs to. */
+.sky-bi { display: flex; align-items: center; gap: 0.5rem; font-size: var(--sky-t-body); color: rgb(var(--c-fg)); }
+.sky-bi__pic {
+  flex: none; display: grid; place-items: center; width: 1.75rem; height: 1.75rem; overflow: hidden;
+  border: 1px solid rgb(var(--c-border) / 0.7); border-radius: 0.35rem; background: rgb(var(--glass-bg) / 0.6);
+}
+.sky-bi__pic img { width: 100%; height: 100%; object-fit: contain; padding: 0.1rem; box-sizing: border-box; }
+.sky-bi__pic .sky-ph { width: 70%; height: 70%; }
 .sky-bi b { font-weight: 500; }
-.sky-bi i { font-style: normal; font: 600 0.55rem var(--font-mono, ui-monospace, monospace); letter-spacing: 0.06em; color: rgb(var(--c-muted)); border: 1px solid rgb(var(--c-border)); border-radius: 0.25rem; padding: 0 0.22rem; }
-.sky-bi em { margin-left: auto; font-style: normal; font-size: 0.6rem; letter-spacing: 0.1em; color: rgb(var(--c-accent)); opacity: 0.75; }
+.sky-bi i { font-style: normal; font: 600 var(--sky-t-micro) var(--font-mono, ui-monospace, monospace); letter-spacing: 0.06em; color: rgb(var(--c-muted)); border: 1px solid rgb(var(--c-border)); border-radius: 0.25rem; padding: 0 0.22rem; }
+.sky-bi em { margin-left: auto; font-style: normal; font-size: var(--sky-t-micro); letter-spacing: 0.1em; color: rgb(var(--c-accent)); opacity: 0.75; }
 .sky-brew .sky-chips { gap: 0.25rem; }
-.sky-brew .sky-chip { font-size: 0.58rem; padding: 0.18rem 0.4rem; }
+.sky-brew .sky-chip { font-size: var(--sky-t-micro); padding: 0.18rem 0.4rem; }
 
 @media (prefers-reduced-motion: reduce) { .sky-pick__b, .sky-fx__b, .sky-go, .sky-back { transition: none; } }
 
 /* ── Self-check page ────────────────────────────────────────────────────── */
-.sky-chk__sum { margin: 0 0 0.75rem; font: 700 1.1rem var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-accent)); }
+.sky-chk__sum { margin: 0 0 0.75rem; font: 700 var(--sky-t-lead) var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-accent)); }
 .sky-chk__sum.is-bad { color: rgb(var(--sky-bad)); }
 .sky-chks { display: flex; flex-direction: column; gap: 0.2rem; margin: 0; padding: 0; list-style: none; }
-.sky-chk { display: flex; align-items: baseline; gap: 0.6rem; padding: 0.3rem 0.5rem; border-radius: 0.35rem; font-size: 0.82rem; }
+.sky-chk { display: flex; align-items: baseline; gap: 0.6rem; padding: 0.3rem 0.5rem; border-radius: 0.35rem; font-size: var(--sky-t-body); }
 .sky-chk:nth-child(odd) { background: rgb(var(--c-border) / 0.2); }
-.sky-chk b { flex: none; width: 3rem; font: 700 0.62rem var(--font-mono, ui-monospace, monospace); letter-spacing: 0.08em; color: rgb(var(--c-accent)); }
+.sky-chk b { flex: none; width: 3rem; font: 700 var(--sky-t-micro) var(--font-mono, ui-monospace, monospace); letter-spacing: 0.08em; color: rgb(var(--c-accent)); }
 .sky-chk.is-bad { background: rgb(var(--sky-bad) / 0.12); }
 .sky-chk.is-bad b { color: rgb(var(--sky-bad)); }
 .sky-chk span { flex: 1; color: rgb(var(--c-fg)); }
-.sky-chk em { font-style: normal; font: 0.72rem var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-muted)); }
+.sky-chk em { font-style: normal; font: var(--sky-t-small) var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-muted)); }
 
 /* Enchant max — the trick list, and what each one is worth. */
 .sky-set--wide { grid-column: 1 / -1; }
@@ -381,8 +778,8 @@
 }
 .sky-trick + .sky-trick { border-top: 1px solid rgb(var(--c-border) / 0.6); }
 .sky-trick > input { margin-top: 0.25rem; }
-.sky-trick__name { font-size: 0.9rem; font-weight: 600; }
-.sky-trick__note { grid-column: 2; font-size: 0.78rem; line-height: 1.5; color: rgb(var(--c-muted)); font-style: normal; }
+.sky-trick__name { font-size: var(--sky-t-body); font-weight: 600; }
+.sky-trick__note { grid-column: 2; font-size: var(--sky-t-body); line-height: 1.5; color: rgb(var(--c-muted)); font-style: normal; }
 
 .sky-worths { display: flex; flex-direction: column; gap: 0.35rem; margin: 0; padding: 0; list-style: none; }
 /* The bar is a background wash rather than a separate element, so a long label never
@@ -400,43 +797,133 @@
 /* Not `> *`: that re-positioned the absolutely-placed bar back into the grid, where it
    took a cell and shunted every label out of order. */
 .sky-worth > :not(.sky-worth__bar) { position: relative; z-index: 1; }
-.sky-worth > b { font-size: 0.88rem; }
-.sky-worth__gain { font: 700 0.95rem var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-accent)); }
+.sky-worth > b { font-size: var(--sky-t-body); }
+.sky-worth__gain { font: 700 var(--sky-t-lead) var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-accent)); }
 .sky-worth__gain > i { font-size: 0.7em; font-style: normal; }
-.sky-worth > em { grid-column: 1; font-size: 0.76rem; font-style: normal; color: rgb(var(--c-muted)); }
-.sky-worth__without { font-size: 0.72rem; color: rgb(var(--c-muted)); text-align: right; }
+.sky-worth > em { grid-column: 1; font-size: var(--sky-t-small); font-style: normal; color: rgb(var(--c-muted)); }
+.sky-worth__without { font-size: var(--sky-t-small); color: rgb(var(--c-muted)); text-align: right; }
 .sky-worth.is-unsure { border-style: dashed; }
 
-/* The mortar. 183 pills need to be denser than the 59-effect grid, and the live
-   bottle sits under them rather than behind a Brew button. */
-.sky-fx--ings { max-height: 22rem; overflow-y: auto; }
-.sky-scr__foot--live { display: block; min-height: 3rem; }
+/* The mortar. 183 pills need to be denser than the 59-effect grid.
 
-/* DLC tint on the ingredient pills. A left edge rather than a fill, so it survives the
-   accent takeover when a pill is selected and never competes with it for meaning:
-   colour says where it came from, filled says it is in the mortar. */
-.sky-fx--ings .sky-fx__b { border-left-width: 3px; }
-/* Scoped to the grid so these outrank .is-on and :disabled, both of which set
-   border-color on all four sides. Base game keeps the neutral border. */
-.sky-fx--ings .sky-fx__b[data-dlc="DG"] { border-left-color: rgb(139 92 246 / 0.85); }  /* Dawnguard */
-.sky-fx--ings .sky-fx__b[data-dlc="HF"] { border-left-color: rgb(217 119 6 / 0.85); }   /* Hearthfire */
-.sky-fx--ings .sky-fx__b[data-dlc="DB"] { border-left-color: rgb(13 148 136 / 0.85); }  /* Dragonborn */
-.sky-fx--ings .sky-fx__b[data-dlc="CC"] { border-left-color: rgb(219 39 119 / 0.85); }  /* Creation Club */
-/* The same five colours on the DLC badge under a tile, so the pill grid and the tiles
-   agree without either needing a legend. */
-.sky-ing__dlc[data-dlc="DG"] { border-color: rgb(139 92 246 / 0.85); color: rgb(139 92 246); }
-.sky-ing__dlc[data-dlc="HF"] { border-color: rgb(217 119 6 / 0.85); color: rgb(217 119 6); }
-.sky-ing__dlc[data-dlc="DB"] { border-color: rgb(13 148 136 / 0.85); color: rgb(13 148 136); }
-.sky-ing__dlc[data-dlc="CC"] { border-color: rgb(219 39 119 / 0.85); color: rgb(219 39 119); }
+   `overscroll-behavior: contain` so flicking the list at its end does not hand the
+   momentum to the page and throw the reader somewhere else. On a coarse pointer the pane
+   also shrinks: at 22rem it filled nearly half a phone screen, which is where a thumb
+   naturally lands, so the most common scroll gesture on the page was landing inside a
+   nested scroller and the page did not move. Smaller pane, obvious boundaries, and the
+   filter above it is the real way through 183 items on a phone. */
+.sky-fx--ings { max-height: 22rem; overflow-y: auto; overscroll-behavior-y: contain; }
+@media (pointer: coarse) { .sky-fx--ings { max-height: 14rem; } }
+/* No min-height. It reserved 48px for a 36px verdict word that no longer renders here —
+   the verdict is the ring and the disc on the tray now — so what it held open under the
+   chip row was a band of nothing, which is the shape this file argues against everywhere
+   else it appears. */
+.sky-scr__foot--live { display: block; margin: 0 0 0.5rem; }
+.sky-scr__foot--live:empty { margin-bottom: 0; }
+.sky-scr__foot--live:focus { outline: none; }
 
-/* The mortar's tiles sit above the grid. `.sky-ing` is `flex: 1 1 0` so that a recipe
-   card's three tiles share its narrow width evenly — across the builder's full width that
-   balloons them to 350px each, so here they are pinned to a fixed size instead.
+/* Screen 2's footer holds Brew, and now holds nothing else, so there is no longer a
+   readout on its left for `space-between` to push against. */
+.sky-scr__foot--end { justify-content: flex-end; }
+/* One selection pushed it to y=873 in an 812px viewport, so the primary action left the
+   screen the moment the user did the thing that enables it. Sticky keeps it in reach
+   without taking it out of the flow. Not applied to the live foot (it is an answer, not an
+   action) or screen 3's (it ends the results, where it belongs). */
+.sky-scr[data-scr="2"] .sky-scr__foot {
+  position: sticky; bottom: 0; z-index: 2;
+  margin-top: 0.75rem; padding: 0.7rem 0 0.6rem;
+  background: linear-gradient(to top, rgb(var(--c-bg)) 72%, rgb(var(--c-bg) / 0));
+}
+
+/* Screen-reader-only text. Not Tailwind's `.sr-only`: most of these strings are assembled
+   in builder.ts, which Tailwind's content scan does not reliably reach, so a utility that
+   got tree-shaken would fail silently and inaudibly. */
+.sky-sr {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
+}
+
+/* The mortar's 183 ingredient buttons are one unbroken tab run with nothing past them
+   but the verdict. Hidden until focused, in place rather than pinned to the viewport
+   corner like the page-level .skip-link, because it belongs to this widget. */
+.sky-skip {
+  position: absolute; left: -9999px;
+  font: 600 var(--sky-t-small) var(--font-mono, ui-monospace, monospace); letter-spacing: 0.04em;
+}
+.sky-skip:focus {
+  position: static; display: inline-block; margin-bottom: 0.5rem;
+  padding: 0.4rem 0.7rem; border: 2px solid rgb(var(--c-accent)); border-radius: 0.4rem;
+  background: rgb(var(--c-bg)); color: rgb(var(--c-fg));
+}
+
+/* Each screen takes focus when it becomes the visible one; it is a tabindex=-1 landmark,
+   never a tab stop, so suppress the ring the way #main does. */
+.sky-scr:focus { outline: none; }
+
+/* DLC on the ingredient pills.
+   This was a 3px tinted left edge and nothing else: no badge, no accessible name, and no
+   legend anywhere on the page saying violet meant Dawnguard. Colour was the sole carrier
+   for 92 of the 183 pills — and since 74 of those need Creation Club, a base-game player
+   had no way to see which two fifths of the mortar they cannot actually reach.
+   The pill now carries the same two-letter badge the recipe tiles do, with the full name
+   in `.sky-sr` next to it, so the hue is redundant reinforcement of a text label instead
+   of the message itself. That also retires the thick side border, which was doing no work
+   the badge does not now do better. */
+.sky-fx--ings .sky-fx__b .sky-ing__dlc { margin-left: 0.3rem; vertical-align: baseline; }
+/* A selected pill is accent all over, so the badge drops its own hue and rides the pill's
+   foreground rather than putting pink CC on an amber fill. Outranks the four
+   `[data-dlc]` rules below on specificity, not on source order. */
+.sky-fx__b.is-on .sky-ing__dlc { color: currentColor; border-color: currentColor; }
+/* The four DLC colours, on the badge under a tile and on the badge inside a pill, so the
+   grid and the tiles agree without either needing a legend. These carry the hue as TEXT,
+   which is why they are the pairing that had to clear 4.5:1 rather than the 3:1 a border
+   would need. */
+.sky-ing__dlc[data-dlc="DG"] { border-color: rgb(var(--sky-dg) / 0.85); color: rgb(var(--sky-dg)); }
+.sky-ing__dlc[data-dlc="HF"] { border-color: rgb(var(--sky-hf) / 0.85); color: rgb(var(--sky-hf)); }
+.sky-ing__dlc[data-dlc="DB"] { border-color: rgb(var(--sky-db) / 0.85); color: rgb(var(--sky-db)); }
+.sky-ing__dlc[data-dlc="CC"] { border-color: rgb(var(--sky-cc) / 0.85); color: rgb(var(--sky-cc)); }
+
+/* The mortar's tray. `.sky-ing` is `flex: 1 1 0` so a recipe card's three tiles share its
+   narrow width evenly — across the builder's full width that balloons them to 350px each,
+   so here they are pinned to a fixed size instead.
+   Centred rather than left-packed: one or two tiles jammed into the left corner of a
+   full-width tray read as a layout that has not finished loading.
    No reserved height: adding the first ingredient shifts the grid once and never again,
    which beats a permanent empty band above it. */
 .sky-mortar { margin-bottom: 0.6rem; }
-.sky-mortar .sky-ings { justify-content: flex-start; border-radius: 0.6rem; }
-.sky-mortar .sky-ing { flex: 0 0 4.5rem; }
+.sky-mortar .sky-ings {
+  position: relative; justify-content: center; gap: 1.1rem;
+  padding: 1.1rem 1.2rem; border-radius: 0.6rem;
+  /* Transparent, not absent: the tray must not resize when the verdict gives it a colour. */
+  border: 1px solid transparent;
+}
+.sky-mortar .sky-ing { flex: 0 0 5rem; }
+/* The verdict, on the thing it is a verdict about. This used to be a 36px word underneath
+   — the answer register — which said POISON louder than the bottle it described. */
+.sky-mortar .sky-ings[data-tone="good"] { border-color: rgb(var(--sky-potion) / 0.8); background: rgb(var(--sky-potion) / 0.08); }
+.sky-mortar .sky-ings[data-tone="bad"] { border-color: rgb(var(--sky-poison) / 0.8); background: rgb(var(--sky-poison) / 0.09); }
+/* Effects on both sides. Dashed, because a solid ring in either camp would be a claim the
+   bottle does not support — and this is the state most worth stopping on. */
+.sky-mortar .sky-ings[data-tone="mixed"] { border-color: rgb(var(--sky-mixed) / 0.85); background: rgb(var(--sky-mixed) / 0.09); border-style: dashed; }
+.sky-verdict {
+  position: absolute; right: 0.6rem; bottom: 0.6rem;
+  display: grid; place-items: center; width: 2rem; height: 2rem;
+  border: 1.5px solid currentColor; border-radius: 999px; background: rgb(var(--c-bg));
+}
+.sky-verdict svg { width: 1.1rem; height: 1.1rem; }
+/* The disc takes the TONE, so it matches the ring it sits on; the glyph inside it is what
+   says potion or poison. */
+.sky-verdict[data-tone="good"] { color: rgb(var(--sky-potion)); }
+.sky-verdict[data-tone="bad"] { color: rgb(var(--sky-poison)); }
+.sky-verdict[data-tone="mixed"] { color: rgb(var(--sky-mixed)); }
+
+/* A refusal is not the bottle's answer, so it does not get the answer's voice. Tinted the
+   same red the poison verdict uses, because both mean "this is not what you wanted". */
+.sky-hint--refused {
+  padding: 0.35rem 0.6rem; border-radius: 0.4rem;
+  border: 1px solid rgb(var(--sky-bad) / 0.4); background: rgb(var(--sky-bad) / 0.08);
+  color: rgb(var(--c-fg));
+}
 
 /* In the mortar the picture is the way back out. The x only appears on hover or focus, so
    at rest the tiles read exactly like a recipe card's; the pointer says the rest. */
@@ -450,6 +937,6 @@
 .sky-tile--drop:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.5); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) { .sky-tile--drop::after { transition: none; } }
 
-/* The live foot is `display: block`, so the verdict has to shrink-wrap itself rather than
-   stretching into a full-width bordered bar under the chips. */
-.sky-scr__foot--live .sky-brew__kind { display: inline-block; margin: 0.45rem 0 0; }
+/* The live foot holds the effect chips and, for a screen reader, the verdict word. The
+   verdict itself is now `.sky-verdict` on the tray above — there is no `.sky-brew__kind`
+   down here to give the answer register to. */

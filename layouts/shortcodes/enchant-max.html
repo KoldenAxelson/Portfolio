@@ -18,7 +18,6 @@
 
   `not-prose` keeps Tailwind Typography off the controls.
 */ -}}
-{{ partial "skyrim-assets.html" .Page }}
 {{- $want := .Get "effect" | default "Fortify Alchemy" -}}
 {{- $potion := .Get "potion" | default "0" -}}
 {{- /* index, not .enchantTricks: Hugo keys a data file by its exact filename,
@@ -39,10 +38,21 @@
       <span class="sky-bar__label">Potion %</span>
       <input type="number" min="0" step="1" value="{{ $potion }}" data-f="potion" />
     </label>
+    {{- /* Rendered hidden and revealed by enchant.ts, same as the resto planner: with
+           JavaScript off the panel below stays open, so nothing hides behind a control
+           that cannot work. This widget shipped without one, so its settings — 1,747px of
+           them at phone width — sat permanently open between the question and the answer,
+           while its structurally identical twin 700px up the page collapsed. */ -}}
+    <button type="button" class="sky-bar__toggle" data-config-toggle aria-expanded="true" hidden>
+      <span aria-hidden="true">+</span> Configuration
+    </button>
   </div>
   <p class="sky-bar__note" data-enchant-group-note></p>
 
-  <div class="sky-config">
+  {{- /* The assumptions collapse. Tricks do NOT — they are the question this widget
+         exists to answer, not the fine print behind it, and they were buried in the same
+         drawer as Alchemist rank. */ -}}
+  <div class="sky-config" data-config>
     <div class="sky-config__grid">
       <fieldset class="sky-set">
         <legend>Enchanting</legend>
@@ -60,17 +70,27 @@
           <select data-f="alchemist">{{ range $i := (seq 0 5) }}<option value="{{ $i }}"{{ if eq $i 5 }} selected{{ end }}>{{ $i }}/5</option>{{ end }}</select></label>
         <label class="sky-in"><span>Pieces worn</span><input type="number" min="1" max="5" step="1" value="4" data-f="pieces" /></label>
         <label class="sky-ck"><input type="checkbox" data-f="benefactor" checked /><span>Benefactor</span></label>
-        <p class="sky-set__hint">The fair loop: brew the best Fortify Enchanting potion you can, place better Fortify Alchemy gear with it, and that gear brews a better potion. It <b>converges</b> — plain, on 29% pieces and a 32.4% potion, which are UESP's own figures. Untick to type a potion strength in by hand instead, e.g. one the Restoration planner above produces.</p>
+        {{- /* The convergence figures and what makes the loop fair live on the page. The box
+               above visibly shows what the loop settled on, and is visibly not typeable, so
+               neither needed a sentence here. */ -}}
+        <p class="sky-set__hint">Brew the best Fortify Enchanting potion you can, place better gear with it, and that gear brews a better potion. Untick to type a potion strength in by hand.</p>
       </fieldset>
+    </div>
+  </div>
 
+  <div class="sky-config sky-config--open">
+    <div class="sky-config__grid">
       <fieldset class="sky-set sky-set--wide">
         <legend>Tricks</legend>
         {{- range $t := $tricks }}
         <label class="sky-trick">
           <input type="checkbox" data-f="{{ $t.id }}" />
+          {{- /* Both badges used to be bare two-character `<b>`s: "D B" and "?" read aloud,
+                 with the meaning available only to someone who could see the colour or
+                 already knew the convention. */ -}}
           <span class="sky-trick__name">{{ $t.label }}
-            {{- with $t.dlc }} <b class="sky-ing__dlc">{{ . }}</b>{{ end }}
-            {{- if not $t.sure }} <b class="sky-ing__dlc">?</b>{{ end }}</span>
+            {{- with $t.dlc }} {{ partial "skyrim-dlc.html" . }}{{ end }}
+            {{- if not $t.sure }} <span class="sky-ing__dlc" aria-hidden="true">?</span><span class="sky-sr"> (this number is not confirmed)</span>{{ end }}</span>
           <em class="sky-trick__note">{{ $t.note }}</em>
         </label>
         {{- end }}
@@ -78,8 +98,11 @@
     </div>
   </div>
 
-  {{- /* Recomputed on every input with no page load, so it announces itself. */ -}}
-  <div class="sky-plan" data-enchant-out aria-live="polite"></div>
+  {{- /* Same reasoning as the resto planner: the breakdown is 72 words and every ticked
+         trick rewrote all of it, so the answer arrived buried in a restatement of the
+         whole table. The line below carries the number; the table stays navigable. */ -}}
+  <p class="sky-sr" data-enchant-status role="status" aria-live="polite"></p>
+  <div class="sky-plan" data-enchant-out></div>
 
   {{- /* jsonify | safeJS: Go's contextual escaper would otherwise re-encode the
          script body as a JS string literal and the parse would fail. */ -}}

@@ -10,6 +10,7 @@ import { initPerfMeters } from './perf-meters';
 import { initAiWidget } from './ai-widget';
 import { initAuxButton } from './auxiliary-button';
 import { initDefinitions } from './definitions';
+import { initSkyrimNotes } from './skyrim-notes';
 import { initQuotes } from './quotes/index';
 
 declare global {
@@ -35,6 +36,7 @@ function initPage(): void {
   initAiWidget();
   initAuxButton();
   initDefinitions();
+  initSkyrimNotes();
   initQuotes();
 }
 

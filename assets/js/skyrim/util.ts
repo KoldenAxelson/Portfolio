@@ -69,3 +69,30 @@ export function debounce(fn: () => void, ms: number): () => void {
 export function queryAll<T extends Element>(root: ParentNode, selector: string): T[] {
   return Array.from(root.querySelectorAll<T>(selector));
 }
+
+/**
+ * Collapse a widget's `[data-config]` panel behind its `[data-config-toggle]` button.
+ *
+ * The panel ships OPEN with its toggle hidden, so a reader without JavaScript sees the
+ * assumptions rather than a dead "+" button. This reveals the button and collapses the
+ * panel.
+ *
+ * Shared rather than owned by the resto planner, because that is exactly how the two
+ * widgets drifted apart: two visually identical `.sky-calc` cards, 700px apart on the
+ * same page, one collapsing its settings and one rendering 1,747px of them permanently
+ * open between the question and the answer.
+ */
+export function setUpConfigPanel(root: Element): void {
+  const panel = root.querySelector<HTMLElement>('[data-config]');
+  const toggle = root.querySelector<HTMLButtonElement>('[data-config-toggle]');
+  if (!panel || !toggle) return;
+
+  toggle.hidden = false;
+  panel.hidden = true;
+  toggle.setAttribute('aria-expanded', 'false');
+  toggle.addEventListener('click', () => {
+    panel.hidden = !panel.hidden;
+    toggle.setAttribute('aria-expanded', String(!panel.hidden));
+    toggle.classList.toggle('is-open', !panel.hidden);
+  });
+}

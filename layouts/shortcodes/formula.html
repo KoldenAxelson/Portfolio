@@ -1,0 +1,123 @@
+{{- /*
+  formula — one formula, given the treatment the maths on this page earns.
+
+    {{< formula "gold-cost" >}}
+
+  The key indexes data/skyrim/formulae.yaml, which holds the expression, what each symbol
+  means, and the one caveat (if any) the expression cannot state itself. That file is the
+  reason this exists: the page used to print a bare fenced block and then define its
+  symbols in the paragraphs around it, so the same quantity was named in two places and
+  the reader had to hold the expression in their head while reading its glossary.
+
+  MARKING. Three registers, applied here rather than by hand in the markdown:
+
+    __out  a quantity the formula DEFINES — the identifier left of an `=`, and every
+           later reference to it, so a multi-line system reads as a system rather than
+           as three unrelated lines
+    __t    a named input that has a legend row (which is what the underline means)
+    __k    a constant worth noticing
+
+  A term with nothing worth saying about it should be left out of the data file and
+  render plain. Underlining something with no row to land on is the failure this is
+  arranged to avoid.
+
+  Names are matched on word boundaries, LONGEST FIRST, so `skillMult` is consumed before
+  `Skill` can take its first five characters, and de-duplicated by priority — a name that
+  is both an input and an output is an input, because that is the one with a row. The
+  line is HTML-escaped before any marking, and the marks are inserted as digit-only
+  sentinels so a later, shorter pattern cannot match inside a tag this pass has already
+  emitted.
+
+  The left-hand side is split off before marking rather than marked in place, which is
+  what keeps `x = brewed × (1 + x)` from nesting a term span inside the output span.
+
+  `not-prose`: the page sets `prose: true`, and Typography's `pre` background would undo
+  the tint that makes this read as the interesting thing rather than a code listing.
+*/ -}}
+{{- $key := .Get 0 -}}
+{{- $f := index (site.Data.skyrim.formulae | default dict) $key -}}
+{{- if not $f -}}
+  {{- errorf "formula: no entry %q in data/skyrim/formulae.yaml (page: %s)" $key .Page.RelPermalink -}}
+{{- else -}}
+
+{{- /* Every identifier this formula defines. Collected up front so line 1 can accent a
+       reference to something line 3 defines. */ -}}
+{{- $lhsRE := "^\\s*[A-Za-z][A-Za-z0-9]*\\s*$" -}}
+{{- $outs := slice -}}
+{{- range $line := $f.lines -}}
+  {{- $parts := split ($line | htmlEscape) "=" -}}
+  {{- if gt (len $parts) 1 -}}
+    {{- $lhs := index $parts 0 -}}
+    {{- if findRE $lhsRE $lhs }}{{ $outs = $outs | append (trim $lhs " \t") }}{{ end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* One list of things to mark. First writer of a name wins, so the order of these
+       three loops IS the priority: input, then constant, then output. */ -}}
+{{- $marks := slice -}}
+{{- $seen := dict -}}
+{{- range $t := $f.terms -}}
+  {{- if not $t.note -}}
+    {{- warnf "formula %q: term %q has no note, so it would be underlined with no legend row to land on — give it one, or leave it out and let it render plain" $key $t.name -}}
+  {{- end -}}
+  {{- if not (isset $seen (string $t.name)) -}}
+    {{- $seen = merge $seen (dict (string $t.name) true) -}}
+    {{- $marks = $marks | append (dict "name" (string $t.name) "tag" "1" "n" (len (string $t.name))) -}}
+  {{- end -}}
+{{- end -}}
+{{- range $c := $f.consts -}}
+  {{- if not (isset $seen (string $c.name)) -}}
+    {{- $seen = merge $seen (dict (string $c.name) true) -}}
+    {{- $marks = $marks | append (dict "name" (string $c.name) "tag" "2" "n" (len (string $c.name))) -}}
+  {{- end -}}
+{{- end -}}
+{{- range $o := $outs -}}
+  {{- if not (isset $seen $o) -}}
+    {{- $seen = merge $seen (dict $o true) -}}
+    {{- $marks = $marks | append (dict "name" $o "tag" "0" "n" (len $o)) -}}
+  {{- end -}}
+{{- end -}}
+{{- $marks = sort $marks "n" "desc" -}}
+
+{{- $lines := slice -}}
+{{- range $line := $f.lines -}}
+  {{- $s := $line | htmlEscape -}}
+  {{- $head := "" -}}
+  {{- $rest := $s -}}
+  {{- $parts := split $s "=" -}}
+  {{- if gt (len $parts) 1 -}}
+    {{- $lhs := index $parts 0 -}}
+    {{- if findRE $lhsRE $lhs -}}
+      {{- $head = printf "%s=" (replaceRE "([A-Za-z][A-Za-z0-9]*)" "@@0@@${1}@@/@@" $lhs) -}}
+      {{- $rest = delimit (after 1 $parts) "=" -}}
+    {{- end -}}
+  {{- end -}}
+  {{- range $m := $marks -}}
+    {{- /* The dot is the only regex metacharacter a name here may contain (1.1, 3.4). */ -}}
+    {{- $pattern := printf "\\b%s\\b" (replaceRE "\\." "\\." $m.name) -}}
+    {{- $rest = replaceRE $pattern (printf "@@%s@@${0}@@/@@" $m.tag) $rest -}}
+  {{- end -}}
+  {{- $lines = $lines | append (printf "%s%s" $head $rest) -}}
+{{- end -}}
+{{- $expr := delimit $lines "\n" -}}
+{{- $expr = replace $expr "@@0@@" "<span class=\"sky-formula__out\">" -}}
+{{- $expr = replace $expr "@@1@@" "<span class=\"sky-formula__t\">" -}}
+{{- $expr = replace $expr "@@2@@" "<span class=\"sky-formula__k\">" -}}
+{{- $expr = replace $expr "@@/@@" "</span>" -}}
+
+{{- /* Legend rows in authored order: every term, plus any constant with something to
+       say. A constant without a note is marked and left alone. */ -}}
+{{- $rows := slice -}}
+{{- range $t := $f.terms }}{{ with $t.note }}{{ $rows = $rows | append $t }}{{ end }}{{ end -}}
+{{- range $c := $f.consts }}{{ with $c.note }}{{ $rows = $rows | append $c }}{{ end }}{{ end -}}
+<figure class="sky-formula not-prose">
+{{- with $f.name }}<p class="sky-formula__name">{{ . }}</p>{{ end }}
+<pre class="sky-formula__expr">{{ $expr | safeHTML }}</pre>
+{{- if $rows }}
+<dl class="sky-formula__legend">
+{{- range $r := $rows }}<dt>{{ $r.name }}</dt><dd>{{ $.Page.RenderString (dict "display" "inline") $r.note }}</dd>{{ end }}
+</dl>
+{{- end }}
+{{- with $f.note }}<p class="sky-formula__note">{{ $.Page.RenderString (dict "display" "inline") . }}</p>{{ end }}
+</figure>
+{{- end -}}
