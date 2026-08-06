@@ -206,6 +206,44 @@ function effectsProducedBy(mixture: Ingredient[]): EffectMask {
   return { low, high };
 }
 
+/**
+ * Could you drop one of these and get the same bottle?
+ *
+ * Canis Root + Hanging Moss makes a Fortify One-Handed potion. So does Canis Root +
+ * Hanging Moss + Bear Claws, because Bear Claws carries Fortify One-Handed too — it is a
+ * third carrier of an effect that already had two, and it changes nothing. The search
+ * ranked those, and ranked them WELL: "most potent" and "easiest to gather" both scored
+ * the mixture on the two ingredients that were doing the work.
+ *
+ * The first rule tried here was "does every ingredient carry a produced effect", which
+ * catches a passenger sharing nothing but not this — Bear Claws passes it. The question
+ * that actually matters is whether the mixture without it produces the SAME SET, which
+ * this asks directly.
+ *
+ * It has to check the multipliers too, and only when the sets match: an ingredient can be
+ * a redundant carrier and still be the strongest deviator on one of the effects, in which
+ * case it is buying magnitude rather than coverage and belongs in the bottle. Every
+ * mixture reaching this point has already passed `covers`, so a smaller one still answers
+ * the question that was asked.
+ */
+function isRedundant(catalogue: Catalogue, mixture: Ingredient[], produced: EffectMask): boolean {
+  if (mixture.length < 3) return false;
+  for (let index = 0; index < mixture.length; index += 1) {
+    const rest = mixture.filter((_, other) => other !== index);
+    const sub = effectsProducedBy(rest);
+    if (sub.low !== produced.low || sub.high !== produced.high) continue;
+    // `multiplierFor`, not `deviationOf`: the latter hands back magnitude AND duration,
+    // and only one of them is the effect's strength — the other is inert. Comparing both
+    // kept eight mixtures whose third ingredient changed only the half nobody reads,
+    // including the four `dur: 0` Rare Curios rows. This is the same call `describe` makes
+    // to build the multipliers a card prints, so the filter now agrees with the screen.
+    const unchanged = maskToIndices(produced, catalogue.effectNames.length).every((effect) =>
+      multiplierFor(catalogue, mixture, effect) === multiplierFor(catalogue, rest, effect));
+    if (unchanged) return true;
+  }
+  return false;
+}
+
 const covers = (outer: EffectMask, inner: EffectMask): boolean =>
   (outer.low & inner.low) === inner.low && (outer.high & inner.high) === inner.high;
 
@@ -378,6 +416,8 @@ export function search(catalogue: Catalogue, wanted: number[]): SearchResult {
   const consider = (mixture: Ingredient[]): void => {
     const produced = effectsProducedBy(mixture);
     if (!covers(produced, wantedMask)) return;
+    // The same bottle off fewer ingredients is already in the results, or about to be.
+    if (isRedundant(catalogue, mixture, produced)) return;
 
     const key = mixture.map((i) => i.slug).sort().join('|');
     if (seen.has(key)) return;

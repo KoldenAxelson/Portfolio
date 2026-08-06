@@ -125,6 +125,16 @@
 
 import { debounce, escapeHtml, findField, formatNumber, formatPrecise, formatWhole, queryAll, readFlag, readNumber, setUpConfigPanel } from './util';
 
+/**
+ * What the enchantment is counted in. Fortify Health, Magicka, Stamina, Carry Weight and
+ * Unarmed are flat POINTS; everything else on the picker is a percentage, and the planner
+ * asked you for "235%" of carry weight until data/skyrim/enchantments.yaml said so.
+ *
+ * The POTION percentages are untouched by this — a Fortify Enchanting potion is a percent
+ * whatever it ends up placing.
+ */
+const unitOf = (unit: string): string => (unit === 'pts' ? 'pts' : '%');
+
 const RESTORATION_BASE = 4;
 const ENCHANTING_BASE = 1;
 /** Four apparel slots take Fortify Alchemy; a fifth needs the helmet + circlet bug. */
@@ -595,14 +605,14 @@ function stepList(plan: Plan, rounds: Round[]): string {
  * The bullseye is `--c-fg` rather than the accent the number carries: two accents side by
  * side would make the icon compete with the figure it is introducing.
  */
-function answerRow(plan: Plan, gems: Record<string, string>): string {
+function answerRow(plan: Plan, gems: Record<string, string>, unit: string): string {
   const art = gems[plan.soulSlug];
   return '<div class="sky-plan__answer">' +
     '<p class="sky-plan__value">' +
     '<svg class="sky-plan__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" ' +
     'aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.6" /><circle cx="12" cy="12" r="4.2" />' +
     '<circle cx="12" cy="12" r="1" fill="currentColor" stroke="none" /></svg>' +
-    `<span>${formatPrecise(plan.value)}<i>%</i></span></p>` +
+    `<span>${formatPrecise(plan.value)}<i>${unitOf(unit)}</i></span></p>` +
     '<p class="sky-plan__gem">' +
     // `alt=""` and the name visible: five gems differ mostly by how blue they are, so the
     // word does work the picture cannot, and " soul gem." finishes the sentence for a
@@ -613,20 +623,21 @@ function answerRow(plan: Plan, gems: Record<string, string>): string {
 }
 
 /** The plan's markup for a solution — the entry point the self-check uses. */
-export function planMarkupFor(solution: Solution, target: number, gems: Record<string, string> = {}): string {
+export function planMarkupFor(solution: Solution, target: number, gems: Record<string, string> = {},
+  unit = 'pct'): string {
   if (!solution.best) return '';
-  return planMarkup(solution.best, solution, target, roundsOf(solution.best), gems);
+  return planMarkup(solution.best, solution, target, roundsOf(solution.best), gems, unit);
 }
 
 function planMarkup(plan: Plan, solution: Solution, target: number, rounds: Round[],
-  gems: Record<string, string>): string {
+  gems: Record<string, string>, unit: string): string {
   const caveats = [
-    Math.floor(plan.value) === Math.floor(target) ? '' : `Nothing reachable reads exactly ${Math.floor(target)}%. `,
+    Math.floor(plan.value) === Math.floor(target) ? '' : `Nothing reachable reads exactly ${Math.floor(target)}${unitOf(unit)}. `,
     solution.truncated ? `Search hit its ${MAX_STATES.toLocaleString('en-US')}-state ceiling, so a better plan may exist.` : '',
   ].join('');
 
   return [
-    answerRow(plan, gems),
+    answerRow(plan, gems, unit),
     // No heading and no metadata row above the number.
     //
     // The heading read "Closest landing on 235%" directly under a box the reader had just
@@ -665,6 +676,7 @@ function setUp(root: HTMLElement): void {
   const output = root.querySelector<HTMLElement>('[data-resto-plan]');
   const status = root.querySelector<HTMLElement>('[data-resto-status]');
   const groupNote = root.querySelector<HTMLElement>('[data-resto-group-note]');
+  const targetUnit = root.querySelector<HTMLElement>('[data-resto-target-unit]');
   const perkLabel = root.querySelector<HTMLElement>('[data-resto-perk-label]');
   const picker = findField(root, 'effect');
   if (!output || !(picker instanceof HTMLSelectElement)) return;
@@ -754,15 +766,17 @@ function setUp(root: HTMLElement): void {
     plan = solution.best;
     rounds = plan ? roundsOf(plan) : [];
     openStep = -1;
-    output.innerHTML = plan ? planMarkup(plan, solution, target, rounds, gems) : '';
+    const unit = picker.selectedOptions[0]?.dataset.unit || 'pct';
+    if (targetUnit) targetUnit.textContent = unitOf(unit);
+    output.innerHTML = plan ? planMarkup(plan, solution, target, rounds, gems, unit) : '';
 
     // The one line the change is worth speaking. Everything else on screen is unchanged
     // in kind and is reachable by reading; see the shortcode for why it is not all live.
     if (status) {
       status.textContent = plan
-        ? `${formatPrecise(plan.value)}% — reads ${Math.floor(plan.value)}% in game, ` +
+        ? `${formatPrecise(plan.value)}${unitOf(unit)} — reads ${Math.floor(plan.value)}${unitOf(unit)} in game, ` +
           `${plan.rounds} round${plan.rounds === 1 ? '' : 's'}, ${plan.soulLabel} soul.`
-        : `Nothing reachable lands on ${formatWhole(target)}%.`;
+        : `Nothing reachable lands on ${formatWhole(target)}${unitOf(unit)}.`;
     }
 
     for (const button of queryAll<HTMLButtonElement>(output, '[data-step]')) {

@@ -7,6 +7,10 @@
 #
 #   base    — base magnitude from UESP's apparel enchantment table.
 #   perk    — the Enchanting perk that gives this group +25%, or blank for none.
+#   unit    — "pct" (default) or "pts". Health, Magicka, Stamina, Carry Weight and
+#             Unarmed are flat POINTS, not percentages, and the planner said "235%" at
+#             them for as long as this file did not say otherwise. Everything else here
+#             really is a percentage.
 #   note    — optional caveat rendered under the picker.
 #
 # Source: https://en.uesp.net/wiki/Skyrim:Enchanting_Effects (apparel table) and
@@ -55,10 +59,18 @@
 - group: "Attributes"
   base: 20
   perk: "Corpus Enchanter"
+  unit: "pts"
   effects:
     - "Fortify Health"
     - "Fortify Magicka"
     - "Fortify Stamina"
+
+# Not points: the regen effects are a percentage increase to the rate.
+- group: "Magicka regeneration"
+  base: 20
+  perk: "Corpus Enchanter"
+  effects:
+    - "Fortify Magicka Regen"
 
 - group: "No perk applies"
   base: 8
@@ -81,25 +93,33 @@
 - group: "No perk applies — Carry Weight"
   base: 15
   perk: ""
+  unit: "pts"
   note: >-
     Carry Weight is neither a skill enchantment nor a health/magicka/stamina one,
     so neither Insightful nor Corpus touches it.
   effects:
     - "Fortify Carry Weight"
 
-# Regeneration effects sit in a gap I could not close: Corpus Enchanter reads
-# "health, magicka, and stamina enchantments on armor", and no source I found
-# says whether the regen variants count. Left unperked, which is the
-# conservative reading — turn the perk toggle on to see the other case.
-- group: "Regeneration (perk status unconfirmed)"
-  base: 20
-  perk: "Corpus Enchanter — unconfirmed"
+# Same reasoning as Carry Weight: not a skill, not health/magicka/stamina, so no perk
+# reaches it. Base 5 from the same UESP apparel table as everything else here.
+- group: "No perk applies — Unarmed"
+  base: 5
+  perk: ""
+  unit: "pts"
+  note: >-
+    Unarmed damage is neither a skill enchantment nor a health/magicka/stamina one,
+    so neither Insightful nor Corpus touches it.
   effects:
-    - "Fortify Magicka Regen"
+    - "Fortify Unarmed"
 
-- group: "Regeneration, 10 base (perk status unconfirmed)"
+# Corpus Enchanter DOES reach the regeneration effects — confirmed, so the hedge in the
+# group names and the "— unconfirmed" that was rendering as the perk checkbox's label are
+# both gone. Magicka Regen shares base 20 and the same perk as the attributes, so it is not
+# a group of its own: two groups with an identical (base, perk) pair render two optgroups
+# with an identical label, which is the drift this file's grouping rule exists to prevent.
+- group: "Regeneration"
   base: 10
-  perk: "Corpus Enchanter — unconfirmed"
+  perk: "Corpus Enchanter"
   effects:
     - "Fortify Healing Rate"
     - "Fortify Stamina Regen"

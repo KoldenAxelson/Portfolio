@@ -6,13 +6,19 @@
 
     want   the effect name to preselect. Warns if it names nothing.
 
-  Each option carries data-base, data-perk and data-note. The caller decides what to do
-  with them: both widgets read base and perk, and both render `note` into their own
-  `[data-*-group-note]` paragraph.
+  Each option carries data-base, data-perk, data-unit and data-note. The caller decides
+  what to do with them: both widgets read base, perk and unit, and both render `note` into
+  their own `[data-*-group-note]` paragraph.
 
-  Built from data/skyrim/enchantments.yaml, grouped by the two things that decide the
-  answer: base magnitude, and which +25% perk applies. Everything inside a group lands on
-  the same number, which is why the groups are the groups.
+  data-unit is "pct" or "pts". Fortify Health, Magicka, Stamina, Carry Weight and Unarmed
+  are flat POINTS — the planner asked for "235%" of carry weight until this existed.
+
+  Built from data/skyrim/enchantments.yaml, grouped by the things that decide the answer:
+  base magnitude, which +25% perk applies, and whether the result is a percentage or a
+  count. Everything inside a group lands on the same number in the same unit, which is why
+  the groups are the groups — and why the unit is in the optgroup label, since base 20 with
+  Corpus Enchanter is now two groups (the attributes, in points; Magicka Regen, a percent)
+  that would otherwise be two identically-labelled headings.
 
   This exists because there were two copies and they drifted: enchant-max's had quietly
   lost `data-note`, so the one group that carries a caveat ("no perk applies — neither
@@ -29,9 +35,10 @@
 {{- end -}}
 <select data-f="effect">
   {{- range $g := site.Data.skyrim.enchantments }}
-  <optgroup label="base {{ $g.base }}{{ with $g.perk }} · {{ . }}{{ else }} · no perk{{ end }}">
+  {{- $unit := $g.unit | default "pct" -}}
+  <optgroup label="base {{ $g.base }}{{ if eq $unit "pts" }} pts{{ else }}%{{ end }}{{ with $g.perk }} · {{ . }}{{ else }} · no perk{{ end }}">
     {{- range $e := $g.effects }}
-    <option data-base="{{ $g.base }}" data-perk="{{ $g.perk }}" data-note="{{ $g.note }}"{{ if eq $e $want }} selected{{ end }}>{{ $e }}</option>
+    <option data-base="{{ $g.base }}" data-perk="{{ $g.perk }}" data-unit="{{ $unit }}" data-note="{{ $g.note }}"{{ if eq $e $want }} selected{{ end }}>{{ $e }}</option>
     {{- end }}
   </optgroup>
   {{- end }}

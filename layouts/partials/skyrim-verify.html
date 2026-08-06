@@ -36,6 +36,21 @@
   {{- end -}}
 {{- end -}}
 
+{{- /* 3. An ingredient may only carry a MULTIPLIER for an effect it actually has.
+       builder.ts leans on this when it drops a mixture whose ingredients can be reduced:
+       if a passenger could deviate on an effect it does not carry, removing it could
+       change a magnitude, and the search would be filtering out real answers. */ -}}
+{{- range $effect := site.Data.skyrim.effects -}}
+  {{- range $slug, $_ := $effect.mult -}}
+    {{- $ing := index site.Data.skyrim.ingredients $slug -}}
+    {{- if not $ing -}}
+      {{- errorf "skyrim data: effect %q has a multiplier for %q, which is not an ingredient" $effect.name $slug -}}
+    {{- else if not (in ($ing.effects | default slice) $effect.name) -}}
+      {{- errorf "skyrim data: %q has a multiplier for %q but does not carry it" $slug $effect.name -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
 {{- range site.Data.skyrim.effects -}}
   {{- $count := int (index $carriers .name | default 0) -}}
   {{- if lt $count 2 -}}
