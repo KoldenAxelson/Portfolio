@@ -37,7 +37,9 @@
     <label class="sky-bar__field">
       {{- /* The % lives in the label, not inside the box — a number input's
              spinner arrows sit exactly where a suffix would go. */ -}}
-      <span class="sky-bar__label">Target %</span>
+      {{- /* The unit follows the effect: Carry Weight and the attributes are counted in
+             points, everything else in percent. resto.ts rewrites this span. */ -}}
+      <span class="sky-bar__label">Target <span data-resto-target-unit>%</span></span>
       <input type="number" min="1" step="1" value="{{ $target }}" data-f="target" />
     </label>
     {{- /* Rendered hidden and revealed by resto.ts. With JavaScript off the panel

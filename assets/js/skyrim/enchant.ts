@@ -281,20 +281,26 @@ export function maximise(s: MaxSettings, tricks: Trick[]): MaxResult {
 
 // ── Rendering ───────────────────────────────────────────────────────────────
 
-function resultMarkup(result: MaxResult, potionPercent: number, loop: FairLoop | null): string {
+/**
+ * What the enchantment is counted in — see data/skyrim/enchantments.yaml. The POTION is a
+ * percentage either way, so only the placed magnitude and the per-lever gains take this.
+ */
+const unitOf = (unit: string): string => (unit === 'pts' ? 'pts' : '%');
+
+function resultMarkup(result: MaxResult, potionPercent: number, loop: FairLoop | null, unit: string): string {
   const rows = result.contributions.map((contribution) => {
     const share = result.magnitude > 0 ? (contribution.worth / result.magnitude) * 100 : 0;
     return (
       `<li class="sky-worth${contribution.sure ? '' : ' is-unsure'}">` +
       `<span class="sky-worth__bar" style="--w:${Math.max(0, Math.min(100, share)).toFixed(1)}%"></span>` +
       `<b>${escapeHtml(contribution.label)}</b>` +
-      `<span class="sky-worth__gain">+${formatNumber(contribution.worth)}<i>%</i></span>` +
+      `<span class="sky-worth__gain">+${formatNumber(contribution.worth)}<i>${unitOf(unit)}</i></span>` +
       `<em>${escapeHtml(contribution.detail)}${contribution.sure ? '' : ' · not confirmed'}</em>` +
       // The visible text is the number alone — the line above the list says what the
       // column is, and repeating "without it:" down fifteen rows is the label winning an
       // argument with the data. The accessible name keeps it, since a screen reader
       // arrives at the row without having the column heading in view.
-      `<span class="sky-worth__without"><span class="sky-sr">without it: </span>${formatNumber(contribution.without)}%</span>` +
+      `<span class="sky-worth__without"><span class="sky-sr">without it: </span>${formatNumber(contribution.without)}${unitOf(unit)}</span>` +
       `</li>`
     );
   }).join('');
@@ -311,12 +317,12 @@ function resultMarkup(result: MaxResult, potionPercent: number, loop: FairLoop |
   if (loop && loop.runaway) return loopLine;
   return [
     `<h3 class="sky-plan__head">Strongest this enchantment gets</h3>`,
-    `<p class="sky-plan__value">${formatNumber(result.magnitude)}<i>%</i></p>`,
+    `<p class="sky-plan__value">${formatNumber(result.magnitude)}<i>${unitOf(unit)}</i></p>`,
     // aria-hidden on the dividers: decorative separators between metadata fields, and the
     // only text here under the contrast floor — deliberately, since they are punctuation
     // rather than words. Same treatment as the resto planner's.
     // Spans so each field wraps as a unit; same as the resto planner's meta row.
-    `<p class="sky-plan__meta"><span>reads <b>${formatWhole(result.reads)}%</b> in game</span><i aria-hidden="true">·</i>`,
+    `<p class="sky-plan__meta"><span>reads <b>${formatWhole(result.reads)}${unitOf(unit)}</b> in game</span><i aria-hidden="true">·</i>`,
     `<span>effective skill <b>${formatWhole(result.effectiveSkill)}</b></span>`,
     potionPercent > 0 ? `<i aria-hidden="true">·</i><span>×<b>${formatNumber(1 + potionPercent / 100)}</b> from the potion</span>` : '',
     `</p>`,
@@ -371,7 +377,8 @@ function setUp(root: HTMLElement): void {
     const loop = settings.fairLoop ? fairLoop(settings, tricks) : null;
     const potion = loop ? (loop.runaway ? Infinity : loop.potionPercent) : settings.potionPercent;
     const result = maximise(settings, tricks);
-    output.innerHTML = resultMarkup(result, potion, loop);
+    const unit = picker.selectedOptions[0]?.dataset.unit || 'pct';
+    output.innerHTML = resultMarkup(result, potion, loop, unit);
 
     // Mirror the loop's own answer into the disabled Potion % box. It used to sit at 0
     // while the sentence below it said 32.4% — two contradictory readouts of one quantity,
@@ -387,7 +394,7 @@ function setUp(root: HTMLElement): void {
     if (status) {
       status.textContent = loop && loop.runaway
         ? 'The fair loop has no fixed point on this many slots — there is no maximum to report.'
-        : `${formatNumber(result.magnitude)}% — reads ${formatWhole(result.reads)}% in game, ` +
+        : `${formatNumber(result.magnitude)}${unitOf(unit)} — reads ${formatWhole(result.reads)}${unitOf(unit)} in game, ` +
           `off a ${formatNumber(potion)}% Fortify Enchanting potion.`;
     }
   };

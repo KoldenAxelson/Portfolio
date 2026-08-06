@@ -411,6 +411,39 @@ function checkBuilder(catalogue: Catalogue): void {
     potentInvisible?.gatherScore === 5, `gather ${potentInvisible?.gatherScore}`);
   check('and still reports the x1.5', potentInvisible?.multipliers[idOf('Invisibility')] === 1.5);
 
+  // NOTHING OFFERED CAN BE SHRUNK. Canis Root + Hanging Moss + Bear Claws was ranked as a
+  // Fortify One-Handed potion, and ranked well, though Bear Claws is a third carrier of an
+  // effect that already had two and changes nothing. A mixture stays only if dropping any
+  // one ingredient would change the effects OR a multiplier.
+  for (const wantedName of ['Fortify One-Handed', 'Restore Health', 'Damage Health']) {
+    const found = search(catalogue, [idOf(wantedName)]);
+    const offered = found.winners.filter(Boolean).concat(found.sample);
+    let shrinkable = '';
+    for (const mixture of offered) {
+      if (!mixture || mixture.ingredients.length < 3 || shrinkable) continue;
+      for (let index = 0; index < mixture.ingredients.length; index += 1) {
+        const rest = mixture.ingredients.filter((_, other) => other !== index);
+        const sub = liveMixture(catalogue, rest);
+        if (!sub) continue;
+        const sameSet = sub.effects.length === mixture.effects.length &&
+          sub.effects.every((effect) => mixture.effects.indexOf(effect) !== -1);
+        const sameMultipliers = mixture.effects.every((effect) =>
+          (mixture.multipliers[effect] || 1) === (sub.multipliers[effect] || 1));
+        if (sameSet && sameMultipliers) {
+          shrinkable = `${mixture.ingredients.map((i) => i.name).join(' + ')} — drop ${mixture.ingredients[index].name}`;
+          break;
+        }
+      }
+    }
+    check(`no ${wantedName} brew has an ingredient you could drop`, !shrinkable, shrinkable);
+  }
+  // The converse: a third ingredient that BUYS something is still offered. Salmon Roe's
+  // x12.5 on Fortify Magicka is the case that would break if the filter got greedy.
+  const roe = search(catalogue, [idOf('Fortify Magicka')]);
+  check('but a third ingredient that buys a multiplier survives',
+    roe.sample.some((mixture) => mixture.ingredients.length === 3 &&
+      Object.keys(mixture.multipliers).length > 0));
+
   const markup = resultsMarkup(catalogue, resists, [idOf('Resist Fire')], false);
   check('results markup renders a card per ranking', (markup.match(/sky-brew__badge/g) || []).length >= 3);
 
