@@ -198,6 +198,19 @@ img {
   --tw-prose-td-borders: rgb(var(--c-border));
 }
 
+/* Readable measure inside a wide column.
+   `container: wide` exists so a card grid can run three across, and the prose sharing
+   that column then sets to ~105 characters — a third past where a line stops being
+   comfortable to track back from. This caps the running text and nothing else: the
+   widgets carry `not-prose` and are untouched, and tables, code blocks and images keep
+   the full width, which is the reason the page asked to be wide in the first place.
+   Applied by layouts/misc/single.html only when the page is both wide and prose. */
+.prose-measure > :is(p, ul, ol, blockquote),
+.prose-measure > details > :is(p, ul, ol, blockquote),
+.prose-measure > details > summary {
+  max-width: 68ch;
+}
+
 .nav-scroll::-webkit-scrollbar {
   display: none;
 }
@@ -448,17 +461,18 @@ html:not([data-ai-ok]) [data-ai-mobile-trigger] { display: none !important; }
   }
 }
 
-/* Colophon performance meters. Rings + bars start empty and are filled by
-   ts/perf-meters.ts when scrolled into view; these transitions carry the sweep.
-   Motion-gated so reduced-motion users get an instant, final-state render. */
-@media (prefers-reduced-motion: no-preference) {
-  .perf-ring {
-    transition: stroke-dasharray 1.1s cubic-bezier(0.33, 0, 0.2, 1);
-  }
-  .perf-bar {
-    transition: width 1.1s cubic-bezier(0.33, 0, 0.2, 1);
-  }
-}
+/* Colophon performance meters: rings + bars start empty and are filled by
+   ts/perf-meters.ts when scrolled into view.
+
+   NO CSS TRANSITIONS HERE, deliberately. There used to be a motion-gated block
+   transitioning `.perf-ring`'s stroke-dasharray and `.perf-bar`'s width, described as
+   "these transitions carry the sweep". They carried nothing: perf-meters.ts sets
+   `style.transition = 'none'` on every ring and bar before it animates, and drives the
+   whole sweep with requestAnimationFrame instead — because Firefox will not reliably
+   animate a two-value stroke-dasharray list, which left the rings stuck when toggling to
+   a panel that started hidden. The rules were dead, the comment was actively misleading,
+   and the `width` one was a standing layout-thrash finding for an animation that never
+   ran. Reduced motion is honoured in the module, not here. */
 
 /* Mobile / desktop segmented toggle. */
 .perf-toggle {

@@ -18,7 +18,7 @@
 //   Numbers that are documented somewhere (UESP's anchors, a measured field
 //   report) and structure that a refactor could silently drop. Not appearance.
 
-import { buildCatalogue, contributesTo, liveMarkup, liveMixture, maskToIndices, mortarMarkup, resultsMarkup, search, type Catalogue } from './builder';
+import { bridgeMaskOf, buildCatalogue, contributesTo, effectDetailMarkup, reachesWith, liveMarkup, liveMixture, maskToIndices, mortarMarkup, resultsMarkup, search, type Catalogue } from './builder';
 import { placeableFrom, planMarkupFor, potionOf, replay, roundsOf, solve, type Plan, type Settings } from './resto';
 import { fairLoop, magnitudeOf, maximise, type MaxSettings, type Trick } from './enchant';
 
@@ -165,6 +165,8 @@ function checkRestoMaths(): void {
     (oneBrew.best?.rounds ?? -1) === 0 && (oneBrew.best?.potionPercent ?? 0) > 0 &&
     planMarkupFor(oneBrew, 26).indexOf('sky-step--brew') !== -1,
     `${oneBrew.best?.value.toFixed(2)}%, potion ${oneBrew.best?.potionPercent.toFixed(1)}%`);
+  check('and says why there are no rounds above it',
+    planMarkupFor(oneBrew, 26).indexOf('No restoration loops needed') !== -1);
 
   const fiveHundred = solve(MAXED, 500);
   check('500% no longer picks the 500.01% landing', (fiveHundred.best?.value ?? 0) > 500.1,
@@ -294,16 +296,40 @@ function checkRestoMarkup(): void {
   const solution = solve(MAXED, 235);
   if (!solution.best) return check('plan markup', false, 'no plan');
   const html = planMarkupFor(solution, 235);
-  for (const cls of ['sky-plan__head', 'sky-plan__value', 'sky-plan__meta', 'sky-plan__count', 'sky-steps']) {
+  // .sky-plan__count is deliberately NOT in here any more: on a looped plan it used to
+  // carry "Tap a step to see where every piece stands after it", and a list of buttons
+  // does not need instructions for pressing one. It survives only where it says something
+  // — the no-loop and nothing-to-brew cases, both asserted above.
+  // .sky-plan__head and .sky-plan__meta are gone too: the heading restated the target box
+  // and the meta row restated the steps. What is left is the answer and the plan.
+  for (const cls of ['sky-plan__value', 'sky-steps']) {
     check(`plan markup contains .${cls}`, html.indexOf(cls) !== -1);
   }
   check('plan markup offers a cash-out step', html.indexOf('sky-step--brew') !== -1);
-  check('every round says how many pieces to brew in',
-    (html.match(/potion wearing/g) || []).length === solution.best.rounds);
-  check('every round says what a piece will read afterwards',
-    (html.match(/you put on now reads/g) || []).length === solution.best.rounds);
-  check('and the cash-out names its Fortify Enchanting potion',
-    html.indexOf('Fortify Enchanting potion') !== -1);
+  // + 1 on each: the cash-out step carries the same two marks as a round.
+  check('every step shows what to wear, as pips',
+    (html.match(/sky-step__pips/g) || []).length === solution.best.rounds + 1);
+  check('and what it brews',
+    (html.match(/sky-step__brew/g) || []).length === solution.best.rounds + 1);
+  check('and the pips count out the whole set every time',
+    (html.match(/<i(?: class="is-on")?><\/i>/g) || []).length ===
+      (solution.best.rounds + 1) * solution.best.pieceCount);
+  check('no step carries a gem any more', html.indexOf('sky-step__gem') === -1);
+  // Marks, not sentences — but a screen reader still gets the sentence.
+  check('and the marks say themselves to a screen reader',
+    html.indexOf('wear 0 of') !== -1 || html.indexOf('wear 1 of') !== -1 ||
+    html.indexOf('wear 2 of') !== -1 || html.indexOf('wear 3 of') !== -1);
+  // In plain sight, not only in the accessibility tree: five gems differ mostly by how
+  // blue they are, and this is the one choice in the plan you cannot redo cheaply.
+  check('the answer row names the soul gem where it can be read',
+    html.indexOf(`<b>${solution.best.soulLabel}</b><span class="sky-sr"> soul gem.`) !== -1,
+    solution.best.soulLabel);
+  check('and the answer row is where it lives',
+    html.indexOf('sky-plan__gem') !== -1 && html.indexOf('sky-plan__icon') !== -1);
+  // The step used to carry the gear percentage and what a piece reads afterwards. Both
+  // moved into the detail card, and a step that grew them back would be the regression.
+  check('a step carries nothing but the round, the wear and the brew',
+    html.indexOf('Fortify Alchemy)') === -1 && html.indexOf('then reads') === -1);
   check('plan markup has a slot for the round detail', html.indexOf('data-slot') !== -1);
 }
 
@@ -385,7 +411,7 @@ function checkBuilder(catalogue: Catalogue): void {
     potentInvisible?.gatherScore === 5, `gather ${potentInvisible?.gatherScore}`);
   check('and still reports the x1.5', potentInvisible?.multipliers[idOf('Invisibility')] === 1.5);
 
-  const markup = resultsMarkup(catalogue.effectNames, resists, [idOf('Resist Fire')], false);
+  const markup = resultsMarkup(catalogue, resists, [idOf('Resist Fire')], false);
   check('results markup renders a card per ranking', (markup.match(/sky-brew__badge/g) || []).length >= 3);
 
   // ── The mortar: what a specific handful actually makes ────────────────────
@@ -423,6 +449,32 @@ function checkBuilder(catalogue: Catalogue): void {
     check('and such an ingredient greys out once the first is picked', !contributesTo([a], b));
   }
   check('anything is allowed while the mortar is empty', contributesTo([], garlic));
+
+  // The deep rule, on the pair that motivated it. Hanging Moss and Juniper Berries share
+  // nothing; Canis Root shares Fortify One-Handed with the first and Fortify Marksman with
+  // the second, so all three make a bottle and the quick rule cannot see it.
+  const moss = bySlug('hanging-moss');
+  const juniper = bySlug('juniper-berries');
+  const canis = bySlug('canis-root');
+  check('Hanging Moss and Juniper Berries share nothing', !contributesTo([moss], juniper));
+  check('but Canis Root bridges them',
+    contributesTo([moss], canis) && contributesTo([juniper], canis));
+  check('so the deep rule offers Juniper Berries anyway',
+    reachesWith([moss], juniper, bridgeMaskOf(catalogue, [moss])));
+  check('and the three of them really do make something',
+    liveMixture(catalogue, [moss, juniper, canis]) !== null);
+  // With two picked there is no slot left to bridge with, so both rules must agree.
+  check('with two in the mortar the deep rule is the quick one',
+    bridgeMaskOf(catalogue, [moss, canis]) === null);
+  check('and an empty mortar has nothing to bridge to',
+    bridgeMaskOf(catalogue, []) === null);
+  // A bridge has to reach BOTH sides. Something sharing nothing with the anchor's
+  // neighbourhood at all stays struck through even in deep mode.
+  const strangerToMoss = catalogue.ingredients.filter((i) =>
+    i !== moss && !reachesWith([moss], i, bridgeMaskOf(catalogue, [moss])));
+  check('deep mode still refuses what nothing can reach',
+    strangerToMoss.every((i) => !contributesTo([moss], i)),
+    `${strangerToMoss.length} still unreachable`);
   check('and a sharer stays enabled', contributesTo([salmon], histcarp));
 
   // A tile draws its art when the file is there and falls back to the "?" disc until it
@@ -485,6 +537,73 @@ function checkBuilder(catalogue: Catalogue): void {
   const bottle = liveMarkup(catalogue, [bySlug('deathbell'), bySlug('nightshade')]);
   check('the live bottle prints the verdict', bottle.indexOf('data-kind="bad"') !== -1);
   check('and marks the chip that decided it', bottle.indexOf('is-dominant') !== -1);
+  // The verdict moved off a 36px word under the tiles and onto the tray itself, which is
+  // markup nothing else asserts — exactly the kind of block that vanished once before.
+  // Not `pair` — that name is already a Mixture forty lines up, and tsc caught the shadow.
+  const nasty = [bySlug('deathbell'), bySlug('nightshade')];
+  const tray = mortarMarkup(catalogue, nasty, liveMixture(catalogue, nasty));
+  check('the tray is outlined with the verdict', tray.indexOf('<div class="sky-ings" data-tone="bad"') !== -1);
+  check('and carries the verdict disc', tray.indexOf('sky-verdict') !== -1);
+  check('which says the word for a screen reader', tray.indexOf('>Poison</span>') !== -1);
+  check('a tray with nothing decided yet takes no colour',
+    mortarMarkup(catalogue, [bySlug('garlic')], null).indexOf('data-tone') === -1);
+
+  // Hue and glyph are two channels, and the pair that proves it is a bottle that is a
+  // POTION and still carries something harmful — green would be a lie, a flask alone
+  // would be a half-truth.
+  const both = liveMixture(catalogue, [bySlug('abecean-longfin'), bySlug('small-antlers')]);
+  check('a potion carrying a harmful effect is mixed', both?.mixed === true);
+  check('and is still a potion', both?.poison === false);
+  check('so its tray reads mixed while its disc reads potion',
+    mortarMarkup(catalogue, [bySlug('abecean-longfin'), bySlug('small-antlers')], both)
+      .indexOf('data-kind="good" data-tone="mixed"') !== -1);
+  // Derived from the catalogue rather than pinned to two named ingredients: the first
+  // version of this asserted that Blue Mountain Flower + Blue Butterfly Wing was clean,
+  // and it is not — Blue Mountain Flower carries Damage Magicka Regen. A fixture that has
+  // to be right about the game is a fixture that will be wrong.
+  const sample = search(catalogue, [idOf('Restore Health')]).sample.slice(0, 60);
+  check('mixed means exactly some-harmful-and-some-benign, across 60 bottles',
+    sample.length > 0 && sample.every((m) => {
+      const harmful = m.effects.filter((e) => catalogue.harmful[e]).length;
+      return m.mixed === (harmful > 0 && harmful < m.effects.length);
+    }), `${sample.length} sampled`);
+  check('and both sides of that actually occur in the sample',
+    sample.some((m) => m.mixed) && sample.some((m) => !m.mixed));
+}
+
+/** Screen 6 — one effect, everything carrying it, and what else each brings. */
+function checkEffectIndex(catalogue: Catalogue): void {
+  const busiest = catalogue.carriersOf.reduce(
+    (best, list, index) => (list.length > catalogue.carriersOf[best].length ? index : best), 0);
+  const carriers = catalogue.carriersOf[busiest];
+  const html = effectDetailMarkup(catalogue, busiest);
+  check('the effect index lists every carrier',
+    (html.match(/class="sky-brew"/g) || []).length === carriers.length,
+    `${catalogue.effectNames[busiest]}: ${carriers.length}`);
+  check('and shows all four effects of each one',
+    (html.match(/<li class="sky-chip/g) || []).length === carriers.length * 4);
+  check('and marks the effect that was asked for, once per carrier',
+    (html.match(/sky-chip--tag/g) || []).length === carriers.length);
+
+  // A Creation Club ingredient that inflates one of its own effects has to print the
+  // multiplier — that number is the reason this screen is worth having over a flat list.
+  let deviating = -1;
+  for (let effect = 0; effect < catalogue.effectNames.length && deviating === -1; effect++) {
+    const table = catalogue.deviations[effect];
+    for (const slug of Object.keys(table || {})) {
+      const row = table[slug];
+      const applied = catalogue.baseMagnitudes[effect] === 0 ? row[1] : row[0];
+      // Only counts if that ingredient actually carries the effect it deviates on.
+      const carried = catalogue.carriersOf[effect].some((i) => i.slug === slug);
+      if (applied !== 1 && carried) { deviating = effect; break; }
+    }
+  }
+  check('some effect has a carrier that deviates on it', deviating !== -1);
+  if (deviating !== -1) {
+    check('and the index prints that multiplier',
+      effectDetailMarkup(catalogue, deviating).indexOf('&times;') !== -1,
+      catalogue.effectNames[deviating]);
+  }
 }
 
 export function runSelfCheck(mount: HTMLElement): void {
@@ -499,6 +618,7 @@ export function runSelfCheck(mount: HTMLElement): void {
   checkRestoMarkup();
   checkEnchantMax();
   checkBuilder(catalogue);
+  checkEffectIndex(catalogue);
 
   const failed = results.filter((r) => !r.pass);
   const rows = results

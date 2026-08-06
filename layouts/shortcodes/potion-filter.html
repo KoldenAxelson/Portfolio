@@ -14,7 +14,6 @@
   the script reveals it, which keeps the static page honest rather than offering
   a control that does nothing.
 */ -}}
-{{ partial "skyrim-assets.html" .Page }}
 <div class="sky-tools not-prose" data-sky-tools hidden>
   <label class="sr-only" for="sky-search">{{ .Get "label" | default "Filter potions" }}</label>
   <input id="sky-search" type="search" autocomplete="off" spellcheck="false" class="sky-search"

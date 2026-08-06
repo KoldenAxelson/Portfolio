@@ -63,7 +63,7 @@
 //   data/skyrim/enchant-tricks.yaml. It is rendered with a warning rather than
 //   quietly folded in.
 
-import { escapeHtml, findField, formatNumber, formatWhole, queryAll, readFlag, readNumber } from './util';
+import { debounce, escapeHtml, findField, formatNumber, formatWhole, queryAll, readFlag, readNumber, setUpConfigPanel } from './util';
 
 export interface Trick {
   id: string;
@@ -290,7 +290,11 @@ function resultMarkup(result: MaxResult, potionPercent: number, loop: FairLoop |
       `<b>${escapeHtml(contribution.label)}</b>` +
       `<span class="sky-worth__gain">+${formatNumber(contribution.worth)}<i>%</i></span>` +
       `<em>${escapeHtml(contribution.detail)}${contribution.sure ? '' : ' · not confirmed'}</em>` +
-      `<span class="sky-worth__without">without it: ${formatNumber(contribution.without)}%</span>` +
+      // The visible text is the number alone — the line above the list says what the
+      // column is, and repeating "without it:" down fifteen rows is the label winning an
+      // argument with the data. The accessible name keeps it, since a screen reader
+      // arrives at the row without having the column heading in view.
+      `<span class="sky-worth__without"><span class="sky-sr">without it: </span>${formatNumber(contribution.without)}%</span>` +
       `</li>`
     );
   }).join('');
@@ -306,14 +310,18 @@ function resultMarkup(result: MaxResult, potionPercent: number, loop: FairLoop |
     : '';
   if (loop && loop.runaway) return loopLine;
   return [
-    `<p class="sky-plan__head">Strongest this enchantment gets</p>`,
+    `<h3 class="sky-plan__head">Strongest this enchantment gets</h3>`,
     `<p class="sky-plan__value">${formatNumber(result.magnitude)}<i>%</i></p>`,
-    `<p class="sky-plan__meta">reads <b>${formatWhole(result.reads)}%</b> in game<i>·</i>`,
-    `effective skill <b>${formatWhole(result.effectiveSkill)}</b>`,
-    potionPercent > 0 ? `<i>·</i>×<b>${formatNumber(1 + potionPercent / 100)}</b> from the potion` : '',
+    // aria-hidden on the dividers: decorative separators between metadata fields, and the
+    // only text here under the contrast floor — deliberately, since they are punctuation
+    // rather than words. Same treatment as the resto planner's.
+    // Spans so each field wraps as a unit; same as the resto planner's meta row.
+    `<p class="sky-plan__meta"><span>reads <b>${formatWhole(result.reads)}%</b> in game</span><i aria-hidden="true">·</i>`,
+    `<span>effective skill <b>${formatWhole(result.effectiveSkill)}</b></span>`,
+    potionPercent > 0 ? `<i aria-hidden="true">·</i><span>×<b>${formatNumber(1 + potionPercent / 100)}</b> from the potion</span>` : '',
     `</p>`,
     loopLine,
-    `<p class="sky-plan__count">What each one is worth, with everything else still on:</p>`,
+    `<p class="sky-plan__count">What each is worth with everything else on, and what you would place without it:</p>`,
     `<ul class="sky-worths">${rows}</ul>`,
     unsure ? `<p class="sky-plan__note">Rows marked <em>not confirmed</em> use a number this page is not sure of — see data/skyrim/enchant-tricks.yaml for what is in doubt.</p>` : '',
   ].join('');
@@ -327,6 +335,7 @@ export function initEnchantMax(): void {
 
 function setUp(root: HTMLElement): void {
   const output = root.querySelector<HTMLElement>('[data-enchant-out]');
+  const status = root.querySelector<HTMLElement>('[data-enchant-status]');
   const payload = root.querySelector('[data-tricks]');
   const picker = findField(root, 'effect');
   const perkLabel = root.querySelector<HTMLElement>('[data-enchant-perk-label]');
@@ -361,7 +370,26 @@ function setUp(root: HTMLElement): void {
     const settings = read();
     const loop = settings.fairLoop ? fairLoop(settings, tricks) : null;
     const potion = loop ? (loop.runaway ? Infinity : loop.potionPercent) : settings.potionPercent;
-    output.innerHTML = resultMarkup(maximise(settings, tricks), potion, loop);
+    const result = maximise(settings, tricks);
+    output.innerHTML = resultMarkup(result, potion, loop);
+
+    // Mirror the loop's own answer into the disabled Potion % box. It used to sit at 0
+    // while the sentence below it said 32.4% — two contradictory readouts of one quantity,
+    // in one widget. Writing it also means unticking the loop hands you a real starting
+    // point to edit instead of dropping the answer to whatever 0% places.
+    const box = findField(root, 'potion');
+    if (box instanceof HTMLInputElement && box.disabled && Number.isFinite(potion)) {
+      box.value = String(Math.round(potion * 10) / 10);
+    }
+
+    // The answer in a line. The breakdown below it is the interesting part but it is not
+    // what changed in kind, and restating all of it on every tick buried the number.
+    if (status) {
+      status.textContent = loop && loop.runaway
+        ? 'The fair loop has no fixed point on this many slots — there is no maximum to report.'
+        : `${formatNumber(result.magnitude)}% — reads ${formatWhole(result.reads)}% in game, ` +
+          `off a ${formatNumber(potion)}% Fortify Enchanting potion.`;
+    }
   };
 
   /** The manual potion box is meaningless while the loop is working it out. */
@@ -395,17 +423,26 @@ function setUp(root: HTMLElement): void {
     }
   };
 
+  // Debounced for two reasons, and only the first has gone away: the breakdown used to
+  // sit in an aria-live region and re-announce itself on every digit, which the status
+  // line above now handles in one sentence — but a full re-solve and re-render per
+  // keystroke is still waste. Same 180ms and same trailing edge as the resto planner.
+  const scheduleRender = debounce(() => {
+    render();
+  }, 180);
+
   for (const control of queryAll<HTMLElement>(root, 'input, select')) {
     const onChange = (): void => {
       syncExclusions(control);
       syncPicker();
       syncPotion();
-      render();
+      scheduleRender();
     };
     control.addEventListener('input', onChange);
     control.addEventListener('change', onChange);
   }
 
+  setUpConfigPanel(root);
   syncPicker();
   syncPotion();
   render();

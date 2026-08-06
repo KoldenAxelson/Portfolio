@@ -2,6 +2,7 @@
 // they survive hx-boost swaps; element handlers re-bound per page via initNav().
 import { sleep, pickRandom, readMessages, charDelay } from './bio';
 import { populateGameCard, wireCarouselDots } from './game-card';
+import { populateNoteCard } from './skyrim-notes';
 import { wirePanelMode } from './sub-nav';
 import type { PanelHost } from './sub-nav';
 
@@ -226,6 +227,22 @@ function wireNavElements(): void {
         if (label) label.textContent = trigger.getAttribute('data-term-label') || '';
         if (body) body.textContent = trigger.getAttribute('data-term-def') || '';
       },
+    },
+    host,
+  );
+
+  // Recipe notes on the Skyrim page. Desktop is the sky-note drawer (skyrim-notes.ts);
+  // the fill is shared with it so the two views cannot drift apart.
+  wirePanelMode(
+    {
+      mode: 'note',
+      trigger: '[data-sky-note-open]',
+      content: '[data-mobile-panel-note]',
+      populate: (trigger, content) =>
+        populateNoteCard(trigger, {
+          title: content.querySelector<HTMLElement>('[data-note-mobile-title]'),
+          body: content.querySelector<HTMLElement>('[data-note-mobile-body]'),
+        }),
     },
     host,
   );

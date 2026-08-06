@@ -123,7 +123,7 @@
 //   treat the last digit of any enchantment as soft. Everything upstream of the
 //   enchanting step is exact.
 
-import { debounce, escapeHtml, findField, formatNumber, formatPrecise, formatWhole, queryAll, readFlag, readNumber } from './util';
+import { debounce, escapeHtml, findField, formatNumber, formatPrecise, formatWhole, queryAll, readFlag, readNumber, setUpConfigPanel } from './util';
 
 const RESTORATION_BASE = 4;
 const ENCHANTING_BASE = 1;
@@ -145,14 +145,16 @@ const MAX_ROUNDS = 12;
  * and multiplying it by five different fractions gives five overlapping copies — which is
  * the difference between "no plan reads 600%" and one that lands 0.42 inside it.
  *
- * Black soul gems hold a grand charge, so they are the same row.
+ * A black soul gem holds a grand charge, so it is the same row and the same picture.
+ * Naming both made every mention of the gem two words longer for a distinction that
+ * changes nothing about the number it places.
  */
-const SOUL_GEMS: { label: string; charges: number }[] = [
-  { label: 'Petty', charges: 250 },
-  { label: 'Lesser', charges: 500 },
-  { label: 'Common', charges: 1000 },
-  { label: 'Greater', charges: 2000 },
-  { label: 'Grand or Black', charges: 3000 },
+const SOUL_GEMS: { label: string; slug: string; charges: number }[] = [
+  { label: 'Petty', slug: 'petty', charges: 250 },
+  { label: 'Lesser', slug: 'lesser', charges: 500 },
+  { label: 'Common', slug: 'common', charges: 1000 },
+  { label: 'Greater', slug: 'greater', charges: 2000 },
+  { label: 'Grand', slug: 'grand', charges: 3000 },
 ];
 const GRAND_CHARGES = 3000;
 /**
@@ -276,6 +278,7 @@ export interface Plan {
   /** The soul gem this landing needs. */
   soulCharges: number;
   soulLabel: string;
+  soulSlug: string;
   /** How far inside its whole number this lands — under ~0.1 is a coin flip. */
   margin: number;
   gearPercent: number;
@@ -342,7 +345,7 @@ export function replay(s: Settings, moves: Move[]): Round[] {
   for (const move of moves) state = advance(state, move, s, baseRestoration);
   return roundsOf({
     value: 0, rounds: moves.length, cashOutWear: 0, margin: 0, soulCharges: GRAND_CHARGES,
-    soulLabel: 'Grand or Black', gearPercent: 0, potionPercent: 0,
+    soulLabel: 'Grand', soulSlug: 'grand', gearPercent: 0, potionPercent: 0,
     state, pieceCount, perPieceFraction: s.perPiece / 100,
   });
 }
@@ -429,7 +432,7 @@ export function solve(s: Settings, target: number): Solution {
     if (value > 0) {
       consider({
         value, rounds: 0, cashOutWear: 0, margin: marginOf(value),
-        soulCharges: gem.charges, soulLabel: gem.label,
+        soulCharges: gem.charges, soulLabel: gem.label, soulSlug: gem.slug,
         gearPercent: 0, potionPercent: 0, state: null, ...shell,
       });
     }
@@ -447,7 +450,7 @@ export function solve(s: Settings, target: number): Solution {
         if (value <= 0) continue;
         consider({
           value, rounds: state.rounds, cashOutWear: wear, margin: marginOf(value),
-          soulCharges: gem.charges, soulLabel: gem.label,
+          soulCharges: gem.charges, soulLabel: gem.label, soulSlug: gem.slug,
           gearPercent: gear * 100, potionPercent, state, ...shell,
         });
       }
@@ -503,7 +506,7 @@ function roundDetail(round: Round, pieceCount: number): string {
     `<li class="sky-gear__p is-on"><b>${badge}</b>` +
     `<span>${formatNumber(percent)}<i>%</i></span><em>${label}</em></li>`;
   return [
-    `<p class="sky-detail__head">After round ${round.index}</p>`,
+    `<h4 class="sky-detail__head">After round ${round.index}</h4>`,
     `<ul class="sky-gear">`,
     tile('1', round.piecePercent, 'one piece'),
     tile(String(pieceCount), round.piecePercent * pieceCount, 'wearing them all'),
@@ -511,14 +514,15 @@ function roundDetail(round: Round, pieceCount: number): string {
     `<p class="sky-detail__foot">Brewing in <b>${round.wear}</b> piece${round.wear === 1 ? '' : 's'} gives you `,
     `<b>${formatNumber(round.brewGearPercent)}%</b> Fortify Alchemy, which makes a `,
     `<b>${formatNumber(round.brewedPercent)}%</b> potion. Drink it and every piece you have on reads `,
-    `<b>${formatNumber(round.piecePercent)}%</b> — so wearing fewer pieces while brewing is the only brake `,
-    `there is.</p>`,
+    // "…so wearing fewer pieces while brewing is the only brake there is" ended this, and
+    // ends the paragraph under the widget, and ends the loop formula's own legend row.
+    `<b>${formatNumber(round.piecePercent)}%</b>.</p>`,
   ].join('');
 }
 
 function cashOutDetail(plan: Plan): string {
   return [
-    `<p class="sky-detail__head">Cash out — wear ${plan.cashOutWear} piece${plan.cashOutWear === 1 ? '' : 's'}</p>`,
+    `<h4 class="sky-detail__head">Cash out — wear ${plan.cashOutWear} piece${plan.cashOutWear === 1 ? '' : 's'}</h4>`,
     `<p class="sky-detail__foot">Each reads <b>${formatNumber(piecePercentAt(plan))}%</b>, so that is `,
     `<b>${formatNumber(plan.gearPercent)}%</b> Fortify Alchemy, which brews a `,
     `<b>${formatNumber(plan.potionPercent)}%</b> Fortify Enchanting potion. Drink it at the arcane enchanter `,
@@ -527,70 +531,126 @@ function cashOutDetail(plan: Plan): string {
 }
 
 /**
- * The steps, written out.
+ * The steps, at a glance.
+ *
+ * A step answers three things and no more: which round this is, how many pieces to have
+ * on, and what comes out of the mortar. The last one adds the gem. Everything else — the
+ * Fortify Alchemy the gear is worth, what a piece reads afterwards, where to drink it —
+ * is in the card one tap away, which is what that card is for.
+ *
+ * It was a sentence per round before, run down a list up to twelve deep, so each word in
+ * the frame cost twelve lines of reading to say a thing the numbers already said.
  *
  * Counts, not letters. Which pieces you wear does not matter — anything on your body
  * while the potion is up reads the same number — and an earlier lettered notation with
  * a lowercase-means-base convention cost a whole run to ambiguity.
  */
 function stepList(plan: Plan, rounds: Round[]): string {
-  const pieces = (n: number): string => `<b>${n}</b> piece${n === 1 ? '' : 's'}`;
-  const steps = rounds.map((round) => {
-    const wearing = round.wear === 0
-      ? 'wearing <b>nothing</b>'
-      : `wearing any ${pieces(round.wear)} (<b>${formatNumber(round.brewGearPercent)}%</b> Fortify Alchemy)`;
-    const text =
-      `Brew a <b>${formatNumber(round.brewedPercent)}%</b> potion ${wearing}. Drink it. ` +
-      `Every piece you put on now reads <b>${formatNumber(round.piecePercent)}%</b>.`;
-    return `<li><button type="button" class="sky-step" data-step="${round.index - 1}">` +
-      `<b>${round.index}</b><span>${text}</span></button></li>`;
-  });
+  /**
+   * How many pieces to have on, as filled pips out of the set you own.
+   *
+   * "wear 2 pieces" was two words spent on a number between 0 and 5, down a list where
+   * every row says it. Pips carry the count AND the total in one glance — a naked round
+   * is a row of empty rings, which no wording made as obvious.
+   *
+   * The drawing is hidden and the sentence goes to `.sky-sr`, which is the same split
+   * this module already makes for the builder's gather dots.
+   */
+  const wear = (n: number): string => {
+    let pips = '';
+    for (let i = 0; i < plan.pieceCount; i += 1) pips += `<i${i < n ? ' class="is-on"' : ''}></i>`;
+    return `<span class="sky-step__wear">` +
+      `<span class="sky-step__pips" aria-hidden="true">${pips}</span>` +
+      `<span class="sky-sr">wear ${n} of ${plan.pieceCount} piece${plan.pieceCount === 1 ? '' : 's'}. </span>` +
+      `</span>`;
+  };
+
+  /** The only number on the row, so it does not need to be told apart from another one. */
+  const brew = (percent: number): string =>
+    `<span class="sky-step__brew"><span class="sky-sr">Brew </span>` +
+    `${formatNumber(percent)}<i>%</i></span>`;
+
+  const steps = rounds.map((round) =>
+    `<li><button type="button" class="sky-step" data-step="${round.index - 1}">` +
+    `<b>${round.index}</b>${wear(round.wear)}${brew(round.brewedPercent)}` +
+    `</button></li>`);
+
+  // No gem here any more — it sits beside the answer, which is the other thing that is
+  // true of the whole plan rather than of one round.
   steps.push(
     `<li><button type="button" class="sky-step sky-step--brew" data-step="${rounds.length}">` +
-      `<b>&#9670;</b><span>Wearing ${pieces(plan.cashOutWear)} (<b>${formatNumber(plan.gearPercent)}%</b> ` +
-      `Fortify Alchemy), brew a <b>${formatNumber(plan.potionPercent)}%</b> Fortify Enchanting potion. ` +
-      `Drink it at an arcane enchanter and place the enchantment with a ` +
-      `<b>${escapeHtml(plan.soulLabel)}</b> soul gem.</span></button></li>`,
-  );
+    `<b>&#9670;</b>${wear(plan.cashOutWear)}${brew(plan.potionPercent)}` +
+    `</button></li>`);
   return `<ol class="sky-steps">${steps.join('')}</ol>`;
 }
 
-/** The plan's markup for a solution — the entry point the self-check uses. */
-export function planMarkupFor(solution: Solution, target: number): string {
-  if (!solution.best) return '';
-  return planMarkup(solution.best, solution, target, roundsOf(solution.best));
+/**
+ * The two things true of the whole plan: what it lands on, and what you place it with.
+ *
+ * Half the row each. The gem used to ride the cash-out step, which is where you USE it —
+ * but it is not a property of that round the way the wear and the brew are, it is a
+ * property of the answer, and it changes when the target does. Beside the number is where
+ * it can be read as one of the two decisions the planner made for you.
+ *
+ * The bullseye is `--c-fg` rather than the accent the number carries: two accents side by
+ * side would make the icon compete with the figure it is introducing.
+ */
+function answerRow(plan: Plan, gems: Record<string, string>): string {
+  const art = gems[plan.soulSlug];
+  return '<div class="sky-plan__answer">' +
+    '<p class="sky-plan__value">' +
+    '<svg class="sky-plan__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" ' +
+    'aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.6" /><circle cx="12" cy="12" r="4.2" />' +
+    '<circle cx="12" cy="12" r="1" fill="currentColor" stroke="none" /></svg>' +
+    `<span>${formatPrecise(plan.value)}<i>%</i></span></p>` +
+    '<p class="sky-plan__gem">' +
+    // `alt=""` and the name visible: five gems differ mostly by how blue they are, so the
+    // word does work the picture cannot, and " soul gem." finishes the sentence for a
+    // screen reader without saying the name to it twice.
+    (art ? `<img src="${escapeHtml(art)}" alt="" loading="lazy" decoding="async" />` : '') +
+    `<b>${escapeHtml(plan.soulLabel)}</b><span class="sky-sr"> soul gem.</span></p>` +
+    '</div>';
 }
 
-function planMarkup(plan: Plan, solution: Solution, target: number, rounds: Round[]): string {
-  const granularity = solution.under && solution.over ? Math.abs(solution.over.value - solution.under.value) : 0;
-  const meta = [
-    `reads <b>${Math.floor(plan.value)}%</b> in game`,
-    plan.rounds ? `<b>${plan.rounds}</b> round${plan.rounds === 1 ? '' : 's'}` : 'no loops needed',
-    granularity ? `finest step <b>${formatPrecise(granularity)}%</b>` : '',
-    Math.floor(plan.value) === Math.floor(target)
-      ? `<b>${formatPrecise(plan.margin)}%</b> inside ${Math.floor(plan.value)}%` : '',
-    `<b>${escapeHtml(plan.soulLabel)}</b> soul`,
-  ].filter(Boolean).join('<i>·</i>');
+/** The plan's markup for a solution — the entry point the self-check uses. */
+export function planMarkupFor(solution: Solution, target: number, gems: Record<string, string> = {}): string {
+  if (!solution.best) return '';
+  return planMarkup(solution.best, solution, target, roundsOf(solution.best), gems);
+}
 
+function planMarkup(plan: Plan, solution: Solution, target: number, rounds: Round[],
+  gems: Record<string, string>): string {
   const caveats = [
     Math.floor(plan.value) === Math.floor(target) ? '' : `Nothing reachable reads exactly ${Math.floor(target)}%. `,
     solution.truncated ? `Search hit its ${MAX_STATES.toLocaleString('en-US')}-state ceiling, so a better plan may exist.` : '',
   ].join('');
 
   return [
-    `<p class="sky-plan__head">Closest landing on ${formatWhole(target)}%</p>`,
-    `<p class="sky-plan__value">${formatPrecise(plan.value)}<i>%</i></p>`,
-    `<p class="sky-plan__meta">${meta}</p>`,
+    answerRow(plan, gems),
+    // No heading and no metadata row above the number.
+    //
+    // The heading read "Closest landing on 235%" directly under a box the reader had just
+    // typed 235 into. The row under it — reads N% in game, N rounds, finest step, N%
+    // inside, which soul — restated the step list in a denser hand: the rounds are the
+    // rounds, and the gem is on the step that uses it.
+    //
+    // What left with it and did not come back: `Math.floor(plan.value)`, the number the
+    // game itself shows, which is not the same as the value above and is not anywhere in
+    // the steps. If that turns out to be missed, it belongs ON the headline rather than
+    // in a row of five facts beside four that were already on screen.
     // Gate on the POTION, not on the round count. A plan can need zero loops and still
     // need a potion — and it used to print "place it with no potion at all" over a plan
     // that wanted a 15% one, with the cash-out step silently dropped along with the list,
     // so the instruction on screen produced a different number from the headline above it.
+    // Only the zero-round case says anything: that IS the plan. The other branch used to
+    // read "Tap a step to see where every piece stands after it", over a list of buttons
+    // that hover, focus and carry a pointer cursor.
     plan.potionPercent > 0
-      ? `<p class="sky-plan__count">${plan.rounds
-        ? 'Tap a step to see where every piece stands after it.'
-        : 'No restoration loops needed — one brew and place it.'}</p>${stepList(plan, rounds)}`
+      ? `${plan.rounds ? '' : '<p class="sky-plan__count">No restoration loops needed — one brew and place it.</p>'}${stepList(plan, rounds)}`
       : '<p class="sky-plan__count">Nothing to brew: put the set on and place it.</p>',
-    `<div class="sky-detail" data-slot></div>`,
+    // Live, where the whole plan is not: this fills only when a step is tapped, it is one
+    // short card rather than the entire plan, and the tap is a request to hear it.
+    `<div class="sky-detail" data-slot aria-live="polite"></div>`,
     caveats ? `<p class="sky-plan__note">${caveats}</p>` : '',
   ].join('');
 }
@@ -603,10 +663,24 @@ export function initResto(): void {
 
 function setUp(root: HTMLElement): void {
   const output = root.querySelector<HTMLElement>('[data-resto-plan]');
+  const status = root.querySelector<HTMLElement>('[data-resto-status]');
   const groupNote = root.querySelector<HTMLElement>('[data-resto-group-note]');
   const perkLabel = root.querySelector<HTMLElement>('[data-resto-perk-label]');
   const picker = findField(root, 'effect');
   if (!output || !(picker instanceof HTMLSelectElement)) return;
+
+  // Soul gem art, resolved and fingerprinted by Hugo because JS cannot reach Hugo Pipes —
+  // the same arrangement the builder's ingredient images use. An absent map just means no
+  // picture: the gem's name is what carries it, and always has.
+  const gemScript = root.querySelector('[data-soul-images]');
+  let gems: Record<string, string> = {};
+  if (gemScript) {
+    try {
+      gems = JSON.parse(gemScript.textContent || '{}') as Record<string, string>;
+    } catch (error) {
+      console.error('skyrim: soul gem images failed to parse', error);
+    }
+  }
 
   let plan: Plan | null = null;
   let rounds: Round[] = [];
@@ -657,6 +731,16 @@ function setUp(root: HTMLElement): void {
       button.classList.toggle('is-open', Number(button.dataset.step) === openStep);
     }
     renderDetail();
+    // The detail renders after the whole step list, so on a phone tapping step 1 put the
+    // answer ~590px below the tap — the border highlighted and nothing else appeared to
+    // happen. Bring it to the reader instead of asking them to go find it.
+    if (openStep === -1) return;
+    const detail = output.querySelector<HTMLElement>('.sky-detail');
+    if (!detail) return;
+    const box = detail.getBoundingClientRect();
+    if (box.top >= 0 && box.bottom <= window.innerHeight) return;
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+    detail.scrollIntoView({ behavior: motion, block: 'nearest' });
   };
 
   const renderPlan = (): void => {
@@ -670,7 +754,16 @@ function setUp(root: HTMLElement): void {
     plan = solution.best;
     rounds = plan ? roundsOf(plan) : [];
     openStep = -1;
-    output.innerHTML = plan ? planMarkup(plan, solution, target, rounds) : '';
+    output.innerHTML = plan ? planMarkup(plan, solution, target, rounds, gems) : '';
+
+    // The one line the change is worth speaking. Everything else on screen is unchanged
+    // in kind and is reachable by reading; see the shortcode for why it is not all live.
+    if (status) {
+      status.textContent = plan
+        ? `${formatPrecise(plan.value)}% — reads ${Math.floor(plan.value)}% in game, ` +
+          `${plan.rounds} round${plan.rounds === 1 ? '' : 's'}, ${plan.soulLabel} soul.`
+        : `Nothing reachable lands on ${formatWhole(target)}%.`;
+    }
 
     for (const button of queryAll<HTMLButtonElement>(output, '[data-step]')) {
       button.addEventListener('click', () => openStepAt(Number(button.dataset.step)));
@@ -712,24 +805,4 @@ function setUp(root: HTMLElement): void {
   setUpConfigPanel(root);
   syncPicker();
   renderPlan();
-}
-
-/**
- * The panel ships OPEN with its toggle hidden, so a reader without JavaScript
- * sees the assumptions rather than a dead "+" button. Here we reveal the button
- * and collapse the panel.
- */
-function setUpConfigPanel(root: HTMLElement): void {
-  const panel = root.querySelector<HTMLElement>('[data-config]');
-  const toggle = root.querySelector<HTMLButtonElement>('[data-config-toggle]');
-  if (!panel || !toggle) return;
-
-  toggle.hidden = false;
-  panel.hidden = true;
-  toggle.setAttribute('aria-expanded', 'false');
-  toggle.addEventListener('click', () => {
-    panel.hidden = !panel.hidden;
-    toggle.setAttribute('aria-expanded', String(!panel.hidden));
-    toggle.classList.toggle('is-open', !panel.hidden);
-  });
 }

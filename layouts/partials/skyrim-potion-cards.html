@@ -1,0 +1,85 @@
+{{- /*
+  skyrim-potion-cards — the recipe card grid.
+
+    {{ partial "skyrim-potion-cards.html" $.Page }}
+
+  A partial rather than only a shortcode because the grid is now a SCREEN of the potion
+  builder (Favorites) as well as something a page can drop in on its own. It was two
+  modules and one of them was a card list with a search box, which is a screen.
+
+  Effects are COMPUTED from the ingredients rather than typed into the data, so a card
+  cannot claim something the mortar would not produce. A recipe may override them, but
+  should say why.
+
+  Filtering is string matching over each card's data-search attribute (assets/js/skyrim/
+  filter.ts), so the full list is in the HTML before any script runs and the page stays
+  readable with JavaScript off.
+
+  `not-prose` keeps Tailwind Typography off the widget internals.
+*/ -}}
+{{- $page := . -}}
+{{- $list := site.Data.skyrim.potions -}}
+{{- if not $list -}}
+  {{- warnf "potions shortcode: data/skyrim/potions.yaml is empty (page: %s)" $page.RelPermalink -}}
+{{- else -}}
+<div class="sky-grid not-prose" data-sky-group>
+  {{- range $potion := $list -}}
+  {{- $effects := $potion.effects | default (partial "func/potion-effects.html" $potion.ingredients) -}}
+
+  {{- /* Search index: the title, the tag, the effects, and both the display name
+         and the slug of every ingredient — including variant-only ones, so
+         searching "corkbulb" finds the recipe that mentions it as a swap. */ -}}
+  {{- $slugs := $potion.ingredients -}}
+  {{- range $potion.variants }}{{ $slugs = union $slugs .ingredients }}{{ end -}}
+  {{- $terms := slice $potion.title -}}
+  {{- with $potion.tag }}{{ $terms = $terms | append . }}{{ end -}}
+  {{- range $effects }}{{ $terms = $terms | append . }}{{ end -}}
+  {{- range $potion.variants }}{{ with .label }}{{ $terms = $terms | append . }}{{ end }}{{ end -}}
+  {{- range $slugs -}}
+    {{- $terms = $terms | append . -}}
+    {{- with index site.Data.skyrim.ingredients . }}{{ $terms = $terms | append .name }}{{ end -}}
+  {{- end -}}
+
+  {{- $hasNote := or $potion.description $potion.variants -}}
+  <article class="sky-card" data-sky-card data-search="{{ delimit $terms " " | lower }}">
+    {{ partial "skyrim-ingredients.html" (dict "slugs" $potion.ingredients "page" $page) }}
+    <div class="sky-body">
+      <h3 class="sky-title">{{ $potion.title }}</h3>
+      {{ partial "skyrim-chips.html" (dict "tag" $potion.tag "effects" $effects) }}
+      {{- with $potion.value }}<p class="sky-value">≈ {{ . }}</p>{{ end }}
+      {{- if $hasNote }}
+      <details class="sky-note">
+        <summary>
+          <svg class="sky-note__chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6" /></svg>
+          <span>Notes</span>
+        </summary>
+        <div class="sky-note__body">
+          {{- with $potion.description }}{{ $page.RenderString (dict "display" "block") . }}{{ end }}
+          {{- range $potion.variants }}
+          <div class="sky-variant">
+            <p class="sky-variant__label">{{ .label | default "Variant" }}</p>
+            {{ partial "skyrim-ingredients.html" (dict "slugs" .ingredients "page" $page) }}
+            {{ partial "skyrim-chips.html" (dict "effects" (.effects | default (partial "func/potion-effects.html" .ingredients))) }}
+          </div>
+          {{- end }}
+        </div>
+      </details>
+      {{- end }}
+    </div>
+    {{- if $hasNote }}
+    {{- /* The whole card opens the note. A real <button> stretched over the card rather
+           than role="button" on the <article>: one tab stop, native keyboard behaviour,
+           and no aria bolted onto a container. It ships HIDDEN and ts/skyrim-notes.ts
+           reveals it while hiding the <details> below — so with JavaScript off the
+           disclosure still works and nothing invisible is intercepting clicks.
+
+           It is last in the card so it layers over the content without needing a z-index
+           fight, and its accessible name is the only text in it. */}}
+    <button type="button" class="sky-card__hit" hidden data-sky-note-open
+            data-note-title="{{ $potion.title }}"
+            aria-haspopup="dialog" aria-expanded="false"><span class="sky-sr">Notes on {{ $potion.title }}</span></button>
+    {{- end }}
+  </article>
+  {{- end }}
+</div>
+{{- end -}}

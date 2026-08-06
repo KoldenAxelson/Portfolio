@@ -25,20 +25,18 @@
 - title: "Excaliboost"
   ingredients: [canis-root, hanging-moss, elves-ear]
   description: |
-    Due to a glitch, Fortify Marksman works on all weapons — effectively
-    doubling this potion's potency.
+    Due to a glitch, Fortify Marksman works on all weapons — effectively doubling
+    this potion's potency. As brewed it handles most of the game.
 
-    25 Canis Root on Ivar's Path. Corkbulb and Stoneflower can replace and
-    boost the other slots: swapping both in keeps Fortify One-Handed and
-    Fortify Marksman *and* adds Paralysis, because Canis Root and Corkbulb
-    Root share it.
+    Also, Juniper Berries are found everywhere near Markarth and are a solid option
+    to replace Elves Ears which is often in short supply. Bear Claws can replace
+    Hanging Moss in a pinch and show up a decent amount when walking. As long as you
+    get the Canis Root to bind the ingredients, which can be found on Ivar's Path.
 
-    Take **Purity** before brewing that one. Paralysis is a negative effect,
-    so the perk strips it on the way out — you get the two fortifies without
-    paralysing yourself for the first few seconds of the fight.
-  variants:
-    - label: "Rare Curios swap — brew with Purity"
-      ingredients: [canis-root, corkbulb-root, stoneflower-petals]
+    If you're trying to push limits you can make two SEPARATE potions using Corkbulb
+    Root with a Marksman ingredient and Stoneflower Petal with a One-Hand ingredient
+    to get some boosted effect. Although the base potion is plenty powerful enough
+    for most legendary encounters.
 
 - title: "Nord Blood"
   ingredients: [fly-amanita, mora-tapinella, dragons-tongue]

@@ -49,7 +49,7 @@
       {{- end -}}
     </span>
     {{- if $showNames }}
-    <span class="sky-ing__name">{{ $name }}{{ with $ing }}{{ with .dlc }}<span class="sky-ing__dlc" title="Added by {{ if eq . "CC" }}Creation Club{{ else if eq . "HF" }}Hearthfire{{ else if eq . "DG" }}Dawnguard{{ else if eq . "DB" }}Dragonborn{{ else }}{{ . }}{{ end }}">{{ . }}</span>{{ end }}{{ end }}</span>
+    <span class="sky-ing__name">{{ $name }}{{ with $ing }}{{ partial "skyrim-dlc.html" .dlc }}{{ end }}</span>
     {{- end }}
   </div>
   {{- end -}}

@@ -47,3 +47,11 @@ AI_PROXY_SECRET
 # Fallow
 .fallow/
 .fallowrc.json
+
+# Impeccable (design skill) — vendored agent tooling, not build input.
+# Authoring-time only; the Hugo/Tailwind build stays Node-free.
+.impeccable/
+.github/skills/
+.github/agents/
+.github/hooks/
+.claude/skills/impeccable/

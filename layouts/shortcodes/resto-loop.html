@@ -25,7 +25,6 @@
 
   `not-prose` keeps Tailwind Typography off the controls.
 */ -}}
-{{ partial "skyrim-assets.html" .Page }}
 {{- $target := .Get "target" | default "200" -}}
 {{- $want := .Get "effect" | default "Fortify Destruction" -}}
 <div class="sky-calc not-prose" data-resto>
@@ -79,16 +78,43 @@
             <option value="500">Lesser</option>
             <option value="1000">Common</option>
             <option value="2000">Greater</option>
-            <option value="3000">Grand / Black</option>
+            {{- /* Just "Grand". A black soul gem holds the same charge and places the
+                   same number, so naming both only ever made the row longer. */}}
+            <option value="3000">Grand</option>
           </select></label>
-        <p class="sky-set__hint">On apparel the soul gem scales the magnitude directly &mdash; a common soul places exactly a third of a grand one. It is the finest control here, because it gives the planner five overlapping copies of an otherwise lumpy set of reachable numbers. Applies to the final enchantment only; the gear you wear is whatever &ldquo;Each, %&rdquo; says.</p>
-        <p class="sky-set__hint">25% is the natural cap — what you can enchant without drinking anything. Raise it if your pieces are already bootstrapped. A fifth slot needs the helmet + circlet bug. <b>Which</b> pieces you wear never matters, only how many.</p>
       </fieldset>
 
     </div>
   </div>
   <p class="sky-bar__note" data-resto-group-note></p>
 
-  {{- /* Recomputed on every input with no page load, so it announces itself. */ -}}
-  <div class="sky-plan" data-resto-plan aria-live="polite"></div>
+  {{- /* The plan itself is NOT a live region. It runs to 133 words — headline, metadata,
+         every round written out, then the caveats — and every settings change rewrites
+         all of it, so nudging the target read the whole plan back from the top. The
+         headline is what changed; the steps are there to be navigated at leisure.
+
+         Two narrower regions carry it instead: this one restates the answer in a line,
+         and the detail panel inside the plan announces itself when a step is tapped. */ -}}
+  <p class="sky-sr" data-resto-status role="status" aria-live="polite"></p>
+  <div class="sky-plan" data-resto-plan></div>
+
+  {{- /* Soul gem art for the cash-out step. Resolved here because JS cannot reach Hugo
+         Pipes, same as the builder's ingredient images; a gem with no file simply does not
+         appear in the map and its step renders the name alone.
+
+         safeJS: Go's contextual escaper treats a <script> body as JavaScript and would
+         re-encode the JSON as a quoted string. */}}
+  {{- $gems := dict -}}
+  {{- range $slug := slice "petty" "lesser" "common" "greater" "grand" -}}
+    {{- $img := "" -}}
+    {{- range $ext := slice "png" "webp" "jpg" "jpeg" -}}
+      {{- if not $img }}{{ with resources.Get (printf "skyrim/soulgems/%s.%s" $slug $ext) }}{{ $img = . }}{{ end }}{{ end -}}
+    {{- end -}}
+    {{- with $img -}}
+      {{- $r := . -}}
+      {{- if gt .Width 96 }}{{ $r = .Fit "96x96 webp q85" }}{{ end -}}
+      {{- $gems = merge $gems (dict $slug $r.RelPermalink) -}}
+    {{- end -}}
+  {{- end }}
+  <script type="application/json" data-soul-images>{{ $gems | jsonify | safeJS }}</script>
 </div>

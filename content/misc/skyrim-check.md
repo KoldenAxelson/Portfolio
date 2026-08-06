@@ -14,10 +14,12 @@ updated: 2026-07-29
 
 Runs the same modules `/misc/skyrim/` ships, in a real browser, with no test
 runner — the site's build is deliberately Node-free and a framework would be the
-first thing to break that. (The same modules, not the same artefact: this page builds them
-unminified, so a minifier-induced regression would not show up here.) Open this page after touching anything under
+first thing to break that. Open this page after touching anything under
 `assets/js/skyrim/`; the tab title reads `PASS — self-check` or `FAIL (n) — self-check`, so a headless
 driver can check it without parsing the page.
+
+The unminified caveat is in the shortcode's own header, where the second esbuild pass that
+causes it lives.
 
 It asserts numbers that are documented somewhere — UESP's anchors, the 120% I
 measured in game — and structure a refactor could silently drop. Not appearance;

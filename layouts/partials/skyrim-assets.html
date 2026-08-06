@@ -1,11 +1,30 @@
 {{- /*
-  skyrim-assets — ship skyrim.css and the page bundle once, however many
-  shortcodes on the page ask for them. Same lazy, Scratch-guarded pattern as
-  partials/puzzle-assets.html and the term shortcode: a page that never mentions
-  Skyrim never downloads a byte of this.
+  skyrim-assets — ship skyrim.css and the page bundle, once, on pages that use a Skyrim
+  widget. A page that never mentions Skyrim never downloads a byte of this.
 
-  Call with the page:                 {{ partial "skyrim-assets.html" .Page }}
-  Style only (no behaviour needed):   {{ partial "skyrim-assets.html" (dict "page" .Page "styleOnly" true) }}
+  CALLED FROM THE LAYOUT, NOT FROM THE SHORTCODES, and that is the whole point.
+
+  It used to be called by each of the five shortcodes and deduplicated with a
+  `.Scratch`-backed "have I already emitted this?" flag. That is unsound, and it failed
+  in a way that cost real time to pin down: the page would come back unstyled and inert
+  after any edit, and only a full `make dev` restart fixed it.
+
+  Two things combine. A Page's `.Scratch` — and its `.Store`, which is NOT reset per
+  rebuild either, whatever you may assume — survives a dev-server rebuild, so the flag
+  stays true from the previous build. And Hugo caches rendered shortcode output, so on a
+  rebuild only the shortcode you actually touched re-renders; that one finds the flag
+  already set and emits nothing, while the other four serve cached markup that never
+  contained the tags. Net effect: no stylesheet, no script, no error.
+
+  Emitting once from the layout has no flag to go stale and no cache to fall out of. It
+  also drops the guard that used to wrap skyrim-verify.html, since the partial now runs
+  exactly once per page by construction.
+
+  NOTE: partials/puzzle-assets.html and shortcodes/term.html still use the old
+  Scratch-guarded shape and have the same latent bug.
+
+  Call with the page:                 {{ partial "skyrim-assets.html" . }}
+  Style only (no behaviour needed):   {{ partial "skyrim-assets.html" (dict "page" . "styleOnly" true) }}
 */ -}}
 {{- $page := . -}}
 {{- $styleOnly := false -}}
@@ -13,22 +32,13 @@
   {{- $page = .page -}}
   {{- $styleOnly = .styleOnly -}}
 {{- end -}}
-{{- /* Data invariants are asserted here rather than in the shortcodes so they run once
-       per page however many widgets ask. It has to sit BEHIND the Scratch guard to do
-       that — /misc/skyrim/ calls five shortcodes, and this partial's carrier count builds
-       a dict with `merge` inside a 732-iteration loop, so running it per shortcode was
-       five quadratic passes over 183 ingredients for one answer. */ -}}
-{{- if not ($page.Scratch.Get "skyrimVerified") -}}
-  {{- partial "skyrim-verify.html" $page -}}
-  {{- $page.Scratch.Set "skyrimVerified" true -}}
-{{- end -}}
-{{- if not ($page.Scratch.Get "skyrimCss") -}}
-  {{- $css := resources.Get "css/skyrim.css" | minify | fingerprint -}}
-  <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" />
-  {{- $page.Scratch.Set "skyrimCss" true -}}
-{{- end -}}
-{{- if and (not $styleOnly) (not ($page.Scratch.Get "skyrimJs")) -}}
+{{- /* Data invariants, asserted once per page. This builds a dict with `merge` inside a
+       732-iteration loop, so running it per shortcode was five quadratic passes over 183
+       ingredients for one answer — which is why it was behind the old guard. */ -}}
+{{- partial "skyrim-verify.html" $page -}}
+{{- $css := resources.Get "css/skyrim.css" | minify | fingerprint -}}
+<link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" />
+{{- if not $styleOnly -}}
   {{- $js := resources.Get "js/skyrim/main.ts" | js.Build (dict "minify" true "target" "es2018" "format" "iife") | fingerprint -}}
   <script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
-  {{- $page.Scratch.Set "skyrimJs" true -}}
 {{- end -}}
