@@ -16,7 +16,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 title: "Skyrim"
 description: "Potion recipes, a mixture builder, and planners for the Restoration loop and the enchanting ceiling. Anniversary Edition, Creation Club on, no mods."
-lead: "The recipes I keep coming back to, and the notes that go with them."
+lead: "My personal Skyrim toolkit"
 blurb: "My working Skyrim reference — go-to potion recipes, their real effects, and where to farm the ingredients."
 icon: "wrench-screwdriver"
 container: "wide"

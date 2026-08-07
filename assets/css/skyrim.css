@@ -250,16 +250,29 @@
   padding: 0.9rem 1.1rem; border-bottom: 1px solid rgb(var(--c-border));
 }
 .sky-bar__field { display: flex; flex-direction: column; gap: 0.3rem; min-width: 0; }
-.sky-bar__field--grow { flex: 1 1 14rem; }
+/* 14rem was a FLOOR, not a preference: the select could not be laid out narrower than
+   224px, so on a phone the bar ran out of room and broke the config toggle onto a line of
+   its own — a 38px circle with 280px of nothing beside it. Basis 0 with min-width 0 lets
+   the select take whatever is left instead, which is the right trade because it is the
+   only control here that can lose width without losing meaning. */
+.sky-bar__field--grow { flex: 1 1 0; min-width: 0; }
 .sky-bar__label { font: 600 var(--sky-t-micro) var(--font-mono, ui-monospace, monospace); letter-spacing: 0.14em; text-transform: uppercase; color: rgb(var(--c-muted)); }
 .sky-bar select, .sky-bar input[type="number"] {
   font: var(--sky-t-body)/1.3 var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-fg));
   background: rgb(var(--c-bg)); border: 1px solid rgb(var(--c-border)); border-radius: 0.5rem;
   padding: 0.45rem 0.6rem;
 }
-.sky-bar select { width: 100%; }
+/* Truncates rather than wraps the bar. "Fortify Marksman (Arch…" still names the effect,
+   and the full text is one tap away in the open select. */
+.sky-bar select { width: 100%; text-overflow: ellipsis; }
 .sky-bar input[type="number"] { width: 6rem; text-align: right; }
 .sky-bar select:focus-visible, .sky-bar input:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.5); outline-offset: 1px; }
+/* One row, always. Everything but the select is a fixed width, and the select can shrink,
+   so there is nothing left to wrap for. */
+@media (max-width: 30rem) {
+  .sky-bar { flex-wrap: nowrap; gap: 0.6rem; padding: 0.8rem 0.9rem; }
+  .sky-bar input[type="number"] { width: 4.6rem; }
+}
 /* A disabled field here used to be byte-identical to an editable one — same colour,
    background, border and opacity — so "Potion %" sat there looking typeable, rejecting
    every keystroke, and reading 0 while the sentence below it said 32.4%. It is not inert:
@@ -407,11 +420,14 @@
 
 /* The steps, written out and tappable. */
 .sky-steps { display: flex; flex-direction: column; gap: 0.35rem; margin: 0; padding: 0; list-style: none; }
-/* Three columns — round, wear, brew — so the marks line up down the list and the eye reads
-   a column instead of re-parsing a sentence per row. The gem used to be a fourth; it is a
-   property of the plan rather than of a round, and now sits beside the answer. */
+/* Three EQUAL columns — round, wear, brew — each holding its content at a different edge:
+   the number at the start, the pips in the middle, the brew at the end. Sized by content
+   they bunched at the left and left a long empty tail; even thirds put each mark in the
+   same place on every row, which is what makes the list scannable down rather than across.
+   The gem used to be a fourth column; it is a property of the plan rather than of a round,
+   and now sits beside the answer. */
 .sky-step {
-  display: grid; grid-template-columns: 1.4rem auto 1fr; align-items: center; gap: 0.9rem;
+  display: grid; grid-template-columns: repeat(3, 1fr); align-items: center; gap: 0.5rem;
   width: 100%; text-align: left; cursor: pointer;
   padding: 0.6rem 0.85rem; border: 1px solid rgb(var(--c-border)); border-radius: 0.55rem;
   background: rgb(var(--c-bg)); font: inherit; font-size: var(--sky-t-body); line-height: 1.5; color: rgb(var(--c-muted));
@@ -421,6 +437,7 @@
 .sky-step:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.5); outline-offset: 2px; }
 .sky-step.is-open { border-color: rgb(var(--c-accent)); background: rgb(var(--c-accent) / 0.08); }
 .sky-step > b {
+  justify-self: start;
   display: grid; place-items: center; width: 1.4rem; height: 1.4rem;
   border-radius: 999px; background: rgb(var(--c-accent)); color: rgb(var(--c-bg));
   font: 700 var(--sky-t-small) var(--font-mono, ui-monospace, monospace);
@@ -429,18 +446,30 @@
 
 /* How many pieces to have on, as filled pips out of the set you own. A naked round is a
    row of empty rings, which is the state no wording ever made this obvious.
+
+   Same radius as the round badge to its left: they are the row's two circular marks, and
+   at 8.8px against the badge's 22.4px the pips read as punctuation rather than as data.
+
    --c-muted for the empty ring rather than --c-border: the border token measures 1.4:1 on
    the dark page, and a mark carrying information has to clear 3:1 like any other
    non-text graphic. */
-.sky-step__pips { display: inline-flex; gap: 0.3rem; }
+.sky-step__wear { justify-self: center; }
+.sky-step__pips { display: inline-flex; gap: 0.4rem; }
 .sky-step__pips i {
-  width: 0.55rem; height: 0.55rem; border-radius: 999px;
+  width: 1.4rem; height: 1.4rem; border-radius: 999px;
   border: 1.5px solid rgb(var(--c-muted)); background: transparent;
 }
 .sky-step__pips i.is-on { background: rgb(var(--c-accent)); border-color: rgb(var(--c-accent)); }
+/* Five pips at full size plus a badge and a five-digit brew do not share 320px. */
+@media (max-width: 30rem) {
+  .sky-step { gap: 0.35rem; }
+  .sky-step__pips { gap: 0.25rem; }
+  .sky-step__pips i { width: 1rem; height: 1rem; }
+}
 
 /* The only number on the row, so it can carry weight without competing with anything. */
 .sky-step__brew {
+  justify-self: end;
   font: 600 var(--sky-t-lead)/1 var(--font-mono, ui-monospace, monospace);
   color: rgb(var(--c-fg)); font-variant-numeric: tabular-nums;
 }
