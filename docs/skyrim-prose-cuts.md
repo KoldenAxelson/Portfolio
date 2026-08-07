@@ -288,6 +288,38 @@ with no explanation of how you would ever wear one.
 
 ---
 
+## Enchant max — the last of it
+
+> Every trick that makes an enchantment come out stronger, and — the part worth having —
+> what each one is actually worth once the others are already on. Tick what you have.
+
+The section intro. The widget is a list of tricks with a number beside each.
+
+> Brew the best Fortify Enchanting potion you can, place better gear with it, and that gear
+> brews a better potion. Untick to type a potion strength in by hand.
+
+> Strongest this enchantment gets · reads 32% in game · effective skill 134.2 · ×1.3 from
+> the potion · The fair loop settles after 3 passes at 32.0% Fortify Alchemy a piece —
+> 128.0% worn, brewing a 34.2% Fortify Enchanting potion. · What each is worth with
+> everything else on, and what you would place without it:
+
+A heading restating the widget's question, a metadata row, the loop's three numbers spelled
+out in a sentence, and a label over a list that is self-evidently a list of levers. The two
+numbers worth keeping — the potion and the gear — are in the answer row under a vial and a
+shirt. **`effective skill` and `reads N in game` left with it**; the first is the quantity
+the whole quadratic turns on, and the second is what the game shows you, neither of which
+is now anywhere on screen.
+
+### The five trick notes
+
+Still in `data/skyrim/enchant-tricks.yaml`, no longer rendered — two or three sentences
+each, five of them stacked inside the panel that is the widget's main question. The one
+fact in them that is not on the page: **Ahzidal's Genius may be +10 skill rather than +10%,
+which would make it worth far more with a strong potion.** The page's derivation says this
+in its own words, so it survives; the other four are gone from the interface entirely.
+
+---
+
 ## Still open
 
 - The two `” ```text ” ` tables in the resto derivation — the measured run and the gem
