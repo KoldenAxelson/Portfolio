@@ -145,9 +145,6 @@ exact.
 
 ## Enchant max {#ceiling}
 
-Every trick that makes an enchantment come out stronger, and — the part worth having —
-what each one is actually worth once the others are already on. Tick what you have.
-
 {{< enchant-max effect="Fortify Alchemy" >}}
 
 <details class="sky-more">

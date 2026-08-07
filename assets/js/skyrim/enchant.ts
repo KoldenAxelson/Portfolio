@@ -287,7 +287,19 @@ export function maximise(s: MaxSettings, tricks: Trick[]): MaxResult {
  */
 const unitOf = (unit: string): string => (unit === 'pts' ? 'pts' : '%');
 
-function resultMarkup(result: MaxResult, potionPercent: number, loop: FairLoop | null, unit: string): string {
+/**
+ * The answer row's three marks. The bullseye is the resto planner's, deliberately — both
+ * modules end on "here is the number you can place", and it should look like one idea.
+ * The vial is what you drink; the shirt is what you are wearing while you drink it.
+ */
+const ICON = {
+  target: '<svg class="sky-plan__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="8.6" /><circle cx="12" cy="12" r="4.2" /><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none" /></svg>',
+  vial: '<svg class="sky-plan__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 2h6M10 2v7.5l-3.4 8A2 2 0 0 0 8.4 21h7.2a2 2 0 0 0 1.8-3.5L14 9.5V2" /><path d="M7.6 15.5h8.8" /></svg>',
+  gear: '<svg class="sky-plan__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8.5 3 5 4.6a2 2 0 0 0-1.1 1.6L3.4 9.4a1 1 0 0 0 .8 1.1l2 .4V20a1 1 0 0 0 1 1h9.6a1 1 0 0 0 1-1v-9.1l2-.4a1 1 0 0 0 .8-1.1l-.5-3.2A2 2 0 0 0 19 4.6L15.5 3" /><path d="M8.5 3a3.5 3.5 0 0 0 7 0" /></svg>',
+};
+
+function resultMarkup(result: MaxResult, potionPercent: number, loop: FairLoop | null,
+  unit: string, pieces: number): string {
   const rows = result.contributions.map((contribution) => {
     const share = result.magnitude > 0 ? (contribution.worth / result.magnitude) * 100 : 0;
     return (
@@ -306,28 +318,37 @@ function resultMarkup(result: MaxResult, potionPercent: number, loop: FairLoop |
   }).join('');
 
   const unsure = result.contributions.some((contribution) => !contribution.sure);
-  const loopLine = loop
-    ? loop.runaway
-      ? `<p class="sky-plan__note">The fair loop has <b>no fixed point</b> with these levers on this many slots — each pass makes better gear than the last, forever, with no Restoration glitch involved. There is no maximum to report.</p>`
-      : `<p class="sky-plan__count">The fair loop settles after <b>${loop.rounds}</b> passes at ` +
-        `<b>${formatNumber(loop.piecePercent)}%</b> Fortify Alchemy a piece — ` +
-        `<b>${formatNumber(loop.gearPercent)}%</b> worn, brewing a ` +
-        `<b>${formatNumber(loop.potionPercent)}%</b> Fortify Enchanting potion.</p>`
+  // Only the runaway case still says anything in prose: it is the one outcome with no
+  // number to show, so a sentence is the only way to report it.
+  const loopLine = loop && loop.runaway
+    ? '<p class="sky-plan__note">The fair loop has <b>no fixed point</b> with these levers on this many slots — each pass makes better gear than the last, forever, with no Restoration glitch involved. There is no maximum to report.</p>'
     : '';
   if (loop && loop.runaway) return loopLine;
+  // Three facts, three columns — the same answer row the resto planner uses, and for the
+  // same reason: what it places, and the two things the fair loop settled on to get there.
+  //
+  // What is NOT here any more: a heading restating the widget's own question, a metadata
+  // row (reads N in game, effective skill, x1.3 from the potion), a sentence spelling out
+  // the loop's three numbers in prose, and a label over a list that is self-evidently a
+  // list of levers. The two numbers worth keeping out of all of that are the potion and
+  // the gear, and they are here under a vial and a shirt.
+  const answer = '<div class="sky-plan__answer sky-plan__answer--three">' +
+    `<p class="sky-plan__value">${ICON.target}` +
+    `<span>${formatNumber(result.magnitude)}<i>${unitOf(unit)}</i></span></p>` +
+    (loop
+      ? `<p class="sky-plan__side">${ICON.vial}<b>${formatNumber(loop.potionPercent)}%</b>` +
+        '<span class="sky-sr"> Fortify Enchanting potion.</span></p>' +
+        // Per piece and how many, not the summed total. "128%" says nothing about how it
+        // was arrived at; "32.0% x4" is the same fact with the arithmetic left in, which
+        // is the whole reason the gear column is worth a third of the row.
+        `<p class="sky-plan__side">${ICON.gear}<b>${formatNumber(loop.piecePercent)}%</b>` +
+        `<i class="sky-plan__times">&times;${pieces}</i>` +
+        `<span class="sky-sr"> Fortify Alchemy on each of ${pieces} pieces.</span></p>`
+      : `<p class="sky-plan__side">${ICON.vial}<b>${formatNumber(potionPercent)}%</b>` +
+        '<span class="sky-sr"> Fortify Enchanting potion.</span></p>') +
+    '</div>';
   return [
-    `<h3 class="sky-plan__head">Strongest this enchantment gets</h3>`,
-    `<p class="sky-plan__value">${formatNumber(result.magnitude)}<i>${unitOf(unit)}</i></p>`,
-    // aria-hidden on the dividers: decorative separators between metadata fields, and the
-    // only text here under the contrast floor — deliberately, since they are punctuation
-    // rather than words. Same treatment as the resto planner's.
-    // Spans so each field wraps as a unit; same as the resto planner's meta row.
-    `<p class="sky-plan__meta"><span>reads <b>${formatWhole(result.reads)}${unitOf(unit)}</b> in game</span><i aria-hidden="true">·</i>`,
-    `<span>effective skill <b>${formatWhole(result.effectiveSkill)}</b></span>`,
-    potionPercent > 0 ? `<i aria-hidden="true">·</i><span>×<b>${formatNumber(1 + potionPercent / 100)}</b> from the potion</span>` : '',
-    `</p>`,
-    loopLine,
-    `<p class="sky-plan__count">What each is worth with everything else on, and what you would place without it:</p>`,
+    answer,
     `<ul class="sky-worths">${rows}</ul>`,
     unsure ? `<p class="sky-plan__note">Rows marked <em>not confirmed</em> use a number this page is not sure of — see data/skyrim/enchant-tricks.yaml for what is in doubt.</p>` : '',
   ].join('');
@@ -353,10 +374,16 @@ function setUp(root: HTMLElement): void {
   // has to clear the box, and coming back must not silently leave the perk off.
   let perkWanted = true;
 
+  const trickButtons = queryAll<HTMLButtonElement>(root, '[data-trick]');
+
   const read = (): MaxSettings => {
     const option = picker.selectedOptions[0];
     const active = new Set<string>();
-    for (const trick of tricks) if (readFlag(root, trick.id)) active.add(trick.id);
+    // aria-pressed, not a checkbox's `.checked`: these are toggle buttons now, and the
+    // attribute the CSS colours them by is the one the maths reads.
+    for (const button of trickButtons) {
+      if (button.getAttribute('aria-pressed') === 'true') active.add(button.dataset.trick || '');
+    }
     return {
       enchanting: readNumber(root, 'enchanting', 100),
       enchanter: readNumber(root, 'enchanter', 5),
@@ -378,7 +405,7 @@ function setUp(root: HTMLElement): void {
     const potion = loop ? (loop.runaway ? Infinity : loop.potionPercent) : settings.potionPercent;
     const result = maximise(settings, tricks);
     const unit = picker.selectedOptions[0]?.dataset.unit || 'pct';
-    output.innerHTML = resultMarkup(result, potion, loop, unit);
+    output.innerHTML = resultMarkup(result, potion, loop, unit, settings.pieces);
 
     // Mirror the loop's own answer into the disabled Potion % box. It used to sit at 0
     // while the sentence below it said 32.4% — two contradictory readouts of one quantity,
@@ -405,16 +432,11 @@ function setUp(root: HTMLElement): void {
     if (box instanceof HTMLInputElement) box.disabled = readFlag(root, 'fair');
   };
 
-  /** Two Black Book boons, one at a time — ticking either has to clear the other. */
-  const syncExclusions = (changed: HTMLElement): void => {
-    const id = changed.getAttribute('data-f');
-    const trick = tricks.find((candidate) => candidate.id === id);
-    if (!trick || !(changed as HTMLInputElement).checked) return;
-    for (const other of trick.excludes || []) {
-      const box = findField(root, other);
-      if (box instanceof HTMLInputElement) box.checked = false;
-    }
-  };
+  // No exclusion sync. It cleared Seeker of Sorcery when you ticked Shadows, because you
+  // can only hold one boon — but you can swap Black Books mid-run and bank both, Shadows
+  // while you brew and Sorcery while you place, so the widget was refusing to model a
+  // build you can actually have. `excludes` is still in the data for a pair that really
+  // is exclusive.
 
   const syncPicker = (): void => {
     const option = picker.selectedOptions[0];
@@ -440,13 +462,19 @@ function setUp(root: HTMLElement): void {
 
   for (const control of queryAll<HTMLElement>(root, 'input, select')) {
     const onChange = (): void => {
-      syncExclusions(control);
       syncPicker();
       syncPotion();
       scheduleRender();
     };
     control.addEventListener('input', onChange);
     control.addEventListener('change', onChange);
+  }
+
+  for (const button of trickButtons) {
+    button.addEventListener('click', () => {
+      button.setAttribute('aria-pressed', String(button.getAttribute('aria-pressed') !== 'true'));
+      render();
+    });
   }
 
   setUpConfigPanel(root);

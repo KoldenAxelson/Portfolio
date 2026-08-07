@@ -44,8 +44,14 @@
     </label>
     {{- /* Rendered hidden and revealed by resto.ts. With JavaScript off the panel
            below stays open, so nothing hides behind a control that cannot work. */ -}}
-    <button type="button" class="sky-bar__toggle" data-config-toggle aria-expanded="true" hidden>
-      <span aria-hidden="true">+</span> Configuration
+    {{- /* A gear in a circle, crossing to an X when the panel is open — the same circular
+           icon-button idiom as the screen-to-screen back control and the drawer close. It
+           carried "+ Configuration" in tracked mono, which is a lot of row for a thing you
+           open once and forget. Both glyphs are in the button and CSS swaps them, so the
+           label never lags the state. */}}
+    <button type="button" class="sky-bar__toggle" data-config-toggle aria-expanded="true" aria-label="Configuration" title="Configuration" hidden>
+      <svg class="sky-bar__toggle-gear" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="3.1" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9v.09a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z" /></svg>
+      <svg class="sky-bar__toggle-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 18 18 6M6 6l12 12" /></svg>
     </button>
   </div>
 

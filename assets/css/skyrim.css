@@ -270,18 +270,26 @@
   color: rgb(var(--c-muted)); cursor: not-allowed;
   border-style: dashed; background: rgb(var(--c-border) / 0.25);
 }
+/* A gear that becomes an X — the same circular icon button the back control and the drawer
+   close use, so "a quiet control" is one shape across the page. Both glyphs ship in the
+   button and this swaps them, so the icon can never lag the panel it describes. */
 .sky-bar__toggle {
-  display: inline-flex; align-items: center; gap: 0.35rem; cursor: pointer; white-space: nowrap;
-  padding: 0.45rem 0.75rem; border: 1px dashed rgb(var(--c-border)); border-radius: 0.5rem;
+  display: grid; place-items: center; width: 2.4rem; height: 2.4rem; flex: none; padding: 0; cursor: pointer;
+  border: 1.5px dashed rgb(var(--c-border)); border-radius: 999px;
   background: transparent; color: rgb(var(--c-muted));
-  font: var(--sky-t-body) var(--font-mono, ui-monospace, monospace); letter-spacing: 0.04em;
-  transition: border-color 0.15s ease, color 0.15s ease;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
 }
+.sky-bar__toggle svg { grid-area: 1 / 1; width: 1.15rem; height: 1.15rem; }
+.sky-bar__toggle .sky-bar__toggle-x { display: none; }
 .sky-bar__toggle:hover { border-color: rgb(var(--c-accent) / 0.6); color: rgb(var(--c-fg)); }
 .sky-bar__toggle:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.5); outline-offset: 2px; }
-.sky-bar__toggle span { font-weight: 700; color: rgb(var(--c-accent)); transition: transform 0.15s ease; display: inline-block; }
-.sky-bar__toggle.is-open { border-style: solid; border-color: rgb(var(--c-accent) / 0.5); color: rgb(var(--c-fg)); }
-.sky-bar__toggle.is-open span { transform: rotate(45deg); }
+.sky-bar__toggle.is-open {
+  border-style: solid; border-color: rgb(var(--c-accent)); color: rgb(var(--c-accent));
+  background: rgb(var(--c-accent) / 0.1);
+}
+.sky-bar__toggle.is-open .sky-bar__toggle-gear { display: none; }
+.sky-bar__toggle.is-open .sky-bar__toggle-x { display: block; }
+@media (pointer: coarse) { .sky-bar__toggle { width: 2.75rem; height: 2.75rem; } }
 
 /* Configuration panel — collapsed by default, but rendered open so it still
    reads correctly with JavaScript off. */
@@ -366,7 +374,13 @@
   display: flex; align-items: center; justify-content: center; gap: 0.55rem;
 }
 /* A hairline, so the halves read as two answers rather than one long line. */
-.sky-plan__gem { border-left: 1px solid rgb(var(--c-border)); }
+.sky-plan__gem, .sky-plan__side { border-left: 1px solid rgb(var(--c-border)); }
+/* The enchant calculator runs three: what it places, the potion, the gear. */
+.sky-plan__side b { font: 600 var(--sky-t-lead) var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-fg)); font-variant-numeric: tabular-nums; }
+/* The multiplier rides the number rather than sitting beside it as an equal: "32.0% x4"
+   is one fact about the gear, not two. */
+.sky-plan__times { font-style: normal; font-size: var(--sky-t-small); color: rgb(var(--c-muted)); margin-left: -0.2rem; }
+.sky-plan__answer--three .sky-plan__value { font-size: 1.75rem; }
 .sky-plan__gem img { width: 2.4rem; height: 2.4rem; object-fit: contain; flex: none; }
 .sky-plan__gem b { font-size: var(--sky-t-lead); font-weight: 600; color: rgb(var(--c-fg)); }
 /* --c-fg, not the accent the number carries: two accents side by side would make the icon
@@ -375,7 +389,9 @@
 /* Stacked on a phone — 36px of tabular figures and a 38px gem do not share 320px. */
 @media (max-width: 30rem) {
   .sky-plan__answer { flex-direction: column; gap: 0.6rem; }
-  .sky-plan__gem { border-left: 0; border-top: 1px solid rgb(var(--c-border)); padding-top: 0.6rem; width: 100%; }
+  .sky-plan__gem, .sky-plan__side {
+    border-left: 0; border-top: 1px solid rgb(var(--c-border)); padding-top: 0.6rem; width: 100%;
+  }
 }
 /* `em`, not a fixed size: the unit rides the answer rather than drifting from it. */
 .sky-plan__value i { font-style: normal; font-size: 0.5em; margin-left: 0.1rem; }
@@ -770,16 +786,41 @@
 .sky-chk span { flex: 1; color: rgb(var(--c-fg)); }
 .sky-chk em { font-style: normal; font: var(--sky-t-small) var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-muted)); }
 
-/* Enchant max — the trick list, and what each one is worth. */
-.sky-set--wide { grid-column: 1 / -1; }
-.sky-trick {
-  display: grid; grid-template-columns: auto 1fr; gap: 0.15rem 0.55rem; align-items: start;
-  padding: 0.45rem 0; cursor: pointer;
+/* Enchant max — the tricks, as a row of marks. */
+/* The fieldset is the row: five stacked checkbox rows with a sentence each was a column of
+   reading where the question is "which of these do you have". */
+.sky-set--wide {
+  grid-column: 1 / -1; flex-direction: row; flex-wrap: wrap;
+  gap: 1.4rem 1.6rem; align-items: flex-start; justify-content: center;
 }
-.sky-trick + .sky-trick { border-top: 1px solid rgb(var(--c-border) / 0.6); }
-.sky-trick > input { margin-top: 0.25rem; }
-.sky-trick__name { font-size: var(--sky-t-body); font-weight: 600; }
-.sky-trick__note { grid-column: 2; font-size: var(--sky-t-body); line-height: 1.5; color: rgb(var(--c-muted)); font-style: normal; }
+/* The legend centres with them: five marks centred under a label pinned to the left edge
+   reads as two things that came from different layouts. */
+.sky-set--wide legend { flex-basis: 100%; text-align: center; }
+.sky-trick { display: flex; flex-direction: column; align-items: center; gap: 0.45rem; width: 5.5rem; }
+/* The same circular toggle as the Configuration button and the DLC badges, and the same
+   two channels: pressed is a solid accent ring over a tint, unpressed a dashed grey one,
+   so the state survives greyscale. */
+.sky-trick__b {
+  display: grid; place-items: center; width: 2.9rem; height: 2.9rem; padding: 0; cursor: pointer;
+  border: 1.5px dashed rgb(var(--c-border)); border-radius: 999px;
+  background: transparent; color: rgb(var(--c-muted));
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+.sky-trick__icon { width: 1.5rem; height: 1.5rem; }
+.sky-trick__b:hover { border-color: rgb(var(--c-accent) / 0.6); color: rgb(var(--c-fg)); }
+.sky-trick__b:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.5); outline-offset: 2px; }
+.sky-trick__b[aria-pressed="true"] {
+  border-style: solid; border-color: rgb(var(--c-accent)); color: rgb(var(--c-accent));
+  background: rgb(var(--c-accent) / 0.12);
+}
+/* The label under the mark, not beside it — five of them across one row, so each name has
+   to fit a column rather than a line. */
+.sky-trick__name {
+  font-size: var(--sky-t-small); line-height: 1.3; text-align: center; color: rgb(var(--c-muted));
+}
+.sky-trick__b[aria-pressed="true"] + .sky-trick__name { color: rgb(var(--c-fg)); font-weight: 600; }
+@media (pointer: coarse) { .sky-trick__b { width: 3.25rem; height: 3.25rem; } }
+@media (prefers-reduced-motion: reduce) { .sky-trick__b { transition: none; } }
 
 .sky-worths { display: flex; flex-direction: column; gap: 0.35rem; margin: 0; padding: 0; list-style: none; }
 /* The bar is a background wash rather than a separate element, so a long label never
