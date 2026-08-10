@@ -1,0 +1,270 @@
+{{- /*
+  ancestry — the ancestry composition breakdown: rings, star rarity, drill-downs.
+
+    {{< ancestry >}}          reads site.Data.genes
+    {{< ancestry "genes" >}}  same thing, explicit
+
+  SHAPE. data/genes.yaml holds tiers → groups → children. Tiers are headings,
+  groups carry a ring, children are rows. That split is deliberate — see SCALING.
+
+  RINGS. The circle trackers are the colophon's, same component: viewBox 0 0 36 36,
+  r=15.9155 so the circumference is ~100 and `stroke-dasharray: "<pct> 100"` reads
+  straight off as a percentage, rotated -90 so it starts at twelve o'clock. This
+  section carries [data-perf-meters] and [data-perf-panel] so ts/perf-meters.ts
+  picks the rings up and sweeps them on scroll — no toggle buttons here, which that
+  module already tolerates (it only looks for them, it does not require them).
+
+  Two departures from the colophon's version, both on purpose:
+
+    STATIC FIRST. The colophon renders `stroke-dasharray="0 100"` and a literal
+    `0`, and depends on JS to fill them in. Here the real values are in the HTML
+    and the module resets to zero and sweeps back up. Identical on screen, but the
+    numbers survive with JS off, which is what Product Principle 1 asks for.
+
+    NO TRAFFIC LIGHT. The colophon colours by threshold — green ≥90, amber ≥50,
+    red below. Those are Lighthouse's semantics and they are nonsense here: 54.4%
+    British & Irish is not "needs improvement". Every ring is --c-accent, which
+    also means the whole page swaps green→amber with the theme for free.
+
+  RARITY. Two ratings per population, both derived — the head-count divided by the
+  matching denominator in meta gives "1 in N", and the star count is the number of
+  digits in N (see func/rarity-stars.html). Nothing is hand-assigned.
+
+  Every rating is printed WITH its "1 in N", in the collapsed row and in the open
+  detail. That pairing is load-bearing: more stars normally means more of a thing,
+  so stars alone would read backwards, and the alternative was a key above the
+  widget explaining which way the scale ran. A chart that needs a sentence telling
+  you how to read it is a chart that hasn't finished. Seeing ★★★★☆ against "1 in
+  5,437" next to ★☆☆☆☆ against "1 in 5" settles the direction in one glance.
+
+  A row can be missing an axis — there is no census line for Belarusian or Spanish
+  ancestry — and a missing axis renders as an em dash with the reason underneath,
+  not as zero stars. Zero stars would read as "vanishingly rare", which is the
+  opposite of "nobody counted".
+
+  SCALING. Every `pct` in the data file is a percentage of the whole report, and
+  every ring's arc is that number, full stop. No normalising, no scaling a child
+  against its parent. An early draft scaled children against their parent so Basque
+  at 0.3% would be visible, and the result was a page where two identical arcs
+  meant 31.5% and 1.2% depending on which group you had open. Children are text
+  rows with a printed percentage instead — the honest version of the same
+  information, and the reason only groups get rings.
+
+  NO SOURCE LINKS. `source` is still in the data file for provenance; it is not
+  rendered. This is a personal page, not a paper, and 21 SOURCE links were louder
+  than anything they pointed at.
+
+  ASSERTIONS. Children must sum to their group and groups to their tier, within
+  0.15 to absorb 23andMe's own rounding. These are warnf, not errorf: a report
+  that genuinely does not sum is a real thing that could be pasted in here, and a
+  hard build failure would be the wrong response to it. A missing data file IS an
+  errorf — that one is always a mistake.
+
+  `not-prose`: the page sets `prose: true`, and Typography would restyle the
+  summary rows and the star rows. Same contract as puzzle-solver.
+*/ -}}
+
+{{- $key := (.Get 0) | default "genes" -}}
+{{- $d := index site.Data $key -}}
+{{- if not $d -}}
+  {{- errorf "ancestry: no data/%s.yaml (page: %s)" $key .Page.RelPermalink -}}
+{{- end -}}
+{{- if not $d.tiers -}}
+  {{- errorf "ancestry: data/%s.yaml has no `tiers` key (page: %s)" $key .Page.RelPermalink -}}
+{{- end -}}
+{{- $wpop := $d.meta.world_population -}}
+{{- $upop := $d.meta.us_population -}}
+{{- if or (not $wpop) (not $upop) -}}
+  {{- errorf "ancestry: data/%s.yaml needs meta.world_population and meta.us_population — the star ratings are derived from them (page: %s)" $key .Page.RelPermalink -}}
+{{- end -}}
+
+{{- $grand := 0.0 -}}
+{{- range $d.tiers }}{{ $grand = add $grand (.pct | default 0.0) }}{{ end -}}
+
+{{- /* One rarity axis: label, stars, head-count, and what was counted. Rendered
+       from a dict so the group and child bodies cannot drift apart. */ -}}
+{{- define "partials/inline/rarity-axis" }}
+  {{- $ax := .axis }}
+  <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+    <span class="flex w-24 shrink-0 items-center gap-1.5 font-mono text-[0.65rem] uppercase tracking-widest text-muted">
+      {{ partial "func/svg-icon.html" (dict "name" .icon "class" "h-3.5 w-3.5 shrink-0") }}{{ .label }}
+    </span>
+    {{- if $ax }}
+    {{- $oneIn := int (math.Round (div (float .pop) (float $ax.count))) }}
+    {{ partial "func/rarity-stars.html" (dict "oneIn" $oneIn) }}
+    <span class="font-mono text-base font-semibold tabular-nums text-fg">1 in {{ lang.FormatNumberCustom 0 $oneIn }}</span>
+    <span class="min-w-0 text-sm text-muted">{{ partial "func/rarity-count.html" $ax.count }} {{ $ax.of }}</span>
+    {{- else }}
+    <span class="font-mono text-base text-muted" aria-label="not counted">&mdash;</span>
+    <span class="min-w-0 text-sm text-muted">not counted separately</span>
+    {{- end }}
+  </div>
+{{- end -}}
+
+<section class="ancestry not-prose space-y-10" aria-label="Ancestry composition" data-perf-meters>
+  <div data-perf-panel="ancestry">
+
+
+  {{- range $ti, $tier := $d.tiers }}
+  {{- $tierPct := $tier.pct | default 0.0 }}
+
+  {{- $gsum := 0.0 -}}
+  {{- $gpriced := 0 -}}
+  {{- range $tier.groups }}
+    {{- if .pct }}{{ $gpriced = add $gpriced 1 }}{{ end -}}
+    {{- $gsum = add $gsum (.pct | default 0.0) -}}
+  {{- end -}}
+  {{- if and $tier.pct (gt $gpriced 0) (gt (math.Abs (sub $gsum $tierPct)) 0.15) -}}
+    {{- warnf "ancestry: tier %q is %.1f%% but its groups sum to %.1f%%" $tier.name $tierPct $gsum -}}
+  {{- end -}}
+
+  {{- /* A `footnote` tier is one small line, not a band. Trace Ancestry is 0.2%
+         of unpainted chromosome; given a heading and a disclosure triangle it
+         carried the same visual weight as British & Irish at 54.4%, which is a
+         270-fold overstatement done purely by layout. */ -}}
+  {{- if $tier.footnote }}
+  <p class="pt-1 font-mono text-[0.6rem] uppercase tracking-widest text-muted/70">
+    {{ $tier.name }}{{ with $tier.pct }} {{ printf "%.1f" . }}%{{ end }}
+    {{- range $tier.groups }} &middot; {{ .name }}{{ end }}
+  </p>
+  {{- else }}
+
+  <div>
+    {{- /* Tier header. A heading, not a data point — it gets no ring. The tier is
+           the sum of the rings underneath it, so drawing one here would be the
+           same quantity twice and would read as a seventh population. */ -}}
+    <div class="flex items-baseline justify-between gap-3 border-b border-border/60 pb-2">
+      <h2 class="font-mono text-xs uppercase tracking-widest text-fg">{{ $tier.name }}</h2>
+      {{- with $tier.pct }}
+      <span class="font-mono text-xs tabular-nums text-muted">{{ printf "%.1f" . }}%</span>
+      {{- end }}
+    </div>
+
+    {{- with $tier.note }}
+    <p class="mt-3 max-w-prose text-sm leading-relaxed text-muted">{{ $.Page.RenderString (dict "display" "inline") . }}</p>
+    {{- end }}
+
+    {{- with $tier.groups }}
+    <div class="mt-5 space-y-1">
+      {{- range $group := . }}
+      {{- $gpct := $group.pct | default 0.0 }}
+
+      {{- $csum := 0.0 -}}
+      {{- range $group.children }}{{ $csum = add $csum (.pct | default 0.0) }}{{ end -}}
+      {{- if and $group.children (gt (math.Abs (sub $csum $gpct)) 0.15) -}}
+        {{- warnf "ancestry: group %q is %.1f%% but its children sum to %.1f%%" $group.name $gpct $csum -}}
+      {{- end -}}
+
+      {{- $openable := or $group.note $group.children }}
+      {{- if $openable }}
+      <details class="group/anc scroll-mt-24 rounded-lg px-3 py-3 transition-colors hover:bg-border/25 open:bg-border/20">
+        <summary class="flex cursor-pointer list-none items-center gap-4 [&::-webkit-details-marker]:hidden">
+          {{- with $group.pct }}
+          <svg viewBox="0 0 36 36" class="h-14 w-14 shrink-0" role="img" aria-label="{{ printf "%.1f" . }} percent of the report">
+            <circle cx="18" cy="18" r="15.9155" fill="none" stroke="rgb(var(--c-border))" stroke-width="2.5" />
+            <circle class="perf-ring" cx="18" cy="18" r="15.9155" fill="none" stroke="rgb(var(--c-accent))" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="{{ printf "%.2f" . }} 100" transform="rotate(-90 18 18)" data-ring-target="{{ printf "%.2f" . }}" />
+            <text x="18" y="18" text-anchor="middle" dominant-baseline="central" fill="rgb(var(--c-accent))" font-size="8.5" font-weight="600" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" data-num-target="{{ printf "%.1f" . }}" data-num-decimals="1">{{ printf "%.1f" . }}</text>
+          </svg>
+          {{- end }}
+          <span class="min-w-0 flex-1">
+            <span class="block font-medium text-fg transition-colors group-hover/anc:!text-accent">{{ $group.name }}</span>
+            {{- with $group.rarity }}
+            {{- /* Icon + stars only. The "1 in N" that used to sit here has moved
+                   into the drill-down: two of them per row, times six rows, was
+                   more numerals than the composition itself and it buried the
+                   rings. The globe and the flag carry the axis, and the exact
+                   figure is one click away.
+
+                   Each pair keeps its "1 in N" in the title and the aria-label, so
+                   the direction of the scale is still recoverable on hover and to a
+                   screen reader without printing it on the page. */ -}}
+            <span class="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1">
+              {{- if .world }}{{ $o := int (math.Round (div (float $wpop) (float .world.count))) }}
+              <span class="inline-flex items-center gap-1.5" title="1 in {{ lang.FormatNumberCustom 0 $o }} people worldwide">
+                {{ partial "func/svg-icon.html" (dict "name" "globe" "class" "h-3.5 w-3.5 shrink-0 text-muted/70") }}
+                {{ partial "func/rarity-stars.html" (dict "oneIn" $o "size" "sm" "axis" "worldwide") }}
+              </span>
+              {{- end }}
+              {{- if .us }}{{ $o := int (math.Round (div (float $upop) (float .us.count))) }}
+              <span class="inline-flex items-center gap-1.5" title="1 in {{ lang.FormatNumberCustom 0 $o }} Americans">
+                {{ partial "func/svg-icon.html" (dict "name" "us-flag" "class" "h-3.5 w-3.5 shrink-0 text-muted/70") }}
+                {{ partial "func/rarity-stars.html" (dict "oneIn" $o "size" "sm" "axis" "in the US") }}
+              </span>
+              {{- end }}
+            </span>
+            {{- end }}
+          </span>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-4 w-4 shrink-0 text-muted/70 transition-transform duration-200 group-open/anc:rotate-90"><path d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+        </summary>
+
+        <div class="mt-3 space-y-3">
+          {{- with $group.note }}
+          <p class="max-w-prose text-sm leading-relaxed text-muted">{{ $.Page.RenderString (dict "display" "inline") . }}</p>
+          {{- end }}
+
+          {{- with $group.rarity }}
+          <div class="space-y-1.5 rounded-md bg-border/25 px-3 py-3">
+            {{ template "partials/inline/rarity-axis" (dict "label" "World" "icon" "globe" "axis" .world "pop" $wpop) }}
+            {{ template "partials/inline/rarity-axis" (dict "label" "US" "icon" "us-flag" "axis" .us "pop" $upop) }}
+            {{- with .note }}
+            <p class="pt-1 text-xs leading-relaxed text-muted">{{ . }}</p>
+            {{- end }}
+          </div>
+          {{- end }}
+
+          {{- with $group.children }}
+          <ul class="mt-4 space-y-0.5 border-t border-border/60 pt-3">
+            {{- range $child := . }}
+            <li>
+              {{- if $child.note }}
+              <details class="group/sub rounded px-2 py-1 transition-colors hover:bg-border/30">
+                <summary class="flex cursor-pointer list-none items-baseline gap-3 [&::-webkit-details-marker]:hidden">
+                  <span class="text-sm text-fg">{{ $child.name }}</span>
+                  <span class="ml-auto font-mono text-xs tabular-nums text-muted">{{ printf "%.1f" ($child.pct | default 0.0) }}%</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-3.5 w-3.5 shrink-0 self-center text-muted/70 transition-transform duration-200 group-open/sub:rotate-90"><path d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+                </summary>
+                <div class="mt-2 space-y-2.5 pb-1">
+                  <p class="max-w-prose text-sm leading-relaxed text-muted">{{ $.Page.RenderString (dict "display" "inline") $child.note }}</p>
+                  {{- with $child.rarity }}
+                  <div class="space-y-1.5 rounded-md bg-border/25 px-3 py-3">
+                    {{ template "partials/inline/rarity-axis" (dict "label" "World" "icon" "globe" "axis" .world "pop" $wpop) }}
+                    {{ template "partials/inline/rarity-axis" (dict "label" "US" "icon" "us-flag" "axis" .us "pop" $upop) }}
+                    {{- with .note }}
+                    <p class="pt-1 text-xs leading-relaxed text-muted">{{ . }}</p>
+                    {{- end }}
+                  </div>
+                  {{- end }}
+                </div>
+              </details>
+              {{- else }}
+              <div class="flex items-baseline gap-3 px-2 py-1">
+                <span class="text-sm text-fg">{{ $child.name }}</span>
+                <span class="ml-auto font-mono text-xs tabular-nums text-muted">{{ printf "%.1f" ($child.pct | default 0.0) }}%</span>
+              </div>
+              {{- end }}
+            </li>
+            {{- end }}
+          </ul>
+          {{- end }}
+        </div>
+      </details>
+
+      {{- else }}
+      {{- /* No note and no children — nothing to open, so don't render a control. */ -}}
+      <div class="flex items-baseline gap-3 px-3 py-2.5">
+        <span class="font-medium text-fg">{{ $group.name }}</span>
+        <span class="ml-auto font-mono text-sm tabular-nums text-muted">{{ if $group.pct }}{{ printf "%.1f" $gpct }}%{{ else }}&mdash;{{ end }}</span>
+      </div>
+      {{- end }}
+      {{- end }}
+    </div>
+    {{- end }}
+  </div>
+  {{- end }}
+  {{- end }}
+  </div>
+</section>
+
+{{- if gt (math.Abs (sub $grand 100.0)) 0.15 -}}
+  {{- warnf "ancestry: tiers sum to %.1f%%, not 100%% (page: %s)" $grand .Page.RelPermalink -}}
+{{- end -}}

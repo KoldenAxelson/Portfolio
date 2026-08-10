@@ -1,0 +1,17 @@
+{{- /*
+  rarity-count — the head-count that sits next to a star rating, formatted big.
+
+    {{ partial "func/rarity-count.html" 62551 }}   →  62,551
+    {{ partial "func/rarity-count.html" 31017275 }} →  31.0M
+
+  Under a million the exact number IS the interesting thing — 62,551 Basque
+  Americans lands precisely because you can see every digit of how few that is.
+  Over a million nobody reads the digits, so it becomes 31.0M and stops competing
+  with the label beside it for attention.
+*/ -}}
+{{- $n := . -}}
+{{- if ge $n 1000000 -}}
+{{ printf "%.1f" (div (float $n) 1000000.0) }}M
+{{- else -}}
+{{ lang.FormatNumberCustom 0 $n }}
+{{- end -}}

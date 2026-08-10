@@ -1,6 +1,17 @@
-// Colophon performance meters. Each device panel (mobile / desktop) renders its
-// score rings, vital bars, and ring numbers empty; this sweeps them up to their
-// targets. The sweep is driven entirely by requestAnimationFrame — not CSS
+// Ring / bar meters. Originally colophon-only, now also driving the ancestry
+// rings on /misc/genes — anything inside a [data-perf-meters] root with a
+// [data-perf-panel] child gets swept.
+//
+// Two callers, two different starting states, and the difference is deliberate.
+// /colophon renders its rings and numbers EMPTY and depends on this module to
+// fill them, so with JS off the page shows zeros. /misc/genes renders the real
+// dasharray and the real number into static HTML, and this module resets to zero
+// and sweeps back up — same animation, but the data survives without a runtime,
+// which is what Product Principle 1 asks for. The genes shape is the better one;
+// colophon could adopt it whenever someone is in there.
+//
+// Each device panel (mobile / desktop) renders its score rings, vital bars, and
+// ring numbers empty; this sweeps them up to their targets. The sweep is driven entirely by requestAnimationFrame — not CSS
 // transitions — because Firefox doesn't reliably animate a two-value
 // stroke-dasharray list, which left the rings stuck when toggling to a panel
 // that started hidden. Re-runs from zero on every tab press, honors
@@ -47,13 +58,18 @@ export function initPerfMeters(): void {
     const ringT = rings.map((r) => Number(r.dataset.ringTarget) || 0);
     const barT = bars.map((b) => Number(b.dataset.barTarget) || 0);
     const numT = nums.map((n) => Number(n.dataset.numTarget) || 0);
+    // Lighthouse scores are integers; ancestry percentages are not. Opt in per
+    // element with data-num-decimals. Defaults to 0, and toFixed(0) matches the
+    // Math.round this replaced for every non-negative value, so /colophon is
+    // byte-identical.
+    const numD = nums.map((n) => Number(n.dataset.numDecimals) || 0);
 
     // k is progress 0→1. The dasharray is "<visible> 100" on a circle whose
     // circumference is ~100, so the visible length doubles as a percentage.
     const paint = (k: number): void => {
       rings.forEach((r, i) => { r.style.strokeDasharray = `${ringT[i] * k} 100`; });
       bars.forEach((b, i) => { b.style.width = `${barT[i] * k}%`; });
-      nums.forEach((n, i) => { n.textContent = String(Math.round(numT[i] * k)); });
+      nums.forEach((n, i) => { n.textContent = (numT[i] * k).toFixed(numD[i]); });
     };
 
     if (reduceMotion) {

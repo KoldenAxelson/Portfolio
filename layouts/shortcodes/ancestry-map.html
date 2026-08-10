@@ -1,0 +1,151 @@
+{{- /*
+  ancestry-map — the composition as a choropleth of Europe.
+
+    {{< ancestry-map >}}
+
+  GEOMETRY comes from data/europe.json, generated once by
+  scripts/build-europe-map.py from Natural Earth (public domain) and committed.
+  Nothing fetches or regenerates it at build time. See that script's header for
+  the projection and why it is subunits rather than countries.
+
+  ASSIGNMENT. Any node in data/genes.yaml carrying `units:` paints those subunits
+  at its own `pct`. It sits on whichever level owns a real geography — the child
+  for English (ENG) and Norwegian (NOR), the group for Spanish & Portuguese,
+  because "Basque" is a region inside Spain and not a subunit anyone publishes a
+  border for. A node with `units` and a parent with `units` would double-paint,
+  so the data file never does both.
+
+  WHAT IS NOT ON THE MAP. Ashkenazi Jewish, 5.6%, because it is a people and not
+  a place — there is no polygon that is the right answer. Drawing it over eastern
+  Europe would be inventing a border for a population defined by not having one.
+
+  NO LEGEND. Each painted region carries its own percentage, placed at the
+  centroid of its largest ring, so the map is read by looking at it rather than by
+  looking at a key and coming back. Below a size threshold the label will not fit
+  inside the shape and is dropped rather than allowed to spill into the sea; those
+  regions still have a <title>, which is a native SVG tooltip and needs no JS.
+
+  INTENSITY is sqrt-scaled, not linear. England at 31.5% is 26× Switzerland at
+  0.5%, and on a linear ramp everything under about 5% collapses into the same
+  barely-there wash. sqrt keeps the ordering while leaving the small ones visible.
+
+  `not-prose`, because the page sets `prose: true` and Typography would put a
+  margin on the figure's children and restyle the caption.
+*/ -}}
+
+{{- $key := (.Get 0) | default "genes" -}}
+{{- $d := index site.Data $key -}}
+{{- $geo := site.Data.europe -}}
+{{- if not $geo -}}
+  {{- errorf "ancestry-map: data/europe.json is missing — run scripts/build-europe-map.py (page: %s)" .Page.RelPermalink -}}
+{{- else -}}
+
+{{- /* Walk tiers → groups → children and collect every node with `units`. */ -}}
+{{- $paint := dict -}}
+{{- $max := 0.0 -}}
+{{- range $tier := $d.tiers -}}
+  {{- range $g := $tier.groups -}}
+    {{- with $g.units -}}
+      {{- range . }}{{ $paint = merge $paint (dict . (dict "pct" $g.pct "name" $g.name)) }}{{ end -}}
+      {{- if gt $g.pct $max }}{{ $max = $g.pct }}{{ end -}}
+    {{- end -}}
+    {{- range $c := $g.children -}}
+      {{- with $c.units -}}
+        {{- range . }}{{ $paint = merge $paint (dict . (dict "pct" $c.pct "name" $c.name)) }}{{ end -}}
+        {{- if gt $c.pct $max }}{{ $max = $c.pct }}{{ end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* Every code in the data must exist in the basemap, or a region silently
+       goes unpainted and the map quietly lies about the composition. */ -}}
+{{- range $code, $_ := $paint -}}
+  {{- if not (index $geo.units $code) -}}
+    {{- errorf "ancestry-map: data/genes.yaml paints subunit %q, which is not in data/europe.json" $code -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* One label per ancestry entry, on its largest subunit — otherwise Ireland
+       and Northern Ireland both print 3.3% and the Belgian label prints four
+       times across three regions and the Netherlands. */ -}}
+{{- $labelAt := dict -}}
+{{- $best := dict -}}
+{{- range $code, $p := $paint -}}
+  {{- $u := index $geo.units $code -}}
+  {{- $prev := index $best $p.name -}}
+  {{- if or (not $prev) (gt $u.area $prev) -}}
+    {{- $best = merge $best (dict $p.name $u.area) -}}
+    {{- $labelAt = merge $labelAt (dict $p.name $code) -}}
+  {{- end -}}
+{{- end -}}
+{{- $labels := dict -}}
+{{- range $name, $code := $labelAt }}{{ $labels = merge $labels (dict $code true) }}{{ end -}}
+
+{{- /* The globe is progressive enhancement over this map, not a replacement.
+       ts/ancestry-globe.ts hides the <figure> only after it has fetched geometry
+       and drawn a frame; with JS off, or if that fetch fails, what stays on the
+       page is the labelled static map — which is the version that carries the
+       numbers as text. */ -}}
+{{- $globe := resources.Get "geo/globe.json" | fingerprint -}}
+<div class="ancestry-globe not-prose mb-12 flex flex-col items-center" data-globe="{{ $globe.RelPermalink }}" hidden>
+  <canvas class="touch-none select-none" role="img" aria-label="Rotatable globe with each region shaded by its share of the ancestry composition"></canvas>
+  <p class="mt-3 h-5 font-mono text-xs tabular-nums text-muted" data-globe-readout aria-live="polite"></p>
+  {{- /* Percentages for the globe, as data rather than as another walk of the
+         tree in TypeScript — the template already resolved which node owns which
+         subunit, and doing it twice invites the two from drifting. */ -}}
+  {{- /* safeJS, not bare jsonify. Go's html/template sees <script> and applies
+         JavaScript-string escaping, which wraps the whole object in quotes and
+         backslash-escapes it — JSON.parse then returns a string rather than an
+         object and every region silently renders unpainted. */ -}}
+  <script type="application/json" data-globe-paint>{{ $paint | jsonify | safeJS }}</script>
+</div>
+
+<figure class="ancestry-map not-prose mb-12" data-globe-fallback>
+  <svg viewBox="{{ $geo.viewBox }}" class="h-auto w-full" role="img" aria-label="Map of Europe with each region shaded by its share of the ancestry composition">
+    {{- /* Base layer: every subunit, unpainted, as the continent. */ -}}
+    <g fill="rgb(var(--c-border))" stroke="rgb(var(--c-bg))" stroke-width="1.2" stroke-linejoin="round">
+      {{- range $code, $u := $geo.units }}
+      <path d="{{ $u.d }}" />
+      {{- end }}
+    </g>
+
+    {{- /* Painted layer, drawn over the base so borders stay crisp. */ -}}
+    <g stroke="rgb(var(--c-bg))" stroke-width="1.2" stroke-linejoin="round">
+      {{- range $code, $p := $paint }}
+      {{- $u := index $geo.units $code }}
+      {{- $alpha := add 0.18 (mul 0.82 (math.Sqrt (div $p.pct $max))) }}
+      <path d="{{ $u.d }}" fill="rgb(var(--c-accent) / {{ printf "%.3f" $alpha }})"><title>{{ $p.name }} &mdash; {{ printf "%.1f" $p.pct }}%</title></path>
+      {{- end }}
+    </g>
+
+    {{- /* Direct labels, sized to fit rather than set to one value and hoped for.
+           `r` is the radius of the largest circle inside the shape; JetBrains Mono
+           advances 0.6em per character, so a label of L characters needs a font
+           size of about r / (0.3 × L) to sit inside that circle. Cap at 18 so the
+           big countries don't shout, floor at 11 — below that it is unreadable at
+           the size this renders on screen, so the label is dropped and the region
+           keeps only its tooltip.
+
+           On this data that drops exactly two: Wales and Denmark, both genuinely
+           too small on a map of Europe to hold five characters. Everything else
+           gets a number sitting on it, which is the whole reason there is no
+           legend. */ -}}
+    <g class="ancestry-map__labels" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-weight="600" text-anchor="middle" fill="rgb(var(--c-bg))" aria-hidden="true">
+      {{- range $code, $p := $paint }}
+      {{- if index $labels $code }}
+      {{- $u := index $geo.units $code }}
+      {{- $txt := printf "%.1f%%" $p.pct }}
+      {{- /* ×0.92 because `r` is an inscribed CIRCLE and a label is a rectangle:
+             sized to the radius exactly, the corners of the text poke out past
+             the coast. Ireland was the one that showed it. */ -}}
+      {{- $fs := mul 0.92 (div $u.r (mul 0.3 (len $txt))) }}
+      {{- if ge $fs 10.0 }}
+      <text x="{{ $u.cx }}" y="{{ $u.cy }}" dy="0.32em" font-size="{{ printf "%.1f" (math.Min $fs 18.0) }}">{{ $txt }}</text>
+      {{- end }}
+      {{- end }}
+      {{- end }}
+    </g>
+  </svg>
+</figure>
+{{- end -}}
