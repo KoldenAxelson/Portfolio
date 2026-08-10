@@ -1,0 +1,437 @@
+# ---------------------------------------------------------------------------
+# Ancestry composition — the numbers off my 23andMe report, a factoid per
+# population, and a two-axis rarity rating.
+#
+# SHAPE
+#   timeline[]         datable events from the factoids, drawn as one chart
+#   tiers[]            top-level bands (European, Trace Ancestry)
+#     .groups[]        the populations that carry the rings
+#       .children[]    sub-populations, rendered as rows rather than rings
+#
+# Every `pct` is a percentage of the WHOLE report, not of its parent — the
+# shortcode leans on that when it checks that children sum to their group and
+# groups sum to their tier. Keep it that way or the assertions go quiet.
+#
+# One tier is exempt by design: Trace Ancestry carries 0.2% and then names a
+# single row the report never puts a number on. The shortcode skips the
+# groups-sum check for any tier whose groups are all unpriced, rather than
+# forcing a 0.2 into that row to satisfy an invariant.
+#
+# ── RARITY ─────────────────────────────────────────────────────────────────
+# Two axes, because they tell opposite stories and the gap between them is the
+# interesting part. Ireland is a small country with an enormous diaspora: 1 in
+# 1,112 people worldwide, 1 in 10 Americans.
+#
+#   world   how many people live in the homeland
+#   us      how many Americans name it in the census ancestry question
+#
+# Each `count` is divided by the matching denominator in `meta` to get "1 in N",
+# and the star rating is THE NUMBER OF DIGITS IN N, capped at five. One star per
+# order of magnitude; five stars means rarer than 1 in 10,000. See
+# partials/func/rarity-stars.html.
+#
+# Nothing about the rating is hand-set, which is the point. The first version had
+# four thresholds picked to suit the spread of this one report, so five stars
+# meant "the rarest thing on this page" and could not be checked against
+# anything. Under the digit rule nothing here scores five — no European
+# population is rarer than 1 in 10,000, in the world or in America, and Basque
+# comes closest at 1 in 5,437 Americans. That absence is the scale working.
+#
+# The head-count key is `count` and NOT `n`. Hugo's YAML parser follows YAML 1.1
+# on bare booleans, so a key of `n` is read as the boolean false — `{ n: 74677190 }`
+# silently becomes `{"false": 74677190}` and every lookup of `.n` returns nil. It
+# fails quietly: every rating rendered as five stars, which looked plausible.
+# Avoid y, n, yes, no, on, off and true/false as keys anywhere in this file.
+#
+# `of` states exactly what was counted, every time. Several labels span three
+# countries and have no clean figure, so the alternative to saying what is in the
+# number is implying a precision that does not exist.
+#
+# THE US AXIS IS SELF-DESCRIPTION, NOT GENETICS. It is the American Community
+# Survey's ancestry question (2024 1-year, table B04006), which asks people what
+# they consider themselves to be. It also records up to TWO ancestries per
+# person, so the lines overlap and a group total is mentions rather than people.
+#
+# WHAT THE SURVEY DOES NOT COUNT, and why some rows have no American star:
+#   - Belarusian. No line exists. None.
+#   - Spanish. Routed through the Hispanic-origin question instead, which is a
+#     different question with a different universe and is not comparable.
+#   - Ashkenazi. No demographic authority publishes an Ashkenazi head-count for
+#     the world or the US, so both figures on that row are all Jewish traditions
+#     together and the row says so.
+#
+# A NUMBER I DELIBERATELY DO NOT USE: diaspora totals. Ireland's official "70
+# million people of Irish descent" appears in government press releases with no
+# method attached, and Norway has no published figure at all. Homeland population
+# is a real measurement; diaspora is a vibe.
+#
+# ── SOURCING ────────────────────────────────────────────────────────────────
+# `source` is kept for provenance and is no longer rendered — this is a personal
+# page, not a paper. It stays in the file so a future edit can check a claim
+# without re-doing the research, and so the rule below still has teeth.
+#
+# THE RULE: check that the source says the thing, not merely that it is about the
+# topic. A fact-check pass on the first draft found six precise-looking accuracy
+# percentages that appeared in no source at all, and they read exactly as
+# trustworthy as everything around them.
+#
+# Deliberate omissions, because they could not be verified:
+#   - a numeric threshold for what 23andMe counts as "Trace Ancestry"
+#   - a definition of "No Data Available"
+#   - any Ashkenazi share of world Jewry (the widely-quoted 74–85% turns out to
+#     be a synthesis of incompatible sources of different vintages, not a
+#     published estimate — it used to be in this file and it is gone)
+#
+# Figures: ACS 2024 1-year B04006 (US total 340,110,990); World Bank 2024 for
+# national populations; ONS/NRS/NISRA mid-2024 for the UK's four countries;
+# INE 2025 + INSEE 2023 for the Basque territories; DellaPergola 2024 and Pew
+# 2020 for Jewish populations.
+# ---------------------------------------------------------------------------
+
+meta:
+  provider: "23andMe"
+  report: "Ancestry Composition"
+  populations: 78
+  lookback: "about 500 years"
+  reference: "https://www.23andme.org/ancestry/ancestry-composition-guide"
+  # The two denominators every rarity rating is divided by. Nothing else feeds
+  # the stars — change these and every rating on the page moves with them.
+  world_population: 8140897523   # World Bank, 2024
+  us_population: 340110990       # ACS 2024 1-year universe
+
+
+# Datable events pulled out of the factoids below, so the page has one picture of
+# when all this actually happened. `bp` is years before present, which is what
+# the log axis is drawn on — the events cluster hard around 4,500 and 1,400 years
+# ago, and a linear axis would bury the recent half.
+timeline:
+  - bp: 5900
+    label: "Anatolian farmers replace Denmark's hunter-gatherers"
+    who: "Danish"
+  - bp: 4800
+    label: "Steppe-derived Single Grave people replace those farmers"
+    who: "Danish"
+  - bp: 4526
+    label: "Steppe ancestry reaches France; R1b arrives with it"
+    who: "French"
+  - bp: 4476
+    label: "Bell Beaker arrivals replace ~90% of Britain's gene pool"
+    who: "British & Irish"
+  - bp: 1500
+    label: "North Sea migration into eastern England"
+    who: "English"
+  - bp: 1476
+    label: "Women with elongated skulls buried in Bavaria"
+    who: "Austrian & Southern German"
+  - bp: 1421
+    label: "Thirteen buried together at Niederstotzingen"
+    who: "Swiss, Southwestern German & Western Austrian"
+  - bp: 1326
+    label: "Slavic migration replaces most of the eastern gene pool"
+    who: "Central & Eastern European"
+  - bp: 1126
+    label: "Norse settlement of Orkney and Shetland"
+    who: "Norwegian"
+  - bp: 1036
+    label: "North African admixture into Iberia"
+    who: "Spanish & Portuguese"
+  - bp: 800
+    label: "Ashkenazi founder bottleneck, ~350 people"
+    who: "Ashkenazi Jewish"
+
+tiers:
+  - name: "European"
+    pct: 99.8
+    groups:
+      # ---------------------------------------------------------------- 54.4 --
+      - name: "British & Irish"
+        pct: 54.4
+        note: >-
+          Around 2450 BC people associated with the Bell Beaker culture arrived in
+          Britain, and within a few centuries roughly 90% of the island's gene pool
+          had been replaced. The same culture spread into Iberia largely without the
+          migration, which makes Britain the standout case of people moving rather
+          than fashion moving.
+        rarity:
+          world: { count: 74677190, of: "live in the UK and Ireland" }
+          us: { count: 71522839, of: "American mentions across its four labels" }
+        source: "https://www.nature.com/articles/nature25738"
+        children:
+          - name: "English"
+            pct: 31.5
+            note: >-
+              Ancient DNA from early medieval eastern England shows those individuals
+              derived up to 76% of their ancestry from the continental North Sea zone
+              — northern Germany, Denmark, the Netherlands — with substantial
+              variation between sites and within them. Present-day English populations
+              keep an estimated 25–47% of it, on a gradient that thins east to west.
+            rarity:
+              world: { count: 58620100, of: "live in England" }
+              us: { count: 31017275, of: "Americans" }
+            units: [ENG]
+            source: "https://www.nature.com/articles/s41586-022-05247-2"
+          - name: "Scottish"
+            pct: 13.3
+            note: >-
+              Scotland splits into six genetic clusters whose boundaries track early
+              medieval kingdoms — Gael, Pict, Briton, Norse. Norwegian-like ancestry
+              runs highest in Shetland and Orkney, at roughly 20–25%. The authors are
+              careful that ancient DNA is still needed to confirm the kingdom
+              correlation.
+            rarity:
+              world: { count: 5546900, of: "live in Scotland" }
+              us: { count: 6580952, of: "Americans, plus 2.5M more as Scotch-Irish" }
+            units: [SCT]
+            source: "https://www.pnas.org/doi/10.1073/pnas.1904761116"
+          - name: "Welsh"
+            pct: 6.3
+            note: >-
+              In the first fine-scale genetic map of Britain — 17 clusters found from
+              genetics alone, with no geographic input — Wales forms a distinct
+              genetic group, and then splits again into separate north and south
+              Welsh clusters. The authors suggest those clusters may sit closest to
+              the settlers who arrived after the last ice age.
+            rarity:
+              world: { count: 3186600, of: "live in Wales" }
+              us: { count: 1532031, of: "Americans" }
+            units: [WLS]
+            source: "https://www.nature.com/articles/nature14230"
+          - name: "Irish"
+            pct: 3.3
+            note: >-
+              Ireland is the global hotspot for the haemochromatosis variant HFE
+              C282Y — a 2026 study predicts roughly 1 in 75 people in Ireland carry
+              two copies, against about 1 in 212 in southern England. Penetrance is
+              variable and sex-dependent rather than absolute: the same study puts
+              cumulative incidence by age 80 at about 56% in male homozygotes, higher
+              than earlier estimates, and notes that treatment started early heads off
+              most of the consequences.
+            rarity:
+              world: { count: 7323690, of: "live in Ireland and Northern Ireland" }
+              us: { count: 32392581, of: "Americans — second only to German" }
+            units: [IRL, NIR]
+            source: "https://www.nature.com/articles/s41467-025-65511-7"
+
+      # ---------------------------------------------------------------- 19.0 --
+      - name: "Western European"
+        pct: 19.0
+        # The one place the panel-artifact point earns its keep, because it is the
+        # one place the reader is looking at a hyphenated three-country label and
+        # wondering what it is.
+        note: >-
+          These hyphenated names are reference-panel clusters, not nationalities. The
+          label is just a list of where that cluster's reference members were born.
+        rarity:
+          world: { count: 200196593, of: "live in the six countries it spans" }
+          us: { count: 51108265, of: "American mentions across its labels" }
+        source: "https://customercare.23andme.com/hc/en-us/articles/212169298-23andMe-Reference-Populations-Regions"
+        children:
+          - name: "Austrian & Southern German"
+            pct: 13.4
+            note: >-
+              41 individuals from 5th- and 6th-century Bavaria included women buried
+              with artificially elongated skulls, whose ancestry pointed to
+              southeastern Europe. The men were consistently northern and central
+              European; the women as a group were strikingly heterogeneous, ranging as
+              far as East Asia. One of the clearest ancient-DNA cases of strongly
+              sex-biased migration — and the study found little sign the Huns had much
+              to do with the skull-shaping.
+            rarity:
+              world: { count: 92696593, of: "live in Germany and Austria" }
+              us: { count: 40793700, of: "Americans — the largest ancestry in the country" }
+            units: [DEU, AUT]
+            source: "https://www.pnas.org/doi/abs/10.1073/pnas.1719880115"
+          - name: "French"
+            pct: 3.1
+            note: >-
+              Across 243 ancient genomes spanning 7,000 years, steppe-related ancestry
+              shows up in France from about 2500 BC. Y-chromosome haplogroup R1b goes
+              from absent to 11 of 13 sampled Bronze Age males — the male lineage that
+              dominates western Europe today arrived, and largely replaced what was
+              there, inside a few centuries.
+            rarity:
+              world: { count: 68600000, of: "live in France" }
+              us: { count: 6128915, of: "Americans, with French Canadian counted separately" }
+            units: [FXX, FXC]
+            source: "https://www.pnas.org/doi/10.1073/pnas.1918034117"
+          - name: "Belgian, Rhinelander & Southern Dutch"
+            pct: 2.0
+            note: >-
+              Dutch genetic variation is structured mainly north-to-south, and HERC2 —
+              the main eye-colour locus — carries the strongest signal of diversifying
+              selection between the two ends. Whether that has much to do with a label
+              also covering Belgium and the Rhineland is a question the study does not
+              answer.
+            rarity:
+              world: { count: 11900000, of: "live in Belgium" }
+              us: { count: 312593, of: "Americans claim Belgian ancestry" }
+              note: "Counted on Belgium alone — the Rhineland and the southern Netherlands have no line of their own."
+            units: [BFR, BWR, BCR, NLD]
+            source: "https://www.nature.com/articles/ejhg201348"
+          - name: "Swiss, Southwestern German & Western Austrian"
+            pct: 0.5
+            note: >-
+              At Niederstotzingen in Baden-Württemberg, around 580–630 AD, thirteen
+              people were buried together in Alemannic style with grave goods of
+              Frankish, Lombard and Byzantine origin. Five were direct relatives and
+              three were unrelated, and the origin of the grave goods tracked neither
+              ancestry nor family — the authors read it as kinship and fellowship
+              being held in roughly equal regard.
+            rarity:
+              world: { count: 9000000, of: "live in Switzerland" }
+              us: { count: 861324, of: "Americans claim Swiss ancestry" }
+            units: [CHE]
+            source: "https://www.science.org/doi/10.1126/sciadv.aao1262"
+
+      # ---------------------------------------------------------------- 17.5 --
+      - name: "Nordic"
+        pct: 17.5
+        note: >-
+          A useful corrective to the popular picture: a 2020 study of Viking-Age
+          remains found many Vikings had brown rather than blond hair, and two men in
+          Orkney buried in Viking graves with Viking swords share ancestry with
+          present-day Irish and Scottish people. Viking was partly a job description.
+        rarity:
+          world: { count: 17172279, of: "live in Norway, Denmark and Finland" }
+          us: { count: 5587366, of: "American mentions across its three labels" }
+        source: "https://www.nature.com/articles/s41586-020-2688-8"
+        source_extra: "https://www.bristol.ac.uk/news/2020/september/viking-dna.html"
+        children:
+          - name: "Norwegian"
+            pct: 14.3
+            note: >-
+              Across 6,369 Norwegians, Norway shows the widest internal spread of any
+              nation in the region: mean pairwise F(ST) between counties is 0.0012 and
+              reaches 0.0073 between Rogaland and Finnmark, against 0.0002 across the
+              whole of Denmark. Fjords and valleys shaped the gene pool, and four
+              centuries of political union with Denmark barely registered in it.
+            rarity:
+              world: { count: 5572279, of: "live in Norway" }
+              us: { count: 3864701, of: "Americans — a diaspora 70% the size of Norway" }
+            units: [NOR]
+            source: "https://www.nature.com/articles/s41431-021-00899-6"
+          - name: "Danish"
+            pct: 2.0
+            note: >-
+              A hundred ancient genomes from Denmark record two near-complete
+              population turnovers in about a thousand years: Anatolian-derived farmers
+              replacing hunter-gatherers ~5,900 years ago, then steppe-derived Single
+              Grave people — carrying 60–85% steppe ancestry — replacing those farmers
+              ~4,800 years ago. Genes, diet and appearance all turned over twice.
+            rarity:
+              world: { count: 5980000, of: "live in Denmark" }
+              us: { count: 1110484, of: "Americans" }
+            units: [DNK, DNB]
+            source: "https://www.nature.com/articles/s41586-023-06862-3"
+          - name: "Finnish"
+            pct: 1.2
+            note: >-
+              Finland is the textbook European founder population. Settled by a small
+              number of founding groups, it carries 39 recognised "Finnish Disease
+              Heritage" disorders that are rare or absent elsewhere — the main
+              aspartylglucosaminuria variant is roughly 50× more common in Finns than
+              in other Europeans. 23andMe scores Finland separately from the rest of
+              the Nordic tier for exactly that reason.
+            rarity:
+              world: { count: 5620000, of: "live in Finland" }
+              us: { count: 612181, of: "Americans" }
+            units: [FIN]
+            source: "https://journals.biologists.com/dmm/article/15/10/dmm049490/278566/The-Finnish-genetic-heritage-in-2022-from"
+
+      # ----------------------------------------------------------------- 5.6 --
+      - name: "Ashkenazi Jewish"
+        pct: 5.6
+        note: >-
+          Unusual among these labels in being a real endogamous population with a
+          documented demographic history rather than a convenient bucket.
+          Whole-genome sequencing points to a severe bottleneck of roughly 350
+          effective founders about 25–32 generations ago, followed by rapid growth.
+          That founder effect is also why ancestry-based carrier screening exists:
+          about 1 in 40 people of Ashkenazi descent carry one of three BRCA1/BRCA2
+          founder variants, roughly ten times the general-population rate of about
+          1 in 400.
+        rarity:
+          world: { count: 15736800, of: "Jews worldwide, all traditions" }
+          us: { count: 7500000, of: "American Jews, all traditions" }
+          note: "No demographer publishes an Ashkenazi-only head-count, so both figures cover every Jewish tradition together. Pew finds about two thirds of American Jews identify as Ashkenazi."
+        source: "https://www.nature.com/articles/ncomms5835"
+        source_extra: "https://www.cancer.gov/about-cancer/causes-prevention/genetics/brca-fact-sheet"
+
+      # ----------------------------------------------------------------- 2.1 --
+      - name: "Spanish & Portuguese"
+        pct: 2.1
+        note: >-
+          A fine-scale map built from 1,413 Spanish individuals found Iberia's main
+          axis of genetic differentiation runs east–west, with remarkable similarity
+          north-to-south — the opposite of what most people assume. Northwest African
+          ancestry varies regionally from 0% to 11%, but patchily, in a way that does
+          not track how long a region was under Muslim rule.
+        rarity:
+          world: { count: 59543521, of: "live in Spain and Portugal" }
+          note: "The census ancestry question has no Spanish line — Spain is routed through the Hispanic-origin question instead, which is a different question and not comparable."
+        units: [ESX, ESI, PRX]
+        source: "https://www.nature.com/articles/s41467-018-08272-w"
+        children:
+          - name: "Andalusian, Asturian & Castilian"
+            pct: 1.8
+            note: >-
+              A direct consequence of the finding above: Iberia is genetically
+              homogeneous north-to-south, so Andalusia, Asturias and Castile — far
+              apart on a map — do not separate cleanly and land in one bucket.
+            rarity:
+              world: { count: 48848840, of: "live in Spain" }
+            source: "https://customercare.23andme.com/hc/en-us/articles/212169298-23andMe-Reference-Populations-Regions"
+          - name: "Basque"
+            pct: 0.3
+            note: >-
+              Basque is the only language isolate in Europe, unrelated to any other
+              known language. Basques also carry the highest known frequency of the
+              Rh-negative variant — about 47% of gene copies, which works out to
+              roughly 22% of people being Rh-negative against about 15% of Europeans
+              generally. That is one allele, and it is not evidence of ancient
+              isolation: ancient genomes from Atapuerca link Basques to Neolithic
+              farmers who mixed with local hunter-gatherers, not to a Palaeolithic
+              remnant. The popular "30–50% of Basques are Rh-negative" comes from
+              misreading a gene frequency as a headcount.
+            rarity:
+              world: { count: 3256053, of: "live in the three Basque territories" }
+              us: { count: 62551, of: "Americans — the rarest line on this page" }
+            source: "https://www.nature.com/articles/s41431-018-0232-1"
+            source_extra: "https://www.pnas.org/doi/10.1073/pnas.1509851112"
+
+      # ----------------------------------------------------------------- 1.2 --
+      - name: "Central & Eastern European"
+        pct: 1.2
+        note: >-
+          A 2025 study of 555 ancient genomes found that migration out of eastern
+          Europe in the 6th–8th centuries replaced most of the existing gene pool
+          across the region — 93% in Poland and northwestern Ukraine, 83% in eastern
+          Germany. The category also contains Hungarian and Estonian, neither of them
+          Slavic languages.
+        rarity:
+          world: { count: 83552083, of: "live in Poland, Ukraine and Belarus" }
+          us: { count: 9606062, of: "Americans claim Polish or Ukrainian ancestry" }
+          note: "The census ancestry question has no Belarusian line at all, so a third of this label is uncounted."
+        units: [POL, UKR, BLR]
+        source: "https://www.nature.com/articles/s41586-025-09437-6"
+        children:
+          - name: "Belarusian, Polish & Ukrainian"
+            pct: 1.2
+            note: >-
+              Any two Europeans almost certainly share genealogical ancestors within
+              the last thousand years, though only a handful of those ancestors left
+              detectable DNA behind. Eastern Europe shows it especially strongly:
+              people from distant eastern European countries share about as many recent
+              common ancestors as two random Irish people do.
+            source: "https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.1001555"
+
+  # ------------------------------------------------------------------- 0.2 --
+  # Rendered as one small line under the composition, not as a band with a
+  # heading. It is 0.2% of unpainted chromosome; a section header and a paragraph
+  # of caveat gave it the same visual weight as British & Irish at 54.4%.
+  - name: "Trace Ancestry"
+    pct: 0.2
+    footnote: true
+    groups:
+      - name: "No Data Available"
+        source: "https://permalinks.23andme.com/pdf/samplereport_ancestrycomp.pdf"

@@ -23,6 +23,10 @@ elsewhere:
     href: "/impossible-list"
     icon: "trophy"
     blurb: "The things I want to build, learn, and do — a list built to keep growing."
+  - label: "Genes"
+    href: "/misc/genes"
+    icon: "globe"
+    blurb: "My ancestry composition, broken down — and what each population actually is."
   # boost:false → full page load so /network loads its Alpine island runtime.
   - label: "Network"
     href: "/network"

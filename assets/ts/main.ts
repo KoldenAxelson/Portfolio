@@ -12,6 +12,7 @@ import { initAuxButton } from './auxiliary-button';
 import { initDefinitions } from './definitions';
 import { initSkyrimNotes } from './skyrim-notes';
 import { initQuotes } from './quotes/index';
+import { initAncestryGlobe } from './ancestry-globe';
 
 declare global {
   interface Window {
@@ -38,6 +39,7 @@ function initPage(): void {
   initDefinitions();
   initSkyrimNotes();
   initQuotes();
+  initAncestryGlobe();
 }
 
 function ready(fn: () => void): void {
