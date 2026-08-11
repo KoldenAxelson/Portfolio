@@ -24,7 +24,7 @@
 {{- if not (.Page.Scratch.Get "indicatorPickerAssets") -}}
   {{- $css := resources.Get "css/indicator-picker.css" | minify | fingerprint -}}
   <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" />
-  {{- $js := resources.Get "js/indicator-picker.js" | js.Build (dict "minify" true) | fingerprint -}}
+  {{- $js := resources.Get "scripts/pages/indicator-picker.js" | js.Build (dict "minify" true) | fingerprint -}}
   <script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
   {{- .Page.Scratch.Set "indicatorPickerAssets" true -}}
 {{- end -}}

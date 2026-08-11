@@ -16,7 +16,7 @@
   {{- $page.Scratch.Set "puzzleCss" true -}}
 {{- end -}}
 {{- if and (not $styleOnly) (not ($page.Scratch.Get "puzzleJs")) -}}
-  {{- $js := resources.Get "js/puzzle/main.ts" | js.Build (dict "minify" true "target" "es2018" "format" "iife") | fingerprint -}}
+  {{- $js := resources.Get "scripts/pages/puzzle/main.ts" | js.Build (dict "minify" true "target" "es2018" "format" "iife") | fingerprint -}}
   <script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
   {{- $page.Scratch.Set "puzzleJs" true -}}
 {{- end -}}

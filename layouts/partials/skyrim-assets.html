@@ -39,6 +39,6 @@
 {{- $css := resources.Get "css/skyrim.css" | minify | fingerprint -}}
 <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" />
 {{- if not $styleOnly -}}
-  {{- $js := resources.Get "js/skyrim/main.ts" | js.Build (dict "minify" true "target" "es2018" "format" "iife") | fingerprint -}}
+  {{- $js := resources.Get "scripts/pages/skyrim/main.ts" | js.Build (dict "minify" true "target" "es2018" "format" "iife") | fingerprint -}}
   <script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
 {{- end -}}

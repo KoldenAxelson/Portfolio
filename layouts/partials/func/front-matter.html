@@ -1,0 +1,98 @@
+{{- /*
+  front-matter — checks a page's front matter against the vocabulary this site
+  actually reads, and fails the build on anything else.
+
+  WHY. The vocabulary grew one key at a time, each read by a different template,
+  none of them validated. Nothing anywhere objected to a key that was misspelt,
+  invented, or — worse — spelt correctly and read by nobody. Three of those were
+  live when this was written: `canonical:` on a cross-posted article that
+  head/seo ignored while telling search engines this copy was the original,
+  `sitemap_exclude:` on two dev-tool pages that stayed in the sitemap regardless,
+  and an inert `checklist: true`. All three looked like working configuration.
+
+  It also catches the collision that started this. `sections:` means
+  "jump-to-section nav" to topnav and section-nav, and /now was using it for
+  content blocks; the nav dutifully built a toolbar out of entries that had no
+  `id`, printed `%!q(<nil>)` into an attribute, and spilled the rest of the
+  button markup onto the page as text.
+
+  MAINTAINING IT. Keys are grouped by the template that reads them, so adding one
+  means naming its reader. If a key is listed here and nothing consumes it, one
+  of the two is a mistake — and the whole point is finding out which at build
+  time rather than by looking at a page and wondering.
+
+  Hugo lowercases top-level front-matter keys, so everything below is lowercase
+  however it is spelt in the file: `desktopFab` arrives here as `desktopfab`.
+*/ -}}
+
+{{- /* Hugo's own, handled by Hugo rather than by anything in layouts/. */ -}}
+{{- $known := slice
+  "title" "description" "date" "lastmod" "publishdate" "expirydate" "draft"
+  "weight" "slug" "url" "aliases" "layout" "type" "keywords" "summary"
+  "headless" "outputs" "cascade" "build" "sitemap" "linktitle" "markup"
+  "translationkey" "series" "tags" "categories" "images" "audio" "videos"
+  "author" "resources" "menu" "params" "iscjklanguage"
+-}}
+{{- /* Mapped onto .Date / .Lastmod by the frontmatter block in hugo.toml. */ -}}
+{{- $known = $known | append "pubdate" "updateddate" -}}
+
+{{- /* partials/head/seo.html */ -}}
+{{- $known = $known | append "noindex" "canonical" "image" "ogtype" "cover" -}}
+
+{{- /* partials/page-banner.html, via every layout that has a banner */ -}}
+{{- $known = $known | append "lead" -}}
+
+{{- /* partials/topnav.html and partials/section-nav.html — the toolbar and the
+       jump-to-section menu. `sections` entries are shape-checked below. */ -}}
+{{- $known = $known | append "sections" "sectionslabel" "tools" "toolsicon" "desktopfab" "mobiletools" -}}
+
+{{- /* _default/baseof.html */ -}}
+{{- $known = $known | append "container" "alpine" -}}
+
+{{- /* misc/list.html and misc/single.html */ -}}
+{{- $known = $known | append "blurb" "icon" "prose" "hidden" -}}
+
+{{- /* about.html and misc/list.html — the link cards */ -}}
+{{- $known = $known | append "elsewhere" -}}
+
+{{- /* The pages that render a structure straight out of front matter */ -}}
+{{- $known = $known | append "blocks" -}}          {{/* now.html          */}}
+{{- $known = $known | append "stack" -}}           {{/* uses + colophon   */}}
+{{- $known = $known | append "groups" "games" "books" "wip" -}}  {{/* impossible-list */}}
+{{- $known = $known | append "decisions" "lighthouse" -}}        {{/* colophon        */}}
+{{- $known = $known | append "thoughts" -}}        {{/* index.html         */}}
+{{- $known = $known | append "updated" -}}         {{/* the "Last updated" line, where a page still has one */}}
+
+{{- /* projects: list.html, single.html, partials/project-card.html,
+       partials/schema/project.html, and the three bespoke project pages */ -}}
+{{- $known = $known | append "tier" "year" "role" "status" "featured" "types" "links" "boost" "agarworkerbase" -}}
+
+{{- /* _default/redirect.html */ -}}
+{{- $known = $known | append "redirectto" "fragment" -}}
+
+{{- $where := .RelPermalink -}}
+{{- with .File }}{{ $where = .Path }}{{ end -}}
+
+{{- range $key, $value := .Params -}}
+  {{- if not (in $known $key) -}}
+    {{- errorf "front matter: %s sets %q, which no template reads. Add it to partials/func/front-matter.html beside the template that consumes it, or delete it." $where $key -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* Shape, not only spelling. `sections` is the one that has actually bitten:
+       an entry without an `id` is not a jump target, and the nav rendered it as
+       a button pointing at nothing. */ -}}
+{{- range $i, $s := .Params.sections -}}
+  {{- if not $s.id -}}
+    {{- errorf "front matter: %s has sections[%d] (%q) with no `id`. `sections:` is the jump-to-section menu and every entry needs to name a heading id — if this page means something else by it, give the key its own name." $where $i ($s.label | default "unlabelled") -}}
+  {{- end -}}
+  {{- if not $s.label -}}
+    {{- errorf "front matter: %s has sections[%d] with no `label` to show." $where $i -}}
+  {{- end -}}
+{{- end -}}
+
+{{- range $i, $e := .Params.elsewhere -}}
+  {{- if or (not $e.label) (not $e.href) -}}
+    {{- errorf "front matter: %s has elsewhere[%d] missing `label` or `href`." $where $i -}}
+  {{- end -}}
+{{- end -}}

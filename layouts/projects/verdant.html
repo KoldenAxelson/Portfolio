@@ -3,7 +3,7 @@
   (js_wasm32) that renders a stylized-grass diorama with WebGL2 — no engine, no
   emscripten. Odin's own JS runtime glue (assets/vendor/odin.js) is loaded first
   as a classic script and exposes `window.odin`; the loader
-  (assets/js/verdant/main.ts) replicates Odin's runWasm driver so it can capture
+  (assets/scripts/pages/verdant/main.ts) replicates Odin's runWasm driver so it can capture
   the wasm exports and drive the in-page control panel.
 
   odin.js MUST run before the loader boots, so both are plain deferred scripts
@@ -78,7 +78,7 @@
   <script defer src="{{ $odin.RelPermalink }}" integrity="{{ $odin.Data.Integrity }}"></script>
 
   {{ $opts := dict "minify" true "target" "es2018" "format" "iife" }}
-  {{ $loader := resources.Get "js/verdant/main.ts" | js.Build $opts | fingerprint }}
+  {{ $loader := resources.Get "scripts/pages/verdant/main.ts" | js.Build $opts | fingerprint }}
   <script defer src="{{ $loader.RelPermalink }}" integrity="{{ $loader.Data.Integrity }}"></script>
 {{ end }}
 

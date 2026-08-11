@@ -4,11 +4,11 @@
   one-line content edit with no template change.
 
   Two stacked canvases. The lower one is WebGL and carries the smoke, which is a
-  real fluid simulation (ts/quotes/fluid.ts) — a column of dye rising off the
+  real fluid simulation (scripts/site/quotes/fluid.ts) — a column of dye rising off the
   bottom edge, lit where it passes over the letterforms. The upper one is 2D and
   carries the lattice: the quote rasterized and sampled on a grid, the same
   technique as the Emil Kowalski card on /misc/web-dev-sites, drawn as cursor-shy
-  dots (ts/quotes/). The lattice also produces the mask the solver lights by,
+  dots (scripts/site/quotes/). The lattice also produces the mask the solver lights by,
   so the two stay in step through a transition.
 
   The checkbox row switches the layers on and off, and the stage is a button: a
@@ -16,7 +16,7 @@
 
   Progressive enhancement: the parsed quotes are server-rendered as a real <ul>,
   which is the content search engines, /llms.txt readers, and no-JS visitors get.
-  ts/quotes/ then flags the section .is-live, which swaps the list for the
+  scripts/site/quotes/ then flags the section .is-live, which swaps the list for the
   canvas and keeps the list in the accessibility tree (sr-only) so screen readers
   get all of it at once instead of a moving target.
 
@@ -46,7 +46,7 @@
 {{- end -}}
 
 <style>
-  /* Dot field — hidden until ts/quotes/ marks the section live, so the no-JS
+  /* Dot field — hidden until scripts/site/quotes/ marks the section live, so the no-JS
      view isn't left with a tall empty box above the list. */
   .quotes__viewport {
     display: none;
@@ -71,7 +71,7 @@
     height: 100%;
     touch-action: none;
   }
-  /* font-* and color are read back by ts/quotes/ (getComputedStyle) for the
+  /* font-* and color are read back by scripts/site/quotes/ (getComputedStyle) for the
      offscreen type-setting, the dot fill and the smoke colour, so the stylesheet
      stays the single source of truth — including the dark-mode palette swap. */
   .quotes__canvas {
@@ -133,7 +133,7 @@
     color: rgb(var(--c-fg));
   }
   /* Customisation parked, not deleted. The inputs stay in the DOM because their
-     `checked` attributes are where ts/quotes/ reads its defaults from — pull the
+     `checked` attributes are where scripts/site/quotes/ reads its defaults from — pull the
      markup and the feature flags go with it. One rule to walk this back. */
   .quotes__controls,
   .quotes__tuner {
@@ -318,7 +318,7 @@
      switches, tuning drawer — and the viewport takes the whole screen. The only
      surviving control is the X, which exists solely for this state.
 
-     One class for both routes in (see ts/quotes/fullscreen.ts): the real
+     One class for both routes in (see scripts/site/quotes/fullscreen.ts): the real
      Fullscreen API where it exists, a fixed cover of the viewport on iPhone
      where it doesn't. Writing this as `:fullscreen, .is-immersive` would lose
      the fallback in any browser that doesn't parse `:fullscreen` — an invalid
@@ -451,15 +451,15 @@
 </style>
 
 {{- with $quotes }}
-{{/* The auto-advance dwell is a knob now (see KNOBS in ts/quotes/), not an
+{{/* The auto-advance dwell is a knob now (see KNOBS in scripts/site/quotes/), not an
      attribute here — one place to set it, and it's adjustable from the panel. */}}
 {{/* The solver is a page-scoped runtime — no reason for the rest of the site to
      carry a fluid simulation in the shared bundle. It isn't loaded from <head>,
      though: hx-boost swaps only <body>, so a head script never arrives when you
-     reach this page from another one. ts/quotes/ injects it instead, once the
+     reach this page from another one. scripts/site/quotes/ injects it instead, once the
      lattice is up and there's a mask for it to read. */}}
 {{ $opts := dict "minify" true "target" "es2018" "format" "iife" }}
-{{ $fluid := resources.Get "ts/quotes/fluid.ts" | js.Build $opts | fingerprint }}
+{{ $fluid := resources.Get "scripts/site/quotes/fluid.ts" | js.Build $opts | fingerprint }}
 <section class="quotes" data-quotes
   data-quotes-solver="{{ $fluid.RelPermalink }}"
   data-quotes-solver-integrity="{{ $fluid.Data.Integrity }}"
@@ -473,7 +473,7 @@
        an isolated one clears it alone and stays a dot. The alpha-matrix form is
        the one that works over a transparent canvas — the CSS contrast() version
        of this trick needs an opaque backdrop. Values are set from the knobs by
-       ts/quotes/. */}}
+       scripts/site/quotes/. */}}
   <svg class="quotes__defs" aria-hidden="true" focusable="false">
     <filter id="quotes-goo">
       <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
@@ -515,7 +515,7 @@
     </button>
   </div>
 
-  {{/* Feature switches, read live by ts/quotes/ via [data-quotes-toggle].
+  {{/* Feature switches, read live by scripts/site/quotes/ via [data-quotes-toggle].
        Checked here = the default state on load. */}}
   <div class="quotes__controls">
     <label><input type="checkbox" data-quotes-toggle="smoke" checked> Smoke</label>
@@ -525,7 +525,7 @@
     <label><input type="checkbox" data-quotes-toggle="auto" checked> Auto-advance</label>
   </div>
 
-  {{/* Tuning panel. Empty here on purpose — ts/quotes/ generates the sliders
+  {{/* Tuning panel. Empty here on purpose — scripts/site/quotes/ generates the sliders
        from its KNOBS table so the markup and the defaults can't drift apart.
        Collapsed by default, and it only renders once the lattice is up, so a
        reader who never opens it sees a single line of small print. */}}

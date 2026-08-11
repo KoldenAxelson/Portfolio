@@ -33,7 +33,7 @@
        here; on desktop `desktopFab: true` suppresses the inline toolbar and the
        floating FAB handles it (partials/section-nav.html). Emitted as data-attr
        buttons rather than "#id" links so hx-boost never tries to fetch the hash;
-       js/section-nav.ts binds them. One `sections` list feeds both surfaces. */ -}}
+       scripts/pages/section-nav.ts binds them. One `sections` list feeds both surfaces. */ -}}
 {{- if and (not $tools) .Params.sections -}}
   {{- $t := slice -}}
   {{- range .Params.sections -}}

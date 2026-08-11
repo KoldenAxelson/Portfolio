@@ -97,10 +97,10 @@ Optional Markdown fallback shown until the widget goes live.
   (e.g. `puzzle-piece`, `squares-2x2`, `academic-cap`, `sparkles`).
 
 **When you're ready to build a real widget:** add a small module under
-`assets/ts/`, have it query `[data-logic-widget="<name>"]`, and replace the
+`assets/scripts/site/`, have it query `[data-logic-widget="<name>"]`, and replace the
 contents of that card's `[data-logic-widget-slot]` with the interactive version.
 Wire it into the TS bundle the same way the site's other behaviors are (see the
-`data-*` hooks in `layouts/partials/` and the existing `assets/ts` entries).
+`data-*` hooks in `layouts/partials/` and the existing `assets/scripts/site` entries).
 That keeps the widgets consistent with the rest of the site and progressive —
 the page stays useful with JavaScript off.
 

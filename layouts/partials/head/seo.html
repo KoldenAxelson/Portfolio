@@ -15,7 +15,11 @@
 {{- with $image -}}
   {{- if hasPrefix . "http" -}}{{ $ogImage = . }}{{- else -}}{{ $ogImage = printf "%s%s" $siteUrl . }}{{- end -}}
 {{- end -}}
-{{- $canonical := .Permalink -}}
+{{- /* A cross-post declares its original home with `canonical:` in front
+       matter. Until now this line ignored it and pointed every page at itself,
+       so the one article that syndicated to dev.to was quietly telling search
+       engines that this copy was the original. */ -}}
+{{- $canonical := .Params.canonical | default .Permalink -}}
 {{- $ogLocale := replace $site.locale "-" "_" -}}
 
 <title>{{ $fullTitle }}</title>

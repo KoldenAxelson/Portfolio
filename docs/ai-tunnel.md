@@ -33,9 +33,9 @@ yet, which is why the initial setup pointed here instead.
 - **`ai-proxy/main.go`** — Go proxy in front of Ollama. Build/run/stop with
   `make ai-proxy` / `make ai-proxy-run` / `make ai-proxy-stop` (reads
   `AI_PROXY_SECRET`, optionally `AI_MODEL`, from env).
-- **`cf-worker/`** — `worker.js` + `wrangler.toml`. The only host the browser
+- **`workers/ai-chat/`** — `worker.js` + `wrangler.toml`. The only host the browser
   talks to.
-- **`layouts/partials/ai-widget.html`** + **`assets/ts/ai-widget.ts`** — the
+- **`layouts/partials/ai-widget.html`** + **`assets/scripts/site/ai-widget.ts`** — the
   widget. Endpoint comes from the `aiChatURL` Hugo param; no secrets client-side.
   Also renders the current page as `data-ai-page-*` and gates the button on health.
 
@@ -75,7 +75,7 @@ hides the button (fail-safe). `localhost` is bypassed (the button always shows i
    Stop a stray instance with `make ai-proxy-stop`.
 3. Tunnel: ingress `service` must be `http://localhost:6573`; then
    `cloudflared tunnel --config ~/.cloudflared/ai-tunnel.yml run ai-tunnel`.
-4. Worker: from `cf-worker/` — `wrangler kv namespace create AI_RL` (paste id),
+4. Worker: from `workers/ai-chat/` — `wrangler kv namespace create AI_RL` (paste id),
    `wrangler secret put PROXY_SECRET`, then
    `wrangler deploy --var TUNNEL_URL:https://<your-private-tunnel-host>`.
    (Find the host with `grep hostname ~/.cloudflared/ai-tunnel.yml`.)
@@ -113,8 +113,8 @@ and the Pages site serves from it.
 | `hugo.toml`                           | `baseURL` → `https://konradwright.com/`                       |
 | `hugo.toml`                           | `params.aiChatURL` → `https://ai.konradwright.com/chat`       |
 | `data/site.yaml`                      | `url` → `https://konradwright.com`                            |
-| `cf-worker/worker.js`                 | `ALLOWED_ORIGINS` → `konradwright.com`, `www.konradwright.com` |
-| `cf-worker/wrangler.toml`             | route `pattern` → `ai.konradwright.com`                       |
+| `workers/ai-chat/worker.js`                 | `ALLOWED_ORIGINS` → `konradwright.com`, `www.konradwright.com` |
+| `workers/ai-chat/wrangler.toml`             | route `pattern` → `ai.konradwright.com`                       |
 | `CONTEXT.md`                          | Website link → `https://konradwright.com` (cosmetic)          |
 
 The proxy port (`:6573`) and the `/health` + per-page-context plumbing are
@@ -132,7 +132,7 @@ domain-independent — nothing to change there.
    `service` at `http://localhost:6573`) and restart the tunnel.
 2. Redeploy the Worker with the new tunnel var:
    ```bash
-   cd cf-worker
+   cd workers/ai-chat
    wrangler deploy --var TUNNEL_URL:https://<tunnel-host>
    ```
 3. Add the `ai.konradwright.com` custom domain in the dashboard (Workers & Pages →

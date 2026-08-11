@@ -3,7 +3,10 @@
 # population, and a two-axis rarity rating.
 #
 # SHAPE
-#   timeline[]         datable events from the factoids, drawn as one chart
+#   timeline[]         datable events from the factoids. Currently unread: the
+#                      chart that drew them was pulled off the page. Kept because
+#                      the dates were the expensive part and re-sourcing them
+#                      later would cost more than carrying them here.
 #   tiers[]            top-level bands (European, Trace Ancestry)
 #     .groups[]        the populations that carry the rings
 #       .children[]    sub-populations, rendered as rows rather than rings
@@ -100,10 +103,8 @@ meta:
   us_population: 340110990       # ACS 2024 1-year universe
 
 
-# Datable events pulled out of the factoids below, so the page has one picture of
-# when all this actually happened. `bp` is years before present, which is what
-# the log axis is drawn on — the events cluster hard around 4,500 and 1,400 years
-# ago, and a linear axis would bury the recent half.
+# Datable events pulled out of the factoids below. Nothing draws these at the
+# moment — see the note at the top of the file. `bp` is years before present.
 timeline:
   - bp: 5900
     label: "Anatolian farmers replace Denmark's hunter-gatherers"

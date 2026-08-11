@@ -8,7 +8,6 @@ blurb: "Reviving a formative, out-of-print logic workbook — chapter summaries,
 # Any key from data/icons.yaml. academic-cap suits a workbook; puzzle-piece,
 # squares-2x2, sparkles, and newspaper are other good fits.
 icon: "academic-cap"
-sitemap_exclude: false
 # Route this section's landing + every chapter to layouts/basic-logic/*, so
 # their styling (headers, etc.) is isolated from the rest of the site. Remove
 # this block to fall back to the shared layouts/misc/* templates.
