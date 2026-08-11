@@ -7,5 +7,6 @@ blurb: "A what-if recreation of my homepage, reframed hard around ML Infrastruct
 icon: "sparkles"
 layout: "homepage-mock"
 container: "wide"
-sitemap_exclude: true
+sitemap:
+  disable: true
 ---

@@ -20,6 +20,16 @@
   "/covers/" or "/badges/" path maps to the same folder under assets/; ".avif"
   is normalized to ".webp".
 
+  WHY THE SAME FILE SITS IN BOTH assets/ AND static/. It looks like duplication
+  and is not. This partial returns a FINGERPRINTED url — /covers/foo_hu<hash>.webp
+  — which is right for an <img> and wrong for metadata: og:image, twitter:image
+  and the JSON-LD `image` fields are absolute urls handed to crawlers and cached
+  by whoever shares the page, and they must not change every time the source
+  does. Those consumers point at the plain "/covers/foo.webp" written in front
+  matter, and that path resolves out of static/. Delete the static copy to tidy
+  up and every social card and structured-data image 404s, quietly, months
+  later. assets/ feeds the pipeline; static/ backs the stable url.
+
   Params (dict):
     path   — cover path string from front matter (required)
     width  — target rendered width in px (required; 2× emitted for srcset)

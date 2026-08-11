@@ -21,7 +21,7 @@
 
   Rendered as ordinary anchors with hx-boost="false" (hx-boost would otherwise
   try to fetch "#combat" as a URL), so the jump works with JavaScript off;
-  js/section-nav.ts upgrades it to a smooth scroll and marks the current section.
+  scripts/pages/section-nav.ts upgrades it to a smooth scroll and marks the current section.
 */ -}}
 {{- $page := . -}}
 {{- /* Only entries with an `id` are jump targets; a page using `sections:` for
@@ -53,6 +53,6 @@
   </div>
 </details>
 
-{{- $js := resources.Get "js/section-nav.ts" | js.Build (dict "minify" true "target" "es2018" "format" "iife") | fingerprint }}
+{{- $js := resources.Get "scripts/pages/section-nav.ts" | js.Build (dict "minify" true "target" "es2018" "format" "iife") | fingerprint }}
 <script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
 {{- end -}}

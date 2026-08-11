@@ -1,10 +1,34 @@
 {{- /*
-  potions — the recipe card grid, standalone.
+  potions — the recipe card grid, standalone, with its own filter.
 
     {{< potions >}}
+    {{< potions placeholder="Filter by potion, effect, or ingredient…" >}}
 
-  /misc/skyrim/ no longer calls this: the grid is the builder's Favorites screen now, and
-  potion-builder.html renders the same partial. Kept because a page that wants the cards
-  without the rest of the builder should not have to reach for the partial directly.
+  /misc/skyrim/ does not call this: the grid is the builder's Favorites screen
+  now, and potion-builder.html renders the same partial. Kept because a page that
+  wants the cards without the rest of the builder should not have to reach for
+  the partial directly.
+
+  THE FILTER LIVES HERE, not in the partial and not in a shortcode of its own.
+  It used to be a `potion-filter` shortcode of its own, which an author had to
+  remember to place above the grid — and once Potions became the builder's
+  Favorites screen, nobody did. The control shipped on every Skyrim page, found
+  no [data-sky-tools] to bind to, and returned. A search box is meaningless
+  without cards and cards are better with one, so the two are one thing now.
+
+  The partial stays free of it because potion-builder.html renders the partial
+  too, and the builder already has its own ingredient and effect filters — a
+  second search box on its Favorites screen would be asking the same question
+  twice.
+
+  Rendered hidden and revealed by assets/scripts/pages/skyrim/filter.ts, so a reader with
+  JavaScript off gets the full grid rather than a control that cannot work.
 */ -}}
+<div class="sky-tools not-prose" data-sky-tools hidden>
+  <label class="sr-only" for="sky-search">{{ .Get "label" | default "Filter potions" }}</label>
+  <input id="sky-search" type="search" autocomplete="off" spellcheck="false" class="sky-search"
+         placeholder="{{ .Get "placeholder" | default "Filter by potion, effect, or ingredient…" }}" data-sky-search />
+  <p class="sky-count" data-sky-count aria-live="polite"></p>
+</div>
+<p class="sky-empty not-prose" data-sky-empty hidden>No potions match that filter.</p>
 {{ partial "skyrim-potion-cards.html" .Page }}

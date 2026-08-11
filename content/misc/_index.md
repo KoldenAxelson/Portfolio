@@ -4,8 +4,6 @@ description: "A junk drawer of personal reference pages — notes, cheat sheets,
 layout: "list"
 # Blank by default — uncomment to put a line under the H1 in the banner.
 #lead: "A junk drawer of personal reference pages — the notes and cheat sheets I keep handy."
-# Keep this out of the main nav and sitemap-prominent listings; it's a personal corner.
-sitemap_exclude: false
 # Pages that belong on this shelf but live outside content/misc/, so their URLs
 # stay where they are (/now, /uses — both are linked from elsewhere and indexed
 # under those paths). Rendered as ordinary cards in the same grid and searched

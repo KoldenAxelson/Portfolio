@@ -6,7 +6,6 @@ description: "Every Viva Piñata species and the items that unlock its colour va
 icon: "trophy"
 blurb: "Colour-variant feeds for every species in Viva Piñata — searchable, with a save/load collection checklist."
 container: "wide"
-checklist: true
 # Desktop shows the floating FAB (below); mobile routes these same actions into
 # the navbar tools button + sub-nav panel, so suppress the centered toolbar.
 desktopFab: true

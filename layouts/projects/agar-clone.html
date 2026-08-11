@@ -1,7 +1,7 @@
 {{/*
   Agar.io clone project page. Uses the site's wide container (set in front
   matter). All UI state outside the canvas is an Alpine island (x-data="agarGame",
-  registered by assets/js/agar-clone/main.ts); the canvas game loop is pure TS.
+  registered by assets/scripts/pages/agar-clone/main.ts); the canvas game loop is pure TS.
 
   Alpine + the game bundle are loaded here (not via the baseof alpine:true path)
   so the game bundle's `alpine:init` listener is registered BEFORE Alpine starts.
@@ -20,7 +20,7 @@
 
   {{ $opts := dict "minify" true "target" "es2018" "format" "iife" }}
   {{/* Game bundle first → its alpine:init handler is in place before Alpine boots. */}}
-  {{ $game := resources.Get "js/agar-clone/main.ts" | js.Build $opts | fingerprint }}
+  {{ $game := resources.Get "scripts/pages/agar-clone/main.ts" | js.Build $opts | fingerprint }}
   <script defer src="{{ $game.RelPermalink }}" integrity="{{ $game.Data.Integrity }}"></script>
   {{ $alpine := resources.Get "vendor/alpine.min.js" | fingerprint }}
   <script defer src="{{ $alpine.RelPermalink }}" integrity="{{ $alpine.Data.Integrity }}"></script>

@@ -32,37 +32,37 @@ games:
       console: "N64"
       done: true
       rating: 3.0
-      shot: "super-mario-64.png"
+      shot: "super-mario-64.webp"
       blurb: "I can see the effect this had on later games, I never beat it as a kid, in fact, I never even got far. But it's beat and was extremely charming!"
     - title: "Diddy Kong Racing"  # 1997
       console: "N64"
       done: true
       rating: 2.5
-      shot: "diddy-kong-racing-64.png"
+      shot: "diddy-kong-racing-64.webp"
       blurb: "A nostalgic whimsical trip, but toon racing games have come a long way since then."
     - title: "The Legend of Zelda: Ocarina of Time"  # 1998
       console: "N64"
       done: true
       rating: 4.0
-      shot: "zelda-ocarina-of-time.png"
+      shot: "zelda-ocarina-of-time.webp"
       blurb: "This was a defining moment in my childhood, and the exploring of Hyrule feels like a stroll through my favorite park. Felt bigger as a kid, but nothing wrong with a smaller world, things felt intentional."
     - title: "Pokémon Snap"  # 1999
       console: "N64"
       done: true
       rating: 2.5
-      shot: "pokemon-snap.png"
+      shot: "pokemon-snap.webp"
       blurb: "Nostalgia Trip on Wheels, all the small things came back to me so the rediscovery which was core to the gameplay was lost on the replay so I didn't get to sit with this game for long."
     - title: "Donkey Kong 64"  # 1999
       console: "N64"
       done: true
       rating: 3.0
-      shot: "donkey-kong-64.png"
+      shot: "donkey-kong-64.webp"
       blurb: "WOW the Collectible Count was INSANE. Still the level design was peak, and DK Island feels like visiting a summer home you used to see as a kid."
     - title: "Kirby 64: The Crystal Shards"  # 2000
       console: "N64"
       done: true
       rating: 2.5
-      shot: "kirby-crystal-shards.png"
+      shot: "kirby-crystal-shards.webp"
       blurb: "I'm not much of a side-scrolling platform guy, but the constant asking 'What does this combination do?' is really fun!"
     - { title: "The Legend of Zelda: Oracle of Ages", done: false, console: "GBC" }  # 2001
     - { title: "The Legend of Zelda: Oracle of Seasons", done: false, console: "GBC" }  # 2001
@@ -71,64 +71,64 @@ games:
       console: "GCN"
       done: true
       rating: 3.0
-      shot: "sonic-adventure-2-chao-garden.png"
+      shot: "sonic-adventure-2-chao-garden.webp"
       blurb: "The genetics and adorableness and the planning! It's such a small but polished gem in an already great game! There's an active hungry community waiting to see something like this take its place."
     - { title: "Super Mario Sunshine", done: false, console: "GCN" }  # 2002
     - title: "The Legend of Zelda: The Wind Waker"  # 2002
       console: "GCN"
       done: true
       rating: 3.5
-      shot: "zelda-wind-waker.png"
+      shot: "zelda-wind-waker.webp"
       blurb: "Vast world with small compact islands. I'll admit, I used a little speed hack to get from point A to point B sometimes for the long sailing adventure. Still the story and charm puts this with the greats."
     - title: "Pokémon Sapphire"  # 2003
       console: "GBA"
       done: true
       rating: 4.0
-      shot: "pokemon-sapphire.png"
+      shot: "pokemon-sapphire.webp"
       blurb: "My comfort zone for Pokémon games. Straightforward without the extra fluff. Good story, memorable additions, and a solid starter trio."
     - title: "Hamtaro: Ham-Ham Heartbreak"  # 2003
       console: "GBA"
       done: true
       rating: 3.5
-      shot: "hamtaro-heartbreak.png"
+      shot: "hamtaro-heartbreak.webp"
       blurb: "Honestly, for how childish it is, this has some of the best puzzles that actually got me to think and get stuck. It's pretty much a point-and-click adventure with some 'keys' that'll have you returning to previously unsolvable puzzles."
     - title: "Custom Robo"  # 2004
       console: "GCN"
       done: true
       rating: 3.5
-      shot: "custom-robo.png"
+      shot: "custom-robo.webp"
       blurb: "The battles are fun! Lots of expression in the customization and playstyles. Though I ended up cheesing most battles I could with high stun striking vanisher builds."
     - title: "The Legend of Zelda: The Minish Cap"  # 2004
       console: "GBA"
       done: true
       rating: 4.0
-      shot: "zelda-minish-cap.png"
+      shot: "zelda-minish-cap.webp"
       blurb: "As someone who liked the Oracle series additions, this was a solid approach to how I like to engage with Zelda. Boiled down to its essence, this game nails it."
     - title: "Need for Speed: Most Wanted"  # 2005
       console: "GCN"
       done: true
       rating: 3.5
-      shot: "need-for-speed-most-wanted.png"
+      shot: "need-for-speed-most-wanted.webp"
       blurb: "I'm not much of a racing sim kinda guy, but the story and the cop chases were peak power fantasy. This game dictated my dream sports car."
     - title: "Pokémon Mystery Dungeon: Red Rescue Team"  # 2006
       console: "GBA"
       done: true
       rating: 3.0
-      shot: "pokemon-mystery-dungeon-red.png"
+      shot: "pokemon-mystery-dungeon-red.webp"
       blurb: "More of a nostalgia trip for me. The story is decent, and the gameplay was probably my first foray into tile-based dungeon crawls."
     - { title: "The Legend of Zelda: Twilight Princess", done: false, console: "GCN" }  # 2006
     - title: "Viva Piñata: Trouble in Paradise"  # 2008
       console: "XBOX"
       done: true
       rating: 3.5
-      shot: "viva-pinata-trouble-in-paradise.jpg"
+      shot: "viva-pinata-trouble-in-paradise.webp"
       blurb: "Not a design pattern I see often — I'll call it attraction-based gameplay. You put effort into something to attract discovery to you. That's an underserved gaming niche, not to mention the aesthetic is charming as can be."
     - { title: "Old School RuneScape: Max Cape", done: false, console: "PC" }  # 2013
     - title: "The Elder Scrolls V: Skyrim"  # 2016
       console: "XSX"
       done: true
       rating: 3.0
-      shot: "skyrim.jpg"
+      shot: "skyrim.webp"
       blurb: "This is a comfort game for me. When I want to just 'take a walk' digitally, this feels like walking around my old neighborhood. Over time some new things are added in, and it's fun to discover things I never saw before. I'm not huge into the modding scene — I appreciate it, but I like having the shared experience."
 # Books — same checklist + drill-down pattern as games. Covers live in
 # assets/achievements/<cover>.<ext> (any raster type; -1, -2 … = extra

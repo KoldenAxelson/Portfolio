@@ -1,5 +1,9 @@
 ---
 title: 'Agar.io Clone'
+# Explicit, though Hugo would also find layouts/projects/agar-clone.html from the
+# bundle's own directory name. Relying on that made this page look orphaned in a
+# grep — spinmasters and verdant both say it outright, and so should this.
+layout: 'agar-clone'
 tier: 1
 summary: "A pseudo-multiplayer Canvas arena. There's no live server — the other cells are bots, each wearing the name of a previous visitor (logged to Cloudflare Workers KV) or a recruiter-style stand-in. Built with TypeScript."
 tags: ['game', 'canvas', 'typescript', 'cloudflare']

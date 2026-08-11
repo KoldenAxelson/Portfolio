@@ -3,7 +3,7 @@
   it rasterises into a CPU pixel buffer that we blit onto a 2D <canvas> (no
   WebGPU). All UI outside the canvas (touch joystick, Dash/Power buttons,
   fullscreen) is an Alpine island (x-data="spinGame", registered by
-  assets/js/spinmasters/main.ts).
+  assets/scripts/pages/spinmasters/main.ts).
 
   Alpine + the loader bundle are loaded here (not via the baseof alpine:true
   path) so the bundle's `alpine:init` listener is registered BEFORE Alpine
@@ -28,7 +28,7 @@
 
   {{ $opts := dict "minify" true "target" "es2018" "format" "iife" }}
   {{/* Loader bundle first → its alpine:init handler is in place before Alpine boots. */}}
-  {{ $game := resources.Get "js/spinmasters/main.ts" | js.Build $opts | fingerprint }}
+  {{ $game := resources.Get "scripts/pages/spinmasters/main.ts" | js.Build $opts | fingerprint }}
   {{/* $wasm is referenced again on the x-data element below (where the loader reads it). */}}
   <script defer src="{{ $game.RelPermalink }}" integrity="{{ $game.Data.Integrity }}"></script>
   {{ $alpine := resources.Get "vendor/alpine.min.js" | fingerprint }}

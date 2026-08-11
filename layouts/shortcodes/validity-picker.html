@@ -21,7 +21,7 @@
   {{- .Page.Scratch.Set "quizKitCss" true -}}
 {{- end -}}
 {{- if not (.Page.Scratch.Get "validityAssets") -}}
-  {{- $js := resources.Get "js/validity-picker.js" | js.Build (dict "minify" true) | fingerprint -}}
+  {{- $js := resources.Get "scripts/pages/validity-picker.js" | js.Build (dict "minify" true) | fingerprint -}}
   <script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
   {{- .Page.Scratch.Set "validityAssets" true -}}
 {{- end -}}

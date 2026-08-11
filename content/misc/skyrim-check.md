@@ -9,13 +9,14 @@ prose: true
 # Kept off the Misc index and out of the sitemap: it is a development tool, not
 # something a visitor has any use for.
 hidden: true
-sitemap_exclude: true
+sitemap:
+  disable: true
 ---
 
 Runs the same modules `/misc/skyrim/` ships, in a real browser, with no test
 runner — the site's build is deliberately Node-free and a framework would be the
 first thing to break that. Open this page after touching anything under
-`assets/js/skyrim/`; the tab title reads `PASS — self-check` or `FAIL (n) — self-check`, so a headless
+`assets/scripts/pages/skyrim/`; the tab title reads `PASS — self-check` or `FAIL (n) — self-check`, so a headless
 driver can check it without parsing the page.
 
 The unminified caveat is in the shortcode's own header, where the second esbuild pass that
