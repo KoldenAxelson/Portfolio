@@ -4,7 +4,6 @@
 # lead        : one-line summary under the banner (falls back to description)
 # description  : used for SEO/meta and as the card blurb fallback
 # weight      : chapter order in the list (1, 2, 3, …). Lower = higher up.
-# updated     : renders a "Last updated …" line at the top of the chapter
 # hidden      : set true to keep a work-in-progress chapter off the list
 # draft       : set true to exclude from the built site entirely
 # ──────────────────────────────────────────────────────────────────────
@@ -12,7 +11,6 @@ title: "Chapter 1: What is Logic?"
 lead: "What it is, why it matters, and an introduction of the terms."
 description: "Chapter 1 of Basic Logic: What it is, why it matters, and an introduction of the terms."
 weight: 1
-updated: 2026-07-20
 ---
 
 ## 1.1 Reasoning and Argumentation

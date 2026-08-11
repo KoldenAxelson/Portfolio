@@ -14,7 +14,8 @@
 # ─────────────────────────────────────────────────────────────────────────────
 title: "Genes"
 description: "My 23andMe ancestry composition — where it comes from, how rare it is, and when it happened."
-lead: "What I am, according to a spit tube"
+# Blank by default — uncomment to put a line under the H1 in the banner.
+#lead: "What I am, according to a spit tube"
 blurb: "The answer to \"what's your ethnic background\", mapped, rated for rarity, and put on a timeline."
 icon: "globe"
 prose: true

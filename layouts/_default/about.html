@@ -5,12 +5,6 @@
 {{ end }}
 
 {{ define "main" }}
-{{- with .Params.updated }}
-<p class="mb-10 font-mono text-xs text-muted">
-  Last updated {{ partial "formatted-date.html" (dict "date" .) }}.
-</p>
-{{- end }}
-
 {{- with .Content }}
 <section class="max-w-prose space-y-4 text-base leading-relaxed text-muted [&_a]:text-fg [&_a]:underline [&_a]:decoration-border hover:[&_a]:!text-accent">
   {{ . }}

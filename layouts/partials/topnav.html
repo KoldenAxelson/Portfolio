@@ -37,12 +37,23 @@
 {{- if and (not $tools) .Params.sections -}}
   {{- $t := slice -}}
   {{- range .Params.sections -}}
+    {{- /* `id` is what makes an entry a jump target, so entries without one are
+           skipped rather than emitted: a nil id renders as `%!q(<nil>)`, and an
+           unquoted `<nil>` in the attribute makes the browser open a phantom tag
+           and spill the rest of the button markup onto the page as text. */ -}}
+    {{- if .id -}}
     {{- $t = $t | append (dict "icon" (.icon | default "") "label" .label "data" (dict "section-goto" .id)) -}}
+    {{- end -}}
   {{- end -}}
-  {{- $tools = $t -}}
+  {{- if gt (len $t) 0 }}{{ $tools = $t }}{{ end -}}
 {{- end -}}
 {{- $hasTools := false -}}
 {{- with $tools }}{{ $hasTools = gt (len .) 0 }}{{ end -}}
+{{- /* Mirror image of `desktopFab`: `mobileTools: false` keeps the toolbar on
+       desktop but drops the mobile navbar button and its panel. The homepage
+       sets it — a jump-to-section menu is noise on a page that short, and it
+       sat under the download icon looking like a chapter select. */ -}}
+{{- $mobileTools := and $hasTools (ne .Params.mobileTools false) -}}
 {{- $cur := strings.TrimSuffix "/" .RelPermalink -}}
 {{- if eq $cur "" }}{{ $cur = "/" }}{{ end -}}
 
@@ -106,7 +117,7 @@
           {{ partial "func/svg-icon.html" (dict "name" "sparkles" "class" "h-7 w-7" "width" "1.6") }}
         </button>
         {{- end }}
-        {{- if $hasTools }}
+        {{- if $mobileTools }}
         <button type="button" data-mobile-tools-trigger aria-label="Open page actions" class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-md text-muted transition-colors hover:bg-border/40 hover:text-fg focus-visible:bg-border/40 focus-visible:text-fg">
           {{ partial "func/svg-icon.html" (dict "name" (.Params.toolsIcon | default (cond (eq .Type "basic-logic") "book-open" "arrow-down-circle")) "class" "h-7 w-7") }}
         </button>
@@ -201,7 +212,7 @@
         </div>
       </div>
 
-      {{- if $hasTools }}
+      {{- if $mobileTools }}
       <ul data-mobile-panel-tools class="mx-auto flex max-w-screen-xl flex-col gap-1 px-6 py-4 opacity-0 transition-opacity duration-200 ease-out motion-reduce:transition-none">
         {{- range $tools }}
         <li>

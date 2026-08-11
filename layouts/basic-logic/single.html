@@ -11,16 +11,10 @@
 {{ define "banner" }}
 {{ partial "page-banner.html" (dict
   "title" .Title
-  "subtitle" (.Params.lead | default .Description | default "")) }}
+  "subtitle" (.Params.lead | default "")) }}
 {{ end }}
 
 {{ define "main" }}
-{{- with .Params.updated }}
-<p class="mb-10 font-mono text-xs text-muted">
-  Last updated {{ partial "formatted-date.html" (dict "date" .) }}.
-</p>
-{{- end }}
-
 <article class="space-y-4 text-base leading-relaxed text-muted
   [&_h2]:mt-10 [&_h2]:mb-1 [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:tracking-tight [&_h2]:text-fg
   [&_h3]:mt-6 [&_h3]:mb-1 [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-fg

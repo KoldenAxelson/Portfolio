@@ -5,6 +5,7 @@ import { initScrollTop } from './scrolltop';
 import { initSidebar } from './sidebar';
 import { initConstellation } from './constellation';
 import { initProjectFilter } from './project-filter';
+import { initMiscFilter } from './misc-filter';
 import { initGameModal } from './impossible-modal';
 import { initPerfMeters } from './perf-meters';
 import { initAiWidget } from './ai-widget';
@@ -32,6 +33,7 @@ function initPage(): void {
   initSidebar();
   initConstellation();
   initProjectFilter();
+  initMiscFilter();
   initGameModal();
   initPerfMeters();
   initAiWidget();
@@ -78,3 +80,17 @@ document.addEventListener('htmx:afterSettle', () => {
   initPage();
   document.getElementById('main')?.focus({ preventScroll: true });
 });
+
+// Back / forward. htmx owns history for boosted navigation: it restores <body>
+// from its own snapshot cache and fires htmx:historyRestore — afterSettle does
+// NOT fire on that path, for either a cache hit or the server refetch on a miss.
+// Without this listener a restored page is inert markup wearing the last frame
+// it painted: the constellation canvas sits frozen, the /misc filter stops
+// filtering, and every init()'s module-level state still points at the page the
+// reader navigated away from.
+//
+// Focus is deliberately left alone here. On afterSettle the reader chose to go
+// somewhere and <main> is where they meant to land; on a back navigation the
+// browser is restoring their old scroll position, and pulling focus to <main>
+// would be a second jump nobody asked for.
+document.addEventListener('htmx:historyRestore', () => initPage());

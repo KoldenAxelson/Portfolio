@@ -16,12 +16,12 @@
 # ─────────────────────────────────────────────────────────────────────────────
 title: "Skyrim"
 description: "Potion recipes, a mixture builder, and planners for the Restoration loop and the enchanting ceiling. Anniversary Edition, Creation Club on, no mods."
-lead: "My personal Skyrim toolkit"
+# Blank by default — uncomment to put a line under the H1 in the banner.
+#lead: "My personal Skyrim toolkit"
 blurb: "My working Skyrim reference — go-to potion recipes, their real effects, and where to farm the ingredients."
 icon: "wrench-screwdriver"
 container: "wide"
 prose: true
-updated: 2026-08-06
 desktopFab: true
 toolsIcon: "book-open"
 # Three sections, not four: the recipe cards are the builder's Favorites screen now, so

@@ -24,7 +24,11 @@
   js/section-nav.ts upgrades it to a smooth scroll and marks the current section.
 */ -}}
 {{- $page := . -}}
-{{- with .Params.sections -}}
+{{- /* Only entries with an `id` are jump targets; a page using `sections:` for
+       some other shape (see content/now.md) must not raise this FAB. */ -}}
+{{- $secs := slice -}}
+{{- range .Params.sections -}}{{- if .id -}}{{- $secs = $secs | append . -}}{{- end -}}{{- end -}}
+{{- with $secs -}}
 {{- $icon := $page.Params.toolsIcon | default "book-open" -}}
 
 {{- /* The navbar is sticky, so an anchored heading would otherwise land under

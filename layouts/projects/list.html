@@ -1,7 +1,7 @@
 {{ define "banner" }}
 {{ partial "page-banner.html" (dict
   "title" "Projects"
-  "subtitle" (.Description | default "Things I've built — featured case studies and the wider catalogue.")) }}
+  "subtitle" (.Params.lead | default "")) }}
 {{ end }}
 
 {{ define "main" }}

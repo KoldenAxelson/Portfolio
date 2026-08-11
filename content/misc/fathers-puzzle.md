@@ -1,11 +1,11 @@
 ---
 title: "Father's Puzzle"
 description: "A 6x6 block puzzle. It has 36 numbered, colored blocks. Every row and every column must contain all six numbers and all six colors. This page shows why the puzzle has an answer, why it is difficult to solve by hand, and what happened when eight different methods were measured against each other."
-lead: "Thirty-six blocks, six colors, six numbers, and 105,753,600 correct answers."
+# Blank by default — uncomment to put a line under the H1 in the banner.
+#lead: "Thirty-six blocks, six colors, six numbers, and 105,753,600 correct answers."
 blurb: "A block puzzle, the 200-year-old problem it almost is, and eight attempts to solve it more quickly."
 icon: "puzzle-piece"
 prose: true
-updated: 2026-07-28
 ---
 
 <!-- WORKING DRAFT. Every number on this page is computed and checked.
