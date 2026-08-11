@@ -1,22 +1,14 @@
-// The four-screen potion builder on /misc/skyrim/. Screens 1-3 ask what you want and
-// search for it; screen 4 is the mortar itself and tells you what a handful makes.
+// The potion builder on /misc/skyrim/. Nine screens: 1-3 ask what you want and search for
+// it, 4 is the mortar, 5-6 the effect index, 7 favourites, 8 one brew, 9 the overflow.
 //
-// WHY THE SEARCH IS SHAPED LIKE THIS
-//   An effect only reaches the bottle when two or more ingredients in the mortar
-//   carry it. So every valid mixture must contain two carriers of the rarest
-//   effect you asked for — which means we can enumerate from that effect's
-//   carriers (4-31 ingredients) instead of all 183. Worst case is ~85,000
-//   candidate triples rather than C(183,3) = 1,004,731.
+// An effect only reaches the bottle when two ingredients carry it, so every valid mixture
+// holds two carriers of the RAREST effect asked for. Enumerating from that effect's
+// carriers (4-31 of them) rather than all 183 is ~85,000 triples instead of C(183,3) =
+// 1,004,731. The same rule is why "Fortify Sneak + Fortify Marksman" has no answer.
 //
-//   That same rule is why "Fortify Sneak + Fortify Marksman" has no answer: no
-//   ingredient carries both, so you would need two carriers of each and only
-//   three slots exist.
-//
-// WHY RANKING HAPPENS INSIDE THE SEARCH
-//   Fortify Magicka has 23,392 valid mixtures. An earlier version collected the
-//   first few thousand and ranked those, which silently lost Salmon Roe's x12.5
-//   because it sat past the cutoff. Winners are now tracked as we go, so they
-//   are chosen over every mixture; the stored sample only feeds "show more".
+// Winners are tracked during the walk rather than picked from a collected sample: Fortify
+// Magicka has 23,392 mixtures, and ranking the first few thousand lost Salmon Roe's x12.5
+// past the cutoff. The stored sample only feeds screen 9.
 
 import { debounce, escapeHtml, formatMultiplier, queryAll } from './util';
 
@@ -41,13 +33,9 @@ export interface Mixture {
   /** Summed multipliers on the effects that were asked for. */
   potency: number;
   /**
-   * Two DISAGREEING ingredients carry a requested effect. The game then uses only the
-   * higher-priority one, and priority is that ingredient's cost for the effect rather
-   * than its magnitude — so the larger multiplier can lose. Ranked below unambiguous
-   * mixtures so a printed multiplier is one the mortar will actually deliver.
-   *
-   * Deviators that AGREE are not contested: whichever the game picks, the number is the
-   * same. See `describe` for why that distinction is load-bearing.
+   * Two DISAGREEING ingredients carry a requested effect. The game uses whichever costs
+   * more for that effect, not whichever is bigger, so the larger multiplier can lose —
+   * ranked below unambiguous mixtures, where the printed number is the delivered one.
    */
   contested: boolean;
   /** Index of the effect with the largest gold cost — the one in charge. -1 when empty. */
@@ -57,61 +45,98 @@ export interface Mixture {
   /** The top two costs are equal and disagree on side, so which you get is genuinely unknown. */
   undecided: boolean;
   /**
-   * The bottle holds effects on BOTH sides — a potion carrying something harmful, or a
-   * poison carrying something useful.
-   *
-   * Not the same question as `poison`, which is only about the costliest effect. A bottle
-   * can be a perfectly good potion and still paralyse you, and that is worth seeing before
-   * you drink it. Every `undecided` mixture is mixed by construction, since a tie that
-   * matters is a tie between the two sides.
+   * Effects on BOTH sides. Not `poison`, which is only about the costliest one: a bottle
+   * can be a perfectly good potion and still paralyse you. Every `undecided` mixture is
+   * mixed by construction, since a tie that matters is a tie between the sides.
    */
   mixed: boolean;
+  /** How many of `effects` harm you. The rest help. */
+  harmfulCount: number;
 }
+
+/**
+ * How many of this bottle's effects are on the side you are shopping for.
+ *
+ * "Most effects" used to count all of them, so a Fortify potion won it by carrying Damage
+ * Stamina — three effects, two of which you wanted, ranked above a clean two. A contradiction
+ * is not a bonus. With no side requested the mixture's own verdict decides, because the
+ * question is still "how much of what this bottle is does it do well".
+ */
+const onSideCount = (mixture: Mixture, kind: Kind): number => {
+  const wantsHarm = kind === 'any' ? mixture.poison : kind === 'bad';
+  return wantsHarm ? mixture.harmfulCount : mixture.effects.length - mixture.harmfulCount;
+};
+
+const offSideCount = (mixture: Mixture, kind: Kind): number =>
+  mixture.effects.length - onSideCount(mixture, kind);
 
 interface Ranking {
   label: string;
-  compare: (a: Mixture, b: Mixture) => number;
+  compare: (a: Mixture, b: Mixture, kind: Kind) => number;
   /**
-   * Whether the label is worth printing on the winner it picked. A ranking always has a
-   * winner; that does not mean the winner is interesting. "Fewest ingredients" on a
-   * three-ingredient brew is a fact about a set where nothing did better, not a reason to
-   * choose this one — and a mixture can hold at most three, so two is the only count that
-   * distinguishes anything.
+   * The one number this ranking is about, higher being better. A ranking always has a
+   * winner; that does not mean the winner BEAT anything. `headlines` prints a label only
+   * when its winner scores above the benchmark — see there.
    */
-  worthSaying?: (mixture: Mixture) => boolean;
+  measure: (mixture: Mixture, kind: Kind) => number;
 }
 
 const SAMPLE_LIMIT = 400;
-const EXTRA_SHOWN = 24;
+/**
+ * Eight fills two rows of the grid at desktop widths and one thumb-scroll on a phone. The
+ * old inline "show more" appended 24 unranked cards under the three headlines instead.
+ */
+const PAGE_SIZE = 8;
 const MAX_GATHER_SCORE = 5;
 
+/**
+ * RANKINGS[0] IS THE BENCHMARK. What you asked for and nothing else, and among those the
+ * easiest to gather — the answer to give someone who has not said what they are optimising
+ * for. Every other ranking is a reason to overrule it, and has to earn the right to say so
+ * (`headlines`). It is also the sort the overflow uses, so screen 9 opens on the same
+ * standard screen 3 leads with.
+ */
 const RANKINGS: Ranking[] = [
   {
-    label: 'Most effects',
-    compare: (a, b) => b.effects.length - a.effects.length || b.gatherScore - a.gatherScore || a.ingredients.length - b.ingredients.length,
-  },
-  {
-    // A resist potion that also restores stamina is not the resist potion you
-    // asked for. The requested set is fixed, so fewest total effects is exactly
-    // fewest unrequested ones.
+    // A resist potion that also restores stamina is not the resist potion you asked for.
+    // The requested set is fixed, so fewest total effects is exactly fewest unrequested.
     label: 'Nothing extra',
     compare: (a, b) => a.effects.length - b.effects.length || b.gatherScore - a.gatherScore || a.ingredients.length - b.ingredients.length,
+    measure: (mixture) => -mixture.effects.length,
   },
   {
-    // Cleanliness breaks the tie: two equally gatherable mixtures should not be
-    // separated at random when one of them carries a passenger.
+    // Cleanliness breaks the tie: two equally gatherable mixtures should not be separated
+    // at random when one of them carries a passenger.
     label: 'Easiest to gather',
-    compare: (a, b) => b.gatherScore - a.gatherScore || a.effects.length - b.effects.length || a.ingredients.length - b.ingredients.length,
+    compare: (a, b, kind) => b.gatherScore - a.gatherScore ||
+      offSideCount(a, kind) - offSideCount(b, kind) || a.effects.length - b.effects.length ||
+      a.ingredients.length - b.ingredients.length,
+    measure: (mixture) => mixture.gatherScore,
+  },
+  {
+    // Effects on the side you asked for, and off-side ones as a tie-break AGAINST.
+    label: 'Most effects',
+    compare: (a, b, kind) =>
+      onSideCount(b, kind) - onSideCount(a, kind) || offSideCount(a, kind) - offSideCount(b, kind) ||
+      b.gatherScore - a.gatherScore || a.ingredients.length - b.ingredients.length,
+    measure: onSideCount,
   },
   {
     label: 'Most potent',
-    compare: (a, b) =>
-      Number(a.contested) - Number(b.contested) || b.potency - a.potency || b.effects.length - a.effects.length || b.gatherScore - a.gatherScore,
+    // Equal potency used to be broken by MORE effects, which handed the label to whichever
+    // brew carried the most passengers. A passenger is a cost everywhere else here.
+    compare: (a, b, kind) =>
+      Number(a.contested) - Number(b.contested) || b.potency - a.potency ||
+      offSideCount(a, kind) - offSideCount(b, kind) || b.effects.length - a.effects.length ||
+      b.gatherScore - a.gatherScore,
+    // A contested mixture cannot claim potency it may not deliver, so it never outscores
+    // the benchmark on this axis even when its arithmetic is higher.
+    measure: (mixture) => (mixture.contested ? 0 : mixture.potency),
   },
   {
     label: 'Fewest ingredients',
     compare: (a, b) => a.ingredients.length - b.ingredients.length || b.gatherScore - a.gatherScore || b.effects.length - a.effects.length,
-    worthSaying: (mixture) => mixture.ingredients.length < 3,
+    measure: (mixture) => -mixture.ingredients.length,
   },
 ];
 
@@ -122,13 +147,12 @@ const RANKINGS: Ranking[] = [
 // share state.
 
 /**
- * The shortcode's JSON payload. Keys are single letters because 183 ingredients
- * times full key names is several KB of repeated text for nothing. The mapping,
- * which is the one place all three layers have to agree:
+ * The shortcode's JSON payload. Single-letter keys because 183 rows of full key names is
+ * KB of repeated text for nothing. The one place all three layers have to agree:
  *
  *   YAML             payload   catalogue
+ *   slug (map key)   s         slug
  *   name             n         name
- *   value            v         (dropped — nothing ranks on gold)
  *   avail            a         gatherScore
  *   dlc              d         dlc
  *   effects          f         effects (indices into `e`)
@@ -137,6 +161,7 @@ const RANKINGS: Ranking[] = [
  *   effects.baseDur  bd        baseDurations
  *   effects.baseCost bc        baseCosts
  *   effects.kind     k         harmful (kind === "bad")
+ *   (image files)    g         images
  */
 interface Payload {
   e: string[];
@@ -145,7 +170,7 @@ interface Payload {
   bc: number[];
   k: boolean[];
   x: Record<string, [number, number]>[];
-  i: { s: string; n: string; v: number; a: number; d: string; f: number[] }[];
+  i: { s: string; n: string; a: number; d: string; f: number[] }[];
   /** slug -> resolved image URL, for the few that have art yet. */
   g?: Record<string, string>;
 }
@@ -163,6 +188,42 @@ export interface Catalogue {
   carriersOf: Ingredient[][];
   images: Record<string, string>;
 }
+
+/**
+ * The catalogue minus the add-ons you have turned off.
+ *
+ * Filtering the CATALOGUE, not the view: reachability, the rankings, the overflow and the
+ * effect index all read these two arrays, so a DLC you turned off cannot come back as an
+ * answer. As a view filter the toggles hid pills in the mortar and nothing else, and the
+ * best brew was routinely built out of an ingredient the player cannot pick up.
+ *
+ * Ingredient objects are shared, not copied — identity comparisons across the two hold.
+ */
+export function catalogueWithout(catalogue: Catalogue, excluded: Set<string>): Catalogue {
+  if (!excluded.size) return catalogue;
+  const keep = (ingredient: Ingredient): boolean => !ingredient.dlc || !excluded.has(ingredient.dlc);
+  return {
+    ...catalogue,
+    ingredients: catalogue.ingredients.filter(keep),
+    carriersOf: catalogue.carriersOf.map((carriers) => carriers.filter(keep)),
+  };
+}
+
+/** Blue benefits you, green harms you. The one rule every chip, cell and title follows. */
+const sideOf = (catalogue: Catalogue, effect: number): string =>
+  catalogue.harmful[effect] ? 'bad' : 'good';
+
+/**
+ * effects.yaml holds deviations BELOW 1 — Briar Heart takes Fortify Block to x0.5 — and
+ * three call sites had drifted to three different tests for "worth printing". The `> 1`
+ * one dropped those from screen 8's title, on the screen that exists to give a brew room.
+ */
+const multiplierSuffix = (applied: number | undefined): string =>
+  applied === undefined ? '' : `<b>&times;${formatMultiplier(applied)}</b>`;
+
+/** An effect with no magnitude carries all its strength in duration, so read that column. */
+const readsDuration = (catalogue: Catalogue, effect: number): boolean =>
+  catalogue.baseMagnitudes[effect] === 0;
 
 function maskOf(effects: number[]): EffectMask {
   let low = 0;
@@ -224,28 +285,21 @@ function effectsProducedBy(mixture: Ingredient[]): EffectMask {
  * ranked those, and ranked them WELL: "most potent" and "easiest to gather" both scored
  * the mixture on the two ingredients that were doing the work.
  *
- * The first rule tried here was "does every ingredient carry a produced effect", which
- * catches a passenger sharing nothing but not this — Bear Claws passes it. The question
- * that actually matters is whether the mixture without it produces the SAME SET, which
- * this asks directly.
+ * "Does every ingredient carry a produced effect" does not catch it — Bear Claws passes
+ * that. Whether the mixture WITHOUT it produces the same set does.
  *
- * It has to check the multipliers too, and only when the sets match: an ingredient can be
- * a redundant carrier and still be the strongest deviator on one of the effects, in which
- * case it is buying magnitude rather than coverage and belongs in the bottle. Every
- * mixture reaching this point has already passed `covers`, so a smaller one still answers
- * the question that was asked.
+ * Multipliers are checked too: a redundant carrier can still be the strongest deviator,
+ * in which case it buys magnitude rather than coverage and earns its slot.
  */
 function isRedundant(catalogue: Catalogue, mixture: Ingredient[], produced: EffectMask): boolean {
   if (mixture.length < 3) return false;
   for (let index = 0; index < mixture.length; index += 1) {
-    const rest = mixture.filter((_, other) => other !== index);
-    const sub = effectsProducedBy(rest);
-    if (sub.low !== produced.low || sub.high !== produced.high) continue;
-    // `multiplierFor`, not `deviationOf`: the latter hands back magnitude AND duration,
-    // and only one of them is the effect's strength — the other is inert. Comparing both
-    // kept eight mixtures whose third ingredient changed only the half nobody reads,
-    // including the four `dur: 0` Rare Curios rows. This is the same call `describe` makes
-    // to build the multipliers a card prints, so the filter now agrees with the screen.
+    const rest = mixture.filter((_, position) => position !== index);
+    const producedWithout = effectsProducedBy(rest);
+    if (producedWithout.low !== produced.low || producedWithout.high !== produced.high) continue;
+    // `multiplierFor`, not `deviationOf`: the inert half of the pair kept eight mixtures
+    // whose third ingredient moved only the number nobody reads. Same call `describe`
+    // makes, so the filter and the printed card agree.
     const unchanged = maskToIndices(produced, catalogue.effectNames.length).every((effect) =>
       multiplierFor(catalogue, mixture, effect) === multiplierFor(catalogue, rest, effect));
     if (unchanged) return true;
@@ -266,13 +320,8 @@ export function maskToIndices(mask: EffectMask, effectCount: number): number[] {
 }
 
 /**
- * The multiplier this mixture applies to one effect.
- *
- * Paralysis, Invisibility, Waterbreathing, Light and Night Eye have a base
- * magnitude of 0 — all their strength is duration — so those read the duration
- * multiplier instead. Where several deviating ingredients are present we take
- * the furthest from 1.0; see `Mixture.contested` for why that is only sometimes
- * the number the game uses.
+ * Where several deviating ingredients are present the furthest from 1.0 wins; see
+ * `Mixture.contested` for why that is only sometimes the number the game uses.
  */
 function deviationOf(catalogue: Catalogue, mixture: Ingredient[], effect: number): [number, number] {
   const table = catalogue.deviations[effect];
@@ -288,36 +337,51 @@ function deviationOf(catalogue: Catalogue, mixture: Ingredient[], effect: number
   return [magnitude, duration];
 }
 
+/**
+ * Paralysis, Invisibility, Waterbreathing, Light and Night Eye have a base magnitude of 0,
+ * so their strength is all duration and the duration multiplier is the one that matters.
+ */
 function multiplierFor(catalogue: Catalogue, mixture: Ingredient[], effect: number): number {
   const [magnitude, duration] = deviationOf(catalogue, mixture, effect);
-  return catalogue.baseMagnitudes[effect] === 0 ? duration : magnitude;
+  return readsDuration(catalogue, effect) ? duration : magnitude;
+}
+
+/**
+ * Whether two ingredients here deviate on this effect by DIFFERENT amounts.
+ *
+ * Disagreement, not merely several deviators. Six of Invisibility's seven carriers all
+ * deviate by the same x1.5, and when they agree the printed multiplier is delivered
+ * whichever one the game picks. Counting rows instead of values demoted provably-correct
+ * "Most potent" winners in favour of harder-to-gather mixtures holding one deviator.
+ */
+function deviatorsDisagree(catalogue: Catalogue, mixture: Ingredient[], effect: number): boolean {
+  const table = catalogue.deviations[effect];
+  if (!table) return false;
+  const column = readsDuration(catalogue, effect) ? 1 : 0;
+  const values = new Set<number>();
+  for (const ingredient of mixture) {
+    const row = table[ingredient.slug];
+    if (row) values.add(row[column]);
+  }
+  return values.size > 1;
 }
 
 // ── Potion or poison ────────────────────────────────────────────────────────
 //
-// UESP, Skyrim:Alchemy Effects: "The effect with the largest individual gold cost is the
-// effect that controls the overall properties of the mixture. That effect is used for
-// naming, and it determines whether the result is considered to be a potion or a poison."
-// So a bottle with four good effects and one Damage Health comes out as a poison if
-// Damage Health is the expensive one, which is not what the mortar looks like it is doing.
+// The costliest effect decides the whole bottle (UESP, Skyrim:Alchemy Effects), so four
+// good effects and one expensive Damage Health come out as a poison.
 //
 //   cost = floor( baseCost x max(magnitude^1.1, 1) x (duration/10)^1.1 )
 //
 // with the duration term dropped when the effect is instantaneous.
 
 /**
- * An effect's gold cost in this mixture, up to a constant — enough to rank them, which is
- * all the classification needs.
+ * An effect's gold cost up to a constant, which is all that ranking them needs.
  *
- * YOUR ALCHEMY STRENGTH IS DELIBERATELY LEFT OUT, and that is exact rather than a
- * simplification. Skill, gear and perks multiply an effect's magnitude, or its duration
- * when it has no magnitude, by the same M; either route puts an M^1.1 in front of the
- * cost, so it is a common factor and cannot change which effect is largest. (The
- * `max(…, 1)` never binds here: every effect with a magnitude has a base of at least 1.)
- *
- * PERKS are left out because the game leaves them out — UESP again: "The determination of
- * the strongest effect is actually done before the perks are factored into the gold cost."
- * That is what stops Benefactor from quietly turning a poison into a potion.
+ * Leaving your alchemy strength out is exact, not a simplification: skill and gear put a
+ * common M^1.1 in front of every cost and cannot change which is largest. Perks are out
+ * because the game excludes them from this determination too (UESP) — otherwise
+ * Benefactor would quietly turn poisons into potions.
  */
 function relativeCostOf(catalogue: Catalogue, mixture: Ingredient[], effect: number): number {
   const [magnitudeMultiplier, durationMultiplier] = deviationOf(catalogue, mixture, effect);
@@ -329,14 +393,10 @@ function relativeCostOf(catalogue: Catalogue, mixture: Ingredient[], effect: num
 }
 
 /**
- * Which effect is in charge, and whether the top two are tied across the potion/poison
- * line. TWO such collisions exist in the table: Resist Magic ties both Weakness to Poison
- * and Weakness to Magic, all three costing 7.1774 to the last decimal. Only the first is
- * reachable — no ingredient carries Resist Magic and Weakness to Magic together, so
- * producing both would need a fourth slot — and it turns up in 65 of the 635,068 triples
- * that make anything. Nothing documents what the game does with a tie, so those are
- * reported as undecided rather than guessed at. Add one ingredient carrying Resist Magic
- * and Weakness to Magic and the second collision becomes reachable too.
+ * Which effect is in charge, and whether the top two tie across the potion/poison line.
+ * Resist Magic ties both Weakness to Poison and Weakness to Magic at 7.1774; only the
+ * first is reachable in three slots, in 65 of the 635,068 triples that make anything.
+ * Nothing documents the game's tie-break, so a tie is reported rather than guessed.
  */
 function dominanceOf(catalogue: Catalogue, mixture: Ingredient[], effects: number[]):
   { dominant: number; poison: boolean; undecided: boolean } {
@@ -361,33 +421,19 @@ function describe(catalogue: Catalogue, mixture: Ingredient[], produced: EffectM
     if (applied !== 1) multipliers[effect] = applied;
   }
   const { dominant, poison, undecided } = dominanceOf(catalogue, mixture, effects);
-  const harmful = effects.filter((effect) => catalogue.harmful[effect]).length;
+  const harmfulCount = effects.filter((effect) => catalogue.harmful[effect]).length;
   return {
     ingredients: mixture,
     effects,
-    gatherScore: mixture.reduce((total, i) => total + i.gatherScore, 0),
+    harmfulCount,
+    gatherScore: mixture.reduce((total, ingredient) => total + ingredient.gatherScore, 0),
     multipliers,
     potency: wanted.reduce((total, effect) => total + (multipliers[effect] || 1), 0),
-    // DISAGREEING deviators, not merely several of them. Six of Invisibility's seven
-    // carriers all deviate by the same x1.5, and when they agree there is nothing to lose
-    // — the printed multiplier is delivered whichever one the game picks. Counting rows
-    // instead of values demoted provably-correct "Most potent" winners in favour of
-    // harder-to-gather mixtures that happened to hold only one deviator.
-    contested: wanted.some((effect) => {
-      const table = catalogue.deviations[effect];
-      if (!table) return false;
-      const readDuration = catalogue.baseMagnitudes[effect] === 0;
-      const values: number[] = [];
-      for (const ingredient of mixture) {
-        const row = table[ingredient.slug];
-        if (row && values.indexOf(row[readDuration ? 1 : 0]) === -1) values.push(row[readDuration ? 1 : 0]);
-      }
-      return values.length > 1;
-    }),
+    contested: wanted.some((effect) => deviatorsDisagree(catalogue, mixture, effect)),
     dominant,
     poison,
     undecided,
-    mixed: harmful > 0 && harmful < effects.length,
+    mixed: harmfulCount > 0 && harmfulCount < effects.length,
   };
 }
 
@@ -405,6 +451,14 @@ export type Kind = 'good' | 'bad' | 'any';
 export const matchesKind = (mixture: Mixture, kind: Kind): boolean =>
   kind === 'any' || mixture.undecided || (kind === 'good' ? !mixture.poison : mixture.poison);
 
+/**
+ * The tie-break that comes before every other one, so the side you asked for sorts to the
+ * front of the winners AND of the overflow. Screen 3 and screen 9 must agree about which
+ * brews are answers; sharing the comparator is what makes that structural.
+ */
+const sideFirst = (kind: Kind) => (a: Mixture, b: Mixture): number =>
+  Number(!matchesKind(a, kind)) - Number(!matchesKind(b, kind));
+
 export interface SearchResult {
   /** Winner per RANKINGS entry, chosen over every mixture found. */
   winners: (Mixture | null)[];
@@ -418,8 +472,6 @@ export interface SearchResult {
   /** Bounded list backing "show more". Never used for ranking. */
   sample: Mixture[];
   total: number;
-  /** How many of those are on the requested side. */
-  matching: number;
   /** Effects that could still be added to the selection. */
   reachable: Set<number>;
 }
@@ -431,22 +483,23 @@ export function search(catalogue: Catalogue, wanted: number[], kind: Kind = 'any
   let total = 0;
   let matching = 0;
 
+  const requestedSideFirst = sideFirst(kind);
   /**
-   * Every ranking, wrapped so that the requested side wins before its own criterion is
-   * consulted. One wrapper rather than a filtered candidate list: a filter would have to
-   * decide up front what to do when the filter empties the set, and this way the wrong
-   * side simply loses every comparison it can — and still wins if it is all there is.
+   * A wrapper rather than a ownedCache candidate list: a filter has to decide up front what
+   * to do when it empties the set, and this way the wrong side loses every comparison it
+   * can while still winning when it is all there is. Built once per ranking, not once per
+   * comparison — this runs ~85,000 times.
    */
-  const rank = (ranking: Ranking) => (a: Mixture, b: Mixture): number =>
-    Number(!matchesKind(a, kind)) - Number(!matchesKind(b, kind)) || ranking.compare(a, b);
+  const rankers = RANKINGS.map((ranking) => (a: Mixture, b: Mixture): number =>
+    requestedSideFirst(a, b) || ranking.compare(a, b, kind));
 
-  // Nothing selected: every effect is reachable, because ingredients.yaml
-  // guarantees each is carried by at least two ingredients.
+  // An effect needs two carriers to reach a bottle at all, and turning off an add-on can
+  // take one below two — so this is a test, not the formality it was before DLC filtering.
   if (!wanted.length) {
     catalogue.effectNames.forEach((_, index) => {
       if (catalogue.carriersOf[index].length >= 2) reachable.add(index);
     });
-    return { winners, kind, closestOnly: false, sample, total, matching: 0, reachable };
+    return { winners, kind, closestOnly: false, sample, total, reachable };
   }
 
   const wantedMask = maskOf(wanted);
@@ -461,7 +514,7 @@ export function search(catalogue: Catalogue, wanted: number[], kind: Kind = 'any
     // The same bottle off fewer ingredients is already in the results, or about to be.
     if (isRedundant(catalogue, mixture, produced)) return;
 
-    const key = mixture.map((i) => i.slug).sort().join('|');
+    const key = mixture.map((ingredient) => ingredient.slug).sort().join('|');
     if (seen.has(key)) return;
     seen.add(key);
     total++;
@@ -469,9 +522,9 @@ export function search(catalogue: Catalogue, wanted: number[], kind: Kind = 'any
     const described = describe(catalogue, mixture, produced, wanted);
     if (matchesKind(described, kind)) matching++;
     for (const effect of described.effects) reachable.add(effect);
-    RANKINGS.forEach((ranking, index) => {
+    rankers.forEach((beats, index) => {
       const current = winners[index];
-      if (!current || rank(ranking)(described, current) < 0) winners[index] = described;
+      if (!current || beats(described, current) < 0) winners[index] = described;
     });
     if (sample.length < SAMPLE_LIMIT) sample.push(described);
   };
@@ -481,11 +534,12 @@ export function search(catalogue: Catalogue, wanted: number[], kind: Kind = 'any
       const pair = [anchors[a], anchors[b]];
       consider(pair);
       for (const third of catalogue.ingredients) {
-        if (third !== pair[0] && third !== pair[1]) consider([...pair, third]);
+        if (third === pair[0] || third === pair[1]) continue;
+        consider([...pair, third]);
       }
     }
   }
-  return { winners, kind, closestOnly: total > 0 && matching === 0, sample, total, matching, reachable };
+  return { winners, kind, closestOnly: total > 0 && matching === 0, sample, total, reachable };
 }
 
 // ── Rendering ───────────────────────────────────────────────────────────────
@@ -502,72 +556,85 @@ const DLC_NAMES: Record<string, string> = {
   CC: 'Creation Club',
 };
 
+const PLACEHOLDER_ART =
+  '<svg class="sky-ph" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" ' +
+  'focusable="false"><circle class="sky-ph__disc" cx="24" cy="24" r="22" />' +
+  '<text class="sky-ph__mark" x="24" y="25" text-anchor="middle" dominant-baseline="central">?</text></svg>';
+
 /**
- * The dots and the DLC tag are both glyph-only, and a screen reader read them literally:
- * "black circle black circle black circle black circle white circle" fifteen times per
- * result card, and "D B" for Dragonborn. Both now carry the sentence they mean, and the
- * decoration is hidden from the accessibility tree rather than duplicated into it.
+ * @param alt  Empty on a result row, where the name sits right beside the picture, so the
+ *   image is decoration; the ingredient's own name on a tile, where the picture IS the
+ *   control and there is nothing else to announce.
+ */
+function artFor(catalogue: Catalogue, ingredient: Ingredient, alt = ''): string {
+  const url = catalogue.images[ingredient.slug];
+  if (!url) return PLACEHOLDER_ART;
+  return `<img src="${escapeHtml(url)}" alt="${escapeHtml(alt)}" loading="lazy" decoding="async"` +
+    `${alt ? '' : ' aria-hidden="true"'} />`;
+}
+
+/**
+ * Same shape as partials/skyrim-dlc.html, off the same map — duplicated here only because
+ * JS cannot reach Hugo at runtime. The code is a glyph a screen reader says as "D B", so
+ * the name rides alongside it in `.sky-sr`.
+ *
+ * @param tag  `i` in a result row, `span.sky-ing__dlc` on a tile. Both take their hue from
+ *   `[data-dlc]`, which is why the element can differ and the colour cannot.
+ */
+function dlcBadge(ingredient: Ingredient, tag: 'i' | 'span'): string {
+  const code = ingredient.dlc;
+  if (!code) return '';
+  const name = escapeHtml(DLC_NAMES[code] || code);
+  const className = tag === 'span' ? ' class="sky-ing__dlc"' : '';
+  return `<${tag}${className} data-dlc="${escapeHtml(code)}" title="${name}" aria-hidden="true">` +
+    `${escapeHtml(code)}</${tag}><span class="sky-sr"> (${name})</span>`;
+}
+
+/**
+ * The gather dots were read out literally — "black circle black circle…" fifteen times per
+ * card — so the glyphs are aria-hidden and the sentence they mean rides in `.sky-sr`.
  */
 function ingredientRow(catalogue: Catalogue, ingredient: Ingredient): string {
-  const code = ingredient.dlc;
-  const dlc = code
-    ? `<i title="${escapeHtml(DLC_NAMES[code] || code)}" aria-hidden="true">${escapeHtml(code)}</i>` +
-      `<span class="sky-sr"> (${escapeHtml(DLC_NAMES[code] || code)})</span>`
-    : '';
   const score = ingredient.gatherScore;
-  // The picture, at row scale. A result card used to be a list of names — the one place
-  // in the module where an ingredient appeared without its art, while the mortar and the
-  // recipe cards both showed it. aria-hidden: the name is right beside it.
-  const url = catalogue.images[ingredient.slug];
-  const art = url
-    ? `<img src="${escapeHtml(url)}" alt="" loading="lazy" decoding="async" aria-hidden="true" />`
-    : '<svg class="sky-ph" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" ' +
-      'focusable="false"><circle class="sky-ph__disc" cx="24" cy="24" r="22" />' +
-      '<text class="sky-ph__mark" x="24" y="25" text-anchor="middle" dominant-baseline="central">?</text></svg>';
-  return `<li class="sky-bi"><span class="sky-bi__pic">${art}</span>` +
-    `<b>${escapeHtml(ingredient.name)}</b>${dlc}` +
+  return `<li class="sky-bi"><span class="sky-bi__pic">${artFor(catalogue, ingredient)}</span>` +
+    `<b>${escapeHtml(ingredient.name)}</b>${dlcBadge(ingredient, 'i')}` +
     `<em title="How easy this is to find: ${score} of ${MAX_GATHER_SCORE}">` +
     `<span aria-hidden="true">${gatherDots(score)}</span>` +
     `<span class="sky-sr">easy to find: ${score} of ${MAX_GATHER_SCORE}</span></em></li>`;
 }
 
 /**
- * COLOUR SAYS WHICH SIDE, and nothing else.
- *
- * It used to say two things at once: the accent marked an effect you had asked for, and
- * the verdict hue marked the single effect that decided potion-or-poison. Asking for
- * Fortify Lockpicking and Fortify Sneak therefore returned one amber chip and one blue
- * one, which reads as "only that one is a potion effect" — a reasonable thing to conclude
- * and not what it meant.
- *
- * So the hue is now the effect's own side, everywhere: blue benefits you, green harms
- * you. The other two facts move to channels that are not hue — a fill for the effects you
- * asked for, a heavier border for the one that set the verdict. That the dominant chip
- * still comes out the verdict's colour is not a special case: the verdict IS its side.
+ * COLOUR SAYS WHICH SIDE, and nothing else. It used to double as "you asked for this",
+ * which returned one amber chip among blue ones and read as "only that one is a potion
+ * effect". Asked-for is a fill now, and the verdict-setter a heavier border.
  */
-function effectChip(catalogue: Catalogue, mixture: Mixture, effect: number, wanted: number[]): string {
-  const applied = mixture.multipliers[effect];
+function chipMarkup(
+  catalogue: Catalogue,
+  effect: number,
+  { tagged = false, dominant = false, applied }: { tagged?: boolean; dominant?: boolean; applied?: number } = {},
+): string {
   const classes = ['sky-chip'];
-  if (wanted.indexOf(effect) !== -1) classes.push('sky-chip--tag');
-  if (effect === mixture.dominant) classes.push('is-dominant');
-  const suffix = applied ? `<b>×${formatMultiplier(applied)}</b>` : '';
-  const side = catalogue.harmful[effect] ? 'bad' : 'good';
-  return `<li class="${classes.join(' ')}" data-side="${side}">` +
-    `${escapeHtml(catalogue.effectNames[effect])}${suffix}</li>`;
+  if (tagged) classes.push('sky-chip--tag');
+  if (dominant) classes.push('is-dominant');
+  return `<li class="${classes.join(' ')}" data-side="${sideOf(catalogue, effect)}">` +
+    `${escapeHtml(catalogue.effectNames[effect])}${multiplierSuffix(applied)}</li>`;
 }
 
-/**
- * The GLYPH: what the mortar hands you. Flask, skull, or — for the one documented tie —
- * both circles.
- */
-const verdictKind = (mixture: Mixture): string =>
+const effectChip = (catalogue: Catalogue, mixture: Mixture, effect: number, wanted: number[]): string =>
+  chipMarkup(catalogue, effect, {
+    tagged: wanted.indexOf(effect) !== -1,
+    dominant: effect === mixture.dominant,
+    applied: mixture.multipliers[effect],
+  });
+
+/** Flask, skull, or — when the top two costs tie across the sides — both circles. */
+const verdictKind = (mixture: Mixture): 'good' | 'bad' | 'either' =>
   mixture.undecided ? 'either' : mixture.poison ? 'bad' : 'good';
 
 /**
- * The HUE: how clean the bottle is. Two channels rather than one, because "poison" and
- * "poison that also restores your health" are different things to be handed and a single
- * colour could only say one of them. Mixed outranks both sides — that is the case worth
- * catching — and the glyph still says which way it fell.
+ * A second channel beside the glyph: "poison" and "poison that also restores your health"
+ * are different things to be handed, and one colour could only say one of them. Mixed
+ * outranks both sides; the glyph still says which way it fell.
  */
 const verdictTone = (mixture: Mixture): string =>
   mixture.mixed ? 'mixed' : mixture.poison ? 'bad' : 'good';
@@ -579,34 +646,34 @@ const verdictLabel = (mixture: Mixture): string =>
  * The same three glyphs screen 1 offers as choices, reused as the answer — so the flask
  * you pressed to ask for a potion is the flask that tells you that you got one.
  */
-const KIND_GLYPH: Record<string, string> = {
+const VERDICT_GLYPH: Record<'good' | 'bad' | 'either', string> = {
   good: '<path d="M9.5 3h5M10.5 3v6.4l-5.1 8.9A1.7 1.7 0 0 0 6.9 21h10.2a1.7 1.7 0 0 0 1.5-2.7l-5.1-8.9V3" /><path d="M7.8 15h8.4" />',
   bad: '<path d="M12 3a7 7 0 0 0-4 12.7V18a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.3A7 7 0 0 0 12 3Z" /><path d="M9.7 10.2h.01M14.3 10.2h.01M10.5 19v2M13.5 19v2" />',
   either: '<circle cx="9" cy="12" r="6" /><circle cx="15" cy="12" r="6" />',
 };
 
 /**
- * The mortar's verdict, as a disc in the corner of the tray rather than a word under it.
- *
- * It used to be a 36px word — the answer register — sitting below the tiles. The tray is
- * what the verdict is ABOUT, so the tray takes the colour and this marks it. aria-hidden
- * on the drawing; the word rides along in `.sky-sr` for the live region.
+ * @param interactive  Render a button rather than a span. Only the mortar's disc takes
+ *   this: there the verdict is about a mixture you assembled by hand and have no other way
+ *   to open, so the thing that announces it is also the way in. On a result card the whole
+ *   card is already the button, and this would be a button inside a button.
  */
-function verdictBadge(mixture: Mixture): string {
-  if (mixture.dominant === -1) return '';
-  const kind = verdictKind(mixture);
-  return `<span class="sky-verdict" data-kind="${kind}" data-tone="${verdictTone(mixture)}">` +
-    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" ' +
-    `stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${KIND_GLYPH[kind]}</svg>` +
+function verdictBadge(mixture: Mixture, interactive = false): string {
+  const glyph = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" ' +
+    'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' +
+    `${VERDICT_GLYPH[verdictKind(mixture)]}</svg>`;
+  const tone = `data-tone="${verdictTone(mixture)}"`;
+  // aria-label replaces the content outright, so the button carries no `.sky-sr` twin.
+  if (interactive) {
+    return `<button type="button" class="sky-verdict sky-verdict--go" ${tone} data-verdict-open ` +
+      `aria-label="${escapeHtml(verdictLabel(mixture))} — see what each ingredient carries">${glyph}</button>`;
+  }
+  return `<span class="sky-verdict" ${tone}>${glyph}` +
     `<span class="sky-sr">${verdictLabel(mixture)}</span></span>`;
 }
 
-/**
- * The effect chips, tagged with the verdict so the chip that caused it can be tinted to
- * match — the word at the top says WHAT, this says WHICH.
- */
 function chipsMarkup(catalogue: Catalogue, mixture: Mixture, wanted: number[]): string {
-  return `<ul class="sky-chips" data-kind="${verdictKind(mixture)}" data-tone="${verdictTone(mixture)}">${mixture.effects
+  return `<ul class="sky-chips">${mixture.effects
     .map((effect) => effectChip(catalogue, mixture, effect, wanted))
     .join('')}</ul>`;
 }
@@ -625,11 +692,7 @@ function ingredientEffectsTable(catalogue: Catalogue, mixture: Mixture): string 
     const cells = ingredient.effects.map((effect) => {
       const classes = ['sky-fxcell'];
       if (inMixture.has(effect)) classes.push('is-shared');
-      // Same rule the chips follow: the hue is the effect's side. Green was already
-      // doing this for the harmful ones; the beneficial ones were left grey, which
-      // made the table look like it only had an opinion about half its contents.
-      const side = catalogue.harmful[effect] ? 'bad' : 'good';
-      return `<td class="${classes.join(' ')}" data-side="${side}">` +
+      return `<td class="${classes.join(' ')}" data-side="${sideOf(catalogue, effect)}">` +
         `${escapeHtml(catalogue.effectNames[effect])}</td>`;
     }).join('');
     return `<tr><th scope="row">${escapeHtml(ingredient.name)}</th>${cells}</tr>`;
@@ -641,45 +704,31 @@ function ingredientEffectsTable(catalogue: Catalogue, mixture: Mixture): string 
 }
 
 /**
- * SCREEN 8 — one brew, with the room the card could not give it.
- *
- * The same three facts the card carries, unhurried: what comes out, what went in, and
- * what else each of those ingredients is holding. The table is the reason this is a
- * screen and not a panel — four effect names per row do not fit in a 15rem grid column,
- * and widening the card to fit them pushes everything below it down the page.
- */
-/**
- * The screen's own title: the verdict as the disc the mortar uses, then what the bottle
- * actually does, each effect in its own side's colour. It replaces both the POTION pill
- * and the chip row underneath it, which between them said the same thing twice in two
- * different visual languages.
+ * Screen 8's title: the mortar's disc, then what the bottle does, each effect in its own
+ * side's colour. It replaces the POTION pill and the chip row that used to say the same
+ * thing twice in two visual languages.
  */
 export function brewTitleMarkup(catalogue: Catalogue, mixture: Mixture): string {
   const effects = mixture.effects
-    .map((effect) => {
-      const side = catalogue.harmful[effect] ? 'bad' : 'good';
-      const applied = mixture.multipliers[effect];
-      const suffix = applied > 1 ? ` ×${formatMultiplier(applied)}` : '';
-      return `<span class="sky-brewtitle__fx" data-side="${side}">` +
-        `${escapeHtml(catalogue.effectNames[effect])}${escapeHtml(suffix)}</span>`;
-    })
+    .map((effect) => `<span class="sky-brewtitle__fx" data-side="${sideOf(catalogue, effect)}">` +
+      `${escapeHtml(catalogue.effectNames[effect])}${multiplierSuffix(mixture.multipliers[effect])}</span>`)
     .join('<span class="sky-brewtitle__sep" aria-hidden="true">+</span>');
   return `${verdictBadge(mixture)}<span class="sky-brewtitle__fxs">${effects}</span>`;
 }
 
+/**
+ * SCREEN 8 — one brew with the room the card could not give it. The table is why this is a
+ * screen and not a panel: four effect names per row do not fit a 15rem grid column, and
+ * widening the card pushes everything below it down the page.
+ */
 export function brewDetailMarkup(catalogue: Catalogue, mixture: Mixture, closest = false): string {
   return [
     '<div class="sky-brewpage">',
-    closest
-      ? '<p class="sky-warn">Nothing produces these effects on the side you asked for. ' +
-        'This is one of the nearest misses.</p>'
-      : '',
-    `<ul class="sky-bis sky-bis--wide">${mixture.ingredients.map((i) => ingredientRow(catalogue, i)).join('')}</ul>`,
-    // No heading and no legend over the table. A table of ingredients against
-    // effects, under a list of those ingredients, does not need to be announced,
-    // and highlighting reads as "these ones" without being told. The caption
-    // inside the table stays: it is screen-reader-only, and the highlight is the
-    // one thing there that cannot be seen.
+    closest ? `<p class="sky-warn">${closestLead(true)}</p>` : '',
+    `<ul class="sky-bis sky-bis--wide">${mixture.ingredients.map((ingredient) => ingredientRow(catalogue, ingredient)).join('')}</ul>`,
+    // No heading and no legend: the list above names the table, and highlighting reads
+    // as "these ones" without being told. The sr-only caption stays — the highlight is
+    // the one thing there that cannot be seen.
     ingredientEffectsTable(catalogue, mixture),
     '</div>',
   ].join('');
@@ -693,42 +742,48 @@ function mixtureCard(
   badge?: string,
   closest = false,
 ): string {
-  const label = `${mixture.ingredients.map((i) => i.name).join(', ')} — ${verdictLabel(mixture)}`;
+  const label = `${mixture.ingredients.map((ingredient) => ingredient.name).join(', ')} — ${verdictLabel(mixture)}`;
   return [
     '<article class="sky-brew">',
     '<div class="sky-brew__head">',
-    // The labels share a cell so the disc keeps its corner however far the
-    // ranking name wraps — "Nothing extra · Easiest to gather" is two lines in a
-    // 15rem column, and as flex siblings that pushed the disc onto a third.
+    // Labels share a cell so the disc keeps its corner however far a ranking name wraps.
     '<div class="sky-brew__labels">',
     badge ? `<h4 class="sky-brew__badge">${escapeHtml(badge)}</h4>` : '',
-    closest ? '<p class="sky-brew__closest" title="Nothing produces these effects on the side you asked for. ' +
-      'This is the nearest miss.">Closest possible</p>' : '',
+    closest ? `<p class="sky-brew__closest" title="${closestLead(false)}">Closest possible</p>` : '',
     '</div>',
-    // The disc the mortar and screen 8 both use, rather than a second word for the
-    // same thing. It carries the word in `.sky-sr`, so nothing is lost to a reader
-    // who cannot see the glyph.
     verdictBadge(mixture),
     '</div>',
-    // A button, so focus, Enter and Space come with the element rather than being
-    // rebuilt on a div. It opens screen 8; the index is how the handler finds the
-    // mixture again after the markup has left the building.
+    // A real button, so focus, Enter and Space come with the element. The index is how
+    // the handler finds the mixture again once this markup has been replaced.
     `<button type="button" class="sky-brew__open" data-brew-open="${index}" ` +
     `aria-label="${escapeHtml(label)}. See what each ingredient carries.">`,
-    `<ul class="sky-bis">${mixture.ingredients.map((i) => ingredientRow(catalogue, i)).join('')}</ul>`,
+    `<ul class="sky-bis">${mixture.ingredients.map((ingredient) => ingredientRow(catalogue, ingredient)).join('')}</ul>`,
     chipsMarkup(catalogue, mixture, wanted),
     '</button>',
     '</article>',
   ].join('');
 }
 
-/** One card per ranking, merging the labels when a mixture wins more than one. */
-function headlines(winners: (Mixture | null)[]): { mixture: Mixture; labels: string[] }[] {
+/**
+ * A LABEL IS A CLAIM TO HAVE BEATEN THE BENCHMARK, so a ranking that only tied it stays
+ * quiet. "Most potent" on a brew exactly as potent as RANKINGS[0]'s winner is not a reason
+ * to pick it — it is a fact about a set where nothing did better, printed as if it were an
+ * argument. Every label the old code printed on such a tie sent the reader to a worse
+ * mixture with a better-sounding name.
+ *
+ * A ranking the benchmark itself wins keeps its label: there the claim is true, and it says
+ * this one brew is best on every axis rather than merely first.
+ *
+ * A card left with no labels is dropped — nothing distinguished it.
+ */
+export function headlines(result: SearchResult): { mixture: Mixture; labels: string[] }[] {
   const cards: { mixture: Mixture; labels: string[] }[] = [];
+  const benchmark = result.winners[0];
   RANKINGS.forEach((ranking, index) => {
-    const winner = winners[index];
+    const winner = result.winners[index];
     if (!winner) return;
-    if (ranking.worthSaying && !ranking.worthSaying(winner)) return;
+    if (benchmark && winner !== benchmark &&
+      ranking.measure(winner, result.kind) <= ranking.measure(benchmark, result.kind)) return;
     const existing = cards.find((card) => card.mixture === winner);
     if (existing) existing.labels.push(ranking.label);
     else cards.push({ mixture: winner, labels: [ranking.label] });
@@ -736,13 +791,7 @@ function headlines(winners: (Mixture | null)[]): { mixture: Mixture; labels: str
   return cards;
 }
 
-/**
- * What a specific handful of ingredients actually makes.
- *
- * The other three modes ask what you WANT and search for it; this one is the mortar
- * itself — you put things in and the bottle updates. No search, no ranking, no Brew
- * button, because there is nothing to choose between.
- */
+/** The mortar: no search and no ranking, because there is nothing to choose between. */
 export function liveMixture(catalogue: Catalogue, chosen: Ingredient[]): Mixture | null {
   if (chosen.length < 2) return null;
   const produced = effectsProducedBy(chosen);
@@ -788,8 +837,8 @@ export function bridgeMaskOf(catalogue: Catalogue, chosen: Ingredient[]): Effect
  * This looks one slot ahead. `bridge` is null wherever looking ahead is meaningless, in
  * which case the two rules agree.
  */
-export function reachesWith(chosen: Ingredient[], candidate: Ingredient, bridge: EffectMask | null): boolean {
-  if (contributesTo(chosen, candidate)) return true;
+export function couldJoin(candidate: Ingredient, chosen: Ingredient[], bridge: EffectMask | null): boolean {
+  if (sharesEffectWith(candidate, chosen)) return true;
   if (!bridge) return false;
   return (candidate.mask.low & bridge.low) !== 0 || (candidate.mask.high & bridge.high) !== 0;
 }
@@ -801,7 +850,7 @@ export function reachesWith(chosen: Ingredient[], candidate: Ingredient, bridge:
  * shares nothing with what is already in the mortar is a wasted third slot. The game
  * would let you do it; there is no reason to want to.
  */
-export function contributesTo(chosen: Ingredient[], candidate: Ingredient): boolean {
+export function sharesEffectWith(candidate: Ingredient, chosen: Ingredient[]): boolean {
   if (!chosen.length) return true;
   return chosen.some((ingredient) =>
     (ingredient.mask.low & candidate.mask.low) !== 0 ||
@@ -813,30 +862,15 @@ export function contributesTo(chosen: Ingredient[], candidate: Ingredient): bool
  * CSS and a recipe card and the mortar look like the same thing.
  */
 function tileMarkup(catalogue: Catalogue, ingredient: Ingredient, removable = false): string {
-  const url = catalogue.images[ingredient.slug];
-  const art = url
-    ? `<img src="${escapeHtml(url)}" alt="${escapeHtml(ingredient.name)}" loading="lazy" decoding="async" />`
-    // No art yet. aria-hidden because the name below already says it.
-    : '<svg class="sky-ph" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" ' +
-      'focusable="false"><circle class="sky-ph__disc" cx="24" cy="24" r="22" />' +
-      '<text class="sky-ph__mark" x="24" y="25" text-anchor="middle" dominant-baseline="central">?</text></svg>';
-  // Same shape as partials/skyrim-dlc.html, off the same DLC_NAMES map: visible code,
-  // colour as reinforcement, full name in the accessibility tree. This one is here rather
-  // than in the partial only because JS cannot reach Hugo at runtime.
-  const dlc = ingredient.dlc
-    ? `<span class="sky-ing__dlc" data-dlc="${escapeHtml(ingredient.dlc)}" aria-hidden="true">${escapeHtml(ingredient.dlc)}</span>` +
-      `<span class="sky-sr"> (${escapeHtml(DLC_NAMES[ingredient.dlc] || ingredient.dlc)})</span>`
-    : '';
+  const art = artFor(catalogue, ingredient, ingredient.name);
   // In the mortar the tile IS the way back out, so it is a real button with a real label.
   // On a recipe card there is nothing to take out, so it stays an inert span.
   const tile = removable
     ? `<button type="button" class="sky-tile sky-tile--drop" data-drop="${escapeHtml(ingredient.slug)}"` +
       ` aria-label="Take ${escapeHtml(ingredient.name)} out of the mortar">${art}</button>`
     : `<span class="sky-tile">${art}</span>`;
-  return (
-    `<div class="sky-ing">${tile}` +
-    `<span class="sky-ing__name">${escapeHtml(ingredient.name)}${dlc}</span></div>`
-  );
+  return `<div class="sky-ing">${tile}` +
+    `<span class="sky-ing__name">${escapeHtml(ingredient.name)}${dlcBadge(ingredient, 'span')}</span></div>`;
 }
 
 /**
@@ -849,9 +883,10 @@ function tileMarkup(catalogue: Catalogue, ingredient: Ingredient, removable = fa
  */
 export function mortarMarkup(catalogue: Catalogue, chosen: Ingredient[], mixture: Mixture | null = null): string {
   if (!chosen.length) return '';
-  const kind = mixture && mixture.dominant !== -1 ? ` data-tone="${verdictTone(mixture)}"` : '';
-  return `<div class="sky-ings"${kind}>${chosen.map((i) => tileMarkup(catalogue, i, true)).join('')}` +
-    `${mixture ? verdictBadge(mixture) : ''}</div>`;
+  const tone = mixture ? ` data-tone="${verdictTone(mixture)}"` : '';
+  return `<div class="sky-ings"${tone}>` +
+    `${chosen.map((ingredient) => tileMarkup(catalogue, ingredient, true)).join('')}` +
+    `${mixture ? verdictBadge(mixture, true) : ''}</div>`;
 }
 
 /**
@@ -866,7 +901,7 @@ export function mortarMarkup(catalogue: Catalogue, chosen: Ingredient[], mixture
  * ingredients carry it": one tile in the tray, no chips under it, and every incompatible
  * pill struck through is the same statement, made three ways, on screen.
  */
-export function guidanceMarkup(refusal: string): string {
+function guidanceMarkup(refusal: string): string {
   return refusal ? `<p class="sky-hint sky-hint--refused">${escapeHtml(refusal)}</p>` : '';
 }
 
@@ -884,21 +919,6 @@ export function liveMarkup(catalogue: Catalogue, chosen: Ingredient[]): string {
 }
 
 /**
- * The multiplier this ONE ingredient applies to ONE of its effects.
- *
- * `deviationOf` answers the same question for a whole mixture, where the strongest
- * deviator wins; here there is only ever one ingredient, so this reads its row directly.
- * Which half of the row matters is the same rule the mortar uses: an effect with no
- * magnitude carries its strength in its duration.
- */
-function deviationFor(catalogue: Catalogue, slug: string, effect: number): number {
-  const table = catalogue.deviations[effect];
-  const row = table ? table[slug] : undefined;
-  if (!row) return 1;
-  return catalogue.baseMagnitudes[effect] === 0 ? row[1] : row[0];
-}
-
-/**
  * Screen 6: one effect, every ingredient carrying it, and what else each of those brings.
  *
  * The other screens all ask a question about a BOTTLE. This one is the index — you have
@@ -906,26 +926,26 @@ function deviationFor(catalogue: Catalogue, slug: string, effect: number): numbe
  * arrives alone, what else comes with it. The chips are the ingredient's own four, with
  * the effect you asked for marked and any multiplier printed on the chip it applies to.
  */
+function carrierCard(catalogue: Catalogue, ingredient: Ingredient, asked: number): string {
+  const chips = ingredient.effects.map((effect) => {
+    // A one-ingredient mixture, so there is no strongest-deviator contest to hold.
+    const applied = multiplierFor(catalogue, [ingredient], effect);
+    return chipMarkup(catalogue, effect, {
+      tagged: effect === asked,
+      applied: applied === 1 ? undefined : applied,
+    });
+  }).join('');
+  return '<article class="sky-brew">' +
+    `<ul class="sky-bis">${ingredientRow(catalogue, ingredient)}</ul>` +
+    `<ul class="sky-chips">${chips}</ul></article>`;
+}
+
 export function effectDetailMarkup(catalogue: Catalogue, effect: number): string {
   const carriers = catalogue.carriersOf[effect] || [];
-  const cards = carriers.map((ingredient) => {
-    const chips = ingredient.effects.map((other) => {
-      const classes = ['sky-chip'];
-      if (other === effect) classes.push('sky-chip--tag');
-      const applied = deviationFor(catalogue, ingredient.slug, other);
-      const suffix = applied !== 1 ? `<b>&times;${formatMultiplier(applied)}</b>` : '';
-      // Same hue rule as everywhere else: the chip is the colour of its side.
-      const side = catalogue.harmful[other] ? 'bad' : 'good';
-      return `<li class="${classes.join(' ')}" data-side="${side}">` +
-        `${escapeHtml(catalogue.effectNames[other])}${suffix}</li>`;
-    }).join('');
-    return '<article class="sky-brew">' +
-      `<ul class="sky-bis">${ingredientRow(catalogue, ingredient)}</ul>` +
-      `<ul class="sky-chips">${chips}</ul></article>`;
-  }).join('');
-  // No count above this. The cards are on screen and countable, and a number nobody asked
+  // No count above this: the cards are on screen and countable, and a number nobody asked
   // for taking the first line of the answer is the label winning again.
-  return `<div class="sky-brews sky-brews--plain">${cards}</div>`;
+  return '<div class="sky-brews">' +
+    `${carriers.map((ingredient) => carrierCard(catalogue, ingredient, effect)).join('')}</div>`;
 }
 
 /**
@@ -938,61 +958,203 @@ export function resultsMarkup(
   catalogue: Catalogue,
   result: SearchResult,
   wanted: number[],
-  showExtra: boolean,
   order: Mixture[] = [],
 ): string {
   order.length = 0;
-  const cards = headlines(result.winners);
-  const extra = showExtra
-    ? result.sample
-        .filter((mixture) => !cards.some((card) => card.mixture === mixture))
-        // Same rule as the headline cards: the side you asked for sorts first, so a poison
-        // you did not ask for lands at the bottom of the overflow instead of the top.
-        .sort((a, b) =>
-          Number(!matchesKind(a, result.kind)) - Number(!matchesKind(b, result.kind)) ||
-          RANKINGS[0].compare(a, b))
-        .slice(0, EXTRA_SHOWN)
-    : [];
-  const canExpand = result.sample.length > cards.length;
-  const missed = result.total - result.matching;
+  const cards = headlines(result);
 
   return [
-    result.closestOnly
-      ? `<p class="sky-warn">Nothing produces ${result.total === 1 ? 'this' : 'these'} on the side you asked for. ` +
-        'These are the nearest misses.</p>'
-      : '',
+    result.closestOnly ? `<p class="sky-warn">${closestLead(result.total !== 1)}</p>` : '',
     `<div class="sky-brews">${cards
       .map((c) => {
         order.push(c.mixture);
         return mixtureCard(catalogue, c.mixture, wanted, order.length - 1, c.labels.join(' · '), result.closestOnly);
       })
       .join('')}</div>`,
-    extra.length
-      ? `<div class="sky-brews sky-brews--rest">${extra
-          .map((m) => {
-            order.push(m);
-            return mixtureCard(catalogue, m, wanted, order.length - 1, undefined,
-              !matchesKind(m, result.kind) && !result.closestOnly);
-          })
-          .join('')}</div>`
-      : '',
+    // The count rides the button rather than taking a line of its own to say it, and it
+    // counts what the button can actually reach — the browsable sample, not the raw total.
+    // A button reading "Show more (2,318)" that leads to 400 is the sentence's old problem
+    // moved onto the control.
     '<div class="sky-scr__foot">',
-    `<p class="sky-hint">${result.total.toLocaleString('en-US')} brew${result.total === 1 ? '' : 's'} produce this` +
-      // Saying how many were set aside is the difference between a filter and a
-      // disappearance: the count still matches what the effect index would tell you.
-      (result.kind !== 'any' && missed > 0 && !result.closestOnly
-        ? `, ${missed.toLocaleString('en-US')} of them on the other side`
-        : '') +
-      '.</p>',
-    canExpand ? `<button type="button" class="sky-go sky-go--ghost" data-more>${showExtra ? 'Show less' : 'Show more'}</button>` : '',
+    browsableCount(result) > cards.length
+      ? '<button type="button" class="sky-go sky-go--ghost" data-more>' +
+        `Show more (${browsableCount(result).toLocaleString('en-US')})</button>`
+      : '',
     '</div>',
   ].join('');
+}
+
+/**
+ * What screen 9 can actually reach. The search keeps at most SAMPLE_LIMIT mixtures, and
+ * `result.total` — often far larger — is not a number any control here can honour.
+ */
+export const browsableCount = (result: SearchResult): number => result.sample.length;
+
+/**
+ * The overflow in reading order: the side you asked for first, then the ranking winners,
+ * then everything else by the same comparator the top card uses.
+ *
+ * The winners are IN this list rather than skipped from it. Screen 9 is the index — a list
+ * called "every brew" that quietly omits the three best ones is a trap for anyone who
+ * arrived here to look for a specific mixture, and their badges come along so page one
+ * still says which is which.
+ */
+// ── Screen 9: the overflow ──────────────────────────────────────────────────
+
+export function overflowOrder(result: SearchResult): { order: Mixture[]; badges: Map<Mixture, string> } {
+  const badges = new Map<Mixture, string>();
+  for (const card of headlines(result)) badges.set(card.mixture, card.labels.join(' · '));
+  const requestedSideFirst = sideFirst(result.kind);
+  const order = result.sample.slice().sort((a, b) =>
+    requestedSideFirst(a, b) ||
+    Number(!badges.has(a)) - Number(!badges.has(b)) ||
+    RANKINGS[0].compare(a, b, result.kind));
+  return { order, badges };
+}
+
+export const pageCount = (total: number): number => Math.max(1, Math.ceil(total / PAGE_SIZE));
+
+/**
+ * One page of it. Cards carry their index into the WHOLE list, not into the page, so a
+ * click on the seventh card of page four still finds its mixture without the handler
+ * having to know which page it came from.
+ */
+export function overflowPageMarkup(
+  catalogue: Catalogue,
+  all: Mixture[],
+  wanted: number[],
+  page: number,
+  badges: Map<Mixture, string>,
+  kind: Kind,
+  closestOnly: boolean,
+): string {
+  const start = page * PAGE_SIZE;
+  const cards = all.slice(start, start + PAGE_SIZE)
+    .map((mixture, offset) => mixtureCard(
+      catalogue, mixture, wanted, start + offset, badges.get(mixture),
+      !matchesKind(mixture, kind) && !closestOnly,
+    ))
+    .join('');
+  return `<div class="sky-brews">${cards}</div>`;
+}
+
+/** Also rewritten in place on every page turn, which is why it is not inline markup. */
+const pageCounterInner = (page: number, pages: number): string =>
+  `${page + 1}<span aria-hidden="true"> / </span><span class="sky-sr"> of </span>${pages}`;
+
+const CHEVRON = (d: string): string =>
+  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" ' +
+  `stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="${d}" /></svg>`;
+
+/**
+ * The carousel indicator: a dot per page while that is a countable number of dots, and a
+ * plain "4 / 27" once it is not. Fifty dots is not an indicator, it is a texture.
+ *
+ * `aria-current`, not `role="tab"`. These are buttons that change what is above them, and
+ * a tablist without tabpanels is a promise to a screen reader that nothing here keeps.
+ */
+const dotsMarkup = (page: number, pages: number): string =>
+  '<div class="sky-pager__dots">' +
+  Array.from({ length: pages }, (_, index) =>
+    `<button type="button" class="sky-pager__dot" data-page="${index}"` +
+    `${index === page ? ' aria-current="true"' : ''} ` +
+    `aria-label="Page ${index + 1} of ${pages}"></button>`).join('') +
+  '</div>';
+
+export function pagerMarkup(page: number, pages: number): string {
+  if (pages < 2) return '';
+  const dots = pages <= 12
+    ? dotsMarkup(page, pages)
+    : `<p class="sky-pager__count" data-page-count>${pageCounterInner(page, pages)}</p>`;
+  // Neither arrow is ever disabled. The list is a ring: past the last page is the first
+  // one. A dead control at each end asks the reader to notice which end they are on before
+  // pressing anything, which is a job the dots already do and the arrows should not.
+  return [
+    `<button type="button" class="sky-pager__arrow" data-page-step="-1" aria-label="Previous page">` +
+    `${CHEVRON('m15 18-6-6 6-6')}</button>`,
+    dots,
+    `<button type="button" class="sky-pager__arrow" data-page-step="1" aria-label="Next page">` +
+    `${CHEVRON('m9 18 6-6-6-6')}</button>`,
+  ].join('');
+}
+
+/**
+ * ONE FLICK, ONE PAGE — a reader for horizontal trackpad scrolling.
+ *
+ * A flick is not one event. It is a burst of deltas while the fingers are on the pad, then
+ * a momentum tail the browser keeps sending for up to a second and a half after they have
+ * left it, so accumulating naively turns one flick into five pages.
+ *
+ * Two ways back in after a page has been spent, and both are needed. Silence ends a
+ * gesture — but the tail never falls silent, so waiting for quiet swallowed the next flick
+ * entirely, and only pausing (say, to move the cursor) got through. So a delta over PUSH
+ * and more than DOUBLE what the tail has decayed to also counts as new: momentum is noisy
+ * rather than smoothly monotonic, and merely "bigger than the last one" re-armed on that
+ * jitter, letting the tail feed itself back over the line nine times per flick.
+ *
+ * @returns -1, 0 or 1 — the page step this event completes, if any.
+ */
+function createFlickReader(): (deltaX: number, at: number) => number {
+  /** Sideways travel that counts as a page. */
+  const PAGE = 55;
+  /** Silence that ends a gesture. Tail events arrive ~16ms apart, so this is safe. */
+  const QUIET = 140;
+  /** Below this, a delta is momentum or a stray graze — never a deliberate push. */
+  const PUSH = 12;
+  let travelled = 0;
+  let lastAt = 0;
+  /** The level the current tail has decayed to — the bar a new push has to clear. */
+  let tail = 0;
+  let spent = false;
+
+  return (deltaX, at) => {
+    const size = Math.abs(deltaX);
+    if (at - lastAt > QUIET) { travelled = 0; spent = false; }
+    lastAt = at;
+    if (spent) {
+      if (size < PUSH || size <= tail * 2) {
+        // Still falling. Follow it down, so the bar a new push must clear falls with it.
+        tail = Math.min(tail, size);
+        return 0;
+      }
+      travelled = 0;
+      spent = false;
+    }
+    travelled += deltaX;
+    if (Math.abs(travelled) < PAGE) return 0;
+    spent = true;
+    tail = size;
+    return travelled > 0 ? 1 : -1;
+  };
+}
+
+/** Why a pill in the mortar's grid refuses to be picked. */
+function blockReason(mortarIsFull: boolean, usesQuickRule: boolean): string {
+  if (mortarIsFull) return 'The mortar already holds three';
+  if (usesQuickRule) return 'Shares no effect with what is already in the mortar';
+  return 'No third ingredient can bridge these';
 }
 
 // ── Wiring ──────────────────────────────────────────────────────────────────
 
 /** Screen 2 has no way to show which side you asked for — every pill looks the same. */
 const KIND_LABEL: Record<Kind, string> = { good: 'Potion', bad: 'Poison', any: 'Mixture' };
+
+/** Screen 8 is reached from three places, so its Back has three names. */
+const BACK_FROM: Record<number, string> = {
+  3: 'Back to the brews',
+  4: 'Back to the mortar',
+  9: 'Back to every brew',
+};
+
+/** The one answer both the results and the overflow give when the search comes up empty. */
+const NOTHING_SPOKEN = 'Nothing can produce that combination.';
+const NOTHING = `<p class="sky-hint">${NOTHING_SPOKEN}</p>`;
+
+/** And the one it gives when everything it found is on the wrong side. */
+const closestLead = (plural: boolean): string =>
+  `Nothing produces ${plural ? 'these' : 'this'} on the side you asked for. ` +
+  `${plural ? 'These are' : 'This is'} the nearest ${plural ? 'misses' : 'miss'}.`;
 
 export function initBuilder(): void {
   for (const root of queryAll<HTMLElement>(document, '[data-builder]')) setUp(root);
@@ -1001,19 +1163,22 @@ export function initBuilder(): void {
 function setUp(root: HTMLElement): void {
   const payloadScript = root.querySelector('[data-builder-data]');
   const results = root.querySelector<HTMLElement>('[data-results]');
-  const heading = root.querySelector<HTMLElement>('[data-result-head]');
+  const resultsHead = root.querySelector<HTMLElement>('[data-result-head]');
   const brewButton = root.querySelector<HTMLButtonElement>('[data-brew]');
   if (!payloadScript || !results || !brewButton) return;
 
   const catalogue = buildCatalogue(JSON.parse(payloadScript.textContent || '{}') as Payload);
 
-  const effectButtons = queryAll<HTMLButtonElement>(root, '[data-fx]');
+  const effectPickButtons = queryAll<HTMLButtonElement>(root, '[data-fx]');
   const ingredientButtons = queryAll<HTMLButtonElement>(root, '[data-ing]');
   const live = root.querySelector<HTMLElement>('[data-live]');
   const mortar = root.querySelector<HTMLElement>('[data-mortar]');
   const filter = root.querySelector<HTMLInputElement>('[data-ing-filter]');
   const ingredientEmpty = root.querySelector<HTMLElement>('[data-ing-empty]');
-  const dlcGroup = root.querySelector<HTMLElement>('[data-dlc-group]');
+  // One control, rendered on four screens. The state lives here, not in the buttons, so
+  // pressing DB on the brews screen is the same press as DB in the mortar.
+  const dlcGroups = queryAll<HTMLElement>(root, '[data-dlc-group]');
+  const hiddenDlc = new Set<string>();
   const quickToggle = root.querySelector<HTMLButtonElement>('[data-quick-toggle]');
   const dlcToggles = queryAll<HTMLButtonElement>(root, '[data-dlc-toggle]');
   // Screen 5/6 — the effect index.
@@ -1021,13 +1186,29 @@ function setUp(root: HTMLElement): void {
   const fxDetail = root.querySelector<HTMLElement>('[data-fx-detail]');
   const fxFilter = root.querySelector<HTMLInputElement>('[data-fx-filter]');
   const fxEmpty = root.querySelector<HTMLElement>('[data-fx-empty]');
-  const fxInfoButtons = queryAll<HTMLButtonElement>(root, '[data-fxinfo]');
+  const effectIndexButtons = queryAll<HTMLButtonElement>(root, '[data-fxinfo]');
   const kindHead = root.querySelector<HTMLElement>('[data-kind-head]');
   // Screen 8 — one brew on its own.
   const brewHead = root.querySelector<HTMLElement>('[data-brew-head]');
   const brewDetail = root.querySelector<HTMLElement>('[data-brew-detail]');
+  // Screen 8 is reached from the results, from the overflow, and from the mortar, so its
+  // Back is written at open time rather than baked into the markup — otherwise opening a
+  // brew from the mortar drops you into a results screen you never asked for.
+  const brewBack = root.querySelector<HTMLElement>('[data-scr="8"] [data-back]');
+  // Screen 9 — the overflow.
+  const overflowScreen = root.querySelector<HTMLElement>('[data-scr="9"]');
+  const overflowHead = root.querySelector<HTMLElement>('[data-all-head]');
+  const overflowGrid = root.querySelector<HTMLElement>('[data-all-page]');
+  const overflowPager = root.querySelector<HTMLElement>('[data-all-pager]');
+  const overflowLive = root.querySelector<HTMLElement>('[data-all-live]');
   /** The mixtures behind the cards currently on screen 3, in the order they were drawn. */
   const rendered: Mixture[] = [];
+  let resultsAreClosest = false;
+  /** The same, for screen 9 — the whole sorted overflow, of which one page is on screen. */
+  let overflowMixtures: Mixture[] = [];
+  let badges = new Map<Mixture, string>();
+  let overflowIsClosest = false;
+  let overflowPage = 0;
   const bySlug = new Map(catalogue.ingredients.map((ingredient) => [ingredient.slug, ingredient]));
   /**
    * What the ingredient filter matches on: the name AND its four effects.
@@ -1046,23 +1227,42 @@ function setUp(root: HTMLElement): void {
   let kind: Kind = 'any';
   let wanted: number[] = [];
   let chosen: Ingredient[] = [];
-  let showExtra = false;
   /** Why the last tap did nothing. Cleared by anything that does something. */
   let refusal = '';
 
   /**
    * `search` walks up to ~85,000 candidate triples and ran twice per brew: once for the
-   * reachability pass on the last effect click, then again in `renderResults` for the
+   * reachability pass on the last effect click, then again in `paintResults` for the
    * same selection, with the first result thrown away. One slot is enough — the search is
    * pure in `wanted`, and the selection cannot change between those two calls.
    */
   let cacheKey = '';
   let cached: SearchResult | null = null;
+  /** Which add-ons are off, as a cache key fragment. */
+  const dlcKey = (): string => [...hiddenDlc].sort().join('');
+
+  /**
+   * The catalogue every answer is drawn from — the full one until an add-on is turned off.
+   * Rebuilt only when that set changes, not per search: `paintReachability` runs on every
+   * effect pill, and re-filtering 183 ingredients and 59 carrier lists each time would be
+   * work done to reach the same object.
+   */
+  let ownedCache = catalogue;
+  let ownedCacheKey = '';
+  const ownedCatalogue = (): Catalogue => {
+    const key = dlcKey();
+    if (key !== ownedCacheKey) {
+      ownedCacheKey = key;
+      ownedCache = catalogueWithout(catalogue, hiddenDlc);
+    }
+    return ownedCache;
+  };
+
   const searchFor = (selection: number[]): SearchResult => {
-    const key = `${kind}|${selection.join(',')}`;
+    const key = `${kind}|${dlcKey()}|${selection.join(',')}`;
     if (!cached || key !== cacheKey) {
       cacheKey = key;
-      cached = search(catalogue, selection, kind);
+      cached = search(ownedCatalogue(), selection, kind);
     }
     return cached;
   };
@@ -1075,6 +1275,8 @@ function setUp(root: HTMLElement): void {
    * stop. `moveFocus` is off for the initial call, which would otherwise steal focus and
    * scroll the page on load.
    */
+  const currentScreen = (): number => Number(root.getAttribute('data-screen')) || 1;
+
   const showScreen = (screen: number, moveFocus = true): void => {
     root.setAttribute('data-screen', String(screen));
     let incoming: HTMLElement | null = null;
@@ -1088,7 +1290,7 @@ function setUp(root: HTMLElement): void {
 
   /** Everything a click already knows: what is picked, what the kind filter shows. */
   const paintSelection = (): void => {
-    for (const button of effectButtons) {
+    for (const button of effectPickButtons) {
       const effect = Number(button.dataset.fx);
       const selected = wanted.indexOf(effect) !== -1;
       const item = button.closest('li');
@@ -1113,7 +1315,7 @@ function setUp(root: HTMLElement): void {
   /** The half that costs a search: what can still join what is already picked. */
   const paintReachability = (): void => {
     const { reachable } = searchFor(wanted);
-    for (const button of effectButtons) {
+    for (const button of effectPickButtons) {
       const effect = Number(button.dataset.fx);
       // aria-disabled, not disabled: a disabled button leaves the tab order, so picking one
       // effect used to make every incompatible one silently vanish for a screen reader.
@@ -1133,121 +1335,320 @@ function setUp(root: HTMLElement): void {
    */
   const scheduleReachability = debounce(paintReachability, 150);
 
-  const refreshEffectGrid = (): void => {
+  const paintEffectGrid = (): void => {
     paintSelection();
     scheduleReachability();
   };
 
   /** The mortar: three slots, live, with everything useless greyed out. */
-  const refreshIngredients = (): void => {
+  const paintIngredientScreen = (): void => {
     const needle = (filter?.value || '').trim().toLowerCase();
-    const full = chosen.length >= 3;
-    // Add-ons the reader has turned off. A base-game ingredient carries no code and is
-    // never hidden, and anything already in the mortar stays in it — the tray is a record
-    // of what you picked, not a view that re-filters underneath you.
+    const mortarIsFull = chosen.length >= 3;
     // The quick rule only pairs against what is already in the mortar; the deep one looks
-    // one slot ahead for an ingredient that could bridge. Both are computed per repaint,
-    // not per pill.
-    const quick = !quickToggle || quickToggle.getAttribute('aria-pressed') !== 'false';
-    const bridge = quick ? null : bridgeMaskOf(catalogue, chosen);
-    const hiddenDlc = new Set<string>();
-    for (const box of dlcToggles) {
-      if (box.getAttribute('aria-pressed') === 'false') hiddenDlc.add(box.dataset.dlcToggle || '');
-    }
-    let shown = 0;
+    // one slot ahead for an ingredient that could bridge. Both are per repaint, not per pill.
+    const usesQuickRule = !quickToggle || quickToggle.getAttribute('aria-pressed') !== 'false';
+    // Searched over the catalogue you OWN, or a bridge could keep a pill lit on the
+    // strength of an ingredient the list below is refusing to show you.
+    const bridge = usesQuickRule ? null : bridgeMaskOf(ownedCatalogue(), chosen);
+    let shownCount = 0;
     for (const button of ingredientButtons) {
       const ingredient = bySlug.get(button.dataset.ing || '');
       if (!ingredient) continue;
       const picked = chosen.indexOf(ingredient) !== -1;
       const item = button.closest('li');
-      const excluded = !!ingredient.dlc && hiddenDlc.has(ingredient.dlc);
-      const missed = excluded ||
+      // An add-on the reader turned off, or a name the filter did not match. Anything
+      // already in the mortar stays in it — the tray records what you picked, it is not a
+      // view that re-filters underneath you.
+      const hide = (!!ingredient.dlc && hiddenDlc.has(ingredient.dlc)) ||
         (!!needle && (haystack.get(ingredient.slug) || '').indexOf(needle) === -1);
-      if (item) item.hidden = missed;
-      if (!missed) shown++;
+      if (item) item.hidden = hide;
+      if (!hide) shownCount++;
       button.classList.toggle('is-on', picked);
       button.setAttribute('aria-pressed', String(picked));
       // Same reasoning as the effect grid: stay focusable, carry the reason.
-      const reachable = quick
-        ? contributesTo(chosen, ingredient)
-        : reachesWith(chosen, ingredient, bridge);
-      const blocked = !picked && (full || !reachable);
+      const reachable = usesQuickRule
+        ? sharesEffectWith(ingredient, chosen)
+        : couldJoin(ingredient, chosen, bridge);
+      const blocked = !picked && (mortarIsFull || !reachable);
       button.setAttribute('aria-disabled', String(blocked));
-      button.title = blocked
-        ? (full ? 'The mortar already holds three'
-          : quick ? 'Shares no effect with what is already in the mortar'
-            : 'No third ingredient can bridge these')
-        : '';
+      button.title = blocked ? blockReason(mortarIsFull, usesQuickRule) : '';
     }
-    if (ingredientEmpty) ingredientEmpty.hidden = shown > 0;
+    if (ingredientEmpty) ingredientEmpty.hidden = shownCount > 0;
     const mixture = liveMixture(catalogue, chosen);
     if (mortar) mortar.innerHTML = mortarMarkup(catalogue, chosen, mixture);
     if (live) live.innerHTML = liveMarkup(catalogue, chosen) + guidanceMarkup(refusal);
   };
 
-  const renderResults = (returnFocus = false): void => {
-    if (heading) heading.textContent = wanted.map((effect) => catalogue.effectNames[effect]).join(' + ');
+  /**
+   * Screen 8, from wherever. `from` is where its Back should go, which is the screen you
+   * were standing on — the results, the overflow, or the mortar.
+   */
+  /**
+   * Delegated rather than per card: both grids are rewritten from scratch on every search
+   * or page turn, so per-card listeners would be rebound a screenful at a time for nothing.
+   * The lists are read at click time for the same reason.
+   */
+  const bindBrewOpeners = (
+    host: HTMLElement | null,
+    mixtures: () => Mixture[],
+    from: number,
+    isClosest: () => boolean,
+    swallow: () => boolean = () => false,
+  ): void => {
+    host?.addEventListener('click', (event) => {
+      const opener = (event.target as HTMLElement | null)?.closest<HTMLElement>('[data-brew-open]');
+      if (!opener || swallow()) return;
+      const mixture = mixtures()[Number(opener.dataset.brewOpen)];
+      if (mixture) openBrew(mixture, from, isClosest());
+    }, true);
+  };
+
+  const openBrew = (mixture: Mixture, from: number, closest = false): void => {
+    if (!brewDetail) return;
+    if (brewHead) brewHead.innerHTML = brewTitleMarkup(catalogue, mixture);
+    brewDetail.innerHTML = brewDetailMarkup(catalogue, mixture, closest);
+    if (brewBack) {
+      brewBack.dataset.back = String(from);
+      // The name has to move with the destination. It did not, so a brew opened from the
+      // mortar offered "Back to the brews" and then went to the mortar.
+      brewBack.setAttribute('aria-label', BACK_FROM[from] || 'Back');
+    }
+    showScreen(8);
+  };
+
+  const paintPager = (pages: number): void => {
+    if (!overflowPager) return;
+    for (const dot of queryAll<HTMLButtonElement>(overflowPager, '[data-page]')) {
+      dot.toggleAttribute('aria-current', Number(dot.dataset.page) === overflowPage);
+    }
+    const counter = overflowPager.querySelector<HTMLElement>('[data-page-count]');
+    if (counter) counter.innerHTML = pageCounterInner(overflowPage, pages);
+  };
+
+  /**
+   * One page of the overflow, and the pager caught up to it.
+   *
+   * The GRID is rewritten; the pager is edited in place. Rewriting both would destroy the
+   * arrow that was just pressed, dropping focus to <body> on every page turn — the same
+   * problem screens have when they hide, one control down. `direction` only feeds the
+   * entry animation, so a page that arrives from a swipe leans the way the thumb went.
+   */
+  const paintOverflowPage = (page: number, direction = 0): void => {
+    if (!overflowGrid) return;
+    const pages = pageCount(overflowMixtures.length);
+    overflowPage = Math.min(Math.max(page, 0), pages - 1);
+    overflowGrid.innerHTML = overflowPageMarkup(
+      catalogue, overflowMixtures, wanted, overflowPage, badges, kind, overflowIsClosest);
+    // Restarting the animation needs the attribute to actually change, so it is cleared
+    // and reapplied on the next frame rather than simply reassigned.
+    overflowGrid.removeAttribute('data-enter');
+    if (direction) {
+      requestAnimationFrame(() => overflowGrid.setAttribute('data-enter', direction > 0 ? 'next' : 'prev'));
+    }
+    paintPager(pages);
+    // The cards are not announced — eight of them read aloud on every arrow press is the
+    // "show more" live region's old mistake with a shorter list. The position is.
+    if (overflowLive) overflowLive.textContent = `Page ${overflowPage + 1} of ${pages}`;
+  };
+
+  /**
+   * A page step from an arrow, a key, a thumb or a trackpad. The list wraps: forward from
+   * the last page is the first, back from the first is the last. Paging is a way to sweep
+   * a list you are scanning, and a sweep that stops dead at one end makes you turn around
+   * and count your way back rather than carry on.
+   */
+  const stepPage = (delta: number): void => {
+    const pages = pageCount(overflowMixtures.length);
+    if (pages < 2) return;
+    paintOverflowPage((overflowPage + delta + pages) % pages, delta);
+  };
+
+  const wantedLabel = (): string => wanted.map((effect) => catalogue.effectNames[effect]).join(' + ');
+
+  /** Rebuild the overflow from the current search. Does not move focus or change screen. */
+  const buildOverflow = (): void => {
     const result = searchFor(wanted);
-    if (!result.total) {
-      results.innerHTML = '<p class="sky-hint">Nothing can produce that combination.</p>';
+    ({ order: overflowMixtures, badges } = overflowOrder(result));
+    overflowIsClosest = result.closestOnly;
+    overflowPage = 0;
+    if (overflowHead) overflowHead.textContent = wantedLabel();
+    // The pager's SHAPE depends on the page count — dots or a counter — so it is built
+    // here, once per search, and only its state moves after that.
+    if (overflowPager) overflowPager.innerHTML = overflowMixtures.length ? pagerMarkup(0, pageCount(overflowMixtures.length)) : '';
+    if (!overflowMixtures.length) {
+      // Turning off an add-on can empty a list the reader is standing in the middle of.
+      // The same answer screen 3 gives, given here rather than one screen back.
+      if (overflowGrid) overflowGrid.innerHTML = NOTHING;
+      if (overflowLive) overflowLive.textContent = NOTHING_SPOKEN;
       return;
     }
-    results.innerHTML = resultsMarkup(catalogue, result, wanted, showExtra, rendered);
-    for (const opener of queryAll<HTMLButtonElement>(results, '[data-brew-open]')) {
-      opener.addEventListener('click', () => {
-        const mixture = rendered[Number(opener.dataset.brewOpen)];
-        if (!mixture || !brewDetail) return;
-        if (brewHead) brewHead.innerHTML = brewTitleMarkup(catalogue, mixture);
-        brewDetail.innerHTML = brewDetailMarkup(catalogue, mixture, result.closestOnly);
-        showScreen(8);
-      });
-    }
-
-    const moreButton = results.querySelector<HTMLButtonElement>('[data-more]');
-    moreButton?.addEventListener('click', () => {
-      showExtra = !showExtra;
-      renderResults(true);
-    });
-    // The button that was pressed lives inside `results` and the rewrite destroys it, so
-    // focus fell to <body> — the same silent jump to the top of a 22,000px page that
-    // showScreen exists to prevent. Put it on the replacement, whose label has flipped to
-    // "Show less", which is also the announcement worth having.
-    if (returnFocus) moreButton?.focus();
+    paintOverflowPage(0);
   };
+
+  const openOverflow = (): void => {
+    buildOverflow();
+    showScreen(9);
+  };
+
+  const paintResults = (): void => {
+    if (resultsHead) resultsHead.textContent = wantedLabel();
+    const result = searchFor(wanted);
+    if (!result.total) {
+      results.innerHTML = NOTHING;
+      return;
+    }
+    resultsAreClosest = result.closestOnly;
+    results.innerHTML = resultsMarkup(catalogue, result, wanted, rendered);
+    results.querySelector<HTMLButtonElement>('[data-more]')?.addEventListener('click', openOverflow);
+  };
+
+  bindBrewOpeners(results, () => rendered, 3, () => resultsAreClosest);
+
+  // The browser fires a click after every pointer sequence, so a drag that ends on a card
+  // would open it. Set by the drag handlers below; declared here, where it is first read.
+  let suppressNextClick = false;
+
+  bindBrewOpeners(overflowGrid, () => overflowMixtures, 9, () => overflowIsClosest,
+    () => suppressNextClick);
+
+  overflowPager?.addEventListener('click', (event) => {
+    const target = event.target as HTMLElement | null;
+    const step = target?.closest<HTMLElement>('[data-page-step]');
+    if (step) return stepPage(Number(step.dataset.pageStep));
+    const dot = target?.closest<HTMLElement>('[data-page]');
+    if (!dot) return;
+    const page = Number(dot.dataset.page);
+    paintOverflowPage(page, Math.sign(page - overflowPage));
+  });
+
+  // Left and right, as the screen's own shape suggests. Scoped to the section so it cannot
+  // hijack an arrow key meant for the filter boxes on other screens.
+  overflowScreen?.addEventListener('keydown', (event) => {
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+    const target = event.target as HTMLElement | null;
+    if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA')) return;
+    event.preventDefault();
+    stepPage(event.key === 'ArrowRight' ? 1 : -1);
+  });
+
+  /**
+   * DRAG — one path for a finger, a trackpad and a mouse, via pointer events.
+   *
+   * Two things make it work on a touchscreen: `touch-action: pan-y` in the stylesheet, or
+   * the browser claims the horizontal gesture and cancels the pointer stream mid-drag; and
+   * pointer capture, so a drag that wanders off the grid still ends up here.
+   *
+   * The grid follows at a third speed — 1:1 promises a next page that is not rendered yet.
+   */
+  /** Sideways travel that commits to a page turn. */
+  const SWIPE_COMMIT_PX = 45;
+  /** How far the grid moves per pixel of finger. Not 1:1 — see the note above. */
+  const DRAG_FOLLOW = 0.32;
+  /** Where the gesture stops being ambiguous and becomes a horizontal drag. */
+  const DRAG_DECIDED_PX = 8;
+  let startX = 0;
+  let startY = 0;
+  let pointerTracking = false;
+  let draggingHorizontally = false;
+
+  const endDrag = (turned: boolean): void => {
+    if (!overflowGrid) return;
+    overflowGrid.style.transform = '';
+    // A frame late when the page turns: the entry animation IS the movement, and the
+    // spring-back transition this attribute suppresses would race it on the same property.
+    if (turned) requestAnimationFrame(() => overflowGrid.removeAttribute('data-dragging'));
+    else overflowGrid.removeAttribute('data-dragging');
+    pointerTracking = false;
+    draggingHorizontally = false;
+  };
+
+  overflowGrid?.addEventListener('pointerdown', (event) => {
+    if (event.pointerType === 'mouse' && event.button !== 0) return;
+    if (pageCount(overflowMixtures.length) < 2) return;
+    startX = event.clientX;
+    startY = event.clientY;
+    pointerTracking = true;
+    draggingHorizontally = false;
+    suppressNextClick = false;
+  });
+
+  overflowGrid?.addEventListener('pointermove', (event) => {
+    if (!pointerTracking || !overflowGrid) return;
+    const dx = event.clientX - startX;
+    if (!draggingHorizontally) {
+      // Decided once, and not revisited: a gesture that starts vertical stays a scroll
+      // however far sideways it later drifts.
+      if (Math.abs(dx) < DRAG_DECIDED_PX) return;
+      if (Math.abs(dx) <= Math.abs(event.clientY - startY)) {
+        pointerTracking = false;
+        return;
+      }
+      draggingHorizontally = true;
+      suppressNextClick = true;
+      overflowGrid.setAttribute('data-dragging', '');
+      overflowGrid.setPointerCapture?.(event.pointerId);
+    }
+    overflowGrid.style.transform = `translateX(${(dx * DRAG_FOLLOW).toFixed(1)}px)`;
+  });
+
+  overflowGrid?.addEventListener('pointerup', (event) => {
+    if (!pointerTracking) return;
+    const dx = event.clientX - startX;
+    const turned = draggingHorizontally && Math.abs(dx) >= SWIPE_COMMIT_PX;
+    endDrag(turned);
+    if (turned) stepPage(dx < 0 ? 1 : -1);
+    // Cleared a task later, so the click this same gesture is about to fire still finds it.
+    if (suppressNextClick) setTimeout(() => { suppressNextClick = false; }, 0);
+  });
+  overflowGrid?.addEventListener('pointercancel', () => endDrag(false));
+
+  const readFlick = createFlickReader();
+  overflowGrid?.addEventListener('wheel', (event) => {
+    if (pageCount(overflowMixtures.length) < 2) return;
+    // A vertical scroll that drifts sideways is a vertical scroll.
+    if (Math.abs(event.deltaX) <= Math.abs(event.deltaY)) return;
+    // Non-passive, so this can run: otherwise the browser reads the same gesture as a
+    // back-navigation swipe and leaves the page entirely.
+    event.preventDefault();
+    const step = readFlick(event.deltaX, event.timeStamp);
+    if (step) stepPage(step);
+  }, { passive: false });
 
   for (const button of queryAll<HTMLButtonElement>(root, '.sky-pick__b[data-kind]')) {
     button.addEventListener('click', () => {
       kind = (button.dataset.kind as Kind) || 'any';
       if (kindHead) kindHead.textContent = KIND_LABEL[kind];
       wanted = [];
-      refreshEffectGrid();
+      paintEffectGrid();
       showScreen(2);
     });
   }
 
   /** Substring match over the effect names, the same shape as the ingredient filter. */
-  const refreshEffectIndex = (): void => {
+  const paintEffectIndex = (): void => {
     const needle = (fxFilter?.value || '').trim().toLowerCase();
-    let shown = 0;
-    for (const button of fxInfoButtons) {
-      const missed = !!needle && (button.textContent || '').toLowerCase().indexOf(needle) === -1;
+    let shownCount = 0;
+    for (const button of effectIndexButtons) {
+      const hide = !!needle && (button.textContent || '').toLowerCase().indexOf(needle) === -1;
       const item = button.closest('li');
-      if (item) item.hidden = missed;
-      if (!missed) shown++;
+      if (item) item.hidden = hide;
+      if (!hide) shownCount++;
     }
-    if (fxEmpty) fxEmpty.hidden = shown > 0;
+    if (fxEmpty) fxEmpty.hidden = shownCount > 0;
   };
 
-  for (const button of fxInfoButtons) {
+  for (const button of effectIndexButtons) {
     button.addEventListener('click', () => {
       const effect = Number(button.dataset.fxinfo);
       if (fxHead) fxHead.textContent = catalogue.effectNames[effect];
-      if (fxDetail) fxDetail.innerHTML = effectDetailMarkup(catalogue, effect);
+      // "What carries Fortify Sneak" should not answer with an add-on the reader has
+      // just said they do not have.
+      if (fxDetail) fxDetail.innerHTML = effectDetailMarkup(ownedCatalogue(), effect);
       showScreen(6);
     });
   }
 
-  fxFilter?.addEventListener('input', refreshEffectIndex);
+  fxFilter?.addEventListener('input', paintEffectIndex);
 
   for (const button of queryAll<HTMLButtonElement>(root, '.sky-pick__b[data-mode="favorites"]')) {
     button.addEventListener('click', () => showScreen(7));
@@ -1256,7 +1657,7 @@ function setUp(root: HTMLElement): void {
   for (const button of queryAll<HTMLButtonElement>(root, '.sky-pick__b[data-mode="effects"]')) {
     button.addEventListener('click', () => {
       if (fxFilter) fxFilter.value = '';
-      refreshEffectIndex();
+      paintEffectIndex();
       showScreen(5);
     });
   }
@@ -1266,7 +1667,7 @@ function setUp(root: HTMLElement): void {
       chosen = [];
       refusal = '';
       if (filter) filter.value = '';
-      refreshIngredients();
+      paintIngredientScreen();
       showScreen(4);
     });
   }
@@ -1280,7 +1681,7 @@ function setUp(root: HTMLElement): void {
       chosen.splice(at, 1);
     }
     refusal = '';
-    refreshIngredients();
+    paintIngredientScreen();
   };
 
   for (const button of ingredientButtons) {
@@ -1291,7 +1692,7 @@ function setUp(root: HTMLElement): void {
       // screen where a single pick strikes through 127 other pills.
       if (button.getAttribute('aria-disabled') === 'true') {
         refusal = button.title;
-        refreshIngredients();
+        paintIngredientScreen();
         return;
       }
       const ingredient = bySlug.get(button.dataset.ing || '');
@@ -1304,6 +1705,15 @@ function setUp(root: HTMLElement): void {
   // pill below does, in the place you are already looking.
   mortar?.addEventListener('click', (event) => {
     const target = event.target as HTMLElement | null;
+    // The verdict disc. It is the one thing on this screen that already knows what the
+    // three tiles make, so it is also the way to the table that spells that out — the same
+    // screen a result card opens, reached from the mixture you built rather than one the
+    // search found. Back returns to the mortar, with the tiles still in it.
+    if (target?.closest('[data-verdict-open]')) {
+      const inTray = liveMixture(catalogue, chosen);
+      if (inTray) openBrew(inTray, 4);
+      return;
+    }
     const tile = target?.closest<HTMLElement>('[data-drop]');
     if (!tile) return;
     const ingredient = bySlug.get(tile.dataset.drop || '');
@@ -1313,58 +1723,75 @@ function setUp(root: HTMLElement): void {
   // Typing is a new question; a refusal from the last tap should not survive it.
   filter?.addEventListener('input', () => {
     refusal = '';
-    refreshIngredients();
+    paintIngredientScreen();
   });
 
   // aria-pressed is the state, not a class: a toggle button's pressed-ness belongs in the
   // accessibility tree first, and the CSS keys off the same attribute so the two cannot
   // disagree the way a class and an aria attribute eventually do.
-  if (dlcGroup) dlcGroup.hidden = false;
+  for (const group of dlcGroups) group.hidden = false;
   if (quickToggle) {
     quickToggle.hidden = false;
     quickToggle.addEventListener('click', () => {
       quickToggle.setAttribute('aria-pressed', String(quickToggle.getAttribute('aria-pressed') === 'false'));
       refusal = '';
-      refreshIngredients();
+      paintIngredientScreen();
     });
   }
+  /** Every copy of the control, told what the one shared set now says. */
+  const paintDlc = (): void => {
+    for (const box of dlcToggles) {
+      box.setAttribute('aria-pressed', String(!hiddenDlc.has(box.dataset.dlcToggle || '')));
+    }
+  };
+
   for (const box of dlcToggles) {
     box.addEventListener('click', () => {
-      box.setAttribute('aria-pressed', String(box.getAttribute('aria-pressed') === 'false'));
+      const code = box.dataset.dlcToggle || '';
+      if (hiddenDlc.has(code)) hiddenDlc.delete(code);
+      else hiddenDlc.add(code);
+      paintDlc();
       refusal = '';
-      refreshIngredients();
+      paintIngredientScreen();
+      // Which effects can still be reached depends on which ingredients exist, so the grid
+      // has to be recomputed even when the reader is not looking at it — they may well
+      // press Back into it next.
+      paintEffectGrid();
+      // And the answer they ARE looking at is now out of date. Rebuilt in place: the
+      // button that was pressed sits in the screen head, outside the region being
+      // rewritten, so it keeps focus.
+      if (currentScreen() === 3) paintResults();
+      if (currentScreen() === 9) buildOverflow();
     });
   }
 
-  for (const button of effectButtons) {
+  for (const button of effectPickButtons) {
     button.addEventListener('click', () => {
       if (button.getAttribute('aria-disabled') === 'true') return;
       const effect = Number(button.dataset.fx);
       const at = wanted.indexOf(effect);
       if (at === -1) wanted.push(effect);
       else wanted.splice(at, 1);
-      refreshEffectGrid();
+      paintEffectGrid();
     });
   }
 
   brewButton.addEventListener('click', () => {
-    showExtra = false;
-    renderResults();
+    paintResults();
     showScreen(3);
   });
 
   for (const button of queryAll<HTMLButtonElement>(root, '[data-back]')) {
     button.addEventListener('click', () => {
-      // The ingredient screen hangs off screen 1 rather than following screen 3, so it
-      // says where it goes instead of stepping back one.
+      // Screens that do not sit under screen 3 name their own destination; screen 8's is
+      // written at open time, because it has three of them.
       const explicit = button.dataset.back;
-      const current = Number(root.getAttribute('data-screen')) || 1;
-      showScreen(explicit ? Number(explicit) : Math.max(1, current - 1));
+      showScreen(explicit ? Number(explicit) : Math.max(1, currentScreen() - 1));
     });
   }
 
-  refreshEffectGrid();
-  refreshIngredients();
-  refreshEffectIndex();
+  paintEffectGrid();
+  paintIngredientScreen();
+  paintEffectIndex();
   showScreen(1, false);
 }

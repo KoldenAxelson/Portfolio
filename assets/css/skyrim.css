@@ -85,9 +85,8 @@
 .sky-card {
   display: flex; flex-direction: column; overflow: hidden;
   border: 1px solid rgb(var(--c-border)); border-radius: 0.9rem;
-  background: rgb(var(--c-bg)); transition: border-color 0.2s ease;
+  background: rgb(var(--c-bg)); position: relative; transition: border-color 0.2s ease;
 }
-.sky-card { position: relative; }
 .sky-card:hover { border-color: rgb(var(--c-accent) / 0.5); }
 /* The site's Tailwind preflight already ships `[hidden] { display: none !important }`, so
    this and the three like it (.sky-config, .sky-scr, .sky-fx > li) are belt-and-braces
@@ -206,7 +205,7 @@
 /* Inset, so the ring reads as the card's own rather than a second box around it. */
 .sky-card__hit:focus-visible { outline: 2px solid rgb(var(--c-accent)); outline-offset: -3px; border-radius: 0.9rem; }
 /* Only a card that opens something says so. `is-clickable` is written by
-   ts/skyrim-notes.ts at the moment it reveals the hit area, so a card with no note — and
+   assets/scripts/site/skyrim-notes.ts at the moment it reveals the hit area, so a card with no note — and
    every card at all when JavaScript is off — keeps the quiet default hover. */
 .sky-card.is-clickable:hover { border-color: rgb(var(--c-accent)); background: rgb(var(--c-accent) / 0.04); }
 .sky-card.is-clickable:has(.sky-card__hit[aria-expanded="true"]) { border-color: rgb(var(--c-accent)); }
@@ -310,7 +309,7 @@
   transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
 }
 .sky-bar__toggle svg { grid-area: 1 / 1; width: 1.15rem; height: 1.15rem; }
-.sky-bar__toggle .sky-bar__toggle-x { display: none; }
+.sky-bar__toggle-x { display: none; }
 .sky-bar__toggle:hover { border-color: rgb(var(--c-accent) / 0.6); color: rgb(var(--c-fg)); }
 .sky-bar__toggle:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.5); outline-offset: 2px; }
 .sky-bar__toggle.is-open {
@@ -333,7 +332,6 @@
 @media (min-width: 700px) { .sky-config__grid { grid-template-columns: repeat(3, 1fr); gap: 1.4rem; } }
 .sky-set { margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 0.4rem; min-width: 0; }
 .sky-set legend { padding: 0 0 0.15rem; font: 600 var(--sky-t-micro) var(--font-mono, ui-monospace, monospace); letter-spacing: 0.14em; text-transform: uppercase; color: rgb(var(--c-muted)); }
-.sky-set__hint { margin: 0.15rem 0 0; font-size: var(--sky-t-small); line-height: 1.5; color: rgb(var(--c-muted)); opacity: 0.85; }
 .sky-in { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; font-size: var(--sky-t-body); color: rgb(var(--c-muted)); }
 .sky-in input, .sky-in select {
   flex: none; padding: 0.28rem 0.4rem;
@@ -536,7 +534,7 @@
    it is set at (0,2,0), so a bare .sky-plan override loses on specificity and this block
    was a no-op for it. resto.ts toggles data-busy on every keystroke. */
 @media (prefers-reduced-motion: reduce) {
-  .sky-step, .sky-plan[data-busy], .sky-bar__toggle, .sky-bar__toggle span { transition: none; }
+  .sky-step, .sky-plan[data-busy], .sky-bar__toggle { transition: none; }
 }
 
 /* Collapsed prose block under the planner — the derivation, for when you want
@@ -627,12 +625,11 @@
 }
 
 
-/* ── Potion builder: four screens, one question each ────────────────────── */
+/* ── Potion builder: nine screens, one question each ─────────────────────── */
 .sky-build { margin: 1.5rem 0 0; border: 1px solid rgb(var(--c-border)); border-radius: 0.9rem; background: rgb(var(--c-bg)); overflow: hidden; }
 .sky-scr { padding: 1.1rem 1.1rem 1.2rem; }
 .sky-scr[hidden] { display: none; }
-.sky-scr__q { margin: 0 0 0.85rem; font-size: var(--sky-t-lead); font-weight: 600; color: rgb(var(--c-fg)); }
-.sky-scr__q--tight { margin: 0; font-size: var(--sky-t-lead); }
+.sky-scr__q { margin: 0; font-size: var(--sky-t-lead); font-weight: 600; color: rgb(var(--c-fg)); }
 .sky-scr__head { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.85rem; }
 .sky-scr__foot { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem; }
 .sky-hint { margin: 0; font-size: var(--sky-t-body); line-height: 1.5; color: rgb(var(--c-muted)); }
@@ -694,10 +691,7 @@
    is a dashed ring over nothing — the same dashed-means-inactive vocabulary the effect
    pills and the gear tiles already use on this page. */
 .sky-dlc__b[aria-pressed="false"] { color: rgb(var(--c-muted)); border-color: rgb(var(--c-border)); border-style: dashed; }
-.sky-dlc__b[aria-pressed="true"][data-dlc="DG"] { color: rgb(var(--sky-dg)); border-color: currentColor; background: rgb(var(--sky-dg) / 0.14); }
-.sky-dlc__b[aria-pressed="true"][data-dlc="HF"] { color: rgb(var(--sky-hf)); border-color: currentColor; background: rgb(var(--sky-hf) / 0.14); }
-.sky-dlc__b[aria-pressed="true"][data-dlc="DB"] { color: rgb(var(--sky-db)); border-color: currentColor; background: rgb(var(--sky-db) / 0.14); }
-.sky-dlc__b[aria-pressed="true"][data-dlc="CC"] { color: rgb(var(--sky-cc)); border-color: currentColor; background: rgb(var(--sky-cc) / 0.14); }
+.sky-dlc__b[aria-pressed="true"] { color: rgb(var(--dlc)); border-color: currentColor; background: rgb(var(--dlc) / 0.14); }
 .sky-dlc__b:hover { border-color: rgb(var(--c-accent)); }
 .sky-dlc__b:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.5); outline-offset: 2px; }
 /* 32px clears WCAG 2.5.8 on a mouse; a coarse pointer gets the full 44, the call this file
@@ -731,7 +725,7 @@
   font: var(--sky-t-small) var(--font-mono, ui-monospace, monospace); letter-spacing: 0.02em;
   transition: border-color 0.12s ease, background 0.12s ease, color 0.12s ease;
 }
-.sky-fx__b:hover:not(:disabled):not([aria-disabled="true"]) { border-color: rgb(var(--c-accent) / 0.7); }
+.sky-fx__b:hover:not([aria-disabled="true"]) { border-color: rgb(var(--c-accent) / 0.7); }
 .sky-fx__b:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.5); outline-offset: 2px; }
 .sky-fx__b.is-on { background: rgb(var(--c-accent)); border-color: rgb(var(--c-accent)); color: rgb(var(--c-bg)); font-weight: 600; }
 /* Opacity 0.28 put this under any reasonable contrast floor, and struck-through
@@ -749,7 +743,7 @@
    picking one effect used to make twenty others silently cease to exist for a screen
    reader — no announcement, nothing left to land on, no way to find out why. These stay
    focusable and carry their own reason; the click handler is what refuses. */
-.sky-fx__b:disabled, .sky-fx__b[aria-disabled="true"] {
+.sky-fx__b[aria-disabled="true"] {
   cursor: not-allowed; text-decoration: line-through;
   color: rgb(var(--c-muted));
   border-style: dashed; border-color: rgb(var(--c-border));
@@ -771,7 +765,6 @@
 /* Screen 3 — the brews */
 .sky-brews { display: grid; gap: 0.6rem; grid-template-columns: 1fr; }
 @media (min-width: 640px) { .sky-brews { grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); } }
-.sky-brews--rest { margin-top: 0.6rem; }
 .sky-brew {
   padding: 0.75rem 0.85rem 0.8rem; border: 1px solid rgb(var(--c-border)); border-radius: 0.7rem;
   background: rgb(var(--c-bg)); transition: border-color 0.18s ease;
@@ -783,7 +776,6 @@
 .sky-brew:has(.sky-brew__open):hover,
 .sky-brew:has(.sky-brew__open):focus-within { border-color: rgb(var(--c-accent)); }
 @media (prefers-reduced-motion: reduce) { .sky-brew { transition: none; } }
-.sky-brews:not(.sky-brews--rest) .sky-brew { border-color: rgb(var(--c-accent) / 0.4); background: rgb(var(--c-accent) / 0.05); }
 .sky-brew__head { display: grid; grid-template-columns: 1fr auto; align-items: start; gap: 0.5rem; margin-bottom: 0.5rem; }
 .sky-brew__head:empty { display: none; }
 .sky-brew__labels { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; min-width: 0; }
@@ -796,11 +788,69 @@
 .sky-brew__head .sky-verdict svg { width: 0.85rem; height: 0.85rem; }
 .sky-brew__badge { margin: 0; font: 600 var(--sky-t-micro) var(--font-mono, ui-monospace, monospace); letter-spacing: 0.12em; text-transform: uppercase; color: rgb(var(--c-accent)); }
 
-/* Potion or poison. The verdict is a word; the chip that caused it is outlined below. */
-/* Screen 6 reuses the result card, but nothing here is a winner, so it does not take the
-   accent tint the headline brews get. Same specificity as that rule (0,2,0) — it wins on
-   SOURCE ORDER, so it has to stay below it. */
-.sky-brews--plain .sky-brew { border-color: rgb(var(--c-border)); background: rgb(var(--c-bg)); }
+/* A winner is tinted. Everything else is not.
+   This used to be a rule about which GRID a card was in — `.sky-brews:not(--rest)` painted
+   the headline grid, and screen 6's cards had to be painted back out again by a second
+   rule below it that only worked because of source order. Screen 9 broke that: its one
+   grid holds three winners and five ordinary brews, and no selector about the container
+   can tell them apart. So the tint follows the badge, which is the thing that actually
+   means "this one won something" — one rule for all three screens, and the two overrides
+   it needed are gone. */
+.sky-brew:has(.sky-brew__badge) {
+  border-color: rgb(var(--c-accent) / 0.4); background: rgb(var(--c-accent) / 0.05);
+}
+/* `pan-y` is what makes the grid swipeable on a touchscreen at all: without it the browser
+   claims a horizontal drag as its own to scroll or navigate with and cancels the pointer
+   stream mid-gesture, so the handler never sees where the finger ended up. Vertical is left
+   to the browser — the page still scrolls normally through the cards.
+   The transition is the spring-back for a drag that did not reach the threshold; a drag in
+   progress carries `data-dragging`, which turns it off so the grid tracks the finger. */
+.sky-page { touch-action: pan-y; overscroll-behavior-x: contain; transition: transform 0.18s ease; }
+.sky-page[data-dragging] { transition: none; }
+@media (prefers-reduced-motion: reduce) { .sky-page { transition: none; } }
+/* The turn. Deliberately short and small: a page that slides its full width reads as a new
+   page LOADING, which is the one thing paging in place is trying not to feel like. */
+@keyframes sky-page-next { from { opacity: 0; transform: translateX(1.25rem); } }
+@keyframes sky-page-prev { from { opacity: 0; transform: translateX(-1.25rem); } }
+.sky-page[data-enter="next"] { animation: sky-page-next 0.22s ease-out; }
+.sky-page[data-enter="prev"] { animation: sky-page-prev 0.22s ease-out; }
+@media (prefers-reduced-motion: reduce) { .sky-page[data-enter] { animation: none; } }
+
+.sky-pager { display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-top: 0.9rem; }
+/* One page of results needs no pager, and builder.ts says so by writing nothing. */
+.sky-pager:empty { display: none; }
+.sky-pager__arrow {
+  display: grid; place-items: center; width: 2.25rem; height: 2.25rem; padding: 0;
+  border: 1px solid rgb(var(--c-border)); border-radius: 999px;
+  background: rgb(var(--c-bg)); color: rgb(var(--c-fg)); cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+.sky-pager__arrow svg { width: 1.05rem; height: 1.05rem; }
+.sky-pager__arrow:hover, .sky-pager__arrow:focus-visible {
+  border-color: rgb(var(--c-accent)); color: rgb(var(--c-accent));
+}
+.sky-pager__arrow:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.5); outline-offset: 2px; }
+.sky-pager__dots { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; }
+/* The dot is drawn in `::after` so the BUTTON can be a real target — a 7px control is a
+   miss on a thumb, and padding the visible dot to reach 44px would just be a big dot. */
+.sky-pager__dot {
+  display: grid; place-items: center; width: 1.15rem; height: 1.9rem; padding: 0;
+  border: 0; background: none; cursor: pointer; border-radius: 0.3rem;
+}
+.sky-pager__dot::after {
+  content: ""; display: block; width: 0.45rem; height: 0.45rem; border-radius: 999px;
+  background: rgb(var(--c-border)); transition: width 0.2s ease, background 0.15s ease;
+}
+.sky-pager__dot:hover::after { background: rgb(var(--c-fg) / 0.55); }
+/* The current page is a bar rather than a brighter dot: shape survives a colourblind
+   reader and a low-contrast screen, and hue alone does not. */
+.sky-pager__dot[aria-current]::after { width: 1.15rem; background: rgb(var(--c-accent)); }
+.sky-pager__dot:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.5); outline-offset: 1px; }
+@media (prefers-reduced-motion: reduce) { .sky-pager__dot::after { transition: none; } }
+.sky-pager__count {
+  margin: 0; font: 600 var(--sky-t-micro) var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.1em; color: rgb(var(--c-muted)); font-variant-numeric: tabular-nums;
+}
 .sky-bis { display: flex; flex-direction: column; gap: 0.2rem; margin: 0 0 0.6rem; padding: 0; list-style: none; }
 /* center, not baseline: the row carries a picture now, and a baseline-aligned 28px tile
    hangs below the text it belongs to. */
@@ -842,6 +892,9 @@
 .sky-brewtitle__fxs { display: flex; align-items: baseline; gap: 0.45rem; flex-wrap: wrap; }
 .sky-brewtitle__fx[data-side="good"] { color: rgb(var(--sky-potion)); }
 .sky-brewtitle__fx[data-side="bad"] { color: rgb(var(--sky-poison)); }
+/* The multiplier arrives in the same `<b>` the chips use, so the two cannot drift apart
+   over whether a sub-1 deviation is worth printing. */
+.sky-brewtitle__fx b { margin-left: 0.3rem; font-weight: 600; }
 .sky-brewtitle__sep { color: rgb(var(--c-muted)); font-weight: 400; }
 /* ── Screen 8's ingredient row ───────────────────────────────────────────────
    Three pills rather than three stretches of a shared line. On the card the
@@ -918,7 +971,7 @@
 }
 
 .sky-brew .sky-chips { gap: 0.25rem; }
-.sky-brew .sky-chip { font-size: var(--sky-t-micro); padding: 0.18rem 0.4rem; }
+.sky-brew .sky-chip { padding: 0.18rem 0.4rem; }
 
 @media (prefers-reduced-motion: reduce) { .sky-pick__b, .sky-fx__b, .sky-go, .sky-back { transition: none; } }
 
@@ -1021,8 +1074,13 @@
 .sky-scr[data-scr="2"] .sky-scr__foot {
   position: sticky; bottom: 0; z-index: 2;
   margin-top: 0.75rem; padding: 0.7rem 0 0.6rem;
-  background: linear-gradient(to top, rgb(var(--c-bg)) 72%, rgb(var(--c-bg) / 0));
 }
+/* No fade behind the button. It painted `--c-bg` — the PAGE colour — across the full width
+   of a panel that is not that colour, so the "fade to background" was a black band on a
+   lighter surface, visible at rest and exactly as tall as the button. Sticky stays: it is
+   what keeps Brew reachable once a selection has pushed it past the fold. Nothing needs to
+   be hidden behind it anyway — the strip is one button wide and the pills scroll past it
+   the same way they scroll past everything else. */
 
 /* Screen-reader-only text. Not Tailwind's `.sr-only`: most of these strings are assembled
    in builder.ts, which Tailwind's content scan does not reliably reach, so a utility that
@@ -1058,19 +1116,20 @@
    in `.sky-sr` next to it, so the hue is redundant reinforcement of a text label instead
    of the message itself. That also retires the thick side border, which was doing no work
    the badge does not now do better. */
-.sky-fx--ings .sky-fx__b .sky-ing__dlc { margin-left: 0.3rem; vertical-align: baseline; }
+.sky-fx__b .sky-ing__dlc { margin-left: 0.3rem; vertical-align: baseline; }
 /* A selected pill is accent all over, so the badge drops its own hue and rides the pill's
-   foreground rather than putting pink CC on an amber fill. Outranks the four
-   `[data-dlc]` rules below on specificity, not on source order. */
+   foreground rather than putting pink CC on an amber fill. Outranks the shared
+   `.sky-ing__dlc` colour rule below on specificity, not on source order. */
 .sky-fx__b.is-on .sky-ing__dlc { color: currentColor; border-color: currentColor; }
 /* The four DLC colours, on the badge under a tile and on the badge inside a pill, so the
    grid and the tiles agree without either needing a legend. These carry the hue as TEXT,
    which is why they are the pairing that had to clear 4.5:1 rather than the 3:1 a border
    would need. */
-.sky-ing__dlc[data-dlc="DG"] { border-color: rgb(var(--sky-dg) / 0.85); color: rgb(var(--sky-dg)); }
-.sky-ing__dlc[data-dlc="HF"] { border-color: rgb(var(--sky-hf) / 0.85); color: rgb(var(--sky-hf)); }
-.sky-ing__dlc[data-dlc="DB"] { border-color: rgb(var(--sky-db) / 0.85); color: rgb(var(--sky-db)); }
-.sky-ing__dlc[data-dlc="CC"] { border-color: rgb(var(--sky-cc) / 0.85); color: rgb(var(--sky-cc)); }
+/* `.sky-bi i` is the same badge on a brew's ingredient row. It used to be plain
+   grey there, so the DB on a tile in the picker and the DB on the row of a brew
+   that uses it were two different-looking things — the reader has to connect
+   them, and colour is what does that everywhere else in the module. */
+.sky-ing__dlc, .sky-bi i[data-dlc] { border-color: rgb(var(--dlc) / 0.85); color: rgb(var(--dlc)); }
 
 /* The mortar's tray. `.sky-ing` is `flex: 1 1 0` so a recipe card's three tiles share its
    narrow width evenly — across the builder's full width that balloons them to 350px each,
@@ -1089,11 +1148,11 @@
 .sky-mortar .sky-ing { flex: 0 0 5rem; }
 /* The verdict, on the thing it is a verdict about. This used to be a 36px word underneath
    — the answer register — which said POISON louder than the bottle it described. */
-.sky-mortar .sky-ings[data-tone="good"] { border-color: rgb(var(--sky-potion) / 0.8); background: rgb(var(--sky-potion) / 0.08); }
-.sky-mortar .sky-ings[data-tone="bad"] { border-color: rgb(var(--sky-poison) / 0.8); background: rgb(var(--sky-poison) / 0.09); }
+.sky-ings[data-tone="good"] { border-color: rgb(var(--sky-potion) / 0.8); background: rgb(var(--sky-potion) / 0.08); }
+.sky-ings[data-tone="bad"] { border-color: rgb(var(--sky-poison) / 0.8); background: rgb(var(--sky-poison) / 0.09); }
 /* Effects on both sides. Dashed, because a solid ring in either camp would be a claim the
    bottle does not support — and this is the state most worth stopping on. */
-.sky-mortar .sky-ings[data-tone="mixed"] { border-color: rgb(var(--sky-mixed) / 0.85); background: rgb(var(--sky-mixed) / 0.09); border-style: dashed; }
+.sky-ings[data-tone="mixed"] { border-color: rgb(var(--sky-mixed) / 0.85); background: rgb(var(--sky-mixed) / 0.09); border-style: dashed; }
 .sky-verdict {
   position: absolute; right: 0.6rem; bottom: 0.6rem;
   display: grid; place-items: center; width: 2rem; height: 2rem;
@@ -1105,6 +1164,37 @@
 .sky-verdict[data-tone="good"] { color: rgb(var(--sky-potion)); }
 .sky-verdict[data-tone="bad"] { color: rgb(var(--sky-poison)); }
 .sky-verdict[data-tone="mixed"] { color: rgb(var(--sky-mixed)); }
+
+/* ONE HUE SOURCE PER ADD-ON. Everything that wears a DLC's colour — the toggle circles,
+   the badge on an ingredient pill, the badge on a brew row — reads `--dlc`, which is set
+   here and nowhere else. Eight near-identical rules used to carry the four hues twice
+   over, which is how the brew rows ended up a different green from the picker. Same trick
+   `.sky-chip` uses for potion/poison. */
+[data-dlc="DG"] { --dlc: var(--sky-dg); }
+[data-dlc="HF"] { --dlc: var(--sky-hf); }
+[data-dlc="DB"] { --dlc: var(--sky-db); }
+[data-dlc="CC"] { --dlc: var(--sky-cc); }
+/* In the mortar the disc is also the way in to the ingredient table — the same screen a
+   result card opens, for the mixture you built by hand. It answers a cursor the way the
+   cards do: brighten, no glyph. A chevron here would be the ambiguous half-arrow the
+   result cards already dropped, on a 32px circle. */
+.sky-verdict--go {
+  padding: 0; cursor: pointer; font: inherit;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.sky-verdict--go:hover, .sky-verdict--go:focus-visible {
+  transform: scale(1.08);
+  /* Two rings: the page colour first, so the halo reads as a gap rather than a thick
+     border, whatever tone the tray underneath is currently wearing. */
+  box-shadow: 0 0 0 3px rgb(var(--c-bg)), 0 0 0 4.5px currentColor;
+}
+.sky-verdict--go:focus-visible { outline: none; }
+/* 32px is under the 44px touch target, and this one is a real destination. */
+@media (pointer: coarse) {
+  .sky-verdict--go { width: 2.6rem; height: 2.6rem; }
+  .sky-verdict--go svg { width: 1.35rem; height: 1.35rem; }
+}
+@media (prefers-reduced-motion: reduce) { .sky-verdict--go { transition: none; } }
 
 /* A refusal is not the bottle's answer, so it does not get the answer's voice. Tinted the
    same red the poison verdict uses, because both mean "this is not what you wanted". */

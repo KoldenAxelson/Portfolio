@@ -1,0 +1,33 @@
+{{- /*
+  skyrim-dlc-group — "which add-ons are in your game", one badge per add-on present.
+
+  Rendered on every screen whose answer depends on it: the effect picker (which effects can
+  still be reached), the brews and the overflow (what the search is allowed to mix), and the
+  mortar (which ingredients are offered). builder.ts keeps one set of state behind all of
+  them, so pressing DB anywhere presses it everywhere.
+
+  `$order` is release order, which this file owns; the badges themselves are filtered to
+  the codes actually present in ingredients.yaml, so an add-on with no ingredients never
+  gets one. Hearthfire has only two ingredients, which is why this is filtered rather than
+  typed out — those two would otherwise be the only ones a base-game player could not hide.
+
+  Toggle buttons, not checkboxes: the badge already IS this page's word for a DLC, on 92 of
+  the 183 ingredient pills and every recipe tile, so the control is that same mark. It is
+  also the legend the page never had, which is why each toggle wears its badge's hue.
+
+  The code is aria-hidden and the full name is the accessible label — "D G" is what a screen
+  reader makes of the badge otherwise.
+
+  Ships hidden and is revealed by builder.ts, the same trade the filters and the config
+  panels make — with JavaScript off these would be dead circles.
+*/ -}}
+{{- $order := slice "DG" "HF" "DB" "CC" -}}
+{{- $names := dict "DG" "Dawnguard" "HF" "Hearthfire" "DB" "Dragonborn" "CC" "Creation Club" -}}
+{{- $present := dict -}}
+{{- range $slug, $ing := site.Data.skyrim.ingredients }}{{ with $ing.dlc }}{{ $present = merge $present (dict . true) }}{{ end }}{{ end -}}
+<div class="sky-dlc" role="group" aria-label="Add-on content in your game" data-dlc-group hidden>
+  {{- range $code := $order }}{{ if isset $present $code }}{{ $full := index $names $code }}
+  <button type="button" class="sky-dlc__b" data-dlc-toggle="{{ $code }}" data-dlc="{{ $code }}"
+          aria-pressed="true" aria-label="{{ $full }}" title="{{ $full }}"><span aria-hidden="true">{{ $code }}</span></button>
+  {{- end }}{{ end }}
+</div>
