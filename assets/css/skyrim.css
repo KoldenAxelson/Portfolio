@@ -951,6 +951,12 @@
 .sky-fxcell.is-shared { font-weight: 500; }
 .sky-fxcell.is-shared[data-side="good"] { color: rgb(var(--sky-potion)); background: rgb(var(--sky-potion) / 0.12); }
 .sky-fxcell.is-shared[data-side="bad"] { color: rgb(var(--sky-poison)); background: rgb(var(--sky-poison) / 0.12); }
+/* The multiplier THIS ingredient applies, in the same `<b>` the chips and the title use. */
+.sky-fxcell b { margin-left: 0.3rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+/* And the one the bottle actually printed. The mixture takes the deviation furthest from
+   1, so on a shared effect several rows can show a number and only one of them is the
+   number on the label — an outline says which, without inventing a sixth colour. */
+.sky-fxcell.is-applied { outline: 1px solid currentColor; outline-offset: -1px; }
 
 /* ── The nearest miss ────────────────────────────────────────────────────────
    --sky-bad, NOT --sky-poison. The poison hue is green here and it means "this
