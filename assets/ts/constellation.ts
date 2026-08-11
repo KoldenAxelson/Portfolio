@@ -24,6 +24,20 @@ const DOT_ALPHA = 0.3;
 // Points roam this far past the card edges before wrapping to the far side, so
 // they drift out of the (overflow-clipped) card and pop back in.
 const ROAM_MARGIN = 40;
+// The banner spans the whole window, so this canvas is the one thing on the page
+// whose per-frame cost really does grow with the monitor. At 3440x280 CSS on a
+// 2x display that is 3.9 Mpx to clear, redraw and composite every frame, for a
+// field of faint grey dots that carries no fine detail worth those pixels.
+// Capping the backing store holds the work flat from roughly a laptop upwards;
+// the floor of 1x keeps the dots from going soft on ordinary displays.
+const PIXEL_BUDGET = 1_200_000;
+
+function backingScale(cssWidth: number, cssHeight: number): number {
+  const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+  const area = cssWidth * cssHeight * dpr * dpr;
+  if (area <= PIXEL_BUDGET) return dpr;
+  return Math.max(1, dpr * Math.sqrt(PIXEL_BUDGET / area));
+}
 
 let teardown: (() => void) | null = null;
 
@@ -81,7 +95,7 @@ export function initConstellation(): void {
     width = w;
     height = h;
     if (width === 0 || height === 0) return;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = backingScale(width, height);
     const cw = Math.round(width * dpr);
     const ch = Math.round(height * dpr);
     // Assigning canvas.width/height clears the whole canvas — even when set to

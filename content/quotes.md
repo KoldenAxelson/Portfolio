@@ -24,15 +24,15 @@ layout: "quotes"
 - Esoteric Knowledge Never Equates to Action
 - Price of Perfection is Permanent Procrastination
 - Don't Equate the Inner Voice with Identity
-- Spend more time in your head than in others.
-- Better to believe in growth than circumstance.
-- A step backwards is still a part of a dance.
-- Treat betterment and permanence as half cost.
-- Difficulty is not an excuse for inaction.
-- Observe your upbringing, don't adhere to it.
-- Action is the precursor to trust and motivation.
-- Do it scared, do it messy.
-- Fun is the bane of anxiety.
-- Fear and Excitement can be a mind shift away.
-- Don't force fruit in a season meant for roots.
-- Before you write a book, ship a short story.
+- Spend more time in your head than in others
+- Better to believe in growth than circumstance
+- A step backwards is still a part of a dance
+- Treat betterment and permanence as half cost
+- Difficulty is not an excuse for inaction
+- Observe your upbringing, don't adhere to it
+- Action is the precursor to trust and motivation
+- Do it scared, do it messy
+- Fun is the bane of anxiety
+- Fear and Excitement can be a mind shift away
+- Don't force fruit in a season meant for roots
+- Before you write a book, ship a short story

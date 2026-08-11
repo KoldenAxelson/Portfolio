@@ -23,6 +23,11 @@ export interface QuotesBridge {
   accent: () => string;
   smokeOn: () => boolean;
   visible: () => boolean;
+  // How far the frame governor has turned the pixel budget down, 1 meaning not
+  // at all. It has to come across the bridge like everything else: viewport.ts
+  // is compiled into both bundles, so each has its own copy of that state and
+  // the solver's is never the one that moved.
+  quality: () => number;
   // No WebGL2, no float render targets, or a lost context: there is no fluid, so
   // the lattice falls back to drawing dots rather than leaving an empty box.
   onFail: () => void;

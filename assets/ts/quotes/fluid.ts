@@ -165,19 +165,18 @@ export function initQuotesFluid(): void {
   // ---- sizing -------------------------------------------------------------
 
   const resize = (): void => {
-    const rect = canvas.getBoundingClientRect();
-    if (rect.width < 2 || rect.height < 2) return;
+    // The layout box rather than the client rect: fullscreen scales this element
+    // with a transform, and the rect reports the size after it. The simulation
+    // is meant to stay the size it was and be blown up with everything else.
+    const boxW = canvas.offsetWidth;
+    const boxH = canvas.offsetHeight;
+    if (boxW < 2 || boxH < 2) return;
 
-    const scale = backingScale(
-      rect.width,
-      rect.height,
-      FLUID_PIXEL_BUDGET,
-      FLUID_MIN_SCALE,
-    );
-    canvas.width = Math.round(rect.width * scale);
-    canvas.height = Math.round(rect.height * scale);
+    const scale = backingScale(boxW, boxH, FLUID_PIXEL_BUDGET, FLUID_MIN_SCALE, bridge.quality());
+    canvas.width = Math.round(boxW * scale);
+    canvas.height = Math.round(boxH * scale);
 
-    const aspect = rect.width / rect.height;
+    const aspect = boxW / boxH;
     const [simW, simH] = gridFor(SIM_RES, aspect, Infinity);
     const [dyeW, dyeH] = gridFor(DYE_RES, aspect, DYE_MAX_TEXELS);
     if (fields && fields.dye.read.width === dyeW && fields.velocity.read.width === simW) return;
@@ -402,9 +401,19 @@ export function initQuotesFluid(): void {
     canvas.style.opacity = visible ? '1' : '0';
   };
 
+  let seenQuality = bridge.quality();
+
   const frame = (): void => {
     if (!alive) return;
     raf = requestAnimationFrame(frame);
+
+    // The governor turned the pixel budget down. No CSS box changed, so the
+    // ResizeObserver will never fire — resize off the version instead.
+    const quality = bridge.quality();
+    if (seenQuality !== quality) {
+      seenQuality = quality;
+      resize();
+    }
 
     const running = bridge.smokeOn() && bridge.visible();
     show(bridge.smokeOn());

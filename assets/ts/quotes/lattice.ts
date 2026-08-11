@@ -20,6 +20,7 @@ import {
   createRectCache,
   LATTICE_PIXEL_BUDGET,
   type RectCache,
+  getQuality,
 } from './viewport';
 
 // Sampling grid, tied to the font size so density holds whether the text is set
@@ -361,12 +362,17 @@ export function createLattice(
 
   const layout = (quoteIndex: number): void => {
     rect.invalidate();
-    const box = rect.get();
-    if (box.width < 2 || box.height < 2) return;
+    // offsetWidth, not the client rect. Fullscreen scales this element with a
+    // transform, and getBoundingClientRect reports the box after it — sizing the
+    // canvas to that would draw the very picture the transform exists to avoid
+    // drawing. The layout box is what the canvas is actually asked to cover.
+    const boxWidth = canvas.offsetWidth;
+    const boxHeight = canvas.offsetHeight;
+    if (boxWidth < 2 || boxHeight < 2) return;
 
-    width = Math.round(box.width);
-    height = Math.round(box.height);
-    const scale = backingScale(width, height, LATTICE_PIXEL_BUDGET);
+    width = Math.round(boxWidth);
+    height = Math.round(boxHeight);
+    const scale = backingScale(width, height, LATTICE_PIXEL_BUDGET, 1, getQuality());
     canvas.width = Math.round(width * scale);
     canvas.height = Math.round(height * scale);
     ctx.setTransform(scale, 0, 0, scale, 0, 0);
@@ -482,7 +488,13 @@ export function createLattice(
     applyFilters,
     cursorAt: (event) => {
       const box = rect.get();
-      return { x: event.clientX - box.left, y: event.clientY - box.top };
+      // getBoundingClientRect reports the box after the fullscreen zoom, so the
+      // offset it yields is in screen pixels while every dot in here is in the
+      // canvas's own. Divide the zoom back out — the ratio is 1 when there is
+      // no transform, so this is the same arithmetic in both modes.
+      const zoomX = box.width ? width / box.width : 1;
+      const zoomY = box.height ? height / box.height : 1;
+      return { x: (event.clientX - box.left) * zoomX, y: (event.clientY - box.top) * zoomY };
     },
     startOfFrame: rect.invalidate,
   };
