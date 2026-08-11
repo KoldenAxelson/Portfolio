@@ -18,7 +18,7 @@
 //   Numbers that are documented somewhere (UESP's anchors, a measured field
 //   report) and structure that a refactor could silently drop. Not appearance.
 
-import { bridgeMaskOf, browsableCount, buildCatalogue, catalogueWithout, couldJoin, effectDetailMarkup, headlines, liveMarkup, liveMixture, maskToIndices, mortarMarkup, sharesEffectWith, overflowOrder, overflowPageMarkup, pageCount, pagerMarkup, resultsMarkup, search, type Catalogue } from './builder';
+import { bridgeMaskOf, browsableCount, buildCatalogue, brewDetailMarkup, catalogueWithout, couldJoin, effectDetailMarkup, headlines, liveMarkup, liveMixture, maskToIndices, mortarMarkup, sharesEffectWith, overflowOrder, overflowPageMarkup, pageCount, pagerMarkup, resultsMarkup, search, winnerOf, type Catalogue } from './builder';
 import { placeableFrom, planMarkupFor, potionOf, replay, roundsOf, solve, type Plan, type Settings } from './resto';
 import { fairLoop, magnitudeOf, maximise, type MaxSettings, type Trick } from './enchant';
 
@@ -378,13 +378,13 @@ function checkBuilder(catalogue: Catalogue): void {
   // The three resists, counted by hand at 15.
   const resists = search(catalogue, [idOf('Resist Fire'), idOf('Resist Frost'), idOf('Resist Shock')]);
   check('the three resists have exactly 15 brews', resists.total === 15, `${resists.total}`);
-  const clean = resists.winners[1]; // "Nothing extra"
+  const clean = winnerOf(resists, 'Nothing extra');
   check('"Nothing extra" on the resists yields exactly 3 effects', clean?.effects.length === 3, `${clean?.effects.length}`);
 
   // Ranking must see the whole space: Salmon Roe's x12.5 sits well past any
   // sample cutoff, and losing it was a real bug.
   const magicka = search(catalogue, [idOf('Fortify Magicka')]);
-  const potent = magicka.winners[3]; // "Most potent"
+  const potent = winnerOf(magicka, 'Most potent');
   check('"Most potent" Fortify Magicka finds Salmon Roe',
     !!potent?.ingredients.some((i) => i.slug === 'salmon-roe'),
     potent?.ingredients.map((i) => i.slug).join(' + ') || '');
@@ -405,7 +405,7 @@ function checkBuilder(catalogue: Catalogue): void {
   // them is not contested — and counting rows instead of values used to demote the
   // gather-5 winner in favour of a gather-3 one with identical potency.
   const invisible = search(catalogue, [idOf('Invisibility')]);
-  const potentInvisible = invisible.winners[3];
+  const potentInvisible = winnerOf(invisible, 'Most potent');
   check('agreeing deviators are not contested', potentInvisible?.contested === false);
   check('and "Most potent" still reports the x1.5',
     potentInvisible?.multipliers[idOf('Invisibility')] === 1.5);
@@ -571,6 +571,46 @@ function checkBuilder(catalogue: Catalogue): void {
   const garlic = bySlug('garlic');
   const salmon = bySlug('salmon-roe');
   const histcarp = bySlug('histcarp');
+
+  // ── An empty slot is the easiest thing of all to find ─────────────────────
+  // Reported: "Fewest ingredients" was usually also the easiest to gather, and lost the
+  // label to a longer brew. A plain SUM punishes a mixture for being short — Bleeding
+  // Crown + Tundra Cotton (5 + 5) scored 10 against the same pair plus a third 5 at 15,
+  // though the pair needs a strict subset of the same walk.
+  const crown = bySlug('bleeding-crown');
+  const cotton = bySlug('tundra-cotton');
+  const flower = bySlug('purple-mountain-flower');
+  const two = liveMixture(catalogue, [crown, cotton]);
+  const three = liveMixture(catalogue, [crown, cotton, flower]);
+  check('an unused slot scores above the commonest ingredient',
+    two?.gatherScore === crown.gatherScore + cotton.gatherScore + 6,
+    `${two?.gatherScore}`);
+  check('so a pair beats the same pair plus a third',
+    (two?.gatherScore ?? 0) > (three?.gatherScore ?? 0),
+    `${two?.gatherScore} vs ${three?.gatherScore}`);
+
+  // ── A weakened effect is not the one you asked for ────────────────────────
+  // Honeycomb takes Fortify Block to x0.5, and a bottle that does exactly what you asked
+  // at half strength was winning "Nothing extra" over one that delivers it in full.
+  const block = search(catalogue, [idOf('Fortify Block'), idOf('Restore Stamina')], 'any');
+  const cleanest = block.winners[0];
+  check('nothing equally clean is more potent than the benchmark',
+    !!cleanest && block.sample.every((mixture) =>
+      mixture.effects.length > cleanest.effects.length || mixture.potency <= cleanest.potency),
+    `potency ${cleanest?.potency}`);
+
+  // ── The table says WHICH ingredient carries the multiplier ────────────────
+  // The bottle prints the deviation furthest from 1 among the ingredients carrying the
+  // effect, so a x0.5 on the label named no culprit.
+  const nerfed = liveMixture(catalogue, [bySlug('honeycomb'), bySlug('pearl')]);
+  const detail = nerfed ? brewDetailMarkup(catalogue, nerfed) : '';
+  check('the mixture really is nerfed to x0.5',
+    nerfed?.multipliers[idOf('Fortify Block')] === 0.5);
+  check('and the table prints that x0.5 on the ingredient applying it',
+    (detail.match(/&times;0\.5/g) || []).length === 1);
+  check('marking the cell the bottle took its number from',
+    (detail.match(/is-applied/g) || []).length === 1);
+
 
   check('one ingredient makes nothing', liveMixture(catalogue, [garlic]) === null);
   // Show, do not tell: the tile goes up, the chip row stays empty. No prose either way.

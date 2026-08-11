@@ -27,6 +27,16 @@ export interface Ingredient {
 export interface Mixture {
   ingredients: Ingredient[];
   effects: number[];
+  /**
+   * How easy the whole bottle is to assemble, scored over all three slots rather than
+   * summed over the ingredients used.
+   *
+   * A plain sum punished a mixture for being short: Bleeding Crown + Tundra Cotton (5 + 5)
+   * lost "easiest to gather" to itself plus a third 5, because 15 beats 10 — though the
+   * two-ingredient version needs a strict subset of the same walk. An unused slot scores
+   * above the commonest ingredient there is, because not needing to find anything is
+   * easier than finding the easy thing.
+   */
   gatherScore: number;
   /** Applied multiplier per effect index, only where it differs from 1. */
   multipliers: Record<number, number>;
@@ -88,6 +98,9 @@ const SAMPLE_LIMIT = 400;
  */
 const PAGE_SIZE = 8;
 const MAX_GATHER_SCORE = 5;
+const MORTAR_SLOTS = 3;
+/** One better than the commonest ingredient: nothing to find beats an easy find. */
+const EMPTY_SLOT_SCORE = MAX_GATHER_SCORE + 1;
 
 /**
  * RANKINGS[0] IS THE BENCHMARK. What you asked for and nothing else, and among those the
@@ -101,7 +114,10 @@ const RANKINGS: Ranking[] = [
     // A resist potion that also restores stamina is not the resist potion you asked for.
     // The requested set is fixed, so fewest total effects is exactly fewest unrequested.
     label: 'Nothing extra',
-    compare: (a, b) => a.effects.length - b.effects.length || b.gatherScore - a.gatherScore || a.ingredients.length - b.ingredients.length,
+    // Potency before gatherability: a bottle that does exactly what you asked at half
+    // strength is not the clean answer, whatever it saved you in walking.
+    compare: (a, b) => a.effects.length - b.effects.length || b.potency - a.potency ||
+      b.gatherScore - a.gatherScore || a.ingredients.length - b.ingredients.length,
     measure: (mixture) => -mixture.effects.length,
   },
   {
@@ -109,8 +125,8 @@ const RANKINGS: Ranking[] = [
     // at random when one of them carries a passenger.
     label: 'Easiest to gather',
     compare: (a, b, kind) => b.gatherScore - a.gatherScore ||
-      offSideCount(a, kind) - offSideCount(b, kind) || a.effects.length - b.effects.length ||
-      a.ingredients.length - b.ingredients.length,
+      offSideCount(a, kind) - offSideCount(b, kind) || b.potency - a.potency ||
+      a.effects.length - b.effects.length || a.ingredients.length - b.ingredients.length,
     measure: (mixture) => mixture.gatherScore,
   },
   {
@@ -118,7 +134,7 @@ const RANKINGS: Ranking[] = [
     label: 'Most effects',
     compare: (a, b, kind) =>
       onSideCount(b, kind) - onSideCount(a, kind) || offSideCount(a, kind) - offSideCount(b, kind) ||
-      b.gatherScore - a.gatherScore || a.ingredients.length - b.ingredients.length,
+      b.potency - a.potency || b.gatherScore - a.gatherScore || a.ingredients.length - b.ingredients.length,
     measure: onSideCount,
   },
   {
@@ -426,7 +442,8 @@ function describe(catalogue: Catalogue, mixture: Ingredient[], produced: EffectM
     ingredients: mixture,
     effects,
     harmfulCount,
-    gatherScore: mixture.reduce((total, ingredient) => total + ingredient.gatherScore, 0),
+    gatherScore: mixture.reduce((total, ingredient) => total + ingredient.gatherScore, 0) +
+      (MORTAR_SLOTS - mixture.length) * EMPTY_SLOT_SCORE,
     multipliers,
     potency: wanted.reduce((total, effect) => total + (multipliers[effect] || 1), 0),
     contested: wanted.some((effect) => deviatorsDisagree(catalogue, mixture, effect)),
@@ -692,14 +709,21 @@ function ingredientEffectsTable(catalogue: Catalogue, mixture: Mixture): string 
     const cells = ingredient.effects.map((effect) => {
       const classes = ['sky-fxcell'];
       if (inMixture.has(effect)) classes.push('is-shared');
+      // WHICH INGREDIENT IS DOING IT. The bottle prints one multiplier per effect — the
+      // deviation furthest from 1 among the ingredients carrying it — so a x0.5 on the
+      // label named no culprit, and the table that exists to explain the bottle could not
+      // explain the one number on it a reader would want explained.
+      const applied = multiplierFor(catalogue, [ingredient], effect);
+      if (applied !== 1 && applied === mixture.multipliers[effect]) classes.push('is-applied');
       return `<td class="${classes.join(' ')}" data-side="${sideOf(catalogue, effect)}">` +
-        `${escapeHtml(catalogue.effectNames[effect])}</td>`;
+        `${escapeHtml(catalogue.effectNames[effect])}` +
+        `${multiplierSuffix(applied === 1 ? undefined : applied)}</td>`;
     }).join('');
     return `<tr><th scope="row">${escapeHtml(ingredient.name)}</th>${cells}</tr>`;
   }).join('');
   return '<table class="sky-fxtable">' +
-    '<caption class="sky-sr">Every effect each ingredient carries. ' +
-    'Highlighted cells are the ones this mixture produces.</caption>' +
+    '<caption class="sky-sr">Every effect each ingredient carries, with the multiplier it ' +
+    'applies. Highlighted cells are the ones this mixture produces.</caption>' +
     `<tbody>${rows}</tbody></table>`;
 }
 
@@ -988,6 +1012,14 @@ export function resultsMarkup(
  * What screen 9 can actually reach. The search keeps at most SAMPLE_LIMIT mixtures, and
  * `result.total` — often far larger — is not a number any control here can honour.
  */
+/**
+ * The winner of a NAMED ranking. `winners` is in RANKINGS order, and that order moves —
+ * a self-check pinning `winners[1]` went on passing after the rankings were reordered,
+ * quietly asserting about a different ranking than the one its comment named.
+ */
+export const winnerOf = (result: SearchResult, label: string): Mixture | null =>
+  result.winners[RANKINGS.findIndex((ranking) => ranking.label === label)] || null;
+
 export const browsableCount = (result: SearchResult): number => result.sample.length;
 
 /**
