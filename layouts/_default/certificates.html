@@ -1,7 +1,7 @@
 {{ define "banner" }}
 {{ partial "page-banner.html" (dict
   "title" "Certifications"
-  "subtitle" "Credentials I've earned and keep current — the active ones up top, with lapsed ones kept on the record."
+  "subtitle" (.Params.lead | default "")
   "printHidden" true) }}
 {{ end }}
 

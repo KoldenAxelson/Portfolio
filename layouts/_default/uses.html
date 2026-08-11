@@ -1,7 +1,7 @@
 {{ define "banner" }}
 {{ partial "page-banner.html" (dict
   "title" "Uses"
-  "subtitle" `The things on my machine right now, and what I'd say about them if you asked. Inspired by <a href="https://uses.tech">uses.tech</a>.`) }}
+  "subtitle" (.Params.lead | default "")) }}
 {{ end }}
 
 {{ define "main" }}

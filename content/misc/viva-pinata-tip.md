@@ -1,12 +1,12 @@
 ---
 title: "Viva Piñata — Colour Variant Cheat Sheet"
 description: "Every Viva Piñata species and the items that unlock its colour variants — feed a Bluebell Flower to an Arocknid to turn it blue, and so on. All 88, searchable, with a built-in collection checklist."
-lead: "The feed item that triggers each species' colour variants — feed a Bluebell Flower to an Arocknid and it turns blue. All 88, searchable, with a checklist you can save and reload."
+# Blank by default — uncomment to put a line under the H1 in the banner.
+#lead: "The feed item that triggers each species' colour variants — feed a Bluebell Flower to an Arocknid and it turns blue. All 88, searchable, with a checklist you can save and reload."
 icon: "trophy"
 blurb: "Colour-variant feeds for every species in Viva Piñata — searchable, with a save/load collection checklist."
 container: "wide"
 checklist: true
-updated: 2026-06-20
 # Desktop shows the floating FAB (below); mobile routes these same actions into
 # the navbar tools button + sub-nav panel, so suppress the centered toolbar.
 desktopFab: true

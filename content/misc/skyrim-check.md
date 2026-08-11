@@ -1,7 +1,8 @@
 ---
 title: "Skyrim self-check"
 description: "Assertions for the Skyrim page's maths and markup, run in the browser."
-lead: "Green or it is not."
+# Blank by default — uncomment to put a line under the H1 in the banner.
+#lead: "Green or it is not."
 icon: "shield-check"
 container: "wide"
 prose: true
@@ -9,7 +10,6 @@ prose: true
 # something a visitor has any use for.
 hidden: true
 sitemap_exclude: true
-updated: 2026-07-29
 ---
 
 Runs the same modules `/misc/skyrim/` ships, in a real browser, with no test

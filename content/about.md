@@ -2,19 +2,14 @@
 title: "About"
 description: "Who Konrad Wright is beyond the résumé — how he works, what he's chasing, and where to find the slower-moving corners of the site."
 layout: "about"
-updated: 2026-06-01
 # Lead sits directly under the H1, above the prose body.
-lead: "I make specialized tools for people with problems, then scale that solution to a magnitude of users. Here's the longer version — the part that doesn't fit on a CV."
+# Blank by default — uncomment to put a line under the H1 in the banner.
+#lead: "I make specialized tools for people with problems, then scale that solution to a magnitude of users. Here's the longer version — the part that doesn't fit on a CV."
 # Quieter, slower-changing corners of the site. Rendered as link cards.
+# Now and Uses used to sit at the top of this list. They live on /misc now —
+# same URLs, just shelved with the other reference pages. The prose below still
+# links both inline, which is where they earn the mention.
 elsewhere:
-  - label: "Now"
-    href: "/now"
-    icon: "fire"
-    blurb: "What I'm actually building, learning, and reading this month."
-  - label: "Uses"
-    href: "/uses"
-    icon: "desktop"
-    blurb: "The stack and hardware I reach for, with notes on why."
   - label: "Inspirational Quotes"
     href: "/quotes"
     icon: "quote"

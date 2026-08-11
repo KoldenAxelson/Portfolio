@@ -2,9 +2,9 @@
 title: "Inspirational Quotes"
 description: "The lines I keep coming back to — a shuffling deck of the aphorisms that actually changed how I work."
 layout: "quotes"
-updated: 2026-07-26
 # Lead sits under the H1 in the banner.
-lead: "Lines I keep coming back to. The deck shuffles on every visit, so the order is never the same twice."
+# Blank by default — uncomment to put a line under the H1 in the banner.
+#lead: "Lines I keep coming back to. The deck shuffles on every visit, so the order is never the same twice."
 ---
 
 <!--
@@ -24,3 +24,15 @@ lead: "Lines I keep coming back to. The deck shuffles on every visit, so the ord
 - Esoteric Knowledge Never Equates to Action
 - Price of Perfection is Permanent Procrastination
 - Don't Equate the Inner Voice with Identity
+- Spend more time in your head than in others.
+- Better to believe in growth than circumstance.
+- A step backwards is still a part of a dance.
+- Treat betterment and permanence as half cost.
+- Difficulty is not an excuse for inaction.
+- Observe your upbringing, don't adhere to it.
+- Action is the precursor to trust and motivation.
+- Do it scared, do it messy.
+- Fun is the bane of anxiety.
+- Fear and Excitement can be a mind shift away.
+- Don't force fruit in a season meant for roots.
+- Before you write a book, ship a short story.

@@ -4,7 +4,6 @@
 # lead        : one-line summary under the banner (falls back to description)
 # description  : used for SEO/meta and as the card blurb fallback
 # weight      : chapter order in the list (1, 2, 3, …). Lower = higher up.
-# updated     : renders a "Last updated …" line at the top of the chapter
 # hidden      : set true to keep a work-in-progress chapter off the list
 # draft       : set true to exclude from the built site entirely
 # ──────────────────────────────────────────────────────────────────────
@@ -12,7 +11,6 @@ title: "Chapter 6: Natural Deduction"
 lead: "In Development"
 description: "Chapter 6 of Basic Logic: In Development."
 weight: 6
-updated: 2026-07-20
 ---
 
 <!-- EXAMPLE CHAPTER — this is placeholder content showing the pattern.

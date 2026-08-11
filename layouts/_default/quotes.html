@@ -45,12 +45,6 @@
   {{- end -}}
 {{- end -}}
 
-{{- with .Params.updated }}
-<p class="mb-6 font-mono text-xs text-muted">
-  Last updated {{ partial "formatted-date.html" (dict "date" .) }}. {{ len $quotes }} in the deck.
-</p>
-{{- end }}
-
 <style>
   /* Dot field — hidden until ts/quotes/ marks the section live, so the no-JS
      view isn't left with a tall empty box above the list. */
@@ -137,6 +131,71 @@
   }
   .quotes__controls label:hover {
     color: rgb(var(--c-fg));
+  }
+  /* Customisation parked, not deleted. The inputs stay in the DOM because their
+     `checked` attributes are where ts/quotes/ reads its defaults from — pull the
+     markup and the feature flags go with it. One rule to walk this back. */
+  .quotes__controls,
+  .quotes__tuner {
+    display: none;
+  }
+
+  /* Fullscreen toggle. Rides in the corner of the module and keeps out of the
+     way until the reader is actually on it. */
+  .quotes__fs {
+    position: absolute;
+    right: 0.75rem;
+    bottom: 0.75rem;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: rgb(var(--c-muted));
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.18s ease, color 0.15s ease;
+  }
+  .quotes__fs svg {
+    width: 1.15rem;
+    height: 1.15rem;
+  }
+  /* Reveal-on-hover only where hovering exists. A touch screen has no hover to
+     reveal it with, so there it just stays put — hence the visible default above
+     and the hide living inside the query rather than the other way round.
+     pointer-events follows opacity: an invisible button you can still click is
+     worse than no button. */
+  @media (hover: hover) {
+    .quotes__fs {
+      opacity: 0;
+      pointer-events: none;
+    }
+    .quotes__viewport:hover .quotes__fs {
+      opacity: 0.55;
+      pointer-events: auto;
+    }
+    .quotes__viewport .quotes__fs:hover {
+      opacity: 1;
+      color: rgb(var(--c-fg));
+    }
+  }
+  /* Keyboard focus never raises :hover, so it has to reveal the button itself.
+     Scoped through .quotes__viewport to outrank the hover rule above. */
+  .quotes__viewport .quotes__fs:focus-visible {
+    opacity: 1;
+    pointer-events: auto;
+    color: rgb(var(--c-fg));
+    outline: 2px solid rgb(var(--c-accent));
+    outline-offset: 2px;
+  }
+  /* Immersive already has the exit X in the opposite corner. */
+  .quotes.is-immersive .quotes__fs {
+    display: none;
   }
   .quotes__tuner {
     margin-top: 1rem;
@@ -388,7 +447,9 @@
   data-quotes-solver="{{ $fluid.RelPermalink }}"
   data-quotes-solver-integrity="{{ $fluid.Data.Integrity }}"
   aria-labelledby="quotes-heading">
-  <h2 id="quotes-heading" class="mb-4 font-mono text-xs uppercase tracking-widest text-muted">The deck</h2>
+  {{/* Kept in the tree, out of the page: the section is aria-labelledby this,
+       so deleting it would leave the deck an unnamed region. */}}
+  <h2 id="quotes-heading" class="sr-only">The deck</h2>
 
   {{/* The goo filter. Blur, then a steep curve on the alpha channel: overlapping
        blurred dots clear the threshold together and read as one solid stroke,
@@ -424,17 +485,27 @@
     <button type="button" class="quotes__stage" data-quotes-advance>
       <span class="sr-only">Show the next quote</span>
     </button>
+
+    {{/* Sibling of the stage, not a child: the stage is itself a <button> that
+         covers the whole viewport, and a button cannot nest inside a button.
+         z-index puts it over the top instead. */}}
+    <button type="button" class="quotes__fs" data-quotes-fullscreen aria-pressed="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"
+        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+        <path d="M3.75 8.25v-4.5h4.5M20.25 8.25v-4.5h-4.5M3.75 15.75v4.5h4.5M20.25 15.75v4.5h-4.5" />
+      </svg>
+      <span class="sr-only" data-quotes-fullscreen-label>Fullscreen</span>
+    </button>
   </div>
 
   {{/* Feature switches, read live by ts/quotes/ via [data-quotes-toggle].
        Checked here = the default state on load. */}}
   <div class="quotes__controls">
     <label><input type="checkbox" data-quotes-toggle="smoke" checked> Smoke</label>
-    <label><input type="checkbox" data-quotes-toggle="dots"> Dots</label>
-    <label><input type="checkbox" data-quotes-toggle="merge"> Merge</label>
+    <label><input type="checkbox" data-quotes-toggle="dots" checked> Dots</label>
+    <label><input type="checkbox" data-quotes-toggle="merge" checked> Merge</label>
     <label><input type="checkbox" data-quotes-toggle="cursor" checked> Cursor</label>
-    <label><input type="checkbox" data-quotes-toggle="auto"> Auto-advance</label>
-    <button type="button" class="quotes__button" data-quotes-fullscreen aria-pressed="false">Fullscreen</button>
+    <label><input type="checkbox" data-quotes-toggle="auto" checked> Auto-advance</label>
   </div>
 
   {{/* Tuning panel. Empty here on purpose — ts/quotes/ generates the sliders

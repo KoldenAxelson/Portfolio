@@ -11,19 +11,63 @@
 </section>
 {{- end }}
 
-{{- $pages := where .Pages "Params.hidden" "!=" true -}}
-{{- with $pages }}
-<section class="{{ if $.Content }}mt-12 {{ end }}grid gap-3 sm:grid-cols-2" aria-label="Pages">
+{{- /* Two sources, one grid. The section's own pages, then `elsewhere:` entries
+       from front matter — pages that belong on this shelf but live outside
+       content/misc/ (/now, /uses) and keep their existing URLs. Normalised into
+       the same three fields here so the card markup and the search below don't
+       need to know which list an entry came from. */ -}}
+{{- $cards := slice -}}
+{{- range where .Pages "Params.hidden" "!=" true -}}
+  {{- $cards = $cards | append (dict
+      "label" .Title
+      "href"  .RelPermalink
+      "icon"  (.Params.icon | default "")
+      "blurb" (.Params.blurb | default .Description | default "")) -}}
+{{- end -}}
+{{- range .Params.elsewhere -}}
+  {{- $cards = $cards | append (dict
+      "label" .label
+      "href"  (partial "func/url.html" .href)
+      "icon"  (.icon | default "")
+      "blurb" (.blurb | default "")) -}}
+{{- end -}}
+
+{{- with $cards }}
+{{- /* Search field. Shipped `hidden` and revealed by ts/misc-filter.ts: an input
+       that filters nothing is worse than no input at all, so with JS off the
+       reader just gets the full grid. */ -}}
+<div data-misc-search-wrap hidden class="{{ if $.Content }}mt-12 {{ end }}mb-6">
+  {{/* The field, not the bare <input>, is the focus surface. base.css puts a 2px
+       accent ring on :focus-visible; left alone it lands tight around the text and
+       reads as a second box inside the border, so it's suppressed on the input and
+       re-hung on the label. Keyboard focus gets the ring, a mouse click gets only
+       the border tint — has-[:focus-visible] vs focus-within. */}}
+  <label class="group flex items-center gap-3 rounded-xl border border-border/70 px-4 py-3 transition-colors hover:border-accent/50 focus-within:border-accent/60 has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent has-[:focus-visible]:outline-offset-2">
+    <span class="sr-only">Filter these pages</span>
+    {{ partial "func/svg-icon.html" (dict "name" "magnifying-glass" "class" "h-5 w-5 shrink-0 text-muted transition-colors group-focus-within:!text-accent") }}
+    <input type="search" data-misc-search autocomplete="off" placeholder="Filter&hellip;"
+      class="w-full border-0 bg-transparent p-0 text-base text-fg placeholder:text-muted focus-visible:!outline-none" />
+  </label>
+</div>
+
+<section class="{{ if and $.Content (not $cards) }}mt-12 {{ end }}grid gap-3 sm:grid-cols-2" aria-label="Pages">
   {{- range . }}
-  <a href="{{ .RelPermalink }}" class="group block rounded-xl border border-border/70 p-5 no-underline transition-colors hover:border-accent/50 hover:bg-border/20">
+  {{- /* One lowercased haystack per card, built here rather than read back out
+         of the DOM — the filter then never has to care how the card is marked up. */ -}}
+  <a href="{{ .href }}" data-misc-card data-misc-terms="{{ lower (printf "%s %s" .label .blurb) }}"
+    class="group block rounded-xl border border-border/70 p-5 no-underline transition-colors hover:border-accent/50 hover:bg-border/20">
     <span class="flex items-center gap-2 text-fg">
-      {{- with .Params.icon }}{{ partial "func/svg-icon.html" (dict "name" . "class" "h-5 w-5 shrink-0 text-muted transition-colors group-hover:!text-accent") }}{{ end }}
-      <span class="font-medium group-hover:!text-accent">{{ .Title }}</span>
+      {{- with .icon }}{{ partial "func/svg-icon.html" (dict "name" . "class" "h-5 w-5 shrink-0 text-muted transition-colors group-hover:!text-accent") }}{{ end }}
+      <span class="font-medium group-hover:!text-accent">{{ .label }}</span>
       <span aria-hidden="true" class="ml-auto inline-block text-muted transition-transform duration-200 ease-out group-hover:translate-x-0.5 group-hover:!text-accent">&rarr;</span>
     </span>
-    {{- with (.Params.blurb | default .Description) }}<span class="mt-2 block text-sm leading-snug text-muted">{{ . }}</span>{{ end }}
+    {{- with .blurb }}<span class="mt-2 block text-sm leading-snug text-muted">{{ . }}</span>{{ end }}
   </a>
   {{- end }}
 </section>
+
+{{/* aria-live so a screen reader hears the dead end instead of a silently
+     emptied grid. Unhidden by the filter only when nothing matches. */}}
+<p data-misc-empty hidden aria-live="polite" class="mt-6 font-mono text-xs text-muted">Nothing matches that.</p>
 {{- end }}
 {{ end }}

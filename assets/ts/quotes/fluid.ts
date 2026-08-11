@@ -600,6 +600,9 @@ function whenReady(run: () => void): void {
   else run();
 }
 
-// Its own entry point, re-run on hx-boost swaps the same way ts/main.ts is.
+// Its own entry point, re-run on hx-boost swaps the same way ts/main.ts is —
+// including historyRestore, which htmx fires instead of afterSettle when the
+// reader arrives by back/forward button.
 whenReady(() => initQuotesFluid());
 document.addEventListener('htmx:afterSettle', () => initQuotesFluid());
+document.addEventListener('htmx:historyRestore', () => initQuotesFluid());

@@ -3,7 +3,11 @@ title: "Now"
 description: "What I'm currently focused on — building, learning, reading, and life."
 layout: "now"
 updated: 2026-05-15
-sections:
+# `blocks`, not `sections`: `sections:` is reserved site-wide for the
+# jump-to-section convention ({id, label}) that topnav.html and
+# partials/section-nav.html read. This page uses a different shape
+# (label + items), so it gets its own key.
+blocks:
   - label: "Building"
     items:
       - "Widda.club — a monetization tool for YouTubers. Abandoned the original version in 2021 after Honey and Brave squashed the category; re-read case law and Amazon's Terms of Service and saw an opening. Building toward a clean Chrome Web Store launch."

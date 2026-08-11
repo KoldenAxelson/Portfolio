@@ -2,7 +2,6 @@
 title: 'How this site is built'
 description: "How this site is built and why: Node-free, static, ~$12/year on Cloudflare, and engineered for performance, supply-chain safety, and AI-readability."
 layout: 'colophon'
-updated: 2026-05-29
 # bar = our score as % "goodness"; avg/bad dots are Google's good + poor
 # thresholds mapped onto the same scale (pos %), shared across profiles.
 lighthouse:

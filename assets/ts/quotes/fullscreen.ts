@@ -21,6 +21,9 @@ const PAGE_CLASS = 'quotes-immersive'; // locks the page behind the cover
 
 export function wireFullscreen(root: HTMLElement): () => void {
   const toggleButton = root.querySelector<HTMLButtonElement>('[data-quotes-fullscreen]');
+  // The button's label lives in an sr-only span alongside an icon. Writing to
+  // toggleButton.textContent would take the icon out with it on the first sync.
+  const toggleLabel = root.querySelector<HTMLElement>('[data-quotes-fullscreen-label]');
   const exitButton = root.querySelector<HTMLButtonElement>('[data-quotes-exit]');
   if (!toggleButton) return () => {};
 
@@ -34,7 +37,9 @@ export function wireFullscreen(root: HTMLElement): () => void {
     const active = isActive();
     root.classList.toggle(IMMERSIVE_CLASS, active);
     document.documentElement.classList.toggle(PAGE_CLASS, active);
-    toggleButton.textContent = active ? 'Exit fullscreen' : 'Fullscreen';
+    const label = active ? 'Exit fullscreen' : 'Fullscreen';
+    if (toggleLabel) toggleLabel.textContent = label;
+    else toggleButton.textContent = label;
     toggleButton.setAttribute('aria-pressed', String(active));
   };
 

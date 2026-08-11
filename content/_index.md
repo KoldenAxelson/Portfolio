@@ -1,6 +1,8 @@
 ---
 title: ""
 container: "split"
+# The section list drives the desktop jump-nav only; see topnav.html.
+mobileTools: false
 sections:
   - { id: "about", label: "About" }
   - { id: "experience", label: "Experience" }

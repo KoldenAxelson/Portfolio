@@ -1,7 +1,7 @@
 {{ define "banner" }}
 {{ partial "page-banner.html" (dict
   "title" "What I'm doing now"
-  "subtitle" `A snapshot of where my attention is this season. Inspired by Derek Sivers' <a href="https://nownownow.com/about" rel="noopener">/now page convention</a> — updated whenever it stops being true.`) }}
+  "subtitle" (.Params.lead | default "")) }}
 {{ end }}
 
 {{ define "main" }}
@@ -12,7 +12,7 @@
 {{- end }}
 
 <div class="space-y-12">
-  {{- range .Params.sections }}
+  {{- range .Params.blocks }}
   {{- $id := printf "%s-heading" (lower .label) }}
   <section aria-labelledby="{{ $id }}">
     <h2 id="{{ $id }}" class="mb-3 font-mono text-xs uppercase tracking-widest text-fg">{{ .label }}</h2>

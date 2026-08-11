@@ -19,16 +19,10 @@
 {{ define "banner" }}
 {{ partial "page-banner.html" (dict
   "title" .Title
-  "subtitle" (.Params.lead | default .Description | default "")) }}
+  "subtitle" (.Params.lead | default "")) }}
 {{ end }}
 
 {{ define "main" }}
-{{- with .Params.updated }}
-<p class="mb-10 font-mono text-xs text-muted">
-  Last updated {{ partial "formatted-date.html" (dict "date" .) }}.
-</p>
-{{- end }}
-
 {{- /* Skyrim widget assets, emitted once here rather than by each shortcode.
        `.HasShortcode` is exact and evaluated per build, so there is no flag to go stale
        and no dependence on which shortcodes Hugo chose to re-render. The previous shape

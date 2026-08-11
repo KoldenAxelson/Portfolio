@@ -8,3 +8,6 @@
 {{- $iso := $t.Format "2006-01-02T15:04:05Z07:00" -}}
 {{- $human := cond (eq $precision "month") ($t.Format "Jan 2006") ($t.Format "Jan 2, 2006") -}}
 <time datetime="{{ $iso }}" class="whitespace-nowrap">{{ $human }}</time>
+{{- /* Deliberately emits no trailing newline: callers write punctuation
+       straight after the call ("… {{ partial … }}."), and a newline would
+       collapse to a space and print as "May 15, 2026 ." */ -}}
