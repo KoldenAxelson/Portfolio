@@ -346,11 +346,28 @@
   .quotes.is-immersive .quotes__tuner {
     display: none;
   }
+  /* Fullscreen draws the same picture the window does and scales it up, rather
+     than drawing a bigger one. Everything downstream of this box is priced off
+     its size — the backing stores, the dot count, the emitter grid, and above
+     all the area the goo filter has to chew through every frame — so going
+     fullscreen on a wide monitor costs what the little box costs instead of
+     fifteen times more. The logical size and zoom are set from JS because they
+     depend on the window's aspect ratio; the fallbacks here are the windowed
+     box, so a failure to set them degrades to something sane.
+
+     will-change is load-bearing, not a superstition: it asks the compositor to
+     pin this layer's raster scale, which is what keeps the filter working on
+     the small bitmap rather than re-rastering it at full screen size and
+     handing back the cost this whole approach exists to avoid. */
   .quotes.is-immersive .quotes__viewport {
-    flex: 1 1 auto;
-    height: auto;
+    flex: 0 0 auto;
+    width: var(--quotes-logical-w, 720px);
+    height: var(--quotes-logical-h, 416px);
     min-height: 0;
-    margin: 0;
+    margin: auto;
+    transform: scale(var(--quotes-zoom, 1));
+    transform-origin: center center;
+    will-change: transform;
   }
 
   /* The page behind the cover mustn't scroll away under it. */

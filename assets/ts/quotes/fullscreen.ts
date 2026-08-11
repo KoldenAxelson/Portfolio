@@ -19,7 +19,7 @@ type FullscreenDocument = Document & { webkitFullscreenEnabled?: boolean };
 const IMMERSIVE_CLASS = 'is-immersive';
 const PAGE_CLASS = 'quotes-immersive'; // locks the page behind the cover
 
-export function wireFullscreen(root: HTMLElement): () => void {
+export function wireFullscreen(root: HTMLElement, onChange?: () => void): () => void {
   const toggleButton = root.querySelector<HTMLButtonElement>('[data-quotes-fullscreen]');
   // The button's label lives in an sr-only span alongside an icon. Writing to
   // toggleButton.textContent would take the icon out with it on the first sync.
@@ -41,6 +41,7 @@ export function wireFullscreen(root: HTMLElement): () => void {
     if (toggleLabel) toggleLabel.textContent = label;
     else toggleButton.textContent = label;
     toggleButton.setAttribute('aria-pressed', String(active));
+    onChange?.();
   };
 
   const cover = (): void => {

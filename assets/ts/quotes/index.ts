@@ -17,6 +17,7 @@ import { wireFullscreen } from './fullscreen';
 import { loadTune, saveTune } from './knobs';
 import { createLattice } from './lattice';
 import { buildTuner } from './tuner';
+import { getQuality, reduceQuality } from './viewport';
 
 const RESIZE_DEBOUNCE_MS = 150;
 const RELAYOUT_DEBOUNCE_MS = 200;
@@ -63,6 +64,77 @@ export function initQuotes(): void {
   let lastFrame = -1;
   let raf = 0;
 
+  // ---- frame budget -------------------------------------------------------
+
+  // This is the heaviest thing on the site, and where the cost lands is not
+  // something the source can predict: an SVG goo filter runs over every pixel of
+  // its layer on every frame it changes, which some browsers hand to the GPU and
+  // others grind out on the CPU. Rather than guess a device class, watch the
+  // frames that are actually landing and give something up if they are not.
+  //
+  // Downward only, two steps, then it stops watching. The first verdict that
+  // comes in on budget also stops it, so a machine that is coping never pays for
+  // the bookkeeping. Nothing here upgrades back: quality that flickers as the
+  // load changes reads as a bug, and the reader cannot tell it was deliberate.
+  const TARGET_FRAME_MS = 22; // ~45fps — below this nobody is counting
+  const WARMUP_MS = 2500; // layout, webfonts, shader compile and the opening tween
+  const VERDICT_MS = 2000;
+  const MIN_SAMPLES = 6;
+  // A frame this long is a stall, a sleep or a tab swap rather than a frame
+  // rate. Clamped into the sample rather than dropped: discarding them means a
+  // machine slow enough to spend two seconds a frame never collects a sample at
+  // all and never gets helped, which is precisely backwards. One clamped
+  // outlier cannot move a median anyway.
+  const STALL_MS = 2000;
+  let watchStart = 0;
+  let intervals: number[] = [];
+  let governorSteps = 0;
+  let strikes = 0;
+
+  const governor = (interval: number): void => {
+    if (governorSteps >= 2 || document.hidden) return;
+    const now = performance.now();
+    if (!watchStart) {
+      watchStart = now + WARMUP_MS;
+      return;
+    }
+    if (now < watchStart) return;
+
+    intervals.push(Math.min(interval, STALL_MS));
+    // Windowed by time, not by frame count. A machine at 5fps would take half a
+    // minute to fill a 90-frame window — and it is exactly the machine that
+    // needs the answer soonest.
+    if (now - watchStart < VERDICT_MS || intervals.length < MIN_SAMPLES) return;
+    intervals.sort((a, b) => a - b);
+    const median = intervals[intervals.length >> 1];
+    intervals = [];
+    watchStart = now; // next window starts here
+
+    if (median <= TARGET_FRAME_MS) {
+      governorSteps = 2; // coping — stop measuring
+      return;
+    }
+    // Two windows before acting. One bad window can belong to something else
+    // entirely — another tab taking the GPU, a garbage collection, a laptop
+    // deciding to think about its battery — and the cost of being wrong here is
+    // that a machine which was coping quietly loses the effect anyway.
+    if (++strikes < 2) return;
+    strikes = 0;
+
+    // Cheapest thing to give up first: the goo threshold is a full-layer filter
+    // pass per frame, and without it the dots simply stop fusing into strokes.
+    const merge = toggles.get('merge');
+    if (governorSteps === 0 && merge?.checked) {
+      governorSteps = 1;
+      merge.checked = false;
+      lattice.applyFilters(false);
+      return;
+    }
+    // Still short: draw fewer pixels and re-fit the deck into them.
+    governorSteps = 2;
+    if (reduceQuality()) relayout();
+  };
+
   // ---- the loop -----------------------------------------------------------
 
   const frame = (): void => {
@@ -74,6 +146,7 @@ export function initQuotes(): void {
     lattice.startOfFrame();
     const now = performance.now();
     const previous = lastFrame < 0 ? now - 16.67 : lastFrame;
+    governor(now - previous);
     lastFrame = now;
 
     const smoke = isOn('smoke');
@@ -166,9 +239,48 @@ export function initQuotes(): void {
   });
   lattice.applyFilters(isOn('merge'));
 
+  // ---- fullscreen geometry ------------------------------------------------
+
+  // The logical box fullscreen draws into, in CSS pixels of area. Matching the
+  // windowed module is the whole point: the same dots make up the words and the
+  // same emitters feed the smoke, and the compositor blows the result up. Raise
+  // it if fullscreen reads too soft — the cost of every frame rises with it,
+  // roughly in proportion.
+  const IMMERSIVE_LOGICAL_AREA = 720 * 416;
+
+  const fitImmersive = (): void => {
+    if (!root.classList.contains('is-immersive')) {
+      root.style.removeProperty('--quotes-logical-w');
+      root.style.removeProperty('--quotes-logical-h');
+      root.style.removeProperty('--quotes-zoom');
+      return;
+    }
+    const style = getComputedStyle(root);
+    const availW =
+      root.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+    const availH =
+      root.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
+    if (!(availW > 2 && availH > 2)) return;
+
+    // Same aspect as the space it has to fill, so the zoom is uniform and the
+    // quote is never stretched — only the area is held down.
+    const aspect = availW / availH;
+    const h = Math.round(Math.sqrt(IMMERSIVE_LOGICAL_AREA / aspect));
+    const w = Math.round(h * aspect);
+    root.style.setProperty('--quotes-logical-w', `${w}px`);
+    root.style.setProperty('--quotes-logical-h', `${h}px`);
+    root.style.setProperty('--quotes-zoom', String(Math.min(availW / w, availH / h)));
+  };
+
   // ---- observers ----------------------------------------------------------
 
   let resizeTimer: number | null = null;
+  // The section, not the canvas: fullscreen pins it to the viewport, and a window
+  // resize while immersive has to re-derive the logical box. Separate from the
+  // canvas observer below so the two cannot chase each other — this one sets the
+  // box, that one reacts to it.
+  const shellObserver = new ResizeObserver(() => fitImmersive());
+
   const resizeObserver = new ResizeObserver(() => {
     if (resizeTimer !== null) window.clearTimeout(resizeTimer);
     resizeTimer = window.setTimeout(relayout, RESIZE_DEBOUNCE_MS);
@@ -191,7 +303,7 @@ export function initQuotes(): void {
     { threshold: 0 },
   );
 
-  const unwireFullscreen = wireFullscreen(root);
+  const unwireFullscreen = wireFullscreen(root, fitImmersive);
 
   dispose = (): void => {
     cancelAnimationFrame(raf);
@@ -199,6 +311,7 @@ export function initQuotes(): void {
       if (timer !== null) window.clearTimeout(timer);
     }
     resizeObserver.disconnect();
+    shellObserver.disconnect();
     visibility.disconnect();
     scheme.removeEventListener('change', onSchemeChange);
     unwireFullscreen();
@@ -217,6 +330,7 @@ export function initQuotes(): void {
     accent: lattice.accent,
     smokeOn: () => isOn('smoke'),
     visible: () => onScreen,
+    quality: getQuality,
     onFail: () => fallBackToDots(toggles),
     onRecover: () => restoreSmoke(toggles),
   };
@@ -224,6 +338,7 @@ export function initQuotes(): void {
   document.dispatchEvent(new CustomEvent(QUOTES_READY_EVENT));
 
   relayout();
+  shellObserver.observe(root);
   resizeObserver.observe(canvas);
   visibility.observe(root);
   // Metrics measured before Inter arrives come from the fallback face and size
