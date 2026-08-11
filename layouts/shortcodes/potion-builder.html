@@ -118,6 +118,20 @@
     <div data-results></div>
   </section>
 
+  {{- /* ── 8 ────────────────────────────────────────────────────────────── */}}
+  {{- /* One brew, on its own. The card on screen 3 is a summary in a 15rem column;
+         everything worth knowing about a mixture — what each of its ingredients
+         also carries, and which of those the other two happened to share — needs
+         the whole width to be readable, so it gets a screen instead of expanding
+         inside the grid it was sitting in. Back goes to the results it came from. */}}
+  <section class="sky-scr" data-scr="8" hidden tabindex="-1" aria-label="This brew">
+    <div class="sky-scr__head">
+      <button type="button" class="sky-back sky-back--icon" data-back="3" aria-label="Back to the brews"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m15 18-6-6 6-6" /></svg></button>
+      <h3 class="sky-scr__q sky-scr__q--tight sky-brewtitle" data-brew-head></h3>
+    </div>
+    <div data-brew-detail></div>
+  </section>
+
   {{- /* ── 4 ────────────────────────────────────────────────────────────── */}}
   {{- /* Hangs off screen 1 rather than following 3, so its Back says where to go. */}}
   <section class="sky-scr" data-scr="4" hidden tabindex="-1" aria-label="The mortar — pick up to three ingredients">
