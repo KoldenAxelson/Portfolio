@@ -129,15 +129,32 @@
 .sky-body { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.9rem 1.05rem 1rem; }
 .sky-title { margin: 0; font-size: var(--sky-t-lead); font-weight: 600; line-height: 1.3; color: rgb(var(--c-fg)); }
 .sky-chips { display: flex; flex-wrap: wrap; gap: 0.3rem; list-style: none; margin: 0; padding: 0; }
+/* ── Effect chips ───────────────────────────────────────────────────────────
+   ONE HUE, ONE SOURCE. This used to be five rules in two blocks 640 lines
+   apart, each contributing part of the look with its own alpha — 0.4 here, 0.55
+   there, 0.1 and 0.16 elsewhere — and two of them still reaching for the accent.
+   A boosted chip ended up amber because `.is-boosted` happened to come after
+   `[data-side]` in source order, so the same effect was blue on one card and
+   gold on the next. The hue now lands in `--chip` once and every state reads it
+   back, so nothing can disagree and source order stops mattering.
+
+   The three states, none of which is a colour:
+     (default)  outline            — this effect is in the bottle
+     --tag      filled             — you asked for this one
+     is-dominant  solid, heavier   — this is the effect that set the verdict */
 .sky-chip {
+  --chip: var(--c-muted);
   padding: 0.22rem 0.5rem; border-radius: 999px;
   font: var(--sky-t-micro) var(--font-mono, ui-monospace, monospace); letter-spacing: 0.06em; text-transform: uppercase;
-  color: rgb(var(--c-muted)); border: 1px solid rgb(var(--c-border));
+  color: rgb(var(--chip)); border: 1px solid rgb(var(--chip) / 0.4);
 }
-.sky-chip--tag { color: rgb(var(--c-accent)); border-color: rgb(var(--c-accent) / 0.45); background: rgb(var(--c-accent) / 0.08); }
-/* The builder marks a chip whose magnitude a Creation Club ingredient inflates. */
-.sky-chip.is-boosted { border-color: rgb(var(--c-accent) / 0.55); color: rgb(var(--c-fg)); }
-.sky-chip b { margin-left: 0.3rem; font-weight: 700; color: rgb(var(--c-accent)); }
+.sky-chip[data-side="good"] { --chip: var(--sky-potion); }
+.sky-chip[data-side="bad"] { --chip: var(--sky-poison); }
+.sky-chip--tag { background: rgb(var(--chip) / 0.12); border-color: rgb(var(--chip) / 0.55); }
+.sky-chip.is-dominant { border-width: 1.5px; border-color: rgb(var(--chip)); background: rgb(var(--chip) / 0.16); }
+/* The multiplier a Creation Club ingredient adds. It had its own class and its
+   own accent colour; the number is the loud part on its own. */
+.sky-chip b { margin-left: 0.3rem; font-weight: 700; color: rgb(var(--chip)); }
 .sky-value { margin: 0; font: var(--sky-t-small) var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-muted)); }
 
 /* ── Collapsible note ───────────────────────────────────────────────────── */
@@ -755,32 +772,31 @@
 .sky-brews { display: grid; gap: 0.6rem; grid-template-columns: 1fr; }
 @media (min-width: 640px) { .sky-brews { grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); } }
 .sky-brews--rest { margin-top: 0.6rem; }
-.sky-brew { padding: 0.75rem 0.85rem 0.8rem; border: 1px solid rgb(var(--c-border)); border-radius: 0.7rem; background: rgb(var(--c-bg)); }
+.sky-brew {
+  padding: 0.75rem 0.85rem 0.8rem; border: 1px solid rgb(var(--c-border)); border-radius: 0.7rem;
+  background: rgb(var(--c-bg)); transition: border-color 0.18s ease;
+}
+/* The card brightens rather than growing a chevron. A half-arrow in the corner
+   had to be read as "this opens something"; a border that responds to the cursor
+   says the whole card is the target, which it is. :focus-within carries it to the
+   keyboard, where there is no hover to rely on. */
+.sky-brew:has(.sky-brew__open):hover,
+.sky-brew:has(.sky-brew__open):focus-within { border-color: rgb(var(--c-accent)); }
+@media (prefers-reduced-motion: reduce) { .sky-brew { transition: none; } }
 .sky-brews:not(.sky-brews--rest) .sky-brew { border-color: rgb(var(--c-accent) / 0.4); background: rgb(var(--c-accent) / 0.05); }
-.sky-brew__head { display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
+.sky-brew__head { display: grid; grid-template-columns: 1fr auto; align-items: start; gap: 0.5rem; margin-bottom: 0.5rem; }
 .sky-brew__head:empty { display: none; }
+.sky-brew__labels { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; min-width: 0; }
+/* The verdict disc, same one the mortar and screen 8 use. It is absolutely
+   positioned in the tray because it sits in a corner there; in a card header it
+   is simply the last thing on the row. */
+.sky-brew__head .sky-verdict {
+  position: static; width: 1.5rem; height: 1.5rem; flex-shrink: 0;
+}
+.sky-brew__head .sky-verdict svg { width: 0.85rem; height: 0.85rem; }
 .sky-brew__badge { margin: 0; font: 600 var(--sky-t-micro) var(--font-mono, ui-monospace, monospace); letter-spacing: 0.12em; text-transform: uppercase; color: rgb(var(--c-accent)); }
 
 /* Potion or poison. The verdict is a word; the chip that caused it is outlined below. */
-.sky-brew__kind {
-  margin: 0 0 0 auto; padding: 0.1rem 0.4rem; border-radius: 0.3rem;
-  font: 700 var(--sky-t-micro) var(--font-mono, ui-monospace, monospace); letter-spacing: 0.1em; text-transform: uppercase;
-  border: 1px solid currentColor; color: rgb(var(--c-muted));
-}
-.sky-brew__kind[data-tone="good"] { color: rgb(var(--sky-potion)); }
-.sky-brew__kind[data-tone="bad"] { color: rgb(var(--sky-poison)); }
-.sky-brew__kind[data-tone="mixed"] { color: rgb(var(--sky-mixed)); }
-
-/* The one chip that decided it, filled to match the verdict above. It outranks
-   .sky-chip--tag on specificity, but only beats .is-boosted (line 72) on SOURCE ORDER —
-   both are (0,2,0), and builder.ts can put both classes on the same chip. Keep this rule
-   below that one. Being in charge should read louder than being asked for or inflated. */
-/* The chip that decided it, filled to match the tray. Tone, not kind, so the chip and the
-   ring around the bottle always agree. */
-.sky-chip.is-dominant { border-color: rgb(var(--c-accent)); color: rgb(var(--c-fg)); background: rgb(var(--c-accent) / 0.16); }
-.sky-chips[data-tone="good"] .sky-chip.is-dominant { border-color: rgb(var(--sky-potion)); background: rgb(var(--sky-potion) / 0.16); }
-.sky-chips[data-tone="bad"] .sky-chip.is-dominant { border-color: rgb(var(--sky-poison)); background: rgb(var(--sky-poison) / 0.16); }
-.sky-chips[data-tone="mixed"] .sky-chip.is-dominant { border-color: rgb(var(--sky-mixed)); background: rgb(var(--sky-mixed) / 0.18); }
 /* Screen 6 reuses the result card, but nothing here is a winner, so it does not take the
    accent tint the headline brews get. Same specificity as that rule (0,2,0) — it wins on
    SOURCE ORDER, so it has to stay below it. */
@@ -798,6 +814,83 @@
 .sky-bi b { font-weight: 500; }
 .sky-bi i { font-style: normal; font: 600 var(--sky-t-micro) var(--font-mono, ui-monospace, monospace); letter-spacing: 0.06em; color: rgb(var(--c-muted)); border: 1px solid rgb(var(--c-border)); border-radius: 0.25rem; padding: 0 0.22rem; }
 .sky-bi em { margin-left: auto; font-style: normal; font-size: var(--sky-t-micro); letter-spacing: 0.1em; color: rgb(var(--c-accent)); opacity: 0.75; }
+/* ── A result card that opens a screen ───────────────────────────────────────
+   The card's body is the control. Reset the button back to a block so the tiles
+   and chips inside keep the layout they had when the article held them
+   directly — this changed what wraps them, not how they look. */
+.sky-brew__open {
+  display: block; width: 100%; padding: 0; border: 0; background: none;
+  font: inherit; color: inherit; text-align: left; cursor: pointer;
+  border-radius: 0.45rem;
+}
+.sky-brew__open:focus-visible { outline: 2px solid rgb(var(--c-accent)); outline-offset: 3px; }
+/* ── Screen 8: one brew ──────────────────────────────────────────────────────
+   Full width and unhurried. The card is a summary; this is the thing itself. */
+.sky-brewpage { display: grid; gap: 0.9rem; }
+/* ── The screen title: verdict disc, then what the bottle does ───────────────
+   The same disc the mortar puts on its tray, reused as the answer here. It is
+   `position: absolute` there because it sits in a corner of the tray; in a title
+   row it is simply the first thing on the line. */
+.sky-brewtitle { display: flex; align-items: center; gap: 0.55rem; flex-wrap: wrap; }
+.sky-brewtitle .sky-verdict {
+  position: static; width: 1.75rem; height: 1.75rem; flex-shrink: 0;
+}
+.sky-brewtitle .sky-verdict svg { width: 1rem; height: 1rem; }
+.sky-brewtitle__fxs { display: flex; align-items: baseline; gap: 0.45rem; flex-wrap: wrap; }
+.sky-brewtitle__fx[data-side="good"] { color: rgb(var(--sky-potion)); }
+.sky-brewtitle__fx[data-side="bad"] { color: rgb(var(--sky-poison)); }
+.sky-brewtitle__sep { color: rgb(var(--c-muted)); font-weight: 400; }
+/* With the row to itself an ingredient can have its art at a readable size
+   instead of the 15rem column's thumbnail. */
+.sky-bis--wide { display: grid; gap: 0.35rem; grid-template-columns: 1fr; }
+@media (min-width: 640px) { .sky-bis--wide { grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); } }
+
+/* ── What each ingredient carries ────────────────────────────────────────────
+   Four equal columns so the eye can read down one as easily as across a row: a
+   shared effect is the reason the bottle works, and that is far easier to spot
+   when the cells line up. */
+.sky-fxtable { width: 100%; border-collapse: collapse; font-size: var(--sky-t-small, 0.85rem); table-layout: fixed; }
+/* The ingredient column stays plain. Colour in this table means which side an
+   effect is on, and an ingredient is not on a side — giving the row headers the
+   accent made them look like a third category of effect. */
+.sky-fxtable th[scope="row"] {
+  width: 22%; padding: 0.45rem 0.7rem 0.45rem 0; text-align: left; vertical-align: middle;
+  font-weight: 600; color: rgb(var(--c-fg)); overflow-wrap: break-word;
+}
+.sky-fxtable tr + tr th, .sky-fxtable tr + tr td { border-top: 1px solid rgb(var(--c-border) / 0.6); }
+.sky-fxcell {
+  padding: 0.45rem 0.55rem; vertical-align: middle; color: rgb(var(--c-muted));
+  overflow-wrap: break-word; border-radius: 0.3rem;
+}
+/* Every effect wears its side, not only the harmful ones — a table that tinted
+   half its cells and left the other half grey looked like it only had an opinion
+   about the poisons. */
+.sky-fxcell[data-side="good"] { color: rgb(var(--sky-potion) / 0.85); }
+.sky-fxcell[data-side="bad"] { color: rgb(var(--sky-poison) / 0.85); }
+/* The ones that made it into the bottle: full strength, and a wash of their own
+   side behind them. */
+.sky-fxcell.is-shared { font-weight: 500; }
+.sky-fxcell.is-shared[data-side="good"] { color: rgb(var(--sky-potion)); background: rgb(var(--sky-potion) / 0.12); }
+.sky-fxcell.is-shared[data-side="bad"] { color: rgb(var(--sky-poison)); background: rgb(var(--sky-poison) / 0.12); }
+
+/* ── The nearest miss ────────────────────────────────────────────────────────
+   --sky-bad, NOT --sky-poison. The poison hue is green here and it means "this
+   bottle is a poison", which is a fact about the mixture; this is a fact about
+   the SEARCH — nothing on the requested side exists. Wearing the poison colour
+   would say the opposite of what happened on a card that is, half the time,
+   flagged precisely because it is a poison. --sky-bad is the module's existing
+   error red, already carrying a documented contrast ratio in both themes. */
+.sky-brew__closest {
+  margin: 0; font: 600 var(--sky-t-micro) var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.08em; text-transform: uppercase; color: rgb(var(--sky-bad));
+  border: 1px solid rgb(var(--sky-bad) / 0.5); border-radius: 999px; padding: 0.1rem 0.45rem;
+}
+.sky-warn {
+  margin: 0 0 0.6rem; padding: 0.5rem 0.7rem; font-size: var(--sky-t-micro);
+  color: rgb(var(--sky-bad)); background: rgb(var(--sky-bad) / 0.08);
+  border: 1px solid rgb(var(--sky-bad) / 0.35); border-radius: 0.5rem;
+}
+
 .sky-brew .sky-chips { gap: 0.25rem; }
 .sky-brew .sky-chip { font-size: var(--sky-t-micro); padding: 0.18rem 0.4rem; }
 

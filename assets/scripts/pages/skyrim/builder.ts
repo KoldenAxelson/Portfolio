@@ -71,6 +71,14 @@ export interface Mixture {
 interface Ranking {
   label: string;
   compare: (a: Mixture, b: Mixture) => number;
+  /**
+   * Whether the label is worth printing on the winner it picked. A ranking always has a
+   * winner; that does not mean the winner is interesting. "Fewest ingredients" on a
+   * three-ingredient brew is a fact about a set where nothing did better, not a reason to
+   * choose this one — and a mixture can hold at most three, so two is the only count that
+   * distinguishes anything.
+   */
+  worthSaying?: (mixture: Mixture) => boolean;
 }
 
 const SAMPLE_LIMIT = 400;
@@ -103,6 +111,7 @@ const RANKINGS: Ranking[] = [
   {
     label: 'Fewest ingredients',
     compare: (a, b) => a.ingredients.length - b.ingredients.length || b.gatherScore - a.gatherScore || b.effects.length - a.effects.length,
+    worthSaying: (mixture) => mixture.ingredients.length < 3,
   },
 ];
 
@@ -382,21 +391,54 @@ function describe(catalogue: Catalogue, mixture: Ingredient[], produced: EffectM
   };
 }
 
+export type Kind = 'good' | 'bad' | 'any';
+
+/**
+ * Does this bottle answer the question that was asked?
+ *
+ * Asking for a potion and being handed a poison at the top of the results is a search
+ * failure, not a result — the mortar can be brilliant at hitting the effects you named
+ * and still produce the opposite of what you wanted, because the side is decided by
+ * whichever effect happens to cost the most (see `dominanceOf`). `undecided` counts as a
+ * match for either side: the game itself has not settled it, so neither will this.
+ */
+export const matchesKind = (mixture: Mixture, kind: Kind): boolean =>
+  kind === 'any' || mixture.undecided || (kind === 'good' ? !mixture.poison : mixture.poison);
+
 export interface SearchResult {
   /** Winner per RANKINGS entry, chosen over every mixture found. */
   winners: (Mixture | null)[];
+  /** What was asked for, so the renderer can mark the mixtures that missed it. */
+  kind: Kind;
+  /**
+   * True when NOTHING produces the requested effects on the requested side, so the
+   * winners are the nearest misses rather than answers. The cards say so in red.
+   */
+  closestOnly: boolean;
   /** Bounded list backing "show more". Never used for ranking. */
   sample: Mixture[];
   total: number;
+  /** How many of those are on the requested side. */
+  matching: number;
   /** Effects that could still be added to the selection. */
   reachable: Set<number>;
 }
 
-export function search(catalogue: Catalogue, wanted: number[]): SearchResult {
+export function search(catalogue: Catalogue, wanted: number[], kind: Kind = 'any'): SearchResult {
   const winners: (Mixture | null)[] = RANKINGS.map(() => null);
   const sample: Mixture[] = [];
   const reachable = new Set<number>();
   let total = 0;
+  let matching = 0;
+
+  /**
+   * Every ranking, wrapped so that the requested side wins before its own criterion is
+   * consulted. One wrapper rather than a filtered candidate list: a filter would have to
+   * decide up front what to do when the filter empties the set, and this way the wrong
+   * side simply loses every comparison it can — and still wins if it is all there is.
+   */
+  const rank = (ranking: Ranking) => (a: Mixture, b: Mixture): number =>
+    Number(!matchesKind(a, kind)) - Number(!matchesKind(b, kind)) || ranking.compare(a, b);
 
   // Nothing selected: every effect is reachable, because ingredients.yaml
   // guarantees each is carried by at least two ingredients.
@@ -404,7 +446,7 @@ export function search(catalogue: Catalogue, wanted: number[]): SearchResult {
     catalogue.effectNames.forEach((_, index) => {
       if (catalogue.carriersOf[index].length >= 2) reachable.add(index);
     });
-    return { winners, sample, total, reachable };
+    return { winners, kind, closestOnly: false, sample, total, matching: 0, reachable };
   }
 
   const wantedMask = maskOf(wanted);
@@ -425,10 +467,11 @@ export function search(catalogue: Catalogue, wanted: number[]): SearchResult {
     total++;
 
     const described = describe(catalogue, mixture, produced, wanted);
+    if (matchesKind(described, kind)) matching++;
     for (const effect of described.effects) reachable.add(effect);
     RANKINGS.forEach((ranking, index) => {
       const current = winners[index];
-      if (!current || ranking.compare(described, current) < 0) winners[index] = described;
+      if (!current || rank(ranking)(described, current) < 0) winners[index] = described;
     });
     if (sample.length < SAMPLE_LIMIT) sample.push(described);
   };
@@ -442,7 +485,7 @@ export function search(catalogue: Catalogue, wanted: number[]): SearchResult {
       }
     }
   }
-  return { winners, sample, total, reachable };
+  return { winners, kind, closestOnly: total > 0 && matching === 0, sample, total, matching, reachable };
 }
 
 // ── Rendering ───────────────────────────────────────────────────────────────
@@ -488,16 +531,29 @@ function ingredientRow(catalogue: Catalogue, ingredient: Ingredient): string {
     `<span class="sky-sr">easy to find: ${score} of ${MAX_GATHER_SCORE}</span></em></li>`;
 }
 
-function effectChip(names: string[], mixture: Mixture, effect: number, wanted: number[]): string {
+/**
+ * COLOUR SAYS WHICH SIDE, and nothing else.
+ *
+ * It used to say two things at once: the accent marked an effect you had asked for, and
+ * the verdict hue marked the single effect that decided potion-or-poison. Asking for
+ * Fortify Lockpicking and Fortify Sneak therefore returned one amber chip and one blue
+ * one, which reads as "only that one is a potion effect" — a reasonable thing to conclude
+ * and not what it meant.
+ *
+ * So the hue is now the effect's own side, everywhere: blue benefits you, green harms
+ * you. The other two facts move to channels that are not hue — a fill for the effects you
+ * asked for, a heavier border for the one that set the verdict. That the dominant chip
+ * still comes out the verdict's colour is not a special case: the verdict IS its side.
+ */
+function effectChip(catalogue: Catalogue, mixture: Mixture, effect: number, wanted: number[]): string {
   const applied = mixture.multipliers[effect];
   const classes = ['sky-chip'];
   if (wanted.indexOf(effect) !== -1) classes.push('sky-chip--tag');
-  if (applied > 1) classes.push('is-boosted');
-  // The effect that decided potion-or-poison. Marked rather than explained: the verdict is
-  // right there above it, and this says which of the four is responsible for it.
   if (effect === mixture.dominant) classes.push('is-dominant');
   const suffix = applied ? `<b>×${formatMultiplier(applied)}</b>` : '';
-  return `<li class="${classes.join(' ')}">${escapeHtml(names[effect])}${suffix}</li>`;
+  const side = catalogue.harmful[effect] ? 'bad' : 'good';
+  return `<li class="${classes.join(' ')}" data-side="${side}">` +
+    `${escapeHtml(catalogue.effectNames[effect])}${suffix}</li>`;
 }
 
 /**
@@ -545,34 +601,123 @@ function verdictBadge(mixture: Mixture): string {
     `<span class="sky-sr">${verdictLabel(mixture)}</span></span>`;
 }
 
-/** One word for what comes out of the mortar — on a RESULT CARD, where the verdict is one
- *  attribute of several competing brews. The live mortar uses `verdictBadge` instead. */
-function verdictTag(mixture: Mixture): string {
-  if (mixture.dominant === -1) return '';
-  return `<p class="sky-brew__kind" data-kind="${verdictKind(mixture)}" ` +
-    `data-tone="${verdictTone(mixture)}">${verdictLabel(mixture)}</p>`;
-}
-
 /**
  * The effect chips, tagged with the verdict so the chip that caused it can be tinted to
  * match — the word at the top says WHAT, this says WHICH.
  */
-function chipsMarkup(names: string[], mixture: Mixture, wanted: number[]): string {
+function chipsMarkup(catalogue: Catalogue, mixture: Mixture, wanted: number[]): string {
   return `<ul class="sky-chips" data-kind="${verdictKind(mixture)}" data-tone="${verdictTone(mixture)}">${mixture.effects
-    .map((effect) => effectChip(names, mixture, effect, wanted))
+    .map((effect) => effectChip(catalogue, mixture, effect, wanted))
     .join('')}</ul>`;
 }
 
-function mixtureCard(catalogue: Catalogue, mixture: Mixture, wanted: number[], badge?: string): string {
-  const names = catalogue.effectNames;
+/**
+ * Every effect each ingredient carries, not only the ones that survived the mix.
+ *
+ * This is the answer to "why these three?" — a shared effect is the reason two ingredients
+ * are in the same bottle, and the other three are what you are also carrying around. The
+ * cell marked `is-shared` is one that made it into the mixture; the rest were outvoted,
+ * because an effect needs two ingredients to appear at all.
+ */
+function ingredientEffectsTable(catalogue: Catalogue, mixture: Mixture): string {
+  const inMixture = new Set(mixture.effects);
+  const rows = mixture.ingredients.map((ingredient) => {
+    const cells = ingredient.effects.map((effect) => {
+      const classes = ['sky-fxcell'];
+      if (inMixture.has(effect)) classes.push('is-shared');
+      // Same rule the chips follow: the hue is the effect's side. Green was already
+      // doing this for the harmful ones; the beneficial ones were left grey, which
+      // made the table look like it only had an opinion about half its contents.
+      const side = catalogue.harmful[effect] ? 'bad' : 'good';
+      return `<td class="${classes.join(' ')}" data-side="${side}">` +
+        `${escapeHtml(catalogue.effectNames[effect])}</td>`;
+    }).join('');
+    return `<tr><th scope="row">${escapeHtml(ingredient.name)}</th>${cells}</tr>`;
+  }).join('');
+  return '<table class="sky-fxtable">' +
+    '<caption class="sky-sr">Every effect each ingredient carries. ' +
+    'Highlighted cells are the ones this mixture produces.</caption>' +
+    `<tbody>${rows}</tbody></table>`;
+}
+
+/**
+ * SCREEN 8 — one brew, with the room the card could not give it.
+ *
+ * The same three facts the card carries, unhurried: what comes out, what went in, and
+ * what else each of those ingredients is holding. The table is the reason this is a
+ * screen and not a panel — four effect names per row do not fit in a 15rem grid column,
+ * and widening the card to fit them pushes everything below it down the page.
+ */
+/**
+ * The screen's own title: the verdict as the disc the mortar uses, then what the bottle
+ * actually does, each effect in its own side's colour. It replaces both the POTION pill
+ * and the chip row underneath it, which between them said the same thing twice in two
+ * different visual languages.
+ */
+export function brewTitleMarkup(catalogue: Catalogue, mixture: Mixture): string {
+  const effects = mixture.effects
+    .map((effect) => {
+      const side = catalogue.harmful[effect] ? 'bad' : 'good';
+      const applied = mixture.multipliers[effect];
+      const suffix = applied > 1 ? ` ×${formatMultiplier(applied)}` : '';
+      return `<span class="sky-brewtitle__fx" data-side="${side}">` +
+        `${escapeHtml(catalogue.effectNames[effect])}${escapeHtml(suffix)}</span>`;
+    })
+    .join('<span class="sky-brewtitle__sep" aria-hidden="true">+</span>');
+  return `${verdictBadge(mixture)}<span class="sky-brewtitle__fxs">${effects}</span>`;
+}
+
+export function brewDetailMarkup(catalogue: Catalogue, mixture: Mixture, closest = false): string {
+  return [
+    '<div class="sky-brewpage">',
+    closest
+      ? '<p class="sky-warn">Nothing produces these effects on the side you asked for. ' +
+        'This is one of the nearest misses.</p>'
+      : '',
+    `<ul class="sky-bis sky-bis--wide">${mixture.ingredients.map((i) => ingredientRow(catalogue, i)).join('')}</ul>`,
+    // No heading and no legend over the table. A table of ingredients against
+    // effects, under a list of those ingredients, does not need to be announced,
+    // and highlighting reads as "these ones" without being told. The caption
+    // inside the table stays: it is screen-reader-only, and the highlight is the
+    // one thing there that cannot be seen.
+    ingredientEffectsTable(catalogue, mixture),
+    '</div>',
+  ].join('');
+}
+
+function mixtureCard(
+  catalogue: Catalogue,
+  mixture: Mixture,
+  wanted: number[],
+  index: number,
+  badge?: string,
+  closest = false,
+): string {
+  const label = `${mixture.ingredients.map((i) => i.name).join(', ')} — ${verdictLabel(mixture)}`;
   return [
     '<article class="sky-brew">',
     '<div class="sky-brew__head">',
+    // The labels share a cell so the disc keeps its corner however far the
+    // ranking name wraps — "Nothing extra · Easiest to gather" is two lines in a
+    // 15rem column, and as flex siblings that pushed the disc onto a third.
+    '<div class="sky-brew__labels">',
     badge ? `<h4 class="sky-brew__badge">${escapeHtml(badge)}</h4>` : '',
-    verdictTag(mixture),
+    closest ? '<p class="sky-brew__closest" title="Nothing produces these effects on the side you asked for. ' +
+      'This is the nearest miss.">Closest possible</p>' : '',
     '</div>',
+    // The disc the mortar and screen 8 both use, rather than a second word for the
+    // same thing. It carries the word in `.sky-sr`, so nothing is lost to a reader
+    // who cannot see the glyph.
+    verdictBadge(mixture),
+    '</div>',
+    // A button, so focus, Enter and Space come with the element rather than being
+    // rebuilt on a div. It opens screen 8; the index is how the handler finds the
+    // mixture again after the markup has left the building.
+    `<button type="button" class="sky-brew__open" data-brew-open="${index}" ` +
+    `aria-label="${escapeHtml(label)}. See what each ingredient carries.">`,
     `<ul class="sky-bis">${mixture.ingredients.map((i) => ingredientRow(catalogue, i)).join('')}</ul>`,
-    chipsMarkup(names, mixture, wanted),
+    chipsMarkup(catalogue, mixture, wanted),
+    '</button>',
     '</article>',
   ].join('');
 }
@@ -583,6 +728,7 @@ function headlines(winners: (Mixture | null)[]): { mixture: Mixture; labels: str
   RANKINGS.forEach((ranking, index) => {
     const winner = winners[index];
     if (!winner) return;
+    if (ranking.worthSaying && !ranking.worthSaying(winner)) return;
     const existing = cards.find((card) => card.mixture === winner);
     if (existing) existing.labels.push(ranking.label);
     else cards.push({ mixture: winner, labels: [ranking.label] });
@@ -733,7 +879,7 @@ export function liveMarkup(catalogue: Catalogue, chosen: Ingredient[]): string {
   if (!mixture) return '';
   // The verdict is visible on the tray above, but this IS the live region, so the word
   // still has to be spoken — in `.sky-sr`, not as a second visible copy of it.
-  return chipsMarkup(catalogue.effectNames, mixture, []) +
+  return chipsMarkup(catalogue, mixture, []) +
     `<p class="sky-sr">${verdictLabel(mixture)}</p>`;
 }
 
@@ -767,9 +913,11 @@ export function effectDetailMarkup(catalogue: Catalogue, effect: number): string
       const classes = ['sky-chip'];
       if (other === effect) classes.push('sky-chip--tag');
       const applied = deviationFor(catalogue, ingredient.slug, other);
-      if (applied !== 1) classes.push('is-boosted');
       const suffix = applied !== 1 ? `<b>&times;${formatMultiplier(applied)}</b>` : '';
-      return `<li class="${classes.join(' ')}">${escapeHtml(catalogue.effectNames[other])}${suffix}</li>`;
+      // Same hue rule as everywhere else: the chip is the colour of its side.
+      const side = catalogue.harmful[other] ? 'bad' : 'good';
+      return `<li class="${classes.join(' ')}" data-side="${side}">` +
+        `${escapeHtml(catalogue.effectNames[other])}${suffix}</li>`;
     }).join('');
     return '<article class="sky-brew">' +
       `<ul class="sky-bis">${ingredientRow(catalogue, ingredient)}</ul>` +
@@ -780,29 +928,68 @@ export function effectDetailMarkup(catalogue: Catalogue, effect: number): string
   return `<div class="sky-brews sky-brews--plain">${cards}</div>`;
 }
 
-export function resultsMarkup(catalogue: Catalogue, result: SearchResult, wanted: number[], showExtra: boolean): string {
+/**
+ * @param order  Filled with every mixture rendered, in card order. The cards carry the
+ *               matching index, which is how a click on one finds its mixture again —
+ *               the alternative is stashing objects on DOM nodes that the next render
+ *               throws away.
+ */
+export function resultsMarkup(
+  catalogue: Catalogue,
+  result: SearchResult,
+  wanted: number[],
+  showExtra: boolean,
+  order: Mixture[] = [],
+): string {
+  order.length = 0;
   const cards = headlines(result.winners);
   const extra = showExtra
     ? result.sample
         .filter((mixture) => !cards.some((card) => card.mixture === mixture))
-        .sort(RANKINGS[0].compare)
+        // Same rule as the headline cards: the side you asked for sorts first, so a poison
+        // you did not ask for lands at the bottom of the overflow instead of the top.
+        .sort((a, b) =>
+          Number(!matchesKind(a, result.kind)) - Number(!matchesKind(b, result.kind)) ||
+          RANKINGS[0].compare(a, b))
         .slice(0, EXTRA_SHOWN)
     : [];
   const canExpand = result.sample.length > cards.length;
+  const missed = result.total - result.matching;
 
   return [
-    `<div class="sky-brews">${cards.map((c) => mixtureCard(catalogue, c.mixture, wanted, c.labels.join(' · '))).join('')}</div>`,
-    extra.length ? `<div class="sky-brews sky-brews--rest">${extra.map((m) => mixtureCard(catalogue, m, wanted)).join('')}</div>` : '',
+    result.closestOnly
+      ? `<p class="sky-warn">Nothing produces ${result.total === 1 ? 'this' : 'these'} on the side you asked for. ` +
+        'These are the nearest misses.</p>'
+      : '',
+    `<div class="sky-brews">${cards
+      .map((c) => {
+        order.push(c.mixture);
+        return mixtureCard(catalogue, c.mixture, wanted, order.length - 1, c.labels.join(' · '), result.closestOnly);
+      })
+      .join('')}</div>`,
+    extra.length
+      ? `<div class="sky-brews sky-brews--rest">${extra
+          .map((m) => {
+            order.push(m);
+            return mixtureCard(catalogue, m, wanted, order.length - 1, undefined,
+              !matchesKind(m, result.kind) && !result.closestOnly);
+          })
+          .join('')}</div>`
+      : '',
     '<div class="sky-scr__foot">',
-    `<p class="sky-hint">${result.total.toLocaleString('en-US')} brew${result.total === 1 ? '' : 's'} produce this.</p>`,
+    `<p class="sky-hint">${result.total.toLocaleString('en-US')} brew${result.total === 1 ? '' : 's'} produce this` +
+      // Saying how many were set aside is the difference between a filter and a
+      // disappearance: the count still matches what the effect index would tell you.
+      (result.kind !== 'any' && missed > 0 && !result.closestOnly
+        ? `, ${missed.toLocaleString('en-US')} of them on the other side`
+        : '') +
+      '.</p>',
     canExpand ? `<button type="button" class="sky-go sky-go--ghost" data-more>${showExtra ? 'Show less' : 'Show more'}</button>` : '',
     '</div>',
   ].join('');
 }
 
 // ── Wiring ──────────────────────────────────────────────────────────────────
-
-type Kind = 'good' | 'bad' | 'any';
 
 /** Screen 2 has no way to show which side you asked for — every pill looks the same. */
 const KIND_LABEL: Record<Kind, string> = { good: 'Potion', bad: 'Poison', any: 'Mixture' };
@@ -836,6 +1023,11 @@ function setUp(root: HTMLElement): void {
   const fxEmpty = root.querySelector<HTMLElement>('[data-fx-empty]');
   const fxInfoButtons = queryAll<HTMLButtonElement>(root, '[data-fxinfo]');
   const kindHead = root.querySelector<HTMLElement>('[data-kind-head]');
+  // Screen 8 — one brew on its own.
+  const brewHead = root.querySelector<HTMLElement>('[data-brew-head]');
+  const brewDetail = root.querySelector<HTMLElement>('[data-brew-detail]');
+  /** The mixtures behind the cards currently on screen 3, in the order they were drawn. */
+  const rendered: Mixture[] = [];
   const bySlug = new Map(catalogue.ingredients.map((ingredient) => [ingredient.slug, ingredient]));
   /**
    * What the ingredient filter matches on: the name AND its four effects.
@@ -867,10 +1059,10 @@ function setUp(root: HTMLElement): void {
   let cacheKey = '';
   let cached: SearchResult | null = null;
   const searchFor = (selection: number[]): SearchResult => {
-    const key = selection.join(',');
+    const key = `${kind}|${selection.join(',')}`;
     if (!cached || key !== cacheKey) {
       cacheKey = key;
-      cached = search(catalogue, selection);
+      cached = search(catalogue, selection, kind);
     }
     return cached;
   };
@@ -1000,7 +1192,17 @@ function setUp(root: HTMLElement): void {
       results.innerHTML = '<p class="sky-hint">Nothing can produce that combination.</p>';
       return;
     }
-    results.innerHTML = resultsMarkup(catalogue, result, wanted, showExtra);
+    results.innerHTML = resultsMarkup(catalogue, result, wanted, showExtra, rendered);
+    for (const opener of queryAll<HTMLButtonElement>(results, '[data-brew-open]')) {
+      opener.addEventListener('click', () => {
+        const mixture = rendered[Number(opener.dataset.brewOpen)];
+        if (!mixture || !brewDetail) return;
+        if (brewHead) brewHead.innerHTML = brewTitleMarkup(catalogue, mixture);
+        brewDetail.innerHTML = brewDetailMarkup(catalogue, mixture, result.closestOnly);
+        showScreen(8);
+      });
+    }
+
     const moreButton = results.querySelector<HTMLButtonElement>('[data-more]');
     moreButton?.addEventListener('click', () => {
       showExtra = !showExtra;
