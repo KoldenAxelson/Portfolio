@@ -831,7 +831,10 @@
    The same disc the mortar puts on its tray, reused as the answer here. It is
    `position: absolute` there because it sits in a corner of the tray; in a title
    row it is simply the first thing on the line. */
-.sky-brewtitle { display: flex; align-items: center; gap: 0.55rem; flex-wrap: wrap; }
+/* Grid, not flex-wrap: at narrow widths the effects run to two lines and as a
+   wrapping flex row that left the disc stranded on a line of its own. Two
+   columns keeps it beside the first line however far the rest wraps. */
+.sky-brewtitle { display: grid; grid-template-columns: auto 1fr; align-items: start; gap: 0.55rem; }
 .sky-brewtitle .sky-verdict {
   position: static; width: 1.75rem; height: 1.75rem; flex-shrink: 0;
 }
@@ -840,10 +843,33 @@
 .sky-brewtitle__fx[data-side="good"] { color: rgb(var(--sky-potion)); }
 .sky-brewtitle__fx[data-side="bad"] { color: rgb(var(--sky-poison)); }
 .sky-brewtitle__sep { color: rgb(var(--c-muted)); font-weight: 400; }
-/* With the row to itself an ingredient can have its art at a readable size
-   instead of the 15rem column's thumbnail. */
-.sky-bis--wide { display: grid; gap: 0.35rem; grid-template-columns: 1fr; }
+/* ── Screen 8's ingredient row ───────────────────────────────────────────────
+   Three pills rather than three stretches of a shared line. On the card the
+   ingredients are a stacked list and the border of the card contains them; here
+   they sit side by side, and without a box of their own the eye reads the whole
+   row as one run of text with the gather dots floating off to the right of a
+   name they do not obviously belong to. The pill closes that gap: art, name, DLC
+   tag and rarity are one object, and the space between objects means something. */
+.sky-bis--wide { display: grid; gap: 0.5rem; grid-template-columns: 1fr; margin-bottom: 0.9rem; }
 @media (min-width: 640px) { .sky-bis--wide { grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); } }
+.sky-bis--wide .sky-bi {
+  gap: 0.55rem; padding: 0.45rem 0.6rem;
+  border: 1px solid rgb(var(--c-border)); border-radius: 0.6rem;
+  background: rgb(var(--glass-bg) / 0.35);
+}
+/* The dots keep their right edge — inside the pill now, where the distance to
+   the name is the width of one ingredient rather than the width of the screen. */
+.sky-bis--wide .sky-bi em { margin-left: auto; padding-left: 0.4rem; }
+/* No frame on the art. The tile draws its own border and background so it reads
+   as an object in the card's stacked list, where nothing else contains it — but
+   the pill already does that job here, and keeping both puts a square inside a
+   square for no gain. The space it was spending on its own edges goes to the
+   picture instead. */
+.sky-bis--wide .sky-bi__pic {
+  width: 2.15rem; height: 2.15rem;
+  border: 0; border-radius: 0; background: none;
+}
+.sky-bis--wide .sky-bi__pic img { padding: 0; }
 
 /* ── What each ingredient carries ────────────────────────────────────────────
    Four equal columns so the eye can read down one as easily as across a row: a
