@@ -18,7 +18,7 @@
 //   Numbers that are documented somewhere (UESP's anchors, a measured field
 //   report) and structure that a refactor could silently drop. Not appearance.
 
-import { bridgeMaskOf, buildCatalogue, contributesTo, effectDetailMarkup, reachesWith, liveMarkup, liveMixture, maskToIndices, mortarMarkup, resultsMarkup, search, type Catalogue } from './builder';
+import { bridgeMaskOf, browsableCount, buildCatalogue, catalogueWithout, couldJoin, effectDetailMarkup, headlines, liveMarkup, liveMixture, maskToIndices, mortarMarkup, sharesEffectWith, overflowOrder, overflowPageMarkup, pageCount, pagerMarkup, resultsMarkup, search, type Catalogue } from './builder';
 import { placeableFrom, planMarkupFor, potionOf, replay, roundsOf, solve, type Plan, type Settings } from './resto';
 import { fairLoop, magnitudeOf, maximise, type MaxSettings, type Trick } from './enchant';
 
@@ -407,9 +407,14 @@ function checkBuilder(catalogue: Catalogue): void {
   const invisible = search(catalogue, [idOf('Invisibility')]);
   const potentInvisible = invisible.winners[3];
   check('agreeing deviators are not contested', potentInvisible?.contested === false);
-  check('so "Most potent" Invisibility takes the easiest to gather',
-    potentInvisible?.gatherScore === 5, `gather ${potentInvisible?.gatherScore}`);
-  check('and still reports the x1.5', potentInvisible?.multipliers[idOf('Invisibility')] === 1.5);
+  check('and "Most potent" still reports the x1.5',
+    potentInvisible?.multipliers[idOf('Invisibility')] === 1.5);
+  // This used to pin gatherScore 5. It is a different mixture now, and deliberately: among
+  // equally potent brews a contradicting effect is a cost, and the old gather-5 winner was
+  // a mixed bottle. Cleanliness first, gatherability after — so the assertion is now about
+  // the rule rather than about which mixture the rule happened to pick.
+  check('and carries nothing that fights its own verdict',
+    !potentInvisible?.mixed, `${potentInvisible?.effects.length} effects, gather ${potentInvisible?.gatherScore}`);
 
   // NOTHING OFFERED CAN BE SHRUNK. Canis Root + Hanging Moss + Bear Claws was ranked as a
   // Fortify One-Handed potion, and ranked well, though Bear Claws is a third carrier of an
@@ -444,8 +449,122 @@ function checkBuilder(catalogue: Catalogue): void {
     roe.sample.some((mixture) => mixture.ingredients.length === 3 &&
       Object.keys(mixture.multipliers).length > 0));
 
-  const markup = resultsMarkup(catalogue, resists, [idOf('Resist Fire')], false);
+  const markup = resultsMarkup(catalogue, resists, [idOf('Resist Fire')]);
   check('results markup renders a card per ranking', (markup.match(/sky-brew__badge/g) || []).length >= 3);
+  // Screen 3 hands the rest to screen 9 rather than growing into it. If a card for every
+  // sampled mixture ever reappears here, the results screen has quietly become the wall
+  // the overflow exists to prevent.
+  check('and hands the rest to the overflow rather than listing it',
+    (markup.match(/sky-brew__open/g) || []).length <= 4 && markup.indexOf('data-more') !== -1,
+    `${(markup.match(/sky-brew__open/g) || []).length} cards`);
+
+  // ── What earns a headline ─────────────────────────────────────────────────
+  // Reported from the live page: asking for Fortify One-Handed + Fortify Marksman as a
+  // POTION led with a brew carrying Damage Stamina, badged "Most effects · Most potent",
+  // above the clean two-effect brew. It had neither more of what was asked for nor more
+  // potency — it counted a contradiction as an effect and tied on the rest.
+  const beneficial = (mixture: { effects: number[] }) =>
+    mixture.effects.filter((effect) => !catalogue.harmful[effect]).length;
+  const fortify = search(catalogue,
+    [idOf('Fortify One-Handed'), idOf('Fortify Marksman')], 'good');
+  const fortifyCards = headlines(fortify);
+
+  check('the benchmark leads the results', fortifyCards[0].labels[0] === 'Nothing extra',
+    fortifyCards.map((card) => card.labels.join(' + ')).join(' | '));
+  check('a potion headline is never won by a harmful passenger',
+    fortifyCards.every((card) => beneficial(card.mixture) >= beneficial(fortifyCards[0].mixture)));
+  check('and the reported Damage Stamina brew is off the headlines',
+    fortifyCards.every((card) => card.mixture.effects.indexOf(idOf('Damage Stamina')) === -1));
+  // The general rule behind both: a superlative is a claim to have BEATEN the benchmark.
+  const potentCard = fortifyCards.filter((card) => card.labels.indexOf('Most potent') !== -1)[0];
+  check('"Most potent" means more potent than the benchmark, not equal to it',
+    !potentCard || potentCard.mixture === fortifyCards[0].mixture ||
+    potentCard.mixture.potency > fortifyCards[0].mixture.potency);
+  check('and every card that survives says something',
+    fortifyCards.every((card) => card.labels.length > 0));
+
+  // A poison asks the opposite question, and "most effects" has to flip with it.
+  const poisonCards = headlines(search(catalogue, [idOf('Damage Magicka')], 'bad'));
+  const mostCard = poisonCards.filter((card) => card.labels.indexOf('Most effects') !== -1)[0];
+  check('on the poison side "most effects" counts the harmful ones',
+    !mostCard || mostCard.mixture.harmfulCount > beneficial(mostCard.mixture),
+    `${mostCard?.mixture.harmfulCount} harmful, ${mostCard ? beneficial(mostCard.mixture) : 0} not`);
+
+  // ── Screen 9: the overflow, paged ─────────────────────────────────────────
+  // The count on the button is what the button can REACH. `total` counts every mixture the
+  // search walked past, which for a common effect is thousands the sample never kept, and
+  // a control promising 2,318 that leads to 400 is exactly the dishonesty the sentence
+  // under the results used to hide.
+  check('the show-more count is the browsable sample, not the raw total',
+    browsableCount(resists) === resists.sample.length && browsableCount(resists) <= resists.total);
+
+  const { order, badges } = overflowOrder(resists);
+  check('the overflow holds every sampled brew', order.length === resists.sample.length,
+    `${order.length} of ${resists.sample.length}`);
+  check('and no brew twice', new Set(order).size === order.length);
+  // Page one has to be worth landing on: the ranking winners sort to the front, so the
+  // index opens on the same brews screen 3 was showing rather than an arbitrary slice.
+  check('with the ranking winners on page one',
+    [...badges.keys()].every((winner) => order.indexOf(winner) < 8),
+    `${badges.size} badged`);
+
+  const pages = pageCount(order.length);
+  check('paged eight at a time', pages === Math.ceil(order.length / 8), `${pages} pages`);
+  const first = overflowPageMarkup(catalogue, order, [idOf('Resist Fire')], 0, badges, 'any', false);
+  const last = overflowPageMarkup(catalogue, order, [idOf('Resist Fire')], pages - 1, badges, 'any', false);
+  check('a page holds at most eight cards',
+    (first.match(/sky-brew__open/g) || []).length === Math.min(8, order.length),
+    `${(first.match(/sky-brew__open/g) || []).length}`);
+  check('and the last page is never empty', (last.match(/sky-brew__open/g) || []).length > 0);
+  // The card index is into the WHOLE list, not the page — a click on the last page has to
+  // find its own mixture, not the one eight from the top.
+  check('cards index into the whole list, not the page',
+    last.indexOf(`data-brew-open="${(pages - 1) * 8}"`) !== -1);
+
+  check('one page gets no pager at all', pagerMarkup(0, 1) === '');
+  // `sky-pager__dot"` with the closing quote — the wrapper is `sky-pager__dots`, and a
+  // bare substring match counts it as a sixth dot.
+  check('a few pages get dots', (pagerMarkup(0, 5).match(/class="sky-pager__dot"/g) || []).length === 5);
+  // Fifty dots is a texture, not an indicator.
+  check('and many pages get a counter instead',
+    pagerMarkup(3, 50).indexOf('sky-pager__dot') === -1 && pagerMarkup(3, 50).indexOf('sky-pager__count') !== -1);
+  // The list is a ring — past the last page is the first — so neither arrow is ever dead.
+  // A disabled control at each end asks the reader to work out which end they are on
+  // before pressing anything, which is a job the dots already do.
+  check('and neither end is a dead arrow',
+    pagerMarkup(0, 5).indexOf('disabled') === -1 &&
+    pagerMarkup(4, 5).indexOf('disabled') === -1);
+
+  // ── The add-ons you actually own ──────────────────────────────────────────
+  // The DLC toggles used to be a view filter on the mortar: they hid pills and changed
+  // nothing else, so the search still built its best brew out of a Dragonborn ingredient a
+  // base-game player cannot pick up. They filter the CATALOGUE now, which is the one thing
+  // every screen's answer is drawn from.
+  check('no exclusions is the same catalogue, not a copy of it',
+    catalogueWithout(catalogue, new Set()) === catalogue);
+
+  const noDb = catalogueWithout(catalogue, new Set(['DB']));
+  const dbCount = catalogue.ingredients.filter((i) => i.dlc === 'DB').length;
+  check('turning an add-on off drops its ingredients',
+    dbCount > 0 && noDb.ingredients.length === catalogue.ingredients.length - dbCount,
+    `${dbCount} from Dragonborn`);
+  check('and drops them from the carrier lists too',
+    noDb.carriersOf.every((list) => list.every((i) => i.dlc !== 'DB')) &&
+    noDb.carriersOf.some((list, effect) => list.length < catalogue.carriersOf[effect].length));
+  // Shared references, not copies — a Mixture found through the filtered catalogue has to
+  // compare equal to the same one found through the full catalogue.
+  check('the ingredients themselves are the same objects',
+    noDb.ingredients[0] === catalogue.ingredients.filter((i) => i.dlc !== 'DB')[0]);
+  // The point of all of it: nothing you cannot pick up comes back in an answer.
+  const dbFree = search(noDb, [idOf('Fortify Sneak')], 'good');
+  check('and no brew is built out of what you turned off',
+    dbFree.sample.length > 0 && dbFree.sample.every((m) => m.ingredients.every((i) => i.dlc !== 'DB')),
+    `${dbFree.sample.length} brews`);
+  // Ashen Grass Pod is Dragonborn's, and it is in every headline brew on the full
+  // catalogue for this pair — so this is the case that would have gone unnoticed.
+  const withDb = search(catalogue, [idOf('Fortify Sneak')], 'good');
+  check('which really does change the answer',
+    withDb.total !== dbFree.total, `${withDb.total} -> ${dbFree.total}`);
 
   // ── The mortar: what a specific handful actually makes ────────────────────
   const bySlug = (slug: string) => catalogue.ingredients.filter((i) => i.slug === slug)[0];
@@ -459,6 +578,14 @@ function checkBuilder(catalogue: Catalogue): void {
   check('and the bottle stays empty rather than explaining itself',
     liveMarkup(catalogue, [garlic]) === '');
   check('an empty mortar renders nothing at all', mortarMarkup(catalogue, []) === '');
+  // The tray's verdict disc is the way in to the ingredient table for a mixture you built
+  // by hand — the only one the search never found and nothing else here can open. The
+  // result cards' disc stays inert: the whole card is already the button, and a control
+  // inside it would be a button nested in a button.
+  check("the tray's verdict disc is a way in, not only a readout",
+    mortarMarkup(catalogue, [salmon, histcarp], liveMixture(catalogue, [salmon, histcarp]))
+      .indexOf('data-verdict-open') !== -1);
+  check("but a result card's disc stays inert", markup.indexOf('data-verdict-open') === -1);
 
   // Salmon Roe + Histcarp share Fortify Magicka and Waterbreathing — and Salmon Roe
   // carries the x12.5, which is the whole reason the multiplier column exists.
@@ -479,9 +606,9 @@ function checkBuilder(catalogue: Catalogue): void {
     // data-drop, not sky-tile: a tile carries `sky-tile sky-tile--drop`, so counting the
     // bare class name found two per tile and made this read four.
     check('and both tiles are still shown', (mortarMarkup(catalogue, [a, b]).match(/data-drop=/g) || []).length === 2);
-    check('and such an ingredient greys out once the first is picked', !contributesTo([a], b));
+    check('and such an ingredient greys out once the first is picked', !sharesEffectWith(b, [a]));
   }
-  check('anything is allowed while the mortar is empty', contributesTo([], garlic));
+  check('anything is allowed while the mortar is empty', sharesEffectWith(garlic, []));
 
   // The deep rule, on the pair that motivated it. Hanging Moss and Juniper Berries share
   // nothing; Canis Root shares Fortify One-Handed with the first and Fortify Marksman with
@@ -489,11 +616,11 @@ function checkBuilder(catalogue: Catalogue): void {
   const moss = bySlug('hanging-moss');
   const juniper = bySlug('juniper-berries');
   const canis = bySlug('canis-root');
-  check('Hanging Moss and Juniper Berries share nothing', !contributesTo([moss], juniper));
+  check('Hanging Moss and Juniper Berries share nothing', !sharesEffectWith(juniper, [moss]));
   check('but Canis Root bridges them',
-    contributesTo([moss], canis) && contributesTo([juniper], canis));
+    sharesEffectWith(canis, [moss]) && sharesEffectWith(canis, [juniper]));
   check('so the deep rule offers Juniper Berries anyway',
-    reachesWith([moss], juniper, bridgeMaskOf(catalogue, [moss])));
+    couldJoin(juniper, [moss], bridgeMaskOf(catalogue, [moss])));
   check('and the three of them really do make something',
     liveMixture(catalogue, [moss, juniper, canis]) !== null);
   // With two picked there is no slot left to bridge with, so both rules must agree.
@@ -503,12 +630,12 @@ function checkBuilder(catalogue: Catalogue): void {
     bridgeMaskOf(catalogue, []) === null);
   // A bridge has to reach BOTH sides. Something sharing nothing with the anchor's
   // neighbourhood at all stays struck through even in deep mode.
-  const strangerToMoss = catalogue.ingredients.filter((i) =>
-    i !== moss && !reachesWith([moss], i, bridgeMaskOf(catalogue, [moss])));
+  const strangerToMoss = catalogue.ingredients.filter((ingredient) =>
+    ingredient !== moss && !couldJoin(ingredient, [moss], bridgeMaskOf(catalogue, [moss])));
   check('deep mode still refuses what nothing can reach',
-    strangerToMoss.every((i) => !contributesTo([moss], i)),
+    strangerToMoss.every((ingredient) => !sharesEffectWith(ingredient, [moss])),
     `${strangerToMoss.length} still unreachable`);
-  check('and a sharer stays enabled', contributesTo([salmon], histcarp));
+  check('and a sharer stays enabled', sharesEffectWith(histcarp, [salmon]));
 
   // A tile draws its art when the file is there and falls back to the "?" disc until it
   // lands. WHICH branch a given ingredient takes depends on what is sitting in
@@ -568,7 +695,7 @@ function checkBuilder(catalogue: Catalogue): void {
   check('a mixture that makes nothing has no verdict', verdict(['garlic']) === 'nothing');
 
   const bottle = liveMarkup(catalogue, [bySlug('deathbell'), bySlug('nightshade')]);
-  check('the live bottle prints the verdict', bottle.indexOf('data-kind="bad"') !== -1);
+  check('the live bottle speaks the verdict', bottle.indexOf('<p class="sky-sr">Poison</p>') !== -1);
   check('and marks the chip that decided it', bottle.indexOf('is-dominant') !== -1);
   // The verdict moved off a 36px word under the tiles and onto the tray itself, which is
   // markup nothing else asserts — exactly the kind of block that vanished once before.
@@ -577,7 +704,12 @@ function checkBuilder(catalogue: Catalogue): void {
   const tray = mortarMarkup(catalogue, nasty, liveMixture(catalogue, nasty));
   check('the tray is outlined with the verdict', tray.indexOf('<div class="sky-ings" data-tone="bad"') !== -1);
   check('and carries the verdict disc', tray.indexOf('sky-verdict') !== -1);
-  check('which says the word for a screen reader', tray.indexOf('>Poison</span>') !== -1);
+  // The word used to ride in a `.sky-sr` span inside the disc. The tray's disc is a button
+  // now, and `aria-label` replaces its content outright, so the span would be an
+  // unreachable second copy — the word moved into the label rather than out of the page.
+  check('which says the word for a screen reader',
+    tray.indexOf('aria-label="Poison &mdash; see what each ingredient carries"') !== -1 ||
+    tray.indexOf('aria-label="Poison — see what each ingredient carries"') !== -1);
   check('a tray with nothing decided yet takes no colour',
     mortarMarkup(catalogue, [bySlug('garlic')], null).indexOf('data-tone') === -1);
 
@@ -587,9 +719,10 @@ function checkBuilder(catalogue: Catalogue): void {
   const both = liveMixture(catalogue, [bySlug('abecean-longfin'), bySlug('small-antlers')]);
   check('a potion carrying a harmful effect is mixed', both?.mixed === true);
   check('and is still a potion', both?.poison === false);
-  check('so its tray reads mixed while its disc reads potion',
-    mortarMarkup(catalogue, [bySlug('abecean-longfin'), bySlug('small-antlers')], both)
-      .indexOf('data-kind="good" data-tone="mixed"') !== -1);
+  const mixedTray = mortarMarkup(catalogue, [bySlug('abecean-longfin'), bySlug('small-antlers')], both);
+  check('so its tray reads mixed while its disc says potion',
+    mixedTray.indexOf('data-tone="mixed"') !== -1 &&
+    mixedTray.indexOf('aria-label="Potion') !== -1);
   // Derived from the catalogue rather than pinned to two named ingredients: the first
   // version of this asserted that Blue Mountain Flower + Blue Butterfly Wing was clean,
   // and it is not — Blue Mountain Flower carries Damage Magicka Regen. A fixture that has

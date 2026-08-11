@@ -1,0 +1,12 @@
+{{- /*
+  skyrim-back — the back chevron on a builder screen.
+
+  Eight screens carried a byte-identical copy of this SVG, varying only in where they go
+  and what they are called.
+
+  A bare `data-back` steps back one screen, which is only the right destination for screens
+  2 and 3; every other screen names where it goes. Screen 8 names one too, and builder.ts
+  rewrites both it and the label at open time, because it is reached from 3, 9 and 4.
+*/ -}}
+{{- $to := .to | default "" -}}
+<button type="button" class="sky-back sky-back--icon"{{ with $to }} data-back="{{ . }}"{{ else }} data-back{{ end }} aria-label="{{ .label | default "Back" }}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m15 18-6-6 6-6" /></svg></button>
