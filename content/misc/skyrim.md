@@ -32,6 +32,8 @@ sections:
   - { id: "alchemy", label: "Alchemy",    icon: "sparkles" }
   - { id: "resto",   label: "Resto loop", icon: "fire" }
   - { id: "ceiling", label: "Enchant max", icon: "puzzle-piece" }
+  # Last, and last on the page. The other three get used; this one gets read.
+  - { id: "john",    label: "John Skyrim", icon: "user" }
 ---
 
 ## Alchemy {#alchemy}
@@ -165,5 +167,34 @@ pass makes better gear than the last, forever, still with no Restoration glitch 
 better potion; Sorcery boosts every enchantment you place, *including the Fortify Alchemy
 gear the loop is building*, so it compounds too — and by more. You can only hold one, and
 the module enforces that.
+
+</details>
+
+## John Skyrim {#john}
+
+{{< john-skyrim >}}
+
+<details class="sky-more">
+<summary>Additional information</summary>
+
+One playthrough, every faction, and the character still has to hold together. Everything
+above is downstream of that.
+
+**Coherent beats optimal.** A Nord who fights for the Empire and then kills the Emperor is
+not a build, it is a spreadsheet.
+
+**The ceiling is vanilla.** No Restoration glitch anywhere in it — the two sections above
+show the working for the parts that look like they need one.
+
+**How the slider knows.** Raising a skill from `S` to `S+1` banks `S+1` character XP; a
+level costs `75 + 25L`; one perk comes with each. Nord starting skills are 15, plus the
+racial +5 on One-Handed, Block, Smithing, Light Armor and Speech. Only Speech and
+Lockpicking are counted as incidental drift, so the level it reports is a **floor** —
+every other skill you happen to raise, every trainer and every skill book only adds perks.
+
+**Two things it does not settle.** Extra Effect costs two points rather than one, because
+Insightful only reaches it through Corpus Enchanter. And the boots in the base plan, the
+shield and the boots' second slot under Extra Effect are genuinely undecided — the doll
+draws them as empty sockets instead of guessing.
 
 </details>

@@ -1,0 +1,120 @@
+{{- /*
+  skyrim-perk-tree — one perk constellation, drawn as a branch graph.
+
+    {{ partial "skyrim-perk-tree.html" (dict
+         "skill" "block"
+         "taken" (slice "shield-wall")
+         "page"  $.Page) }}
+
+  Params:
+    skill  (required) key into data/skyrim/perks.yaml.
+    taken  (optional) perk ids this build spends on. A taken node takes ALL its ranks —
+           nothing here models a partial Armsman, because no build on this page wants one.
+    page   (required) used only for the build warning on an unknown id.
+
+  ── HOW IT DRAWS ────────────────────────────────────────────────────────────
+  Nodes are a CSS grid keyed off each perk's `tier` (row) and `lane` (column). The
+  connectors are ONE inline SVG sitting behind that grid, absolutely positioned to fill
+  it, with a viewBox of 100 abstract units per cell and `preserveAspectRatio="none"`.
+
+  That combination is what makes it line up. The grid is sized in rem and therefore moves
+  with the reader's font size; a connector layer measured in px would drift away from it
+  at any zoom other than 100%. Stretching an abstract viewBox instead means the lines land
+  on the node centres at every size, and `vector-effect="non-scaling-stroke"` keeps the
+  stroke from being squashed by the non-uniform scale that buys us.
+
+  NO JAVASCRIPT. The tree is static — it is a statement about a build, not a control.
+  Everything here is real markup for a reader with scripting off and for anything parsing
+  the page, which is the same reason the recipe cards are server-rendered.
+
+  Edges are elbows: down out of the parent, across at the midpoint, down into the child.
+  An edge with both ends taken is drawn in the accent; every other edge is a hairline, so
+  the route a build walks is legible before a single label is read.
+*/ -}}
+{{- $key := .skill -}}
+{{- $page := .page -}}
+{{- $taken := .taken | default slice -}}
+{{- $tree := index site.Data.skyrim.perks $key -}}
+{{- if not $tree }}{{ errorf "skyrim-perk-tree: %q is not in data/skyrim/perks.yaml" $key }}{{ end -}}
+{{- $perks := $tree.perks -}}
+
+{{- /* Position lookup, and the two extents the layers are sized from. `add 1` because
+       tier and lane are 0-based and a count is not. */ -}}
+{{- $at := dict -}}
+{{- $lanes := 1 -}}
+{{- $tiers := 1 -}}
+{{- range $perks -}}
+  {{- $at = merge $at (dict .id (dict "tier" .tier "lane" .lane)) -}}
+  {{- if ge .lane $lanes }}{{ $lanes = add .lane 1 }}{{ end -}}
+  {{- if ge .tier $tiers }}{{ $tiers = add .tier 1 }}{{ end -}}
+{{- end -}}
+
+{{- /* Warn on an id in `taken` that this tree does not have. Silent would mean a build
+       quietly spending points on a perk that is not there. */ -}}
+{{- range $id := $taken -}}
+  {{- if not (index $at $id) -}}
+    {{- warnf "skyrim-perk-tree: %q is not a perk in the %s tree (page: %s)" $id $key $page.RelPermalink -}}
+  {{- end -}}
+{{- end -}}
+
+<div class="sky-tree" style="--lanes:{{ $lanes }};--tiers:{{ $tiers }}">
+  <svg class="sky-tree__wires" viewBox="0 0 {{ mul $lanes 100 }} {{ mul $tiers 100 }}"
+       preserveAspectRatio="none" aria-hidden="true" focusable="false">
+    {{- range $perk := $perks -}}
+      {{- $childTaken := in $taken $perk.id -}}
+      {{- /* 26 is where the dot sits in a cell — see .sky-tree__node in skyrim.css, which
+             pads the stack down from the top so the label and pips hang below it. The two
+             numbers have to move together; there is no third place that knows this. */ -}}
+      {{- $cx := add (mul $perk.lane 100) 50 -}}
+      {{- $cy := add (mul $perk.tier 100) 26 -}}
+      {{- range $parentId := ($perk.requires | default slice) -}}
+        {{- with index $at $parentId -}}
+          {{- $px := add (mul .lane 100) 50 -}}
+          {{- /* A wire leaves the BOTTOM of the parent's cell and enters the TOP of the
+                 child's, rather than running centre to centre. Centre to centre draws the
+                 vertical straight through the parent's own label and pips, which is what
+                 the first version did — legible only in the trees where the taken route
+                 happened to be a single column. */ -}}
+          {{- $exit := add (mul .tier 100) 97 -}}
+          {{- /* The crossbar sits just inside the child's cell, ABOVE its dot, not halfway
+                 between the two rows. Halfway is inside whatever row lies between them,
+                 and on a two-tier edge — Corpus to Extra Effect, Matching Set to Deft
+                 Movement — that is somebody else's label. */ -}}
+          {{- $cross := add (mul $perk.tier 100) 8 -}}
+          {{- $live := and $childTaken (in $taken $parentId) -}}
+          <path class="sky-tree__wire{{ if $live }} is-on{{ end }}"
+                d="M {{ $px }} {{ $exit }} L {{ $px }} {{ $cross }} L {{ $cx }} {{ $cross }} L {{ $cx }} {{ $cy }}"
+                vector-effect="non-scaling-stroke" />
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  </svg>
+
+  <ul class="sky-tree__nodes">
+    {{- range $perk := $perks -}}
+    {{- $on := in $taken $perk.id -}}
+    {{- $ranks := $perk.ranks | default 1 -}}
+    <li class="sky-tree__node{{ if $on }} is-on{{ end }}" style="--t:{{ $perk.tier }};--l:{{ $perk.lane }}">
+      {{- /* A span, not a button. Nothing here is interactive, and a control that does
+             not act is worse than no control — see the perk-tree calculator, later. */ -}}
+      <span class="sky-tree__dot" aria-hidden="true"></span>
+      <span class="sky-tree__name">{{ $perk.name }}</span>
+      {{- /* Ranks as pips, the same idiom the resto plan uses for pieces worn. A taken
+             node takes every rank, so the pips are all-on or all-off; they are here to
+             say what the node COSTS, which is the whole point of a budget. */ -}}
+      {{- if gt $ranks 1 }}
+      <span class="sky-tree__pips">
+        {{- range seq $ranks }}<i class="sky-tree__pip"></i>{{ end -}}
+      </span>
+      {{- end }}
+      {{- /* The accessible sentence. A screen reader arriving at a node has neither the
+             colour nor the position, so each one says its own state and cost. */ -}}
+      <span class="sky-sr">
+        {{- if $on }}taken, {{ $ranks }} point{{ if gt $ranks 1 }}s{{ end }}
+        {{- else }}not taken{{ end -}}
+        {{- with $perk.requires }}, after {{ delimit . " or " }}{{ end -}}
+      </span>
+    </li>
+    {{- end -}}
+  </ul>
+</div>

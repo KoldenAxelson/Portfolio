@@ -10,6 +10,7 @@ import { initFilter } from './filter';
 import { initResto } from './resto';
 import { initEnchantMax } from './enchant';
 import { initBuilder } from './builder';
+import { initJohn } from './john';
 
 function start(name: string, init: () => void): void {
   try {
@@ -26,6 +27,7 @@ function init(): void {
   start('resto planner', initResto);
   start('potion builder', initBuilder);
   start('enchant max', initEnchantMax);
+  start('john skyrim', initJohn);
 }
 
 if (document.readyState === 'loading') {

@@ -1,0 +1,131 @@
+# The seven perk trees John Skyrim spends in — nodes, edges and the shape they draw in.
+#
+# GAME DATA ONLY. Which perks a given build takes lives in data/skyrim/john.yaml, so this
+# file stays reusable: the perk-tree calculator that is coming next reads the same
+# topology rather than re-typing it.
+#
+#   id       stable slug, referenced by john.yaml's `perks:` lists. Renaming one here
+#            drops it from a build — skyrim-verify.html fails the build rather than
+#            letting that ship quietly.
+#   name     exact in-game spelling. "Advanced Armors", NOT "Advanced Smithing" — the
+#            latter is what everyone calls it and it is not what the game calls it.
+#   ranks    perk points the node absorbs. 1 unless stated.
+#   levels   skill level gating each rank, in order. len(levels) == ranks.
+#   requires perk ids that must be taken first. TWO ids means EITHER is enough
+#            (Paralyzing Strike, Shield Charge, Dragon Armor, Extra Effect) — except
+#            Deft Movement and Snakeblood, which need BOTH. `both: true` marks those.
+#   tier     row in the drawing, 0 at the base. Roughly "how far up the constellation".
+#   lane     column in the drawing, 0 leftmost.
+#
+# WHY LANE AND TIER ARE DATA AND NOT COMPUTED. Assigning lanes from a DAG is a graph
+# layout problem, and solving it in a Hugo template to redraw a shape that has been fixed
+# since 2011 is the wrong trade. These are the constellation's own geometry, flattened.
+# Lane 0 is chosen to carry the path a reader most likely walks, so the trees read like a
+# `git log --graph` with main on the left; nothing enforces that, and nothing breaks if a
+# future build takes a different route through the same tree.
+#
+# `points` per tree is deliberately NOT stored: it is the sum of `ranks` and a stored copy
+# is a second source of truth waiting to drift. Compute it.
+#
+# Sources: UESP Skyrim:One-handed, Elder Scrolls Fandom for Light Armor, Smithing,
+# Alchemy, Sneak and Enchanting. Block came from Konrad's own in-game perk menu — every
+# web source got it wrong, which is documented at that tree below.
+
+one-handed:
+  name: "One-Handed"
+  perks:
+    - { id: armsman,           name: "Armsman",           ranks: 5, levels: [0, 20, 40, 60, 80], tier: 0, lane: 0 }
+    # No prerequisite of its own — a second root, not a child of Armsman.
+    - { id: fighting-stance,   name: "Fighting Stance",   levels: [20],  tier: 1, lane: 0 }
+    - { id: savage-strike,     name: "Savage Strike",     levels: [50],  requires: [fighting-stance], tier: 2, lane: 0 }
+    - { id: critical-charge,   name: "Critical Charge",   levels: [50],  requires: [fighting-stance], tier: 2, lane: 1 }
+    - { id: paralyzing-strike, name: "Paralyzing Strike", levels: [100], requires: [savage-strike, critical-charge], tier: 3, lane: 0 }
+    - { id: bladesman,         name: "Bladesman",         ranks: 3, levels: [30, 60, 90], requires: [armsman], tier: 1, lane: 2 }
+    - { id: hack-and-slash,    name: "Hack and Slash",    ranks: 3, levels: [30, 60, 90], requires: [armsman], tier: 1, lane: 3 }
+    - { id: bone-breaker,      name: "Bone Breaker",      ranks: 3, levels: [30, 60, 90], requires: [armsman], tier: 1, lane: 4 }
+    - { id: dual-flurry,       name: "Dual Flurry",       ranks: 2, levels: [30, 50],     requires: [armsman], tier: 1, lane: 5 }
+    - { id: dual-savagery,     name: "Dual Savagery",     levels: [70],  requires: [dual-flurry], tier: 2, lane: 5 }
+
+# THE ONE TREE NO WEB SOURCE HAS RIGHT. Fextralife omits Quick Reflexes from its topology
+# while its own text counts 9 perks / 13 points; Carl's Guides lists every level with no
+# parents at all; UESP 403s. The real shape, from the in-game menu — two arms that rejoin,
+# plus a dead end that requires only the base and is a prerequisite for nothing:
+#
+#   Shield Wall ─┬─ Deflect Arrows ── Elemental Protection ── Block Runner ─┬─ Shield Charge
+#                ├─ Power Bash ────── Deadly Bash ─────────── Disarming Bash┘
+#                └─ Quick Reflexes
+block:
+  name: "Block"
+  perks:
+    - { id: shield-wall,          name: "Shield Wall",          ranks: 5, levels: [0, 20, 40, 60, 80], tier: 0, lane: 0 }
+    - { id: deflect-arrows,       name: "Deflect Arrows",       levels: [30],  requires: [shield-wall], tier: 1, lane: 0 }
+    - { id: elemental-protection, name: "Elemental Protection", levels: [50],  requires: [deflect-arrows], tier: 2, lane: 0 }
+    - { id: block-runner,         name: "Block Runner",         levels: [70],  requires: [elemental-protection], tier: 3, lane: 0 }
+    - { id: power-bash,           name: "Power Bash",           levels: [30],  requires: [shield-wall], tier: 1, lane: 1 }
+    - { id: deadly-bash,          name: "Deadly Bash",          levels: [50],  requires: [power-bash], tier: 2, lane: 1 }
+    - { id: disarming-bash,       name: "Disarming Bash",       levels: [70],  requires: [deadly-bash], tier: 3, lane: 1 }
+    - { id: shield-charge,        name: "Shield Charge",        levels: [100], requires: [disarming-bash, block-runner], tier: 4, lane: 0 }
+    - { id: quick-reflexes,       name: "Quick Reflexes",       levels: [30],  requires: [shield-wall], tier: 1, lane: 2 }
+
+light-armor:
+  name: "Light Armor"
+  perks:
+    - { id: agile-defender, name: "Agile Defender", ranks: 5, levels: [0, 20, 40, 60, 80], tier: 0, lane: 0 }
+    - { id: custom-fit,     name: "Custom Fit",     levels: [30],  requires: [agile-defender], tier: 1, lane: 0 }
+    - { id: unhindered,     name: "Unhindered",     levels: [50],  requires: [custom-fit], tier: 2, lane: 0 }
+    - { id: wind-walker,    name: "Wind Walker",    levels: [60],  requires: [unhindered], tier: 3, lane: 0 }
+    - { id: matching-set,   name: "Matching Set",   levels: [70],  requires: [custom-fit], tier: 2, lane: 1 }
+    - { id: deft-movement,  name: "Deft Movement",  levels: [100], requires: [wind-walker, matching-set], both: true, tier: 4, lane: 0 }
+
+smithing:
+  name: "Smithing"
+  perks:
+    - { id: steel-smithing,    name: "Steel Smithing",    levels: [0],   tier: 0, lane: 0 }
+    - { id: elven-smithing,    name: "Elven Smithing",    levels: [30],  requires: [steel-smithing], tier: 1, lane: 0 }
+    - { id: advanced-armors,   name: "Advanced Armors",   levels: [50],  requires: [elven-smithing], tier: 2, lane: 0 }
+    - { id: glass-smithing,    name: "Glass Smithing",    levels: [70],  requires: [advanced-armors], tier: 3, lane: 0 }
+    - { id: arcane-blacksmith, name: "Arcane Blacksmith", levels: [60],  requires: [steel-smithing], tier: 1, lane: 1 }
+    - { id: dwarven-smithing,  name: "Dwarven Smithing",  levels: [30],  requires: [steel-smithing], tier: 1, lane: 2 }
+    - { id: orcish-smithing,   name: "Orcish Smithing",   levels: [50],  requires: [dwarven-smithing], tier: 2, lane: 2 }
+    - { id: ebony-smithing,    name: "Ebony Smithing",    levels: [80],  requires: [orcish-smithing], tier: 3, lane: 2 }
+    - { id: daedric-smithing,  name: "Daedric Smithing",  levels: [90],  requires: [ebony-smithing], tier: 4, lane: 2 }
+    - { id: dragon-armor,      name: "Dragon Armor",      levels: [100], requires: [glass-smithing, daedric-smithing], tier: 5, lane: 0 }
+
+enchanting:
+  name: "Enchanting"
+  perks:
+    - { id: enchanter,            name: "Enchanter",            ranks: 5, levels: [0, 20, 40, 60, 80], tier: 0, lane: 0 }
+    - { id: insightful-enchanter, name: "Insightful Enchanter", levels: [50],  requires: [enchanter], tier: 1, lane: 0 }
+    - { id: corpus-enchanter,     name: "Corpus Enchanter",     levels: [70],  requires: [insightful-enchanter], tier: 2, lane: 0 }
+    - { id: fire-enchanter,       name: "Fire Enchanter",       levels: [30],  requires: [enchanter], tier: 1, lane: 1 }
+    - { id: frost-enchanter,      name: "Frost Enchanter",      levels: [40],  requires: [fire-enchanter], tier: 2, lane: 1 }
+    - { id: storm-enchanter,      name: "Storm Enchanter",      levels: [50],  requires: [frost-enchanter], tier: 3, lane: 1 }
+    - { id: soul-squeezer,        name: "Soul Squeezer",        levels: [20],  requires: [enchanter], tier: 1, lane: 2 }
+    - { id: soul-siphon,          name: "Soul Siphon",          levels: [40],  requires: [soul-squeezer], tier: 2, lane: 2 }
+    - { id: extra-effect,         name: "Extra Effect",         levels: [100], requires: [storm-enchanter, corpus-enchanter], tier: 4, lane: 0 }
+
+alchemy:
+  name: "Alchemy"
+  perks:
+    - { id: alchemist,           name: "Alchemist",           ranks: 5, levels: [0, 20, 40, 60, 80], tier: 0, lane: 0 }
+    - { id: physician,           name: "Physician",           levels: [20],  requires: [alchemist], tier: 1, lane: 0 }
+    - { id: benefactor,          name: "Benefactor",          levels: [30],  requires: [physician], tier: 2, lane: 0 }
+    - { id: experimenter,        name: "Experimenter",        ranks: 3, levels: [50, 70, 90], requires: [benefactor], tier: 3, lane: 0 }
+    - { id: poisoner,            name: "Poisoner",            levels: [30],  requires: [physician], tier: 2, lane: 1 }
+    - { id: concentrated-poison, name: "Concentrated Poison", levels: [60],  requires: [poisoner], tier: 3, lane: 1 }
+    - { id: green-thumb,         name: "Green Thumb",         levels: [70],  requires: [concentrated-poison], tier: 4, lane: 1 }
+    - { id: snakeblood,          name: "Snakeblood",          levels: [80],  requires: [concentrated-poison, experimenter], both: true, tier: 4, lane: 0 }
+    - { id: purity,              name: "Purity",              levels: [100], requires: [snakeblood], tier: 5, lane: 0 }
+
+sneak:
+  name: "Sneak"
+  perks:
+    - { id: stealth,          name: "Stealth",          ranks: 5, levels: [0, 20, 40, 60, 80], tier: 0, lane: 0 }
+    - { id: backstab,         name: "Backstab",         levels: [30],  requires: [stealth], tier: 1, lane: 0 }
+    - { id: deadly-aim,       name: "Deadly Aim",       levels: [40],  requires: [backstab], tier: 2, lane: 0 }
+    - { id: assassins-blade,  name: "Assassin's Blade", levels: [50],  requires: [deadly-aim], tier: 3, lane: 0 }
+    - { id: muffled-movement, name: "Muffled Movement", levels: [30],  requires: [stealth], tier: 1, lane: 1 }
+    - { id: light-foot,       name: "Light Foot",       levels: [40],  requires: [muffled-movement], tier: 2, lane: 1 }
+    - { id: silent-roll,      name: "Silent Roll",      levels: [50],  requires: [light-foot], tier: 3, lane: 1 }
+    - { id: silence,          name: "Silence",          levels: [70],  requires: [silent-roll], tier: 4, lane: 1 }
+    - { id: shadow-warrior,   name: "Shadow Warrior",   levels: [100], requires: [silence], tier: 5, lane: 1 }

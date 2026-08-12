@@ -21,6 +21,7 @@
 import { bridgeMaskOf, browsableCount, buildCatalogue, brewDetailMarkup, catalogueWithout, couldJoin, effectDetailMarkup, headlines, liveMarkup, liveMixture, maskToIndices, mortarMarkup, sharesEffectWith, overflowOrder, overflowPageMarkup, pageCount, pagerMarkup, resultsMarkup, search, winnerOf, type Catalogue } from './builder';
 import { placeableFrom, planMarkupFor, potionOf, replay, roundsOf, solve, type Plan, type Settings } from './resto';
 import { fairLoop, magnitudeOf, maximise, type MaxSettings, type Trick } from './enchant';
+import { linkTargets, screenNames, skillXp, standingAt, xpToReach, type Levelling } from './john';
 
 interface Check { name: string; pass: boolean; detail: string }
 
@@ -812,6 +813,109 @@ function checkEffectIndex(catalogue: Catalogue): void {
   }
 }
 
+/**
+ * John Skyrim — structure, and the one piece of arithmetic it does.
+ *
+ * The maths is the levelling model behind the perk slider, and it is worth pinning
+ * because it replaced an assertion. This module used to open by announcing "42 perks",
+ * which is what the build COSTS stated as though it were what you can AFFORD. The two
+ * anchors below are UESP's own worked examples, so if the constants drift the page stops
+ * agreeing with the game rather than quietly reporting a different level.
+ */
+function checkJohn(root: HTMLElement): void {
+  const screens = screenNames(root);
+  // Hub, Nord, the perk budget, seven skills, potions, gear, stones.
+  check('the module renders its thirteen screens', screens.length === 13, `${screens.length}`);
+
+  // A screen renamed in the shortcode without its links renamed with it is a dead button,
+  // and a dead button is exactly what a screenshot cannot see.
+  const dangling = linkTargets(root).filter((to) => screens.indexOf(to) === -1);
+  check('every link points at a screen that exists', dangling.length === 0, dangling.join(', '));
+
+  // ── the levelling model ───────────────────────────────────────────────────
+  // UESP: "100 XP is needed to advance from level 1 to level 2" and "1,300 XP to advance
+  // from level 49 to level 50". The second is the increment, not the total.
+  check('reaching level 2 costs UESP\'s 100 XP', xpToReach(2, 75, 25) === 100, `${xpToReach(2, 75, 25)}`);
+  check('and level 49 to 50 costs its 1,300',
+    xpToReach(50, 75, 25) - xpToReach(49, 75, 25) === 1300,
+    `${xpToReach(50, 75, 25) - xpToReach(49, 75, 25)}`);
+  // Raising a skill grants the level you arrive at, so 21..100 off a Nord's +5 skill is
+  // the sum of those integers. Closed form against the loop it replaces.
+  let longhand = 0;
+  for (let s = 21; s <= 100; s++) longhand += s;
+  check('skill XP matches summing it the slow way', skillXp(20, 100) === longhand, `${skillXp(20, 100)}`);
+  check('and a skill already at its level banks nothing', skillXp(100, 100) === 0);
+
+  const payload = root.querySelector('[data-levelling]');
+  if (payload) {
+    const model = JSON.parse(payload.textContent || '{}') as Levelling;
+    check('the payload carries all seven trees', model.skills.length === 7, `${model.skills.length}`);
+    const capped = standingAt(model, 100);
+    // The build is affordable, which is the answer the slider exists to establish rather
+    // than assume. Pinned as a range: the exact level moves if the incidental list does.
+    check('seven skills at 100 puts the character past level 50',
+      capped.characterLevel >= 50, `level ${capped.characterLevel}`);
+    check('and earns more perks than the build spends',
+      capped.perksEarned >= capped.perksOwed,
+      `${capped.perksEarned} earned vs ${capped.perksOwed} owed`);
+    // Gated by skill level, so the cost is not owed before it can be paid.
+    const early = standingAt(model, 30);
+    check('a level-30 character is not yet owed the capstones',
+      early.perksOwed < capped.perksOwed, `${early.perksOwed} vs ${capped.perksOwed}`);
+    check('and the model is monotonic in skill level',
+      standingAt(model, 60).characterLevel > early.characterLevel);
+
+    // The drawing has to agree with the model: lit pips are points, and at 100 every
+    // point the build spends is unlocked.
+    const drawn = Array.from(root.querySelectorAll<HTMLElement>('.sky-tree')).reduce((sum, tree) =>
+      sum + Array.from(tree.querySelectorAll('.sky-tree__node.is-on')).reduce(
+        (points, node) => points + Math.max(1, node.querySelectorAll('.sky-tree__pip').length), 0), 0);
+    check('the lit perks cost what the model says the build owes',
+      drawn === capped.perksOwed, `${drawn} drawn vs ${capped.perksOwed} owed`);
+  }
+
+  check('there is a tree per skill', root.querySelectorAll('.sky-tree').length === 7);
+  const wires = root.querySelectorAll('.sky-tree__wire').length;
+  check('the trees draw their prerequisite edges', wires >= 45, `${wires}`);
+  check('and some of them are on the taken route',
+    root.querySelectorAll('.sky-tree__wire.is-on').length > 0);
+
+  // ── the screens that are only structure ───────────────────────────────────
+  check('Nord shows both escapes', root.querySelectorAll('.sky-face').length === 2);
+  check('and exactly one is chosen', root.querySelectorAll('.sky-face.is-chosen').length === 1);
+
+  // Swaps are positional: the row must have one socket per ingredient above it, or the
+  // alignment that makes a swap mean "for THIS slot" carries nothing.
+  let aligned = true;
+  for (const swaps of Array.from(root.querySelectorAll<HTMLElement>('.sky-ings--swap'))) {
+    const card = swaps.closest('.sky-card');
+    const above = card?.querySelector('.sky-ings:not(.sky-ings--swap)');
+    if (above && above.children.length !== swaps.children.length) aligned = false;
+  }
+  check('every swap row lines up with its ingredients', aligned);
+  check('and at least one socket is deliberately empty',
+    root.querySelectorAll('.sky-tile--empty').length > 0);
+
+  // The doll: eight slots, three modes, and only one mode visible at a time.
+  check('the gear doll has eight slots',
+    root.querySelectorAll('.sky-doll__slot').length === 8,
+    `${root.querySelectorAll('.sky-doll__slot').length}`);
+  const visible = Array.from(root.querySelectorAll<HTMLElement>('.sky-doll__ench'))
+    .filter((list) => !list.hidden).length;
+  check('and shows exactly one plan at a time', visible === 8, `${visible} lists visible`);
+  check('an unenchanted slot draws an open socket',
+    root.querySelectorAll('.sky-doll__ench .is-empty').length > 0);
+
+  // The stacked meter must not overflow its own track. --w by name, not "every digit in
+  // the style attribute" — the segments also carry --a, and stripping non-digits glued
+  // the two together into 753%.
+  const width = Array.from(root.querySelectorAll<HTMLElement>('.sky-stack__seg')).reduce((sum, seg) => {
+    const match = /--w:\s*([\d.]+)%/.exec(seg.getAttribute('style') || '');
+    return sum + (match ? parseFloat(match[1]) : 0);
+  }, 0);
+  check('the resist stack fits inside 100%', width > 0 && width <= 100, `${width}%`);
+}
+
 export function runSelfCheck(mount: HTMLElement): void {
   const payloadScript = document.querySelector('[data-builder-data]');
   if (!payloadScript) {
@@ -825,6 +929,10 @@ export function runSelfCheck(mount: HTMLElement): void {
   checkEnchantMax();
   checkBuilder(catalogue);
   checkEffectIndex(catalogue);
+  // Skipped rather than failed when the module is absent: this page mounts it hidden, but
+  // the check should not turn red on a page that simply does not use the shortcode.
+  const john = document.querySelector<HTMLElement>('[data-john]');
+  if (john) checkJohn(john);
 
   const failed = results.filter((r) => !r.pass);
   const rows = results
