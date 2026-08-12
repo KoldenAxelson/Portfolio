@@ -29,7 +29,7 @@
        — every shortcode calling the partial behind a `.Scratch` guard — silently shipped
        no CSS and no JS after any dev-server rebuild. See partials/skyrim-assets.html. */ -}}
 {{- $skyrim := false -}}
-{{- range slice "potions" "potion-builder" "resto-loop" "enchant-max" "skyrim-selfcheck" -}}
+{{- range slice "potions" "potion-builder" "resto-loop" "enchant-max" "skyrim-selfcheck" "john-skyrim" -}}
   {{- if $.HasShortcode . }}{{ $skyrim = true }}{{ end -}}
 {{- end -}}
 {{- if $skyrim }}{{ partial "skyrim-assets.html" . }}{{ end }}

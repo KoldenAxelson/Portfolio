@@ -1,0 +1,267 @@
+# John Skyrim — one coherent character, every faction, no glitch.
+#
+# The build and the argument for it. The perk TREES are game data and live in
+# data/skyrim/perks.yaml; this file only names which nodes get a point and why.
+#
+# Every `perks:` id must exist in that file — skyrim-verify.html asserts it at build time,
+# along with `take:` matching the ranks those ids actually add up to.
+#
+# VOICE. First person, opinionated, unhedged. This module is a position, not a calculator —
+# the other three already do the arithmetic. Say the call, then say why, and stop.
+#
+# Ingredient slugs are keys into data/skyrim/ingredients.yaml and draw the same tiles the
+# recipe cards use. A slug that has drifted renders the "?" placeholder.
+
+# ── Levelling ────────────────────────────────────────────────────────────────
+# What the perk screen's slider runs on, so it can answer "would I even HAVE these perks"
+# instead of asserting a number.
+#
+# The engine's own arithmetic, from UESP Skyrim:Leveling:
+#
+#   raising a skill from S to S+1 grants (S+1) character XP   [fXPPerSkillRank = 1]
+#   advancing character level L to L+1 costs 75 + 25L XP      [fXPLevelUpBase/Mult]
+#   one perk point per character level, so level L has L-1
+#
+# `start` is the Nord's actual starting skill level: 15 base, plus the racial +5 on
+# One-Handed, Block, Smithing, Light Armor and Speech. Getting this wrong shifts the
+# answer by a level or two, which is exactly the size of the question being asked.
+#
+# `rate: 0.5` is the half-speed drift Konrad describes for skills you never train on
+# purpose. It is a JUDGEMENT, not a game constant, and it is deliberately stingy: only
+# Speech and Lockpicking are listed, so the level this reports is a FLOOR. Every other
+# skill you happen to raise only adds perks.
+levelling:
+  xpPerSkillRank: 1
+  levelUpBase: 75
+  levelUpMult: 25
+  incidental:
+    - { name: "Speech",      start: 20, rate: 0.5 }
+    - { name: "Lockpicking", start: 15, rate: 0.5 }
+
+# ── 2 · Nord ─────────────────────────────────────────────────────────────────
+nord:
+  title: "Nord"
+  question: "Why the race is not a stat line"
+  beats:
+    - "**The Stormcloaks want a Nord.** Play one and the argument never starts."
+    - "**The Empire and the Dark Brotherhood cancel.** You do not fight for the Emperor and then take the contract on him."
+    - "**Helgen already decided it.** Hadvar calls you *prisoner* until you are out of the keep. Ralof calls you kin in the first minute. The escape route was cast at character creation."
+  close: "Not a claim that the Stormcloaks are right. A claim that they are right *for this character*."
+  faces:
+    - { image: "ralof",  name: "Ralof",  line: "Brothers and sisters in binds.", chosen: true }
+    - { image: "hadvar", name: "Hadvar", line: "Still calls you prisoner.",      chosen: false }
+
+# ── 3/4 · Perks ──────────────────────────────────────────────────────────────
+# `start` feeds the levelling model above. Ordered by spend.
+build:
+  - skill: one-handed
+    start: 20
+    take: 9
+    rule: "Take the trunk. Skip the weapon branches and dual wield."
+    perks: [armsman, fighting-stance, savage-strike, critical-charge, paralyzing-strike]
+    why: >-
+      Smithed weapons already do more damage than the game asks for, and they take the
+      sneak multiplier on top. The subtype branches buy nothing the workbench has not
+      handed over — the flavour is in *which* sword, not which perk.
+
+  - skill: alchemy
+    start: 15
+    take: 7
+    rule: "Stop at Benefactor."
+    perks: [alchemist, physician, benefactor]
+    why: >-
+      Poisons are a charge counter. A fortify potion is a timer, and a timer wins.
+      Nothing past Benefactor pays for itself.
+    goto: potions
+
+  - skill: enchanting
+    start: 15
+    take: 6
+    rule: "Enchanter and Insightful. Extra Effect is optional."
+    perks: [enchanter, insightful-enchanter]
+    why: >-
+      Two outfits — one sneak, one combat — do the work Extra Effect would, and daggers
+      ignore Fortify One-Handed anyway.
+    footnote: >-
+      Extra Effect is **two more points, not one**: Insightful only reaches it through
+      Corpus Enchanter.
+    goto: gear
+
+  - skill: sneak
+    start: 15
+    take: 6
+    rule: "Base plus Backstab."
+    perks: [stealth, backstab]
+    why: >-
+      Two outfits let you skip the left tree entirely, and in light armor full-time you
+      can drop Assassin's Blade too. Sneak rarely decides anything outside the Thieves
+      Guild and the Dark Brotherhood, and going in loud costs a bonus rather than a run.
+
+  - skill: block
+    start: 20
+    take: 5
+    rule: "The base five. Bashing is a side bet."
+    perks: [shield-wall]
+    why: "Five and out. The bash tree is fine if you enjoy rolling for a disarm."
+
+  - skill: light-armor
+    start: 20
+    take: 5
+    rule: "The base five. Everything else is a bonus."
+    perks: [agile-defender]
+    why: >-
+      Every set reaches the armor cap with perks in it, which beats recasting Dragonskin
+      before each fight — or watching it lapse mid-fight — and it does not tax Sneak later.
+
+  - skill: smithing
+    start: 20
+    take: 4
+    rule: "Steel and Arcane, by way of Advanced Armors."
+    perks: [steel-smithing, elven-smithing, advanced-armors, arcane-blacksmith]
+    why: >-
+      Steel and Arcane are the whole requirement; Elven is the road to Advanced Armors,
+      which buys enough armor to drop the helmet.
+    footnote: "The game calls it **Advanced Armors**. Everyone calls it Advanced Smithing."
+
+# ── 5 · Potions ──────────────────────────────────────────────────────────────
+# `swaps` is POSITIONAL: one entry per ingredient above it, empty for "no swap". The row
+# is drawn as sockets under the tiles it replaces, so a swap says WHICH slot it is for —
+# floating loose next to a card, it only said "these are also relevant somehow".
+potions:
+  title: "Potions"
+  question: "The working set"
+  recipes:
+    - name: "Excaliboost"
+      ingredients: [canis-root, hanging-moss, elves-ear]
+      swaps: ["", bear-claws, juniper-berries]
+      maths: { chain: ["Fortify Marksman", "Fortify One-Handed"], result: "4×", duration: "60s" }
+      body: >-
+        Fortify Marksman is bugged to lift *every* weapon, and it stacks with Fortify
+        One-Handed. +100% and +100% is four times damage for a minute. It is a timer, not
+        a charge count — that is the entire case against poison.
+
+    - name: "Resist Magic"
+      ingredients: [lavender, tundra-cotton]
+      swaps: [bleeding-crown, ""]
+      body: >-
+        Bleeding Crown for Lavender adds Fortify Block, which does real work on One-Handed
+        blocks against power attacks.
+
+    - name: "Resist Everything"
+      ingredients: [hawk-beak, snowberries, dragons-tongue]
+      swaps: ["", "", ""]
+      body: >-
+        All three resistances in one bottle: the beak and the berries share Frost and
+        Shock, the berries and the tongue share Fire. **Snowberries are the pickup that
+        matters** — they carry all three on their own, so anything else you find in the
+        north pairs with them. Dragon's Tongue grows all over Whiterun hold.
+
+    - name: "Fortify Sneak"
+      ingredients: [purple-mountain-flower, frost-mirriam]
+      swaps: ["", ""]
+      body: "Enough for someone who is not really a sneak."
+
+    - name: "Invisibility"
+      ingredients: [chaurus-eggs, vampire-dust]
+      swaps: ["", luna-moth-wing]
+      body: "For when it actually has to work. Ice Wraith Teeth do the same job."
+
+    - name: "The loop ingredients"
+      ingredients: [dreugh-wax, stoneflower-petals, spriggan-sap]
+      swaps: ["", "", ""]
+      tag: "Rare Curios"
+      body: "Fortify Enchanting and Fortify Smithing. This is what pays for the gear."
+      goto: gear
+
+# ── 6 · Gear ─────────────────────────────────────────────────────────────────
+# A paper doll, not a list. The question this screen answers is "what is on each slot",
+# and a slot is a place — so it is drawn as one.
+#
+# An empty `enchants` list draws an EMPTY SOCKET rather than being skipped. Those are
+# genuinely open slots in the build, not omissions, and a doll that hides them would
+# claim the loadout is finished when it is not.
+gear:
+  title: "Gear"
+  question: "What is actually on"
+  headline: "200–235%"
+  headlineNote: "Fortify Alchemy and Fortify Smithing, vanilla, no glitch"
+  modes:
+    - { id: "base",     label: "Base",         note: "Fortify One-Handed everywhere it goes, and the two slots that earn something else." }
+    - { id: "extra",    label: "Extra Effect", note: "Two enchantments a piece. The resists spread across boots, ring and amulet." }
+    - { id: "atronach", label: "Atronach",     note: "The stone covers magic, so the resists come off and stealth goes on instead." }
+  slots:
+    - id: head
+      label: "Head"
+      item: "Scaled Helmet"
+      base: ["Fortify Alchemy"]
+      extra: ["Fortify Alchemy", "Waterbreathing"]
+      atronach: ["Fortify Alchemy", "Waterbreathing"]
+    - id: amulet
+      label: "Amulet"
+      item: "Nordic Amulet"
+      base: ["Fortify One-Handed"]
+      extra: ["Fortify One-Handed", "Resist Shock"]
+      atronach: ["Fortify One-Handed", "Fortify Sneak"]
+    - id: chest
+      label: "Chest"
+      item: "Scaled Armor"
+      base: ["Fortify Carry Weight"]
+      extra: ["Fortify Carry Weight", "Fortify Stamina Regen"]
+      atronach: ["Fortify Carry Weight", "Fortify Stamina Regen"]
+    - id: ring
+      label: "Ring"
+      item: "Nordic Ring"
+      base: ["Fortify One-Handed"]
+      extra: ["Fortify One-Handed", "Resist Frost"]
+      atronach: ["Fortify One-Handed", "Fortify Sneak"]
+    - id: weapon
+      label: "Weapon"
+      item: "Blades Sword"
+      note: "Or Dragonbane from 46. Daedric is the fallback — base 14 and lighter."
+      base: []
+      extra: []
+      atronach: []
+    - id: hands
+      label: "Hands"
+      item: "Scaled Bracers"
+      base: ["Fortify One-Handed"]
+      extra: ["Fortify One-Handed", "Fortify Carry Weight"]
+      atronach: ["Fortify One-Handed", "Fortify Carry Weight"]
+    - id: shield
+      label: "Shield"
+      item: "—"
+      base: []
+      extra: []
+      atronach: []
+    - id: feet
+      label: "Feet"
+      item: "Scaled Boots"
+      base: []
+      extra: ["Resist Fire"]
+      atronach: ["Fortify Sneak"]
+  links:
+    - { to: "#resto",   label: "Resto loop" }
+    - { to: "#ceiling", label: "Enchant max" }
+
+# ── 7 · Stones ───────────────────────────────────────────────────────────────
+stones:
+  title: "Stones"
+  question: "Lord, or no magic at all"
+  lord:
+    name: "The Lord Stone"
+    stack:
+      - { label: "Lord Stone",    min: 25, max: 25 }
+      - { label: "Potion",        min: 30, max: 40 }
+      - { label: "Agent of Mara", min: 10, max: 10 }
+    total: "65 – 75%"
+    body: >-
+      Push further with Extra Effect or the Alteration tree. But if that is the *only*
+      reason you are climbing Alteration, there is a cleaner answer.
+  atronach:
+    name: "The Atronach Stone"
+    total: "100%"
+    body: >-
+      Full spell absorption. Take it honestly, or take a Fortify Destruction potion to the
+      stone. Rare Curios sells the shortcut too — a spell absorption potion, and a good
+      number of its ingredients come out of the Oblivion quest.
+    pull: "Nords do not believe in magic."

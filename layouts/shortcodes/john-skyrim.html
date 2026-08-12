@@ -1,0 +1,348 @@
+{{- /*
+  john-skyrim — the build, one screen at a time.
+
+    {{< john-skyrim >}}
+
+  Screens, in reading order:
+
+    hub            five choices, no heading — the tiles are the question
+    nord           why the race is not a stat line
+    perks          the levelling slider, and what each tree costs against it
+    skill-<id>     one tree per skill, drawn by partials/skyrim-perk-tree.html
+    potions        the working set, on the same tiles the recipe cards use
+    gear           a paper doll, three enchantment modes
+    stones         Lord, or no magic at all
+
+  `data-scr` carries a NAME, not a number. The potion builder numbers its nine screens and
+  then needs a comment explaining they run 1,2,3,8,9,4,5,6,7. Seven skill screens would
+  have made that worse, and `data-back="perks"` says where it goes without a lookup.
+
+  Everything is server-rendered. john.ts swaps which section is visible, runs the
+  levelling model behind the slider, and picks a gear mode. No content is assembled at
+  runtime, so the build reads with scripting off and to anything parsing the page.
+
+  THE PREMISE IS NOT IN HERE any more. It sat above the box as a lead and three numbered
+  rules, which put the argument in front of a reader who came for the tiles and repeated
+  what the screens go on to say. It lives in the page's own <details> now.
+
+  `not-prose` keeps Tailwind Typography off the controls.
+*/ -}}
+{{- $john := site.Data.skyrim.john -}}
+{{- if not $john }}{{ errorf "john-skyrim: data/skyrim/john.yaml is missing or empty" }}{{ end -}}
+{{- $trees := site.Data.skyrim.perks -}}
+{{- $lv := $john.levelling -}}
+
+{{- /* One entry per perk POINT the build spends, carrying the skill level that unlocks
+       it. Flattened here rather than in the browser because it is a pure function of two
+       data files, and the payload is smaller than the two files it replaces. */ -}}
+{{- $plans := slice -}}
+{{- range $row := $john.build -}}
+  {{- $tree := index $trees $row.skill -}}
+  {{- $gates := slice -}}
+  {{- range $id := ($row.perks | default slice) -}}
+    {{- range $p := $tree.perks -}}
+      {{- if eq $p.id $id -}}{{ range $p.levels }}{{ $gates = $gates | append . }}{{ end }}{{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $plans = $plans | append (dict "name" $tree.name "start" $row.start "gates" (sort $gates)) -}}
+{{- end -}}
+
+<div class="sky-john not-prose" data-john data-screen="hub">
+
+  {{- /* ── hub ──────────────────────────────────────────────────────────── */}}
+  <section class="sky-scr" data-scr="hub" tabindex="-1" aria-label="John Skyrim">
+    <div class="sky-pick">
+      <button type="button" class="sky-pick__b" data-go="nord">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3 4 6.6v5c0 4.4 3.2 8.2 8 9.4 4.8-1.2 8-5 8-9.4v-5L12 3Z" /><path d="M12 8.2v5.4M9.4 10.6h5.2" /></svg>
+        <b>Nord</b>
+      </button>
+      <button type="button" class="sky-pick__b" data-go="perks">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="4.5" r="2" /><circle cx="6" cy="19.5" r="2" /><circle cx="18" cy="19.5" r="2" /><path d="M12 6.5v4M12 10.5 6 15.5v2M12 10.5l6 5v2" /></svg>
+        <b>Perks</b>
+      </button>
+      <button type="button" class="sky-pick__b" data-go="potions">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9.5 3h5M10.5 3v6.4l-5.1 8.9A1.7 1.7 0 0 0 6.9 21h10.2a1.7 1.7 0 0 0 1.5-2.7l-5.1-8.9V3" /><path d="M7.8 15h8.4" /></svg>
+        <b>Potions</b>
+      </button>
+      <button type="button" class="sky-pick__b" data-go="gear">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M14.5 3.5 6 12l-1.5 5.5L10 16l8.5-8.5a2.1 2.1 0 0 0-3-3Z" /><path d="M13 5 17 9M4.5 17.5 3 21l3.5-1.5" /></svg>
+        <b>Gear</b>
+      </button>
+      <button type="button" class="sky-pick__b" data-go="stones">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 2.5 5 8v9.5L12 21.5l7-4V8l-7-5.5Z" /><path d="M12 8.5 9 11v4l3 1.8 3-1.8v-4l-3-2.5Z" /></svg>
+        <b>Stones</b>
+      </button>
+    </div>
+  </section>
+
+  {{- /* ── nord ─────────────────────────────────────────────────────────── */}}
+  {{- /* Faces at 5rem in a column on the left, argument on the right. They were square
+         tiles across the full width — 650px of Ralof's face above three lines of text,
+         which made a portrait the subject of a screen that is about what he CALLS you. */}}
+  <section class="sky-scr" data-scr="nord" hidden tabindex="-1" aria-label="Nord">
+    <div class="sky-scr__head">
+      {{ partial "skyrim-back.html" (dict "to" "hub" "label" "Back to the build") }}
+      <h3 class="sky-scr__q">{{ $john.nord.question }}</h3>
+    </div>
+
+    <div class="sky-nord">
+      <div class="sky-faces">
+        {{- /* $face, not `.` — the extension loop below rebinds the dot to a string, and
+               `.image` inside it fails the build with "can't evaluate field image in type
+               string". Same reason skyrim-ingredients.html names its slug. */ -}}
+        {{- range $face := $john.nord.faces }}
+        {{- $img := "" -}}
+        {{- range $ext := slice "jpg" "png" "webp" "jpeg" -}}
+          {{- if not $img }}{{ with resources.Get (printf "skyrim/%s.%s" $face.image $ext) }}{{ $img = . }}{{ end }}{{ end -}}
+        {{- end -}}
+        <figure class="sky-face{{ if $face.chosen }} is-chosen{{ end }}">
+          {{- with $img }}{{ $r := .Fit "160x160 webp q85" }}
+          <img src="{{ $r.RelPermalink }}" width="{{ $r.Width }}" height="{{ $r.Height }}" alt="" loading="lazy" decoding="async" />
+          {{- end }}
+          <figcaption>
+            <b>{{ $face.name }}</b>
+            <span class="sky-sr">{{ if $face.chosen }} — the escape you take.{{ else }} — the escape you do not take.{{ end }}</span>
+            <em>&ldquo;{{ $face.line }}&rdquo;</em>
+          </figcaption>
+        </figure>
+        {{- end }}
+      </div>
+
+      <div class="sky-nord__body">
+        <ul class="sky-beats">
+          {{- range $john.nord.beats }}<li>{{ . | markdownify }}</li>{{ end }}
+        </ul>
+        <p class="sky-close">{{ $john.nord.close | markdownify }}</p>
+      </div>
+    </div>
+  </section>
+
+  {{- /* ── perks ────────────────────────────────────────────────────────── */}}
+  <section class="sky-scr" data-scr="perks" hidden tabindex="-1" aria-label="Perks">
+    <div class="sky-scr__head">
+      {{ partial "skyrim-back.html" (dict "to" "hub" "label" "Back to the build") }}
+      <h3 class="sky-scr__q">What the build costs, and whether you can afford it</h3>
+    </div>
+
+    {{- /* The slider. This screen used to open by announcing "Forty-two points", which is
+           what the build COSTS stated as though it were what you can AFFORD — and nothing
+           had checked the second one. Drag the seven skills up together and the engine's
+           own arithmetic says which character level that is and how many perks came with
+           it. See the header of assets/scripts/pages/skyrim/john.ts. */}}
+    <div class="sky-slider">
+      <label class="sky-slider__row">
+        <span class="sky-slider__label">Seven skills at</span>
+        <input type="range" min="20" max="100" step="1" value="100" data-level-slider
+               aria-label="Skill level reached by the seven build skills" />
+        <b data-out-skill>100</b>
+      </label>
+      <ul class="sky-tally">
+        <li><span>Character level</span><b data-out-level>—</b></li>
+        <li><span>Perks earned</span><b data-out-earned>—</b></li>
+        <li><span>The build wants</span><b data-out-owed>—</b></li>
+        <li class="sky-tally__verdict"><b data-out-spare>—</b></li>
+      </ul>
+      <p class="sky-sr" data-out-status role="status" aria-live="polite"></p>
+    </div>
+
+    <ol class="sky-budget">
+      {{- range $i, $row := $john.build }}
+      {{- $tree := index $trees $row.skill }}
+      {{- $plan := index $plans $i }}
+      <li>
+        <button type="button" class="sky-budget__b" data-go="skill-{{ $row.skill }}"
+                data-bar-skill data-gates="{{ delimit $plan.gates "," }}"
+                style="--on:{{ $row.take }};--of:{{ $row.take }}">
+          <span class="sky-budget__name">{{ $tree.name }}</span>
+          {{- /* Segmented, one cell per point, rather than a proportional fill. The bar
+                 now answers "how much of this tree is unlocked yet", and a continuous bar
+                 cannot show four-of-nine without inviting you to measure it. */}}
+          <span class="sky-budget__bar">
+            {{- range $g := $plan.gates }}<i title="unlocks at {{ $tree.name }} {{ $g }}"></i>{{ end -}}
+          </span>
+          <span class="sky-budget__n" data-bar-n>{{ $row.take }}/{{ $row.take }}</span>
+          <span class="sky-budget__rule">{{ $row.rule }}</span>
+        </button>
+      </li>
+      {{- end }}
+    </ol>
+
+    {{- /* jsonify | safeJS: Go's contextual escaper would otherwise re-encode the script
+           body as a JS string literal and the parse would fail. */ -}}
+    <script type="application/json" data-levelling>{{ dict
+      "levelUpBase" $lv.levelUpBase
+      "levelUpMult" $lv.levelUpMult
+      "skills" $plans
+      "incidental" $lv.incidental | jsonify | safeJS }}</script>
+  </section>
+
+  {{- /* ── one screen per skill ─────────────────────────────────────────── */}}
+  {{- range $row := $john.build }}
+  {{- $tree := index $trees $row.skill }}
+  <section class="sky-scr" data-scr="skill-{{ $row.skill }}" hidden tabindex="-1" aria-label="{{ $tree.name }}">
+    <div class="sky-scr__head">
+      {{ partial "skyrim-back.html" (dict "to" "perks" "label" "Back to the perks") }}
+      <h3 class="sky-scr__q">{{ $tree.name }}</h3>
+      <span class="sky-scr__n">{{ $row.take }}</span>
+    </div>
+
+    <p class="sky-rule">{{ $row.rule }}</p>
+    {{ partial "skyrim-perk-tree.html" (dict "skill" $row.skill "taken" $row.perks "page" $.Page) }}
+    <p class="sky-why">{{ $row.why | markdownify }}</p>
+    {{- with $row.footnote }}<p class="sky-plan__note">{{ . | markdownify }}</p>{{ end }}
+    {{- with $row.goto }}
+    <div class="sky-scr__foot sky-scr__foot--end">
+      <button type="button" class="sky-go" data-go="{{ . }}">{{ if eq . "potions" }}The potions{{ else }}The gear{{ end }} &rarr;</button>
+    </div>
+    {{- end }}
+  </section>
+  {{- end }}
+
+  {{- /* ── potions ──────────────────────────────────────────────────────── */}}
+  <section class="sky-scr" data-scr="potions" hidden tabindex="-1" aria-label="Potions">
+    <div class="sky-scr__head">
+      {{ partial "skyrim-back.html" (dict "to" "hub" "label" "Back to the build") }}
+      <h3 class="sky-scr__q">{{ $john.potions.question }}</h3>
+    </div>
+
+    <div class="sky-grid sky-grid--john">
+      {{- range $r := $john.potions.recipes }}
+      {{- $hasSwap := false }}{{ range $r.swaps }}{{ if . }}{{ $hasSwap = true }}{{ end }}{{ end }}
+      <article class="sky-card">
+        {{ partial "skyrim-ingredients.html" (dict "slugs" $r.ingredients "page" $.Page) }}
+
+        {{- /* The swap row is POSITIONAL: one socket per ingredient above it, empty where
+               there is no swap. Loose tiles in a "Swaps" strip said these were relevant
+               and nothing else — which slot each one replaces is the entire content of a
+               swap, and it was the one thing the row did not carry. */}}
+        {{- if $hasSwap }}
+        <div class="sky-swaps">
+          <span class="sky-swaps__label">Swap</span>
+          <div class="sky-ings sky-ings--swap">
+            {{- range $i, $slug := $r.swaps }}
+            {{- if $slug }}
+              {{- $ing := index site.Data.skyrim.ingredients $slug -}}
+              {{- $name := $slug | replaceRE "-" " " | title -}}
+              {{- with $ing }}{{ $name = .name | default $name }}{{ end -}}
+              {{- $img := "" -}}
+              {{- range $ext := slice "png" "webp" "jpg" "jpeg" -}}
+                {{- if not $img }}{{ with resources.Get (printf "skyrim/ingredients/%s.%s" $slug $ext) }}{{ $img = . }}{{ end }}{{ end -}}
+              {{- end -}}
+              <div class="sky-ing">
+                <span class="sky-tile">
+                  {{- with $img }}{{ $r2 := . }}{{ if gt .Width 192 }}{{ $r2 = .Fit "192x192 webp q85" }}{{ end }}
+                  <img src="{{ $r2.RelPermalink }}" width="{{ $r2.Width }}" height="{{ $r2.Height }}" alt="{{ $name }}" loading="lazy" decoding="async" />
+                  {{- end }}
+                </span>
+                <span class="sky-ing__name">{{ $name }}{{ with $ing }}{{ partial "skyrim-dlc.html" .dlc }}{{ end }}</span>
+              </div>
+            {{- else }}
+              {{- /* An empty socket, not a gap. It holds the column open so the swap below
+                     Hanging Moss is visibly the swap FOR Hanging Moss. */ -}}
+              <div class="sky-ing sky-ing--empty" aria-hidden="true"><span class="sky-tile sky-tile--empty"></span></div>
+            {{- end }}
+            {{- end }}
+          </div>
+        </div>
+        {{- end }}
+
+        <div class="sky-body">
+          <h4 class="sky-title">{{ $r.name }}</h4>
+          {{- with $r.tag }}<ul class="sky-chips"><li class="sky-chip sky-chip--tag">{{ . }}</li></ul>{{ end }}
+          {{- with $r.maths }}
+          <p class="sky-mult">
+            {{- range $i, $step := .chain }}{{ if $i }}<i>&times;</i>{{ end }}<span>{{ $step }}</span>{{ end }}
+            <b>{{ .result }}</b><em>{{ .duration }}</em>
+          </p>
+          {{- end }}
+          <div class="sky-why">{{ $r.body | markdownify }}</div>
+          {{- with $r.goto }}<button type="button" class="sky-link" data-go="{{ . }}">The gear &rarr;</button>{{ end }}
+        </div>
+      </article>
+      {{- end }}
+    </div>
+
+    <div class="sky-scr__foot sky-scr__foot--end">
+      <a class="sky-link" href="#alchemy">Open the potion builder &uarr;</a>
+    </div>
+  </section>
+
+  {{- /* ── gear ─────────────────────────────────────────────────────────── */}}
+  {{- /* A paper doll. The question is "what is on each slot", and a slot is a place, so
+         it is drawn as one — the arrangement is the inventory screen every RPG has used
+         since RuneScape, because it is the one people can already read. */}}
+  <section class="sky-scr" data-scr="gear" hidden tabindex="-1" aria-label="Gear">
+    <div class="sky-scr__head">
+      {{ partial "skyrim-back.html" (dict "to" "hub" "label" "Back to the build") }}
+      <h3 class="sky-scr__q">{{ $john.gear.question }}</h3>
+    </div>
+
+    <div class="sky-modes" role="group" aria-label="Enchantment plan">
+      {{- range $i, $m := $john.gear.modes }}
+      <button type="button" class="sky-modes__b" data-mode="{{ $m.id }}" data-note="{{ $m.note }}"
+              aria-pressed="{{ if eq $i 0 }}true{{ else }}false{{ end }}">{{ $m.label }}</button>
+      {{- end }}
+    </div>
+    <p class="sky-bar__note" data-mode-note></p>
+
+    <div class="sky-doll">
+      {{- range $s := $john.gear.slots }}
+      <div class="sky-doll__slot sky-doll__slot--{{ $s.id }}">
+        <span class="sky-doll__label">{{ $s.label }}</span>
+        <b class="sky-doll__item">{{ $s.item }}</b>
+        {{- range $m := $john.gear.modes }}
+        {{- $list := index $s $m.id }}
+        <ul class="sky-doll__ench" data-for-mode="{{ $m.id }}"{{ if ne $m.id "base" }} hidden{{ end }}>
+          {{- if $list }}
+            {{- range $list }}<li>{{ . }}</li>{{ end }}
+          {{- else }}
+            {{- /* An empty socket is a real state in this build, not a gap in the data —
+                   the slot is open and Konrad has not said what goes in it. Hiding it
+                   would claim the loadout is finished. */ -}}
+            <li class="is-empty">open<span class="sky-sr"> — nothing enchanted on this slot</span></li>
+          {{- end }}
+        </ul>
+        {{- end }}
+        {{- with $s.note }}<em class="sky-doll__note">{{ . }}</em>{{ end }}
+      </div>
+      {{- end }}
+    </div>
+
+    <p class="sky-headline"><b>{{ $john.gear.headline }}</b><span>{{ $john.gear.headlineNote }}</span></p>
+    <div class="sky-scr__foot sky-scr__foot--end">
+      {{- range $john.gear.links }}<a class="sky-link" href="{{ .to }}">{{ .label }} &uarr;</a>{{ end }}
+    </div>
+  </section>
+
+  {{- /* ── stones ───────────────────────────────────────────────────────── */}}
+  <section class="sky-scr" data-scr="stones" hidden tabindex="-1" aria-label="Standing stones">
+    <div class="sky-scr__head">
+      {{ partial "skyrim-back.html" (dict "to" "hub" "label" "Back to the build") }}
+      <h3 class="sky-scr__q">{{ $john.stones.question }}</h3>
+    </div>
+
+    <h4 class="sky-sub">{{ $john.stones.lord.name }}</h4>
+    {{- /* One meter to 100. The labels are UNDER the bar: Agent of Mara is 10% of the
+           track, about 39px at phone width, and its name is three times that — in-segment
+           labels made the smallest contributor the one you could not read. */}}
+    <div class="sky-stack" role="img"
+         aria-label="{{ $john.stones.lord.total }} magic resistance, stacked from {{ range $i, $s := $john.stones.lord.stack }}{{ if $i }}, {{ end }}{{ $s.label }} {{ $s.min }}{{ if ne $s.max $s.min }} to {{ $s.max }}{{ end }} percent{{ end }}">
+      {{- range $i, $s := $john.stones.lord.stack }}
+      <span class="sky-stack__seg" style="--w:{{ $s.min }}%;--a:{{ sub 0.92 (mul $i 0.17) }}"></span>
+      {{- if ne $s.max $s.min }}<span class="sky-stack__seg sky-stack__seg--range" style="--w:{{ sub $s.max $s.min }}%;--a:{{ sub 0.92 (mul $i 0.17) }}"></span>{{ end }}
+      {{- end }}
+    </div>
+    <ul class="sky-stack__keys">
+      {{- range $i, $s := $john.stones.lord.stack }}
+      <li style="--a:{{ sub 0.92 (mul $i 0.17) }}">{{ $s.label }}<b>{{ $s.min }}{{ if ne $s.max $s.min }}&ndash;{{ $s.max }}{{ end }}%</b></li>
+      {{- end }}
+    </ul>
+    <p class="sky-stack__total"><b>{{ $john.stones.lord.total }}</b> magic resist</p>
+    <p class="sky-why">{{ $john.stones.lord.body | markdownify }}</p>
+
+    <h4 class="sky-sub">{{ $john.stones.atronach.name }}</h4>
+    <p class="sky-headline"><b>{{ $john.stones.atronach.total }}</b><span>spell absorption</span></p>
+    <p class="sky-why">{{ $john.stones.atronach.body | markdownify }}</p>
+    <blockquote class="sky-pull"><p>{{ $john.stones.atronach.pull }}</p></blockquote>
+  </section>
+</div>

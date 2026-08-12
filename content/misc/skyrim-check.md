@@ -35,3 +35,4 @@ nothing in the build runs it. Do both before pushing.
 {{< skyrim-selfcheck >}}
 
 <div hidden>{{< potion-builder >}}</div>
+<div hidden>{{< john-skyrim >}}</div>

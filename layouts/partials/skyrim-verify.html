@@ -57,3 +57,43 @@
     {{- errorf "skyrim data: effect %q is carried by %d ingredient(s); it needs 2 to ever appear in a potion" .name $count -}}
   {{- end -}}
 {{- end -}}
+
+{{- /* 4. THE BUILD AGREES WITH THE TREES. Two things a hand-maintained build drifts on,
+       both silent without this:
+
+         a. every perk id John spends on exists in the tree it is filed under. A renamed
+            id would just stop being drawn — a taken perk quietly rendering as untaken.
+         b. `take:` equals the ranks those perks actually cost. The budget bars, the total
+            under them and the page's own "42 perks" all read from `take:`, so a build
+            that claims 9 and spends 8 puts a wrong number in three places at once.
+
+       Also asserts the ids are unique per tree, since a duplicate would inflate the sum
+       here and be invisible in the drawing. */ -}}
+{{- with site.Data.skyrim.john -}}
+  {{- range $row := .build -}}
+    {{- $tree := index site.Data.skyrim.perks $row.skill -}}
+    {{- if not $tree -}}
+      {{- errorf "skyrim data: john.yaml builds %q, which is not a tree in perks.yaml" $row.skill -}}
+    {{- else -}}
+      {{- $ranks := dict -}}
+      {{- range $tree.perks -}}
+        {{- if index $ranks .id -}}
+          {{- errorf "skyrim data: perks.yaml lists %q twice in the %s tree" .id $row.skill -}}
+        {{- end -}}
+        {{- $ranks = merge $ranks (dict .id (.ranks | default 1)) -}}
+      {{- end -}}
+      {{- $spent := 0 -}}
+      {{- range $id := ($row.perks | default slice) -}}
+        {{- $cost := index $ranks $id -}}
+        {{- if not $cost -}}
+          {{- errorf "skyrim data: john.yaml takes %q in %s, which is not a perk in that tree" $id $row.skill -}}
+        {{- else -}}
+          {{- $spent = add $spent $cost -}}
+        {{- end -}}
+      {{- end -}}
+      {{- if ne $spent $row.take -}}
+        {{- errorf "skyrim data: john.yaml claims take: %d for %s but its perks cost %d" $row.take $row.skill $spent -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}

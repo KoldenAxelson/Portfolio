@@ -1225,3 +1225,239 @@
 /* The live foot holds the effect chips and, for a screen reader, the verdict word. The
    verdict itself is now `.sky-verdict` on the tray above — there is no `.sky-brew__kind`
    down here to give the answer register to. */
+
+/* ── John Skyrim ─────────────────────────────────────────────────────────────
+   The build, one screen at a time. Reuses .sky-scr, .sky-pick, .sky-back,
+   .sky-card, .sky-ings and .sky-chips wholesale — this module adds no new screen
+   chrome, only the five things it shows that nothing else on the page shows: a
+   levelling slider, a segmented perk budget, a perk tree, two faces, a paper
+   doll and a stacked meter. */
+
+.sky-john { margin: 1.5rem 0 0; border: 1px solid rgb(var(--c-border)); border-radius: 0.9rem; overflow: hidden; background: rgb(var(--c-bg)); }
+.sky-scr__n { margin-left: auto; font: 700 var(--sky-t-lead) var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-accent)); }
+.sky-rule { margin: 0 0 1rem; font-size: var(--sky-t-lead); font-weight: 600; color: rgb(var(--c-fg)); }
+.sky-why { margin: 0.9rem 0 0; font-size: var(--sky-t-body); line-height: 1.6; color: rgb(var(--c-muted)); }
+.sky-why strong, .sky-close strong, .sky-beats strong { color: rgb(var(--c-fg)); font-weight: 600; }
+.sky-close { margin: 1rem 0 0; padding-top: 0.9rem; border-top: 1px solid rgb(var(--c-border) / 0.6); font-size: var(--sky-t-body); color: rgb(var(--c-fg)); }
+.sky-sub { margin: 1.7rem 0 0; font-size: var(--sky-t-lead); font-weight: 600; color: rgb(var(--c-fg)); }
+.sky-sub:first-of-type { margin-top: 0; }
+
+/* ── The levelling slider ────────────────────────────────────────────────────
+   Replaces a headline that asserted "42 points". The tally is four facts wide on
+   desktop and wraps to two on a phone; the verdict is the only one that changes
+   colour, because it is the only one that can be bad news. */
+.sky-slider { padding: 0.9rem 1rem 1rem; margin: 0 0 1.1rem; border: 1px solid rgb(var(--c-border)); border-radius: 0.6rem; background: rgb(var(--c-border) / 0.14); }
+.sky-slider__row { display: flex; align-items: center; gap: 0.8rem; }
+.sky-slider__label { flex: none; font-size: var(--sky-t-body); color: rgb(var(--c-muted)); }
+.sky-slider__row input[type="range"] { flex: 1; min-width: 0; accent-color: rgb(var(--c-accent)); }
+.sky-slider__row input[type="range"]:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.5); outline-offset: 3px; }
+.sky-slider__row b { flex: none; min-width: 2.5rem; text-align: right; font: 700 var(--sky-t-lead) var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-accent)); }
+.sky-tally { display: flex; flex-wrap: wrap; gap: 0.5rem 1.6rem; margin: 0.9rem 0 0; padding: 0; list-style: none; }
+.sky-tally li { display: flex; align-items: baseline; gap: 0.45rem; }
+.sky-tally span { font-size: var(--sky-t-small); color: rgb(var(--c-muted)); }
+.sky-tally b { font: 700 var(--sky-t-lead) var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-fg)); }
+.sky-tally__verdict { margin-left: auto; }
+.sky-tally__verdict b { color: rgb(var(--c-accent)); }
+/* --sky-bad is the module's error red, already carrying a measured ratio in both
+   themes. Short is the one outcome that means the build does not fit. */
+.sky-tally__verdict b.is-short { color: rgb(var(--sky-bad)); }
+
+/* ── The budget ──────────────────────────────────────────────────────────────
+   One row per skill, and the row IS the button. The bar is SEGMENTED, one cell per
+   perk point: it answers "how much of this tree has the slider unlocked", and a
+   continuous fill cannot say four-of-nine without inviting you to measure it. */
+.sky-budget { display: flex; flex-direction: column; gap: 0.35rem; margin: 0; padding: 0; list-style: none; }
+.sky-budget__b {
+  display: grid; grid-template-columns: 8.5rem 1fr 3rem; align-items: center;
+  gap: 0.75rem; width: 100%; padding: 0.55rem 0.7rem; text-align: left;
+  border: 1px solid transparent; border-radius: 0.55rem; background: none;
+  cursor: pointer; font: inherit; color: inherit; transition: border-color 0.12s ease, background 0.12s ease;
+}
+.sky-budget__b:hover { border-color: rgb(var(--c-accent) / 0.6); background: rgb(var(--c-accent) / 0.06); }
+.sky-budget__b:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.5); outline-offset: 2px; }
+.sky-budget__name { font-size: var(--sky-t-body); font-weight: 600; color: rgb(var(--c-fg)); }
+.sky-budget__bar { display: flex; gap: 0.2rem; }
+.sky-budget__bar i { flex: 1 1 0; max-width: 2.2rem; height: 0.55rem; border-radius: 0.15rem; background: rgb(var(--c-border) / 0.7); }
+/* john.ts marks the unlocked cells directly. It cannot be done in CSS: `nth-child` takes
+   a literal, not a custom property, so there is no selector for "the first --on of
+   them" — an earlier version pretended otherwise and lit exactly one cell forever. */
+.sky-budget__bar i.is-on { background: rgb(var(--c-accent)); }
+.sky-budget__n { font: 700 var(--sky-t-small) var(--font-mono, ui-monospace, monospace); text-align: right; color: rgb(var(--c-accent)); }
+.sky-budget__rule { grid-column: 2 / -1; font-size: var(--sky-t-small); color: rgb(var(--c-muted)); }
+@media (max-width: 32rem) {
+  /* The name gets its own line rather than being squeezed to an ellipsis — "Light
+     Armor" truncated to "Light A…" beside a bar has lost the only thing naming it. */
+  .sky-budget__b { grid-template-columns: 1fr 3rem; }
+  .sky-budget__name, .sky-budget__rule { grid-column: 1 / -1; }
+}
+
+/* ── The perk tree ───────────────────────────────────────────────────────────
+   Nodes on a grid, connectors on one stretched SVG behind them. Both are sized from
+   --lanes and --tiers, which is what keeps them registered at any font size. See
+   partials/skyrim-perk-tree.html for why the viewBox is abstract. */
+.sky-tree { position: relative; margin: 0.25rem 0 0; overflow-x: auto; overscroll-behavior-x: contain; }
+.sky-tree__wires { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.sky-tree__wire { fill: none; stroke: rgb(var(--c-border)); stroke-width: 1.5; }
+.sky-tree__wire.is-on { stroke: rgb(var(--c-accent)); stroke-width: 2.5; }
+.sky-tree__nodes {
+  position: relative; display: grid; margin: 0; padding: 0; list-style: none;
+  grid-template-columns: repeat(var(--lanes), minmax(7.5rem, 1fr));
+  /* 5.5rem = 88px. The dot's centre lands at 26% of that (1rem of padding plus half a
+     0.85rem dot), which is the 26 the connector layer draws to. Change one, change both. */
+  grid-template-rows: repeat(var(--tiers), 5.5rem);
+  min-width: calc(var(--lanes) * 7.5rem);
+}
+.sky-tree__node {
+  grid-column: calc(var(--l) + 1); grid-row: calc(var(--t) + 1);
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+  gap: 0.2rem; padding: 1rem 0.3rem 0; text-align: center;
+}
+.sky-tree__dot { width: 0.85rem; height: 0.85rem; border-radius: 999px; border: 2px solid rgb(var(--c-border)); background: rgb(var(--c-bg)); }
+.sky-tree__name { font-size: var(--sky-t-micro); line-height: 1.25; color: rgb(var(--c-muted)); }
+.sky-tree__node.is-on .sky-tree__dot { border-color: rgb(var(--c-accent)); background: rgb(var(--c-accent)); }
+.sky-tree__node.is-on .sky-tree__name { color: rgb(var(--c-fg)); font-weight: 600; }
+.sky-tree__pips { display: flex; gap: 0.15rem; }
+.sky-tree__pip { width: 0.25rem; height: 0.25rem; border-radius: 999px; background: rgb(var(--c-border)); }
+.sky-tree__node.is-on .sky-tree__pip { background: rgb(var(--c-accent)); }
+
+/* ── Ralof and Hadvar ────────────────────────────────────────────────────────
+   A column of two small faces beside the argument, not two square tiles across the
+   full width. The dim one is the point, and it is never the only carrier: the caption
+   quotes what each calls you and `.sky-sr` names which escape it is. */
+.sky-nord { display: grid; gap: 1.2rem; grid-template-columns: 9.5rem 1fr; align-items: start; }
+.sky-faces { display: flex; flex-direction: column; gap: 0.9rem; margin: 0; }
+.sky-face { margin: 0; display: grid; grid-template-columns: 3.25rem 1fr; gap: 0.6rem; align-items: center; }
+.sky-face img { width: 3.25rem; height: 3.25rem; object-fit: cover; border-radius: 0.5rem; border: 1px solid rgb(var(--c-border)); filter: grayscale(1); opacity: 0.4; }
+.sky-face.is-chosen img { filter: none; opacity: 1; border-color: rgb(var(--c-accent)); }
+.sky-face figcaption { display: flex; flex-direction: column; gap: 0.1rem; min-width: 0; }
+.sky-face b { font-size: var(--sky-t-body); color: rgb(var(--c-muted)); }
+.sky-face.is-chosen b { color: rgb(var(--c-fg)); }
+.sky-face em { font-style: italic; font-size: var(--sky-t-micro); line-height: 1.35; color: rgb(var(--c-muted)); }
+@media (max-width: 40rem) {
+  .sky-nord { grid-template-columns: 1fr; }
+  .sky-faces { flex-direction: row; }
+  .sky-face { flex: 1; }
+}
+
+.sky-beats { display: flex; flex-direction: column; gap: 0.75rem; margin: 0; padding: 0; list-style: none; }
+.sky-beats li { font-size: var(--sky-t-body); line-height: 1.6; color: rgb(var(--c-muted)); padding-left: 0.9rem; border-left: 2px solid rgb(var(--c-accent) / 0.45); }
+
+/* ── Potions ─────────────────────────────────────────────────────────────── */
+.sky-mult { display: flex; align-items: center; flex-wrap: wrap; gap: 0.35rem; margin: 0; font-size: var(--sky-t-micro); }
+.sky-mult span { padding: 0.15rem 0.4rem; border: 1px solid rgb(var(--c-border)); border-radius: 999px; color: rgb(var(--c-muted)); }
+.sky-mult i { font-style: normal; color: rgb(var(--c-muted)); }
+.sky-mult b { font: 700 var(--sky-t-lead) var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-accent)); }
+.sky-mult em { font-style: normal; font: var(--sky-t-micro) var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-muted)); }
+
+.sky-grid--john { grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); }
+/* Cap and centre the tiles. `.sky-ing` is `flex: 1 1 0`, which is right for the three
+   ingredient recipes it was written for and absurd on a two-ingredient card, where the
+   tiles stretched to half the card each and read as hero images. */
+.sky-grid--john .sky-ings { justify-content: flex-start; }
+.sky-grid--john .sky-ing { flex: 0 1 7.5rem; }
+
+/* The swap row. Positional: one socket per ingredient above it, empty where there is
+   no swap, so a swap says WHICH slot it replaces. The empty socket is the whole
+   mechanism — without it the row collapses left and the alignment carries nothing. */
+/* The label sits ABOVE the row, not beside it. Beside it, the label's own width pushed
+   every socket right by about 50px, so the swap under Hanging Moss was no longer under
+   Hanging Moss — which is the entire thing this row exists to say. */
+.sky-swaps { display: flex; flex-direction: column; gap: 0.3rem; padding: 0.55rem 1.05rem 0.7rem; border-bottom: 1px solid rgb(var(--c-border) / 0.6); background: rgb(var(--c-border) / 0.14); }
+.sky-swaps__label { font: 600 var(--sky-t-micro) var(--font-mono, ui-monospace, monospace); letter-spacing: 0.14em; text-transform: uppercase; color: rgb(var(--c-muted)); }
+.sky-ings--swap { padding: 0; background: none; border-bottom: none; }
+.sky-grid--john .sky-ings--swap .sky-ing { flex: 0 1 7.5rem; }
+.sky-ings--swap .sky-tile { width: 2.6rem; height: 2.6rem; border-radius: 0.45rem; }
+.sky-ings--swap .sky-ing__name { font-size: var(--sky-t-micro); }
+/* Dashed and hollow — a socket that is deliberately empty, not a tile that failed to
+   load. The "?" placeholder means the opposite thing on this page. */
+.sky-tile--empty { border-style: dashed; background: none; opacity: 0.55; }
+
+/* ── The gear doll ───────────────────────────────────────────────────────────
+   The arrangement every RPG inventory has used since RuneScape, because it is the one
+   people can already read: head on top, the paired slots either side of the chest,
+   feet at the bottom. Four rows, three columns, placed by slot rather than by order. */
+.sky-modes { display: flex; flex-wrap: wrap; gap: 0.35rem; margin: 0 0 0.5rem; }
+.sky-modes__b {
+  padding: 0.35rem 0.75rem; border: 1px solid rgb(var(--c-border)); border-radius: 999px;
+  background: none; cursor: pointer; color: rgb(var(--c-muted));
+  font: 600 var(--sky-t-small) var(--font-mono, ui-monospace, monospace);
+  transition: border-color 0.12s ease, color 0.12s ease, background 0.12s ease;
+}
+.sky-modes__b:hover { border-color: rgb(var(--c-accent) / 0.6); color: rgb(var(--c-fg)); }
+.sky-modes__b:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.5); outline-offset: 2px; }
+.sky-modes__b[aria-pressed="true"] { border-color: rgb(var(--c-accent)); background: rgb(var(--c-accent) / 0.12); color: rgb(var(--c-fg)); }
+
+.sky-doll {
+  display: grid; gap: 0.5rem; margin: 0.9rem 0 1.2rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-areas:
+    ".      head   ."
+    "amulet chest  ring"
+    "weapon hands  shield"
+    ".      feet   .";
+}
+.sky-doll__slot {
+  display: flex; flex-direction: column; gap: 0.2rem; padding: 0.6rem 0.65rem;
+  border: 1px solid rgb(var(--c-border)); border-radius: 0.55rem; background: rgb(var(--c-bg));
+  min-width: 0;
+}
+.sky-doll__slot--head { grid-area: head; }
+.sky-doll__slot--amulet { grid-area: amulet; }
+.sky-doll__slot--chest { grid-area: chest; }
+.sky-doll__slot--ring { grid-area: ring; }
+.sky-doll__slot--weapon { grid-area: weapon; }
+.sky-doll__slot--hands { grid-area: hands; }
+.sky-doll__slot--shield { grid-area: shield; }
+.sky-doll__slot--feet { grid-area: feet; }
+.sky-doll__label { font: 600 var(--sky-t-micro) var(--font-mono, ui-monospace, monospace); letter-spacing: 0.12em; text-transform: uppercase; color: rgb(var(--c-muted)); }
+.sky-doll__item { font-size: var(--sky-t-body); font-weight: 600; color: rgb(var(--c-fg)); line-height: 1.3; }
+.sky-doll__ench { display: flex; flex-direction: column; gap: 0.2rem; margin: 0.2rem 0 0; padding: 0; list-style: none; }
+.sky-doll__ench li {
+  font-size: var(--sky-t-micro); line-height: 1.3; padding: 0.15rem 0.4rem;
+  border-radius: 0.3rem; background: rgb(var(--c-accent) / 0.12); color: rgb(var(--c-fg));
+}
+/* An open slot in the build, not a hole in the data. Dashed, to match the swap socket:
+   both mean "this is deliberately empty". */
+.sky-doll__ench li.is-empty { background: none; border: 1px dashed rgb(var(--c-border)); color: rgb(var(--c-muted)); }
+.sky-doll__note { font-style: normal; font-size: var(--sky-t-micro); line-height: 1.35; color: rgb(var(--c-muted)); }
+@media (max-width: 34rem) {
+  /* Two columns, in reading order. The doll shape needs three lanes to mean anything
+     and 120px lanes cannot hold "Fortify Stamina Regen" — a legible list beats a
+     silhouette nobody can read. */
+  .sky-doll { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-areas: none; }
+  .sky-doll__slot { grid-area: auto !important; }
+}
+
+/* ── Gear and stones ─────────────────────────────────────────────────────── */
+.sky-headline { display: flex; align-items: baseline; gap: 0.6rem; flex-wrap: wrap; margin: 0; }
+.sky-headline b { font: 700 var(--sky-t-answer) var(--font-mono, ui-monospace, monospace); line-height: 1.1; color: rgb(var(--c-accent)); }
+.sky-headline span { font-size: var(--sky-t-small); color: rgb(var(--c-muted)); }
+
+.sky-stack { display: flex; height: 1.6rem; margin: 0.9rem 0 0.6rem; border-radius: 0.45rem; overflow: hidden; background: rgb(var(--c-border) / 0.4); }
+.sky-stack__seg { width: var(--w); background: rgb(var(--c-accent) / var(--a, 0.9)); border-right: 1px solid rgb(var(--c-bg)); }
+/* Striped because it is a RANGE and not a helping — the bar would otherwise claim 75%
+   is what you get, when 65% is equally true. */
+.sky-stack__seg--range { background: repeating-linear-gradient(135deg, rgb(var(--c-accent) / var(--a, 0.9)) 0 4px, rgb(var(--c-accent) / 0.25) 4px 8px); }
+.sky-stack__keys { display: flex; flex-wrap: wrap; gap: 0.3rem 1rem; margin: 0 0 0.7rem; padding: 0; list-style: none; }
+.sky-stack__keys li { display: flex; align-items: center; gap: 0.35rem; font-size: var(--sky-t-small); color: rgb(var(--c-muted)); }
+.sky-stack__keys li::before { content: ""; width: 0.6rem; height: 0.6rem; border-radius: 0.15rem; background: rgb(var(--c-accent) / var(--a, 0.9)); }
+.sky-stack__keys b { font: 700 var(--sky-t-small) var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-fg)); }
+.sky-stack__total { margin: 0; font-size: var(--sky-t-small); color: rgb(var(--c-muted)); }
+.sky-stack__total b { font: 700 var(--sky-t-answer) var(--font-mono, ui-monospace, monospace); line-height: 1.1; color: rgb(var(--c-fg)); margin-right: 0.5rem; }
+
+.sky-pull { margin: 1.2rem 0 0; padding: 0.9rem 1.1rem; border-left: 3px solid rgb(var(--c-accent)); background: rgb(var(--c-accent) / 0.06); border-radius: 0 0.5rem 0.5rem 0; }
+.sky-pull p { margin: 0; font-size: var(--sky-t-lead); font-weight: 600; color: rgb(var(--c-fg)); }
+
+.sky-link {
+  display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.35rem 0.7rem;
+  border: 1px solid rgb(var(--c-border)); border-radius: 0.45rem; background: none;
+  font: 600 var(--sky-t-small) var(--font-mono, ui-monospace, monospace);
+  color: rgb(var(--c-fg)); text-decoration: none; cursor: pointer;
+  transition: border-color 0.12s ease, color 0.12s ease;
+}
+.sky-link:hover { border-color: rgb(var(--c-accent)); color: rgb(var(--c-accent)); }
+.sky-link:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.5); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sky-budget__b, .sky-link, .sky-modes__b { transition: none; }
+}
