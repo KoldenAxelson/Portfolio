@@ -1,0 +1,59 @@
+{{- /*
+  arg-showcase — the cycling "Argument Example" box. An argument in standard
+  form that walks itself through the terms the chapter introduces: the caption
+  reads "Argument Example — <term>" and the matching part of the argument
+  lights up, then it moves on. Steps can also swap the argument itself, which
+  is how the deductive/inductive contrast gets shown on the same sentences.
+
+    {{< arg-showcase >}}                     uses data/argsets/showcase-ch01
+    {{< arg-showcase set="evaluate-ch01" >}}
+
+  A step may carry a `note`, rendered under the argument — used by the
+  evaluative set, where the verdict needs a sentence of its own.
+
+  The FIRST step is rendered server-side, so with JavaScript off the page still
+  shows a complete argument in standard form — the same thing the old static
+  {{< arg >}} block showed. The cycling is layered on top of that.
+
+  Markup mirrors layouts/shortcodes/arg.html so the two boxes look identical;
+  this one just adds the data hooks the script needs.
+*/ -}}
+{{- $set := .Get "set" | default "showcase-ch01" -}}
+{{- $data := index site.Data.argsets $set -}}
+{{- if and $data $data.steps -}}
+{{- $first := index $data.steps 0 -}}
+{{- $arg := index $data.arguments $first.argument -}}
+<figure data-arg-showcase class="my-8 overflow-hidden rounded-2xl border border-border" style="background-color: rgb(var(--c-muted) / 0.05);">
+  <figcaption class="flex items-center gap-2 border-b border-border px-5 py-3 text-sm font-medium text-fg">
+    <span>Argument Example &mdash; <span data-showcase-label>{{ $first.label }}</span></span>
+  </figcaption>
+  <div data-showcase-body class="px-5 py-4 text-base leading-relaxed">
+    <div class="space-y-1.5">
+      {{- range $i, $p := $arg.premises }}
+      <p class="sc-line flex items-baseline gap-x-2.5" data-part="premises">
+        <span class="shrink-0 font-mono text-xs text-muted" aria-hidden="true">P{{ add $i 1 }}</span>
+        <span class="min-w-0 text-fg"><span class="sr-only">Premise {{ add $i 1 }}: </span>{{ $p }}</span>
+      </p>
+      {{- end }}
+    </div>
+    <hr class="my-2.5 border-0 border-t border-border/70" />
+    <p class="sc-line flex items-baseline gap-x-2.5" data-part="conclusion">
+      <span class="shrink-0 font-mono text-sm text-accent" aria-hidden="true">&there4;</span>
+      <span class="min-w-0 font-medium text-fg"><span class="sr-only">Therefore, conclusion: </span>{{ $arg.conclusion }}</span>
+    </p>
+    {{- with $first.note }}
+    <p data-showcase-note class="sc-note mt-3 text-sm italic leading-snug text-muted">{{ . }}</p>
+    {{- end }}
+  </div>
+  <script type="application/json" data-showcase-data>{{ $data | jsonify | safeJS }}</script>
+</figure>
+{{- if not (.Page.Scratch.Get "argShowcaseAssets") -}}
+  {{- $css := resources.Get "css/arg-showcase.css" | minify | fingerprint -}}
+  <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" />
+  {{- $js := resources.Get "scripts/pages/arg-showcase.js" | js.Build (dict "minify" true) | fingerprint -}}
+  <script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
+  {{- .Page.Scratch.Set "argShowcaseAssets" true -}}
+{{- end -}}
+{{- else -}}
+<p><em>arg-showcase: no data set named &ldquo;{{ $set }}&rdquo; found under data/argsets/.</em></p>
+{{- end -}}

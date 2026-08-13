@@ -1,10 +1,16 @@
-/* definitions — the {{< term >}} trigger and its DESKTOP detail drawer. On mobile
-   the term routes into the shared top-nav panel (a 'definition' mode — see
-   topnav.html / ts/nav.ts), so there's no mobile-specific CSS here. Colors come
-   from the site's --c-* / --glass-* tokens (base.css), so it themes automatically. */
+/* definitions — the {{< term >}} trigger and its DESKTOP definition windows.
+   On mobile the term routes into the shared top-nav panel (a 'definition' mode —
+   see topnav.html / site/nav.ts); the shared blocks at the bottom of this file
+   style the rendered definition in BOTH places, so the two views can't drift.
+   Colors come from the site's --c-* / --glass-* tokens (base.css), so it themes
+   automatically. */
+
+/* One easing for everything here: a fast-out curve (easeOutExpo) so motion
+   leaves immediately and settles, rather than drifting in linearly. */
+:root { --def-ease: cubic-bezier(0.16, 1, 0.3, 1); }
 
 /* Trigger: a word in the accent color. No underline until hover, so it reads as
-   "special / tappable" without cluttering the prose. */
+   "special / clickable" without cluttering the prose. */
 .term {
   appearance: none; background: none; border: 0; padding: 0; margin: 0;
   font: inherit; cursor: pointer; color: rgb(var(--c-accent));
@@ -14,45 +20,486 @@
 .term[aria-expanded="true"] { text-decoration: underline; text-underline-offset: 2px; }
 .term:focus-visible { outline: 2px solid rgb(var(--c-accent)); outline-offset: 2px; }
 
-/* Desktop drawer (>=1024px): a card floating on the right, vertically centered.
-   Its horizontal position is set by definitions.ts so it sits in the gutter
-   beside the text when there's room, and pins to the edge otherwise. Slides in
-   from the right. */
-.def-drawer { position: fixed; inset: 0; z-index: 60; pointer-events: none; }
-@media (max-width: 1023px) { .def-drawer { display: none; } }
-.def-drawer__card {
+/* ── Desktop windows (>=1024px) ──────────────────────────────────────────────
+   The container is a fixed, click-through layer; each window inside it is also
+   position:fixed, which is what keeps it at the same screen X/Y while the page
+   scrolls underneath. definitions.ts sets left/top/transform-origin (the origin
+   being the corner nearest the pointer, so it grows out of the click). */
+.def-windows { position: fixed; inset: 0; z-index: 60; pointer-events: none; }
+@media (max-width: 1023px) { .def-windows { display: none; } }
+
+.def-win {
   box-sizing: border-box;
-  position: absolute; top: 50%; right: 1.5rem;   /* right is the fallback; JS may set left instead */
-  pointer-events: none; width: 19rem;            /* only clickable once open (see [data-open]) */
-  max-width: calc(100vw - 3rem); max-height: calc(100dvh - 3rem); overflow-y: auto;
-  border-radius: 1rem; padding: 18px 20px;
-  background: rgb(var(--glass-bg) / 0.92); border: 1px solid rgb(var(--c-border));
+  position: fixed; width: 20rem;
+  max-width: calc(100vw - 2rem); max-height: calc(100dvh - 2rem);
+  display: flex; flex-direction: column;
+  pointer-events: auto;
+  border-radius: 0.875rem;
+  background: rgb(var(--glass-bg) / 0.94); border: 1px solid rgb(var(--c-border));
   -webkit-backdrop-filter: blur(14px) saturate(160%); backdrop-filter: blur(14px) saturate(160%);
   box-shadow: inset 0 1px 0 0 rgb(var(--glass-hi) / 0.5), 0 18px 44px -16px rgb(0 0 0 / 0.28);
-  transform: translate(calc(100% + 2rem), -50%); opacity: 0;
-  transition: transform 320ms cubic-bezier(0.22, 1, 0.36, 1), opacity 240ms ease;
+  /* Stage one: the empty shell scales up from the pointer. */
+  opacity: 0; transform: scale(0.82);
+  transition: opacity 120ms var(--def-ease), transform 200ms var(--def-ease);
 }
+.def-win.is-open { opacity: 1; transform: scale(1); }
+.def-win:focus-visible { outline: 2px solid rgb(var(--c-accent)); outline-offset: 2px; }
+/* No transition while dragging — the pointer sets left/top every frame. */
+.def-win.is-dragging { transition: none; box-shadow: 0 26px 60px -18px rgb(0 0 0 / 0.4); }
+/* Both need lifting off a dark background to stay legible. */
 @media (prefers-color-scheme: dark) {
-  .def-drawer__card { box-shadow: inset 0 1px 0 0 rgb(var(--glass-hi) / 0.1), 0 18px 44px -16px rgb(0 0 0 / 0.75); }
+  .def-fig {
+    --fig-blue: #60a5fa; --fig-blue-rgb: 96 165 250;
+    --fig-violet: #a78bfa; --fig-violet-rgb: 167 139 250;
+    --fig-true: #60a5fa; --fig-true-rgb: 96 165 250;
+    --fig-false: #f87171; --fig-false-rgb: 248 113 113;
+  }
 }
-.def-drawer[data-open] .def-drawer__card { transform: translate(0, -50%); opacity: 1; pointer-events: auto; }
 
-.def-card__head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
-.def-card__label {
-  font: 600 0.66rem var(--font-mono, ui-monospace, monospace); letter-spacing: 0.1em;
-  text-transform: uppercase; color: rgb(var(--c-accent)); margin: 0; padding-top: 4px;
+@media (prefers-color-scheme: dark) {
+  .def-win { box-shadow: inset 0 1px 0 0 rgb(var(--glass-hi) / 0.1), 0 18px 44px -16px rgb(0 0 0 / 0.75); }
 }
-.def-card__body { font-size: 0.95rem; line-height: 1.6; color: rgb(var(--c-fg)); margin: 0; }
-.def-close {
+
+/* Stage two: the contents fade in once the shell has arrived. They're only
+   opacity-hidden, never display:none, so the shell is already its final size and
+   nothing reflows mid-animation. The header's divider is part of the shell, so
+   only its children fade — the line is there from the first frame. */
+.def-win__head > *, .def-win__body {
+  opacity: 0; transition: opacity 170ms var(--def-ease);
+}
+.def-win.is-filled .def-win__head > *, .def-win.is-filled .def-win__body { opacity: 1; }
+.def-win__body { transition-delay: 40ms; overflow-y: auto; padding: 14px 16px 16px; }
+
+.def-win__head {
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 10px 10px 10px 16px;
+  border-bottom: 1px solid rgb(var(--c-border) / 0.7);
+  cursor: grab; touch-action: none; user-select: none;
+}
+.def-win.is-dragging .def-win__head { cursor: grabbing; }
+.def-win__label {
+  margin: 0;
+  font: 600 0.66rem var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.1em; text-transform: uppercase; color: rgb(var(--c-accent));
+}
+.def-win__close {
   flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center;
-  width: 30px; height: 30px; border-radius: 999px; border: 1px solid rgb(var(--c-border));
-  background: rgb(var(--c-bg) / 0.6); color: rgb(var(--c-muted)); cursor: pointer;
+  width: 26px; height: 26px; border-radius: 999px;
+  border: 1px solid rgb(var(--c-border)); background: rgb(var(--c-bg) / 0.6);
+  color: rgb(var(--c-muted)); cursor: pointer;
   transition: color 0.12s, border-color 0.12s;
 }
-.def-close:hover { color: rgb(var(--c-accent)); border-color: rgb(var(--c-accent)); }
-.def-close:focus-visible { outline: 2px solid rgb(var(--c-accent)); outline-offset: 2px; }
+.def-win__close:hover { color: rgb(var(--c-accent)); border-color: rgb(var(--c-accent)); }
+.def-win__close:focus-visible { outline: 2px solid rgb(var(--c-accent)); outline-offset: 2px; }
+
 
 @media (prefers-reduced-motion: reduce) {
-  .def-drawer__card { transition: opacity 0.01s; }
-  .def-drawer[data-open] .def-drawer__card { transform: translate(0, -50%); }
+  .def-win { transition: opacity 0.01s; transform: none; }
+  .def-win.is-open { transform: none; }
+  .def-win__head > *, .def-win__body { transition: opacity 0.01s; }
 }
+
+/* ── Shared definition body (desktop windows + mobile panel) ─────────────── */
+
+.def-body { margin: 0; font-size: 0.95rem; line-height: 1.6; color: rgb(var(--c-fg)); }
+.def-body strong { font-weight: 700; }
+
+/* A cross-reference to another term. Dotted underline so it reads as a further
+   drill-down rather than a repeat of the .term styling in the prose. */
+.def-ref {
+  appearance: none; background: none; border: 0; padding: 0; margin: 0;
+  font: inherit; cursor: pointer; color: rgb(var(--c-accent));
+  text-decoration: underline; text-decoration-style: dotted; text-underline-offset: 2px;
+  border-radius: 3px; transition: color 0.12s;
+}
+.def-ref:hover { text-decoration-style: solid; }
+.def-ref:focus-visible { outline: 2px solid rgb(var(--c-accent)); outline-offset: 2px; }
+
+/* Word lists as chips — a single unlabelled group (the premise/conclusion
+   indicator vocabularies). Two or more labelled groups render as .def-table. */
+.def-words { margin-top: 12px; }
+.def-words__label {
+  margin: 0 0 6px;
+  font: 600 0.6rem var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.1em; text-transform: uppercase; color: rgb(var(--c-muted));
+}
+.def-words__list {
+  display: flex; flex-wrap: wrap; gap: 5px;
+  margin: 0; padding: 0; list-style: none;
+}
+.def-words__list li {
+  padding: 2px 8px; border-radius: 999px;
+  border: 1px solid rgb(var(--c-border));
+  background: rgb(var(--c-muted) / 0.06);
+  font-size: 0.78rem; line-height: 1.45; color: rgb(var(--c-fg));
+  transition: color 200ms var(--def-ease), border-color 200ms var(--def-ease),
+              background-color 200ms var(--def-ease);
+}
+/* The word the madlib is showing right now — so the vocabulary appears once,
+   with the live one called out, rather than being listed twice. */
+.def-words__list li.is-on {
+  color: rgb(var(--c-accent)); border-color: rgb(var(--c-accent));
+  background: rgb(var(--c-accent) / 0.1);
+}
+
+/* Two or more labelled groups: a comparison, so columns rather than chips. */
+.def-table {
+  width: 100%; margin-top: 12px;
+  border-collapse: collapse; table-layout: fixed;
+  font-size: 0.8rem; line-height: 1.5;
+}
+.def-table th {
+  padding: 0 8px 5px; text-align: left;
+  font: 600 0.6rem var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.1em; text-transform: uppercase; color: rgb(var(--c-muted));
+  border-bottom: 1px solid rgb(var(--c-border));
+}
+.def-table td {
+  padding: 4px 8px; color: rgb(var(--c-fg));
+  border-bottom: 1px solid rgb(var(--c-border) / 0.45);
+  transition: color 200ms var(--def-ease), background-color 200ms var(--def-ease);
+}
+.def-table tr:last-child td { border-bottom: 0; }
+.def-table td.is-on {
+  color: rgb(var(--c-accent)); background: rgb(var(--c-accent) / 0.1);
+}
+.def-table td + td, .def-table th + th { border-left: 1px solid rgb(var(--c-border) / 0.45); }
+/* A table whose cells are ways in to other definitions. */
+.def-table--terms td { padding: 3px 8px; }
+.def-table--terms .def-ref { font-size: 0.8rem; }
+
+/* ── Micro-figures (def-figures.ts) ─────────────────────────────────────── */
+
+.def-fig {
+  margin: 12px 0 0; padding: 0;
+  /* The palette has no success/danger token, so figures carry their own —
+     the same values quiz-kit.css uses for correct/incorrect. */
+  --fig-ok: #22c55e;
+  --fig-bad: #ef4444;
+  /* True and false carry their own colours. Kept as channel triplets as well,
+     so a tint can be mixed the way the --c-* tokens are. */
+  --fig-blue: #2563eb;
+  --fig-blue-rgb: 37 99 235;
+  --fig-violet: #7c3aed;
+  --fig-violet-rgb: 124 58 237;
+  --fig-true: #2563eb;
+  --fig-true-rgb: 37 99 235;
+  --fig-false: #dc2626;
+  --fig-false-rgb: 220 38 38;
+}
+
+/* argument-map: two premises above, flowing down into a conclusion. The lit/dim
+   split is what lets one drawing serve five definitions. */
+/* Capped at its viewBox width so it draws ~1:1. Left to stretch, the SVG scales
+   to the window and the circles come back out at the size they were before. */
+.fig-map { display: block; width: 100%; max-width: 190px; height: auto; margin: 0 auto; }
+.fig-node__ring {
+  fill: rgb(var(--c-muted) / 0.07);
+  stroke: rgb(var(--c-border)); stroke-width: 1.5;
+  transition: fill 200ms var(--def-ease), stroke 200ms var(--def-ease);
+}
+.fig-node__label {
+  font: 600 13px var(--font-mono, ui-monospace, monospace);
+  fill: rgb(var(--c-muted));
+  transition: fill 200ms var(--def-ease);
+}
+/* The flow runs on every link, lit or not — the support relation is live
+   whether or not this definition happens to be about it. Dimming changes what's
+   in focus, not what's moving. */
+.fig-link {
+  stroke: rgb(var(--c-border)); stroke-width: 2; stroke-linecap: round;
+  stroke-dasharray: 5 7;
+  animation: fig-flow 1.4s linear infinite;
+  transition: stroke 200ms var(--def-ease);
+}
+.fig-node.is-lit .fig-node__ring { fill: rgb(var(--c-accent) / 0.12); stroke: rgb(var(--c-accent)); }
+.fig-node.is-lit .fig-node__label { fill: rgb(var(--c-accent)); }
+.fig-link.is-lit { stroke: rgb(var(--c-accent)); }
+.fig-node.is-dim, .fig-link.is-dim { opacity: 0.34; }
+
+@keyframes fig-flow { to { stroke-dashoffset: -24; } }
+
+/* madlib: one sentence, cycling its indicator on its own. No picker — the
+   choice is style, not logic. The live word lights up in the chip list below.
+
+   The sentence is a row of word spans rather than one text run, which is what
+   lets any single word be crossfaded, added or removed without touching the
+   rest. They stay in ordinary inline flow separated by real spaces, so wrapping,
+   selection and copying behave exactly as they would in plain text. */
+.def-fig--madlib { margin-top: 14px; }
+.fig-line {
+  margin: 0; font-size: 0.88rem; line-height: 1.7;
+  color: rgb(var(--c-muted));
+}
+/* Every word is the same kind of box, so every word animates the same way.
+   inline-block gives each one a box the ghost can sit in and a width that can be
+   animated, while ordinary inline flow (and the real spaces between them) keeps
+   the wrapping and the copyable text of a normal sentence. */
+/* nowrap so a multi-word indicator ("It follows that") can never break inside
+   its own box — that was what made the sentence grow taller mid-animation. */
+.fig-tok { position: relative; display: inline-block; white-space: nowrap; }
+.fig-tok__t { display: inline-block; }
+/* The indicator wears the chip — styling only; it transitions like any other. */
+.fig-slot {
+  box-sizing: border-box; padding: 1px 7px;
+  border: 1px dashed rgb(var(--c-accent) / 0.6); border-radius: 6px;
+  background: rgb(var(--c-accent) / 0.08);
+  font-weight: 600; color: rgb(var(--c-accent));
+}
+/* The outgoing text, taken out of flow so its span can resize under it while it
+   leaves. `padding: inherit` keeps it aligned inside the chip as well as inside
+   a bare word, so one rule covers both. */
+.fig-ghost {
+  position: absolute; left: 0; top: 0; padding: inherit;
+  white-space: nowrap; pointer-events: none;
+  user-select: none; -webkit-user-select: none;
+}
+
+/* truth-values: two sets of two, running together. True and false get colours
+   of their own so the pair reads before the letters resolve. */
+.fig-tv { display: block; width: 100%; max-width: 200px; height: auto; margin: 0 auto; }
+.tv-node__ring {
+  fill: rgb(var(--c-muted) / 0.07);
+  stroke: rgb(var(--c-border)); stroke-width: 1.5;
+  transition: fill 300ms var(--def-ease), stroke 300ms var(--def-ease);
+}
+.tv-node__label {
+  font: 600 13px var(--font-mono, ui-monospace, monospace);
+  fill: rgb(var(--c-muted));
+  transition: fill 300ms var(--def-ease), opacity 300ms var(--def-ease);
+}
+/* The value bubbles start empty — the letter is revealed by the glow, not
+   sitting there waiting for it. */
+.tv-node--reveal .tv-node__label { opacity: 0; }
+.tv-node--reveal.is-on .tv-node__label { opacity: 1; }
+
+.tv-node--source.is-on .tv-node__ring {
+  fill: rgb(var(--c-accent) / 0.14); stroke: rgb(var(--c-accent));
+}
+.tv-node--source.is-on .tv-node__label { fill: rgb(var(--c-accent)); }
+.tv-node--true.is-on .tv-node__ring { fill: rgb(var(--fig-true-rgb) / 0.16); stroke: var(--fig-true); }
+.tv-node--true.is-on .tv-node__label { fill: var(--fig-true); }
+.tv-node--false.is-on .tv-node__ring { fill: rgb(var(--fig-false-rgb) / 0.16); stroke: var(--fig-false); }
+.tv-node--false.is-on .tv-node__label { fill: var(--fig-false); }
+
+.tv-track { stroke: rgb(var(--c-border)); stroke-width: 2; }
+.tv-fill {
+  stroke: rgb(var(--c-accent)); stroke-width: 2; stroke-linecap: round;
+  transform-box: fill-box; transform-origin: left center;
+  transform: scaleX(0);
+  transition: transform 380ms var(--def-ease);
+}
+.tv-fill.is-on { transform: scaleX(1); }
+
+/* advice + conditional: shapes whose glow colour cycles. The colour is set as a
+   custom property on the element, so one rule serves every colour in the
+   palette and adding one never touches this file. */
+.fig-glow { display: block; width: 100%; max-width: 200px; height: auto; margin: 0 auto; }
+.gl-node__ring {
+  fill: rgb(var(--c-muted) / 0.07);
+  stroke: rgb(var(--c-border)); stroke-width: 1.5;
+  transition: fill 400ms var(--def-ease), stroke 400ms var(--def-ease);
+}
+.gl-node.is-on .gl-node__ring {
+  fill: rgb(var(--glow-rgb) / 0.16); stroke: var(--glow);
+}
+.gl-link {
+  stroke: rgb(var(--c-border)); stroke-width: 2; stroke-linecap: round;
+  transition: stroke 400ms var(--def-ease), opacity 400ms var(--def-ease);
+}
+.gl-link.is-on {
+  stroke: var(--glow);
+  /* The map's marching dash, not the flow figure's single pulse: these links are
+     short (72-100 units), and a 5/39 pattern leaves at most one dash on them —
+     which reads as a broken line rather than a moving one. */
+  stroke-dasharray: 5 7; animation: fig-flow 1.4s linear infinite;
+}
+.gl-link:not(.is-on) { opacity: 0.4; }
+
+/* The crown: who is doing the telling. */
+.gl-crown { fill: rgb(var(--c-muted) / 0.5); }
+/* The truth values advice does not carry, struck out. HTML rather than SVG so
+   the strike is guaranteed to sit on the letter (see the note in
+   def-figures.ts). */
+.gl-values {
+  display: flex; justify-content: center; gap: 18px;
+  margin: 2px 0 0;
+}
+.gl-struck {
+  font: 600 0.72rem var(--font-mono, ui-monospace, monospace);
+  color: rgb(var(--c-muted) / 0.8);
+  text-decoration: line-through;
+  text-decoration-thickness: 1.5px;
+  text-decoration-color: rgb(var(--c-muted) / 0.8);
+}
+
+/* ── the sequenced figures (expository / explanation / illustration / report) ── */
+.fig-bx { display: block; width: 100%; max-width: 200px; height: auto; margin: 0 auto; }
+.bx-node__ring {
+  fill: rgb(var(--c-muted) / 0.07);
+  stroke: rgb(var(--c-border)); stroke-width: 1.5;
+  transition: fill 320ms var(--def-ease), stroke 320ms var(--def-ease);
+}
+.bx-node__label {
+  font: 600 13px var(--font-mono, ui-monospace, monospace);
+  fill: rgb(var(--c-muted));
+  transition: fill 320ms var(--def-ease);
+}
+.bx-node.is-on .bx-node__ring { fill: rgb(var(--c-accent) / 0.14); stroke: rgb(var(--c-accent)); }
+.bx-node.is-on .bx-node__label { fill: rgb(var(--c-accent)); }
+/* Glyphs drawn rather than lettered: the globe, the eye, the book. */
+.bx-glyph { fill: none; stroke: rgb(var(--c-muted)); stroke-width: 1.4; transition: stroke 320ms var(--def-ease); }
+.bx-node.is-on .bx-glyph { stroke: rgb(var(--c-accent)); }
+.bx-mark {
+  fill: none; stroke: rgb(var(--c-muted) / 0.8); stroke-width: 1.3;
+  stroke-linejoin: round; stroke-linecap: round;
+  opacity: 0; transition: opacity 320ms var(--def-ease);
+}
+.bx-mark.is-on { opacity: 1; }
+
+.bx-track { stroke: rgb(var(--c-border)); stroke-width: 2; fill: none; }
+/* pathLength=1, so the dash offset is a fraction of the run and a line can be
+   told to stop half way. */
+.bx-line {
+  stroke: rgb(var(--c-accent)); stroke-width: 2; stroke-linecap: round; fill: none;
+  stroke-dasharray: 1; stroke-dashoffset: 1;
+  transition: stroke-dashoffset 460ms var(--def-ease);
+}
+
+/* The panel of elaboration. */
+.bx-panel {
+  fill: rgb(var(--c-muted) / 0.06); stroke: rgb(var(--c-border)); stroke-width: 1.5;
+  opacity: 0; transition: opacity 320ms var(--def-ease);
+}
+.bx-panel.is-on { opacity: 1; }
+.bx-textline {
+  fill: rgb(var(--c-muted) / 0.55);
+  opacity: 0; transform: translateX(-6px);
+  transition: opacity 300ms var(--def-ease), transform 300ms var(--def-ease);
+}
+.bx-textline.is-on { opacity: 1; transform: none; }
+
+/* infer: one bubble, centred, with the value it carries beneath it. */
+.def-fig--infer { display: flex; flex-direction: column; align-items: center; }
+.fig-infer { display: block; width: 64px; height: 64px; }
+.if-value {
+  margin: 5px 0 0;
+  font: 600 0.76rem var(--font-mono, ui-monospace, monospace);
+  transition: color 320ms var(--def-ease);
+}
+.if-value.is-true { color: var(--fig-true); }
+.if-value.is-false { color: var(--fig-false); }
+
+/* belief and warning: advice's shape in the site's own accent, no cycling. */
+.def-fig--glow .gl-node.is-accent .gl-node__ring {
+  fill: rgb(var(--c-accent) / 0.14); stroke: rgb(var(--c-accent));
+}
+.def-fig--glow .gl-link.is-accent { stroke: rgb(var(--c-accent)); }
+.gl-values--under {
+  position: relative; height: 1.1em;
+  max-width: 200px; margin-left: auto; margin-right: auto;
+}
+.gl-mark {
+  position: absolute; left: var(--at, 50%); transform: translateX(-50%);
+  font: 600 0.72rem var(--font-mono, ui-monospace, monospace);
+  color: rgb(var(--c-accent));
+}
+/* The warning triangle, in place of advice's struck values. */
+.gl-warn {
+  fill: none; stroke: rgb(var(--c-accent)); stroke-width: 1.6;
+  stroke-linejoin: round; stroke-linecap: round;
+}
+
+/* evaluate: the argument, judged. Its own width because the drawing is wider
+   than the others — the verdict bubbles sit beside the argument, not under it. */
+.fig-ev { display: block; width: 100%; height: auto; margin: 0 auto; }
+/* Support that can be taken away: when it goes, so does the verdict. */
+.ev-link {
+  fill: none; stroke: rgb(var(--c-accent)); stroke-width: 2; stroke-linecap: round;
+  stroke-dasharray: 5 7; animation: fig-flow 1.4s linear infinite;
+  opacity: 0; transition: opacity 340ms var(--def-ease);
+}
+.ev-link.is-on { opacity: 1; }
+/* Cogency reads its conclusion off a ring rather than a colour: red while the
+   premises leave it no better than a coin flip, green once they carry it past. */
+.ev-arc {
+  fill: none; stroke: var(--fig-false); stroke-width: 2.4; stroke-linecap: round;
+  transition: stroke-dashoffset 620ms var(--def-ease), stroke 300ms var(--def-ease);
+}
+.ev-arc.is-over { stroke: var(--fig-ok); }
+.ev-arc.is-empty { opacity: 0; }
+
+/* standard-form: the definition's own shape, in miniature. */
+.def-fig--sf { font-size: 0.85rem; line-height: 1.5; }
+.sf-lines { margin: 0; padding: 0; list-style: none; }
+.sf-line { display: flex; align-items: baseline; gap: 8px; margin: 0 0 3px; color: rgb(var(--c-fg)); }
+.sf-tag {
+  flex-shrink: 0; width: 1.2rem;
+  font: 600 0.62rem var(--font-mono, ui-monospace, monospace);
+  color: rgb(var(--c-muted));
+}
+.sf-rule { margin: 6px 0; border: 0; border-top: 1px solid rgb(var(--c-border)); }
+.sf-concl { margin: 0; font-weight: 500; }
+.sf-concl .sf-tag { color: rgb(var(--c-accent)); font-size: 0.8rem; }
+
+/* pipeline (deductive): every stage passes, every time. */
+.fig-pipe { display: block; width: 100%; max-width: 200px; height: auto; margin: 0 auto; }
+.fig-step__ring {
+  fill: rgb(var(--c-muted) / 0.07);
+  stroke: rgb(var(--c-border)); stroke-width: 1.5;
+  transition: fill 260ms var(--def-ease), stroke 260ms var(--def-ease);
+}
+.fig-step__label {
+  font: 600 13px var(--font-mono, ui-monospace, monospace);
+  fill: rgb(var(--c-muted));
+  transition: opacity 200ms var(--def-ease);
+}
+.fig-step__check {
+  stroke: var(--fig-ok); stroke-width: 2.4;
+  stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 1; stroke-dashoffset: 1;
+  transition: stroke-dashoffset 300ms var(--def-ease);
+}
+.fig-step.is-done .fig-step__ring { fill: rgb(34 197 94 / 0.14); stroke: var(--fig-ok); }
+.fig-step.is-done .fig-step__label { opacity: 0; }
+.fig-step.is-done .fig-step__check { stroke-dashoffset: 0; }
+
+.fig-pipe__track { stroke: rgb(var(--c-border)); stroke-width: 2; }
+.fig-pipe__fill {
+  stroke: var(--fig-ok); stroke-width: 2; stroke-linecap: round;
+  transform-box: fill-box; transform-origin: left center;
+  transform: scaleX(0);
+  transition: transform 320ms var(--def-ease);
+}
+.fig-pipe__fill.is-done { transform: scaleX(1); }
+
+/* Inductive: an arc around the conclusion instead of a check inside it. Red
+   while the conclusion is no better than a coin flip, green once the premises
+   make it more likely than not — and it never closes the circle. */
+.fig-step__arc {
+  fill: none; stroke: var(--fig-bad); stroke-width: 2.4; stroke-linecap: round;
+  transition: stroke 220ms var(--def-ease);
+}
+.fig-step__arc.is-over { stroke: var(--fig-ok); }
+/* The conclusion of an inductive argument never completes, so its ring keeps
+   the resting border and its label never gives way to a checkmark. */
+.fig-step--ring .fig-step__check { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fig-link, .ev-link { animation: none; }
+  .ev-link, .ev-arc { transition: none; }
+  .tv-node__ring, .tv-node__label, .tv-fill { transition: none; }
+  .gl-node__ring, .gl-link { transition: none; }
+  .gl-link.is-on { animation: none; }
+  .bx-node__ring, .bx-node__label, .bx-glyph, .bx-mark, .bx-line,
+  .bx-panel, .bx-textline, .if-value { transition: none; }
+  .bx-textline { transform: none; }
+  .fig-node__ring, .fig-node__label, .fig-link,
+  .fig-line, .fig-step__ring, .fig-step__label, .fig-step__check,
+  .fig-pipe__fill, .fig-step__arc { transition: none; }
+}
+
+/* Mobile panel: the container's own type scale is set in topnav.html, so the
+   shared body just inherits it. */
+[data-definition-body] .def-body { font-size: inherit; line-height: inherit; }
