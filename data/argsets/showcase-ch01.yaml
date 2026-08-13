@@ -1,0 +1,50 @@
+# Argument Example — the cycling showcase on Chapter 1 (the {{< arg-showcase >}}
+# shortcode). One argument in standard form, walked through the terms the chapter
+# introduces: each step names a term, highlights the part of the argument that
+# term refers to, and the caption reads "Argument Example — <label>".
+#
+# Two arguments so the deductive/inductive contrast is shown on the SAME
+# familiar sentences rather than described. A step naming a different argument
+# swaps it in.
+#
+# steps[].highlight:
+#   all         nothing dimmed — the whole form
+#   premises    the premise lines
+#   conclusion  the conclusion line
+#   indicator   the argument's `indicator` words, inside the conclusion
+#
+# The first step is what renders server-side, so the page is complete and
+# readable with JavaScript off; the cycling is layered on top.
+
+arguments:
+  deductive:
+    premises:
+      - All men are mortal.
+      - Socrates was a man.
+    conclusion: Socrates is mortal.
+  inductive:
+    premises:
+      - Most men have two feet.
+      - Socrates was a man.
+    conclusion: Socrates most likely has two feet.
+    indicator: most likely
+
+steps:
+  - label: Standard Form
+    argument: deductive
+    highlight: all
+  - label: Premises
+    argument: deductive
+    highlight: premises
+  - label: Conclusion
+    argument: deductive
+    highlight: conclusion
+  - label: Deductive Argument
+    argument: deductive
+    highlight: all
+  - label: Inductive Argument
+    argument: inductive
+    highlight: all
+  - label: Inferential Claim Indicator
+    argument: inductive
+    highlight: indicator

@@ -189,13 +189,15 @@
         </div>
       </div>
 
-      {{/* Definition mode — glossary term detail, driven by ts/nav.ts from
-           [data-term-def] words on Basic Logic pages. Same panel + physics as the
-           nav menu; desktop is handled separately by the definitions drawer. */}}
+      {{/* Definition mode — glossary term detail, driven by site/nav.ts from
+           [data-term] words on Basic Logic pages. Same panel + physics as the
+           nav menu; desktop opens draggable windows instead (site/definitions.ts).
+           The body is a <div>, not a <p>: site/glossary.ts fills it with the
+           definition paragraph plus any indicator-word chip lists. */}}
       <div data-mobile-panel-definition class="mx-auto max-w-screen-xl px-6 py-5">
         <div class="opacity-0 transition-opacity duration-200 ease-out motion-reduce:transition-none">
           <p data-definition-label></p>
-          <p data-definition-body></p>
+          <div data-definition-body></div>
         </div>
       </div>
 
@@ -298,7 +300,9 @@
     opacity: 1;
     transition-delay: 200ms;
   }
-  /* Definition mode — a glossary term tapped on mobile (see ts/nav.ts). */
+  /* Definition mode — a glossary term tapped on mobile (see site/nav.ts). The
+     inner .def-body / .def-ref / .def-words markup is styled in definitions.css,
+     shared with the desktop windows. */
   [data-definition-label] {
     margin: 0 0 0.35rem;
     font: 600 0.72rem var(--font-mono, ui-monospace, monospace);

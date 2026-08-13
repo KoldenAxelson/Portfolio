@@ -1,0 +1,59 @@
+# Argument Example — the second cycling showcase on Chapter 1, for the
+# evaluative terms. Same shortcode and same machinery as showcase-ch01; what
+# differs is that each step swaps in an argument chosen to make its term's point,
+# and carries a `note` saying what the verdict is and why.
+#
+# The arguments are deliberately uncomfortable. A valid argument built on false
+# premises, and an invalid one built on true ones, are the two cases that break
+# the assumption readers arrive with — that "valid" means "true".
+
+arguments:
+  valid-unsound:
+    premises:
+      - All cats are fish.
+      - Konrad was a cat.
+    conclusion: Konrad was a fish.
+  invalid-true:
+    premises:
+      - California is in the United States.
+      - The United States is in North America.
+    conclusion: Konrad is in California.
+  sound:
+    premises:
+      - All men are mortal.
+      - Socrates was a man.
+    conclusion: Socrates is mortal.
+  strong:
+    premises:
+      - Most men have two feet.
+      - Socrates was a man.
+    conclusion: Socrates most likely has two feet.
+    indicator: most likely
+  weak:
+    premises:
+      - Two men I met had two feet.
+      - Socrates was a man.
+    conclusion: Socrates most likely has two feet.
+    indicator: most likely
+
+steps:
+  - label: Validity
+    argument: valid-unsound
+    highlight: all
+    note: Valid. If the premises were true the conclusion would have to be — and that is the whole test. Both happen to be false, which is a separate question.
+  - label: Invalidity
+    argument: invalid-true
+    highlight: all
+    note: Invalid, even though every statement in it is true. Nothing in the premises leads to the conclusion, and truth cannot rescue a form that does not connect.
+  - label: Soundness
+    argument: sound
+    highlight: all
+    note: Sound. Valid in form, and this time the premises are true as well.
+  - label: Strength
+    argument: strong
+    highlight: indicator
+    note: Strong. The premises do not guarantee the conclusion, but they make it likely — which is all an inductive argument claims.
+  - label: Cogency
+    argument: weak
+    highlight: premises
+    note: Weak, and so not cogent. Two men is too small a sample to make the conclusion likely, however true that premise may be.

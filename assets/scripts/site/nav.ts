@@ -5,6 +5,7 @@ import { populateGameCard, wireCarouselDots } from './game-card';
 import { populateNoteCard } from './skyrim-notes';
 import { wirePanelMode } from './sub-nav';
 import type { PanelHost } from './sub-nav';
+import { DEFAULT_SET, fillPanel } from './glossary';
 
 const SHOW_NAV_BELOW_PX = 50;
 const SCROLL_JITTER_PX = 4;
@@ -215,18 +216,32 @@ function wireNavElements(): void {
     host,
   );
 
-  // Glossary terms on Basic Logic pages.
+  // Glossary terms on Basic Logic pages. Desktop opens a draggable window per
+  // term (definitions.ts); here one definition shows at a time and a
+  // cross-reference tapped inside it replaces the panel's contents. The fill is
+  // shared with the desktop windows (glossary.ts) so the two cannot drift apart.
   wirePanelMode(
     {
       mode: 'definition',
-      trigger: '[data-term-def]',
+      trigger: '[data-term]',
       content: '[data-mobile-panel-definition]',
-      populate: (trigger, content) => {
-        const label = content.querySelector<HTMLElement>('[data-definition-label]');
+      setup: (content) => {
         const body = content.querySelector<HTMLElement>('[data-definition-body]');
-        if (label) label.textContent = trigger.getAttribute('data-term-label') || '';
-        if (body) body.textContent = trigger.getAttribute('data-term-def') || '';
+        // Cross-references are created fresh on every fill, so the listener is
+        // delegated to the container — and guarded, because setup() re-runs on
+        // each init while this container survives within a page.
+        if (!body || body.dataset.refsBound === '1') return;
+        body.dataset.refsBound = '1';
+        body.addEventListener('click', (e) => {
+          const ref = (e.target as Element | null)?.closest<HTMLElement>('[data-term-ref]');
+          if (!ref?.dataset.termRef) return;
+          e.preventDefault();
+          e.stopPropagation();
+          fillPanel(content, ref.dataset.termRef, body.dataset.termSet ?? DEFAULT_SET);
+        });
       },
+      populate: (trigger, content) =>
+        fillPanel(content, trigger.dataset.term ?? '', trigger.dataset.termSet ?? DEFAULT_SET),
     },
     host,
   );

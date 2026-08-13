@@ -1,14 +1,21 @@
 {{- /*
-  term — wrap a vocab word to make it a tappable definition popover.
+  term — wrap a vocab word to make it a clickable definition.
 
     {{< term "validity" >}}validity{{< /term >}}   key + the word as it reads in prose
     {{< term "standard-form" >}}standard form{{< /term >}}
 
-  The key looks up data/glossary/basic-logic.yaml (one source of truth for the
-  definitions). The button carries the label + definition; the popover behavior
-  lives in the global bundle (ts/definitions.ts → the shared drawer). Only the
-  CSS ships lazily, once per page, on pages that actually use a term. A bad key
-  renders the plain word and logs a build warning, so a typo never breaks the page.
+  The key looks up data/glossary/<set>.yaml (one source of truth). The button
+  carries only the KEY — the definition text is not inlined per-word, because a
+  definition can cross-reference other terms ([[key|display]]) and carry word
+  lists, and those need lookup at click time from inside an already-open card.
+  So the whole set ships once per page as a JSON blob and the client resolves
+  keys against it (site/glossary.ts).
+
+  Behavior lives in the global bundle: desktop opens a draggable window per term
+  (site/definitions.ts), mobile replaces the top-nav panel (site/nav.ts). Only
+  the CSS ships lazily, once per page, on pages that actually use a term. A bad
+  key renders the plain word and logs a build warning, so a typo never breaks
+  the page.
 */ -}}
 {{- $set := .Get "set" | default "basic-logic" -}}
 {{- $key := .Get 0 -}}
@@ -16,7 +23,13 @@
 {{- $entry := index $glossary $key -}}
 {{- $display := .Inner | default $key -}}
 {{- if $entry -}}
-<button type="button" class="term" data-term-def="{{ $entry.definition }}" data-term-label="{{ $entry.term }}" aria-expanded="false" aria-haspopup="dialog">{{ $display }}</button>
+<button type="button" class="term" data-term="{{ $key }}" data-term-set="{{ $set }}" aria-expanded="false" aria-haspopup="dialog">{{ $display }}</button>
+{{- /* The set ships once per page, keyed by set name so a page can use two. */ -}}
+{{- $seen := printf "glossaryData-%s" $set -}}
+{{- if not (.Page.Scratch.Get $seen) -}}
+  <script type="application/json" data-glossary="{{ $set }}">{{ $glossary | jsonify | safeJS }}</script>
+  {{- .Page.Scratch.Set $seen true -}}
+{{- end -}}
 {{- if not (.Page.Scratch.Get "definitionsAssets") -}}
   {{- $css := resources.Get "css/definitions.css" | minify | fingerprint -}}
   <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" />

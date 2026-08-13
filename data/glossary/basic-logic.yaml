@@ -1,109 +1,359 @@
 # Basic Logic glossary — the single source of truth for the {{< term >}} popovers.
 # Key (lowercase-hyphen) is what you pass to the shortcode; `term` is the label
-# shown in the popover header, `definition` is the body. Decoupled from the
+# shown in the window header, `definition` is the body. Decoupled from the
 # chapter prose, so restructuring the sections never touches these.
+#
+# Definitions are authored here and never rendered inline in a chapter — they're
+# the drill-down, reached by clicking a term.
+#
+# ── Cross-references ──────────────────────────────────────────────────
+# Inside a definition, [[key|display text]] marks another glossary term. ALWAYS
+# use the explicit two-part form — never bare [[key]] — so display text is
+# unambiguous for hyphenated keys. These render as click targets: on desktop
+# each opens another draggable window, on mobile it replaces the panel.
+#
+# ── Term lists ────────────────────────────────────────────────────────
+# `termgroups` is the same shape as `wordgroups`, but its entries are glossary
+# KEYS and render as a table of click targets. Use it when the other terms are
+# the content of the entry, rather than vocabulary sitting alongside it.
+#
+# ── Word lists ────────────────────────────────────────────────────────
+# `wordgroups` is a list of groups, each with an optional `label` and its
+# `words`. The shape follows the data: ONE unlabelled group renders as chips,
+# TWO OR MORE labelled groups are a comparison and render as a table.
+#
+# ── Figures ───────────────────────────────────────────────────────────
+# `figure` adds a micro-diagram under the definition (see
+# assets/scripts/site/def-figures.ts). The kinds:
+#
+#   kind: argument-map    two premises flowing into a conclusion. ONE drawing
+#                         shared by argument / premise / conclusion / support /
+#                         statement, with `highlight` lighting a different part
+#                         each time (p1 | p2 | c | premises | conclusion | links
+#                         | all). Seeing the same picture from five entries is
+#                         the point — those five terms are parts of one
+#                         structure. `cycle` takes a list of highlights and walks
+#                         them in turn instead of holding one.
+#
+#   kind: madlib          one sentence, cycling its word on its own, for terms
+#                         where the choice is style rather than logic. `template`
+#                         marks the slot with {} and `options` fills it. An option
+#                         is a plain string, or {word, template} when that word
+#                         needs its own sentence frame. The word showing lights up
+#                         in the entry's `wordgroups` chips, so the vocabulary is
+#                         displayed once rather than twice.
+#
+#   kind: standard-form   the premises, a rule, then the conclusion — the term's
+#                         own shape, shown rather than described.
+#
+#   kind: advice          a crowned source flowing to a target, with struck-out
+#                         truth values under the line.
+#
+#   kind: belief          advice's shape in the accent colour, with a lone T.
+#
+#   kind: warning         advice's shape with a caution triangle.
+#
+#   kind: expository      a topic, a panel of elaboration, then the rest.
+#                         `glyph: eye | book` marks what the elaboration is made
+#                         of — book is what makes it an explanation.
+#
+#   kind: reasoning       the argument map, premises carrying true/false.
+#
+#   kind: infer           one statement and the value read off it.
+#
+#   kind: illustration    a line that stops half way for its examples.
+#
+#   kind: report          the world, then information about it.
+#
+#   kind: conditional     one bubble pointing at two, lighting one at a time.
+#
+#   kind: truth-values    two rows of statement -> line -> value, running
+#                         together, resolving to a blue T and a red F.
+#
+#   kind: flow            one link with a pulse travelling it — the act of
+#                         inferring, as opposed to the shape of an argument.
+#
+#   kind: evaluate        the argument with the verdicts beside it. `mode:
+#                         validity` cycles the support away and takes V with it;
+#                         `mode: soundness` holds the form and cycles the
+#                         premises, lighting S only when none is false.
 
-reasoning:
-  term: Reasoning
-  definition: Our ability to infer — to grasp that the truth of some statements implies the truth of others.
-
-infer:
-  term: Infer
-  definition: To grasp that the truth of some statements implies the truth of other statements.
+#
+#   kind: pipeline        premises checking off in order. `mode: ring`
+#                         swaps the conclusion's checkmark for the colophon score
+#                         ring, swept to `target`, red below `threshold` and green
+#                         at or above it. Deductive and inductive share this one
+#                         drawing and differ ONLY at the conclusion — which is
+#                         exactly how the two kinds of argument differ.
+# ──────────────────────────────────────────────────────────────────────
 
 logic:
   term: Logic
-  definition: The study of reasoning.
+  definition: The study and a form of [[reasoning|reasoning]].
+
+reasoning:
+  term: Reasoning
+  definition: The ability to [[infer|infer]] [[truth-value|truth values]] from [[argument|arguments]], and the process of doing so.
+  figure:
+    # The argument map, with the premises carrying truth rather than emphasis:
+    # either premise going false loses the conclusion.
+    kind: reasoning
+
+infer:
+  term: Infer
+  definition: To extract a [[truth-value|truth value]] from a [[statement|statement]].
+  figure:
+    # One statement, and the value read off it — bubble and word change together.
+    kind: infer
 
 argument:
   term: Argument
-  definition: A group of statements, one of which is meant to be supported by the other(s).
+  definition: A group of [[statement|statements]], that consists of [[premise|premises]] [[support|supporting]] a [[conclusion|conclusion]].
+  figure:
+    kind: argument-map
+    highlight: all
 
 premise:
   term: Premise
-  definition: A statement that is meant to support the conclusion of its argument.
+  definition: A [[statement|statement]] made that is intended to [[support|support]] the [[conclusion|conclusion]] of an [[argument|argument]].
+  figure:
+    kind: argument-map
+    highlight: premises
 
 conclusion:
   term: Conclusion
-  definition: A statement that is meant to be supported by the premise(s) of its argument.
+  definition: A [[statement|statement]] made that is supported by [[premise|premises]] of an [[argument|argument]].
+  figure:
+    kind: argument-map
+    highlight: conclusion
 
-standard-form:
-  term: Standard Form
-  definition: A written argument in which the premises are listed first and separated from the conclusion by a horizontal line.
+support:
+  term: Support
+  definition: A quality between two [[statement|statements]] in which the first persuades the listener of the second's [[truth-value|truth value]].
+  figure:
+    kind: argument-map
+    highlight: links
 
 statement:
   term: Statement
-  definition: A sentence that makes an assertion.
+  definition: A sentence that makes an assertion/claim, that contains a [[truth-value|truth value]].
+  figure:
+    kind: argument-map
+    # Walks the highlight around each bubble in turn: every one of the three is a
+    # statement in its own right, which one still frame can't say.
+    cycle: [p1, p2, c]
 
 truth-value:
   term: Truth Value
-  definition: The result of an assertion being either true or false.
+  definition: The result of an assertion being true or false.
+  figure:
+    # Two sets of two, in parallel: a statement glows, the line carries it, and
+    # the value bubble reveals a blue T on one row and a red F on the other.
+    kind: truth-values
 
-supports:
-  term: Supports
-  definition: A quality of one statement, in relation to another, that backs the second statement's truth value.
+standard-form:
+  term: Standard Form
+  definition: A written [[argument|argument]] in which the [[premise|premises]] are listed first then the [[conclusion|conclusion]], with a horizontal line separating the two.
+  figure:
+    kind: standard-form
+    premises:
+      - All men are mortal.
+      - Socrates was a man.
+    conclusion: Socrates is mortal.
+
+premise-indicator:
+  term: Premise Indicator
+  definition: Words in a [[statement|statement]] that indicate whether it's a [[premise|premise]] or not.
+  figure:
+    kind: madlib
+    template: "Socrates is mortal, {} all men are mortal."
+    # Every word in the chip list below cycles through the sentence, and the one
+    # showing lights up down there. "On account of" takes a noun phrase rather
+    # than a clause, so it carries its own frame.
+    options:
+      - as
+      - because
+      - for
+      - for the reason that
+      - given that
+      - in that
+      - word: on account of
+        template: "Socrates is mortal, {} his being a man."
+      - since
+  wordgroups:
+    - words: [As, Because, For, For the reason that, Given that, In that, On account of, Since]
+
+conclusion-indicator:
+  term: Conclusion Indicator
+  definition: Words in a [[statement|statement]] that indicate whether it's a [[conclusion|conclusion]] or not.
+  figure:
+    kind: madlib
+    template: "All men are mortal, and Socrates was a man. {} Socrates is mortal."
+    # "Must" sits inside the clause instead of in front of it, so it carries its
+    # own frame; the rest share the default.
+    options:
+      - Accordingly
+      - Consequently
+      - Hence
+      - It follows that
+      - word: must
+        template: "All men are mortal, and Socrates was a man. Socrates {} be mortal."
+      - So
+      - Therefore
+      - Thus
+  wordgroups:
+    - words: [Accordingly, Consequently, Hence, It follows that, Must, So, Therefore, Thus]
 
 deductive:
   term: Deductive Argument
-  definition: An argument whose premises support the conclusion so strongly that it would be impossible for the conclusion to be false.
+  definition: An [[argument|argument]] that if the [[premise|premises]] are true, it is **IMPOSSIBLE** for the [[conclusion|conclusion]] to be false.
+  figure:
+    kind: pipeline
 
 inductive:
   term: Inductive Argument
-  definition: An argument whose premises support the conclusion only enough to make it likely.
+  definition: An [[argument|argument]] that if the [[premise|premises]] are true, it is **UNLIKELY** for the [[conclusion|conclusion]] to be false.
+  figure:
+    kind: pipeline
+    mode: ring
+    target: 60
+    threshold: 51
 
 inferential-claim-indicator:
   term: Inferential Claim Indicator
-  definition: A word in the conclusion that hints at whether an argument is meant to be deductive or inductive.
+  definition: A word in the [[conclusion|conclusion]] that hints at whether an [[argument|argument]] is meant to be [[deductive|deductive]] or [[inductive|inductive]].
+  figure:
+    kind: madlib
+    template: "Socrates is {} mortal."
+    # Deliberately alternating between the two columns, so the lit cell in the
+    # table below crosses back and forth — the split shown, not stated. Four of
+    # them need their own frame to read as English.
+    options:
+      - certainly
+      - probably
+      - definitely
+      - likely
+      - absolutely
+      - word: improbable
+        template: "It is {} that Socrates is mortal."
+      - necessarily
+      - word: plausible
+        template: "It is {} that Socrates is mortal."
+      - word: must
+        template: "Socrates {} be mortal."
+      - word: chances are
+        template: "{}, Socrates is mortal."
+  wordgroups:
+    - label: Deductive
+      words: [certainly, definitely, absolutely, necessarily, must]
+    - label: Inductive
+      words: [probably, likely, improbable, plausible, chances are]
+
+# ── Terms below are unchanged; they belong to §1.5 onward. ─────────────
 
 non-inferential-passage:
   term: Non-Inferential Passage
-  definition: A passage that may contain statements with truth values but lacks the two-part, supporting structure of an argument.
+  definition: A passage that may contain [[statement|statements]] with [[truth-value|truth values]] but lacks the two-part, [[support|supporting]] structure of an [[argument|argument]].
+  # The eight kinds, each a way in to its own definition. `termgroups` renders a
+  # table of glossary keys rather than plain words, so naming them and letting a
+  # reader open them is the same gesture.
+  termgroups:
+    - terms: [advice, conditional, expository, illustration]
+    - terms: [report, statement-of-belief, warning, explanation]
 
 # The eight kinds of non-inferential passage.
 advice:
   term: Advice
   definition: A form of discourse intended to guide the behavior of others.
+  figure:
+    # One party directing another, a crown over the source, and a struck-out T
+    # and F under the line: nothing here is true or false.
+    kind: advice
 
 conditional:
   term: Conditional
   definition: 'A statement of the form "If X, then Y."'
+  figure:
+    # One statement pointing at two others, one route live at a time.
+    kind: conditional
 
 expository:
   term: Expository
-  definition: A form of writing in which a topic sentence is followed by elaboration on that topic.
+  definition: A form of writing in which a topic sentence is followed by elaboration on that topic. Usually a sensory elaboration.
+  figure:
+    # A topic, the elaboration hanging off it, and only then the rest. The eye in
+    # the panel's corner is what the elaboration is made of.
+    kind: expository
+    glyph: eye
 
 illustration:
   term: Illustration
   definition: A general idea followed by a specific example or examples.
+  figure:
+    # The line stops half way for the examples, then carries on.
+    kind: illustration
 
 report:
   term: Report
   definition: A form of discourse intended to convey information.
+  figure:
+    kind: report
 
 statement-of-belief:
   term: Statement of Belief
   definition: An assertion of something that the speaker/writer regards as true.
+  figure:
+    # Advice's shape in the site's own accent, with a lone T under the speaker.
+    kind: belief
 
 warning:
   term: Warning
   definition: A form of discourse intended to help the audience avoid some harm.
+  figure:
+    # Advice's shape, with the sign for caution where its struck values sat.
+    kind: warning
 
 explanation:
   term: Explanation
-  definition: A statement containing an explanandum—that which must be explained—and an explanans—that which does the explaining.
+  definition: A [[statement|statement]] containing an explanandum—that which must be explained—and an explanans—that which does the explaining.
+  figure:
+    # The expository shape, with a book where the eye goes: an explanation
+    # elaborates by accounting for something rather than by describing it.
+    kind: expository
+    glyph: book
 
 validity:
   term: Validity
-  definition: A property of deductive arguments in which it is impossible for the premises to be true and the conclusion false.
+  definition: A property of [[deductive|deductive arguments]] in which it is impossible for the [[premise|premises]] to be true and the [[conclusion|conclusion]] false.
+  figure:
+    # The argument itself, judged: the support lines come and go, and V goes
+    # with them. S never lights — validity does not ask about the premises.
+    kind: evaluate
+    mode: validity
 
 soundness:
   term: Soundness
-  definition: A property of valid deductive arguments in which all the premises are true.
+  definition: A property of [[validity|valid]] [[deductive|deductive arguments]] in which all the [[premise|premises]] are true.
+  figure:
+    # The same picture with the form holding throughout: V stays lit while the
+    # premises cycle, and S lights only when none of them is red.
+    kind: evaluate
+    mode: soundness
 
 strength:
   term: Strength
-  definition: A property of inductive arguments in which it is likely, when the premises are true, that the conclusion is also true.
+  definition: A property of [[inductive|inductive arguments]] in which it is likely, when the [[premise|premises]] are true, that the [[conclusion|conclusion]] is also true.
+  figure:
+    # Validity's run with the inductive pair beside it: S follows the support,
+    # C stays dark.
+    kind: evaluate
+    mode: strength
 
 cogency:
   term: Cogency
-  definition: A property of strong inductive arguments in which all the premises are true, and no pertinent information is omitted.
+  definition: A property of [[strength|strong]] [[inductive|inductive arguments]] in which all the [[premise|premises]] are true, and no pertinent information is omitted.
+  figure:
+    # The premises arrive one at a time and the conclusion's ring climbs with
+    # them — 25%, then 60% and green, which is where C lights.
+    kind: evaluate
+    mode: cogency
