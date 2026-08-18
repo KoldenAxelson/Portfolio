@@ -1,0 +1,63 @@
+{{/* Dagea — the section index.
+
+     A plain list for now. The explorer (globe, info panel, section browser)
+     replaces the body of this page; until it exists, this is the browsable
+     gazetteer that has to be here anyway — the explorer is an enhancement over
+     a list of links, not a substitute for one. */}}
+
+{{ define "banner" }}
+{{ partial "page-banner.html" (dict "title" .Title "subtitle" (.Params.lead | default "")) }}
+{{ end }}
+
+{{ define "main" }}
+{{- $lore := index site.Data.dagea "regions" -}}
+<article class="prose prose-lg max-w-none prose-measure">{{ .Content }}</article>
+
+{{- /* Group the articles by the folder they live in — regions, factions, people.
+       The folder is the taxonomy: it is already how the files are organised and
+       how their URLs read, so a front-matter key saying the same thing would be
+       a second source of truth for a fact that is visible in the path.
+
+       `append` takes the SLICE AS ITS LAST ARGUMENT, which is why this reads
+       backwards. `$cur | append .` is `append . $cur`. Writing it the natural-
+       looking way round — `append $cur .` — makes Hugo treat the PAGE as the
+       slice and fail with "expected a slice, got *hugolib.pageState". */ -}}
+{{- $bydir := dict }}
+{{- range .RegularPagesRecursive }}
+  {{- $dir := path.Base (path.Dir .File.Path) }}
+  {{- $cur := or (index $bydir $dir) slice }}
+  {{- $bydir = merge $bydir (dict $dir ($cur | append .)) }}
+{{- end }}
+
+{{- range $dir, $pages := $bydir }}
+<section class="not-prose mt-10">
+  <h2 class="mb-4 text-lg font-medium text-fg">{{ humanize $dir | title }}</h2>
+  <ul class="grid list-none grid-cols-1 gap-3 p-0 sm:grid-cols-2 lg:grid-cols-3">
+    {{- range $pages }}
+    {{- /* Captured here because `$` is the ROOT context — the /dagea/ list page
+           — and not the item being ranged over. Comparing against `$.Title`
+           compares every article to the word "Dagea", which is never equal, so
+           the badge printed on all of them. */ -}}
+    {{- $title := .Title }}
+    <li class="m-0 p-0">
+      <a class="flex h-full flex-col rounded-lg border border-border p-4 no-underline transition-colors hover:border-accent" href="{{ .RelPermalink }}">
+        <span class="flex items-baseline gap-2">
+          <span class="text-base font-medium text-fg">{{ .Title }}</span>
+          {{- /* The region badge says where on the map this article sits. An
+                 article ABOUT a whole region would print its own title twice, so
+                 it is dropped when they are the same word. */ -}}
+          {{- with .Params.region }}
+          {{- $rn := (index $lore.places .).name }}
+          {{- if ne $rn $title }}
+          <span class="ml-auto shrink-0 font-mono text-xs text-muted">{{ $rn }}</span>
+          {{- end }}
+          {{- end }}
+        </span>
+        <span class="mt-1.5 block text-sm leading-relaxed text-muted">{{ .Params.summary | default .Description }}</span>
+      </a>
+    </li>
+    {{- end }}
+  </ul>
+</section>
+{{- end }}
+{{ end }}

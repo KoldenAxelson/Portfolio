@@ -1,0 +1,222 @@
+# ---------------------------------------------------------------------------
+# Dagea — what to say about each place on the map.
+#
+# GEOMETRY IS NOT IN HERE. map.json next door is generated from the drawing by
+# scripts/build-dagea-globe.py and overwritten every time that runs; this file is
+# hand-written and never touched by it. Shapes come from the picture, words come
+# from a person.
+#
+# Keyed by the same codes the script uses — the six landmass regions, the nine
+# Feldian duchies, and the four Kretavian zones. Every code the map draws as a
+# NAMED place must appear here or the shortcode fails the build. The numbered
+# islands (BGI1, ERK7…) deliberately do not: they fall back to their region's
+# `island_note`, because naming forty islands is a decision about the world that
+# nobody has made yet.
+#
+# `capital` and `export` are the two things a player asks first and a gazetteer
+# answers. `blurb` is the vibe. None of it comes from behind a DM Notes callout.
+#
+# ── WHAT IS INVENTED ───────────────────────────────────────────────────────
+# Vault canon: every region and duchy name, Kronstadt and Kirchberg as seats,
+# Feldmark as Kornfeld's seat (from the World Index's own half-baked notes), and
+# every export and characterisation below.
+#
+# Mine, and fair game to overwrite: the four Kretavian zone names (Sahalim, the
+# Kharsa, the Sundered Sand — the Old Wood is the vault's).
+#
+# An earlier version of this file invented seats for Steinmark, Grenzmark and
+# Eisenmark. It should not have: the vault names all four ducal seats — Waldmark,
+# Grimmhold, Grenzburg and Eisenstadt — in the duchy notes rather than in the
+# World Index, and the World Index was all that had been read. The vault is the
+# source of truth; when this file and a vault note disagree, the vault is right.
+# ---------------------------------------------------------------------------
+
+places:
+  # ── The landmasses ────────────────────────────────────────────────────────
+  FEL:
+    name: Feldia
+    capital: Kronstadt
+    export: Grain, wool, and the peace between its own duchies
+    blurb: >-
+      Eight duchies bound by habit and trade more than by unity, with a High King
+      who negotiates rather than commands. It works, mostly, and everyone
+      involved is quietly aware of how little holds it together. East of the
+      Spine are the Wastes, and something there is wrong.
+    island_note: Part of the northern continent.
+
+  KRT:
+    name: Kretavia
+    capital: No single seat — a council of religious and military authority
+    export: Fine metalwork, textiles, dates, and missionaries
+    blurb: >-
+      The southern desert nation, older in faith than Feldia and certain of it.
+      Its traders carry more soldiers than the goods require and its missionaries
+      travel armed, which the Kretavians consider prudent and everyone north of
+      the Sea of Coin considers something else.
+    island_note: Part of the southern continent.
+
+  ERK:
+    name: Erka Fjords
+    capital: None — each fjord answers to itself
+    export: Dragon oil, bone, and passage north of the Dragon Line
+    blurb: >-
+      Snow, mountain tops, and cold water. The only latitude dragons range, and
+      the Erkish are the only people who have made anything of that rather than
+      simply moving away from it.
+    island_note: >-
+      One of the fjord islands. Nobody has written this one down yet.
+
+  BGI:
+    name: Bagii Isles
+    capital: None recorded
+    export: Ships, crews, and pilots who can read a kraken's weather
+    blurb: >-
+      The chain off Feldia's west coast and the primary home of the Bagii. They
+      are not easily impressed and they do not talk about Jrakvia, which is its
+      own kind of statement about Jrakvia.
+    island_note: One of the Bagii Isles. Unnamed on this chart.
+
+  BGA:
+    name: Bagii Atoll
+    capital: None — the market moves with the season
+    export: Everything, briefly. It is a place goods pass through
+    blurb: >-
+      A broken ring of islets off Kretavia's east coast, and the only place
+      Feldian and Kretavian merchants reliably meet. Both sides prefer it that
+      way: business happens on ground neither of them owns.
+    island_note: One of the atoll's islets. Unnamed on this chart.
+
+  JRK:
+    name: Jrakvia
+    capital: Not disclosed
+    export: Nothing. That is the policy, not an accident
+    blurb: >-
+      An island that broke off Kretavia's Old Wood and drifted. Three hundred
+      uninterrupted years later it has looked at the rest of the world and
+      declined. The geography enforces the decision without walls or armies —
+      what arrives comes in by accident, and what leaves does not go back the
+      way it came.
+    island_note: One of the islands off Kretavia's west coast.
+
+  # ── The eight duchies, and the Wastes ─────────────────────────────────────
+  KRO:
+    name: Kronstadt
+    capital: Kronstadt
+    export: Wine, credit, and access to the court
+    blurb: >-
+      The seat of the High King and the largest trade city in Feldia, with wine
+      country running west of it to the coast. A chairman's capital rather than a
+      conqueror's: business gets done here by leverage, and everyone doing it
+      knows exactly what everyone else is owed.
+
+  WAL:
+    name: Waldheim
+    capital: Waldmark
+    export: Timber, fur, charcoal
+    blurb: >-
+      The deep wood. Insular, older than the Crusade, and pagan enough about it
+      that the church has stopped making a point of the matter. Things are left
+      at the treeline here and nobody local finds that remarkable.
+
+  SEE:
+    name: Seehaven
+    capital: Seehaven
+    export: Ships, salt, and salt fish
+    blurb: >-
+      Feldia's coast, its harbors, and its temper. Seehaven shares a canal with
+      Kretavia and has been raided across it often enough that a southern sail on
+      the horizon empties a market square.
+
+  KOR:
+    name: Kornfeld
+    capital: Feldmark
+    export: Grain, livestock, and horses
+    blurb: >-
+      Flat open steppe under wide skies, and the duchy Feldia cannot do without —
+      it feeds the rest. Horse culture runs deep, the grasslands carry wild
+      herds, and the distances between towns are real distances.
+
+  KIR:
+    name: Kirchberg
+    capital: Kirchberg
+    export: Scholarship, letters, and counsel nobody asked for
+    blurb: >-
+      Feldia's oldest university and its most influential bishop, on a hill, in
+      that order of self-regard. A great deal of what the rest of the duchies
+      believe about the world was written down here first.
+
+  STE:
+    name: Steinmark
+    capital: Grimmhold
+    export: Iron, coal, stone
+    blurb: >-
+      Highlands at the head of the Spine. Hard country, hard weather, and people
+      who have concluded from both that outsiders generally want something. They
+      are usually right.
+
+  GRE:
+    name: Grenzmark
+    capital: Grenzburg
+    export: Cavalry, and men who have already seen a war
+    blurb: >-
+      The march, running from the Korn down to the northern shore of the Sea of
+      Coin. It has fought every neighbor it has at least once and keeps the
+      horses to do it again. Border patrols have been going missing lately; the
+      official word is desertion and nobody's family believes it.
+
+  EIS:
+    name: Eisenmark
+    capital: Eisenstadt
+    export: Weapons, chain, and iron by the ton
+    blurb: >-
+      Closed borders, open forges, and the whole western foot of the Spine, from
+      the Korn's spring down to the sea. Trade with Kretavia has grown a great
+      deal of late and diplomatic contact has become routine, and neither party
+      has explained why. Its Duke has held the seat longer than looks reasonable.
+
+  WAS:
+    name: The Wastes
+    capital: None. Nothing holds here
+    export: Nothing anyone will admit to carrying out
+    blurb: >-
+      Badlands east of the Spine, which is the only reason Feldia sleeps. Whatever
+      is wrong out here has been wrong for a long time and is not getting better.
+
+  # ── Kretavia's four zones ─────────────────────────────────────────────────
+  SAH:
+    name: Sahalim
+    capital: None — a coast of port towns
+    export: Dates, citrus, salt fish, and shipping
+    blurb: >-
+      The green coast. Mediterranean weather, irrigated ground, and every harbor
+      Kretavia has. If a northerner has been to Kretavia at all, they have been
+      here and nowhere else.
+
+  OWD:
+    name: The Old Wood
+    capital: None
+    export: Timber, resin, and things the resin is used for
+    blurb: >-
+      Ancient forest on the mountainous west coast, older than the faith that
+      surrounds it. Jrakvia broke off this coast and drifted; whatever the Old
+      Wood is rooted in, the island took the branch and left the root.
+
+  KHR:
+    name: The Kharsa
+    capital: None — the oasis cities each keep their own
+    export: Metalwork, textiles, and water rights
+    blurb: >-
+      The desert proper. Cities sit where the water is and the distance between
+      them is measured in what a party can carry. It is not dramatic country. It
+      kills the unprepared quietly, in ordinary weather.
+
+  SND:
+    name: The Sundered Sand
+    capital: None. People do not settle here
+    export: Guides, at a premium
+    blurb: >-
+      The south-east, where the stories cluster. Riders arriving days before they
+      set out; a camp that burns down every night and is whole by morning; a man
+      who came back speaking of forty years and had not aged a season. Scholars
+      argue about what it is and have never agreed. Guides charge more to cross
+      it and do not linger.

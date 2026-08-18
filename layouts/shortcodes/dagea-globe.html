@@ -1,0 +1,160 @@
+{{- /*
+  dagea-globe — Dagea, a hand-drawn world, as a globe you can turn.
+
+    {{< dagea-globe >}}
+
+  WHAT IS ON THE PAGE, in the order it matters:
+
+    1. a static SVG map of the world, labelled, in the HTML;
+    2. a list of the six regions, as text, with what is in each;
+    3. a globe, which replaces (1) once it has geometry and has drawn a frame.
+
+  That order is the whole design. The globe is the fun part and it is the part
+  that needs JavaScript, a canvas, and a fetch to work — so it is third, and it
+  is an enhancement over a page that is already complete without it. Product
+  Principle 1: content behind a runtime is content that didn't ship.
+
+  GEOMETRY comes from two committed files, both generated from the drawing by
+  scripts/build-dagea-globe.py and neither fetched or regenerated at build
+  time. data/dagea/map.json holds projected SVG paths for the flat map;
+  assets/geo/dagea.json holds lon/lat rings for the globe, and is requested at
+  runtime rather than inlined — 12 KB of coordinates in the HTML of a page some
+  visitors will scroll past is 12 KB nobody asked for.
+
+  NAMES come from data/dagea/regions.yaml, which the script never touches. See
+  that file's header for the split.
+
+  ONE COLOUR, NOT SIX. Every landmass is drawn in the same muted grey and the
+  region under the pointer lights up in --c-accent. A six-way categorical palette
+  was the obvious first move and it was wrong twice: it fights a site whose whole
+  colour story is one accent that swaps green to amber with the theme, and it
+  answers a question — "which region is this?" — that nobody is asking until they
+  point at something. Highlight on demand says the same thing and says it about
+  the thing you are actually looking at.
+
+  THE LIST IS AN INPUT, not a legend. Each region is a button: hovering one
+  lights that region on the globe, clicking one selects it and keeps it lit.
+  Which means the globe is reachable without a pointer ever landing on a
+  four-pixel islet in the Bagil Atoll — the six-item list is the accessible
+  route to the same six things, and it is the version that works on a phone.
+
+  `not-prose`, because the page sets `prose: true` and Typography would restyle
+  the list and put margins on the figure's children.
+*/ -}}
+
+{{- $map := index site.Data.dagea "map" -}}
+{{- $lore := index site.Data.dagea "regions" -}}
+{{- if or (not $map) (not $lore) -}}
+  {{- errorf "dagea-globe: data/dagea/map.json or regions.yaml is missing — run scripts/build-dagea-globe.py (page: %s)" .Page.RelPermalink -}}
+{{- else -}}
+{{- $places := $lore.places -}}
+
+{{- /* Every NAMED place the map draws must have something to say about it. The
+       auto-numbered islands (BGI4, ERK11…) are exempt on purpose and fall back
+       to their region's island_note. */ -}}
+{{- range $code, $_ := $map.units -}}
+  {{- if not (index $places $code) -}}
+    {{- errorf "dagea-globe: map.json has region %q, which data/dagea/regions.yaml does not describe" $code -}}
+  {{- end -}}
+{{- end -}}
+{{- range $code, $u := $map.subunits -}}
+  {{- if not (findRE "[0-9]$" $code) -}}
+    {{- if not (index $places $code) -}}
+      {{- errorf "dagea-globe: map.json has subregion %q, which data/dagea/regions.yaml does not describe" $code -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* One resolved table for the panel, so the template and the TypeScript are
+       never two opinions about the same place. Islands inherit their region's
+       island_note rather than being listed forty times. */ -}}
+{{- $info := dict -}}
+{{- range $code, $p := $places -}}
+  {{- $info = merge $info (dict $code (dict
+      "name" $p.name "capital" $p.capital "export" $p.export "blurb" $p.blurb)) -}}
+{{- end -}}
+{{- range $code, $u := $map.subunits -}}
+  {{- if not (index $info $code) -}}
+    {{- $parent := index $places $u.parent -}}
+    {{- $info = merge $info (dict $code (dict
+        "name" $u.name "capital" "" "export" ""
+        "blurb" ($parent.island_note | default ""))) -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $globe := resources.Get "geo/dagea.json" | fingerprint -}}
+
+<div class="dagea not-prose mb-10" data-dagea data-dagea-src="{{ $globe.RelPermalink }}">
+
+  {{- /* safeJS, not bare jsonify. Go's html/template sees <script> and applies
+         JavaScript-string escaping, which wraps the object in quotes — JSON.parse
+         then hands back a string and every place renders unnamed. */ -}}
+  <script type="application/json" data-dagea-places>{{ $info | jsonify | safeJS }}</script>
+
+  <div class="flex flex-col items-center" data-dagea-globe hidden>
+    <canvas class="touch-none select-none" role="img"
+      aria-label="Rotatable globe of Dagea. Point at a place to highlight it; every place is also listed as a button below."></canvas>
+    <p class="mt-3 h-5 font-mono text-xs tabular-nums text-muted" data-dagea-readout aria-live="polite"></p>
+  </div>
+
+  <figure class="dagea__map mx-auto max-w-3xl" data-dagea-fallback>
+    <svg viewBox="{{ $map.viewBox }}" class="h-auto w-full" role="img"
+      aria-label="Flat map of Dagea: two continents, four island groups, and open ocean.">
+      <g fill="rgb(var(--c-muted) / 0.30)" stroke="rgb(var(--c-bg))" stroke-width="1.2" stroke-linejoin="round">
+        {{- range $code, $u := $map.units }}
+        <path d="{{ $u.d }}"><title>{{ (index $info $code).name }}</title></path>
+        {{- end }}
+      </g>
+      <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-weight="600"
+         text-anchor="middle" fill="rgb(var(--c-fg))" stroke="rgb(var(--c-bg))"
+         stroke-width="3.5" paint-order="stroke" aria-hidden="true">
+        {{- range $code, $u := $map.units }}
+        {{- $name := (index $info $code).name }}
+        {{- $fs := mul 0.92 (div $u.r (mul 0.3 (len $name))) }}
+        <text x="{{ $u.cx }}" y="{{ $u.cy }}" dy="0.32em"
+          font-size="{{ printf "%.1f" (math.Min (math.Max $fs 11.0) 20.0) }}">{{ $name }}</text>
+        {{- end }}
+      </g>
+    </svg>
+  </figure>
+
+  {{- /* Chips. Every one ships; the script shows the row that belongs to the
+         current level and hides the rest. With no script they are all here, which
+         is a complete index of the map and no worse for being long. */ -}}
+  <div class="mt-8 flex flex-wrap items-center gap-2" data-dagea-chips>
+    <button type="button" data-dagea-chip="" data-dagea-level="_" aria-pressed="true"
+      class="cursor-pointer rounded-full border border-border bg-transparent px-3 py-1 font-mono text-xs text-muted transition-colors hover:border-accent hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent aria-pressed:border-accent aria-pressed:text-fg">All of Dagea</button>
+    {{- range $code, $u := $map.units }}
+    <button type="button" data-dagea-chip="{{ $code }}" data-dagea-level="_" aria-pressed="false"
+      class="cursor-pointer rounded-full border border-border bg-transparent px-3 py-1 font-mono text-xs text-muted transition-colors hover:border-accent hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent aria-pressed:border-accent aria-pressed:text-fg">{{ (index $info $code).name }}</button>
+    {{- end }}
+    {{- range $code, $u := $map.subunits }}
+    <button type="button" data-dagea-chip="{{ $code }}" data-dagea-level="{{ $u.parent }}" aria-pressed="false"
+      class="cursor-pointer rounded-full border border-border bg-transparent px-3 py-1 font-mono text-xs text-muted transition-colors hover:border-accent hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent aria-pressed:border-accent aria-pressed:text-fg">{{ $u.name }}</button>
+    {{- end }}
+  </div>
+
+  {{- /* The panel the script writes into, and behind it the same thing as static
+         markup for every named place. */ -}}
+  <div class="mt-6 min-h-40 rounded-lg border border-border p-5" data-dagea-panel hidden>
+    <h3 class="m-0 text-xl font-medium text-fg" data-dagea-title></h3>
+    <dl class="mt-3 grid grid-cols-1 gap-x-6 gap-y-1 sm:grid-cols-[max-content_1fr]" data-dagea-facts></dl>
+    <p class="mt-3 text-base leading-relaxed text-muted" data-dagea-blurb></p>
+  </div>
+
+  <div class="mt-6 space-y-6" data-dagea-gazetteer>
+    {{- range $code, $p := $places }}
+    <article class="rounded-lg border border-border p-5">
+      <h3 class="m-0 text-xl font-medium text-fg">{{ $p.name }}</h3>
+      <dl class="mt-3 grid grid-cols-1 gap-x-6 gap-y-1 sm:grid-cols-[max-content_1fr]">
+        <dt class="font-mono text-xs uppercase tracking-wide text-muted">Capital</dt>
+        <dd class="m-0 text-sm text-fg">{{ $p.capital }}</dd>
+        <dt class="font-mono text-xs uppercase tracking-wide text-muted">Main export</dt>
+        <dd class="m-0 text-sm text-fg">{{ $p.export }}</dd>
+      </dl>
+      <p class="mt-3 text-base leading-relaxed text-muted">{{ $p.blurb }}</p>
+    </article>
+    {{- end }}
+  </div>
+</div>
+{{- end -}}

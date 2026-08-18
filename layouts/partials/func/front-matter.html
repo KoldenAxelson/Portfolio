@@ -67,6 +67,11 @@
        partials/schema/project.html, and the three bespoke project pages */ -}}
 {{- $known = $known | append "tier" "year" "role" "status" "featured" "types" "links" "boost" "agarworkerbase" -}}
 
+{{- /* dagea/single.html and dagea/list.html — the world articles.
+       `region` ties an article to a code in data/dagea/regions.yaml; `source`
+       is the vault path it was transcribed from, printed as provenance. */ -}}
+{{- $known = $known | append "region" "source" -}}
+
 {{- /* _default/redirect.html */ -}}
 {{- $known = $known | append "redirectto" "fragment" -}}
 

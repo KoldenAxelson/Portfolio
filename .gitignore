@@ -1,5 +1,8 @@
 # Local Dev Storage
 /private/
+
+# Python bytecode from the hand-run scripts/ generators.
+scripts/__pycache__/
 /_to_delete/
 
 # AI chat proxy — compiled binary and Go build leftovers (build with

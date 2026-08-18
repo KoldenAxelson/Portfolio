@@ -1,0 +1,64 @@
+{{/* Dagea — one article.
+
+     Every page under /dagea/ is a player-facing rewrite of a note in the Dagean
+     Vault, which is a separate repository and is not read at build time. Two
+     front-matter keys exist for that relationship and are consumed here:
+
+       region:  the globe's region code (see data/dagea/regions.yaml). Where an
+                article is about a place that is ON the map, this ties the two
+                together — the article gets a link back to the globe, and the
+                explorer can find the article from the region.
+
+       source:  the vault path this was transcribed from. Provenance, printed at
+                the foot of the page, and deliberately not a link: the vault is
+                not published and never will be. It is here so that the next
+                person to edit the article knows where the canon lives.
+
+     `type:` is NOT used to say what kind of article this is, even though that
+     would read well. Hugo treats `type` as the layout lookup directory, so
+     `type: region` sends Hugo looking for layouts/region/single.html and the
+     page renders with the wrong template or none. The directory the file sits in
+     already carries that information. */}}
+
+{{ define "banner" }}
+{{ partial "page-banner.html" (dict "title" .Title "subtitle" (.Params.summary | default "")) }}
+{{ end }}
+
+{{ define "main" }}
+{{- $map := index site.Data.dagea "map" -}}
+{{- $lore := index site.Data.dagea "regions" -}}
+{{- $code := .Params.region -}}
+
+{{- with $code }}
+  {{- if not (index $lore.places .) }}
+    {{- errorf "dagea: %s sets region %q, which data/dagea/regions.yaml does not name" $.File.Path . -}}
+  {{- end }}
+{{- end }}
+
+<article class="prose prose-lg max-w-none prose-measure">
+  {{ .Content }}
+</article>
+
+<footer class="mt-12 border-t border-border pt-5 text-sm text-muted">
+  {{- with $code }}
+  {{- $r := index $lore.places . }}
+  {{- /* A code is either a whole landmass region (units) or a part of one
+         (subunits) — a duchy, a Kretavian zone. Looking only in `units` left
+         every duchy article with a bare "On the map: Kornfeld ." and no
+         indication of where Kornfeld actually is. */ -}}
+  {{- $u := index $map.units . }}
+  {{- $s := index $map.subunits . }}
+  <p class="m-0">
+    On the map:
+    <a class="text-fg underline decoration-border hover:!text-accent" href="/dagea/#{{ . }}">{{ $r.name }}</a>
+    {{- with $u }} — {{ .islands }} landmass{{ if ne (int .islands) 1 }}es{{ end }}{{ end }}
+    {{- with $s }}{{ with index $map.units .parent }} — within {{ .name }}{{ end }}{{ end }}.
+  </p>
+  {{- end }}
+  {{- with .Params.source }}
+  <p class="m-0 mt-1 font-mono text-xs">
+    Transcribed from <span class="text-fg">{{ . }}</span> in the Dagean Vault, which is not published. The vault is canon; this drifts from it until somebody re-transcribes.
+  </p>
+  {{- end }}
+</footer>
+{{ end }}
