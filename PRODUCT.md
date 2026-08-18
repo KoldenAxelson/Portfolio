@@ -116,7 +116,10 @@ Real, verifiable, and safe to use:
 - **Shipped products:** VisorPlate (visorplate-us.com, live and selling),
   BigHammerGarage (bighammergarage.com, delivered contract), Neofolio (MIT,
   public repo), Crunchy (public repo).
-- **In progress:** Widda (widda.club), private development, pre-launch.
+- **In progress:** Widda (widda.club), private development, pre-launch. GrowGo
+  (hyperlocal food marketplace), resurrected August 2026 — working Flutter
+  prototype + Cloudflare Workers/D1 backend, pre-launch; its investor pitch is
+  passcode-gated at `/misc/growgo`.
 - **Employment history:** 2010–2025 across Neurotopia/SenseLabs, Cumulus,
   Draftboard (acquired by DraftKings 2019), UNCOMN LLC. Concrete claim on record:
   1,000+ Fortify-flagged vulnerabilities resolved on the CPA project.
@@ -128,7 +131,8 @@ Real, verifiable, and safe to use:
 logos, no user counts, no revenue figures, no press coverage, no case studies,
 and no performance benchmarks. Konrad's degree-level education is general college
 coursework at Cuesta College — do not upgrade it. Widda has not launched; do not
-imply it has.
+imply it has. GrowGo has not launched and has no revenue; do not imply otherwise,
+and never surface or guess its pitch passcode.
 
 ## Product Principles
 

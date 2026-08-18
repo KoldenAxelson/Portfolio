@@ -652,3 +652,57 @@ html:not([data-ai-ok]) [data-ai-mobile-trigger] { display: none !important; }
     transition: none;
   }
 }
+
+/* Passcode gate (the vault shortcode + ts/vault.ts). Entry dots and the
+   wrong-code shake live here beside the other data-attribute components; the
+   keypad buttons themselves are plain utilities in the shortcode. The shake is
+   feedback, not information — the dots emptying and the status line say the
+   same thing, so under prefers-reduced-motion it simply never runs. */
+[data-vault-dot] {
+  display: block;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 9999px;
+  border: 1px solid rgb(var(--c-muted) / 0.55);
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease,
+    transform 120ms ease;
+}
+[data-vault-dot][data-filled] {
+  background-color: rgb(var(--c-accent));
+  border-color: rgb(var(--c-accent));
+  transform: scale(1.15);
+}
+
+@keyframes vault-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-6px);
+  }
+  40% {
+    transform: translateX(6px);
+  }
+  60% {
+    transform: translateX(-4px);
+  }
+  80% {
+    transform: translateX(4px);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-vault-shake] {
+    animation: vault-shake 320ms ease;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-vault-dot] {
+    transition: none;
+  }
+  [data-vault-dot][data-filled] {
+    transform: none;
+  }
+}
