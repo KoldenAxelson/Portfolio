@@ -14,6 +14,7 @@ import { initDefinitions } from './definitions';
 import { initSkyrimNotes } from './skyrim-notes';
 import { initQuotes } from './quotes/index';
 import { initAncestryGlobe } from './ancestry-globe';
+import { initDageaGlobe } from './dagea-globe';
 
 declare global {
   interface Window {
@@ -42,6 +43,7 @@ function initPage(): void {
   initSkyrimNotes();
   initQuotes();
   initAncestryGlobe();
+  initDageaGlobe();
 }
 
 function ready(fn: () => void): void {
