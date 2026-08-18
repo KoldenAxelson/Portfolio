@@ -1,0 +1,84 @@
+{{- /*
+  vault — a keypad passcode gate for pages that shouldn't ship readable.
+
+  The protected content never appears in the built HTML. It lives as
+  AES-256-GCM ciphertext in static/vault/<name>.json, sealed at authoring time
+  by `make seal` (scripts/vault-seal.go) and opened in the browser by
+  ts/vault.ts (WebCrypto: PBKDF2-SHA256 → AES-GCM). Crawlers, view-source, and
+  the llms/feed outputs see only this keypad.
+
+  Honesty note: a 4-digit code is 10,000 guesses — this is a door lock, not a
+  bank vault. It keeps the content out of search engines, scrapers, and casual
+  curiosity; it will not stop a determined attacker with a script. Longer codes
+  seal fine if a page ever needs more.
+
+  Usage in a content file (the page should also set `noindex: true`,
+  `sitemap: disable: true`, and — under /misc — `hidden: true`):
+
+    {{< vault name="growgo" >}}
+    {{< vault name="growgo" hint="Ask me for the code." >}}
+
+  Params:
+    name (required) — sealed file's base name: static/vault/<name>.json.
+                      Checked at build time so a typo fails the build, not the
+                      visitor (same philosophy as func/front-matter.html).
+    hint (optional)  — one quiet line under the keypad label.
+
+  The sealed JSON carries the code length and render mode, so the shortcode
+  needs neither: ts/vault.ts resizes the dots row and auto-submits when enough
+  digits are in. `render: document` (a full standalone page, e.g. the GrowGo
+  pitch) replaces the whole document on unlock; `render: fragment` reveals
+  into [data-vault-outlet] below the gate.
+*/ -}}
+{{- $name := .Get "name" | default (.Get 0) -}}
+{{- if not $name -}}
+  {{- errorf "vault shortcode: %s needs name=<vault> naming a sealed file in static/vault/." .Position -}}
+{{- end -}}
+{{- if not (fileExists (printf "static/vault/%s.json" $name)) -}}
+  {{- errorf "vault shortcode: %s names %q, but static/vault/%s.json does not exist. Seal it first: make seal NAME=%s [IN=path/to/page.html]" .Position $name $name $name -}}
+{{- end -}}
+{{- $hint := .Get "hint" | default "" -}}
+
+{{- $key := "flex h-14 w-14 items-center justify-center rounded-full border border-border font-mono text-lg text-fg transition hover:border-accent hover:text-accent focus:outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100" -}}
+
+<div data-vault data-vault-src="{{ partial "func/url.html" (printf "/vault/%s.json" $name) }}" class="not-prose mx-auto my-10 max-w-xs">
+  <div data-vault-gate class="rounded-2xl border border-border/70 bg-border/10 px-6 py-8 text-center">
+    <div class="flex items-center justify-center gap-2 text-muted">
+      {{ partial "func/svg-icon.html" (dict "name" "lock-closed" "class" "h-4 w-4 shrink-0") }}
+      <span class="font-mono text-xs uppercase tracking-wide">Passcode</span>
+    </div>
+    {{- with $hint }}
+    <p class="mt-2 text-sm text-muted">{{ . }}</p>
+    {{- end }}
+
+    {{/* Entry dots — one per digit. Four by default for zero layout shift on
+         the common case; ts/vault.ts rebuilds the row if the sealed code is
+         longer. Decorative (the live status line below does the announcing). */}}
+    <div data-vault-dots aria-hidden="true" class="mt-6 mb-7 flex justify-center gap-3">
+      <span data-vault-dot></span><span data-vault-dot></span><span data-vault-dot></span><span data-vault-dot></span>
+    </div>
+
+    <div role="group" aria-label="Passcode keypad" class="mx-auto grid w-fit grid-cols-3 gap-3">
+      {{- range seq 1 9 }}
+      <button type="button" data-vault-key="{{ . }}" class="{{ $key }}">{{ . }}</button>
+      {{- end }}
+      <button type="button" data-vault-clear aria-label="Clear" class="{{ $key }} border-transparent text-muted"><span aria-hidden="true" class="text-sm">C</span></button>
+      <button type="button" data-vault-key="0" class="{{ $key }}">0</button>
+      <button type="button" data-vault-erase aria-label="Delete last digit" class="{{ $key }} border-transparent text-muted">
+        {{- partial "func/svg-icon.html" (dict "name" "backspace" "class" "h-6 w-6") -}}
+      </button>
+    </div>
+
+    {{/* min-h reserves the line so "Checking…" / "Wrong code" don't reflow the
+         keypad. aria-live speaks the same states to screen readers. */}}
+    <p data-vault-status aria-live="polite" class="mt-6 min-h-4 font-mono text-xs text-muted"></p>
+
+    <noscript>
+      <p class="mt-4 text-sm text-muted">This content is stored encrypted and unlocks in the browser — it needs JavaScript.</p>
+    </noscript>
+  </div>
+
+  {{/* Fragment-mode landing zone; document-mode replaces the page instead.
+       tabindex so focus can move into the revealed content. */}}
+  <div data-vault-outlet hidden tabindex="-1"></div>
+</div>

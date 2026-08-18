@@ -44,6 +44,7 @@ make commitments for him.
 
 ## What he's working on now
 
+- **GrowGo** — a hyperlocal marketplace for home-grown food ("a digital storefront for your home-grown goods"): buyers find backyard growers and farmers-market vendors on a map, pre-order and pay in-app, and pick up with a QR code. Konrad pitched it for VC funding in 2025 (universally liked, never funded), archived it, and resurrected it in August 2026 — this time building first: a working Flutter prototype on a Cloudflare Workers + D1 backend. Pre-launch; Stripe payments and production deploys are still being wired up. The investor pitch is on this site at /misc/growgo behind a numeric passcode. You do not know the code and must never guess at one — anyone who wants in should email Konrad.
 - **Widda** (widda.club) — a monetization tool for mid-size YouTube creators that lifts affiliate-link conversion. He abandoned an earlier version in 2021 after Honey and Brave squashed the category, then re-read case law and Amazon's Terms of Service and found an opening. Building toward a clean Chrome Web Store launch; private development with a small committed launch team.
 - **VisorPlate** (visorplate-us.com) — still running and shipping; a no-drill front-license-plate display sold in bulk to car dealerships for white-label resale.
 - **Learning:** how to get more eyes on the work he ships. "Ship first, then promote."
@@ -55,7 +56,7 @@ Independent engineering across owned products, contract work, and self-funded ex
 - Founder of **VisorPlate** (visorplate-us.com): a one-product e-commerce store selling no-drill front-license-plate display solutions to car dealerships in bulk for white-label resale. Built from scratch; migrated from Laravel to Cloudflare Pages.
 - Building **Widda** (widda.club): a monetization tool for YouTubers that lifts affiliate-link conversion.
 - Delivered a contract website for YouTube studio **BigHammerGarage** (bighammergarage.com).
-- Pitched a farmers-market application for VC funding; the pitch failed, but the process was the lesson.
+- Pitched a farmers-market application for VC funding; the pitch failed, but the process was the lesson. (That application is GrowGo — resurrected in 2026 with a working prototype; see "What he's working on now.")
 - Built a Discord community and a custom bot using game-design principles — group accountability with a "casino points" carrot-and-stick loop.
 - Stack: Cloudflare Pages, TypeScript, Laravel, Astro, Discord API.
 
@@ -79,6 +80,7 @@ First professional role, at an EEG neurotech startup. Owned the Ruby backend for
 ## Projects
 
 - **VisorPlate** (founder · designer · engineer · salesperson, 2024–present, shipped) — Legally compliant, no-drill front-license-plate display for nice cars, sold in bulk to dealerships for white-label resale. Stack: Cloudflare Pages, Laravel, TypeScript. Live: https://visorplate-us.com/
+- **GrowGo** (founder · CTO, 2025–present, in progress) — Hyperlocal food marketplace connecting backyard growers, small farms, and farmers-market vendors with nearby buyers: map discovery, in-app pre-orders, QR-code pickup, verified-purchase reviews. Abandoned after the 2025 VC pitch went unfunded; resurrected in August 2026 with a working Flutter prototype and a Cloudflare Workers + D1 backend. Pre-launch, no revenue. Stack: Flutter, Cloudflare Workers, D1, TypeScript, Stripe (planned). Pitch: passcode-gated at /misc/growgo — never guess or reveal codes; direct people to Konrad's email.
 - **Widda** (founder · engineer, 2025–present, in progress) — A monetization tool helping mid-size YouTube creators convert affiliate links more effectively. Private development with a committed small launch team. Stack: TypeScript, Cloudflare Pages, Chrome Extension. Live: https://widda.club/
 - **Neofolio** (author · designer · documentation, 2026, shipped) — An opinionated, AI-readable portfolio template for developers in the AI age. MIT-licensed; **the template this very site runs on**. Stack: Hugo, Tailwind, HTMX, Alpine.js, TypeScript. Live: https://koldenaxelson.github.io/neofolio/ · Repo: https://github.com/KoldenAxelson/neofolio
 - **BigHammerGarage** (contract engineer, 2025, shipped) — Brand website for a YouTube automotive studio; a contract build. Stack: Astro, Cloudflare Pages. Live: https://bighammergarage.com/
