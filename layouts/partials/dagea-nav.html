@@ -1,0 +1,44 @@
+{{- /*
+  dagea-nav — floating "where in Dagea" FAB, DESKTOP ONLY (lg+). Built on the
+  shared auxiliary-button shell (.aux-fab, list layout — see
+  assets/css/auxiliary-button.css and ts/auxiliary-button.ts), so all it supplies
+  is the icon and the rows.
+
+  Renders on every page that partials/func/dagea-menu.html claims: the /dagea/
+  overview, every topic index, every article, and the globe at /misc/dagea/. That
+  last one is the reason this exists — the globe and the gazetteer are the two
+  halves of the same world and there was no way from either to the other except the
+  one sentence in the overview's prose.
+
+  On mobile the same rows come out of the navbar tools button (topnav.html), which
+  reads the same partial.
+
+  Rows carry an icon rather than a number, unlike chapter-select: these are places,
+  not steps, and numbering them would imply an order to read them in.
+*/ -}}
+{{- $menu := partial "func/dagea-menu.html" . -}}
+{{- with $menu }}
+<details data-aux-fab class="fixed bottom-6 right-6 z-30 hidden lg:block print:!hidden">
+  <summary class="aux-fab__btn relative flex h-12 w-12 cursor-pointer list-none items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50" aria-label="Dagea navigation" title="Dagea navigation">
+    <span class="sr-only">Dagea navigation</span>
+    {{ partial "func/svg-icon.html" (dict "name" "map-pin" "class" "aux-fab__icon aux-fab__icon--main h-6 w-6" "width" "1.75") }}
+    <svg class="aux-fab__icon aux-fab__icon--close h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18 18 6M6 6l12 12" /></svg>
+  </summary>
+  <div class="aux-fab__menu aux-fab__menu--list" role="menu" aria-label="Dagea">
+    <p class="aux-fab__title">Dagea</p>
+    {{- range . }}
+    {{- if .current }}
+    <span class="aux-fab__row aux-fab__row--current" aria-current="page">
+      {{ partial "func/svg-icon.html" (dict "name" .icon "class" "aux-fab__ico h-4 w-4 shrink-0") }}
+      <span class="aux-fab__name">{{ .label }}</span><span class="aux-fab__dot"></span>
+    </span>
+    {{- else }}
+    <a class="aux-fab__row" href="{{ .href }}" role="menuitem">
+      {{ partial "func/svg-icon.html" (dict "name" .icon "class" "aux-fab__ico h-4 w-4 shrink-0") }}
+      <span class="aux-fab__name">{{ .label }}</span>
+    </a>
+    {{- end }}
+    {{- end }}
+  </div>
+</details>
+{{- end -}}

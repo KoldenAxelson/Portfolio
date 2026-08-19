@@ -1,0 +1,129 @@
+{{- /*
+  character-builder — the click-through character creation module.
+
+    {{< character-builder >}}
+
+  WHAT IS ON THE PAGE, in the order it matters:
+
+    1. the rules, as static markup, generated from data/dnd/creation.yaml;
+    2. the module, which replaces (1) once its script has started.
+
+  That order is the design, and it is the same one dagea-globe.html uses. The
+  module is a walkthrough of rules that are complete without it — a reader with
+  no JavaScript gets every array, every number and every step in prose, not a
+  dead form. Product Principle 1: content behind a runtime is content that
+  didn't ship.
+
+  The two are generated from ONE data file, so they cannot drift. If you change
+  an array here, change it in data/dnd/creation.yaml and both halves move.
+
+  THE MODULE'S MARKUP IS NEARLY EMPTY. Everything inside [data-dnd-stage] is
+  written by assets/scripts/pages/dnd/builder.ts, because eight steps of
+  server-rendered markup that the script would immediately have to re-render on
+  the first click is two implementations of the same eight screens.
+*/ -}}
+{{- $c := site.Data.dnd.creation -}}
+{{- $feats := site.Data.dnd.feats.feats -}}
+{{- $styles := (index site.Data.dnd "fighting-styles").styles -}}
+
+{{- $skillsTotal := 0 -}}
+{{- range $c.skills_from }}{{ $skillsTotal = add $skillsTotal .count }}{{ end -}}
+
+{{- /* Only the fields the module computes with. Passing the YAML through whole
+       would ship the prose notes twice and make the payload a moving target. */ -}}
+{{- $featCfg := slice -}}
+{{- range $feats -}}
+  {{- $entry := dict "name" .name "origin" .origin -}}
+  {{- with .boost }}{{ $entry = merge $entry (dict "boost" .) }}{{ end -}}
+  {{- $featCfg = $featCfg | append $entry -}}
+{{- end -}}
+{{- $styleCfg := slice -}}
+{{- range $styles -}}
+  {{- $entry := dict "name" .name -}}
+  {{- with .grants }}{{ $entry = merge $entry (dict "grants" .) }}{{ end -}}
+  {{- $styleCfg = $styleCfg | append $entry -}}
+{{- end -}}
+
+{{- $cfg := dict
+    "abilities" $c.abilities
+    "arrays" $c.arrays
+    "human" $c.human
+    "skills" $c.skills
+    "skillsTotal" $skillsTotal
+    "skillsFrom" $c.skills_from
+    "background" $c.background
+    "saves" $c.saves
+    "hitPoints" $c.hit_points
+    "feats" $featCfg
+    "featPicks" $c.human.feats
+    "styles" $styleCfg -}}
+
+<div class="dnd-builder not-prose" data-dnd-builder>
+
+  {{- /* safeJS, not bare jsonify. Go's html/template sees <script> and applies
+         JavaScript-string escaping, which wraps the object in quotes — JSON.parse
+         then hands back a string and the module bails. */ -}}
+  <script type="application/json" data-dnd-config>{{ $cfg | jsonify | safeJS }}</script>
+
+  {{- /* ── The rules, for a reader with no script ─────────────────────────── */}}
+  <div data-dnd-static>
+    {{- range $g := slice "major" "minor" }}
+    {{- $a := index $c.arrays $g }}
+    <h3 class="dnd-subhead">{{ $a.label }}</h3>
+    <p class="dnd-subhead__note">{{ $a.note }} Choose one array and assign its three numbers as you like.</p>
+    <ul class="dnd-defs" role="list">
+      {{- range $a.options }}
+      <li><div class="dnd-def">
+        <p class="dnd-def__name">{{ .label }}</p>
+        <p class="dnd-def__text">{{ .note }}</p>
+      </div></li>
+      {{- end }}
+    </ul>
+    {{- end }}
+
+    <h3 class="dnd-subhead">Human</h3>
+    <p class="dnd-subhead__note">
+      {{ $c.human.points }} points, +1 to an ability score each, to a maximum of
+      +{{ $c.human.max_per_ability }} on any one — both may go on the same ability.
+      You also get {{ $c.human.skills }} skill and {{ $c.human.feats }} feats.
+    </p>
+
+    <h3 class="dnd-subhead">Skills</h3>
+    <p class="dnd-subhead__note">
+      {{ $skillsTotal }} in total:
+      {{- range $i, $s := $c.skills_from }}{{ if $i }},{{ end }} {{ $s.count }} from {{ $s.source }}{{ end }}.
+    </p>
+
+    <h3 class="dnd-subhead">Background</h3>
+    <p class="dnd-subhead__note">
+      +{{ $c.background.boost }} to Intelligence, Wisdom, or Charisma, and double
+      proficiency in one skill under it. Then {{ $c.background.experiences }} experiences —
+      see below.
+    </p>
+
+    <h3 class="dnd-subhead">Saving throws and hit points</h3>
+    <p class="dnd-subhead__note">
+      {{ range $i, $k := $c.saves.fixed }}{{ if $i }}, {{ end }}Constitution{{ end }}, and
+      either Strength or Dexterity. {{ $c.hit_points.note }}
+    </p>
+  </div>
+
+  {{- /* ── The module ──────────────────────────────────────────────────────── */}}
+  <div class="dnd-module" data-dnd-module hidden>
+    {{- /* The strip is above the stage and sticky, because it is the answer to
+           every question the stage asks and it should never be the thing you
+           scroll back up to check. */}}
+    <div class="dnd-strip" data-dnd-strip aria-label="Ability scores"></div>
+
+    <nav aria-label="Character creation steps">
+      <ol class="dnd-steps" data-dnd-steps></ol>
+    </nav>
+
+    <div class="dnd-stage" data-dnd-stage></div>
+
+    <div class="dnd-navbtns">
+      <button type="button" class="dnd-act" data-dnd-back>Back</button>
+      <button type="button" class="dnd-act" data-dnd-next>Next</button>
+    </div>
+  </div>
+</div>

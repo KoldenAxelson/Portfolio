@@ -52,6 +52,11 @@
 {{- /* misc/list.html and misc/single.html */ -}}
 {{- $known = $known | append "blurb" "icon" "prose" "hidden" -}}
 
+{{- /* partials/definitions-assets.html — which data/glossary/<set>.yaml a page
+       ships, and (via shortcodes/term.html) which set a bare {{< term >}} call
+       resolves against. A string or a list of set names. */ -}}
+{{- $known = $known | append "glossary" -}}
+
 {{- /* about.html and misc/list.html — the link cards */ -}}
 {{- $known = $known | append "elsewhere" -}}
 

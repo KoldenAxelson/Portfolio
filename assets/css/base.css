@@ -205,8 +205,17 @@ img {
    widgets carry `not-prose` and are untouched, and tables, code blocks and images keep
    the full width, which is the reason the page asked to be wide in the first place.
    Applied by layouts/misc/single.html only when the page is both wide and prose. */
-.prose-measure > :is(p, ul, ol, blockquote),
-.prose-measure > details > :is(p, ul, ol, blockquote),
+/* Cap the RUNNING TEXT at a readable measure when a page has asked for a wide
+   column, so the prose does not set to ~105 characters while a widget beside it
+   uses the full width.
+
+   `:not(.not-prose)` is the escape hatch, and it is load-bearing. A widget whose
+   root is a bare <ul> — the campaign's feature-card and feat-card grids — is a
+   direct child here, and without the exclusion it gets capped at 68ch and lays
+   out two columns in a space that fits three. `not-prose` already means
+   "Typography, hands off"; this is the same instruction and the same marker. */
+.prose-measure > :is(p, ul, ol, blockquote):not(.not-prose),
+.prose-measure > details > :is(p, ul, ol, blockquote):not(.not-prose),
 .prose-measure > details > summary {
   max-width: 68ch;
 }

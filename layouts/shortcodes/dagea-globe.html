@@ -65,20 +65,38 @@
   {{- end -}}
 {{- end -}}
 
+{{- /* Which places have an article under /dagea/regions/, keyed by title.
+       MATCHED ON TITLE, NOT ON THE `region:` FRONT-MATTER CODE — that code says
+       which region a page belongs TO, and two pages can share one: Sea of Coin
+       and Kretavia are both KRT. The title is what identifies the place.
+
+       Nothing errors when a place has no article. Half the gazetteer is still
+       unwritten and a missing page should read as "not written yet", not as a
+       broken build. */ -}}
+{{- $articles := dict -}}
+{{- range site.RegularPages -}}
+  {{- if hasPrefix .RelPermalink "/dagea/regions/" -}}
+    {{- $articles = merge $articles (dict .Title .RelPermalink) -}}
+  {{- end -}}
+{{- end -}}
+
 {{- /* One resolved table for the panel, so the template and the TypeScript are
        never two opinions about the same place. Islands inherit their region's
        island_note rather than being listed forty times. */ -}}
 {{- $info := dict -}}
 {{- range $code, $p := $places -}}
   {{- $info = merge $info (dict $code (dict
-      "name" $p.name "capital" $p.capital "export" $p.export "blurb" $p.blurb)) -}}
+      "name" $p.name "capital" $p.capital "export" $p.export "blurb" $p.blurb
+      "href" (index $articles $p.name | default ""))) -}}
 {{- end -}}
 {{- range $code, $u := $map.subunits -}}
   {{- if not (index $info $code) -}}
     {{- $parent := index $places $u.parent -}}
+    {{- /* No href: an auto-numbered islet has no article of its own, and linking
+           it to its parent region would make the title a lie about where it goes. */ -}}
     {{- $info = merge $info (dict $code (dict
         "name" $u.name "capital" "" "export" ""
-        "blurb" ($parent.island_note | default ""))) -}}
+        "blurb" ($parent.island_note | default "") "href" "")) -}}
   {{- end -}}
 {{- end -}}
 
@@ -137,6 +155,8 @@
   {{- /* The panel the script writes into, and behind it the same thing as static
          markup for every named place. */ -}}
   <div class="mt-6 min-h-40 rounded-lg border border-border p-5" data-dagea-panel hidden>
+    {{- /* The script swaps the text for a link when the place has an article, so
+           the heading is left empty here rather than pre-filled. */ -}}
     <h3 class="m-0 text-xl font-medium text-fg" data-dagea-title></h3>
     <dl class="mt-3 grid grid-cols-1 gap-x-6 gap-y-1 sm:grid-cols-[max-content_1fr]" data-dagea-facts></dl>
     <p class="mt-3 text-base leading-relaxed text-muted" data-dagea-blurb></p>
@@ -144,8 +164,12 @@
 
   <div class="mt-6 space-y-6" data-dagea-gazetteer>
     {{- range $code, $p := $places }}
+    {{- $href := index $articles $p.name -}}
     <article class="rounded-lg border border-border p-5">
-      <h3 class="m-0 text-xl font-medium text-fg">{{ $p.name }}</h3>
+      <h3 class="m-0 text-xl font-medium text-fg">
+        {{- with $href }}<a href="{{ . }}" class="text-fg underline decoration-border underline-offset-4 transition-colors hover:!text-accent hover:decoration-accent">{{ $p.name }}</a>
+        {{- else }}{{ $p.name }}{{ end -}}
+      </h3>
       <dl class="mt-3 grid grid-cols-1 gap-x-6 gap-y-1 sm:grid-cols-[max-content_1fr]">
         <dt class="font-mono text-xs uppercase tracking-wide text-muted">Capital</dt>
         <dd class="m-0 text-sm text-fg">{{ $p.capital }}</dd>

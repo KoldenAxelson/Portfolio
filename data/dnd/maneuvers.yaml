@@ -1,0 +1,537 @@
+# ---------------------------------------------------------------------------
+# Warlord maneuvers — the whole pool, as data.
+#
+# This file is the source of truth for /misc/dnd/maneuvers/. Nothing generates
+# it; it is transcribed by hand from the Fighter Class Replacement Supplement
+# and edited here when the supplement changes.
+#
+# ONE FACET: `family`, the suffix in the maneuver's name. It is deliberate, it is
+# mechanical — Extra Attack reads it — and it tells you when the thing happens.
+# Strikes and Attacks ride a hit, Maneuvers spend an attack, Stances cost a bonus
+# action, Reflexes cost a reaction, Prowesses go on an ability check.
+#
+# `other` is the catch-all, and it is where the exceptions go rather than being
+# papered over: Quick Strike is named like a Strike but costs a bonus action, and
+# Precision applies to the roll rather than to a result. Putting them under their
+# suffix would make the suffix a lie, which is the whole reason there is no longer
+# a second `timing` field to disagree with it.
+#
+#   family    strike | attack | maneuver | stance | reflex | prowess | other
+#   status    active | discontinued  (discontinued ones still render, greyed,
+#             because a table that used to allow them wants to read the text)
+# ---------------------------------------------------------------------------
+
+maneuvers:
+  - name: Advantageous Attack
+    family: attack
+    tags: [damage, support]
+    text: >-
+      When you hit a creature with a weapon attack, you can expend one Superiority
+      Die. You add the Superiority Die to the attack's damage roll, and until the
+      end of your next turn, the next attack a creature makes against the target is
+      made with advantage.
+
+  - name: Ambusher's Prowess
+    family: prowess
+    tags: [skill]
+    text: >-
+      Whenever you make an Initiative, or Stealth check, you can expend one
+      Superiority Die and add the Superiority Die to the ability check.
+
+  - name: Ambusher's Strike
+    family: strike
+    tags: [control]
+    text: >-
+      When you hit a creature that has not acted in initiative with a weapon
+      attack, you can expend one Superiority Die. The creature's initiative count
+      is reduced by the Superiority Die roll.
+
+  - name: Analyzing Stance
+    family: stance
+    tags: [defense, utility]
+    text: >-
+      You can expend one Superiority Die and use a bonus action. You analyze your
+      enemies. You may roll the Superiority Die to gain a number of temporary hit
+      points equal to the rolled amount + your proficiency bonus. Roll an amount of
+      d20 equal to half your proficiency bonus rounded up. Until the start of your
+      next turn, whenever you make a weapon attack you may expend a result from
+      this pool instead of rolling.
+
+  - name: Artisan's Prowess
+    family: prowess
+    tags: [skill]
+    text: >-
+      Whenever you make an artisan's tools check, you can expend one Superiority
+      Die and add the Superiority Die to the ability check.
+
+  - name: Blinding Attack
+    family: attack
+    tags: [damage, control]
+    save: Constitution
+    text: >-
+      When you hit a creature with a weapon attack, you can expend one Superiority
+      Die. You add the Superiority Die to the attack's damage roll, and the target
+      must make a Constitution saving throw. On a failed save, it is blinded until
+      the end of your next turn.
+
+  - name: Charging Maneuver
+    family: maneuver
+    tags: [mobility, damage]
+    text: >-
+      On your turn, you can expend one Superiority Die and forgo one attack. When
+      you do so, you may take the Dash action, and you may use your bonus action to
+      attack a creature with a melee weapon attack, on a hit add your Superiority
+      Die to the attack's damage roll.
+
+  - name: Coating Strike
+    family: strike
+    tags: [damage, utility]
+    text: >-
+      When you hit a creature with a weapon attack, you can expend one Superiority
+      Die. You add the Superiority Die to the attack's damage roll, you may coat
+      your weapon in a poison or other coating item as part of this attack.
+
+  - name: Commanding Maneuver
+    family: maneuver
+    tags: [support, damage]
+    text: >-
+      On your turn, you can forgo one of your attacks to direct one of your
+      companions to strike. When you do so, choose a friendly creature who can see
+      or hear you and expend one Superiority Die. That creature can immediately use
+      its reaction to make one weapon attack or cast a cantrip that requires an
+      attack roll at advantage, adding the Superiority Die to the attack's damage
+      roll.
+
+  - name: Confidence Maneuver
+    family: maneuver
+    tags: [support, defense]
+    text: >-
+      On your turn, you can forgo one of your attacks to bolster the resolve of you
+      or one of your companions. When you do so, choose a friendly creature who can
+      see or hear you and expend one Superiority Die. That creature gains a number
+      of temporary hit points equal to the Superiority Die roll + your Charisma
+      modifier + your proficiency bonus.
+
+  - name: Crippling Attack
+    family: attack
+    tags: [damage, control]
+    save: Constitution
+    text: >-
+      When you hit a creature with a weapon attack, you can expend one Superiority
+      Die. You add the Superiority Die to the attack's damage roll, and the target
+      must make a Constitution saving throw. On a failed save, its movement speed
+      is 0 until the end of your next turn.
+
+  - name: Dashing Strike
+    family: strike
+    tags: [damage, mobility]
+    text: >-
+      When you hit a creature with a weapon attack, you can expend one Superiority
+      Die. You add the Superiority Die to the attack's damage roll, you then may
+      take the Dash action as a bonus action.
+
+  - name: Deafening Attack
+    family: attack
+    tags: [damage, control]
+    save: Constitution
+    text: >-
+      When you hit a creature with a weapon attack, you can expend one Superiority
+      Die. You add the Superiority Die to the attack's damage roll, and the target
+      must make a Constitution saving throw. On a failed save, it is deafened until
+      the end of your next turn.
+
+  - name: Defensive Stance
+    family: stance
+    tags: [defense]
+    text: >-
+      You can expend one Superiority Die and use a bonus action. You may roll the
+      Superiority Die to gain a bonus to your AC equal to the rolled amount, until
+      the end of your next turn.
+
+  - name: Deflecting Reflex
+    family: reflex
+    tags: [defense]
+    text: >-
+      When a creature makes a weapon attack roll against you, you may expend one
+      Superiority Die and your reaction in attempts to block the damage. Make a
+      contested attack roll against the current attack against you and add your
+      Superiority Die to the attack roll. If you match or exceed the attack roll,
+      you negate the damage.
+
+  - name: Disarming Strike
+    family: strike
+    tags: [damage, control]
+    save: Strength
+    text: >-
+      When you hit a creature with a weapon attack, you can expend one Superiority
+      Die. You add the Superiority Die to the attack's damage roll, and it must
+      make a Strength saving throw. On a failed save, they drop an object of your
+      choice.
+
+  - name: Discombobulating Strike
+    family: strike
+    tags: [damage, control]
+    text: >-
+      When you hit a creature with a weapon attack, you can expend one Superiority
+      Die. You add the Superiority Die to the attack's damage roll, and any
+      concentration check made as a result of this attack, its DC is equal to the
+      damage dealt.
+
+  - name: Disgracing Attack
+    family: attack
+    tags: [damage, control]
+    save: Charisma
+    text: >-
+      When you hit a creature with a weapon attack, you can expend one Superiority
+      Die. You add the Superiority Die to the attack's damage roll, and the target
+      must make a Charisma saving throw. On a failed save, whenever it makes an
+      attack roll it must roll a d4 and subtract it from the attack until the end
+      of your next turn.
+
+  - name: Disorienting Attack
+    family: attack
+    tags: [damage, control]
+    text: >-
+      When you hit a creature with a weapon attack, you can expend one Superiority
+      Die. You add the Superiority Die to the attack's damage roll, and it can't
+      take reactions until the end of your next turn.
+
+  - name: Double Strike
+    family: strike
+    tags: [damage]
+    text: >-
+      When you hit a creature with a weapon attack, you can expend one Superiority
+      Die. You add the Superiority Die to the attack's damage roll, and you may
+      make an off-hand weapon attack against the same target. The off-hand attack
+      cannot use this maneuver.
+
+  - name: Elusive Attack
+    family: attack
+    tags: [damage, defense]
+    save: Wisdom
+    text: >-
+      When you hit a creature with a weapon attack, you can expend one Superiority
+      Die. You add the Superiority Die to the attack's damage roll, and the target
+      must make a Wisdom saving throw. On a failed save, it has disadvantage on all
+      attack rolls against you until the end of your next turn.
+
+  - name: Gamer's Prowess
+    family: prowess
+    tags: [skill]
+    text: >-
+      Whenever you make a Deception, Insight, Sleight of Hand, or Gaming Set check,
+      you can expend one Superiority Die and add the Superiority Die to the ability
+      check.
+
+  - name: Goading Attack
+    family: attack
+    tags: [damage, control, defense]
+    save: Wisdom
+    text: >-
+      When you hit a creature with a weapon attack, you can expend one Superiority
+      Die. You add the Superiority Die to the attack's damage roll, and the target
+      must make a Wisdom saving throw. On a failed save, it has disadvantage on all
+      attack rolls against targets other than you until the end of your next turn.
+
+  - name: Helpful Attack
+    family: attack
+    tags: [support]
+    text: >-
+      When you hit a creature with a weapon attack, you can expend one Superiority
+      Die. Until the end of your next turn, the next attack against the target of
+      your weapon attack that misses, may add the Superiority Die to the attack
+      roll, possibly turning it into a success, ending this effect.
+
+  - name: Hindering Attack
+    family: attack
+    tags: [damage, control, defense]
+    save: Constitution
+    text: >-
+      When you hit a creature with a weapon attack, you can expend one Superiority
+      Die. You add the Superiority Die to the attack's damage roll, and the target
+      must make a Constitution saving throw. On a failed save, its damage rolls are
+      halved until the end of your next turn.
+
+  - name: Honed Stance
+    family: stance
+    tags: [damage, defense]
+    text: >-
+      You can expend one Superiority Die and use a bonus action. You may roll the
+      Superiority Die to gain a number of temporary hit points equal to the rolled
+      amount + your proficiency bonus. You gain advantage on all weapon attacks
+      until the end of the current turn.
+
+  - name: Impeding Attack
+    family: attack
+    tags: [damage, control]
+    text: >-
+      When you hit a creature with a weapon attack, you can expend one Superiority
+      Die. You add the Superiority Die to the attack's damage roll, and the
+      target's speed is reduced by 10 feet until the end of your next turn.
+
+  - name: Interception Reflex
+    family: reflex
+    tags: [defense, support]
+    text: >-
+      When a creature you can see hits a target, other than you, within 5 feet of
+      you with an attack, you can expend one Superiority Die and use your reaction
+      to reduce the damage the target takes by your Superiority Die roll + either
+      your Strength or Dexterity modifier + your proficiency bonus (to a minimum of
+      0 damage).
+
+  - name: Lunging Stance
+    family: stance
+    tags: [defense, mobility]
+    text: >-
+      You can expend one Superiority Die and use a bonus action. You may roll the
+      Superiority Die to gain a number of temporary hit points equal to the rolled
+      amount + your proficiency bonus. Until the end of your next turn, your reach
+      on melee weapon attacks increases by 5 feet.
+
+  - name: Magic Strike
+    family: strike
+    tags: [damage, magic]
+    text: >-
+      When you hit a creature with a weapon attack, you can expend one Superiority
+      Die. You add the Superiority Die to the attack's damage roll, and then you
+      may cast a cantrip you know with a casting time of one action, as a bonus
+      action. You may ignore any somatic requirements for that cantrip.
+
+  - name: Menacing Attack
+    family: attack
+    tags: [damage, control]
+    save: Wisdom
+    text: >-
+      When you hit a creature with a weapon attack, you can expend one Superiority
+      Die. You add the Superiority Die to the attack's damage roll, and the target
+      must make a Wisdom saving throw. On a failed save, it is frightened of you
+      until the end of your next turn.
+
+  - name: Mounting Stance
+    family: stance
+    tags: [mounted, mobility, damage]
+    text: >-
+      You can expend one Superiority Die and use a bonus action. For the next
+      minute, you cannot be dismounted, mounting and dismounting only cost you 5
+      feet of movement, and the next attack your mount makes adds a Superiority Die
+      to its damage roll.
+
+  - name: Musicians' Prowess
+    family: prowess
+    tags: [skill]
+    text: >-
+      Whenever you make a Performance, or Musical Instrument check, you can expend
+      one Superiority Die and add the Superiority Die to the ability check.
+
+  - name: Parrying Reflex
+    family: reflex
+    tags: [defense]
+    text: >-
+      When another creature damages you with a weapon attack, you can use your
+      reaction and expend one Superiority Die to reduce the damage by the number
+      you roll on your Superiority Die + your Dexterity modifier + your proficiency
+      bonus.
+
+  - name: Piercing Maneuver
+    family: maneuver
+    tags: [damage, ranged]
+    save: Dexterity
+    text: >-
+      On your turn, you may forgo 1 ranged weapon attack and expend a Superiority
+      Die. Make a ranged weapon damage roll and add the Superiority Die to the
+      damage roll. Each creature in a 5 feet wide line the length of your weapon's
+      normal range, must make a Dexterity saving throw. On a failure, the creature
+      takes the damage roll.
+
+  - name: Plunging Reflex
+    family: reflex
+    tags: [defense, damage, mobility]
+    text: >-
+      When you fall at least 10 feet, you may use your reaction and expend a
+      Superiority Die to reduce your fall damage by the number you roll on your
+      Superiority Die + your Dexterity modifier + your proficiency bonus. If you
+      land on a creature, you may make a melee weapon attack, on a hit, the
+      creature takes the normal damage from your weapon attack + the unreduced fall
+      damage.
+
+  - name: Precision
+    family: other
+    tags: [utility]
+    text: >-
+      When you make a weapon attack roll against a creature, you can expend one
+      Superiority Die to add it to the roll. You can use this maneuver before or
+      after making the attack roll, but before any effects of the attack are
+      applied.
+
+  - name: Pushing Strike
+    family: strike
+    tags: [damage, control]
+    save: Strength
+    text: >-
+      When you hit a creature with a weapon attack, you can expend one Superiority
+      Die. You add the Superiority Die to the attack's damage roll, and it must
+      make a Strength saving throw. On a failed save, the target is pushed 15 feet
+      away from you.
+
+  - name: Quick Grab
+    family: other
+    tags: [control]
+    text: >-
+      As a bonus action, you can expend one Superiority Die and make a grapple
+      attempt against a creature within reach of you, adding the Superiority Die to
+      your grapple check.
+
+  - name: Quick Restore
+    family: other
+    tags: [defense, support]
+    text: >-
+      You can expend one Superiority Die, spend one Hit Die, and use a bonus
+      action. You may roll both dice and add your Constitution modifier +
+      proficiency bonus, and regain a number of hit points equal to the total.
+
+  - name: Quick Strike
+    family: other
+    tags: [damage]
+    text: >-
+      As a bonus action, you can expend one Superiority Die and make a weapon
+      attack. You can load or draw the weapon as part of making this attack. If you
+      hit, add the Superiority Die to the weapon's damage roll.
+
+  - name: Redirecting Reflex
+    family: reflex
+    tags: [defense]
+    text: >-
+      When a creature misses you with a weapon attack within 5 feet of you, you can
+      use your reaction and expend one Superiority Die to make a Strength
+      (Athletics) or Dexterity (Acrobatics) check against the attack adding your
+      Superiority Die roll to the check. If you match or exceed the attack with
+      your check, you may redirect the attack to another creature within the
+      weapon's reach or negate the damage.
+
+  - name: Riposte Reflex
+    family: reflex
+    tags: [damage, defense]
+    text: >-
+      When a creature misses you with a weapon attack within your weapon's reach,
+      you can use your reaction and expend one Superiority Die to make a weapon
+      attack against the creature. If you hit, you add the Superiority Die to the
+      attack's damage roll.
+
+  - name: Repositioning Strike
+    family: strike
+    tags: [damage, mobility, support]
+    text: >-
+      When you hit a creature with a weapon attack, you can expend one Superiority
+      Die. You add the Superiority Die to the attack's damage roll, and you may
+      choose yourself or an ally to immediately take their reaction to move up to
+      half of its movement speed without provoking opportunity attacks from the
+      target of your attack.
+
+  - name: Sentinel Stance
+    family: stance
+    tags: [control, defense, damage]
+    text: >-
+      You can expend one Superiority Die and use a bonus action. You may roll the
+      Superiority Die to gain a number of temporary hit points equal to the rolled
+      amount + your proficiency bonus. Until the start of your next turn, whenever
+      a creature enters the range of a melee weapon you are holding, you may make
+      an attack of opportunity without expending a reaction a number of times equal
+      to your proficiency bonus.
+
+  - name: Sieging Strike
+    family: strike
+    tags: [damage, utility]
+    text: >-
+      When you hit an object or structure with a weapon attack, you can expend one
+      Superiority Die. You add the Superiority Die to the attack's damage roll, and
+      the attack gains the siege property.
+
+  - name: Smiting Strike
+    family: strike
+    tags: [damage]
+    text: >-
+      When you hit a creature with a weapon attack, you can expend one Superiority
+      Die. You add the Superiority Die and a die of equal size to your Superiority
+      Die to the attack's damage roll.
+
+  - name: Specialist's Prowess
+    family: prowess
+    tags: [skill]
+    repeatable: true
+    text: >-
+      Choose a combination of three skills and/or tools when learning this
+      maneuver. Whenever you make a check using these skills or tools, you can
+      expend one Superiority Die and add the Superiority Die to the ability check.
+      You may take this maneuver multiple times.
+
+  - name: Surprising Strike
+    family: strike
+    tags: [damage]
+    text: >-
+      When you hit a surprised creature with a weapon attack, you can expend one
+      Superiority Die. You add the Superiority Die to the attack's damage roll, and
+      the attack is considered a critical hit.
+
+  - name: Sweeping Maneuver
+    family: maneuver
+    tags: [damage]
+    save: Dexterity
+    text: >-
+      On your turn, you may forgo 1 melee weapon attack and expend a Superiority
+      Die. Make a melee weapon damage roll and add the Superiority Die to the
+      damage roll. Each creature within your weapon's reach must make a Dexterity
+      saving throw. On a failure, the creature takes the damage roll.
+
+  - name: Tripping Strike
+    family: strike
+    tags: [damage, control]
+    save: Strength
+    text: >-
+      When you hit a creature with a weapon attack, you can expend one Superiority
+      Die. You add the Superiority Die to the attack's damage roll, and it must
+      make a Strength saving throw. On a failed save, the target is knocked prone.
+
+  - name: Useful Strike
+    family: strike
+    tags: [damage, utility]
+    text: >-
+      When you hit a creature with a weapon attack, you can expend one Superiority
+      Die. You add the Superiority Die to the attack's damage roll, you then may
+      take the Use Object action as a bonus action.
+
+  - name: Warding Reflex
+    family: reflex
+    tags: [defense, support]
+    text: >-
+      When a creature you can see hits a target, other than you, within 5 feet of
+      you with an attack, you can expend one Superiority Die and use your reaction
+      to add to the AC equal to the Superiority Die roll, potentially turning a hit
+      into a miss. If the attack still hits the creature, that creature gains
+      resistance to the attack's damage.
+
+  # ── Discontinued ──────────────────────────────────────────────────────────
+  # Off the list, kept on the page. A table that already allowed one still needs
+  # to be able to read it.
+  - name: Berserking Stance
+    family: stance
+    status: discontinued
+    tags: [defense]
+    text: >-
+      You can expend one Superiority Die and use a bonus action. You enter into a
+      berserk state of mind. You may roll the Superiority Die to gain a number of
+      temporary hit points equal to the rolled amount + your proficiency bonus.
+      While you are berserking, you gain resistance to bludgeoning, piercing, and
+      slashing damage, and you cannot use any Superiority Dice. This berserk mode
+      ends when you choose to on your turn, when a minute passes, or when you are
+      incapacitated.
+
+  - name: Stunning Attack
+    family: attack
+    status: discontinued
+    tags: [damage, control]
+    save: Constitution
+    text: >-
+      When you hit a creature with a weapon attack, you can expend one Superiority
+      Die. You add the Superiority Die to the attack's damage roll, and the target
+      must make a Constitution saving throw. On a failed save, it is stunned until
+      the end of your next turn.

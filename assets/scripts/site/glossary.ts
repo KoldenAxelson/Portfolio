@@ -15,10 +15,17 @@
 // Anything else is literal text. Both are parsed here, never with innerHTML, so
 // glossary copy can never inject markup.
 //
-// An entry renders as: the definition sentence, then its figure (a micro-diagram
-// — see def-figures.ts), then its word lists. Word lists pick their own shape:
-// a single unlabelled group reads best as chips, while two or more labelled
-// groups are a comparison and read as a table.
+// An entry renders as: the definition sentence, any follow-on `notes`, any
+// `bullets`, then its figure (a micro-diagram — see def-figures.ts), then its word
+// lists. Word lists pick their own shape: a single unlabelled group reads best as
+// chips, while two or more labelled groups are a comparison and read as a table.
+//
+// `notes` and `bullets` exist because a Basic Logic definition is one sentence by
+// design and a campaign ruling is not — the Dagean set needs a worked example under
+// the statement of the rule, and a class feature like Martial Studies IS a list of
+// five options. Same tokenizer and same paragraph class as the definition, so both
+// can cross-reference terms. One-sentence entries omit them and render as they
+// always did.
 import { renderFigure } from './def-figures';
 import type { Figure } from './def-figures';
 
@@ -35,6 +42,11 @@ export interface TermGroup {
 export interface GlossaryEntry {
   term: string;
   definition: string;
+  /** Extra paragraphs under the definition. Same syntax; use sparingly. */
+  notes?: string[];
+  /** A list, for an entry whose content IS a list — a pick-one class feature, a
+   *  feat's benefits. Rendered after `notes`. */
+  bullets?: string[];
   figure?: Figure;
   wordgroups?: WordGroup[];
   termgroups?: TermGroup[];
@@ -206,10 +218,25 @@ function termTable(groups: TermGroup[], set: string): HTMLElement {
   );
 }
 
-// The definition sentence, its figure, then its lists.
+// The definition sentence, its notes, its bullets, its figure, then its lists.
 export function renderDefinition(entry: GlossaryEntry, set: string = DEFAULT_SET): DocumentFragment {
   const frag = document.createDocumentFragment();
   frag.appendChild(definitionBody(entry.definition));
+
+  for (const note of entry.notes ?? []) frag.appendChild(definitionBody(note));
+
+  if (entry.bullets?.length) {
+    const list = document.createElement('ul');
+    list.className = 'def-bullets';
+    for (const bullet of entry.bullets) {
+      const item = document.createElement('li');
+      // definitionBody returns a <p>; its children are what belongs in the <li>,
+      // so the bullet keeps its cross-references without nesting a paragraph.
+      item.append(...Array.from(definitionBody(bullet).childNodes));
+      list.appendChild(item);
+    }
+    frag.appendChild(list);
+  }
 
   if (entry.figure) {
     const figure = renderFigure(entry.figure);

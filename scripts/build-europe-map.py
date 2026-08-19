@@ -88,19 +88,44 @@ WIDTH = 1000.0          # viewBox width; height is derived from the data
 TOLERANCE = 0.55        # Douglas–Peucker, in output units
 MIN_AREA = 1.2          # drop rings smaller than this (µ-states, rocks)
 
-# Subunits that are politically European but geographically elsewhere, or so far
-# offshore they only add empty ocean. Dropping them tightens the frame.
-DROP = {"NSV", "NJM", "FRO", "ISL", "ALD", "GRL", "ATF", "SGS", "FLK", "SHN"}
+# THE FLAT MAP ONLY. Subunits that are politically European but geographically
+# elsewhere, or so far offshore they only add empty ocean. Dropping them tightens
+# the frame, which is the entire justification and it does not travel.
+#
+# It used to travel. build_globe consulted this set as well, on the reasoning that
+# one list of "things we don't want" was simpler than two — and so a list written
+# to answer "what would stretch a map of Europe" silently answered "what is on
+# Earth". Greenland is 645 square degrees. It is the second-largest thing this
+# script can draw and it was missing from the globe for the same reason Jan Mayen
+# was: it makes an awkward frame around Warsaw. Iceland, Svalbard, the Faroes,
+# Åland and the Falklands went with it.
+#
+# The globe drops Antarctica and nothing else. See GLOBE_DROP.
+MAP_DROP = {"NSV", "NJM", "FRO", "ISL", "ALD", "GRL", "ATF", "SGS", "FLK", "SHN"}
 
 # ── The globe ──────────────────────────────────────────────────────────────
 # A second output, and a different KIND of output. The flat map ships paths that
 # are already projected, because its projection never changes. The globe changes
 # projection every frame, so it has to ship raw lon/lat and project in the
 # browser. Same source, same simplifier, different stage to stop at.
+# Simplification is ADAPTIVE, because one tolerance in degrees cannot serve both
+# Russia and Malta. At a flat 0.35 deg every shape smaller than about a third of a
+# degree simplified to fewer than three points and was dropped — which is most of
+# why the globe was missing a hundred island states and three subunits the
+# ancestry data actually paints. A ring is simplified at a tolerance set by its
+# own size instead: one tenth of its longest side, floored so a speck still costs
+# something to draw and capped at GLOBE_TOL so a continent is not over-described.
 GLOBE_TOL = 0.35        # degrees; ~39 km, against ~32 km per pixel on a 400px globe
-GLOBE_MIN_AREA = 0.25   # square degrees
+GLOBE_TOL_DIV = 10      # ring span / this, before the cap and floor below
+GLOBE_TOL_MIN = 0.005   # ~550 m; below this the wire cost stops being worth it
+# A ring smaller than this is under a pixel on a 460 px disc and is not drawn —
+# UNLESS it is all its subunit has, in which case it is kept regardless. That
+# exception is the rule that keeps the set honest: every subunit in the source is
+# on the globe, and the floor only decides how much of an archipelago's tail comes
+# with it. Monaco arrives as a six-point speck, which is the correct size for
+# Monaco.
+GLOBE_MIN_AREA = 0.15   # square degrees
 GLOBE_DROP = {"ATA"}    # Antarctica wraps the pole and breaks limb clipping
-GLOBE_PLACES = 1        # decimals kept on the wire; see build_globe
 
 
 def fetch():
@@ -177,7 +202,7 @@ def main():
     for feat in data["features"]:
         p = feat["properties"]
         code = p.get("SU_A3")
-        if not code or code in DROP:
+        if not code or code in MAP_DROP:
             continue
         kept = []
         for ring in rings_of(feat["geometry"]):
@@ -246,36 +271,54 @@ def main():
     build_globe(data)
 
 
+def span(pts):
+    """Longest side of a ring's bounding box, in degrees."""
+    xs = [x for x, _ in pts]
+    ys = [y for _, y in pts]
+    return max(max(xs) - min(xs), max(ys) - min(ys))
+
+
 def build_globe(data):
     """Second pass over the same source, stopping at lon/lat.
 
-    Coordinates are rounded to one decimal — 0.1 degrees is about 11 km, and a
-    400-pixel globe resolves about 32 km per pixel, so the extra digits were
-    bytes on the wire that could never reach a screen. That rounding is most of
-    why this file is small enough to fetch.
+    THE WHOLE WORLD, less Antarctica. This is not a map of Europe and must not
+    inherit the frame-tightening choices of one — see MAP_DROP.
+
+    PRECISION IS PER RING, for the same reason the tolerance is. One decimal is
+    about 11 km and a 460-pixel globe resolves about 30 km per pixel, so a
+    continent gains nothing from a second digit — but Malta is 27 km across, and
+    at one decimal it rounds to a rectangle. So: one decimal for anything a
+    continent's size, two down to about a degree, three below that. The extra
+    digits are spent only where a whole country fits between two of them.
     """
     out = {}
     for feat in data["features"]:
         p = feat["properties"]
         code = p.get("SU_A3")
-        if not code or code in DROP or code in GLOBE_DROP:
+        if not code or code in GLOBE_DROP:
             continue
-        rings = []
+        kept = []
         for ring in rings_of(feat["geometry"]):
             pts = [(pt[0], pt[1]) for pt in ring]
-            sm = simplify_ring(pts, GLOBE_TOL)
-            if len(sm) < 3 or area(sm) < GLOBE_MIN_AREA:
+            tol = min(GLOBE_TOL, max(span(pts) / GLOBE_TOL_DIV, GLOBE_TOL_MIN))
+            sm = simplify_ring(pts, tol)
+            if len(sm) < 3:
                 continue
-            rings.append(flat_coords(sm, GLOBE_PLACES))
-        if not rings:
+            s = span(sm)
+            kept.append((area(sm), flat_coords(sm, 1 if s >= 8 else 2 if s >= 0.8 else 3)))
+        if not kept:
             continue
+        kept.sort(key=lambda t: -t[0])
+        # Every ring over the floor, or — if none clears it — the largest one
+        # anyway, so no subunit in the source is silently absent from the globe.
+        rings = [r for a, r in kept if a >= GLOBE_MIN_AREA] or [kept[0][1]]
         out[code] = {"name": p.get("SUBUNIT") or p.get("ADMIN"), "rings": rings}
 
     payload = {
         "_meta": {
             "source": "Natural Earth 1:50m Admin 0 map subunits (public domain)",
             "generated_by": "scripts/build-europe-map.py",
-            "note": "lon/lat degrees, flat [lon,lat,lon,lat,...] per ring.",
+            "note": "lon/lat degrees, flat [lon,lat,lon,lat,...] per ring. Whole world, less Antarctica.",
         },
         "units": out,
     }

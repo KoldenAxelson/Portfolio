@@ -1,0 +1,75 @@
+{{- /*
+  dnd-popovers — turn the campaign's own data files into glossary sets, so a class
+  feature or a feat opens in the same draggable window a {{< term >}} does.
+
+    {{ partial "dnd-popovers.html" . }}     (from the layout, once per page)
+
+  WHY SYNTHESISE RATHER THAN HAND-WRITE. There are eleven class features and there
+  will be fifty feats. Copying each one's text into data/glossary/dnd.yaml so it
+  could have a window would be two copies of every rule, drifting from the day it
+  was written. The window manager only cares that a set exists at
+  <script data-glossary="NAME"> in the glossary entry shape, so the shape is built
+  here from the data that already exists.
+
+  Three sets, emitted only when the page uses the shortcode that links into them:
+
+    dnd-features   from data/dnd/fighter.yaml `features`
+    dnd-feats      from data/dnd/feats.yaml `feats`
+    dnd-styles     from data/dnd/fighting-styles.yaml `styles`
+
+  Keys are `urlize`d names, which is what fighter-table.html, feat-cards.html and
+  fighting-styles.html use when they emit their triggers. Change one, change all.
+
+  The mapping onto the glossary shape:
+
+    definition  the feature's `text`, or the feat's `summary`
+    notes       the meta line, then each `option` as "**Name.** text", then `house`
+    bullets     `bullets` (a pick-one feature) or `benefits` (a feat)
+
+  ASSETS: definitions.css comes from partials/definitions-assets.html, which the
+  page triggers with `glossary:` in front matter. This partial ships data only.
+*/ -}}
+
+{{- if .HasShortcode "fighter-table" -}}
+  {{- $set := dict -}}
+  {{- range site.Data.dnd.fighter.features -}}
+    {{- $notes := slice -}}
+    {{- range .options }}{{ $notes = $notes | append (printf "**%s.** %s" .name .text) }}{{ end -}}
+    {{- $entry := dict "term" .name "definition" .text -}}
+    {{- with $notes }}{{ $entry = merge $entry (dict "notes" .) }}{{ end -}}
+    {{- with .bullets }}{{ $entry = merge $entry (dict "bullets" .) }}{{ end -}}
+    {{- $set = merge $set (dict (.name | urlize) $entry) -}}
+  {{- end }}
+  <script type="application/json" data-glossary="dnd-features">{{ $set | jsonify | safeJS }}</script>
+{{- end -}}
+
+{{- if .HasShortcode "feat-cards" -}}
+  {{- $set := dict -}}
+  {{- range site.Data.dnd.feats.feats -}}
+    {{- $notes := slice -}}
+    {{- /* The prerequisite and the ability bump are conditions on taking the feat,
+           so they lead — before the benefits, not buried under them. */ -}}
+    {{- $meta := slice -}}
+    {{- with .prerequisite }}{{ $meta = $meta | append (printf "Requires %s" .) }}{{ end -}}
+    {{- with .asi }}{{ $meta = $meta | append . }}{{ end -}}
+    {{- with $meta }}{{ $notes = $notes | append (printf "**%s**" (delimit . " · ")) }}{{ end -}}
+    {{- with .house }}{{ $notes = $notes | append . }}{{ end -}}
+    {{- $entry := dict "term" .name "definition" .summary -}}
+    {{- with $notes }}{{ $entry = merge $entry (dict "notes" .) }}{{ end -}}
+    {{- with .benefits }}{{ $entry = merge $entry (dict "bullets" .) }}{{ end -}}
+    {{- $set = merge $set (dict (.name | urlize) $entry) -}}
+  {{- end }}
+  <script type="application/json" data-glossary="dnd-feats">{{ $set | jsonify | safeJS }}</script>
+{{- end -}}
+
+{{- if .HasShortcode "fighting-styles" -}}
+  {{- $set := dict -}}
+  {{- range (index site.Data.dnd "fighting-styles").styles -}}
+    {{- $entry := dict "term" .name "definition" .text -}}
+    {{- with .grants -}}
+      {{- $entry = merge $entry (dict "notes" (slice (printf "**Grants %d maneuver%s.** See Combat Superiority for how they are used." . (cond (gt . 1) "s" "")))) -}}
+    {{- end -}}
+    {{- $set = merge $set (dict (.name | urlize) $entry) -}}
+  {{- end }}
+  <script type="application/json" data-glossary="dnd-styles">{{ $set | jsonify | safeJS }}</script>
+{{- end -}}

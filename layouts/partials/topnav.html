@@ -11,6 +11,12 @@
        from the navbar download button (shared tools panel); on desktop the
        centered toolbar is suppressed and the floating FAB handles them. */ -}}
 {{- $tools := .Params.tools -}}
+{{- /* The one misc page that is part of Dagea. `.HasShortcode` is exact and
+       evaluated per build, so the globe page identifies itself rather than
+       carrying a front-matter flag that could go stale. Used twice below: to
+       suppress the inline desktop toolbar (the FAB covers desktop) and to pick the
+       navbar button's icon. */ -}}
+{{- $dageaGlobe := .HasShortcode "dagea-globe" -}}
 {{- if and (not $tools) (eq .Layout "cv") -}}
   {{- $t := slice (dict "icon" "printer" "label" "Print" "action" "print") -}}
   {{- with $site.author.resume.docx }}{{ $t = $t | append (dict "icon" "docx" "label" "DOCX" "href" . "download" true) }}{{ end -}}
@@ -27,6 +33,19 @@
     {{- $t = $t | append (dict "label" .Title "href" .RelPermalink) -}}
   {{- end -}}
   {{- $tools = $t -}}
+{{- end -}}
+{{- /* Dagea — the gazetteer, the topic indexes and the globe all get the same
+       navigation. One list, built by partials/func/dagea-menu.html and rendered on
+       desktop by partials/dagea-nav.html; this is its mobile half. The partial
+       returns an empty slice off a non-Dagea page, so there is nothing to gate on
+       here. */ -}}
+{{- if not $tools -}}
+  {{- $menu := partial "func/dagea-menu.html" . -}}
+  {{- with $menu -}}
+    {{- $t := slice -}}
+    {{- range . }}{{ $t = $t | append (dict "icon" .icon "label" .label "href" .href) }}{{ end -}}
+    {{- $tools = $t -}}
+  {{- end -}}
 {{- end -}}
 {{- /* A long single page may declare `sections:` in front matter ({id,label,icon?})
        for a "jump to section" menu. On mobile it drops from the navbar button
@@ -66,7 +85,7 @@
 
       {{- /* desktopFab pages (Viva) render their own floating FAB, so the centered
              toolbar is suppressed there too, same as CV / Basic Logic. */ -}}
-      {{- if and $hasTools (ne .Layout "cv") (ne .Type "basic-logic") (not .Params.desktopFab) }}
+      {{- if and $hasTools (ne .Layout "cv") (ne .Type "basic-logic") (ne .Type "dagea") (not $dageaGlobe) (not .Params.desktopFab) }}
       <ul class="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-2 lg:flex">
         {{- range $tools }}
         <li>
@@ -112,14 +131,18 @@
       </nav>
 
       <div class="flex items-center gap-1 lg:hidden">
-        {{- if and (ne .Layout "cv") (not (in .RelPermalink "/misc")) }}
+        {{- /* The mobile half of the chat trigger. Same allow-list as the desktop
+               FAB in baseof.html — it used to be a second, differently-written copy
+               of the condition (this one keyed on `.Layout`, that one on
+               `.RelPermalink`), so the two agreed about /cv by luck. */ -}}
+        {{- if partial "func/ai-enabled.html" . }}
         <button type="button" data-ai-trigger data-ai-mobile-trigger aria-haspopup="dialog" aria-expanded="false" aria-label="Ask about Konrad" class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-md text-muted transition-colors hover:bg-border/40 hover:!text-accent focus-visible:bg-border/40 focus-visible:!text-accent">
           {{ partial "func/svg-icon.html" (dict "name" "sparkles" "class" "h-7 w-7" "width" "1.6") }}
         </button>
         {{- end }}
         {{- if $mobileTools }}
         <button type="button" data-mobile-tools-trigger aria-label="Open page actions" class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-md text-muted transition-colors hover:bg-border/40 hover:text-fg focus-visible:bg-border/40 focus-visible:text-fg">
-          {{ partial "func/svg-icon.html" (dict "name" (.Params.toolsIcon | default (cond (eq .Type "basic-logic") "book-open" "arrow-down-circle")) "class" "h-7 w-7") }}
+          {{ partial "func/svg-icon.html" (dict "name" (.Params.toolsIcon | default (cond (eq .Type "basic-logic") "book-open" (cond (or (eq .Type "dagea") $dageaGlobe) "map-pin" "arrow-down-circle"))) "class" "h-7 w-7") }}
         </button>
         {{- end }}
 

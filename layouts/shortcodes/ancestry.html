@@ -60,6 +60,23 @@
   hard build failure would be the wrong response to it. A missing data file IS an
   errorf — that one is always a mistake.
 
+  THE GLOBE DRIVES THIS LIST. Every openable row carries `data-anc-node` with the
+  population's name, which is the key the globe already has — ancestry-map.html
+  hands it `{"ENG": {"name": "English", …}}` and the name is the join. Clicking
+  England on the globe opens the English row, and its group above it, and marks
+  it; opening a row that owns geography flies the globe there. See
+  ts/ancestry-globe.ts.
+
+  The name is the join rather than a code because a code would only work for the
+  rows that have one. Basque and Ashkenazi Jewish have no polygon and never will,
+  and they still have to be addressable if this hook is ever used for anything
+  but the globe.
+
+  `data-anc-current` is set by that module, so the highlight has to be declared
+  HERE — Tailwind's `@source` covers layouts and content, not TypeScript, and a
+  class name that only ever appears in a .ts file is a class name that never
+  makes it into the stylesheet.
+
   `not-prose`: the page sets `prose: true`, and Typography would restyle the
   summary rows and the star rows. Same contract as puzzle-solver.
 */ -}}
@@ -101,8 +118,14 @@
   </div>
 {{- end -}}
 
-<section class="ancestry not-prose space-y-10" aria-label="Ancestry composition" data-perf-meters>
-  <div data-perf-panel="ancestry">
+<section class="ancestry not-prose" aria-label="Ancestry composition" data-perf-meters data-ancestry-list>
+  {{- /* space-y-10 lives HERE, on the element whose children are the tiers, and
+         not on the <section>, whose only child is this div and which was
+         therefore spacing nothing. It went unnoticed while the second tier was a
+         one-line footnote sitting under a `pt-1`; the moment Trace Ancestry
+         became a band with a heading, the two tiers were flush against each
+         other and the heading read as belonging to the group above it. */ -}}
+  <div class="space-y-10" data-perf-panel="ancestry">
 
 
   {{- range $ti, $tier := $d.tiers }}
@@ -157,7 +180,7 @@
 
       {{- $openable := or $group.note $group.children }}
       {{- if $openable }}
-      <details class="group/anc scroll-mt-24 rounded-lg px-3 py-3 transition-colors hover:bg-border/25 open:bg-border/20">
+      <details data-anc-node="{{ $group.name }}" class="group/anc scroll-mt-24 rounded-lg px-3 py-3 transition-colors hover:bg-border/25 open:bg-border/20 data-[anc-current]:bg-accent/10 data-[anc-current]:ring-1 data-[anc-current]:ring-accent/40">
         <summary class="flex cursor-pointer list-none items-center gap-4 [&::-webkit-details-marker]:hidden">
           {{- with $group.pct }}
           <svg viewBox="0 0 36 36" class="h-14 w-14 shrink-0" role="img" aria-label="{{ printf "%.1f" . }} percent of the report">
@@ -217,7 +240,7 @@
             {{- range $child := . }}
             <li>
               {{- if $child.note }}
-              <details class="group/sub rounded px-2 py-1 transition-colors hover:bg-border/30">
+              <details data-anc-node="{{ $child.name }}" class="group/sub rounded px-2 py-1 transition-colors hover:bg-border/30 data-[anc-current]:bg-accent/10 data-[anc-current]:ring-1 data-[anc-current]:ring-accent/40">
                 <summary class="flex cursor-pointer list-none items-baseline gap-3 [&::-webkit-details-marker]:hidden">
                   <span class="text-sm text-fg">{{ $child.name }}</span>
                   <span class="ml-auto font-mono text-xs tabular-nums text-muted">{{ printf "%.1f" ($child.pct | default 0.0) }}%</span>

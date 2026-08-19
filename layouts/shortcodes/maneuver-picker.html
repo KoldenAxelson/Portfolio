@@ -1,0 +1,117 @@
+{{- /*
+  maneuver-picker — the whole maneuver pool, filterable, with a list you keep.
+
+    {{< maneuver-picker >}}
+
+  EVERY CARD IS IN THE HTML. Filtering and selection are added on top by
+  assets/scripts/pages/dnd/picker.ts; with JavaScript off this renders as a plain,
+  complete, readable list of every maneuver, which is what a reference page owes
+  you. The toolbar ships `hidden` and is revealed by the script, so nobody is ever
+  shown a control that cannot work.
+
+  ONE FACET AND A SEARCH BOX. There used to be a second row of filter chips for the
+  action economy, and it was removed because the family already says when a maneuver
+  happens — see the header of data/dnd/maneuvers.yaml. Two facets over 53 items was
+  a filter UI wearing more chrome than the thing it filtered.
+
+  NO CEILING ON THE LIST. It used to count against twelve, which is what a Warlord
+  knows at 18th level — but Signature Technique, Superior Technique and a future feat
+  all add to that, so the number was wrong for anyone who took one. The list counts
+  up and stops nowhere; the player owns the count.
+
+  THE GRID IS IN A SCROLL AREA. 53 cards is about 5,000px of page, which made
+  everything after Maneuvers unreachable by scrolling. Fixed height, internal scroll,
+  and the page stays a page.
+*/ -}}
+{{- $tax := site.Data.dnd.taxonomy -}}
+{{- $all := site.Data.dnd.maneuvers.maneuvers -}}
+
+{{- /* Assertions, once, at build time. A typo'd family is a filter chip nobody can
+       ever click, and a card that silently drops out of every filter is worse than a
+       broken build. */ -}}
+{{- range $all -}}
+  {{- if not (index $tax.families .family) -}}
+    {{- errorf "maneuver-picker: %q has unknown family %q — add it to data/dnd/taxonomy.yaml" .name .family -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $active := where $all "status" "!=" "discontinued" -}}
+{{- $gone := where $all "status" "discontinued" -}}
+
+<div class="dnd-picker not-prose" data-dnd-picker>
+
+  <div class="dnd-tools" data-dnd-tools hidden>
+    <div class="dnd-tools__row">
+      <label class="sr-only" for="dnd-search">Filter maneuvers</label>
+      <input id="dnd-search" type="search" autocomplete="off" spellcheck="false" class="dnd-search"
+             placeholder="Filter by name, effect, or save&hellip;" data-dnd-search />
+      <button type="button" class="dnd-filter" aria-pressed="false" data-dnd-filter="picked:1">On my list</button>
+      <button type="button" class="dnd-act" data-dnd-copy disabled>Copy</button>
+      <button type="button" class="dnd-act" data-dnd-clear disabled>Clear</button>
+    </div>
+
+    <div class="dnd-tools__row">
+      {{- range $key, $meta := $tax.families }}
+      <button type="button" class="dnd-filter" aria-pressed="false"
+              data-dnd-filter="family:{{ $key }}" title="{{ $meta.note }}">{{ $meta.label }}</button>
+      {{- end }}
+      <button type="button" class="dnd-act" data-dnd-reset hidden>Reset</button>
+      <p class="dnd-count" aria-live="polite" data-dnd-count></p>
+    </div>
+  </div>
+
+  <div class="dnd-scroll" data-dnd-scroll>
+    <ul class="dnd-grid" role="list">
+      {{- range $active }}
+      {{- $slug := .name | urlize -}}
+      {{- $fam := index $tax.families .family -}}
+      {{- $tagWords := slice -}}
+      {{- range .tags }}{{ $tagWords = $tagWords | append (index $tax.tags . | default .) }}{{ end -}}
+      <li>
+        <button type="button" class="dnd-card" aria-pressed="false"
+                data-dnd-card data-slug="{{ $slug }}" data-name="{{ .name }}"
+                data-family="{{ .family }}"
+                data-search="{{ lower (printf "%s %s %s %s %s" .name $fam.label (delimit $tagWords " ") (.save | default "") .text) }}">
+          <span class="dnd-card__head">
+            <span class="dnd-card__name">{{ .name }}</span>
+            <span class="dnd-card__mark" aria-hidden="true">
+              <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 9.5 18 20 6.5" /></svg>
+            </span>
+          </span>
+          <span class="dnd-card__chips">
+            <span class="dnd-chip">{{ $fam.label }}</span>
+            {{- with .save }}<span class="dnd-chip dnd-chip--save">{{ . }} save</span>{{ end }}
+          </span>
+          <span class="dnd-card__text">{{ .text }}</span>
+          {{- with $tagWords }}<span class="dnd-card__tags">{{ delimit . " · " }}</span>{{ end }}
+        </button>
+      </li>
+      {{- end }}
+    </ul>
+  </div>
+
+  <p class="dnd-empty" aria-live="polite" data-dnd-empty hidden>Nothing matches that.</p>
+
+  {{- with $gone }}
+  {{- /* Folded away. Off the list, but a table that already allowed one needs to be
+         able to look it up. */ -}}
+  <details class="dnd-fold">
+    <summary>Discontinued <span class="dnd-chip">{{ len . }}</span></summary>
+    <ul class="dnd-grid" role="list">
+      {{- range . }}
+      {{- $fam := index $tax.families .family -}}
+      <li>
+        <div class="dnd-card dnd-card--gone">
+          <span class="dnd-card__head"><span class="dnd-card__name">{{ .name }}</span></span>
+          <span class="dnd-card__chips">
+            <span class="dnd-chip">{{ $fam.label }}</span>
+            {{- with .save }}<span class="dnd-chip dnd-chip--save">{{ . }} save</span>{{ end }}
+          </span>
+          <span class="dnd-card__text">{{ .text }}</span>
+        </div>
+      </li>
+      {{- end }}
+    </ul>
+  </details>
+  {{- end }}
+</div>

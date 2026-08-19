@@ -1,0 +1,30 @@
+{{- /*
+  ai-enabled — does this page offer the "Ask about Konrad" chat? Returns a bool.
+
+    {{ if partial "func/ai-enabled.html" . }} … {{ end }}
+
+  AN ALLOW-LIST, from data/site.yaml `ai.pages`. It used to be a deny-list in
+  baseof.html — "every page except /cv and /misc/*" — which is the wrong default:
+  a new section inherits the chat button without anybody deciding it should have
+  one, and that is how it ended up on the Skyrim toolkit, the campaign rules and
+  all 28 Dagea articles. Pages somebody is USING do not want a chat button in the
+  corner.
+
+  TWO CALLERS, ONE ANSWER: baseof.html renders the widget and the desktop FAB,
+  partials/topnav.html renders the mobile button. They were two separate copies of
+  the same condition, written slightly differently — one keyed on `.RelPermalink`,
+  the other on `.Layout` — so /cv agreed by luck rather than by construction.
+
+  Matching is base-path aware (via func/url.html) and indifferent to a trailing
+  slash, so "/about" and "/about/" both work in the data file.
+*/ -}}
+{{- $on := false -}}
+{{- /* No endpoint, no chat, wherever the page is. */ -}}
+{{- if site.Params.aiChatURL -}}
+  {{- $here := strings.TrimSuffix "/" .RelPermalink -}}
+  {{- range site.Data.site.ai.pages -}}
+    {{- $want := strings.TrimSuffix "/" (partial "func/url.html" .) -}}
+    {{- if eq $here $want }}{{ $on = true }}{{ end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $on -}}

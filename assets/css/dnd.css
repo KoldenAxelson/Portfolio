@@ -1,0 +1,625 @@
+/* dnd — the Dagean campaign tools at /misc/dnd/.
+   Shipped once per page by partials/dnd-assets.html, the same lazy pattern as
+   skyrim.css: a page that never mentions the campaign downloads none of it.
+   Everything is namespaced .dnd-* so it cannot leak into another misc page, and
+   every colour goes through the site's --c-* tokens so light and dark both work
+   with no extra rules. These pages set `prose: true`, so each widget root also
+   carries `not-prose` in the markup to keep Tailwind Typography off the
+   internals.
+
+   ONE ACCENT, NOT SEVEN. Skyrim earned a hue per DLC because the DLC is a fact
+   about the ingredient that you need before you read the card. A maneuver's
+   family is not that — you are already reading the name, and the name ends in
+   the family. So the chips are all one quiet register and the only colour on the
+   page is the site accent, spent on exactly one thing: whether a maneuver is in
+   your list. Adding a family palette here would be decoration competing with the
+   single piece of state the page actually holds. */
+
+:root {
+  /* Same five-role ramp discipline as skyrim.css, same 11px floor. */
+  --dnd-t-micro: 0.6875rem;  /* 11px · uppercase mono chips, counters, legends */
+  --dnd-t-small: 0.8125rem;  /* 13px · notes, metadata, secondary control text */
+  --dnd-t-body: 0.9375rem;   /* 15px · maneuver text, inputs, table cells */
+  --dnd-t-lead: 1.0625rem;   /* 17px · card titles, feat names */
+  --dnd-t-answer: 1.75rem;   /* 28px · the picked-count readout */
+}
+
+/* ── Shared chip ────────────────────────────────────────────────────────── */
+.dnd-chip {
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  padding: 0.15rem 0.45rem; border-radius: 0.35rem;
+  font: var(--dnd-t-micro) var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.07em; text-transform: uppercase; white-space: nowrap;
+  color: rgb(var(--c-muted)); background: rgb(var(--c-border) / 0.45);
+}
+.dnd-chip--save { box-shadow: inset 0 0 0 1px rgb(var(--c-border)); background: transparent; }
+
+/* ── Toolbar ────────────────────────────────────────────────────────────── */
+/* NOT sticky, deliberately. The obvious move on a 53-card grid is to pin the
+   filters to the top — but the site header is itself `sticky top-0 z-40` and
+   hides on scroll-down, so a second sticky strip either sits underneath it or
+   has to hard-code its height and then disagree with it forever. The loadout bar
+   below pins to the BOTTOM instead, which is the same answer the Skyrim builder
+   reached for its Brew button, and it is the better one anyway: while you scroll
+   you want to see what you have picked, not the controls you used to pick it. */
+.dnd-tools {
+  margin: 1.5rem 0 0; padding: 0 0 0.85rem;
+  border-bottom: 1px solid rgb(var(--c-border) / 0.7);
+}
+.dnd-tools__row { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+.dnd-tools__row + .dnd-tools__row { margin-top: 0.6rem; }
+
+.dnd-search {
+  flex: 1 1 15rem; min-width: 0; padding: 0.55rem 0.85rem;
+  font-size: var(--dnd-t-body); color: rgb(var(--c-fg));
+  background: rgb(var(--c-bg)); border: 1px solid rgb(var(--c-border));
+  border-radius: 0.6rem; -webkit-appearance: none; appearance: none;
+}
+.dnd-search::placeholder { color: rgb(var(--c-muted)); }
+.dnd-search:focus-visible {
+  outline: 2px solid rgb(var(--c-accent) / 0.5); outline-offset: 1px;
+  border-color: rgb(var(--c-accent) / 0.6);
+}
+
+/* Filter chips are real <button>s with aria-pressed, not styled checkboxes:
+   the control is "narrow the grid", and a checkbox promises a form. */
+.dnd-filter {
+  padding: 0.3rem 0.6rem; border-radius: 0.5rem; cursor: pointer;
+  font: var(--dnd-t-micro) var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.07em; text-transform: uppercase;
+  color: rgb(var(--c-muted)); background: transparent;
+  border: 1px solid rgb(var(--c-border));
+  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+.dnd-filter:hover { border-color: rgb(var(--c-accent) / 0.5); color: rgb(var(--c-fg)); }
+.dnd-filter[aria-pressed="true"] {
+  color: rgb(var(--c-bg)); background: rgb(var(--c-accent));
+  border-color: rgb(var(--c-accent));
+}
+.dnd-filter:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.6); outline-offset: 2px; }
+
+.dnd-tools__label {
+  font: var(--dnd-t-micro) var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.07em; text-transform: uppercase; color: rgb(var(--c-muted));
+  margin: 0 0.1rem 0 0;
+}
+.dnd-count {
+  margin: 0; margin-left: auto;
+  font: var(--dnd-t-micro) var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.06em; text-transform: uppercase; color: rgb(var(--c-muted));
+}
+/* On a phone the chip row wraps, and `margin-left: auto` then pins the readout to
+   the right end of whatever the last line happens to be — hard against the viewport
+   edge, half off it. Its own line instead. */
+@media (max-width: 639px) {
+  .dnd-count { flex: 1 0 100%; margin-left: 0; }
+}
+
+/* A secondary action — Copy, Clear, Reset, the rail's arrows. Quieter than a
+   filter chip because it acts rather than narrowing. */
+.dnd-act {
+  padding: 0.35rem 0.7rem; border-radius: 0.5rem; cursor: pointer;
+  font: var(--dnd-t-micro) var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.07em; text-transform: uppercase;
+  color: rgb(var(--c-fg)); background: transparent;
+  border: 1px solid rgb(var(--c-border));
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+.dnd-act:hover:not(:disabled) { border-color: rgb(var(--c-accent) / 0.6); color: rgb(var(--c-accent)); }
+.dnd-act:disabled { opacity: 0.45; cursor: default; }
+.dnd-act:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.6); outline-offset: 2px; }
+
+/* ── Card grid ──────────────────────────────────────────────────────────── */
+/* `align-items: start` so a card is as tall as its text. Inside a scroll area
+   density is the whole point, and one long maneuver — Analyzing Stance — was
+   stretching its two neighbours to match. */
+.dnd-grid { display: grid; align-items: start; gap: 0.85rem; margin: 0; grid-template-columns: 1fr; list-style: none; padding: 0; }
+@media (min-width: 640px) { .dnd-grid { grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr)); } }
+.dnd-grid > li { margin: 0; }
+
+.dnd-card {
+  display: flex; flex-direction: column; gap: 0.55rem; height: 100%;
+  padding: 0.95rem 1rem; text-align: left; cursor: pointer;
+  border: 1px solid rgb(var(--c-border)); border-radius: 0.8rem;
+  background: rgb(var(--c-bg)); color: inherit;
+  transition: border-color 0.18s ease, background-color 0.18s ease;
+}
+.dnd-card:hover { border-color: rgb(var(--c-accent) / 0.5); }
+.dnd-card:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.6); outline-offset: 2px; }
+.dnd-card[aria-pressed="true"] {
+  border-color: rgb(var(--c-accent)); background: rgb(var(--c-accent) / 0.07);
+  box-shadow: inset 3px 0 0 rgb(var(--c-accent));
+}
+.dnd-card[hidden] { display: none; }
+
+.dnd-card__head { display: flex; align-items: flex-start; gap: 0.6rem; }
+.dnd-card__name { flex: 1 1 auto; font-size: var(--dnd-t-lead); font-weight: 600; line-height: 1.25; color: rgb(var(--c-fg)); }
+/* The check is drawn, not typed — a text "+"/"✓" swap reflows the heading by a
+   pixel on every toggle, which reads as the card twitching. */
+.dnd-card__mark {
+  flex: 0 0 auto; width: 1.35rem; height: 1.35rem; margin-top: 0.1rem;
+  display: grid; place-items: center; border-radius: 999px;
+  border: 1px solid rgb(var(--c-border)); color: transparent;
+  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+}
+.dnd-card[aria-pressed="true"] .dnd-card__mark {
+  background: rgb(var(--c-accent)); border-color: rgb(var(--c-accent)); color: rgb(var(--c-bg));
+}
+.dnd-card__chips { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+/* A <span>, not a <p>: the card is a <button>, and a paragraph is not phrasing
+   content — the parser closes the button at the <p> and the bottom half of the
+   card stops being clickable. */
+.dnd-card__text { display: block; margin: 0; font-size: var(--dnd-t-body); line-height: 1.55; color: rgb(var(--c-muted)); }
+.dnd-card__tags {
+  margin: auto 0 0; padding-top: 0.15rem;
+  font: var(--dnd-t-micro) var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.07em; text-transform: uppercase; color: rgb(var(--c-muted) / 0.85);
+}
+
+/* Discontinued cards are <div>s, not buttons — nothing to press. */
+.dnd-card--gone { opacity: 0.62; cursor: default; }
+.dnd-card--gone:hover { border-color: rgb(var(--c-border)); }
+.dnd-card--gone .dnd-card__name { text-decoration: line-through; text-decoration-color: rgb(var(--c-muted) / 0.6); }
+
+/* Headings inside a widget root. The root carries `not-prose`, so Tailwind
+   Typography — and Tailwind's reset before it — leave an <h3> at body size and
+   normal weight. Styled by class rather than by `.dnd-picker h3` so it keeps
+   working if the markup is ever moved out of the picker. */
+.dnd-subhead { margin: 2.5rem 0 0; font-size: 1.25rem; font-weight: 600; letter-spacing: -0.01em; color: rgb(var(--c-fg)); }
+.dnd-subhead__note { margin: 0.4rem 0 0; font-size: var(--dnd-t-small); line-height: 1.55; color: rgb(var(--c-muted)); }
+
+.dnd-empty { margin: 1.25rem 0 0; font-size: var(--dnd-t-body); color: rgb(var(--c-muted)); }
+
+/* ── Static tables and lists (no JS) ────────────────────────────────────── */
+/* Capped rather than full-bleed. The page sets `container: wide` so the maneuver
+   grid gets three columns; left alone the level table inherits that and puts 40
+   characters of "Ability Score Improvement" at the far end of a 1200px row from
+   the level number it belongs to. */
+.dnd-table { width: 100%; max-width: 52rem; border-collapse: collapse; margin: 1.25rem 0 0; font-size: var(--dnd-t-body); }
+.dnd-table th, .dnd-table td { padding: 0.45rem 0.7rem; border-bottom: 1px solid rgb(var(--c-border) / 0.7); text-align: left; }
+.dnd-table th {
+  font: var(--dnd-t-micro) var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.07em; text-transform: uppercase; color: rgb(var(--c-muted)); font-weight: 400;
+}
+.dnd-table td:first-child, .dnd-table th:first-child { font-variant-numeric: tabular-nums; white-space: nowrap; }
+/* NO ROW EMPHASIS. An earlier version put an accent rule on every row that
+   granted something other than an Ability Score Improvement, which made the ASI
+   rows the unmarked ones — seven gaps down a twenty-row table, reading as damage
+   rather than as emphasis. The Features column is the only thing that differs
+   between rows, and that is the only thing that should look like it. */
+
+/* `align-items: start` so a card is as tall as its content. The default
+   `stretch` makes every card in a row match the tallest, which is fine when they
+   are within a line or two of each other and absurd when one of them is a
+   five-option pick list. Ragged bottoms beat dead space. */
+.dnd-defs { display: grid; align-items: start; gap: 0.85rem; margin: 1.25rem 0 0; grid-template-columns: 1fr; list-style: none; padding: 0; }
+@media (min-width: 640px) { .dnd-defs { grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr)); } }
+.dnd-defs > li { margin: 0; }
+/* The row-spanning variant, for a feature whose content is a list of options. */
+.dnd-defs__wide { grid-column: 1 / -1; }
+.dnd-choices { columns: 1; column-gap: 2rem; }
+@media (min-width: 640px) { .dnd-choices { columns: 2; } }
+@media (min-width: 1024px) { .dnd-choices { columns: 3; } }
+/* An option split across a column break reads as two options. */
+.dnd-choices > li { break-inside: avoid; }
+.dnd-def {
+  padding: 0.95rem 1rem;
+  border: 1px solid rgb(var(--c-border)); border-radius: 0.8rem; background: rgb(var(--c-bg));
+}
+.dnd-def__name { display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; font-size: var(--dnd-t-lead); font-weight: 600; color: rgb(var(--c-fg)); }
+.dnd-def__meta { margin: 0.35rem 0 0; font-size: var(--dnd-t-small); color: rgb(var(--c-muted)); }
+.dnd-def__text { margin: 0.55rem 0 0; font-size: var(--dnd-t-body); line-height: 1.55; color: rgb(var(--c-muted)); }
+/* Tailwind's reset strips list markers globally and the widget root carries
+   `not-prose`, so Typography does not put them back. A feat's benefits are read
+   as a checklist at the table — without markers they are two paragraphs that
+   happen to be indented. */
+.dnd-def ul { margin: 0.55rem 0 0; padding-left: 1.15rem; list-style: disc; }
+.dnd-def li::marker { color: rgb(var(--c-accent) / 0.7); }
+.dnd-def li { margin: 0 0 0.4rem; font-size: var(--dnd-t-body); line-height: 1.55; color: rgb(var(--c-muted)); }
+.dnd-def li:last-child { margin-bottom: 0; }
+
+/* House rule inside a stock feat. Kept visually separate so it never gets read
+   as part of the printed text. */
+.dnd-house {
+  margin: 0.7rem 0 0; padding: 0.55rem 0.7rem;
+  border-left: 2px solid rgb(var(--c-accent) / 0.7); border-radius: 0 0.4rem 0.4rem 0;
+  background: rgb(var(--c-accent) / 0.07);
+  font-size: var(--dnd-t-small); line-height: 1.5; color: rgb(var(--c-fg));
+}
+
+/* A placeholder that says so. Used where the campaign has a decision pending —
+   the continental subraces — so the gap reads as unfinished rather than absent. */
+.dnd-todo {
+  margin: 1.25rem 0 0; padding: 0.9rem 1rem;
+  border: 1px dashed rgb(var(--c-border)); border-radius: 0.8rem;
+  font-size: var(--dnd-t-small); line-height: 1.55; color: rgb(var(--c-muted));
+}
+.dnd-todo strong { color: rgb(var(--c-fg)); }
+
+/* ═══ The character-creation module ═════════════════════════════════════════
+   /misc/dnd/character-creation/. Everything under .dnd-builder.
+
+   ONE SELECTED LOOK, USED EVERYWHERE. There are five kinds of control here —
+   array cards, number slots, +/- steppers, skill chips, feat cards — and they
+   all mean the same thing when they are on: accent border, accent tint, and the
+   same 3px inset rule the maneuver picker uses for a chosen card. Five affordances
+   for one state is how a form starts feeling like five forms.
+
+   Every control is a real <button> with `aria-pressed`, not a styled checkbox or
+   a div. The whole module is a sequence of "which of these" questions and the
+   platform already has an answer for that. */
+
+.dnd-builder { margin: 1.5rem 0 0; }
+
+/* ── The ability strip ──────────────────────────────────────────────────── */
+/* Sticky at the top rather than the bottom, unlike the maneuver picker's
+   loadout. The difference is what the bar is for: the picker's bar is a budget
+   you glance at, this one is the OUTPUT — every control on the page moves a
+   number in it, and a change you cannot see is a change you have to trust.
+   `top: 0` slides under the site header while it is shown, which is acceptable
+   here because the strip is only ~64px and the header hides on scroll-down,
+   which is exactly when you are working. */
+.dnd-strip {
+  position: sticky; top: 0; z-index: 20;
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.4rem;
+  padding: 0.6rem 0; background: rgb(var(--c-bg));
+  border-bottom: 1px solid rgb(var(--c-border) / 0.7);
+}
+@media (min-width: 640px) { .dnd-strip { grid-template-columns: repeat(7, minmax(0, 1fr)); } }
+.dnd-ab {
+  display: flex; flex-direction: column; align-items: center; gap: 0.05rem;
+  padding: 0.4rem 0.2rem; border-radius: 0.5rem;
+  background: rgb(var(--c-border) / 0.3);
+}
+.dnd-ab[data-set="false"] { opacity: 0.5; }
+.dnd-ab--hp { background: rgb(var(--c-accent) / 0.1); }
+.dnd-ab__k {
+  font: var(--dnd-t-micro) var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.09em; text-transform: uppercase; color: rgb(var(--c-muted));
+}
+.dnd-ab__v {
+  font: 700 1.375rem / 1 var(--font-mono, ui-monospace, monospace);
+  color: rgb(var(--c-fg)); font-variant-numeric: tabular-nums;
+}
+.dnd-ab__m {
+  font: var(--dnd-t-micro) var(--font-mono, ui-monospace, monospace);
+  color: rgb(var(--c-muted)); font-variant-numeric: tabular-nums;
+}
+
+/* ── The stepper ────────────────────────────────────────────────────────── */
+/* Scrolls sideways on a phone rather than wrapping to three ragged rows. The
+   labels go with it; the numbers alone would make step 6 unfindable. */
+.dnd-steps {
+  display: flex; gap: 0.4rem; margin: 1rem 0 0; padding: 0 0 0.35rem;
+  list-style: none; overflow-x: auto; scrollbar-width: thin;
+}
+.dnd-steps > li { margin: 0; flex: 0 0 auto; }
+.dnd-step {
+  display: flex; align-items: center; gap: 0.4rem; cursor: pointer;
+  padding: 0.3rem 0.6rem 0.3rem 0.35rem; border-radius: 999px;
+  border: 1px solid rgb(var(--c-border)); background: transparent;
+  font: var(--dnd-t-micro) var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.07em; text-transform: uppercase; color: rgb(var(--c-muted));
+  transition: color 0.15s ease, border-color 0.15s ease;
+  white-space: nowrap;
+}
+.dnd-step:hover { border-color: rgb(var(--c-accent) / 0.5); color: rgb(var(--c-fg)); }
+.dnd-step:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.6); outline-offset: 2px; }
+.dnd-step__n {
+  display: grid; place-items: center; width: 1.35rem; height: 1.35rem;
+  border-radius: 999px; background: rgb(var(--c-border) / 0.6); color: rgb(var(--c-muted));
+}
+/* Three states, and the visited one is not just "not current". Somebody who
+   jumps back to step 2 needs to see that 3 through 6 still have their answers. */
+.dnd-step[data-done="true"] { color: rgb(var(--c-fg)); }
+.dnd-step[data-done="true"] .dnd-step__n { background: rgb(var(--c-accent) / 0.25); color: rgb(var(--c-fg)); }
+.dnd-step[aria-current="step"] { border-color: rgb(var(--c-accent)); color: rgb(var(--c-fg)); }
+.dnd-step[aria-current="step"] .dnd-step__n { background: rgb(var(--c-accent)); color: rgb(var(--c-bg)); }
+
+/* ── The stage ──────────────────────────────────────────────────────────── */
+.dnd-stage { min-height: 18rem; padding: 0.25rem 0 0; }
+.dnd-stage .dnd-subhead:first-child { margin-top: 1.5rem; }
+.dnd-minihead {
+  margin: 1.75rem 0 0; font-size: var(--dnd-t-lead); font-weight: 600; color: rgb(var(--c-fg));
+}
+/* The budget line. The number is the whole message, so it gets the weight and
+   the sentence around it stays in the label register. */
+.dnd-budget {
+  margin: 0.85rem 0 0;
+  font: var(--dnd-t-micro) var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.07em; text-transform: uppercase; color: rgb(var(--c-muted));
+}
+.dnd-budget strong { font-size: 1.1rem; color: rgb(var(--c-fg)); font-variant-numeric: tabular-nums; }
+
+/* ── Big choice cards (arrays, feats, styles) ───────────────────────────── */
+.dnd-picks { display: grid; gap: 0.7rem; margin: 0.85rem 0 0; grid-template-columns: 1fr; }
+@media (min-width: 640px) { .dnd-picks { grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); } }
+.dnd-pick {
+  display: flex; flex-direction: column; gap: 0.3rem; height: 100%;
+  padding: 0.8rem 0.9rem; text-align: left; cursor: pointer;
+  border: 1px solid rgb(var(--c-border)); border-radius: 0.7rem;
+  background: rgb(var(--c-bg)); color: inherit;
+  transition: border-color 0.18s ease, background-color 0.18s ease;
+}
+.dnd-pick:hover:not(:disabled) { border-color: rgb(var(--c-accent) / 0.5); }
+.dnd-pick:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.6); outline-offset: 2px; }
+.dnd-pick[aria-pressed="true"] {
+  border-color: rgb(var(--c-accent)); background: rgb(var(--c-accent) / 0.07);
+  box-shadow: inset 3px 0 0 rgb(var(--c-accent));
+}
+/* Disabled because the budget is full, not because the option is invalid — so
+   it fades rather than greys out, and it comes back the moment you deselect. */
+.dnd-pick:disabled { opacity: 0.4; cursor: default; }
+.dnd-pick__title { font-size: var(--dnd-t-lead); font-weight: 600; color: rgb(var(--c-fg)); }
+.dnd-pick__note { font-size: var(--dnd-t-small); line-height: 1.45; color: rgb(var(--c-muted)); }
+
+/* ── Small choice chips (numbers, abilities, skills) ────────────────────── */
+.dnd-nums { display: flex; flex-wrap: wrap; gap: 0.4rem; margin: 0.85rem 0 0; }
+.dnd-num {
+  display: inline-flex; align-items: baseline; gap: 0.35rem; cursor: pointer;
+  min-width: 2.6rem; justify-content: center;
+  padding: 0.4rem 0.6rem; border-radius: 0.5rem;
+  border: 1px solid rgb(var(--c-border)); background: rgb(var(--c-bg));
+  font: 600 var(--dnd-t-body) / 1.2 var(--font-mono, ui-monospace, monospace);
+  color: rgb(var(--c-fg)); font-variant-numeric: tabular-nums;
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+.dnd-num--wide { min-width: 0; font-family: inherit; font-weight: 500; }
+.dnd-num:hover:not(:disabled) { border-color: rgb(var(--c-accent) / 0.6); }
+.dnd-num:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.6); outline-offset: 2px; }
+.dnd-num[aria-pressed="true"] {
+  border-color: rgb(var(--c-accent)); background: rgb(var(--c-accent) / 0.12); color: rgb(var(--c-fg));
+}
+.dnd-num:disabled { opacity: 0.35; cursor: default; }
+.dnd-num__sub {
+  font: var(--dnd-t-micro) var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.06em; text-transform: uppercase; color: rgb(var(--c-muted));
+}
+.dnd-num--step { min-width: 2.1rem; padding: 0.35rem 0.5rem; }
+
+/* ── Assignment rows ────────────────────────────────────────────────────── */
+.dnd-assign { max-width: 34rem; margin: 0.85rem 0 0; border: 1px solid rgb(var(--c-border)); border-radius: 0.7rem; overflow: hidden; }
+.dnd-assign__row {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: 0.6rem 0.9rem;
+}
+.dnd-assign__row + .dnd-assign__row { border-top: 1px solid rgb(var(--c-border) / 0.7); }
+.dnd-assign__name { font-size: var(--dnd-t-body); color: rgb(var(--c-fg)); }
+.dnd-assign__base {
+  display: block;
+  font: var(--dnd-t-micro) var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.06em; text-transform: uppercase; color: rgb(var(--c-muted));
+}
+.dnd-assign__nums { display: flex; align-items: center; gap: 0.35rem; }
+.dnd-assign__count {
+  min-width: 2.2rem; text-align: center;
+  font: 600 var(--dnd-t-body) var(--font-mono, ui-monospace, monospace);
+  color: rgb(var(--c-fg)); font-variant-numeric: tabular-nums;
+}
+
+/* ── Text fields ────────────────────────────────────────────────────────── */
+.dnd-fields { display: grid; gap: 0.7rem; margin: 0.85rem 0 0; grid-template-columns: 1fr; }
+@media (min-width: 640px) { .dnd-fields { grid-template-columns: 1fr 1fr; } }
+.dnd-field { display: flex; flex-direction: column; gap: 0.3rem; }
+.dnd-field__label {
+  font: var(--dnd-t-micro) var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.07em; text-transform: uppercase; color: rgb(var(--c-muted));
+}
+.dnd-input {
+  padding: 0.55rem 0.8rem; font-size: var(--dnd-t-body); color: rgb(var(--c-fg));
+  background: rgb(var(--c-bg)); border: 1px solid rgb(var(--c-border));
+  border-radius: 0.6rem; -webkit-appearance: none; appearance: none;
+}
+.dnd-input::placeholder { color: rgb(var(--c-muted) / 0.8); }
+.dnd-input:focus-visible {
+  outline: 2px solid rgb(var(--c-accent) / 0.5); outline-offset: 1px;
+  border-color: rgb(var(--c-accent) / 0.6);
+}
+
+/* ── Review ─────────────────────────────────────────────────────────────── */
+.dnd-table--sheet { max-width: 24rem; }
+.dnd-table--sheet td:nth-child(2), .dnd-table--sheet td:nth-child(3) { font-variant-numeric: tabular-nums; }
+.dnd-sheet { max-width: 44rem; margin: 1.25rem 0 0; border: 1px solid rgb(var(--c-border)); border-radius: 0.7rem; overflow: hidden; }
+.dnd-sheet__row { display: flex; gap: 1rem; padding: 0.55rem 0.9rem; }
+.dnd-sheet__row + .dnd-sheet__row { border-top: 1px solid rgb(var(--c-border) / 0.7); }
+.dnd-sheet__k {
+  flex: 0 0 8.5rem;
+  font: var(--dnd-t-micro) var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.07em; text-transform: uppercase; color: rgb(var(--c-muted));
+  padding-top: 0.15rem;
+}
+.dnd-sheet__v { font-size: var(--dnd-t-body); line-height: 1.5; color: rgb(var(--c-fg)); }
+/* A note about a choice, not an error — the character is legal, it just wasted a
+   pick. Muted and italic rather than red. */
+.dnd-sheet__warn { font-size: var(--dnd-t-small); font-style: italic; color: rgb(var(--c-muted)); }
+.dnd-review__acts { margin: 1.25rem 0 0; }
+
+/* ── Back / Next ────────────────────────────────────────────────────────── */
+/* Sticky to the bottom for the same reason the picker's loadout is: the stage is
+   taller than a phone, and "Next" at the end of a scroll is a button you have to
+   go looking for. Right-padded to clear the scroll-to-top button in the corner. */
+.dnd-navbtns {
+  position: sticky; bottom: 0.75rem; z-index: 19;
+  display: flex; justify-content: space-between; gap: 0.75rem;
+  margin: 1.5rem 0 0; padding: 0.7rem 4.75rem 0.7rem 0.9rem;
+  border: 1px solid rgb(var(--c-border)); border-radius: 0.7rem;
+  background: rgb(var(--c-bg));
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.06), 0 8px 24px rgb(0 0 0 / 0.08);
+}
+@media (prefers-color-scheme: dark) {
+  .dnd-navbtns { box-shadow: 0 1px 3px rgb(0 0 0 / 0.5), 0 8px 24px rgb(0 0 0 / 0.45); }
+}
+
+/* ── Glossary click-throughs ────────────────────────────────────────────── */
+/* The icon-only form of the `.term` button (partials/func/term-button.html),
+   for a card whose heading already names the thing. Behaviour and colour come
+   from .term in definitions.css; this only changes the shape from "an accent word
+   in a sentence" to "a mark beside a heading".
+
+   Baseline-aligned rather than centred: it sits inside a heading line next to
+   text, and a vertically-centred icon in a two-line heading floats. */
+.dnd-why {
+  display: inline-flex; align-items: center; vertical-align: -0.15em;
+  margin-left: 0.1rem; opacity: 0.75; transition: opacity 0.15s ease;
+}
+.dnd-why:hover { opacity: 1; }
+.dnd-why svg { display: block; }
+
+/* ── Level chip ─────────────────────────────────────────────────────────── */
+/* On a feature card, the level is the index — it is how you find the card at
+   all — so it leads the heading rather than trailing it as metadata. */
+.dnd-chip--level {
+  background: rgb(var(--c-accent) / 0.14); color: rgb(var(--c-fg));
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Sub-cards inside a feature ─────────────────────────────────────────── */
+/* A Superiority Dice option granted BY a feature. Indented under it rather than
+   listed beside the feature, because "Overcome" is not a feature you get at 9th
+   level — it is a thing Indomitable hands you, and the nesting says so. */
+.dnd-sub {
+  margin: 0.7rem 0 0; padding: 0.6rem 0.75rem;
+  border-left: 2px solid rgb(var(--c-border)); border-radius: 0 0.4rem 0.4rem 0;
+  background: rgb(var(--c-border) / 0.2);
+}
+.dnd-sub__name {
+  margin: 0;
+  font: var(--dnd-t-micro) var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.07em; text-transform: uppercase; color: rgb(var(--c-fg));
+}
+.dnd-sub__name + .dnd-sub__text { margin-top: 0.2rem; }
+.dnd-sub__text { margin: 0; font-size: var(--dnd-t-small); line-height: 1.5; color: rgb(var(--c-muted)); }
+.dnd-sub__text + .dnd-sub__name { margin-top: 0.6rem; }
+
+/* markdownify wraps a card's text in <p>; the card supplies the spacing. */
+.dnd-def__text > p:first-child, .dnd-sub__text > p:first-child { margin-top: 0; }
+.dnd-def__text > p:last-child, .dnd-sub__text > p:last-child { margin-bottom: 0; }
+
+/* ═══ Scroll areas, rails and rows ══════════════════════════════════════════
+   The three shapes that keep this page a page. Before them, /misc/dnd/ was about
+   14,000px tall: 53 maneuver cards, 11 style cards and a feature grid, all expanded,
+   all at once. That is a document optimised for being read end to end by something
+   that does not get tired, and this is a tool for people at a table.
+
+   Each shape answers a different question about a list:
+     scroll   long, filterable, you arrive knowing what you want   → maneuvers, feats
+     rail     short, browsable, you want to see them all           → fighting styles
+     fold     present for completeness, not for reading            → discontinued */
+
+/* ── Vertical scroll area ───────────────────────────────────────────────── */
+/* `overscroll-behavior: contain` so reaching the end does not hand the scroll to
+   the page and throw you out of the section you were working in. The mask fades the
+   top and bottom edges, which is what says "this continues" without a scrollbar. */
+.dnd-scroll {
+  max-height: min(70vh, 44rem); overflow-y: auto; overscroll-behavior: contain;
+  margin: 1rem 0 0; padding: 0.85rem;
+  border: 1px solid rgb(var(--c-border)); border-radius: 0.8rem;
+  background: rgb(var(--c-border) / 0.14);
+  scrollbar-width: thin; scrollbar-color: rgb(var(--c-border)) transparent;
+}
+.dnd-scroll::-webkit-scrollbar { width: 8px; }
+.dnd-scroll::-webkit-scrollbar-track { background: transparent; }
+.dnd-scroll::-webkit-scrollbar-thumb {
+  background: rgb(var(--c-border)); border-radius: 4px;
+  border: 2px solid transparent; background-clip: content-box;
+}
+/* A short list should not sit in a tall box with a scrollbar it does not need. */
+@media (max-width: 639px) { .dnd-scroll { max-height: min(75vh, 34rem); padding: 0.7rem; } }
+
+/* ── Compact rows (feats) ───────────────────────────────────────────────── */
+/* One line per feat, name and summary, the full text a click away. Built for the
+   fifty this list is going to hold, not the four it holds today: a grid of expanded
+   cards is unreadable at fifty and unscannable at any size.
+
+   The whole row is the `.term` trigger, so `.term`'s accent colour would paint the
+   entire row green — hence the explicit colours on the children. */
+.dnd-rows { display: flex; flex-direction: column; gap: 0.3rem; margin: 0; padding: 0; list-style: none; }
+.dnd-rows > li { margin: 0; }
+.dnd-rows > li[hidden] { display: none; }
+/* Flex column, not a two-column grid. As a grid it was `auto max-content` with the
+   summary spanning both tracks — and a spanning item's max-content contribution is
+   distributed across the tracks it spans, so a long summary silently inflated the
+   chip's column and stretched the chip across half the row. */
+.dnd-row {
+  display: flex; flex-direction: column; gap: 0.15rem; width: 100%;
+  text-align: left; cursor: pointer;
+  padding: 0.6rem 0.75rem; border-radius: 0.6rem;
+  border: 1px solid transparent; background: rgb(var(--c-bg));
+  transition: border-color 0.15s ease;
+}
+.dnd-row__head { display: flex; align-items: baseline; gap: 0.55rem; flex-wrap: wrap; }
+/* A row says "open me" with its border, not with an underline — which is one of the
+   two reasons it does not carry `.term`. See the note in feat-cards.html. */
+.dnd-row:hover { border-color: rgb(var(--c-accent) / 0.5); }
+.dnd-row[aria-expanded="true"] {
+  border-color: rgb(var(--c-accent)); box-shadow: inset 3px 0 0 rgb(var(--c-accent));
+}
+.dnd-row:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.6); outline-offset: 2px; }
+.dnd-row__name { font-size: var(--dnd-t-body); font-weight: 600; color: rgb(var(--c-fg)); }
+/* Its own line, always. It is the answer to "which one is this", so it must never be
+   the thing that gets squeezed to keep a chip alongside the name. */
+.dnd-row__sum { font-size: var(--dnd-t-small); line-height: 1.45; color: rgb(var(--c-muted)); }
+
+/* ── Horizontal rail (fighting styles) ──────────────────────────────────── */
+.dnd-rail { margin: 1rem 0 0; }
+.dnd-rail__head { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
+.dnd-rail__count {
+  margin: 0;
+  font: var(--dnd-t-micro) var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.07em; text-transform: uppercase; color: rgb(var(--c-muted));
+}
+.dnd-rail__nav { display: flex; gap: 0.4rem; }
+.dnd-rail__btn { min-width: 2.4rem; }
+/* Scroll-snap so a flick lands on a card rather than between two. Scrollbar hidden
+   because the arrows say the same thing more clearly at this size — and they are
+   only revealed when the rail actually overflows (see rail.ts). */
+.dnd-rail__track {
+  display: flex; gap: 0.85rem; margin: 0.6rem 0 0; padding: 0 0 0.25rem; list-style: none;
+  overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+.dnd-rail__track::-webkit-scrollbar { display: none; }
+.dnd-rail__track > li { margin: 0; flex: 0 0 auto; scroll-snap-align: start; }
+/* The card is a <button> now, so `text-align` and `cursor` have to be said. */
+.dnd-rail__card {
+  width: min(20rem, 78vw); display: flex; flex-direction: column; gap: 0.35rem;
+  text-align: left; cursor: pointer; transition: border-color 0.15s ease;
+}
+.dnd-rail__card:hover { border-color: rgb(var(--c-accent) / 0.5); }
+.dnd-rail__card[aria-expanded="true"] {
+  border-color: rgb(var(--c-accent)); box-shadow: inset 3px 0 0 rgb(var(--c-accent));
+}
+.dnd-rail__card:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.6); outline-offset: 2px; }
+/* Four lines, so every card is the same height and the rail is 11 styles tall
+   rather than one-long-style tall. Nothing is lost: the card opens. */
+.dnd-rail__clamp {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4;
+  overflow: hidden; color: rgb(var(--c-muted));
+}
+
+/* ── Fold (discontinued) ────────────────────────────────────────────────── */
+.dnd-fold { margin: 1.25rem 0 0; }
+.dnd-fold > summary {
+  display: flex; align-items: center; gap: 0.5rem; cursor: pointer; list-style: none;
+  padding: 0.5rem 0.75rem; border: 1px solid rgb(var(--c-border)); border-radius: 0.6rem;
+  font: var(--dnd-t-micro) var(--font-mono, ui-monospace, monospace);
+  letter-spacing: 0.07em; text-transform: uppercase; color: rgb(var(--c-muted));
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+.dnd-fold > summary::-webkit-details-marker { display: none; }
+.dnd-fold > summary:hover { border-color: rgb(var(--c-accent) / 0.5); color: rgb(var(--c-fg)); }
+.dnd-fold > summary:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.6); outline-offset: 2px; }
+.dnd-fold[open] > summary { margin-bottom: 0.85rem; }
+
+/* ── Misc ───────────────────────────────────────────────────────────────── */
+.dnd-list { margin: 1rem 0 0; }
+/* The table's caption carries the instruction that its features are clickable —
+   above the table, where you read it before you need it. */
+.dnd-table__cap {
+  caption-side: top; text-align: left; padding: 0 0 0.5rem;
+  font-size: var(--dnd-t-small); color: rgb(var(--c-muted));
+}
+.dnd-review__acts { display: flex; gap: 0.5rem; margin: 1.25rem 0 0; }
+/* A term trigger inside a table cell. `.term` has no padding, so two features in
+   one cell run together without this. */
+.dnd-table td .term + .term { margin-left: 0.1rem; }

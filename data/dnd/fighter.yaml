@@ -1,0 +1,182 @@
+# ---------------------------------------------------------------------------
+# The Revised Fighter: the level table, the Superiority Die's growth, and every
+# feature the class and the Warlord grant.
+#
+# ONE FEATURE LIST, NOT TWO. Warlord is the only archetype, so the table names
+# the actual features at 3rd, 7th, 10th, 15th and 18th rather than saying "Martial
+# Archetype Feature" and making the reader go and look them up somewhere else.
+# Class and archetype features live in the same list because from a player's seat
+# they are the same thing: something you get at a level.
+#
+# THE FEATURES DO NOT RENDER AS CARDS. A grid of ten always-open cards is a wall
+# to scroll past. Each feature name in the level table is a click-through instead,
+# opening a draggable window built from the entry below — see
+# partials/dnd-popovers.html, which synthesises a glossary set out of this list so
+# the existing window manager does the work.
+#
+#   level    which row of the table names it
+#   text     the rule, in as few sentences as it takes. NEVER why.
+#   bullets  a pick-one list, rendered as a list inside the window
+#   options  Superiority Dice options this feature grants, as further paragraphs
+#   term     a key in data/glossary/dnd.yaml, when the WHY needs its own window
+#
+# `features` in the table is a list of plain strings. A trailing "(2)" is stripped
+# before the popover lookup, so "Extra Attack (2)" opens Extra Attack — the count
+# is a fact about the level, not a different feature.
+# ---------------------------------------------------------------------------
+
+# The Superiority Die grows with the class, not with the subclass.
+superiority_die:
+  - { level: 2,  die: d6 }
+  - { level: 5,  die: d8 }
+  - { level: 11, die: d10 }
+  - { level: 17, die: d12 }
+
+table:
+  - { level: 1,  pb: 2, features: ["Fighting Style", "Second Wind"] }
+  - { level: 2,  pb: 2, features: ["Action Surge", "Superiority Dice"] }
+  - { level: 3,  pb: 2, features: ["Martial Studies", "Combat Superiority"] }
+  - { level: 4,  pb: 2, features: ["Ability Score Improvement"] }
+  - { level: 5,  pb: 3, features: ["Extra Attack"] }
+  - { level: 6,  pb: 3, features: ["Ability Score Improvement"] }
+  - { level: 7,  pb: 3, features: ["Battle Tested"] }
+  - { level: 8,  pb: 3, features: ["Ability Score Improvement"] }
+  - { level: 9,  pb: 4, features: ["Indomitable"] }
+  - { level: 10, pb: 4, features: ["Improved Second Wind"] }
+  - { level: 11, pb: 4, features: ["Extra Attack (2)"] }
+  - { level: 12, pb: 4, features: ["Ability Score Improvement"] }
+  - { level: 13, pb: 5, features: ["Indomitable (2)"] }
+  - { level: 14, pb: 5, features: ["Ability Score Improvement"] }
+  - { level: 15, pb: 5, features: ["Martial Mastery"] }
+  - { level: 16, pb: 5, features: ["Ability Score Improvement"] }
+  - { level: 17, pb: 6, features: ["Extra Attack (3)"] }
+  - { level: 18, pb: 6, features: ["Improved Combat Superiority"] }
+  - { level: 19, pb: 6, features: ["Ability Score Improvement"] }
+  - { level: 20, pb: 6, features: ["Action Surge (2)", "Indomitable (3)"] }
+
+# How many maneuvers a Warlord knows at each level. Four at 3rd, two more at each
+# of 7th, 10th, 15th and 18th — and a Fighting Style or a feat can add to that,
+# which is why nothing in the picker treats twelve as a ceiling.
+maneuvers_known:
+  - { level: 3,  known: 4 }
+  - { level: 7,  known: 6 }
+  - { level: 10, known: 8 }
+  - { level: 15, known: 10 }
+  - { level: 18, known: 12 }
+
+features:
+  - name: Fighting Style
+    level: 1
+    text: >-
+      One from the list below. You can't take the same one twice, even when Battle
+      Tested gives you a second pick at 7th.
+
+  - name: Second Wind
+    level: 1
+    text: >-
+      Bonus action: regain 1d10 + your fighter level hit points. Once per short or
+      long rest.
+
+  - name: Action Surge
+    level: 2
+    text: >-
+      One additional action and one additional bonus action, once per short or long
+      rest. Twice from 20th level, never twice in the same turn.
+
+  - name: Superiority Dice
+    level: 2
+    term: superiority-die
+    text: >-
+      A pool of dice equal to your proficiency bonus. d6 at 2nd level, d8 at 5th,
+      d10 at 11th, d12 at 17th. One die per attack, maximum.
+    options:
+      - name: Regaining them
+        text: >-
+          All of them on a short or long rest, and one whenever you drop a creature
+          to 0 hit points or land a critical hit — once per attack, spell, or stick
+          of dynamite.
+      - name: "Athlete's Prowess"
+        text: Expend one die and add it to an Acrobatics or Athletics check.
+
+  - name: Martial Studies
+    level: 3
+    text: "Choose one:"
+    bullets:
+      - Your weapon attack critical hit range is reduced by 1.
+      - Advantage on Dexterity saving throws against effects you can see.
+      - >-
+        Add half your proficiency bonus, rounded down, to any ability check that
+        doesn't already include it.
+      - >-
+        Choose a non-Dexterity ability. Your unarmored AC becomes 10 + your
+        Dexterity modifier + that ability's modifier. Shields still work.
+      - >-
+        Once per turn on a weapon attack, make another attack roll with the same
+        weapon against a second target within 5 feet of the first, if it's within
+        your reach.
+
+  - name: Combat Superiority
+    level: 3
+    term: combat-superiority
+    text: >-
+      Four maneuvers known, two more at 7th, 10th, 15th and 18th. One maneuver per
+      attack. Swap one over a long rest.
+    options:
+      - name: Maneuver save DC
+        text: 8 + your proficiency bonus + your Strength or Dexterity modifier, your choice.
+
+  - name: Extra Attack
+    level: 5
+    text: >-
+      Two attacks on the Attack action. Three at 11th, four at 17th.
+    options:
+      - name: The free maneuver
+        text: >-
+          On a hit you may forgo one attack to perform a Strike or Attack maneuver
+          you don't know. You spend no Superiority Die for it, so the rider applies
+          and the die's damage does not.
+
+  - name: Battle Tested
+    level: 7
+    text: A second Fighting Style.
+    options:
+      - name: Empowered
+        text: >-
+          On a hit, expend one die and reroll a number of the attack's damage dice
+          equal to the roll. Stacks with a maneuver on the same attack.
+
+  - name: Indomitable
+    level: 9
+    text: >-
+      Reroll a failed saving throw and use the new roll. Once per short or long
+      rest, twice from 13th, three times from 20th.
+    options:
+      - name: Overcome
+        text: Expend one die on a failed saving throw and add it to the roll.
+
+  - name: Improved Second Wind
+    level: 10
+    text: >-
+      Second Wind uses equal to your proficiency bonus, and each use returns one
+      expended Superiority Die.
+
+  - name: Martial Mastery
+    level: 15
+    text: "Choose one:"
+    bullets:
+      - Your weapon attack critical hit range is reduced by 1.
+      - >-
+        On a Dexterity save that would halve damage, a success takes none and a
+        failure takes half.
+      - >-
+        On any ability check that adds your proficiency bonus, treat a d20 roll of
+        9 or lower as a 10.
+      - Your movement speed is doubled.
+      - >-
+        As an action, either a ranged attack against any number of creatures within
+        10 feet of a point in range, or a melee attack against any number of
+        creatures within your reach. Separate roll for each.
+
+  - name: Improved Combat Superiority
+    level: 18
+    text: Spend Hit Dice in place of Superiority Dice.
