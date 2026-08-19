@@ -15,10 +15,12 @@
 # shortcode leans on that when it checks that children sum to their group and
 # groups sum to their tier. Keep it that way or the assertions go quiet.
 #
-# One tier is exempt by design: Trace Ancestry carries 0.2% and then names a
-# single row the report never puts a number on. The shortcode skips the
-# groups-sum check for any tier whose groups are all unpriced, rather than
-# forcing a 0.2 into that row to satisfy an invariant.
+# The shortcode skips the groups-sum check for any tier whose groups are all
+# unpriced, which is how Trace Ancestry was carried while its one row was the
+# report's "No Data Available" and had no number of its own. That row is now
+# Indigenous American at 0.2%, so every tier here sums and the exemption is doing
+# no work. It stays in the shortcode because the next report pasted in may need
+# it again.
 #
 # ── RARITY ─────────────────────────────────────────────────────────────────
 # Two axes, because they tell opposite stories and the gap between them is the
@@ -62,6 +64,11 @@
 #   - Ashkenazi. No demographic authority publishes an Ashkenazi head-count for
 #     the world or the US, so both figures on that row are all Jewish traditions
 #     together and the row says so.
+#   - Indigenous American. B04006 has no American Indian line: it is asked as
+#     RACE, not as ancestry, and the two questions have different universes and
+#     different instructions. Borrowing the race answer to fill an ancestry
+#     column would put a number in the same visual slot as the others while
+#     measuring something else, which is worse than the em dash.
 #
 # A NUMBER I DELIBERATELY DO NOT USE: diaspora totals. Ireland's official "70
 # million people of Irish descent" appears in government press releases with no
@@ -80,15 +87,25 @@
 #
 # Deliberate omissions, because they could not be verified:
 #   - a numeric threshold for what 23andMe counts as "Trace Ancestry"
-#   - a definition of "No Data Available"
 #   - any Ashkenazi share of world Jewry (the widely-quoted 74–85% turns out to
 #     be a synthesis of incompatible sources of different vintages, not a
 #     published estimate — it used to be in this file and it is gone)
+#   - a hemisphere-wide Indigenous head-count. Adding the US race question to a
+#     Canadian census to a Latin American one is that same synthesis wearing a
+#     different hat. The row carries the one published regional figure and says
+#     which region it is.
+#
+# A percentage that is NOT on the Indigenous American row, though every summary
+# of that paper leads with it: the claim that Anzick-1 is directly ancestral to
+# some percentage of living Native Americans — usually 80%. The Nature abstract
+# says "directly ancestral to many contemporary Native Americans" and puts no
+# number on it. Exactly the failure mode described above.
 #
 # Figures: ACS 2024 1-year B04006 (US total 340,110,990); World Bank 2024 for
 # national populations; ONS/NRS/NISRA mid-2024 for the UK's four countries;
 # INE 2025 + INSEE 2023 for the Basque territories; DellaPergola 2024 and Pew
-# 2020 for Jewish populations.
+# 2020 for Jewish populations; World Bank "Indigenous Latin America in the
+# Twenty-First Century" (2010 census round) for Indigenous Latin America.
 # ---------------------------------------------------------------------------
 
 meta:
@@ -106,6 +123,9 @@ meta:
 # Datable events pulled out of the factoids below. Nothing draws these at the
 # moment — see the note at the top of the file. `bp` is years before present.
 timeline:
+  - bp: 12631
+    label: "A Clovis child is buried in Montana with his tools"
+    who: "Indigenous American"
   - bp: 5900
     label: "Anatolian farmers replace Denmark's hunter-gatherers"
     who: "Danish"
@@ -427,12 +447,44 @@ tiers:
             source: "https://journals.plos.org/plosbiology/article?id=10.1371/journal.pbio.1001555"
 
   # ------------------------------------------------------------------- 0.2 --
-  # Rendered as one small line under the composition, not as a band with a
-  # heading. It is 0.2% of unpainted chromosome; a section header and a paragraph
-  # of caveat gave it the same visual weight as British & Irish at 54.4%.
+  # NOT a `footnote` tier. It was one, on the argument that 0.2% given a heading
+  # and a disclosure triangle carries the same visual weight as British & Irish
+  # at 54.4% — a 270-fold overstatement done purely by layout. That argument was
+  # about "No Data Available", a row with nothing to disclose, where the triangle
+  # would have opened onto an apology. A named population with a burial site and
+  # a head-count behind it is a different object, and the reader who wants to
+  # know what 0.2% means has somewhere to go. The ring still draws 0.2, so the
+  # arithmetic is on screen either way.
+  #
+  # `units` puts a dim wash on the United States, and it is the one paint on this
+  # map that marks a reader rather than an origin. 23andMe's Indigenous American
+  # reference panel spans two continents; the ancestry is not from the US in the
+  # sense that Norwegian is from Norway, and Alaska is on the map because Alaska
+  # Native populations are in that panel. Hawaii is NOT, deliberately — 23andMe
+  # scores Native Hawaiians under Melanesian & Polynesian, a different branch of
+  # the report entirely, and painting it here would put this number on a people
+  # it does not describe.
+  #
+  # Nothing shows on the flat map, which stops at the edge of Europe. That is
+  # expected and ancestry-map.html tolerates it by design; see the comment there.
   - name: "Trace Ancestry"
     pct: 0.2
-    footnote: true
     groups:
-      - name: "No Data Available"
-        source: "https://permalinks.23andme.com/pdf/samplereport_ancestrycomp.pdf"
+      - name: "Indigenous American"
+        pct: 0.2
+        note: >-
+          Anzick-1 — a male infant buried with Clovis tools in western Montana
+          around 12,600 years ago, and the only Clovis burial ever found —
+          answered two questions at once. He is more closely related to every
+          indigenous American population than to any other group, which leaves
+          nowhere for the Solutrean hypothesis that Clovis toolmakers had crossed
+          from southwestern Europe. And he already carries the Siberian Upper
+          Palaeolithic Mal'ta ancestry that living Native Americans carry, which
+          dates that gene flow to before he was buried. The same genome shows a
+          deep divergence among Native American populations that is older still.
+        rarity:
+          world: { count: 42000000, of: "identify as Indigenous in Latin America" }
+          note: "The World Bank's figure is Latin America at the 2010 census round and stops at its northern border; no comparable count exists for the hemisphere the reference panel actually spans. There is no American star because the census ancestry question has no American Indian line — it is asked as race instead, which is a different question with a different universe."
+        units: [USB, USK]
+        source: "https://www.nature.com/articles/nature13025"
+        source_extra: "https://documents1.worldbank.org/curated/en/145891467991974540/pdf/Indigenous-Latin-America-in-the-twenty-first-century-the-first-decade.pdf"

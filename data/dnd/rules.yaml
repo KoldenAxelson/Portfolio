@@ -1,0 +1,42 @@
+# ---------------------------------------------------------------------------
+# The four rulings that replace what the book says. Everything else is 5e until
+# it gets in the way.
+#
+# `text` is the rule and only the rule. The reasoning and the worked examples are
+# in data/glossary/dnd.yaml, behind `term`.
+# ---------------------------------------------------------------------------
+
+rules:
+  - name: Hit points
+    term: flat-hit-points
+    text: "1d10 hit die, never rolled: 10 + your Constitution modifier per level."
+
+  - name: Off-hand weapon fighting
+    term: off-hand-fighting
+    text: >-
+      A *light* weapon in your off-hand may be used for a bonus-action attack, with no ability
+      modifier on the damage unless it is negative.
+
+  - name: Gambit attacks
+    term: gambit-attacks
+    text: >-
+      Declare any number of remaining attacks that share an attack bonus, roll once for all of
+      them, and sum the damage on a hit.
+
+  - name: Cleaving
+    term: cleaving
+    text: >-
+      Excess damage from a killing blow carries into another creature within your reach whose AC
+      is the same or lower.
+
+  - name: Exotic gear
+    term: exotic
+    text: >-
+      Everyone can use every weapon and every suit of armor. Anything carrying the
+      **exotic** tag is the exception and needs special training first.
+
+  - name: Tools and languages
+    term: experiences
+    text: >-
+      Gone. Two **experiences** replace them — short phrases about what you have been, argued for
+      at the table.

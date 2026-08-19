@@ -1,0 +1,203 @@
+# Dagean campaign glossary — the drill-down behind /misc/dnd/.
+#
+# THIS FILE IS WHERE THE "WHY" LIVES. The page states rules; anything that
+# explains, justifies, or works an example belongs here, reached by clicking the
+# term. That split is the whole point: a player scanning for what their character
+# can do should not have to read past a paragraph about why I removed tool
+# proficiencies.
+#
+# Same contract as data/glossary/basic-logic.yaml — see that file's header for
+# the full syntax. In short:
+#
+#   key            lowercase-hyphen, what {{< term "key" set="dnd" >}} passes
+#   term           the label in the window header
+#   definition     one sentence. The rule, or the thing being named.
+#   notes          further paragraphs: the reason, the worked example, the
+#                  edge case. Optional, and most entries here have one.
+#   [[key|text]]   a cross-reference — opens another window on desktop
+#   **bold**       emphasis
+#
+# No `figure`, `wordgroups` or `termgroups` in this set yet. The figure kinds in
+# def-figures.ts all draw argument maps, which are Basic Logic's shapes and not
+# these.
+
+warlord:
+  term: Warlord
+  definition: The only martial archetype on offer, taken at 3rd level by everyone.
+  notes:
+    - >-
+      Champion, Battle Master and Cavalier are gone outright — [[combat-superiority|Combat Superiority]]
+      does what all three did, and does it with the same dice.
+    - >-
+      The rest of the book's archetypes can be reached from here as flavour. A Samurai is
+      Honed Stance and the Prowess maneuvers. A Cavalier is Mark, Sentinel Stance and
+      Warding Reflex. Bring it before session one and we will make it work.
+
+combat-superiority:
+  term: Combat Superiority
+  definition: >-
+    The Warlord's 3rd-level feature: four maneuvers known, two more at 7th, 10th, 15th and
+    18th, and one maneuver per attack.
+  notes:
+    - >-
+      Over a long rest you may swap one maneuver you know for one you don't. Maneuvers are
+      fuelled by the [[superiority-die|Superiority Die]].
+
+superiority-die:
+  term: Superiority Die
+  definition: >-
+    A pool of dice equal to your proficiency bonus, gained at 2nd level — d6, then d8 at
+    5th, d10 at 11th, d12 at 17th.
+  notes:
+    - >-
+      One die per attack, maximum. All of them come back on a short or long rest, and **one**
+      comes back whenever you drop a creature to 0 hit points or land a critical hit — once
+      per attack, spell, or stick of dynamite.
+
+maneuver-dc:
+  term: Maneuver save DC
+  definition: 8 + your proficiency bonus + your Strength or Dexterity modifier, your choice.
+  notes:
+    - The choice is made per save, not locked in at 3rd level.
+
+family:
+  term: Family
+  definition: The word a maneuver's name ends in, and the only thing you need to know about when it happens.
+  notes:
+    - >-
+      **Strike** and **Attack** ride a hit. **Maneuver** spends one of your attacks.
+      **Stance** costs a bonus action and usually buys temporary hit points. **Reflex**
+      costs your reaction, off your turn. **Prowess** adds the die to an ability check.
+    - >-
+      **Other** is the catch-all, and it is where the exceptions live rather than
+      hiding under a suffix that would misdescribe them. Quick Strike is named like a
+      Strike and costs a bonus action; Precision applies to the attack roll rather
+      than to a result.
+
+discontinued:
+  term: Discontinued
+  definition: A maneuver that is off the list and cannot be learned.
+  notes:
+    - >-
+      They stay on the page and stay readable, greyed out, because a table that already
+      allowed one needs to be able to look it up.
+
+majors-and-minors:
+  term: Majors and minors
+  definition: >-
+    Your three physical abilities come from one of two arrays and your three mentals from one
+    of two more. Nothing is rolled and there is no point buy.
+  notes:
+    - >-
+      A peak or a flat, and that choice is the whole decision. Then [[human-points|two human
+      points]], then a feat that may move a score again. 20 is the ceiling on the total, not
+      on any one source.
+    - >-
+      **A 20 in Dexterity at 1st level.** Majors 17·15·13, minors 10·10·10. Put the 17 in
+      Dexterity, the 15 in Constitution, the 13 in Strength. Spend both human points on
+      Dexterity for 19. Take Resilient (Dexterity) for 20, plus proficiency in Dexterity
+      saves. That is min-maxing and it is entirely allowed.
+
+human-points:
+  term: Human points
+  definition: Two points, +1 to an ability score each.
+  notes:
+    - >-
+      Both may go on the same ability. That is not an oversight — it is the intended route
+      to a 20 at 1st level. See [[majors-and-minors|majors and minors]].
+
+experiences:
+  term: Experiences
+  definition: >-
+    Two short phrases about what you have been, replacing tool and language proficiencies
+    entirely.
+  notes:
+    - >-
+      Write `Chef`. Write `Army`. Write `Candy Store Operator` and we will find out together
+      what it turns out to be good for. There is no list and nothing is approved in advance.
+    - >-
+      When one plausibly bears on a roll, argue for it. **No skill, covering experience** —
+      add your proficiency bonus. **Skill and covering experience** — roll with advantage.
+    - >-
+      Cooking over a fire is a Survival check. A chef with no Survival proficiency adds
+      their proficiency bonus anyway. A chef with Survival rolls two dice. Someone with
+      neither rolls flat and eats what they are given. The argument is the mechanic; if it is
+      a stretch, sell it.
+
+subraces:
+  term: Subraces
+  definition: Not written yet.
+  notes:
+    - >-
+      Where you are from is going to matter mechanically and the axis is continental — the
+      six landmasses are Feldia, Kretavia, the Erka Fjords, the Bagii Isles, the Bagii Atoll
+      and Jrakvia.
+    - >-
+      Read the gazetteer and pick somewhere you would like to be from. The traits will be
+      written to fit the places people actually choose, not the other way round.
+
+flat-hit-points:
+  term: Flat hit points
+  definition: 10 + your Constitution modifier per level. The hit die is 1d10 and never rolled.
+  notes:
+    - Nobody at this table has ever enjoyed rolling a 2.
+
+off-hand-fighting:
+  term: Off-hand fighting
+  definition: >-
+    Wielding a *light* weapon in your off-hand lets you attack with it as a bonus action, with
+    no ability modifier on the damage roll unless the modifier is negative.
+  notes:
+    - If the weapon is *thrown*, throw it instead of swinging it.
+    - >-
+      With Extra Attack, spending your bonus action buys the same number of off-hand attacks
+      that Extra Attack grants in your main hand.
+
+gambit-attacks:
+  term: Gambit attacks
+  definition: >-
+    Declare any number of your remaining attacks that share an attack bonus, make one attack
+    roll for all of them, and on a hit sum every attack's damage.
+  notes:
+    - Maneuvers still apply to each attack as if it were rolled separately.
+    - >-
+      **Worked example.** Off-hand fighting, two main-hand attacks and two off-hand attacks,
+      one roll for all four. With a longsword, a shortsword and 16 Strength that is
+      1d8 + 3 + 1d8 + 3 + 1d6 + 1d6.
+    - >-
+      Advantage, disadvantage, Precision and Inspiration all apply to that single roll as
+      normal — each source only once.
+
+cleaving:
+  term: Cleaving
+  definition: >-
+    When a killing blow leaves damage unspent, carry the excess into another creature within
+    your reach whose AC is the same or lower.
+
+exotic:
+  term: Exotic
+  definition: >-
+    A tag on a weapon or a suit of armor meaning it needs special training before you
+    can use it.
+  notes:
+    - >-
+      Everything without the tag is available to everyone — there is no armor or weapon
+      proficiency list in this game, because a Fighter would have had all of it anyway.
+
+allow-list:
+  term: Allow-list
+  definition: If a feat is not on this page, it is not in the game.
+  notes:
+    - >-
+      The list is short on purpose. Twelve feats that all change how you play beats a hundred
+      where sixty are half an ability score and a skill proficiency. Most of what ends up here
+      will be custom.
+
+mental-doubling:
+  term: Mental doubling
+  definition: >-
+    A feat that would raise Intelligence, Wisdom, or Charisma by 1 raises it by 2 instead.
+  notes:
+    - >-
+      Which makes Resilient worth twice as much on a mental as on a physical, and is the only
+      reason to ever put it there.

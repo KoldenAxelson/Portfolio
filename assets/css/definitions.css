@@ -104,6 +104,21 @@
 
 .def-body { margin: 0; font-size: 0.95rem; line-height: 1.6; color: rgb(var(--c-fg)); }
 .def-body strong { font-weight: 700; }
+/* An entry's `notes` render as further .def-body paragraphs after the definition
+   sentence (see glossary.ts). Without this they set solid and a rule plus its
+   worked example read as one run-on paragraph. `margin: 0` stays on the first,
+   so a one-sentence Basic Logic entry is unchanged. */
+.def-body + .def-body { margin-top: 0.6rem; }
+
+/* An entry whose content is a list — a pick-one class feature, a feat's benefits.
+   Markers on, because "choose one of these five" is unreadable as five paragraphs
+   and the campaign set leans on it. */
+.def-bullets {
+  margin: 0.6rem 0 0; padding-left: 1.15rem; list-style: disc;
+  font-size: 0.95rem; line-height: 1.6; color: rgb(var(--c-fg));
+}
+.def-bullets > li + li { margin-top: 0.4rem; }
+.def-bullets > li::marker { color: rgb(var(--c-accent) / 0.7); }
 
 /* A cross-reference to another term. Dotted underline so it reads as a further
    drill-down rather than a repeat of the .term styling in the prose. */

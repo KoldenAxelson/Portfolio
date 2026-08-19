@@ -1,0 +1,35 @@
+{{- /*
+  definitions-assets — ship definitions.css and one or more glossary sets, once,
+  from the LAYOUT.
+
+    {{ partial "definitions-assets.html" . }}
+
+  Reads `glossary:` from the page's front matter — a string or a list of set
+  names, each matching a file in data/glossary/. Renders nothing when it is absent.
+
+  WHY FROM THE LAYOUT. shortcodes/term.html emits the same two things behind a
+  `.Page.Scratch` guard, and that guard is unsound on the dev server: Scratch
+  survives a rebuild while Hugo's shortcode cache means only the shortcode you
+  touched re-renders, so the one that would have emitted the stylesheet serves
+  cached markup that never contained it. The page comes back with unstyled,
+  inert terms and no error. See the long note in partials/skyrim-assets.html.
+
+  This runs before {{ .Content }} in the layout and SETS THE SAME SCRATCH KEYS,
+  so term.html finds its work already done and skips it. Pages that do not declare
+  `glossary:` — every Basic Logic chapter — keep the old behaviour untouched.
+*/ -}}
+{{- $sets := .Params.glossary -}}
+{{- if $sets -}}
+  {{- if reflect.IsSlice $sets | not }}{{ $sets = slice $sets }}{{ end -}}
+  {{- $css := resources.Get "css/definitions.css" | minify | fingerprint -}}
+  <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" />
+  {{- .Scratch.Set "definitionsAssets" true -}}
+  {{- range $sets -}}
+    {{- $glossary := index site.Data.glossary . -}}
+    {{- if not $glossary -}}
+      {{- errorf "definitions-assets: no data/glossary/%s.yaml (page: %s)" . $.RelPermalink -}}
+    {{- end -}}
+    <script type="application/json" data-glossary="{{ . }}">{{ $glossary | jsonify | safeJS }}</script>
+    {{- $.Scratch.Set (printf "glossaryData-%s" .) true -}}
+  {{- end -}}
+{{- end -}}

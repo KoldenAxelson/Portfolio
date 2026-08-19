@@ -1,63 +1,108 @@
-{{/* Dagea — the section index.
+{{/* Dagea — a topic index, and the section overview.
 
-     A plain list for now. The explorer (globe, info panel, section browser)
-     replaces the body of this page; until it exists, this is the browsable
-     gazetteer that has to be here anyway — the explorer is an enhancement over
-     a list of links, not a substitute for one. */}}
+     ONE TEMPLATE, TWO CONTENTS, decided by whether the page has child sections:
+     /dagea/ lists the topics, a topic lists its articles. The shape is the same
+     either way — a table — because that is what an index page is for. It used to
+     be a three-column card grid of all 28 articles under one heading per folder,
+     which is a page you read rather than a page you leave.
+
+     DELIBERATELY LIGHT. No cards, no borders but the row rules, no icons in the
+     rows. Everything about this page is in service of the reader arriving, finding
+     the line they want, and going. `.Content` renders above the table for the rare
+     index that needs a sentence; three of the five have none, which is correct.
+
+     The table is OUTSIDE the .prose wrapper and marked not-prose, so Typography's
+     table styling — which is built for a table inside an article — does not apply
+     to a table that IS the article. */}}
 
 {{ define "banner" }}
 {{ partial "page-banner.html" (dict "title" .Title "subtitle" (.Params.lead | default "")) }}
 {{ end }}
 
 {{ define "main" }}
+{{- $map := index site.Data.dagea "map" -}}
 {{- $lore := index site.Data.dagea "regions" -}}
-<article class="prose prose-lg max-w-none prose-measure">{{ .Content }}</article>
+{{- $topics := where .Sections "Params.hidden" "!=" true -}}
 
-{{- /* Group the articles by the folder they live in — regions, factions, people.
-       The folder is the taxonomy: it is already how the files are organised and
-       how their URLs read, so a front-matter key saying the same thing would be
-       a second source of truth for a fact that is visible in the path.
+{{- /* WHERE AN ARTICLE SITS, resolved once per page so the column can be dropped
+       when no article in the topic has an answer — which is every topic but
+       Regions today. A column of twenty em-dashes is worse than no column.
 
-       `append` takes the SLICE AS ITS LAST ARGUMENT, which is why this reads
-       backwards. `$cur | append .` is `append . $cur`. Writing it the natural-
-       looking way round — `append $cur .` — makes Hugo treat the PAGE as the
-       slice and fail with "expected a slice, got *hugolib.pageState". */ -}}
-{{- $bydir := dict }}
-{{- range .RegularPagesRecursive }}
-  {{- $dir := path.Base (path.Dir .File.Path) }}
-  {{- $cur := or (index $bydir $dir) slice }}
-  {{- $bydir = merge $bydir (dict $dir ($cur | append .)) }}
+       "Within" is the PARENT, not the region itself. An article about Kornfeld
+       whose region code IS Kornfeld would otherwise print its own title back at
+       it, which is what the first version of this table did for nineteen of the
+       twenty regions. A code is either a whole landmass (map.units) or a part of
+       one (map.subunits) — the parts are the ones with somewhere to be within. */ -}}
+{{- $within := dict -}}
+{{- $anyWithin := false -}}
+{{- range .RegularPages -}}
+  {{- $name := "" -}}
+  {{- /* Captured before the `with` blocks change the dot. `$.Title` would be the
+         LIST page's title — "Dagea Regions" — which is never equal to an article's
+         and would print a region name on every row. */ -}}
+  {{- $title := .Title -}}
+  {{- with .Params.region -}}
+    {{- $code := . -}}
+    {{- with index $map.subunits $code -}}
+      {{- with index $lore.places .parent }}{{ $name = .name }}{{ end -}}
+    {{- else -}}
+      {{- /* A landmass. Only worth naming when the article is about something
+             else that happens to be there — Sea of Coin sits in Kretavia. */ -}}
+      {{- with index $lore.places $code }}{{ if ne .name $title }}{{ $name = .name }}{{ end }}{{ end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if $name }}{{ $anyWithin = true }}{{ end -}}
+  {{- $within = merge $within (dict .RelPermalink $name) -}}
+{{- end -}}
+
+{{- with .Content }}
+<article class="prose prose-lg max-w-none prose-measure">{{ . }}</article>
 {{- end }}
 
-{{- range $dir, $pages := $bydir }}
-<section class="not-prose mt-10">
-  <h2 class="mb-4 text-lg font-medium text-fg">{{ humanize $dir | title }}</h2>
-  <ul class="grid list-none grid-cols-1 gap-3 p-0 sm:grid-cols-2 lg:grid-cols-3">
-    {{- range $pages }}
-    {{- /* Captured here because `$` is the ROOT context — the /dagea/ list page
-           — and not the item being ranged over. Comparing against `$.Title`
-           compares every article to the word "Dagea", which is never equal, so
-           the badge printed on all of them. */ -}}
-    {{- $title := .Title }}
-    <li class="m-0 p-0">
-      <a class="flex h-full flex-col rounded-lg border border-border p-4 no-underline transition-colors hover:border-accent" href="{{ .RelPermalink }}">
-        <span class="flex items-baseline gap-2">
-          <span class="text-base font-medium text-fg">{{ .Title }}</span>
-          {{- /* The region badge says where on the map this article sits. An
-                 article ABOUT a whole region would print its own title twice, so
-                 it is dropped when they are the same word. */ -}}
-          {{- with .Params.region }}
-          {{- $rn := (index $lore.places .).name }}
-          {{- if ne $rn $title }}
-          <span class="ml-auto shrink-0 font-mono text-xs text-muted">{{ $rn }}</span>
-          {{- end }}
-          {{- end }}
-        </span>
-        <span class="mt-1.5 block text-sm leading-relaxed text-muted">{{ .Params.summary | default .Description }}</span>
-      </a>
-    </li>
+<div class="not-prose{{ if .Content }} mt-10{{ end }} overflow-x-auto">
+<table class="w-full border-collapse text-left text-base">
+  <thead>
+    <tr class="border-b border-border">
+      {{- if $topics }}
+      <th scope="col" class="py-2 pr-4 font-mono text-xs font-normal uppercase tracking-wide text-muted">Topic</th>
+      <th scope="col" class="py-2 pr-4 text-right font-mono text-xs font-normal uppercase tracking-wide text-muted">Articles</th>
+      <th scope="col" class="py-2 font-mono text-xs font-normal uppercase tracking-wide text-muted">What is in it</th>
+      {{- else }}
+      <th scope="col" class="py-2 pr-4 font-mono text-xs font-normal uppercase tracking-wide text-muted">Article</th>
+      {{- if $anyWithin }}<th scope="col" class="py-2 pr-4 font-mono text-xs font-normal uppercase tracking-wide text-muted">Within</th>{{ end }}
+      <th scope="col" class="py-2 font-mono text-xs font-normal uppercase tracking-wide text-muted">Summary</th>
+      {{- end }}
+    </tr>
+  </thead>
+  <tbody>
+    {{- if $topics }}
+    {{- range $topics.ByWeight }}
+    <tr class="border-b border-border/60">
+      <td class="py-2.5 pr-4 align-top whitespace-nowrap">
+        <a class="font-medium text-fg underline decoration-border underline-offset-4 transition-colors hover:!text-accent hover:decoration-accent" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+      </td>
+      <td class="py-2.5 pr-4 align-top text-right font-mono text-sm tabular-nums text-muted">{{ len .RegularPagesRecursive }}</td>
+      <td class="py-2.5 align-top text-sm leading-relaxed text-muted">{{ .Description }}</td>
+    </tr>
     {{- end }}
-  </ul>
-</section>
-{{- end }}
+    {{- else }}
+    {{- range .RegularPages }}
+    <tr class="border-b border-border/60">
+      <td class="py-2.5 pr-4 align-top">
+        <a class="font-medium text-fg underline decoration-border underline-offset-4 transition-colors hover:!text-accent hover:decoration-accent" href="{{ .RelPermalink }}">{{ .Title }}</a>
+      </td>
+      {{- if $anyWithin }}
+      <td class="py-2.5 pr-4 align-top whitespace-nowrap font-mono text-xs uppercase tracking-wide text-muted">{{ with index $within .RelPermalink }}{{ . }}{{ else }}&mdash;{{ end }}</td>
+      {{- end }}
+      <td class="py-2.5 align-top text-sm leading-relaxed text-muted">{{ .Params.summary | default .Description }}</td>
+    </tr>
+    {{- end }}
+    {{- end }}
+  </tbody>
+</table>
+</div>
+
+{{/* Desktop: jump anywhere else in Dagea, including the globe. Mobile reads the
+     same list from the navbar tools button — see partials/topnav.html. */}}
+{{ partial "dagea-nav.html" . }}
 {{ end }}

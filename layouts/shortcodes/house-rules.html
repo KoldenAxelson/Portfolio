@@ -1,0 +1,28 @@
+{{- /*
+  house-rules — the campaign's edited rulings, from data/dnd/rules.yaml.
+
+    {{< house-rules >}}
+
+  Five cards, each one sentence. Every worked example that used to sit under one
+  of these as three paragraphs of prose is now behind its info button, in
+  data/glossary/dnd.yaml. That is the trade the whole page is built on: the rule
+  is on the page, the reasoning is one click away, and nobody scanning for the
+  rule has to read the reasoning to find it.
+*/ -}}
+{{- $rules := site.Data.dnd.rules.rules -}}
+<ul class="dnd-defs not-prose" role="list">
+  {{- range $rules }}
+  <li>
+    <div class="dnd-def">
+      <p class="dnd-def__name">
+        {{ .name }}
+        {{- with .term }}{{ partial "func/term-button.html" (dict "key" . "set" "dnd") }}{{ end }}
+      </p>
+      {{- /* A <div>, not a <p>: markdownify strips the wrapper on single-paragraph
+             input but not on anything longer, and a <p> inside a <p> closes the
+             outer one and drops the rest of the card out of it. */ -}}
+      <div class="dnd-def__text">{{ .text | markdownify }}</div>
+    </div>
+  </li>
+  {{- end }}
+</ul>

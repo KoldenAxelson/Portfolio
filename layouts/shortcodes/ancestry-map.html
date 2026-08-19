@@ -15,9 +15,26 @@
   border for. A node with `units` and a parent with `units` would double-paint,
   so the data file never does both.
 
+  A UNIT NEED NOT BE ON BOTH BASEMAPS. Indigenous American paints USB and USK,
+  which the globe has and a map of Europe never will. So the two checks below are
+  asymmetric on purpose: every painted code must exist on the GLOBE, which draws
+  the whole Earth and has no excuse; the flat map draws the ones inside its frame
+  and ignores the rest. Erroring on a code the Europe map cannot hold would be
+  the map dictating what the data is allowed to say.
+
   WHAT IS NOT ON THE MAP. Ashkenazi Jewish, 5.6%, because it is a people and not
   a place — there is no polygon that is the right answer. Drawing it over eastern
   Europe would be inventing a border for a population defined by not having one.
+  Indigenous American, 0.2%, for the same reason at a different scale — see the
+  comment above that tier in data/genes.yaml.
+
+  TWO BASEMAPS, DELIBERATELY DIFFERENT. The <figure> below is Europe and stops at
+  the edge of the frame; the globe is the whole Earth, less Antarctica. They are
+  the same build script and the same data, and the flat map's exclusions —
+  Iceland, Greenland, Svalbard, the Faroes — exist to keep a map of Europe from
+  being mostly ocean. They are not statements about what exists. See MAP_DROP in
+  scripts/build-europe-map.py, which used to be one list serving both and was
+  therefore quietly deleting Greenland from the planet.
 
   NO LEGEND. Each painted region carries its own percentage, placed at the
   centroid of its largest ring, so the map is read by looking at it rather than by
@@ -58,12 +75,12 @@
   {{- end -}}
 {{- end -}}
 
-{{- /* Every code in the data must exist in the basemap, or a region silently
-       goes unpainted and the map quietly lies about the composition. */ -}}
-{{- range $code, $_ := $paint -}}
-  {{- if not (index $geo.units $code) -}}
-    {{- errorf "ancestry-map: data/genes.yaml paints subunit %q, which is not in data/europe.json" $code -}}
-  {{- end -}}
+{{- /* What the flat map can actually draw: the painted codes inside its frame.
+       The rest are not an error here — see A UNIT NEED NOT BE ON BOTH BASEMAPS
+       above — they are simply outside Europe, and the globe has them. */ -}}
+{{- $flat := dict -}}
+{{- range $code, $p := $paint -}}
+  {{- if index $geo.units $code -}}{{ $flat = merge $flat (dict $code $p) }}{{ end -}}
 {{- end -}}
 
 {{- /* One label per ancestry entry, on its largest subunit — otherwise Ireland
@@ -71,7 +88,7 @@
        times across three regions and the Netherlands. */ -}}
 {{- $labelAt := dict -}}
 {{- $best := dict -}}
-{{- range $code, $p := $paint -}}
+{{- range $code, $p := $flat -}}
   {{- $u := index $geo.units $code -}}
   {{- $prev := index $best $p.name -}}
   {{- if or (not $prev) (gt $u.area $prev) -}}
@@ -82,15 +99,48 @@
 {{- $labels := dict -}}
 {{- range $name, $code := $labelAt }}{{ $labels = merge $labels (dict $code true) }}{{ end -}}
 
+{{- /* `lead` marks that same largest-subunit choice for the globe, which needs
+       exactly one answer to "where is Irish" when Irish is two polygons. The
+       globe could work it out from its own geometry, but then the flat map's
+       label and the globe's camera would be two independent opinions about the
+       same question, free to disagree the next time either basemap is rebuilt.
+
+       A population with no subunit inside the Europe frame gets no `lead` and
+       cannot: this map has no opinion about where the United States is. That
+       case falls through to a measured fallback in ts/ancestry-globe.ts, which
+       is documented there as the exception it is. */ -}}
+{{- range $name, $code := $labelAt -}}
+  {{- $paint = merge $paint (dict $code (dict "lead" true)) -}}
+{{- end -}}
+
 {{- /* The globe is progressive enhancement over this map, not a replacement.
        ts/ancestry-globe.ts hides the <figure> only after it has fetched geometry
        and drawn a frame; with JS off, or if that fetch fails, what stays on the
        page is the labelled static map — which is the version that carries the
        numbers as text. */ -}}
-{{- $globe := resources.Get "geo/globe.json" | fingerprint -}}
+{{- /* THE check, and the only one that stops a build. The two basemaps are built
+       with different simplification and different size floors, and for a while
+       three subunits the data paints — Brussels-Capital, Bornholm and the
+       Balearics — were on the flat map and under the globe's floor. Nothing failed. The globe just drew three of them
+       as ocean, which is the map quietly disagreeing with the numbers printed
+       beside it. The globe draws every subunit there is, so anything missing here
+       is a typo in the data or a stale build, and both should stop the build. */ -}}
+{{- $globeRes := resources.Get "geo/globe.json" -}}
+{{- $globeGeo := $globeRes.Content | transform.Unmarshal -}}
+{{- range $code, $_ := $paint -}}
+  {{- if not (index $globeGeo.units $code) -}}
+    {{- errorf "ancestry-map: data/genes.yaml paints subunit %q, which is not in assets/geo/globe.json — re-run scripts/build-europe-map.py" $code -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $globe := $globeRes | fingerprint -}}
 <div class="ancestry-globe not-prose mb-12 flex flex-col items-center" data-globe="{{ $globe.RelPermalink }}" hidden>
   <canvas class="touch-none select-none" role="img" aria-label="Rotatable globe with each region shaded by its share of the ancestry composition"></canvas>
   <p class="mt-3 h-5 font-mono text-xs tabular-nums text-muted" data-globe-readout aria-live="polite"></p>
+  {{- /* Outside the live region on purpose: this never changes, and an aria-live
+         element that re-announces a fixed instruction every time the pointer
+         leaves a country is a screen reader reading out the manual. */ -}}
+  <p class="mt-1 text-xs text-muted/80">Click a region to zoom in and open its entry below.</p>
   {{- /* Percentages for the globe, as data rather than as another walk of the
          tree in TypeScript — the template already resolved which node owns which
          subunit, and doing it twice invites the two from drifting. */ -}}
@@ -112,7 +162,7 @@
 
     {{- /* Painted layer, drawn over the base so borders stay crisp. */ -}}
     <g stroke="rgb(var(--c-bg))" stroke-width="1.2" stroke-linejoin="round">
-      {{- range $code, $p := $paint }}
+      {{- range $code, $p := $flat }}
       {{- $u := index $geo.units $code }}
       {{- $alpha := add 0.18 (mul 0.82 (math.Sqrt (div $p.pct $max))) }}
       <path d="{{ $u.d }}" fill="rgb(var(--c-accent) / {{ printf "%.3f" $alpha }})"><title>{{ $p.name }} &mdash; {{ printf "%.1f" $p.pct }}%</title></path>
@@ -132,7 +182,7 @@
            gets a number sitting on it, which is the whole reason there is no
            legend. */ -}}
     <g class="ancestry-map__labels" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-weight="600" text-anchor="middle" fill="rgb(var(--c-bg))" aria-hidden="true">
-      {{- range $code, $p := $paint }}
+      {{- range $code, $p := $flat }}
       {{- if index $labels $code }}
       {{- $u := index $geo.units $code }}
       {{- $txt := printf "%.1f%%" $p.pct }}

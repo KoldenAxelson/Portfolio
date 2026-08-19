@@ -27,6 +27,9 @@ interface Place {
   capital: string;
   export: string;
   blurb: string;
+  /** The place's article under /dagea/regions/, or '' when nobody has written
+   *  one. Resolved at build time by the shortcode — see dagea-globe.html. */
+  href?: string;
 }
 
 let handle: GlobeHandle | null = null;
@@ -87,7 +90,23 @@ export function initDageaGlobe(): void {
 
   function describe(code: string | null): void {
     const p = code ? places[code] : null;
-    if (titleEl) titleEl.textContent = p ? p.name : 'Dagea';
+    if (titleEl) {
+      // The title is a link when the place has an article and plain text when it
+      // does not — rather than always a link, dead half the time, or never one,
+      // which is what it was: the gazetteer underneath has always been the only
+      // way through to a region's page and the panel replaces the gazetteer.
+      titleEl.textContent = '';
+      const name = p ? p.name : 'Dagea';
+      if (p?.href) {
+        const a = document.createElement('a');
+        a.href = p.href;
+        a.textContent = name;
+        a.className = 'text-fg underline decoration-border underline-offset-4 transition-colors hover:!text-accent hover:decoration-accent';
+        titleEl.append(a);
+      } else {
+        titleEl.textContent = name;
+      }
+    }
     if (blurbEl) {
       blurbEl.textContent = p
         ? p.blurb
@@ -232,6 +251,7 @@ export function initDageaGlobe(): void {
             capital: '',
             export: '',
             blurb: places[unit.parent ?? '']?.blurb ?? '',
+            href: '',
           };
         }
       }

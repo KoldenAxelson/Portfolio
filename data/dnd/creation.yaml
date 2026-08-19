@@ -1,0 +1,109 @@
+# ---------------------------------------------------------------------------
+# Character creation for the Dagean campaign — the parts a machine has to know.
+#
+# This file drives the click-through module on /misc/dnd/character-creation/.
+# Prose that a person reads once stays in the markdown; anything the module has
+# to compute with lives here.
+#
+# MAJORS AND MINORS. There is no point buy and no rolling. Physical abilities
+# come from one of two three-number arrays, mentals from one of two more, and the
+# choice between them is the whole decision: a peak or a flat. Naming them
+# "majors" and "minors" rather than "physical array A/B" is how the table talks
+# about it.
+#
+# The arrays are written high-to-low and assigned by the player, so `values` is
+# ordered for display, not for assignment.
+# ---------------------------------------------------------------------------
+
+abilities:
+  - { key: str, short: STR, name: Strength,     group: major }
+  - { key: dex, short: DEX, name: Dexterity,    group: major }
+  - { key: con, short: CON, name: Constitution, group: major }
+  - { key: int, short: INT, name: Intelligence, group: minor }
+  - { key: wis, short: WIS, name: Wisdom,       group: minor }
+  - { key: cha, short: CHA, name: Charisma,     group: minor }
+
+arrays:
+  major:
+    label: Majors
+    note: Strength, Dexterity, Constitution.
+    options:
+      - key: peaked
+        values: [17, 15, 13]
+        label: "17 · 15 · 13"
+        note: One thing you are the best in the room at, and one you are not.
+      - key: even
+        values: [15, 15, 15]
+        label: "15 · 15 · 15"
+        note: No hole to cover. No number anyone remembers either.
+  minor:
+    label: Minors
+    note: Intelligence, Wisdom, Charisma.
+    options:
+      - key: peaked
+        values: [12, 10, 8]
+        label: "12 · 10 · 8"
+        note: One of them is a personality. One of them is a liability.
+      - key: even
+        values: [10, 10, 10]
+        label: "10 · 10 · 10"
+        note: Unremarkable in every direction, which is its own kind of useful.
+
+# Human. Two points, +1 each, and NOTHING stops you putting both on the same
+# ability — that is the intended route to a 20 at 1st level (17 major, +2 here,
+# +1 from Resilient) and it is allowed on purpose.
+human:
+  points: 2
+  max_per_ability: 2
+  skills: 1
+  feats: 3
+
+# What the class and the background hand out, counted here so the module and the
+# page can never disagree about how many skills a 1st-level character has.
+skills_from:
+  - { source: "Human", count: 1 }
+  - { source: "Fighter", count: 2 }
+  - { source: "Background", count: 2 }
+
+# The eighteen skills and the ability each is checked against. `ability` is what
+# lets the background's expertise step offer only the skills under the mental
+# ability you chose.
+skills:
+  - { name: Acrobatics,      ability: dex }
+  - { name: Animal Handling, ability: wis }
+  - { name: Arcana,          ability: int }
+  - { name: Athletics,       ability: str }
+  - { name: Deception,       ability: cha }
+  - { name: History,         ability: int }
+  - { name: Insight,         ability: wis }
+  - { name: Intimidation,    ability: cha }
+  - { name: Investigation,   ability: int }
+  - { name: Medicine,        ability: wis }
+  - { name: Nature,          ability: int }
+  - { name: Perception,      ability: wis }
+  - { name: Performance,     ability: cha }
+  - { name: Persuasion,      ability: cha }
+  - { name: Religion,        ability: int }
+  - { name: Sleight of Hand, ability: dex }
+  - { name: Stealth,         ability: dex }
+  - { name: Survival,        ability: wis }
+
+# The background's ability feature: +2 to one mental, and expertise in one skill
+# under it.
+background:
+  boost: 2
+  boost_from: [int, wis, cha]
+  experiences: 2
+  # Shown as placeholder text in the two experience fields. Deliberately a range
+  # from the obvious to the absurd — the point of the system is that "Candy Store
+  # Operator" is as valid as "Army".
+  experience_examples: ["Chef", "Army", "Candy Store Operator", "Ran the docks at Seehaven", "Third-best liar in the village"]
+
+# Saving throws. Constitution is fixed; the other is the player's.
+saves:
+  fixed: [con]
+  choose_one: [str, dex]
+
+hit_points:
+  base: 10
+  note: "10 + your Constitution modifier, every level. Nobody rolls."

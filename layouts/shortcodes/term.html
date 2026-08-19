@@ -4,6 +4,8 @@
     {{< term "validity" >}}validity{{< /term >}}   key + the word as it reads in prose
     {{< term "standard-form" >}}standard form{{< /term >}}
 
+  The glossary set comes from the PAGE, not the call — see the note below.
+
   The key looks up data/glossary/<set>.yaml (one source of truth). The button
   carries only the KEY — the definition text is not inlined per-word, because a
   definition can cross-reference other terms ([[key|display]]) and carry word
@@ -17,7 +19,20 @@
   key renders the plain word and logs a build warning, so a typo never breaks
   the page.
 */ -}}
-{{- $set := .Get "set" | default "basic-logic" -}}
+{{- /* WHICH SET, without a named parameter. Hugo refuses to mix named and
+       positional arguments in one shortcode call, and the key has always been
+       positional — so `{{< term "x" set="dnd" >}}` is a parse error, not a
+       template problem.
+
+       The page says which glossary it uses instead, once, in front matter:
+       `glossary: "dnd"`. That is the same key partials/definitions-assets.html
+       reads to ship the data, so a page cannot use a set it did not load. A list
+       takes the first entry; a page with two sets and terms from both would need
+       a real parameter, and no page has that yet. */ -}}
+{{- $set := "basic-logic" -}}
+{{- with .Page.Params.glossary -}}
+  {{- if reflect.IsSlice . }}{{ $set = index . 0 }}{{ else }}{{ $set = . }}{{ end -}}
+{{- end -}}
 {{- $key := .Get 0 -}}
 {{- $glossary := index site.Data.glossary $set -}}
 {{- $entry := index $glossary $key -}}

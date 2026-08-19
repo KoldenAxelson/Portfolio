@@ -1,0 +1,59 @@
+{{- /*
+  dagea-menu — the Dagea navigation menu, as data. Returns a slice of
+  {label, href, icon, current}, or an empty slice when the page is not part of
+  Dagea.
+
+    {{ $menu := partial "func/dagea-menu.html" . }}
+
+  ONE SOURCE, TWO SURFACES. partials/dagea-nav.html renders it as the desktop FAB
+  and partials/topnav.html renders it as the mobile navbar list. They used to be
+  the same list written twice for Basic Logic and again for the campaign page;
+  here it is written once.
+
+  THE TOPICS ARE DISCOVERED, not listed. Every folder under content/dagea/ with an
+  `_index.md` is a topic, ordered by its `weight` and labelled by its `title`. Add
+  content/dagea/people/_index.md and it appears here, in the FAB, and in the mobile
+  menu, with no template edited.
+
+  THE MAP IS THE ONE HARD-CODED ENTRY. It lives at /misc/dagea/ rather than under
+  /dagea/ — it is a toy about the world rather than an article in it — so nothing
+  in the section tree can find it.
+
+  WHICH PAGES GET A MENU: anything with `type: dagea` (every article and every
+  topic index), plus whichever page draws the globe. `.HasShortcode` is exact and
+  evaluated per build, so the globe page identifies itself and needs no flag in
+  front matter that could go stale.
+*/ -}}
+{{- $items := slice -}}
+{{- if or (eq .Type "dagea") (.HasShortcode "dagea-globe") -}}
+  {{- $cur := .RelPermalink -}}
+  {{- $add := slice -}}
+
+  {{- with site.GetPage "/dagea" -}}
+    {{- $add = $add | append (dict "label" "Overview" "href" .RelPermalink "icon" "book-open") -}}
+  {{- end -}}
+
+  {{- /* The globe. Looked up rather than written as a literal path, so a rename
+         of content/misc/dagea.md is a build error here instead of a dead row. */ -}}
+  {{- with site.GetPage "/misc/dagea" -}}
+    {{- $add = $add | append (dict "label" "The map" "href" .RelPermalink "icon" "globe") -}}
+  {{- else -}}
+    {{- errorf "dagea-menu: no page at /misc/dagea — the globe moved, and the menu has nowhere to point" -}}
+  {{- end -}}
+
+  {{- /* `.LinkTitle` is Hugo's own short form — `linkTitle:` in front matter,
+         falling back to `title:`. The topics are titled "Dagea Regions" so they
+         read correctly in a search result, and linkTitled "Regions" so they do not
+         say the word Dagea five times inside a menu that is already Dagea's. */ -}}
+  {{- range (where (site.GetPage "/dagea").Sections "Params.hidden" "!=" true).ByWeight -}}
+    {{- $add = $add | append (dict
+        "label" .LinkTitle
+        "href" .RelPermalink
+        "icon" (.Params.icon | default "folder")) -}}
+  {{- end -}}
+
+  {{- range $add -}}
+    {{- $items = $items | append (merge . (dict "current" (eq .href $cur))) -}}
+  {{- end -}}
+{{- end -}}
+{{- return $items -}}

@@ -40,6 +40,14 @@
 </article>
 
 <footer class="mt-12 border-t border-border pt-5 text-sm text-muted">
+  {{- /* Back to the topic this article belongs to. The FAB below covers going
+         anywhere in Dagea; this covers going up, which is the one people want
+         most and should not have to open a menu for. */ -}}
+  {{- with .CurrentSection }}{{ if ne .RelPermalink $.Site.Home.RelPermalink }}
+  <p class="m-0 mb-3">
+    <a class="text-fg underline decoration-border hover:!text-accent" href="{{ .RelPermalink }}">&larr; {{ .Title }}</a>
+  </p>
+  {{ end }}{{ end }}
   {{- with $code }}
   {{- $r := index $lore.places . }}
   {{- /* A code is either a whole landmass region (units) or a part of one
@@ -49,8 +57,12 @@
   {{- $u := index $map.units . }}
   {{- $s := index $map.subunits . }}
   <p class="m-0">
+    {{/* The globe, not "/dagea/#CODE". That anchor pointed at an id the section
+         index has never had — the region codes only exist on the map. Note the
+         un-trimmed left delimiters: `{{-` here eats the newline after the colon
+         and the line renders as "On the map:Kornfeld". */}}
     On the map:
-    <a class="text-fg underline decoration-border hover:!text-accent" href="/dagea/#{{ . }}">{{ $r.name }}</a>
+    <a class="text-fg underline decoration-border hover:!text-accent" href="{{ partial "func/url.html" "/misc/dagea/" }}">{{ $r.name }}</a>
     {{- with $u }} — {{ .islands }} landmass{{ if ne (int .islands) 1 }}es{{ end }}{{ end }}
     {{- with $s }}{{ with index $map.units .parent }} — within {{ .name }}{{ end }}{{ end }}.
   </p>
@@ -61,4 +73,8 @@
   </p>
   {{- end }}
 </footer>
+
+{{/* Desktop: the Dagea navigation FAB. Mobile gets the same rows from the navbar
+     tools button — see partials/topnav.html. */}}
+{{ partial "dagea-nav.html" . }}
 {{ end }}

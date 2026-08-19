@@ -1,0 +1,36 @@
+{{- /*
+  term-button — a glossary click-target, for use from a TEMPLATE.
+
+    {{ partial "func/term-button.html" (dict "key" "gambit-attacks" "set" "dnd") }}
+    {{ partial "func/term-button.html" (dict "key" "free-use" "set" "dnd" "label" "free-use") }}
+
+  The {{< term >}} shortcode is the one to use from Markdown prose. This is the
+  same button for the places where the trigger is generated — a card built from a
+  data file, where there is no prose to wrap.
+
+  DELIBERATELY EMITS NO ASSETS. The shortcode ships the glossary JSON and
+  definitions.css behind a `.Page.Scratch` guard, which is unsound across
+  dev-server rebuilds (see the long note in partials/skyrim-assets.html). A page
+  that uses this partial must declare `glossary:` in front matter, and its layout
+  emits both, once, from the layout — see partials/definitions-assets.html.
+
+  `label` defaults to nothing, which renders the icon-only form: a card whose
+  heading already says "Superiority Dice" does not need a link underneath it that
+  also says Superiority Dice. The accessible name always carries the term.
+*/ -}}
+{{- $key := .key -}}
+{{- $set := .set | default "dnd" -}}
+{{- $label := .label | default "" -}}
+{{- $glossary := index site.Data.glossary $set -}}
+{{- $entry := index $glossary $key -}}
+{{- if not $entry -}}
+  {{- errorf "term-button: no glossary entry %q in data/glossary/%s.yaml" $key $set -}}
+{{- else -}}
+<button type="button" class="term{{ if not $label }} dnd-why{{ end }}" data-term="{{ $key }}" data-term-set="{{ $set }}"
+        aria-expanded="false" aria-haspopup="dialog"
+        {{ if not $label }}title="{{ $entry.term }}"{{ end }}>
+  {{- if $label }}{{ $label }}
+  {{- else }}{{ partial "func/svg-icon.html" (dict "name" "information-circle" "class" "h-4 w-4") }}<span class="sr-only">{{ $entry.term }}</span>
+  {{- end }}
+</button>
+{{- end -}}

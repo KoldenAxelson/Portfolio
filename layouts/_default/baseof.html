@@ -109,9 +109,10 @@
     {{ partial "cv-actions.html" . }}
     {{ partial "scroll-to-top.html" . }}
 
-    {{/* AI chat widget — every page except /cv and /misc/* (those use the
-         navbar button slot for their own page actions). */}}
-    {{- if and (not (eq .RelPermalink "/cv/")) (not (in .RelPermalink "/misc")) }}
+    {{/* AI chat widget. OFF BY DEFAULT — the five pages that offer it are listed
+         in data/site.yaml under `ai.pages`. See partials/func/ai-enabled.html for
+         why that is an allow-list and not the deny-list it used to be. */}}
+    {{- if partial "func/ai-enabled.html" . }}
     {{ partial "ai-widget.html" . }}
     {{- end }}
   </body>

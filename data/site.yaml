@@ -71,3 +71,29 @@ locale: "en-US"
 
 # Default OpenGraph image (served from /static, no domain prefix).
 ogImage: "/og-default.png"
+
+# ---------------------------------------------------------------------------
+# The "Ask about Konrad" chat — WHERE IT IS OFFERED.
+#
+# An ALLOW-LIST, and that is the point: off by default, on in five places. It
+# used to be the other way round — every page except /cv and /misc/* — which put
+# a chat button on the Skyrim toolkit, the campaign rules, every Dagea article and
+# every project write-up. Those are pages somebody is USING. The chat answers
+# "who is this person and should I talk to them", so it belongs on the pages where
+# that is the question being asked.
+#
+# Paths are matched against a page's RelPermalink, base-path aware, trailing slash
+# optional. Adding a path here is the whole job — see
+# partials/func/ai-enabled.html, which both baseof.html (the desktop FAB) and
+# partials/topnav.html (the mobile button) read.
+#
+# The endpoint itself is `aiChatURL` in hugo.toml. With that unset nothing renders
+# anywhere, whatever this list says.
+# ---------------------------------------------------------------------------
+ai:
+  pages:
+    - "/"              # home
+    - "/projects/"     # the project directory, not the individual write-ups
+    - "/articles/"     # the article directory, ditto
+    - "/certificates/"
+    - "/about/"

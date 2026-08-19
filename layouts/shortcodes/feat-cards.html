@@ -1,0 +1,51 @@
+{{- /*
+  feat-cards — the campaign's feat allow-list, as a searchable list.
+
+    {{< feat-cards >}}
+
+  BUILT FOR FIFTY, NOT FOR FOUR. There are four today and there will be tens; a grid
+  of expanded cards is unreadable at that size and unscannable at any size. So each
+  feat is one row — name, origin, and the one line that says what it does — and the
+  full text opens in a draggable window (partials/dnd-popovers.html synthesises the
+  set). The rows live in a fixed-height scroll area, so the list's length never
+  costs the page height.
+
+  Every row is in the HTML. The search field ships `hidden` and is revealed by
+  assets/scripts/pages/dnd/feats.ts, so with JavaScript off this is a complete,
+  readable list of what is allowed — which is the one thing this page owes a player.
+*/ -}}
+{{- $feats := site.Data.dnd.feats.feats -}}
+<div class="dnd-list not-prose" data-dnd-feats>
+  <div class="dnd-tools" data-dnd-feats-tools hidden>
+    <div class="dnd-tools__row">
+      <label class="sr-only" for="dnd-feat-search">Filter feats</label>
+      <input id="dnd-feat-search" type="search" autocomplete="off" spellcheck="false" class="dnd-search"
+             placeholder="Filter feats&hellip;" data-dnd-feats-search />
+      <p class="dnd-count" aria-live="polite" data-dnd-feats-count></p>
+    </div>
+  </div>
+
+  <div class="dnd-scroll">
+    <ul class="dnd-rows" role="list">
+      {{- range $feats }}
+      {{- $search := lower (printf "%s %s %s %s" .name .summary (delimit .benefits " ") (.prerequisite | default "")) -}}
+      <li data-dnd-feat-row data-search="{{ $search }}">
+        {{- /* NO `.term` CLASS. definitions.ts and nav.ts both bind on [data-term], so
+               the class is purely the typographic treatment for a word in a sentence —
+               accent-coloured, no padding, no border, underlined on hover. On a card it
+               strips the card (it is later in the cascade than dnd.css) and underlines
+               both lines of the row. The data attribute is the behaviour. */ -}}
+        <button type="button" class="dnd-row" data-term="{{ .name | urlize }}" data-term-set="dnd-feats"
+                aria-expanded="false" aria-haspopup="dialog">
+          <span class="dnd-row__head">
+            <span class="dnd-row__name">{{ .name }}</span>
+            <span class="dnd-chip">{{ if eq .origin "homebrew" }}Homebrew{{ else }}PHB{{ end }}</span>
+          </span>
+          <span class="dnd-row__sum">{{ .summary }}</span>
+        </button>
+      </li>
+      {{- end }}
+    </ul>
+  </div>
+  <p class="dnd-empty" aria-live="polite" data-dnd-feats-empty hidden>No feat matches that.</p>
+</div>

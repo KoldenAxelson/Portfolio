@@ -17,6 +17,29 @@
   .aux-fab__btn { box-shadow: 0 6px 18px -8px rgb(0 0 0 / 0.6); }
   .aux-fab__btn:hover { box-shadow: 0 8px 22px -8px rgb(0 0 0 / 0.65); }
 }
+/* ── Sharing the corner with the AI chat button ──────────────────────────────
+   Every aux FAB is `fixed bottom-6 right-6 z-30`, and so is the AI widget's
+   trigger — which renders after them in baseof, wins the equal z-index, and takes
+   the click. That made the aux FAB unreachable on /cv, every Basic Logic chapter,
+   /misc/skyrim, /misc/dnd and every Dagea page, whenever the chat backend was up.
+
+   A GUARD, NOT A FIX, as of the chat's allow-list: data/site.yaml now offers the
+   chat on five pages and none of them has an aux FAB, so today the two never meet.
+   The rule stays because that is a fact about a list somebody will edit, and the
+   failure it prevents is silent — a button that is visible, looks fine, and does
+   nothing when clicked.
+
+   Both conditions are required. `data-ai-ok` is set on <html> by ts/ai-widget.ts
+   once its health check passes — the same signal base.css uses to reveal the chat
+   button — and `:has([data-ai-fab])` is what makes this fire only on a page that
+   actually renders the button, rather than on every page in a session where the
+   health check has been cached.
+
+   Unlayered, so it beats the Tailwind `bottom-6` utility in the markup without an
+   `!important` — Tailwind v4 puts utilities in @layer utilities and unlayered
+   declarations win over layered ones regardless of source order. */
+html[data-ai-ok]:has([data-ai-fab]) [data-aux-fab] { bottom: 5.25rem; }
+
 [data-aux-fab] > summary::-webkit-details-marker { display: none; }
 [data-aux-fab] > summary::marker { content: ""; }
 
@@ -83,9 +106,16 @@
 [data-aux-fab][open] .aux-fab__row:nth-child(4) { transition-delay: 0.09s; }
 [data-aux-fab][open] .aux-fab__row:nth-child(5) { transition-delay: 0.12s; }
 [data-aux-fab][open] .aux-fab__row:nth-child(6) { transition-delay: 0.15s; }
+[data-aux-fab][open] .aux-fab__row:nth-child(7) { transition-delay: 0.18s; }
+[data-aux-fab][open] .aux-fab__row:nth-child(8) { transition-delay: 0.21s; }
 .aux-fab__row:hover { background: rgb(var(--c-accent) / 0.1); color: rgb(var(--c-accent)); }
 .aux-fab__num { flex-shrink: 0; font: 600 0.7rem var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-muted)); width: 1.6rem; }
 .aux-fab__row:hover .aux-fab__num { color: rgb(var(--c-accent)); }
+/* An icon where chapter-select puts a number. Dagea's rows are places, not steps,
+   and numbering them would imply an order to visit them in. Same width as
+   .aux-fab__num so the two menus' labels line up at the same x. */
+.aux-fab__ico { flex-shrink: 0; width: 1rem; color: rgb(var(--c-muted)); }
+.aux-fab__row:hover .aux-fab__ico, .aux-fab__row--current .aux-fab__ico { color: rgb(var(--c-accent)); }
 .aux-fab__row--current { background: rgb(var(--c-accent) / 0.1); color: rgb(var(--c-accent)); font-weight: 600; cursor: default; }
 .aux-fab__row--current .aux-fab__num { color: rgb(var(--c-accent)); }
 .aux-fab__name { flex: 1; min-width: 0; }

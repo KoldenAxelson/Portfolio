@@ -1,0 +1,78 @@
+# ---------------------------------------------------------------------------
+# The feat list, as selected for the Dagean campaign.
+#
+# THIS IS AN ALLOW-LIST, NOT A REFERENCE. Only what is in this file is on the
+# table. Most of what lands here later will be custom; the four that seeded it
+# are stock ones that survived the cut.
+#
+#   origin  phb | homebrew — where the feat came from, shown as a chip.
+#   summary one line, and it does real work: it is the only thing visible in the
+#           list before you open a feat, and with fifty of these the list is how
+#           anyone finds anything. Say what the feat DOES, not what it is for.
+#   boost   the ability change, in a form the character-creation module can
+#           apply. `ability` for a fixed one, `choose: any` for a player pick.
+#           `doubles_for_mental: true` marks the ones the campaign's
+#           Intelligence/Wisdom/Charisma rule applies to. `asi` next to it is the
+#           same fact written for a human to read; both exist because the module
+#           needs to compute and the card needs to say.
+#   house   the campaign's edit to it, if any. Rendered as a callout under the
+#           benefits, never folded into them, so it stays obvious which half of
+#           the text is the book and which half is the table.
+#
+# Benefits are a list because they are read as a checklist at the table, not as
+# a paragraph. One benefit per bullet, in the order the book gives them.
+# ---------------------------------------------------------------------------
+
+feats:
+  - name: Heavy Armor Master
+    origin: phb
+    summary: Heavy armor shrugs off 3 damage from every nonmagical hit.
+    prerequisite: "proficiency with heavy armor"
+    asi: "+1 Strength (max 20)"
+    boost: { ability: str, amount: 1 }
+    benefits:
+      - "Increase your Strength score by 1, to a maximum of 20."
+      - >-
+        While you're wearing heavy armor, bludgeoning, piercing, and slashing
+        damage from nonmagical attacks is reduced by 3.
+
+  - name: Polearm Master
+    origin: phb
+    summary: A bonus-action butt-end attack, and reach weapons punish anyone who closes.
+    benefits:
+      - >-
+        When you take the Attack action and attack with only a glaive, halberd,
+        quarterstaff, or spear, you can use a bonus action to make a melee attack
+        with the opposite end of the weapon. It deals 1d4 bludgeoning damage and
+        uses the same ability modifier as the primary attack.
+      - >-
+        While you are wielding a glaive, halberd, pike, quarterstaff, or spear,
+        other creatures provoke an opportunity attack from you when they enter
+        your reach.
+
+  - name: Resilient
+    origin: phb
+    summary: Raise one ability and gain proficiency in its saving throws.
+    asi: "+1 to the chosen ability (max 20)"
+    boost: { choose: any, amount: 1, doubles_for_mental: true, grants_save: true }
+    benefits:
+      - "Choose one ability score. Increase it by 1, to a maximum of 20."
+      - "You gain proficiency in saving throws using the chosen ability."
+    house: >-
+      Campaign rule: a feat that would raise Intelligence, Wisdom, or Charisma by
+      1 raises it by 2 instead. Choosing one of those three here is worth double.
+
+  - name: Sentinel
+    origin: phb
+    summary: Opportunity attacks stop movement, ignore Disengage, and defend your allies.
+    benefits:
+      - >-
+        When you hit a creature with an opportunity attack, the creature's speed
+        becomes 0 for the rest of the turn.
+      - >-
+        Creatures provoke opportunity attacks from you even if they take the
+        Disengage action before leaving your reach.
+      - >-
+        When a creature within 5 feet of you makes an attack against a target
+        other than you — and that target doesn't have this feat — you can use your
+        reaction to make a melee weapon attack against the attacking creature.

@@ -1,7 +1,11 @@
 {{- /*
   ai-widget — "Ask about Konrad" chat. A lightweight, vanilla-JS chat panel
-  backed by the local-Ollama tunnel (see SPEC-ai-agent.md). Rendered on every
-  page except /cv (the include in baseof.html guards on RelPermalink).
+  backed by the local-Ollama tunnel (see SPEC-ai-agent.md).
+
+  OFF BY DEFAULT. It renders on the five pages listed in data/site.yaml under
+  `ai.pages` — home, the project and article and certificate directories, and
+  /about. baseof.html and partials/topnav.html both gate on
+  partials/func/ai-enabled.html; see that partial for why the list is an allow-list.
 
   Pieces:
     - Desktop trigger: a floating glass FAB (bottom-right), mirroring the site's

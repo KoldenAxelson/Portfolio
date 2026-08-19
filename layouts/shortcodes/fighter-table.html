@@ -1,0 +1,62 @@
+{{- /*
+  fighter-table — the Revised Fighter's twenty levels, from data/dnd/fighter.yaml.
+
+    {{< fighter-table >}}
+
+  EVERY FEATURE NAME IS A CLICK-THROUGH. The table used to sit above a grid of ten
+  always-open feature cards; the cards are gone and their text opens in a draggable
+  window instead (partials/dnd-popovers.html synthesises the set). So the table is
+  the whole Fighter section, and it is the index rather than a summary of one.
+
+  NO ROW HIGHLIGHTING. An earlier version put an accent rule on every row that
+  granted something other than an Ability Score Improvement — which meant the ASI
+  rows were the unmarked ones, seven gaps down a twenty-row table, and it read as
+  damage rather than as emphasis. Every row is now the same. The Features column is
+  the only thing that differs between rows, which is correct: it is the only thing
+  that does.
+
+  The Superiority Die column is COMPUTED. It steps at 2nd, 5th, 11th and 17th;
+  writing it out twenty times would be twenty chances for the table and the class
+  feature to disagree about when your d8 arrives.
+
+  A trailing "(2)" on a feature name is stripped before the popover lookup, so
+  "Extra Attack (2)" opens Extra Attack.
+*/ -}}
+{{- $f := site.Data.dnd.fighter -}}
+{{- /* name -> true, so a feature the popover set does not describe renders as
+       plain text rather than as a button that opens nothing. */ -}}
+{{- $described := dict -}}
+{{- range $f.features }}{{ $described = merge $described (dict .name true) }}{{ end -}}
+<div class="not-prose">
+<table class="dnd-table">
+  <caption class="dnd-table__cap">The Revised Fighter. Tap a feature to read it.</caption>
+  <thead>
+    <tr><th scope="col">Level</th><th scope="col">Prof.</th><th scope="col">Sup. Die</th><th scope="col">Features</th></tr>
+  </thead>
+  <tbody>
+    {{- range $f.table }}
+    {{- $level := .level -}}
+    {{- /* Largest step at or below this level; empty before 2nd. */ -}}
+    {{- $die := "" -}}
+    {{- range $f.superiority_die }}{{ if ge $level .level }}{{ $die = .die }}{{ end }}{{ end -}}
+    <tr>
+      <td>{{ .level }}</td>
+      <td>+{{ .pb }}</td>
+      <td>{{ with $die }}{{ . }}{{ else }}&mdash;{{ end }}</td>
+      <td>
+        {{- range $i, $name := .features -}}
+        {{- if $i }}, {{ end -}}
+        {{- $base := replaceRE ` \(\d+\)$` "" $name -}}
+        {{- if index $described $base -}}
+        <button type="button" class="term" data-term="{{ $base | urlize }}" data-term-set="dnd-features"
+                aria-expanded="false" aria-haspopup="dialog">{{ $name }}</button>
+        {{- else -}}
+        {{ $name }}
+        {{- end -}}
+        {{- end -}}
+      </td>
+    </tr>
+    {{- end }}
+  </tbody>
+</table>
+</div>

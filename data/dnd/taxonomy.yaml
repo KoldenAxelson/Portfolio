@@ -1,0 +1,34 @@
+# ---------------------------------------------------------------------------
+# The labels the maneuver picker filters by, and what each one means.
+#
+# Families are the only facet. There used to be a second one — `timings`, the
+# action economy — and it was removed because the family already says when: a
+# Stance is a bonus action, a Reflex is a reaction. The maneuvers that broke that
+# rule were moved into `other` instead of being described by a whole extra field
+# and a whole extra row of filter chips.
+#
+# Every family used by data/dnd/maneuvers.yaml must appear here or the shortcode
+# fails the build, which is the point: a typo'd family is a filter nobody can ever
+# click.
+# ---------------------------------------------------------------------------
+
+families:
+  strike:   { label: "Strike",   note: "Named for the hit it rides on." }
+  attack:   { label: "Attack",   note: "Usually forces a saving throw." }
+  maneuver: { label: "Maneuver", note: "Spend an attack to do something else with it." }
+  stance:   { label: "Stance",   note: "A bonus action that buys temp HP and a posture." }
+  reflex:   { label: "Reflex",   note: "Off-turn. Costs your reaction." }
+  prowess:  { label: "Prowess",  note: "Out of combat. Adds the die to a check." }
+  other:    { label: "Other",    note: "The catch-all. Anything whose name doesn't predict how it works." }
+
+tags:
+  damage:  "Damage"
+  control: "Control"
+  defense: "Defense"
+  support: "Support"
+  mobility: "Mobility"
+  utility: "Utility"
+  skill:   "Skill"
+  magic:   "Magic"
+  mounted: "Mounted"
+  ranged:  "Ranged"

@@ -1,0 +1,24 @@
+{{- /*
+  dnd-assets — ship dnd.css and the page bundle, once, on pages that use a
+  campaign widget. A page that never mentions the campaign downloads none of it.
+
+  CALLED FROM THE LAYOUT, NOT FROM THE SHORTCODES. See the long note in
+  partials/skyrim-assets.html for why: a `.Scratch`-guarded "have I emitted this
+  yet?" flag survives a dev-server rebuild while Hugo's shortcode cache does not
+  re-render the shortcodes that would have set it, so the page comes back
+  unstyled and inert with no error. Emitting from the layout has no flag to go
+  stale and no cache to fall out of.
+
+  Call with the page:                 {{ partial "dnd-assets.html" . }}
+  Style only (no behaviour needed):   {{ partial "dnd-assets.html" (dict "page" . "styleOnly" true) }}
+*/ -}}
+{{- $styleOnly := false -}}
+{{- if reflect.IsMap . -}}
+  {{- $styleOnly = .styleOnly -}}
+{{- end -}}
+{{- $css := resources.Get "css/dnd.css" | minify | fingerprint -}}
+<link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" />
+{{- if not $styleOnly -}}
+  {{- $js := resources.Get "scripts/pages/dnd/main.ts" | js.Build (dict "minify" true "target" "es2018" "format" "iife") | fingerprint -}}
+  <script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
+{{- end -}}

@@ -1,0 +1,55 @@
+{{- /*
+  fighting-styles — the eleven Fighting Styles, as a horizontal rail.
+
+    {{< fighting-styles >}}
+
+  A RAIL, NOT A GRID. Eleven cards in a three-column grid is four rows and about
+  1200px of page, for a decision you make once at 1st level. Sideways they cost one
+  card's height, and browsing them is a gesture rather than a scroll — which is
+  what they are: a set you look through, not a reference you return to.
+
+  THE PREVIEW IS CLAMPED AND THE CARD IS A TRIGGER. Great Weapon Fighting is eight
+  lines and Archery is three; unclamped, one style set the height of the whole rail
+  and the other ten sat over 200px of nothing. Four lines each, and the full text
+  opens in a window — the same move the level table and the feat list make, so
+  nothing on this page is both long and expanded.
+
+  Scroll-snap plus real arrow buttons (assets/scripts/pages/dnd/rail.ts). The
+  buttons ship `hidden` and the script reveals them, so with JavaScript off the rail
+  is still a plain scrollable row that works with a trackpad, a touch screen, and
+  the keyboard.
+
+  `grants` gets its own chip rather than being left inside the prose: Signature
+  Technique and Superior Technique are the only two places outside Combat
+  Superiority where a maneuver enters a character.
+*/ -}}
+{{- $styles := (index site.Data.dnd "fighting-styles").styles -}}
+<div class="dnd-rail not-prose" data-dnd-rail>
+  <div class="dnd-rail__head">
+    <p class="dnd-rail__count" data-dnd-rail-count aria-live="polite">{{ len $styles }} styles &middot; tap to read</p>
+    <span class="dnd-rail__nav" data-dnd-rail-nav hidden>
+      <button type="button" class="dnd-act dnd-rail__btn" data-dnd-rail-prev aria-label="Previous styles">&larr;</button>
+      <button type="button" class="dnd-act dnd-rail__btn" data-dnd-rail-next aria-label="More styles">&rarr;</button>
+    </span>
+  </div>
+  <ul class="dnd-rail__track" data-dnd-rail-track role="list">
+    {{- range $styles }}
+    <li>
+      {{- /* A <button>, so every child is phrasing content: a <p> in here closes the
+             button early and the text stops being clickable.
+
+             No `.term` class — both listeners bind on [data-term], and the class is
+             only the look of a linked word in prose. On a card it wins over
+             dnd.css (definitions.css ships after it) and strips the border,
+             background and padding right off. */ -}}
+      <button type="button" class="dnd-def dnd-rail__card" data-term="{{ .name | urlize }}"
+              data-term-set="dnd-styles" aria-expanded="false" aria-haspopup="dialog">
+        <span class="dnd-def__name">
+          {{ .name }}
+          {{- with .grants }}<span class="dnd-chip dnd-chip--level">+{{ . }} maneuver{{ if gt . 1 }}s{{ end }}</span>{{ end }}
+        </span>
+        <span class="dnd-def__text dnd-rail__clamp">{{ .text }}</span>
+      </button>
+    {{- end }}
+  </ul>
+</div>
