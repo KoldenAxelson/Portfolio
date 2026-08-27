@@ -49,8 +49,10 @@
 {{- /* _default/baseof.html */ -}}
 {{- $known = $known | append "container" "alpine" -}}
 
-{{- /* misc/list.html and misc/single.html */ -}}
-{{- $known = $known | append "blurb" "icon" "prose" "hidden" -}}
+{{- /* misc/list.html and misc/single.html. `youtube` is the source-video URL on
+       a misc page that is notes taken from one; list.html reads it as the flag
+       for the red corner mark on that page's card. */ -}}
+{{- $known = $known | append "blurb" "icon" "prose" "hidden" "youtube" -}}
 
 {{- /* partials/definitions-assets.html — which data/glossary/<set>.yaml a page
        ships, and (via shortcodes/term.html) which set a bare {{< term >}} call
