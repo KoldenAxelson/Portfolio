@@ -14,22 +14,29 @@
 {{- /* Two sources, one grid. The section's own pages, then `elsewhere:` entries
        from front matter — pages that belong on this shelf but live outside
        content/misc/ (/now, /uses) and keep their existing URLs. Normalised into
-       the same three fields here so the card markup and the search below don't
-       need to know which list an entry came from. */ -}}
+       the same four fields here so the card markup and the search below don't
+       need to know which list an entry came from.
+
+       `youtube` is the source-video URL on a page that is notes taken from one.
+       The card only ever asks whether it is set — the corner mark is a label for
+       what kind of page this is, not a second link out of the card (the card is
+       one <a>, and the video link belongs on the page itself). */ -}}
 {{- $cards := slice -}}
 {{- range where .Pages "Params.hidden" "!=" true -}}
   {{- $cards = $cards | append (dict
-      "label" .Title
-      "href"  .RelPermalink
-      "icon"  (.Params.icon | default "")
-      "blurb" (.Params.blurb | default .Description | default "")) -}}
+      "label"   .Title
+      "href"    .RelPermalink
+      "icon"    (.Params.icon | default "")
+      "blurb"   (.Params.blurb | default .Description | default "")
+      "youtube" (.Params.youtube | default "")) -}}
 {{- end -}}
 {{- range .Params.elsewhere -}}
   {{- $cards = $cards | append (dict
-      "label" .label
-      "href"  (partial "func/url.html" .href)
-      "icon"  (.icon | default "")
-      "blurb" (.blurb | default "")) -}}
+      "label"   .label
+      "href"    (partial "func/url.html" .href)
+      "icon"    (.icon | default "")
+      "blurb"   (.blurb | default "")
+      "youtube" (.youtube | default "")) -}}
 {{- end -}}
 
 {{- with $cards }}
@@ -54,14 +61,33 @@
   {{- range . }}
   {{- /* One lowercased haystack per card, built here rather than read back out
          of the DOM — the filter then never has to care how the card is marked up. */ -}}
-  <a href="{{ .href }}" data-misc-card data-misc-terms="{{ lower (printf "%s %s" .label .blurb) }}"
-    class="group block rounded-xl border border-border/70 p-5 no-underline transition-colors hover:border-accent/50 hover:bg-border/20">
+  {{- /* "youtube video" joins the haystack so typing either word filters the
+         grid down to the video notes — the corner mark is visible, so it should
+         be searchable by the thing it depicts. */ -}}
+  {{- $terms := printf "%s %s" .label .blurb -}}
+  {{- if .youtube }}{{ $terms = printf "%s youtube video" $terms }}{{ end -}}
+  {{- /* pb-11 rather than p-5's pb-5 on a marked card: the mark is absolutely
+         positioned, so without a reserved band the last line of a long blurb
+         runs underneath it. */ -}}
+  <a href="{{ .href }}" data-misc-card data-misc-terms="{{ lower $terms }}"
+    class="group relative block rounded-xl border border-border/70 p-5{{ if .youtube }} pb-11{{ end }} no-underline transition-colors hover:border-accent/50 hover:bg-border/20">
     <span class="flex items-center gap-2 text-fg">
       {{- with .icon }}{{ partial "func/svg-icon.html" (dict "name" . "class" "h-5 w-5 shrink-0 text-muted transition-colors group-hover:!text-accent") }}{{ end }}
       <span class="font-medium group-hover:!text-accent">{{ .label }}</span>
       <span aria-hidden="true" class="ml-auto inline-block text-muted transition-transform duration-200 ease-out group-hover:translate-x-0.5 group-hover:!text-accent">&rarr;</span>
     </span>
     {{- with .blurb }}<span class="mt-2 block text-sm leading-snug text-muted">{{ . }}</span>{{ end }}
+    {{- /* Corner mark. Brand red, not the accent token — this is the one place on
+           the site where the colour IS the information, and an accent-tinted
+           YouTube logo reads as a generic play button. Held at 70% so it sits
+           quietly in a grid of muted cards, and brought to full on hover with the
+           rest of the card. */ -}}
+    {{- if .youtube }}
+    <span class="pointer-events-none absolute bottom-4 right-5 text-[#FF0000] opacity-70 transition-opacity group-hover:opacity-100">
+      <span class="sr-only">Notes from a YouTube video</span>
+      {{ partial "func/svg-icon.html" (dict "name" "youtube" "class" "h-5 w-5") }}
+    </span>
+    {{- end }}
   </a>
   {{- end }}
 </section>

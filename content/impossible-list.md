@@ -9,7 +9,7 @@ groups:
   - label: "Build"
     items:
       - { text: "Ship a product to 10,000 paying users", done: false }
-      - { text: "Open-source a tool that someone I've never met depends on", done: true }
+      - { text: "Open-source a tool that someone I've never met depends on", done: false }
       - { text: "Get a Chrome extension through Google's review on the first pass", done: false }
       - { text: "Run a business that pays me while I sleep", done: true }
   - label: "Learn"
@@ -21,7 +21,7 @@ groups:
     items:
       - { text: "Visit all seven continents", done: false }
       - { text: "Learn to free-dive past 20 meters", done: false }
-      - { text: "Build something with my hands that outlives the warranty", done: true }
+      - { text: "Build something with my hands that outlives the warranty", done: false }
 # Games — a checklist (crossed out when 100%-ed). Completed entries carry a
 # rating (of 5), a blurb, and shot (PNG in assets/games/, optimized to WebP at
 # build); clicking one opens the drill-down modal. To-do entries are plain.
