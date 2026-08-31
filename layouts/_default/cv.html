@@ -2,7 +2,8 @@
 {{- $site := site.Data.site -}}
 {{- $author := $site.author -}}
 {{- $cv := site.Data.cv -}}
-{{- $active := (partial "func/active-certs.html" .).active -}}
+{{- $certSplit := partial "func/active-certs.html" . -}}
+{{- $active := $certSplit.active -}}
 
 <header class="mb-10 print:mb-6">
   <h1 class="text-4xl font-semibold tracking-tight sm:text-5xl">{{ $author.name }}</h1>
@@ -52,20 +53,30 @@
   <ul class="space-y-3">
     {{- range $cv.education }}
     <li>
-      <p class="font-medium">{{ .degree }} · <span class="text-muted">{{ .school }}</span> <span class="font-mono text-xs text-muted">({{ .year }})</span></p>
+      <p class="font-medium">{{ .degree }}{{ with .school }} · <span class="text-muted">{{ . }}</span>{{ end }}{{ with .year }} <span class="font-mono text-xs text-muted">({{ . }})</span>{{ end }}</p>
       {{- with .notes }}<p class="text-sm text-muted">{{ . }}</p>{{ end }}
     </li>
     {{- end }}
   </ul>
 </section>
 
-{{- with $active }}
+{{- if or $active $certSplit.expired }}
 <section id="certifications" class="mb-10 scroll-mt-24" aria-labelledby="certifications-heading">
   <h2 id="certifications-heading" class="mb-4 text-xl font-medium">Certifications</h2>
   <ul class="space-y-3">
-    {{- range . }}
+    {{- range $active }}
     <li class="print:break-inside-avoid">
       <p class="font-medium">{{ .name }} · <span class="text-muted">{{ .issuer }}</span> <span class="font-mono text-xs text-muted">({{ partial "formatted-date.html" (dict "date" .issueDate "precision" "month") }}{{ with .expirationDate }} – {{ partial "formatted-date.html" (dict "date" . "precision" "month") }}{{ end }})</span></p>
+      {{- with .skills }}<p class="text-sm text-muted">{{ delimit . " · " }}</p>{{ end }}
+    </li>
+    {{- end }}
+    {{- /* Lapsed certs stay on the CV deliberately: for government work the
+           signal is "held it before, will recertify on hire" — hiding it just
+           reads as never having had it. `cvNote` in the cert's data file
+           carries the honest status; absent one, the line says "expired". */ -}}
+    {{- range $certSplit.expired }}
+    <li class="print:break-inside-avoid">
+      <p class="font-medium">{{ .name }} · <span class="text-muted">{{ .issuer }}</span> <span class="font-mono text-xs text-muted">({{ partial "formatted-date.html" (dict "date" .issueDate "precision" "month") }}{{ with .expirationDate }} – {{ partial "formatted-date.html" (dict "date" . "precision" "month") }}{{ end }} · {{ .cvNote | default "expired" }})</span></p>
       {{- with .skills }}<p class="text-sm text-muted">{{ delimit . " · " }}</p>{{ end }}
     </li>
     {{- end }}

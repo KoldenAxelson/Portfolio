@@ -4,10 +4,19 @@
 {{- $recentRoles := first 3 $cv.experience -}}
 {{- $featured := first 4 (sort (where (where site.RegularPages "Section" "projects") "Params.featured" true) "Params.year" "desc") -}}
 {{- $recentPosts := first 5 (sort (where (where site.RegularPages "Section" "articles") "Params.draft" "!=" true) "Date" "desc") -}}
-{{- $activeCerts := (partial "func/active-certs.html" .).active -}}
+{{- $certSplit := partial "func/active-certs.html" . -}}
+{{- $activeCerts := $certSplit.active -}}
+{{- /* With no active certs, fall back to lapsed ones that carry a cvNote:
+       hiding Security+ entirely would dead-end the rail's Certifications
+       anchor and read as never having held it. The note keeps the row
+       honest — see the matching logic on /cv. */ -}}
+{{- $certPool := $activeCerts -}}
+{{- if not $certPool -}}
+  {{- range $certSplit.expired }}{{ if .cvNote }}{{ $certPool = $certPool | append . }}{{ end }}{{ end -}}
+{{- end -}}
 {{- $hasFeaturedCert := false -}}
-{{- range $activeCerts }}{{ if .featured }}{{ $hasFeaturedCert = true }}{{ end }}{{ end -}}
-{{- $featuredCerts := first 4 (cond $hasFeaturedCert (where $activeCerts "featured" true) $activeCerts) -}}
+{{- range $certPool }}{{ if .featured }}{{ $hasFeaturedCert = true }}{{ end }}{{ end -}}
+{{- $featuredCerts := first 4 (cond $hasFeaturedCert (where $certPool "featured" true) $certPool) -}}
 
 <section id="about" class="mb-24 scroll-mt-24 last:mb-0" aria-labelledby="about-heading">
   <h2 id="about-heading" class="sr-only">About</h2>
@@ -71,7 +80,7 @@
         {{ partial "cert-badge.html" (dict "badge" (.badge | default "") "alt" (printf "%s badge" .name) "size" "sm") }}
         <div class="min-w-0 flex-1">
           <p class="m-0 font-medium leading-snug text-fg group-hover/cert:!text-accent">{{ .name }}</p>
-          <p class="m-0 mt-0.5 text-xs text-muted">{{ .issuer }}<span class="ml-1 font-mono">· {{ partial "formatted-date.html" (dict "date" .issueDate) }}{{ with .expirationDate }} – {{ partial "formatted-date.html" (dict "date" .) }}{{ end }}</span></p>
+          <p class="m-0 mt-0.5 text-xs text-muted">{{ .issuer }}<span class="ml-1 font-mono">· {{ partial "formatted-date.html" (dict "date" .issueDate) }}{{ with .expirationDate }} – {{ partial "formatted-date.html" (dict "date" .) }}{{ end }}{{ with .cvNote }} · {{ . }}{{ end }}</span></p>
         </div>
       </a>
       <div class="absolute right-0 top-3">{{ partial "bio-indicator.html" (dict "messages" (.thoughts | default slice) "label" (printf "%s from %s" .name .issuer)) }}</div>

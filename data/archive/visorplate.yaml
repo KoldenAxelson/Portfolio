@@ -1,0 +1,6 @@
+title: 'VisorPlate'
+year: '2024–2026'
+reason: 'on hiatus'
+href: '/projects/visorplate'
+stack: ['Cloudflare Pages', 'Laravel', 'TypeScript']
+postmortem: "One-product store built to sell no-drill front-plate displays to dealerships in bulk. Built, shipped, and run solo — and it never closed a dealership. Parked in 2026 to put those hours into Widda, GrowGo, and the return to federal DevOps work; the product and the domain are still mine."

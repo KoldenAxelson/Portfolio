@@ -38,6 +38,6 @@ I'm a software engineer who turned into a professional problem-solver somewhere 
 
 The throughline is simple: I work best for the person in front of me. I build things I know will help my friends, because those problems are almost never unique to them. When I earn someone's appreciation, I keep that smile filed away — I replay it every time a Stripe notification tells me a new customer showed up.
 
-Right now the main engine is **VisorPlate**, though it doesn't ask for my around-the-clock attention anymore; I've automated most of it to run without my hand in the pot. That freed up room for the rest: I took a side-tangent, built this AI-SEO portfolio, turned the engine into an open template, and I'm seeing where that goes. **Widda** is in submission with Google right now — four to six weeks of waiting. Cost of doing business.
+The big swing of the last couple of years was **VisorPlate**; in 2026 I parked it on hiatus. That freed up room for the rest: I took a side-tangent, built this AI-SEO portfolio, turned the engine into an open template, and I'm seeing where that goes. **Widda** is in submission with Google right now — four to six weeks of waiting. Cost of doing business.
 
 If you want the version of me that changes week to week, the [Now](/now) page is the honest log. If you want to know what's on my machine and why, [Uses](/uses) covers it. The [Impossible List](/impossible-list) is the part that's a little harder to put on a résumé — the things I'm still chasing. And if you just want the formal story, the [CV](/cv) has dates and a download button.

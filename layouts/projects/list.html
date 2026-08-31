@@ -82,7 +82,14 @@
     {{- range . }}
     <li class="py-5">
       <header class="flex flex-wrap items-baseline justify-between gap-3">
+        {{- /* An archive entry with `href` keeps its write-up page (e.g. a
+               hiatus rather than a death) — link the title so the case study
+               isn't orphaned. Plain entries render exactly as before. */ -}}
+        {{- if .href }}
+        <h3 class="m-0 font-medium"><a href="{{ partial "func/url.html" .href }}" class="no-underline hover:!text-accent">{{ .title }}</a></h3>
+        {{- else }}
         <h3 class="m-0 font-medium">{{ .title }}</h3>
+        {{- end }}
         <span class="font-mono text-xs text-muted">{{ .year }} · {{ .reason | default "abandoned" }}</span>
       </header>
       <p class="mt-2 text-sm text-muted">{{ .postmortem }}</p>

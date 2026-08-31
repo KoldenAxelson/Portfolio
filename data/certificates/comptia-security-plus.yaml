@@ -3,6 +3,9 @@ issuer: 'CompTIA'
 issuerUrl: 'https://www.comptia.org/'
 issueDate: 2023-07-01
 expirationDate: 2026-07-01
+# Rendered on /cv in place of a bare "expired" — the honest status for a
+# lapsed cert that's coming back. See layouts/_default/cv.html.
+cvNote: 'lapsed — prepared to recertify on hire'
 credentialId: 'COMP001022308155'
 verifyUrl: 'https://www.certmetrics.com/comptia/public/verification.aspx'
 badge: '/badges/security-plus.png'
@@ -17,3 +20,4 @@ featured: true
 thoughts:
   - "Earned Security+ to put a credential behind the hardening work I was already doing daily."
   - "The exam is a mile wide and an inch deep, but that inch covers a lot of real ground."
+  - "Lapsed July 2026 — recertifying is the first order of business on my next contract."

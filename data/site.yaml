@@ -13,13 +13,13 @@ url: "https://wrightfunctions.com"
 title: "Konrad Wright"
 
 # Tagline / meta description. Keep under 160 chars.
-description: "Konrad Wright — software engineer: full-stack web, cloud (AWS, Cloudflare), and application security. Founder of VisorPlate & Widda."
+description: "Konrad Wright — senior DevOps engineer: secure AWS infrastructure, GitOps CI/CD, Kubernetes. Five years on federal systems. Founder of Widda & GrowGo."
 
 # Owner identity. Used in <Person> JSON-LD and across the site.
 author:
   name: "Konrad Wright"
   handle: "@KoldenAxelson"
-  role: "Lead Software Engineer"
+  role: "Senior DevOps Engineer"
   location: "Paso Robles, CA"
   email: "KonradWright@Protonmail.com"
   # Intentionally blank — phone is not listed publicly. (Templates guard on
@@ -29,16 +29,19 @@ author:
   bio: "I make specialized tools for people with problems, then I scale that solution to a magnitude of users."
   # Longer bio for the homepage hero, JSON-LD, and llms.txt.
   longBio: |
-    Welcome to my little corner of the internet! I'm **your local tech bro**. Growing up, I was always the one people came to with their computer problems, and eventually Uncle Sam asked the same. I work best for the person right in front of me: I solve their niche problem, scale that solution up for the public, and replay that smile whenever a *Stripe notification* lands.
+    Welcome to my little corner of the internet! I'm a **jack of all trades of the tech world** — fifteen-plus years across web, cloud, security, mobile, and product, comfortable anywhere in the stack. Range only matters if you can specialize on command, so here's the proof: I spent five of those years specialized all the way down, hardening and shipping federal systems on AWS as a DevOps engineer. Hand me an ambiguous problem and I'll take it to production; hand me the specialized seat and I'll own it.
 
-    Whether you're here to recruit, scope me out, or just see what I'm up to, this site has it all! I'm either working hard or hopelessly addicted to *Sudoku*.
+    These days I'm steering back toward government DevOps work. Whether you're here to recruit, scope me out, or just see what I'm up to, this site has it all! I'm either working hard or hopelessly addicted to *Sudoku*.
   # CV summary — a concise, professional bio for the /cv Summary section.
   cvBio: >
-    Lead software engineer with over fifteen years across web, automation, and
-    product. A cross-domain generalist, I turn ambiguous problems into
-    specialized tools and take them from concept to shipped, profitable product,
-    designing, engineering, and scaling each solution myself. I'm open to roles
-    where that range and end-to-end ownership matter.
+    Senior DevOps engineer with fifteen-plus years in software — five of them
+    building and securing AWS-hosted systems for federal government and
+    enterprise clients, largely on AWS GovCloud: GitOps CI/CD on GitLab and
+    ArgoCD, Kubernetes on Docker, and security remediation at scale (1,000+ Fortify findings
+    resolved), with STIG compliance training. Previously CompTIA Security+
+    certified (2023–2026) and prepared to recertify on hire. U.S. citizen; prior
+    DoD CAC holder on unclassified systems, eligible for reinvestigation. Open to
+    government DevOps roles where security and end-to-end ownership matter.
   # Public résumé downloads (rendered on /cv). Set either to "" to hide.
   resume:
     pdf: "/resume.pdf"
