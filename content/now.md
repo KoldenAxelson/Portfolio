@@ -12,7 +12,7 @@ blocks:
     items:
       - "GrowGo — my farmers-market app, back from the archive. The 2025 pitch got universal love and zero checks, so the 2026 version leads with a working thing instead: Flutter app on a Cloudflare Workers + D1 backend, Stripe and production hookups next. This time the demo does the talking."
       - "Widda.club — a monetization tool for YouTubers. Abandoned the original version in 2021 after Honey and Brave squashed the category; re-read case law and Amazon's Terms of Service and saw an opening. Building toward a clean Chrome Web Store launch."
-      - "VisorPlate — still running, still shipping. If you have a god-awful front-license-plate setup you want to retire, drop me a note. Send pics of the worst ones, they make me laugh."
+      - "VisorPlate — parked on hiatus. The storefront’s idle while Widda and GrowGo get those hours; the product and the domain aren’t going anywhere. (Pics of god-awful front-plate setups still make me laugh, though.)"
   - label: "Learning"
     items:
       - "How to get more eyes on the work I'm shipping. Eyeing a suite of tools for YouTube video production, but I'm holding off until I hit a good stopping point with current projects. Ship first, then promote."

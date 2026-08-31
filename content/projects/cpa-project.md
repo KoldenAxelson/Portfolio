@@ -1,11 +1,11 @@
 ---
 title: 'CPA Project'
 tier: 2
-summary: 'Security and reliability work on a government-facing system. Resolved 1,000+ Fortify-flagged vulnerabilities, then provided cross-team technical support across the stack.'
+summary: 'Two related contracts on government-facing systems: a legacy modernization with bi-weekly Fortify scans briefed to the team, and a maintenance line — vulnerability fixes and most of the DevOps work — on sub-five-developer teams.'
 tags: ['government', 'security', 'java']
 types: ['cloud', 'security']
 stack: ['Java', 'JavaScript', 'AWS', 'Fortify', 'Spring Boot', 'GitLab']
-role: 'Lead DevOps Engineer · UNCOMN LLC'
+role: 'DevOps Engineer · UNCOMN LLC'
 year: '2021–2023'
 status: 'shipped'
 thoughts:

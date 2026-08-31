@@ -5,6 +5,14 @@
 #
 # Edit THIS file. Don't duplicate the data into templates.
 # `skills` is a list (not a map) so category order is preserved.
+#
+# POSITIONING (2026 rework): aimed at government DevOps work. Titles are the
+# official ones only — no unofficial "Lead" anywhere; leadership shows up as
+# owned work in the bullets, not in role names. Wording mirrors what federal
+# DevOps postings actually ask for (GitOps CI/CD, Kubernetes, SAST/Fortify,
+# STIG), and claims nothing that isn't true: STIG is listed as training,
+# AWS is plain AWS (not GovCloud), and the lapsed Security+ lives in
+# data/certificates/ with an honest cvNote, not here.
 # ---------------------------------------------------------------------------
 
 experience:
@@ -14,12 +22,11 @@ experience:
     start: "2025"
     end: "present"
     startDate: "2025-02-01"
-    summary: "Independent engineering across owned products, contract work, and self-funded experiments. Operating at the level the Government work prepared me for — without the formal level structure to label it."
+    summary: "Independent engineering across owned products, contract work, and self-funded experiments."
     highlights:
-      - "Founder of VisorPlate (visorplate-us.com): one-product e-commerce store selling no-drill front-license-plate display solutions to car dealerships in bulk for white-label resale. Built from scratch; migrated from Laravel to Cloudflare Pages."
-      - "Building Widda (widda.club): a monetization tool for YouTubers that lifts affiliate-link conversion."
-      - "Delivered a contract website for YouTube studio BigHammerGarage (bighammergarage.com), launching this month."
-      - "Pitched a farmers-market application for VC funding; pitch failed, but the process was the lesson."
+      - "Built bighammergarage.com from scratch for a YouTube studio's merch store — every tool the client needs and none they don't, roughly two dozen shirt-and-hat sales to date, hosted for $12/year with no Shopify subscription to manage."
+      - "Shipped GrowGo's working prototype — a farmers-market marketplace on Flutter and Cloudflare Workers + D1 — after pitching it for VC funding in 2025."
+      - "Took Widda (widda.club), a monetization tool for YouTubers, through Chrome Web Store submission with a small launch team."
       - "Built a Discord community and a custom bot using game-design principles — group accountability with a \"casino points\" carrot-and-stick loop."
     stack: ["Cloudflare Pages", "TypeScript", "Laravel", "Astro", "Discord API"]
     thoughts:
@@ -27,20 +34,21 @@ experience:
       - "A VC pitch that failed taught me more than a funded one would have."
       - "Turns out the government years had quietly been training me to run solo."
 
-  - role: "Lead DevOps Engineer"
+  - role: "DevOps Engineer"
     employer: "UNCOMN LLC"
     location: "Remote"
     start: "2020"
-    end: "2025"
+    end: "2024"
     startDate: "2020-01-01"
-    endDate: "2025-01-31"
-    summary: "Five-year span building secure, AWS-hosted systems for government and enterprise clients. Owned CI/CD, infrastructure hardening, and security review across multiple production projects in parallel."
+    endDate: "2024-11-01"
+    summary: "Five years building and securing AWS-hosted systems — largely on AWS GovCloud — for federal government and enterprise clients. Owned Fortify/SAST security remediation and CI/CD across successive production contracts. Left when the contract concluded — UNCOMN had no other remote seats open, and relocating to the St. Louis office wasn't in the cards."
     highlights:
-      - "Resolved 1,000+ Fortify-flagged security vulnerabilities on the CPA project — hardened application integrity end-to-end."
-      - "Scripted and deployed the AWS Lambda + API Gateway layer that became the team pattern for Java/JavaScript services on Docker/Kubernetes."
-      - "Built GitOps CI/CD on GitLab + ArgoCD, retiring the prior Jenkins-only pipeline."
-      - "Ran code reviews, security reviews, and agile coordination with leadership and external clients."
-    stack: ["AWS", "Java", "Python", "Kubernetes", "GitLab", "Fortify"]
+      - "Resolved 1,000+ Fortify-flagged (SAST) security vulnerabilities, owning security remediation across five years of federal contracts — on CPA, ran bi-weekly Fortify scans and briefed findings through a legacy-modernization effort."
+      - "Built GitOps CI/CD on GitLab + ArgoCD on AWS GovCloud, retiring the prior Jenkins-only pipeline — recovered roughly one developer-day per two-week sprint and cut pipeline-environment issues in half."
+      - "Scripted and deployed the AWS Lambda + API Gateway layer behind 50+ automated jobs — the team pattern for Java/JavaScript services on Docker/Kubernetes, supporting systems used across US military bases, including every US installation in South Korea."
+      - "Ramped from junior hire to owning contract security work within six months, closing sprint work at roughly 6x peer rate (by Jira task points) on ICODES — a 30–40-developer ship and aircraft load-planning platform."
+      - "Performed code and security reviews, coordinated agile delivery with external client stakeholders, and completed STIG (Security Technical Implementation Guide) compliance training."
+    stack: ["AWS GovCloud", "Kubernetes", "Docker", "GitLab", "ArgoCD", "Fortify", "Java", "Python"]
     thoughts:
       - "Five years of locked-down government infra is where I learned to do it right the first time."
       - "Retiring a Jenkins-only pipeline for GitOps was the most satisfying delete of my career."
@@ -71,7 +79,7 @@ experience:
     endDate: "2018-01-31"
     summary: "Database and data-visualization engineer for retail clients, primarily on BevMo's point-of-sale systems."
     highlights:
-      - "Built an internal app that automated data charting for the BevMo team — eliminated a manual reporting workflow."
+      - "Charted point-of-sale data BevMo hadn't been able to visualize; the holiday stocking decisions it guided saved the client a few million dollars in one season."
       - "Designed user-friendly visualizations of complex POS data to support decision-making."
       - "Transitioned to consultancy at the end of the contract to support long-term client relationships."
     stack: ["SQL", "JavaScript", "Data Visualization"]
@@ -98,18 +106,29 @@ experience:
       - "Building EEG training games in Unity taught me the brain is the strangest API there is."
       - "Gave conference talks before I felt ready. You never feel ready."
 
+# Education is deliberately minimal: no degree, and no pretending otherwise.
+# Federal DevOps hiring runs on experience + certs + eligibility, so the CV
+# leads with those; the diploma line is here because contracts often list it
+# as the literal minimum requirement. Empty school/year fields render nothing
+# (layouts/_default/cv.html guards them).
 education:
   - school: "Cuesta College"
     degree: "General College Coursework"
     year: ""
     notes: "San Luis Obispo, CA"
+  - school: ""
+    degree: "High School Diploma"
+    year: ""
+    notes: ""
 
 skills:
+  - category: "Cloud & Infrastructure"
+    items: ["AWS (GovCloud, Lambda, API Gateway)", "Docker", "Kubernetes", "Cloudflare"]
+  - category: "CI/CD & Delivery"
+    items: ["GitLab CI/CD", "ArgoCD (GitOps)", "Agile / Scrum"]
+  - category: "Security & Compliance"
+    items: ["Fortify (SAST) remediation", "STIG compliance (trained)", "Security review", "Incident response"]
   - category: "Languages"
-    items: ["Go", "TypeScript", "Python", "Java", "JavaScript", "Rust", "PHP", "Swift", "Ruby", "SQL"]
-  - category: "Cloud & Infra"
-    items: ["AWS", "Cloudflare", "Docker", "Kubernetes", "GitLab", "ArgoCD", "Fortify"]
+    items: ["Python", "Java", "JavaScript", "TypeScript", "Go", "SQL", "Ruby", "Swift", "Rust", "PHP"]
   - category: "Web"
     items: ["React", "Tailwind", "Laravel", "HTML", "CSS", "Full-Stack Development"]
-  - category: "Practices"
-    items: ["Mentorship", "Public Speaking", "Agile / Scrum", "Security", "Incident Response"]

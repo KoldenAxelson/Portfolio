@@ -97,7 +97,7 @@ tools that are actually used, not portfolio props.
 
 ## Brand Commitments
 
-- **Name and identity:** Konrad Wright, `@KoldenAxelson`, Lead Software Engineer,
+- **Name and identity:** Konrad Wright, `@KoldenAxelson`, Senior DevOps Engineer,
   Paso Robles, CA. Canonical domain `wrightfunctions.com`.
 - **Voice:** first-person, warm, self-deprecating, unpolished on purpose — "your
   local tech bro," "I'm either working hard or hopelessly addicted to Sudoku."

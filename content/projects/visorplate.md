@@ -1,17 +1,17 @@
 ---
 title: 'VisorPlate'
-tier: 1
-summary: 'Legally compliant, no-drill front-license-plate display for nice cars. Sold in bulk to car dealerships for white-label resale.'
+tier: 3
+summary: 'Legally compliant, no-drill front-license-plate display for nice cars, built to sell in bulk to car dealerships for white-label resale. It never closed a dealership.'
 tags: ['ecommerce', 'product', 'cloudflare']
 types: ['web']
 stack: ['Cloudflare Pages', 'Laravel', 'TypeScript']
 role: 'Founder · designer · engineer · salesperson'
-year: '2024–present'
-status: 'shipped'
+year: '2024–2026'
+status: 'on hiatus'
 links:
   live: 'https://visorplate-us.com/'
 cover: '/covers/visorplate.webp'
-featured: true
+featured: false
 thoughts:
   - "Don't overcomplicate things with Laravel when Cloudflare Pages does it just as well for free."
   - 'Learned that car salesmen are really easy to talk to. They also like making money.'

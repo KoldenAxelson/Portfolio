@@ -15,9 +15,14 @@
 
 {{- $alumni := slice -}}
 {{- range $cv.education -}}
-  {{- $e := dict "@type" "EducationalOrganization" "name" .school -}}
-  {{- if .notes }}{{ $e = merge $e (dict "description" (printf "%s (%s). %s" .degree .year .notes)) }}{{ end -}}
-  {{- $alumni = $alumni | append $e -}}
+  {{- if .school -}}
+    {{- $e := dict "@type" "EducationalOrganization" "name" .school -}}
+    {{- $desc := .degree -}}
+    {{- with .year }}{{ $desc = printf "%s (%s)" $desc . }}{{ end -}}
+    {{- with .notes }}{{ $desc = printf "%s. %s" $desc . }}{{ end -}}
+    {{- $e = merge $e (dict "description" $desc) -}}
+    {{- $alumni = $alumni | append $e -}}
+  {{- end -}}
 {{- end -}}
 
 {{- $worksFor := slice -}}
