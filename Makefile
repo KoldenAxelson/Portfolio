@@ -9,12 +9,21 @@ TAILWIND_VERSION := v4.3.0
 # GitHub releases yet, so the binary is pulled from its official npm-registry
 # tarball via curl — no npm CLI, no node_modules. This is a TS7 preview build.
 TSGO_VERSION     := 7.0.0-dev.20260527.2
+# Phaser powers the Digital Pet Place game (/games/digital-pet-place). The
+# runtime is vendored + committed at static/vendor/phaser/$(PHASER_VERSION)/ (the
+# arcade-physics build — no Matter — since that's all the game needs). Its type
+# declarations are 8 MB of generated .d.ts, so they are fetched into ./bin like
+# tsgo is, not committed: `make typecheck` pulls them from the same pinned npm
+# tarball the runtime came from. Bump both together.
+PHASER_VERSION   := 4.2.1
 
 BIN      := bin
 HUGO     := $(BIN)/hugo
 TAILWIND := $(BIN)/tailwindcss
 TSGO_DIR := $(BIN)/tsgo-dist
 TSGO     := $(TSGO_DIR)/tsgo
+PHASER_TYPES_DIR := $(BIN)/phaser-types
+PHASER_TYPES     := $(PHASER_TYPES_DIR)/phaser.d.ts
 
 CSS_IN   := assets/css/main.css
 CSS_OUT  := assets/css/app.css
@@ -134,7 +143,16 @@ build: $(HUGO) $(TAILWIND) ## Production build to ./public
 	@$(TAILWIND) -i $(CSS_IN) -o $(CSS_OUT) --minify
 	@$(HUGO) --minify
 
-typecheck: $(TSGO) ## Type-check the TypeScript with tsgo (no emit)
+# Phaser's phaser.d.ts + matter.d.ts (the former references the latter), pulled
+# out of the pinned npm tarball. tsconfig.json includes bin/phaser-types/*.d.ts.
+$(PHASER_TYPES):
+	@mkdir -p $(PHASER_TYPES_DIR)
+	@echo "Downloading Phaser $(PHASER_VERSION) type declarations…"
+	@curl -fsSL "https://registry.npmjs.org/phaser/-/phaser-$(PHASER_VERSION).tgz" \
+	  | tar -xz -C $(PHASER_TYPES_DIR) --strip-components=2 package/types/phaser.d.ts package/types/matter.d.ts
+	@echo "Phaser types ready in $(PHASER_TYPES_DIR)"
+
+typecheck: $(TSGO) $(PHASER_TYPES) ## Type-check the TypeScript with tsgo (no emit)
 	@$(TSGO) --noEmit -p tsconfig.json
 	@echo "Type-check passed."
 

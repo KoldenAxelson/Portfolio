@@ -1,0 +1,58 @@
+{{- /*
+  Standalone game document for content/games/<game>/. Deliberately NOT built
+  on baseof.html: no nav, no htmx, no Tailwind, no site bundle — a full page of
+  its own that the project page loads in a lazy iframe (partials/game-embed.html)
+  and that also works opened directly at /games/<game>/.
+
+  Why a separate document (see docs/microgames.md): the iframe isolates the game
+  from hx-boost body swaps (fresh document per load, no leaked state, no
+  double-initialised loops) and from Tailwind's preflight, and none of Phaser's
+  ~300 KB is fetched by the host page until the visitor opts in.
+
+  Phaser is vendored, pinned, and served from /static — never a CDN. Bump the
+  version here and PHASER_VERSION in the Makefile together.
+*/ -}}
+{{- partial "func/front-matter.html" . -}}
+{{- $phaser := "/vendor/phaser/4.2.1/phaser-arcade-physics.min.js" -}}
+{{- $opts := dict "minify" true "target" "es2018" "format" "iife" -}}
+{{- $game := resources.Get (printf "scripts/pages/%s/main.ts" .File.ContentBaseName) | js.Build $opts | fingerprint -}}
+<!doctype html>
+<html lang="{{ site.Data.site.locale | default `en-US` }}">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="robots" content="noindex" />
+    <title>{{ .Title }}</title>
+    <meta name="description" content="{{ .Params.description }}" />
+    <link rel="icon" type="image/svg+xml" href="{{ partial "func/url.html" "/favicon.svg" }}" />
+    <meta name="theme-color" content="#0b1020" />
+    <style>
+      /* Inter is the site's face; the canvas text uses it too (main.ts waits
+         for the load). Same file the host page already has cached. */
+      @font-face {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 100 900;
+        font-display: swap;
+        src: url('{{ partial "func/url.html" "/fonts/InterVariable.woff2" }}') format('woff2');
+      }
+      html, body { margin: 0; height: 100%; background: #0b1020; overflow: hidden; }
+      body { touch-action: none; -webkit-user-select: none; user-select: none; }
+      #game { width: 100%; height: 100%; }
+      #game canvas { display: block; }
+      /* Until Phaser paints: a quiet title so the poster→iframe swap isn't a
+         black flash. Removed by the first frame (the canvas covers it). */
+      #splash {
+        position: absolute; inset: 0; display: grid; place-items: center;
+        color: #aab2e6; font: 500 15px/1.4 Inter, system-ui, sans-serif;
+        pointer-events: none;
+      }
+    </style>
+    <script defer src="{{ partial "func/url.html" $phaser }}"></script>
+    <script defer src="{{ $game.RelPermalink }}" integrity="{{ $game.Data.Integrity }}"></script>
+  </head>
+  <body>
+    <div id="splash" aria-hidden="true">Loading the garden…</div>
+    <div id="game"></div>
+  </body>
+</html>
