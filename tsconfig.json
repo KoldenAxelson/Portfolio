@@ -14,5 +14,9 @@
     "verbatimModuleSyntax": true,
     "noEmit": true
   },
-  "include": ["assets/scripts/site/**/*.ts", "assets/scripts/pages/**/*.ts"]
+  "include": [
+    "assets/scripts/site/**/*.ts",
+    "assets/scripts/pages/**/*.ts",
+    "bin/phaser-types/*.d.ts"
+  ]
 }

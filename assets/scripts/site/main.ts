@@ -16,6 +16,7 @@ import { initQuotes } from './quotes/index';
 import { initAncestryGlobe } from './ancestry-globe';
 import { initDageaGlobe } from './dagea-globe';
 import { initVault } from './vault';
+import { initGameEmbed } from './game-embed';
 
 declare global {
   interface Window {
@@ -46,6 +47,7 @@ function initPage(): void {
   initAncestryGlobe();
   initDageaGlobe();
   initVault();
+  initGameEmbed();
 }
 
 function ready(fn: () => void): void {

@@ -1,0 +1,46 @@
+{{- /*
+  game-embed — click-to-play iframe for a standalone game page (see
+  docs/microgames.md). Renders the poster + a Play button; the site bundle
+  (scripts/site/game-embed.ts) swaps in a lazy <iframe> on click. Until then
+  the host page has fetched nothing of the game: no Phaser, no bundle.
+
+  CLS stays at 0 because the wrapper carries the game's aspect ratio and the
+  poster is stamped with its dimensions, so the box is sized before anything
+  loads and the iframe drops into exactly that box.
+
+  Dict params:
+    src    — the standalone page, e.g. "/games/digital-pet-place/" (required)
+    title  — accessible name for the iframe / poster alt (required)
+    cover  — poster path as written in front matter, e.g. "/covers/foo.webp";
+             resolved through func/cover.html (assets/ source, build-time webp)
+    ratio  — CSS aspect-ratio, default "4 / 3"
+    width  — poster width in px at 1×, default 960 (height follows the ratio)
+*/ -}}
+{{- $src := .src -}}
+{{- $title := .title -}}
+{{- $ratio := .ratio | default "4 / 3" -}}
+{{- $w := int (.width | default 960) -}}
+{{- $h := int (div (mul $w 3) 4) -}}
+{{- $c := partial "func/cover.html" (dict "path" .cover "width" $w "height" $h "fit" true "q" 82) -}}
+<div
+  data-game-embed
+  data-src="{{ partial "func/url.html" $src }}"
+  data-title="{{ $title }}"
+  class="group relative w-full overflow-hidden rounded-lg border border-border bg-[#0b1020]"
+  style="aspect-ratio: {{ $ratio | safeCSS }};"
+>
+  {{- with $c.src }}
+  <img src="{{ . }}"{{ with $c.srcset }} srcset="{{ . }}"{{ end }} width="{{ $w }}" height="{{ $h }}" alt="{{ $title }} — tap to play" loading="lazy" decoding="async" class="pointer-events-none absolute inset-0 h-full w-full object-cover" />
+  {{- end }}
+  <button
+    type="button"
+    data-game-play
+    class="absolute inset-0 flex h-full w-full cursor-pointer items-center justify-center bg-black/10 transition hover:bg-black/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+    aria-label="Play {{ $title }}"
+  >
+    <span class="flex items-center gap-2 rounded-full border border-white/30 bg-black/60 px-6 py-3 font-mono text-sm text-white shadow-lg backdrop-blur transition group-hover:scale-105">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="h-4 w-4"><path d="M8 5.14v13.72a1 1 0 0 0 1.5.86l11-6.86a1 1 0 0 0 0-1.72l-11-6.86A1 1 0 0 0 8 5.14Z" /></svg>
+      Play
+    </span>
+  </button>
+</div>
