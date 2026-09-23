@@ -1,0 +1,134 @@
+// One direction of a separable 9-tap Gaussian. `texelStep` is one texel along
+// the direction being blurred, so the same shader does both passes.
+FS_IN vec2 fragTexCoord;
+FS_IN vec4 fragColor;
+
+uniform sampler2D texture0;
+uniform vec2 texelStep;
+
+void main() {
+    vec3 sum = TEXTURE_2D(texture0, fragTexCoord).rgb * 0.227027;
+    sum += TEXTURE_2D(texture0, fragTexCoord + texelStep * 1.384615).rgb * 0.316216;
+    sum += TEXTURE_2D(texture0, fragTexCoord - texelStep * 1.384615).rgb * 0.316216;
+    sum += TEXTURE_2D(texture0, fragTexCoord + texelStep * 3.230769).rgb * 0.070270;
+    sum += TEXTURE_2D(texture0, fragTexCoord - texelStep * 3.230769).rgb * 0.070270;
+    FRAG_COLOR = vec4(sum, 1.0);
+}
+// Bloom bright pass: keeps what glows. Everything above `threshold` in
+// luminance passes, softened over `knee` so edges do not pop.
+FS_IN vec2 fragTexCoord;
+FS_IN vec4 fragColor;
+
+uniform sampler2D texture0;
+uniform float threshold;
+uniform float knee;
+
+void main() {
+    vec4 color = TEXTURE_2D(texture0, fragTexCoord);
+    float lum = dot(color.rgb, vec3(0.299, 0.587, 0.114));
+    float pass = smoothstep(threshold, threshold + knee, lum);
+    FRAG_COLOR = vec4(color.rgb * pass, 1.0);
+}
+// Anti-aliased world-space grid on the XZ plane: thin minor lines every cell,
+// brighter major lines every `majorEvery` cells, fading out with distance so
+// the horizon dissolves into space instead of aliasing.
+FS_IN vec3 fragPosition;
+FS_IN vec4 fragColor;
+
+uniform float cellSize;
+uniform float majorEvery;
+uniform float lineWidth;
+uniform vec3  cameraPosition;
+uniform float fadeDistance;
+uniform vec4  minorColor;
+uniform vec4  majorColor;
+
+float lineCoverage(vec2 p, float spacing, float widthPx) {
+    vec2 texelWorld = fwidth(p);
+    vec2 halfWidth  = widthPx * 0.5 * texelWorld;
+    vec2 aa         = max(texelWorld * 0.75, vec2(0.0001));
+    vec2 toLine     = abs(mod(p + spacing * 0.5, spacing) - spacing * 0.5);
+    vec2 coverage   = 1.0 - smoothstep(halfWidth - aa, halfWidth + aa, toLine);
+    return max(coverage.x, coverage.y);
+}
+
+void main() {
+    vec2 p = fragPosition.xz;
+
+    float minor = lineCoverage(p, cellSize, lineWidth);
+    float major = lineCoverage(p, cellSize * majorEvery, lineWidth * 1.5);
+
+    float distance = length(fragPosition - cameraPosition);
+    float fade = 1.0 - smoothstep(fadeDistance * 0.5, fadeDistance, distance);
+
+    vec4 color = mix(vec4(0.0), minorColor, minor);
+    color = mix(color, majorColor, major);
+
+    FRAG_COLOR = vec4(color.rgb * fade, color.a * fade) * fragColor;
+}
+// Passes world-space position through so the fragment shader can draw an
+// infinite grid. Geometry reaches this shader through raylib's batch, which
+// applies the model transform on the CPU, so vertexPosition is already world.
+VS_IN vec3 vertexPosition;
+VS_IN vec4 vertexColor;
+
+uniform mat4 mvp;
+
+VS_OUT vec3 fragPosition;
+VS_OUT vec4 fragColor;
+
+void main() {
+    fragPosition = vertexPosition;
+    fragColor    = vertexColor;
+    gl_Position  = mvp * vec4(vertexPosition, 1.0);
+}
+// The screen pass: scene plus two bloom levels, a touch of barrel
+// distortion and chromatic spread at the edges, a vignette, and dither so
+// the dark gradients do not band. The tron look, lit.
+FS_IN vec2 fragTexCoord;
+FS_IN vec4 fragColor;
+
+uniform sampler2D texture0;   // the scene
+uniform sampler2D bloomNear;  // quarter-res blur
+uniform sampler2D bloomFar;   // eighth-res blur
+uniform vec2  resolution;
+uniform float bloomStrength;
+uniform float barrel;
+uniform float vignette;
+uniform float aberration;
+
+float hash(vec2 p) {
+    return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
+}
+
+vec2 distort(vec2 uv, float k) {
+    vec2 centered = uv * 2.0 - 1.0;
+    float r2 = dot(centered, centered);
+    centered *= 1.0 + k * r2;
+    return centered * 0.5 + 0.5;
+}
+
+void main() {
+    vec2 uv = distort(fragTexCoord, barrel);
+    if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) {
+        FRAG_COLOR = vec4(0.0, 0.0, 0.0, 1.0);
+        return;
+    }
+
+    // Slight color spread that grows toward the edge.
+    vec2 toEdge = (uv - 0.5) * aberration;
+    float r = TEXTURE_2D(texture0, uv + toEdge).r;
+    float g = TEXTURE_2D(texture0, uv).g;
+    float b = TEXTURE_2D(texture0, uv - toEdge).b;
+    vec3 scene = vec3(r, g, b);
+
+    vec3 glow = TEXTURE_2D(bloomNear, uv).rgb * 0.65 + TEXTURE_2D(bloomFar, uv).rgb * 0.55;
+    vec3 color = scene + glow * bloomStrength;
+
+    vec2 centered = uv * 2.0 - 1.0;
+    float edge = dot(centered, centered);
+    color *= 1.0 - vignette * edge * edge;
+
+    color += (hash(fragTexCoord * resolution) - 0.5) / 255.0;
+    FRAG_COLOR = vec4(color, 1.0);
+}

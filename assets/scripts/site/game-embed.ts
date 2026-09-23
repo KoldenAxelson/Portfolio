@@ -5,9 +5,11 @@
 
 const BOUND = 'gameEmbedBound';
 
-function mountGame(box: HTMLElement): void {
+function mountGame(box: HTMLElement): HTMLIFrameElement | null {
+  const mounted = box.querySelector('iframe');
+  if (mounted) return mounted;
   const src = box.dataset.src;
-  if (!src) return;
+  if (!src) return null;
   const frame = document.createElement('iframe');
   frame.src = src;
   frame.title = box.dataset.title || 'Game';
@@ -23,6 +25,22 @@ function mountGame(box: HTMLElement): void {
     box.querySelector('img')?.remove();
     frame.focus();
   });
+  return frame;
+}
+
+// Fullscreen goes on the embed box rather than the iframe, so the UA's
+// :fullscreen rules size the box and the game letterboxes inside it. Mounting
+// first means the button also works before Play was ever clicked. Focus goes
+// to the frame either way: keyboard games only see keys while they hold it.
+function fullscreenGame(box: HTMLElement): void {
+  const frame = mountGame(box);
+  if (!frame) return;
+  const focusFrame = () => frame.focus();
+  if (!document.fullscreenEnabled) {
+    focusFrame();
+    return;
+  }
+  box.requestFullscreen().then(focusFrame, focusFrame);
 }
 
 export function initGameEmbed(): void {
@@ -30,5 +48,14 @@ export function initGameEmbed(): void {
     if (box.dataset[BOUND]) return;
     box.dataset[BOUND] = '1';
     box.querySelector('[data-game-play]')?.addEventListener('click', () => mountGame(box), { once: true });
+  });
+  // A [data-game-fullscreen] button anywhere inside a [data-game-frame]
+  // wrapper drives the embed box in that wrapper.
+  document.querySelectorAll<HTMLElement>('[data-game-fullscreen]').forEach((button) => {
+    if (button.dataset[BOUND]) return;
+    button.dataset[BOUND] = '1';
+    const box = button.closest<HTMLElement>('[data-game-frame]')?.querySelector<HTMLElement>('[data-game-embed]');
+    if (!box) return;
+    button.addEventListener('click', () => fullscreenGame(box));
   });
 }

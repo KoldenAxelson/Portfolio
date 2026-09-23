@@ -46,6 +46,24 @@ static/vendor/phaser/<version>/…        the runtime
 The standalone page must work opened directly, not only in the iframe — it is
 linked as "Open full page" from the project page.
 
+A game built outside this repo (SpaceScape: Odin + raylib → emscripten) skips
+the `content/games/` pair and lands as static files in `static/games/<game>/`
+(committed like the other wasm pieces, so `make build` needs no Odin or emsdk;
+`make spacescape` rebuilds them). Same `/games/<game>/` URL, same
+`_headers` rule, same embed.
+
+## Keyboard games and fullscreen
+
+Space and the arrow keys page-scroll whatever document holds focus, so a
+keyboard game must `preventDefault()` them in its own document and take focus
+on load and on click (SpaceScape's `web/shell.html` does both). The embed
+focuses the iframe once it loads. A project layout can add a
+`<button data-game-fullscreen>` inside a `data-game-frame` wrapper around the
+embed; `game-embed.ts` mounts the game if needed, fullscreens the embed box
+(the UA `:fullscreen` rules size it, the game letterboxes inside) and focuses
+the frame. Note ESC leaves browser fullscreen; a game that binds ESC can
+`navigator.keyboard.lock(['Escape'])` while fullscreen where supported.
+
 ## Why an iframe, and what that required
 
 The project page fetches nothing of the game until the visitor clicks Play: the
