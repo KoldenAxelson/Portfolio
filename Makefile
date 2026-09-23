@@ -38,6 +38,9 @@ CSS_OUT  := assets/css/app.css
 # three things: the .wasm, assets/vendor/odin.js, and assets/img/verdant/sprites/.
 SPINMASTERS_DIR ?= ../Playgrounds/Rust/spinmasters
 VERDANT_DIR     ?= ../Micro/Portfolio/verdant
+# SpaceScape (Odin + raylib → emscripten) publishes itself: its own Makefile
+# builds the wasm and copies index.{html,js,wasm,data} into static/games/spacescape/.
+SPACESCAPE_DIR  ?= ../Playgrounds/Odin/SpaceScape
 
 # AI chat proxy (Go, stdlib-only — see docs/ai-tunnel.md). The binary is built
 # into its own dir and is gitignored; never commit it.
@@ -52,7 +55,7 @@ AI_PORT      := 6573    # localhost-only proxy port (ASCII "AI" = 65,73). Must
 # `?=` means an AI_MODEL from the environment wins and skips this detection.
 AI_MODEL     ?= $(shell command -v ollama >/dev/null 2>&1 && ollama list 2>/dev/null | awk 'NR==2 {print $$1}')
 
-.PHONY: help setup dev build css css-watch typecheck clean distclean ai-proxy ai-proxy-run ai-proxy-stop spinmasters verdant games
+.PHONY: help setup dev build css css-watch typecheck clean distclean ai-proxy ai-proxy-run ai-proxy-stop spinmasters verdant spacescape games
 
 help: ## Show this help
 	@echo "Portfolio — available commands:"
@@ -174,7 +177,14 @@ verdant: ## Rebuild the Verdant wasm + odin.js + sprites from its repo into asse
 	@echo "Building Verdant wasm from $(VERDANT_DIR)…"
 	@cd "$(VERDANT_DIR)" && bash scripts/build-web.sh "$(CURDIR)"
 
-games: spinmasters verdant ## Rebuild every wasm piece (SpinMasters + Verdant)
+spacescape: ## Rebuild the SpaceScape web build from its repo into static/games/spacescape/
+	@command -v odin >/dev/null 2>&1 || { echo "Odin not found on PATH — install from https://odin-lang.org" >&2; exit 1; }
+	@command -v emcc >/dev/null 2>&1 || { echo "emcc not found on PATH — install emsdk and source emsdk_env.sh" >&2; exit 1; }
+	@[ -d "$(SPACESCAPE_DIR)" ] || { echo "SpaceScape repo not found at $(SPACESCAPE_DIR) — override: make spacescape SPACESCAPE_DIR=/path/to/SpaceScape" >&2; exit 1; }
+	@echo "Building SpaceScape web build from $(SPACESCAPE_DIR)…"
+	@$(MAKE) -C "$(SPACESCAPE_DIR)" publish PORTFOLIO_DIR="$(CURDIR)"
+
+games: spinmasters verdant spacescape ## Rebuild every wasm piece (SpinMasters + Verdant + SpaceScape)
 
 # --- AI chat proxy ----------------------------------------------------------
 
