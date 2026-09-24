@@ -55,7 +55,7 @@ AI_PORT      := 6573    # localhost-only proxy port (ASCII "AI" = 65,73). Must
 # `?=` means an AI_MODEL from the environment wins and skips this detection.
 AI_MODEL     ?= $(shell command -v ollama >/dev/null 2>&1 && ollama list 2>/dev/null | awk 'NR==2 {print $$1}')
 
-.PHONY: help setup dev build css css-watch typecheck clean distclean ai-proxy ai-proxy-run ai-proxy-stop spinmasters verdant spacescape games
+.PHONY: help setup dev build css css-watch typecheck clean distclean ai-proxy ai-proxy-run ai-proxy-stop spinmasters verdant spacescape games seal
 
 help: ## Show this help
 	@echo "Portfolio — available commands:"
@@ -210,6 +210,28 @@ ai-proxy-stop: ## Stop all running ai-proxy instances (started by ai-proxy-run)
 	  echo "No running ai-proxy found."; \
 	  echo "If :$(AI_PORT) is still busy, another app holds it — check: lsof -nP -i :$(AI_PORT)"; \
 	fi
+
+# --- Passcode vault ---------------------------------------------------------
+# Pages under {{< vault name=… >}} never ship readable: the HTML is sealed with
+# AES-GCM into static/vault/<NAME>.json (scripts/vault-seal.go, stdlib-only)
+# and opened in the browser by assets/scripts/site/vault.ts. Re-run whenever
+# the source page changes — the site serves the sealed file, not the source,
+# so an edited source with a stale seal is invisible until re-sealed.
+# Defaults cover the GrowGo pitch; override NAME/IN for another page.
+#
+#   make seal                                   # prompts for the passcode
+#   VAULT_CODE=4769 make seal                   # non-interactive
+#   make seal NAME=foo IN=path/to/page.html     # another vault
+VAULT_NAME ?= growgo
+VAULT_IN   ?= ../GrowGo/pitch/web/index.html
+NAME       ?= $(VAULT_NAME)
+IN         ?= $(VAULT_IN)
+
+seal: ## Seal a page into static/vault/<NAME>.json (NAME=growgo IN=…; passcode via $VAULT_CODE or prompt)
+	@command -v go >/dev/null 2>&1 || { echo "Go not found on PATH — install from https://go.dev/dl/" >&2; exit 1; }
+	@[ -f "$(IN)" ] || { echo "Source page not found: $(IN) (set IN=path/to/page.html)" >&2; exit 1; }
+	@go run scripts/vault-seal.go -in "$(IN)" -out "static/vault/$(NAME).json"
+	@echo "Now rebuild (make build / make dev) and commit static/vault/$(NAME).json."
 
 clean: ## Remove build artifacts (public/, resources/, generated CSS, proxy binary)
 	@rm -rf public resources $(CSS_OUT) $(AI_PROXY_BIN)
