@@ -1,0 +1,17 @@
+{{- /*
+  ml-cost — monthly inference bill, with quantize + batch.
+
+    {{< ml-cost >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml-demos-assets.html (css/ml-demos.css, scripts/pages/ml/).
+  Element ids are fixed, so use each demo at most once per page.
+*/ -}}
+<div class="not-prose mli-demo" id="mli-cost">
+<div class="mli-demo-label">Live · what an answer costs</div>
+<div class="mli-row"><label>Requests / day: <span class="mli-val" id="mli-cost-reqv"></span></label><input class="mli-range" id="mli-cost-req" type="range" min="1000" max="2000000" step="1000" value="200000" aria-label="Requests per day" /></div>
+<div class="mli-row"><label>Tokens / request: <span class="mli-val" id="mli-cost-tokv"></span></label><input class="mli-range" id="mli-cost-tok" type="range" min="50" max="2000" step="50" value="500" aria-label="Tokens per request" /></div>
+<div class="mli-controls"><label class="mli-toggle"><input type="checkbox" id="mli-cost-opt" /> Optimized (quantize + batch)</label></div>
+<div class="mli-cost" id="mli-cost-out"></div>
+<div class="mli-caption" id="mli-cost-cap"></div>
+</div>

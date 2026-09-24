@@ -1,0 +1,16 @@
+{{- /*
+  ml-rag — retrieval-augmented generation vs. guessing.
+
+    {{< ml-rag >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml-demos-assets.html (css/ml-demos.css, scripts/pages/ml/).
+  Element ids are fixed, so use each demo at most once per page.
+*/ -}}
+<div class="not-prose mli-demo" id="mli-rag">
+<div class="mli-demo-label">Live · retrieval-augmented generation</div>
+<div class="mli-rag-qs" id="mli-rag-qs"></div>
+<div class="mli-rag-kb" id="mli-rag-kb"></div>
+<div class="mli-rag-ans" id="mli-rag-ans"></div>
+<div class="mli-caption">The retrieval is real: every document is ranked by how well it matches your question (watch the relevance bars), and the top one is handed to the model. The answers are illustrative, but the contrast is exact: with no retrieval the model guesses; with it, it answers from the document.</div>
+</div>

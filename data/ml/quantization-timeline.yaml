@@ -1,0 +1,173 @@
+# Quantization timeline — the milestones behind the {{< ml-timeline >}} strip in
+# content/articles/quantization-living-history.md. One entry per dot, oldest
+# first. The article's prose tells the story; this file holds the facts.
+#
+#   date     display date (month + year of the first public release)
+#   title    short name, shown on the dot's card
+#   bits     the bit width it's about, as shown on the card's tag
+#   what     what changed, one sentence
+#   why      why it mattered, one sentence
+#   source   link text + url: the original paper or announcement
+#   anchor   optional id of the article section that tells this part
+#
+# Living article: when adding an entry, also add its paragraph, rewrite "Where
+# it stands now", bump updatedDate and add a changelog line in the post.
+
+- date: Oct 2015
+  title: Deep Compression
+  bits: "32 → ~5"
+  what: Pruning, then rounding the survivors to about 5 bits, shrank image models 35 to 49 times.
+  why: AlexNet went from 240 MB to 6.9 MB, small enough to ship inside a phone app.
+  source: { text: "Han, Mao & Dally, arXiv", url: "https://arxiv.org/abs/1510.00149" }
+  anchor: before-chatbots-squeezing-models-onto-phones
+
+- date: Dec 2017
+  title: Integer-only inference
+  bits: "8"
+  what: Google ran whole networks in 8-bit whole numbers on ordinary phone CPUs.
+  why: It became the scheme TensorFlow Lite uses, and made int8 the default for small devices.
+  source: { text: "Jacob et al., arXiv", url: "https://arxiv.org/abs/1712.05877" }
+  anchor: before-chatbots-squeezing-models-onto-phones
+
+- date: May 2020
+  title: GPT-3
+  bits: "16"
+  what: A language model with 175 billion weights.
+  why: At 16 bits that's 350 GB just to hold it, several data-center GPUs before it says a word.
+  source: { text: "Brown et al., arXiv", url: "https://arxiv.org/abs/2005.14165" }
+
+- date: Mar 2022
+  title: FP8 in hardware
+  bits: "8"
+  what: NVIDIA announced the H100, with 8-bit floating point built into the chip.
+  why: The first time a mainstream data-center GPU treated 8-bit as a first-class format.
+  source: { text: "NVIDIA newsroom", url: "https://nvidianews.nvidia.com/news/nvidia-announces-hopper-architecture-the-next-generation-of-accelerated-computing" }
+  anchor: the-chips-catch-up
+
+- date: Aug 2022
+  title: LLM.int8()
+  bits: "8"
+  what: A 175-billion-weight model ran in 8-bit with no loss in accuracy.
+  why: It found the outliers that break naive rounding, and kept them in 16-bit.
+  source: { text: "Dettmers et al., arXiv", url: "https://arxiv.org/abs/2208.07339" }
+  anchor: 8-bits-and-nothing-lost
+
+- date: Oct 2022
+  title: GPTQ
+  bits: "3–4"
+  what: Rounded a 175-billion-weight model to 3 or 4 bits in about four GPU hours.
+  why: A model that needed a rack could now run on a single GPU.
+  source: { text: "Frantar et al., arXiv", url: "https://arxiv.org/abs/2210.17323" }
+  anchor: down-to-4-bits-after-the-fact
+
+- date: Nov 2022
+  title: SmoothQuant
+  bits: "8 + 8"
+  what: Brought the numbers flowing through the model down to 8-bit too, not only the weights.
+  why: Up to 1.56× faster and half the memory, with the accuracy intact.
+  source: { text: "Xiao et al., arXiv", url: "https://arxiv.org/abs/2211.10438" }
+  anchor: 8-bits-and-nothing-lost
+
+- date: Mar 2023
+  title: llama.cpp
+  bits: "4"
+  what: One developer's plain C/C++ program ran Meta's LLaMA on a laptop CPU.
+  why: Local AI stopped needing a data center, or even a graphics card.
+  source: { text: "ggml-org/llama.cpp, first commit", url: "https://github.com/ggml-org/llama.cpp/commit/26c084662903ddaca19bef982831bfb0856e8257" }
+  anchor: a-model-on-your-laptop
+
+- date: May 2023
+  title: QLoRA
+  bits: "4"
+  what: Fine-tuned a 65-billion-weight model on one 48 GB GPU by keeping it frozen in 4-bit.
+  why: Customizing a big model went from a cluster job to a one-GPU, one-day job.
+  source: { text: "Dettmers et al., arXiv", url: "https://arxiv.org/abs/2305.14314" }
+  anchor: teaching-a-squeezed-model-new-tricks
+
+- date: Jun 2023
+  title: AWQ
+  bits: "4"
+  what: Found that protecting about 1% of the weights keeps a 4-bit model accurate.
+  why: A simple, fast recipe that became standard, and won Best Paper at MLSys 2024.
+  source: { text: "Lin et al., arXiv", url: "https://arxiv.org/abs/2306.00978" }
+  anchor: down-to-4-bits-after-the-fact
+
+- date: Aug 2023
+  title: GGUF
+  bits: "any"
+  what: llama.cpp switched to GGUF, one file holding a quantized model and everything needed to run it.
+  why: It's the format most people download when they run a model at home.
+  source: { text: "llama.cpp PR #2398", url: "https://github.com/ggml-org/llama.cpp/pull/2398" }
+  anchor: a-model-on-your-laptop
+
+- date: Oct 2023
+  title: BitNet
+  bits: "1"
+  what: Trained a language model from scratch with 1-bit weights.
+  why: Flipped the question from "how much can we round off?" to "what if it starts small?"
+  source: { text: "Wang et al., arXiv", url: "https://arxiv.org/abs/2310.11453" }
+  anchor: starting-small-158-bits
+
+- date: Feb 2024
+  title: BitNet b1.58
+  bits: "1.58"
+  what: Weights of only −1, 0 or +1, trained in, matching full-precision models of the same size.
+  why: Multiplying by −1, 0 or +1 is just adding, which is far cheaper in energy.
+  source: { text: "Ma et al., arXiv", url: "https://arxiv.org/abs/2402.17764" }
+  anchor: starting-small-158-bits
+
+- date: Mar 2024
+  title: FP4 in hardware
+  bits: "4"
+  what: NVIDIA's Blackwell GPUs added 4-bit floating point for running models.
+  why: 4-bit went from a software trick to something the silicon does natively.
+  source: { text: "NVIDIA newsroom", url: "https://nvidianews.nvidia.com/news/nvidia-blackwell-platform-arrives-to-power-a-new-era-of-computing" }
+  anchor: the-chips-catch-up
+
+- date: Dec 2024
+  title: DeepSeek-V3
+  bits: "8"
+  what: A 671-billion-weight model trained largely in FP8.
+  why: Showed low precision works for training at the very largest scale, not only for serving.
+  source: { text: "DeepSeek-AI, arXiv", url: "https://arxiv.org/abs/2412.19437" }
+  anchor: the-chips-catch-up
+
+- date: Apr 2025
+  title: BitNet b1.58 2B4T
+  bits: "1.58"
+  what: Microsoft released open weights for a 2-billion-weight ternary model trained on 4 trillion tokens.
+  why: The first 1.58-bit model anyone could download and run.
+  source: { text: "Ma et al., arXiv", url: "https://arxiv.org/abs/2504.12285" }
+  anchor: starting-small-158-bits
+
+- date: Aug 2025
+  title: gpt-oss
+  bits: "4"
+  what: OpenAI released open-weight models shipped in 4-bit MXFP4 from day one.
+  why: The 120B model fits one 80 GB GPU, and the 20B runs in 16 GB of memory.
+  source: { text: "OpenAI", url: "https://openai.com/index/introducing-gpt-oss/" }
+  anchor: the-chips-catch-up
+
+- date: Sep 2025
+  title: 4-bit pretraining
+  bits: "4"
+  what: NVIDIA trained a 12-billion-weight model on 10 trillion tokens in NVFP4.
+  why: It matched the 8-bit baseline, the longest public 4-bit training run to date.
+  source: { text: "NVIDIA, arXiv", url: "https://arxiv.org/abs/2509.25149" }
+  anchor: the-chips-catch-up
+
+- date: Mar 2026
+  title: 1-bit Bonsai
+  bits: "1"
+  what: PrismML released 1-bit models up to 8 billion weights, the largest at 1.15 GB.
+  why: A billions-of-weights model that fits in a phone's memory with room to spare (performance claims are the maker's own).
+  source: { text: "PrismML", url: "https://prismml.com/news/bonsai-8b" }
+  anchor: starting-small-158-bits
+
+- date: Sep 2026
+  title: Jev
+  bits: "—"
+  what: TypeSafe AI launched a "decision model" that returns odds over answers you define instead of writing text.
+  why: A different route to cheap, by generating almost nothing instead of storing less.
+  source: { text: "TypeSafe AI", url: "https://typesafe.ai/blog/introducing-system-one-models-and-jev" }
+  anchor: a-different-road-to-cheap

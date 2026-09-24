@@ -22,6 +22,9 @@
 //   figure: { kind: warning }
 //   figure: { kind: evaluate, mode: validity | soundness | strength | cogency }
 //   figure: { kind: expository, glyph: eye }
+//   figure: { kind: levels, levels: 16, label: "4 bits · 16 steps" }
+//   figure: { kind: levels, levels: 16, mode: float, label: "…" }
+//   figure: { kind: levels, cycle: ["256", "16", "3"] }
 //
 // Animations are driven from here rather than from CSS keyframes because each
 // one needs a sequence, and a sequence in keyframes means one @keyframes block
@@ -46,6 +49,8 @@ export interface Figure {
   conclusion?: string;
   target?: number;
   threshold?: number;
+  levels?: number;
+  label?: string;
 }
 
 const NS = 'http://www.w3.org/2000/svg';
@@ -1410,6 +1415,116 @@ function pipeline(ringSpec: RingSpec | null): HTMLElement {
   return wrap;
 }
 
+/* ── levels ───────────────────────────────────────────────────────────────
+   A ruler with as many marks as the format has values. A true value (ring)
+   wanders along it and the stored value (dot) snaps to the nearest mark; the
+   red gap between them is the rounding error. Shared by every precision term,
+   so the only thing that changes from entry to entry is how many marks there
+   are and how they're spaced. */
+
+const LEVELS_MS = 1700;
+const LEVELS_SETTLE_MS = 620;
+const LEVELS_CYCLE_HOLD = 3; // wanders per bit width before the cycle moves on
+const MAX_DRAWN_MARKS = 33; // past this the marks blur into a solid bar anyway
+// Every non-negative value FP4 (E2M1) can hold. Drawn from the real table so the
+// crowding near zero is the format's, not an illustration of it.
+const FP4_MAGNITUDES = [0, 0.5, 1, 1.5, 2, 3, 4, 6];
+const RULER = { left: 14, right: 186, y: 20 };
+
+function evenMarks(count: number): number[] {
+  const drawn = Math.min(count, MAX_DRAWN_MARKS);
+  return Array.from({ length: drawn }, (_, i) => i / (drawn - 1));
+}
+
+// Floating point spaces its values closer together near zero. Squaring an even
+// spread reproduces that shape for the wide formats.
+function floatMarks(count: number): number[] {
+  if (count === 16) {
+    const top = FP4_MAGNITUDES[FP4_MAGNITUDES.length - 1]!;
+    const halves = FP4_MAGNITUDES.map((m) => m / top);
+    return [...halves.slice(1).reverse().map((m) => -m), ...halves].map((v) => (v + 1) / 2);
+  }
+  return evenMarks(count).map((t) => {
+    const centred = t * 2 - 1;
+    return (Math.sign(centred) * centred * centred + 1) / 2;
+  });
+}
+
+const toX = (fraction: number): number => RULER.left + fraction * (RULER.right - RULER.left);
+
+function nearestMark(marks: number[], value: number): number {
+  return marks.reduce((best, mark) => (Math.abs(mark - value) < Math.abs(best - value) ? mark : best));
+}
+
+function levelsLabel(count: number): string {
+  if (count === 3) return '3 values: −1, 0, +1';
+  const bits = Math.log2(count);
+  return `${bits} bit${bits === 1 ? '' : 's'} · ${count.toLocaleString()} values`;
+}
+
+function levels(counts: number[], isFloat: boolean, label: string | undefined): HTMLElement {
+  const wrap = document.createElement('figure');
+  wrap.className = 'def-fig def-fig--levels';
+  const canvas = figureCanvas(200, 52, 'fig-lv',
+    'A ruler of allowed values. A true value lands between marks and is stored as the nearest one; the gap is the rounding error.');
+
+  const axis = svg('line');
+  attrs(axis, { x1: RULER.left, y1: RULER.y, x2: RULER.right, y2: RULER.y });
+  axis.setAttribute('class', 'fig-lv__axis');
+  const marksGroup = svg('g');
+  const error = svg('line');
+  error.setAttribute('class', 'fig-lv__err');
+  const truth = svg('circle');
+  attrs(truth, { cx: 0, cy: RULER.y, r: 4.5 });
+  truth.setAttribute('class', 'fig-lv__true');
+  const stored = svg('circle');
+  attrs(stored, { cx: 0, cy: RULER.y, r: 3.2 });
+  stored.setAttribute('class', 'fig-lv__snap');
+  const caption = centredLabel(100, 42, 'fig-lv__label', '');
+  canvas.append(axis, marksGroup, error, truth, stored, caption);
+  wrap.appendChild(canvas);
+
+  let marks: number[] = [];
+  const drawMarks = (count: number): void => {
+    marks = isFloat ? floatMarks(count) : evenMarks(count);
+    marksGroup.replaceChildren(...marks.map((mark) => {
+      const tick = svg('line');
+      attrs(tick, { x1: toX(mark), y1: RULER.y - 5, x2: toX(mark), y2: RULER.y + 5 });
+      tick.setAttribute('class', 'fig-lv__mark');
+      return tick;
+    }));
+    caption.textContent = label ?? levelsLabel(count);
+  };
+
+  const placeValue = (value: number): void => {
+    const trueX = toX(value);
+    const storedX = toX(nearestMark(marks, value));
+    truth.style.transform = `translateX(${trueX}px)`;
+    stored.style.transform = `translateX(${storedX}px)`;
+    attrs(error, { x1: trueX, y1: RULER.y, x2: storedX, y2: RULER.y });
+    // The gap is drawn where the dots are heading, so it stays hidden until
+    // they arrive rather than flashing at the destination mid-move.
+    error.classList.remove('is-shown');
+    window.setTimeout(() => error.classList.add('is-shown'), reduceMotion() ? 0 : LEVELS_SETTLE_MS);
+  };
+
+  // Offsets chosen to land between marks at every bit width, so the gap shows.
+  const wanderStops = [0.37, 0.71, 0.18, 0.56, 0.87];
+  drawMarks(counts[0]!);
+  placeValue(wanderStops[0]!);
+  if (reduceMotion()) return wrap;
+
+  whileMounted(canvas, LEVELS_MS, (tick) => {
+    const step = tick + 1;
+    if (counts.length > 1 && step % LEVELS_CYCLE_HOLD === 0) {
+      drawMarks(counts[(step / LEVELS_CYCLE_HOLD) % counts.length]!);
+    }
+    placeValue(wanderStops[step % wanderStops.length]!);
+    return LEVELS_MS;
+  });
+  return wrap;
+}
+
 export function renderFigure(figure: Figure): HTMLElement | null {
   switch (figure.kind) {
     case 'argument-map':
@@ -1450,6 +1565,10 @@ export function renderFigure(figure: Figure): HTMLElement | null {
           ? { target: figure.target ?? 60, threshold: figure.threshold ?? 51 }
           : null,
       );
+    case 'levels': {
+      const counts = figure.cycle?.map(Number).filter((n) => n > 1) ?? [figure.levels ?? 16];
+      return counts.length ? levels(counts, figure.mode === 'float', figure.label) : null;
+    }
     default:
       return null;
   }

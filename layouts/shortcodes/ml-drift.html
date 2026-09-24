@@ -1,0 +1,15 @@
+{{- /*
+  ml-drift — accuracy drifting down, with optional auto-retrain.
+
+    {{< ml-drift >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml-demos-assets.html (css/ml-demos.css, scripts/pages/ml/).
+  Element ids are fixed, so use each demo at most once per page.
+*/ -}}
+<div class="not-prose mli-demo" id="mli-drift">
+<div class="mli-demo-label">Live · a model drifting in production</div>
+<canvas id="mli-drift-cvs" class="mli-drift-cvs" aria-label="Model accuracy over time: it drifts downward, and with monitoring on it retrains when it crosses the threshold"></canvas>
+<div class="mli-controls"><label class="mli-toggle"><input type="checkbox" id="mli-drift-mon" checked /> Monitoring &amp; auto-retrain</label></div>
+<div class="mli-caption" id="mli-drift-cap"></div>
+</div>

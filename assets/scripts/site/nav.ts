@@ -216,7 +216,7 @@ function wireNavElements(): void {
     host,
   );
 
-  // Glossary terms on Basic Logic pages. Desktop opens a draggable window per
+  // Glossary terms, on any page that uses one. Desktop opens a draggable window per
   // term (definitions.ts); here one definition shows at a time and a
   // cross-reference tapped inside it replaces the panel's contents. The fill is
   // shared with the desktop windows (glossary.ts) so the two cannot drift apart.

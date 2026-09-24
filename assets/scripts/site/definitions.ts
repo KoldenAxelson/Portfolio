@@ -91,14 +91,20 @@ function markTriggers(key: string, expanded: boolean): void {
   }
 }
 
+// The word the reader actually clicked, so closing hands focus back to that
+// instance rather than the term's first appearance on the page.
+const openers = new WeakMap<HTMLElement, HTMLElement>();
+
 function closeWindow(win: HTMLElement, restoreFocus = false): void {
   const key = win.dataset.defKey ?? '';
   openWindows.delete(key);
   markTriggers(key, false);
   win.remove();
-  if (restoreFocus) {
-    document.querySelector<HTMLElement>(`[data-term="${key}"]`)?.focus();
-  }
+  if (!restoreFocus) return;
+  const opener = openers.get(win);
+  // preventScroll: closing a window must never move the reader's place, even
+  // when the opener has since scrolled out of view.
+  if (opener?.isConnected) opener.focus({ preventScroll: true });
 }
 
 function wireDrag(win: HTMLElement, handle: HTMLElement): void {
@@ -164,7 +170,7 @@ function ensureContainer(): HTMLElement {
     }
     const ref = target.closest<HTMLElement>('[data-term-ref]');
     if (ref?.dataset.termRef) {
-      openDefinition(ref.dataset.termRef, win.dataset.defSet ?? DEFAULT_SET, anchorFrom(e, ref));
+      openDefinition(ref.dataset.termRef, win.dataset.defSet ?? DEFAULT_SET, anchorFrom(e, ref), ref);
     }
   });
 
@@ -177,13 +183,14 @@ function ensureContainer(): HTMLElement {
   return root;
 }
 
-function openDefinition(key: string, set: string, at: Anchor): void {
+function openDefinition(key: string, set: string, at: Anchor, opener: HTMLElement): void {
   const entry = lookup(set, key);
   if (!entry) return;
 
   const already = openWindows.get(key);
   if (already) {
     raise(already);
+    openers.set(already, opener);
     already.focus({ preventScroll: true });
     return;
   }
@@ -193,6 +200,7 @@ function openDefinition(key: string, set: string, at: Anchor): void {
   win.className = 'def-win';
   win.dataset.defKey = key;
   win.dataset.defSet = set;
+  openers.set(win, opener);
   win.tabIndex = -1;
   win.setAttribute('role', 'dialog');
   win.setAttribute('aria-label', `Definition: ${entry.term}`);
@@ -249,7 +257,7 @@ export function initDefinitions(): void {
       if (!window.matchMedia(DESKTOP).matches) return; // mobile → top-nav panel
       e.preventDefault();
       const key = el.dataset.term;
-      if (key) openDefinition(key, el.dataset.termSet ?? DEFAULT_SET, anchorFrom(e, el));
+      if (key) openDefinition(key, el.dataset.termSet ?? DEFAULT_SET, anchorFrom(e, el), el);
     });
   }
 

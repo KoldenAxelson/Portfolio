@@ -11,7 +11,7 @@ status: 'shipped'
 links:
   live: 'https://koldenaxelson.github.io/neofolio/'
   repo: 'https://github.com/KoldenAxelson/neofolio'
-featured: true
+featured: false
 thoughts:
   - "Betting on AI-readability felt ridiculous when I started. It's already paying off."
   - "Rebuilding it from Astro and Vue to a Node-free Hugo stack forced me to justify every decision."
