@@ -1,0 +1,28 @@
+{{- /*
+  ml-timeline — the quantization timeline: one dot per milestone, opening its card.
+
+    {{< ml-timeline >}}
+
+  Markup only, built from data/ml/quantization-timeline.yaml (add milestones
+  there). Styles and behaviour ship once per page from
+  partials/ml-demos-assets.html. With JavaScript off every card shows as a list;
+  the script hides all but the chosen one and reveals the dot strip.
+*/ -}}
+{{- $entries := index site.Data.ml "quantization-timeline" -}}
+<div class="not-prose mli-demo mli-tl" id="mli-tl">
+<div class="mli-demo-label">Live · {{ len $entries }} milestones, oldest first</div>
+<div class="mli-tl-strip" id="mli-tl-strip" role="group" aria-label="Milestones" hidden>
+{{- $lastYear := "" -}}
+{{- range $i, $e := $entries -}}
+{{- $year := index (split $e.date " ") 1 -}}
+<button class="mli-tl-dot" type="button" data-index="{{ $i }}" aria-label="{{ $e.date }}: {{ $e.title }}"><span class="mli-tl-pip"></span><span class="mli-tl-year">{{ if ne $year $lastYear }}{{ $year }}{{ end }}</span></button>
+{{- $lastYear = $year -}}
+{{- end -}}
+</div>
+<div class="mli-tl-cards" id="mli-tl-cards" aria-live="polite">
+{{- range $i, $e := $entries }}
+<article class="mli-tl-card"><div class="mli-cite-top"><span class="mli-cite-tag">{{ $e.bits }}{{ if not (in (slice "any" "—") $e.bits) }} bit{{ if ne $e.bits "1" }}s{{ end }}{{ end }}</span><span class="mli-cite-num">{{ $e.date }}</span></div><div class="mli-cite-title">{{ $e.title }}</div><p class="mli-cite-note">{{ $e.what }}</p><p class="mli-cite-note mli-tl-why"><b>Why it mattered:</b> {{ $e.why }}</p><div class="mli-cite-meta"><a href="{{ $e.source.url }}">{{ $e.source.text }}</a>{{ with $e.anchor }} · <a href="#{{ . }}">in the story&nbsp;&darr;</a>{{ end }}</div></article>
+{{- end }}
+</div>
+<div class="mli-mo-nav" id="mli-tl-nav" hidden><button class="mli-mo-btn" id="mli-tl-prev" type="button" aria-label="Earlier milestone">&lsaquo;</button><span class="mli-cite-num" id="mli-tl-count"></span><button class="mli-mo-btn" id="mli-tl-next" type="button" aria-label="Later milestone">&rsaquo;</button></div>
+</div>

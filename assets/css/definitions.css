@@ -501,6 +501,22 @@
    the resting border and its label never gives way to a checkmark. */
 .fig-step--ring .fig-step__check { display: none; }
 
+/* levels: a ruler of allowed values, a true value, and where it gets stored. */
+.fig-lv { display: block; width: 100%; max-width: 200px; height: auto; margin: 0 auto; }
+.fig-lv__axis { stroke: rgb(var(--c-border)); stroke-width: 1.5; }
+.fig-lv__mark { stroke: rgb(var(--c-muted) / 0.55); stroke-width: 1; }
+.fig-lv__err { stroke: var(--fig-bad); stroke-width: 3; stroke-linecap: round; opacity: 0; transition: opacity 160ms ease; }
+.fig-lv__err.is-shown { opacity: 1; }
+.fig-lv__true {
+  fill: none; stroke: rgb(var(--c-muted)); stroke-width: 1.5;
+  transition: transform 520ms var(--def-ease);
+}
+.fig-lv__snap {
+  fill: rgb(var(--c-accent));
+  transition: transform 180ms var(--def-ease) 420ms;
+}
+.fig-lv__label { font: 500 10.5px var(--font-mono, ui-monospace, monospace); fill: rgb(var(--c-muted)); }
+
 @media (prefers-reduced-motion: reduce) {
   .fig-link, .ev-link { animation: none; }
   .ev-link, .ev-arc { transition: none; }
@@ -512,7 +528,8 @@
   .bx-textline { transform: none; }
   .fig-node__ring, .fig-node__label, .fig-link,
   .fig-line, .fig-step__ring, .fig-step__label, .fig-step__check,
-  .fig-pipe__fill, .fig-step__arc { transition: none; }
+  .fig-pipe__fill, .fig-step__arc,
+  .fig-lv__true, .fig-lv__snap, .fig-lv__err { transition: none; }
 }
 
 /* Mobile panel: the container's own type scale is set in topnav.html, so the

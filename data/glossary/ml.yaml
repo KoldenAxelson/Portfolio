@@ -1,0 +1,460 @@
+# Machine learning glossary — the drill-down behind the {{< term >}} windows on
+# ML articles (and any future ML deep-dive section). One file per subject, so a
+# term is defined once for the whole site.
+#
+# Same contract as data/glossary/basic-logic.yaml — see that file's header for
+# the full syntax. In short:
+#
+#   key            lowercase-hyphen, what {{< term "key" >}} passes
+#   term           the label in the window header
+#   definition     one plain sentence
+#   notes          optional paragraphs: why it matters, a real example
+#   [[key|text]]   a cross-reference (always the two-part form)
+#   **bold**       emphasis
+#
+# Figures (assets/scripts/site/def-figures.ts). The ML kind so far:
+#
+#   kind: levels      a ruler with one mark per value the format can hold; a
+#                     true value wanders and gets stored at the nearest mark.
+#                     `levels` is how many values (16 for 4-bit, 3 for ternary),
+#                     `mode: float` crowds the marks toward zero the way
+#                     floating point does, `label` overrides the caption, and
+#                     `cycle: ["256", "16", "3"]` steps through several widths.
+#                     Shared by every precision term, so they read as one family.
+
+# ── Models ───────────────────────────────────────────────────────────
+
+model:
+  term: Model
+  definition: >-
+    A function whose inner numbers are learned from examples instead of written
+    by hand: input in, guess out.
+
+training:
+  term: Training
+  definition: >-
+    Feeding a [[model|model]] examples and nudging its [[weights|weights]] until
+    its guesses clear the bar you set.
+
+weights:
+  term: Weights
+  definition: >-
+    The learned numbers inside a [[model|model]]. [[training|Training]] sets
+    them; once the model ships, they stay frozen.
+
+linear-regression:
+  term: Linear Regression
+  definition: >-
+    The simplest [[model|model]]: draw the best straight line through your data
+    points, then read new points off the line.
+
+neural-network:
+  term: Neural Network
+  definition: >-
+    A [[model|model]] made of layers of simple units, each passing weighted
+    signals on to the next.
+  notes:
+    - >-
+      The digit reader in the article is a tiny one, about nineteen thousand
+      [[weights|weights]]. A chatbot's is millions of times bigger, but the same
+      shape.
+
+llm:
+  term: Large Language Model (LLM)
+  definition: >-
+    A very large [[neural-network|neural network]] trained on text to predict the
+    next [[token|token]].
+
+training-cutoff:
+  term: Training Cutoff
+  definition: >-
+    The date a model's training data ends. It knows nothing that happened after.
+
+# ── The loop ─────────────────────────────────────────────────────────
+
+mlops:
+  term: MLOps
+  definition: >-
+    The practice of automating a model's whole life: ingest data, retrain,
+    evaluate, ship, and watch it, on repeat.
+  notes:
+    - >-
+      What makes it its own discipline is [[continuous-training|continuous
+      training]]: normal software stays correct until someone changes it; a
+      model doesn't.
+
+continuous-training:
+  term: Continuous Training
+  definition: >-
+    Retraining a model automatically on fresh data, because the world keeps
+    moving and a frozen model falls behind.
+
+eval-gate:
+  term: Eval Gate
+  definition: >-
+    An automatic check that blocks a new model from shipping unless it beats the
+    one already running.
+  notes:
+    - >-
+      A worse model is worse than no change at all, so the gate defaults to "no".
+
+# ── Data ─────────────────────────────────────────────────────────────
+
+data-layer:
+  term: Data Layer
+  definition: >-
+    Everything that gathers, cleans, [[label|labels]], stores and versions the
+    data a model learns from.
+  notes:
+    - On most real teams, it's where most of the work goes.
+
+label:
+  term: Label
+  definition: >-
+    The right answer attached to a training example: "this image is a 7".
+  notes:
+    - >-
+      A model learns its labels faithfully, mistakes included. Garbage in,
+      garbage out.
+
+feature:
+  term: Feature
+  definition: >-
+    An input value computed from raw data for the model to use, like a
+    customer's average order size.
+
+feature-store:
+  term: Feature Store
+  definition: >-
+    A shared system that computes each [[feature|feature]] the same way in
+    [[training|training]] and in live [[inference|serving]].
+  notes:
+    - >-
+      Its main job is to kill [[train-serve-skew|train/serve skew]].
+
+train-serve-skew:
+  term: Train/Serve Skew
+  definition: >-
+    When a [[feature|feature]] is computed one way in training and another way in
+    production, so the model sees a subtly different world live.
+
+data-versioning:
+  term: Data Versioning
+  definition: >-
+    Keeping snapshots of training data, the way git keeps code, so you can say
+    exactly what a model learned from.
+  notes:
+    - You need it to reproduce, audit, or roll back a model.
+
+# ── Production ───────────────────────────────────────────────────────
+
+drift:
+  term: Drift
+  definition: >-
+    A model slowly getting worse because the world changes while its
+    [[weights|weights]] stay frozen.
+  notes:
+    - >-
+      It's quiet: the service stays up and the logs stay clean. Only the answers
+      get worse. [[monitoring|Monitoring]] is how you catch it.
+
+monitoring:
+  term: Monitoring
+  definition: >-
+    Watching a model's predictions in production and raising an alarm when they
+    stop looking like they used to.
+  notes:
+    - >-
+      Unlike a CPU dashboard, it watches the outputs themselves. The alarm is
+      what kicks off [[continuous-training|retraining]].
+
+inference:
+  term: Inference (Serving)
+  definition: >-
+    Running a trained model to answer real requests, as opposed to
+    [[training|training]] it.
+
+autoscaling:
+  term: Autoscaling
+  definition: >-
+    Adding or removing servers automatically as traffic rises and falls, so
+    [[latency|response times]] stay flat.
+
+latency:
+  term: Latency
+  definition: How long one request takes to get its answer.
+
+throughput:
+  term: Throughput
+  definition: How many requests a system can answer per second.
+
+# ── Cost ─────────────────────────────────────────────────────────────
+
+quantization:
+  term: Quantization
+  definition: >-
+    Storing a model's [[weights|weights]] at lower precision, like 8-bit instead
+    of 16-bit, so it needs less memory and costs less to run.
+  notes:
+    - >-
+      Done well, the answers barely change. LLM.int8() ran a 175-billion-weight
+      model in 8-bit with no measurable loss in accuracy.
+    - >-
+      How low you can go, and how, is its own history: see
+      [[precision|precision]], [[post-training-quantization|post-training
+      quantization]] and [[1-bit-llm|1-bit LLMs]].
+  figure: { kind: levels, levels: 16 }
+
+batching:
+  term: Batching
+  definition: >-
+    Answering many requests in one pass through the model, so they share the
+    work.
+  notes:
+    - It trades a little [[latency|latency]] for a lot of [[throughput|throughput]].
+
+# ── Precision ────────────────────────────────────────────────────────
+
+precision:
+  term: Precision
+  definition: >-
+    How many bits a computer spends storing one number, which sets how finely
+    that number can be written down.
+  notes:
+    - >-
+      Each bit doubles the number of values on offer: 16 bits can hold 65,536
+      different values, 4 bits only 16. Fewer values means more rounding, but
+      also less memory for every one of a model's [[weights|weights]].
+  figure: { kind: levels, cycle: ["256", "16", "3"] }
+
+fp16:
+  term: FP16 (16-bit floating point)
+  definition: >-
+    A 16-bit way of storing a number with a movable decimal point, and the
+    usual format large models are stored and run in.
+  notes:
+    - >-
+      Floating point spends some bits on the digits and some on where the point
+      sits, so it covers tiny and huge numbers alike. Its close cousin BF16 is
+      the everyday format for [[training|training]].
+  figure: { kind: levels, levels: 65536, mode: float, label: "16 bits · 65,536 values" }
+
+fp8:
+  term: FP8 (8-bit floating point)
+  definition: >-
+    An 8-bit floating-point format, built into data-center GPUs since NVIDIA's
+    H100, and precise enough to [[training|train]] with.
+  notes:
+    - >-
+      Half the memory of [[fp16|FP16]]. DeepSeek-V3 was trained largely in FP8,
+      one of the first frontier-scale models to do it.
+  figure: { kind: levels, levels: 256, mode: float }
+
+int8:
+  term: INT8
+  definition: >-
+    Storing each number as a whole number from −128 to 127, one byte apiece,
+    plus a shared multiplier to turn it back into the real value.
+  notes:
+    - >-
+      That multiplier is the whole trick. Each small block of
+      [[weights|weights]] gets its own, so 127 can mean 0.8 in one block and 12
+      in the next.
+  figure: { kind: levels, levels: 256 }
+
+int4:
+  term: INT4
+  definition: >-
+    Storing each number as a whole number from −8 to 7: half a byte apiece,
+    with a shared multiplier per block.
+  notes:
+    - >-
+      A quarter of [[fp16|FP16]]'s memory, and the workhorse for running
+      [[llm|LLMs]] on ordinary hardware.
+  figure: { kind: levels, levels: 16 }
+
+fp4:
+  term: FP4 (4-bit floating point)
+  definition: >-
+    A 4-bit floating-point format with only 16 values, packed closer together
+    near zero, built into NVIDIA GPUs from the Blackwell generation on.
+  notes:
+    - >-
+      Sixteen values is crude on its own, so FP4 always travels in small blocks
+      that share a scale. MXFP4 (an industry standard) and NVFP4 (NVIDIA's) are
+      the two you'll see on model cards.
+  figure: { kind: levels, levels: 16, mode: float }
+
+outlier:
+  term: Outlier
+  definition: >-
+    A value far larger than the ones around it. In big language models, a few
+    of them carry an outsized share of the answer.
+  notes:
+    - >-
+      One huge value stretches the scale for its whole block, so the small
+      numbers beside it all round to zero. LLM.int8() fixed this by leaving the
+      outliers in 16-bit and rounding everything else.
+
+pruning:
+  term: Pruning
+  definition: >-
+    Deleting the [[weights|weights]] that matter least, so they never need
+    storing or computing.
+
+post-training-quantization:
+  term: Post-Training Quantization (PTQ)
+  definition: >-
+    Rounding an already-trained model down to fewer bits, using a little sample
+    data to decide how, with no retraining.
+  notes:
+    - >-
+      Cheap: hours on one GPU, not months on thousands. GPTQ and AWQ are the
+      famous ones. The expensive alternative is
+      [[quantization-aware-training|quantization-aware training]].
+
+quantization-aware-training:
+  term: Quantization-Aware Training (QAT)
+  definition: >-
+    [[training|Training]] a model while it already feels the rounding, so it
+    learns [[weights|weights]] that survive being squeezed.
+  notes:
+    - >-
+      It costs a real training run, but it's how the lowest bit counts work:
+      [[1-bit-llm|1-bit LLMs]] are trained this way from scratch.
+
+lora:
+  term: LoRA (Low-Rank Adaptation)
+  definition: >-
+    [[fine-tuning|Fine-tuning]] a model by training a small add-on set of
+    [[weights|weights]] while the original ones stay frozen.
+  notes:
+    - >-
+      QLoRA keeps the frozen original in 4-bit and trains only the add-on, which
+      is how a 65-billion-weight model got fine-tuned on a single GPU.
+
+gguf:
+  term: GGUF
+  definition: >-
+    A single-file format that holds a [[quantization|quantized]] model and
+    everything needed to run it, made for llama.cpp.
+  notes:
+    - >-
+      If you've downloaded a model to run on your own machine with a tool like
+      Ollama or LM Studio, it was very likely a GGUF file. Names like
+      "Q4_K_M" tell you its bit width.
+
+1-bit-llm:
+  term: 1-bit LLM
+  definition: >-
+    A language model whose [[weights|weights]] are stored in about one bit each,
+    often just −1, 0 or +1, and trained that way from the start.
+  notes:
+    - >-
+      Three values need log₂3 ≈ 1.58 bits, hence the name BitNet b1.58. With
+      weights that small, the model's multiplications become additions, which is
+      where most of the energy saving comes from.
+  figure: { kind: levels, levels: 3 }
+
+# ── Safety ───────────────────────────────────────────────────────────
+
+guardrail:
+  term: Guardrail
+  definition: >-
+    A check on a model's output before a user sees it: is it valid, in range,
+    does it match the [[schema|schema]], does a second model agree?
+
+fallback:
+  term: Fallback
+  definition: >-
+    What you serve when a [[guardrail|guardrail]] fails: a simpler model, a cached
+    answer, a safe default, or a human.
+
+schema:
+  term: Schema
+  definition: >-
+    The shape an output must have, such as which fields it needs and what type
+    each one is.
+
+# ── Language models ──────────────────────────────────────────────────
+
+token:
+  term: Token
+  definition: >-
+    The chunk of text a language model reads and writes: often a whole word,
+    sometimes a piece of one.
+  notes:
+    - You're billed per token, not per word.
+    - >-
+      Real tokenizers learn their splits from data, usually with
+      [[byte-pair-encoding|byte-pair encoding]].
+
+byte-pair-encoding:
+  term: Byte-Pair Encoding
+  definition: >-
+    A way to learn how to split text into [[token|tokens]] from data, by merging
+    the most common pairs of characters over and over.
+
+rag:
+  term: Retrieval-Augmented Generation (RAG)
+  definition: >-
+    Looking up relevant documents when a question arrives and pasting them into
+    the prompt, so the model answers from them instead of from memory.
+  notes:
+    - >-
+      The lookup is usually done with [[embedding|embeddings]] in a
+      [[vector-database|vector database]].
+
+embedding:
+  term: Embedding
+  definition: >-
+    A list of numbers that stands for the meaning of a piece of text, so similar
+    texts land close together.
+
+vector-database:
+  term: Vector Database
+  definition: >-
+    A store built to find the [[embedding|embeddings]] most similar to a query,
+    in milliseconds.
+
+fine-tuning:
+  term: Fine-Tuning
+  definition: >-
+    Continuing to [[training|train]] a model's [[weights|weights]] on your own
+    data. Expensive and powerful.
+  notes:
+    - The cheaper alternative, usually enough, is better [[prompting|prompting]].
+
+prompting:
+  term: Prompting
+  definition: >-
+    Steering a model with the instructions and context you give it, without
+    changing its [[weights|weights]].
+
+kv-cache:
+  term: KV Cache
+  definition: >-
+    A per-conversation scratchpad that saves the model from re-reading the whole
+    conversation for every new [[token|token]].
+  notes:
+    - >-
+      Managing it well is half the battle for LLM speed and cost. vLLM pages it
+      like OS virtual memory and gets 2–4× the [[throughput|throughput]].
+
+# ── Agents ───────────────────────────────────────────────────────────
+
+harness:
+  term: Harness
+  definition: >-
+    The code wrapped around a model that feeds it context, hands it tools, runs
+    its actions and catches its mistakes.
+  notes:
+    - >-
+      The model brings the judgment; the harness brings the hands, the memory
+      and the [[guardrail|guardrails]]. Claude Code is one.
+
+agent:
+  term: Agent
+  definition: >-
+    A model inside a [[harness|harness]] that loops: reason, act with a tool,
+    observe the result, and pick the next step.

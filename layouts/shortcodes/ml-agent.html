@@ -1,0 +1,16 @@
+{{- /*
+  ml-agent — an agent harness reason-act-observe trace.
+
+    {{< ml-agent >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml-demos-assets.html (css/ml-demos.css, scripts/pages/ml/).
+  Element ids are fixed, so use each demo at most once per page.
+*/ -}}
+<div class="not-prose mli-demo" id="mli-ag">
+<div class="mli-demo-label">Live · an agent's reason–act–observe loop</div>
+<div class="mli-ag-phases" id="mli-ag-phases"></div>
+<div class="mli-ag-log" id="mli-ag-log"></div>
+<div class="mli-controls"><button class="mli-btn" id="mli-ag-replay" type="button">Replay</button><button class="mli-btn mli-btn-ghost" id="mli-ag-step" type="button">Step &rsaquo;</button></div>
+<div class="mli-caption">An illustrative trace of a coding agent fixing a failing test, the same read, edit, run, react loop a harness like Claude Code runs. The model supplies each decision; the harness supplies the tools and the loop.</div>
+</div>

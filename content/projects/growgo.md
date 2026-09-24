@@ -8,7 +8,7 @@ stack: ['Flutter', 'Cloudflare Workers', 'D1', 'TypeScript', 'Stripe']
 role: 'Founder · CTO'
 year: '2025–present'
 status: 'in-progress'
-featured: false
+featured: true
 thoughts:
   - 'Everyone said they loved it. Nobody funded it. Those turn out to be different sentences.'
   - 'The 2025 plan was Rust and Go microservices for a company with zero customers. The 2026 rebuild is one Worker and a database.'

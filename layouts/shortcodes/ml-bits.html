@@ -1,0 +1,22 @@
+{{- /*
+  ml-bits — the bits-per-weight slider: model memory, and what it fits on.
+
+    {{< ml-bits >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml-demos-assets.html (css/ml-demos.css, scripts/pages/ml/).
+  The model sizes, bit widths and device sizes live in the data-* attributes
+  below; the script reads them from here. The static text is the 175B / 16-bit
+  state, so the demo still reads with JavaScript off.
+*/ -}}
+<div class="not-prose mli-demo" id="mli-bits">
+<div class="mli-demo-label">Live · how many bits per weight?</div>
+<div class="mli-bits-models" role="group" aria-label="Model size"><span class="mli-bits-lab">Model:</span><button class="mli-rag-q" type="button" data-billions="8" aria-pressed="false">8B</button><button class="mli-rag-q" type="button" data-billions="70" aria-pressed="false">70B</button><button class="mli-rag-q is-on" type="button" data-billions="175" aria-pressed="true">175B (GPT-3)</button></div>
+<div class="mli-row"><label for="mli-bits-r">Bits per weight: <span class="mli-val" id="mli-bits-v">16</span></label><input class="mli-range" id="mli-bits-r" type="range" min="0" max="4" step="1" value="1" aria-valuetext="16 bits" /></div>
+<div class="mli-bits-steps" aria-hidden="true"><span data-bits="32">32</span><span data-bits="16">16</span><span data-bits="8">8</span><span data-bits="4">4</span><span data-bits="1.58">1.58</span></div>
+<div class="mli-cost" id="mli-bits-mem">350 GB <small>of weights</small></div>
+<div class="mli-bits-devices"><div class="mli-bits-dev" data-gb="8" data-name="a phone">Phone<small>8 GB</small></div><div class="mli-bits-dev" data-gb="32" data-name="a laptop">Laptop<small>32 GB</small></div><div class="mli-bits-dev" data-gb="80" data-name="one big GPU">One big GPU<small>80 GB</small></div></div>
+<div class="mli-bits-gpus" id="mli-bits-gpus" aria-hidden="true"></div>
+<div class="mli-caption" id="mli-bits-cap">175 billion weights × 16 bits ÷ 8 = 350 GB. That's 5 data-center GPUs (80 GB each) just to hold the model.</div>
+<div class="mli-caption">Real arithmetic, weights only. Actually running a model takes some extra memory for its working space, so read "fits" as the best case.</div>
+</div>

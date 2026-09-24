@@ -11,6 +11,9 @@
     </p>
   </header>
 
+  {{- /* Before .Content, so term.html finds the glossary already shipped; see the partial for why. */}}
+  {{ partial "definitions-assets.html" . }}
+  {{ partial "ml-demos-assets.html" . }}
   {{ .Content }}
 </article>
 {{ end }}

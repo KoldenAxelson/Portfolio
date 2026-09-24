@@ -1,0 +1,16 @@
+{{- /*
+  ml-tokens — live tokenizer: type and watch the split.
+
+    {{< ml-tokens >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml-demos-assets.html (css/ml-demos.css, scripts/pages/ml/).
+  Element ids are fixed, so use each demo at most once per page.
+*/ -}}
+<div class="not-prose mli-demo" id="mli-tok">
+<div class="mli-demo-label">Live · how text becomes tokens</div>
+<textarea id="mli-tok-in" class="mli-tok-in" aria-label="Type text to see it tokenized" spellcheck="false">Tokenization turns text into the pieces a model actually reads.</textarea>
+<div class="mli-tok-chips" id="mli-tok-chips"></div>
+<div class="mli-tok-stat" id="mli-tok-stat"></div>
+<div class="mli-caption">A simplified tokenizer (real ones, like GPT's or Claude's, learn their splits from data with byte-pair encoding), but the behavior is the same: common words cost one token, rare or long ones break into several, and spaces and punctuation count too.</div>
+</div>
