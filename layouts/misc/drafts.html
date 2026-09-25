@@ -1,5 +1,7 @@
 {{- /*
-  misc/drafts — every article in review (`review: true`), newest first.
+  misc/drafts — every article in review (`review: true`), in validation order:
+  `reviewOrder` ascending (set from the priority list in
+  private/blog-ideas/WRITER-HANDOFF.md), then any unnumbered drafts, newest first.
 
   Review articles use `build.list: never`, so they're absent from .Pages and
   site.RegularPages by design. They're found here by reading the articles folder
@@ -29,16 +31,21 @@
 </section>
 {{- end }}
 
+{{- $queued := sort (where $drafts "Params.revieworder" "!=" nil) "Params.revieworder" -}}
+{{- $unqueued := sort (where $drafts "Params.revieworder" "==" nil) "Date" "desc" -}}
+{{- $drafts = $queued | append $unqueued -}}
+
 {{- if not $drafts }}
 <p class="font-mono text-sm text-muted">Nothing in review right now.</p>
 {{- else }}
 <p class="mb-4 font-mono text-xs uppercase tracking-widest text-muted">{{ len $drafts }} in review</p>
 <ul class="divide-y divide-border">
-  {{- range sort $drafts "Date" "desc" }}
+  {{- range $drafts }}
   {{- $slug := .File.ContentBaseName }}
   {{- $audited := fileExists (printf "private/article-audits/%s.md" $slug) }}
   <li class="py-5">
     <h2 class="m-0 flex items-center gap-2 text-lg font-medium">
+      {{- with .Params.reviewOrder }}<span class="w-6 shrink-0 font-mono text-sm text-muted" title="Validation order">{{ . }}.</span>{{ end }}
       {{- partial "article-mark.html" (dict "page" .) }}
       <a href="{{ .RelPermalink }}" class="text-fg no-underline hover:!text-accent">{{ .Title }}</a>
     </h2>
