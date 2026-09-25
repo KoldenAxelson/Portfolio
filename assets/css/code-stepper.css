@@ -1,0 +1,140 @@
+/* code-stepper — the snippet-and-data box (layouts/shortcodes/code-stepper.html
+   + scripts/pages/code-stepper.ts). The frame matches the arg-showcase box so
+   the two sections' moving examples look like one family; the syntax colours
+   come from code.css. */
+
+.code-stepper {
+  margin: 2rem 0;
+  border: 1px solid rgb(var(--c-border));
+  border-radius: 1rem;
+  overflow: hidden;
+  background-color: rgb(var(--c-muted) / 0.05);
+}
+.cs-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+  border-bottom: 1px solid rgb(var(--c-border));
+  padding: 0.75rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgb(var(--c-fg));
+}
+.cs-count { font: 0.75rem 'JetBrains Mono', ui-monospace, monospace; color: rgb(var(--c-muted)); }
+
+/* Code left, data right on a wide screen; stacked on a phone, code first. */
+.cs-body { display: grid; gap: 1rem; padding: 1rem 1.25rem; }
+@media (min-width: 40rem) {
+  .cs-body { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); align-items: start; }
+}
+
+/* Lines wrap rather than scroll: the lit line has to stay in view, and a
+   continuation hangs past the line's start so it doesn't read as a new line. */
+.cs-code {
+  margin: 0;
+  padding: 0.6rem 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 0.8125rem;
+  line-height: 1.7;
+  background-color: rgb(var(--c-bg) / 0.6);
+}
+/* One block per line (no newline characters between them), so the active
+   line's band spans the whole width. */
+.cs-line {
+  display: block;
+  padding: 0 0.85rem 0 2rem;
+  text-indent: -1.15rem;
+  min-height: 1.7em;
+  border-left: 3px solid transparent;
+  opacity: 0.55;
+  transition: opacity 320ms cubic-bezier(0.65, 0, 0.35, 1),
+              background-color 320ms cubic-bezier(0.65, 0, 0.35, 1),
+              border-color 320ms cubic-bezier(0.65, 0, 0.35, 1);
+}
+.cs-line.is-active {
+  opacity: 1;
+  border-left-color: rgb(var(--c-accent));
+  background-color: rgb(var(--c-accent) / 0.08);
+}
+.cs-line code { background: none; padding: 0; font-size: inherit; }
+
+.cs-panels { display: flex; flex-direction: column; gap: 0.9rem; min-width: 0; }
+.cs-panel { min-width: 0; }
+.cs-panel__title { margin: 0 0 0.35rem; font-size: 0.8125rem; color: rgb(var(--c-fg)); }
+.cs-panel__title code { background: none; padding: 0; }
+.cs-panel__meta { font: 0.7rem 'JetBrains Mono', ui-monospace, monospace; color: rgb(var(--c-muted)); }
+
+.cs-layers { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+.cs-grid, .cs-table {
+  border-collapse: collapse;
+  font: 0.8125rem/1.2 'JetBrains Mono', ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+.cs-grid td {
+  min-width: 2.1rem;
+  padding: 0.4rem 0.45rem;
+  border: 1px solid rgb(var(--c-border));
+  text-align: center;
+  color: rgb(var(--c-muted));
+  background-color: rgb(var(--c-bg));
+}
+.cs-table { display: block; max-width: 100%; overflow-x: auto; }
+.cs-table th, .cs-table td {
+  padding: 0.3rem 0.55rem;
+  border-bottom: 1px solid rgb(var(--c-border));
+  text-align: right;
+  white-space: nowrap;
+  color: rgb(var(--c-muted));
+}
+.cs-table thead th { color: rgb(var(--c-fg)); font-weight: 600; }
+.cs-table tbody th { color: rgb(var(--c-muted)); font-weight: 400; opacity: 0.8; }
+/* The index's name sits in the corner, above the row labels it names, styled like them. */
+.cs-table thead th.cs-table__index-name { color: rgb(var(--c-muted)); font-weight: 400; text-align: left; }
+
+/* A lit cell is what the active line read or wrote. Colour AND weight, so the
+   highlight doesn't rest on colour alone. */
+.cs-grid td, .cs-table td {
+  transition: background-color 280ms cubic-bezier(0.16, 1, 0.3, 1),
+              color 280ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.cs-grid td.is-lit, .cs-table td.is-lit {
+  background-color: rgb(var(--c-accent) / 0.16);
+  color: rgb(var(--c-accent));
+  font-weight: 700;
+}
+.cs-text {
+  margin: 0;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.8125rem;
+  white-space: pre-wrap;
+}
+
+.cs-note { margin: 0; padding: 0 1.25rem 0.9rem; font-size: 0.875rem; font-style: italic; color: rgb(var(--c-muted)); }
+.cs-controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  border-top: 1px solid rgb(var(--c-border));
+  padding: 0.6rem 1.25rem;
+}
+.cs-controls[hidden] { display: none; }
+.cs-btn {
+  border: 1px solid rgb(var(--c-border));
+  border-radius: 999px;
+  background: transparent;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.8125rem;
+  color: rgb(var(--c-muted));
+  cursor: pointer;
+  transition: color 150ms ease, border-color 150ms ease;
+}
+.cs-btn:hover:not(:disabled) { color: rgb(var(--c-accent)); border-color: rgb(var(--c-accent) / 0.5); }
+.cs-btn--primary { color: rgb(var(--c-fg)); }
+.cs-btn:disabled { opacity: 0.4; cursor: default; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cs-line, .cs-grid td, .cs-table td { transition: none; }
+}

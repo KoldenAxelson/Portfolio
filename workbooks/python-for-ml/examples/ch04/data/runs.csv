@@ -1,0 +1,9 @@
+run,model,lr,epochs,val_loss,device
+r1,cnn,0.1,10,0.42,gpu
+r2,cnn,0.01,10,0.35,gpu
+r3,mlp,0.1,,0.61,cpu
+r4,mlp,0.05,20,,cpu
+r5,cnn,0.05,20,0.33,gpu
+r6,rnn,0.1,5,0.71,
+r7,mlp,0.01,20,0.48,cpu
+r8,cnn,0.01,,0.29,gpu

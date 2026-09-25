@@ -1,0 +1,12 @@
+{{/* Python for ML — section landing. The banner lives here so the course can be
+     restyled on its own; the intro and chapter cards are shared with every
+     chapter-by-chapter section (partials/chapters/section-list.html). */}}
+{{ define "banner" }}
+{{ partial "page-banner.html" (dict
+  "title" (.Title | default "Python for ML")
+  "subtitle" (.Params.lead | default "")) }}
+{{ end }}
+
+{{ define "main" }}
+{{- partial "chapters/section-list.html" . -}}
+{{ end }}

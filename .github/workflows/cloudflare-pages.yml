@@ -27,6 +27,30 @@ jobs:
       - name: Type-check (tsgo)
         run: make typecheck
 
+      # Python for ML workbooks: the solutions must pass their tests on the
+      # pinned stack, and every example shown on a chapter page must still print
+      # what the page says, or the deploy stops. Then the packets are zipped into
+      # static/downloads/ for Hugo to publish.
+      - name: Set up Python (workbooks)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: workbooks/python-for-ml/requirements.txt
+
+      - name: Install the pinned workbook stack
+        # The CPU index keeps PyTorch from pulling its multi-gigabyte CUDA build.
+        run: pip install -r workbooks/python-for-ml/requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
+
+      - name: Test workbook solutions
+        run: make workbooks-test
+
+      - name: Check page examples against a fresh run
+        run: make examples-check
+
+      - name: Build workbook zips
+        run: make workbooks
+
       - name: Build CSS
         run: ./bin/tailwindcss -i assets/css/main.css -o assets/css/app.css --minify
 

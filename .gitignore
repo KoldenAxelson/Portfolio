@@ -15,6 +15,11 @@ scripts/__pycache__/
 
 # Hugo build output
 /public/
+
+# Workbook zips — built by `make workbooks` from workbooks/, never committed.
+/static/downloads/
+workbooks/**/__pycache__/
+workbooks/**/.pytest_cache/
 /resources/
 .hugo_build.lock
 

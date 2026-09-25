@@ -1,0 +1,172 @@
+/* figures-python — the Python for ML glossary figures (assets/scripts/site/
+   def-figures-python.ts and pyfig/*). Loaded by the course layout
+   (partials/python-for-ml-assets.html) beside definitions.css, whose .def-fig
+   palette (--fig-bad, --fig-blue, --fig-violet) these reuse.
+
+   The cells move by CSS transform and fade by opacity; the engine only sets
+   the end state, so every transition here is the whole animation. */
+
+.fig-py { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.fig-py__canvas { display: block; width: 100%; max-width: 260px; height: auto; overflow: visible; }
+.fig-py__caption {
+  max-width: 260px;
+  text-align: center;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  color: rgb(var(--c-muted));
+}
+.fig-py__caption code { background: none; padding: 0; font-size: inherit; font-variant-ligatures: none; }
+
+.fig-py-cell {
+  transition: transform 520ms cubic-bezier(0.65, 0, 0.35, 1), opacity 260ms ease;
+}
+.fig-py-cell rect {
+  fill: rgb(var(--c-bg));
+  stroke: rgb(var(--c-border));
+  stroke-width: 1;
+  transition: fill 240ms ease, stroke 240ms ease;
+}
+.fig-py-cell__text {
+  font: 500 10px var(--font-mono, 'JetBrains Mono', ui-monospace, monospace);
+  font-variant-numeric: tabular-nums;
+  fill: rgb(var(--c-muted));
+  transition: fill 240ms ease;
+}
+.fig-py-cell.is-hidden { opacity: 0; }
+/* Tints are mixed into the page colour rather than laid on with alpha, so a
+   cell is opaque and a stacked layer in front hides the one behind it. */
+.fig-py-cell.is-lit rect { fill: color-mix(in srgb, rgb(var(--c-accent)) 16%, rgb(var(--c-bg))); stroke: rgb(var(--c-accent)); }
+.fig-py-cell.is-lit .fig-py-cell__text { fill: rgb(var(--c-accent)); font-weight: 700; }
+.fig-py-cell.is-alt rect { fill: color-mix(in srgb, var(--fig-violet) 14%, rgb(var(--c-bg))); stroke: var(--fig-violet); }
+.fig-py-cell.is-alt .fig-py-cell__text { fill: var(--fig-violet); }
+.fig-py-cell.is-bad rect { fill: color-mix(in srgb, var(--fig-bad) 14%, rgb(var(--c-bg))); stroke: var(--fig-bad); }
+.fig-py-cell.is-bad .fig-py-cell__text { fill: var(--fig-bad); }
+.fig-py-cell.is-ghost { opacity: 0.55; }
+.fig-py-cell.is-dim { opacity: 0.3; }
+.fig-py-cell.is-ghost rect { fill: transparent; stroke: var(--fig-violet); stroke-dasharray: 2 2; }
+.fig-py-cell.is-ghost .fig-py-cell__text { fill: var(--fig-violet); }
+/* A table's column names and row labels (pyfig/frame.ts): text, no box. */
+.fig-py-cell.is-head rect { fill: transparent; stroke: transparent; }
+.fig-py-cell.is-head .fig-py-cell__text { fill: rgb(var(--c-fg)); font-weight: 700; }
+
+.fig-py-axis { opacity: 0; transition: opacity 240ms ease; }
+.fig-py-axis.is-shown { opacity: 1; }
+.fig-py-axis__line { stroke: rgb(var(--c-accent)); stroke-width: 1.5; }
+.fig-py-axis__head { fill: none; stroke: rgb(var(--c-accent)); stroke-width: 1.5; stroke-linejoin: round; }
+.fig-py-axis__label { font: 600 9px var(--font-mono, ui-monospace, monospace); fill: rgb(var(--c-accent)); }
+
+.fig-py-tag { transition: opacity 260ms ease; }
+.fig-py-tag.is-hidden, .fig-py-file.is-hidden { opacity: 0; }
+.fig-py-tag__line { stroke: rgb(var(--c-muted)); stroke-width: 1.25; marker-end: none; }
+.fig-py-tag__label { font: 700 11px var(--font-mono, ui-monospace, monospace); fill: rgb(var(--c-fg)); }
+.fig-py-file { transition: opacity 260ms ease; }
+.fig-py-file path { stroke: rgb(var(--c-muted)); stroke-width: 1.25; }
+.fig-py-file__label { font: 500 8.5px var(--font-mono, ui-monospace, monospace); fill: rgb(var(--c-muted)); }
+
+@media (prefers-reduced-motion: reduce) {
+  .fig-py-cell, .fig-py-cell rect, .fig-py-cell__text, .fig-py-axis, .fig-py-tag, .fig-py-file { transition: none; }
+}
+
+/* ── plot-anatomy (pyfig/plot.ts): a Matplotlib figure drawn as its parts ── */
+.fig-plot__part { transition: opacity 300ms ease; }
+.fig-plot__part.is-hidden { opacity: 0; }
+.fig-plot__figure { fill: rgb(var(--c-bg)); stroke: rgb(var(--c-border)); stroke-width: 1.25; }
+.fig-plot__axes { fill: none; stroke: rgb(var(--c-muted)); stroke-width: 1; transition: stroke 240ms ease, stroke-width 240ms ease; }
+.fig-plot__tick { stroke: rgb(var(--c-muted)); stroke-width: 1; }
+.fig-plot__text { font: 500 8px var(--font-sans, system-ui, sans-serif); fill: rgb(var(--c-muted)); transition: fill 240ms ease; }
+.fig-plot__text.is-code { font: 500 7.5px var(--font-mono, ui-monospace, monospace); }
+.fig-plot__text.is-tag { font-weight: 700; }
+/* Lines draw themselves in: pathLength="1" makes the dash one line long. */
+.fig-plot__line {
+  fill: none;
+  stroke-width: 1.75;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 800ms ease, stroke-width 240ms ease;
+}
+.fig-plot__part.is-hidden .fig-plot__line { stroke-dashoffset: 1; }
+.fig-plot__line.is-train { stroke: var(--fig-blue); }
+.fig-plot__line.is-val { stroke: var(--fig-violet); }
+.fig-plot__legend { fill: rgb(var(--c-bg)); stroke: rgb(var(--c-border)); }
+.fig-plot__mark { fill: var(--fig-blue); }
+.fig-plot__mark.is-bin { stroke: rgb(var(--c-bg)); stroke-width: 0.75; }
+.fig-plot__pixel { fill: rgb(var(--c-accent)); stroke: rgb(var(--c-bg)); stroke-width: 1; }
+.fig-plot__best { stroke: rgb(var(--c-muted)); stroke-width: 1; stroke-dasharray: 3 2; }
+.fig-plot__after { fill: var(--fig-bad); fill-opacity: 0.1; }
+.fig-plot__cover { fill: rgb(var(--c-bg)); fill-opacity: 0.7; }
+.fig-plot__file { stroke: rgb(var(--c-accent)); stroke-width: 1.5; }
+
+.fig-plot__part.is-lit .fig-plot__figure,
+.fig-plot__part.is-lit .fig-plot__axes,
+.fig-plot__part.is-lit .fig-plot__legend { stroke: rgb(var(--c-accent)); stroke-width: 2; }
+.fig-plot__part.is-lit .fig-plot__text { fill: rgb(var(--c-accent)); font-weight: 700; }
+.fig-plot__part.is-lit .fig-plot__line { stroke-width: 2.75; }
+.fig-plot__part.is-lit .fig-plot__mark { fill: rgb(var(--c-accent)); }
+.fig-plot__part.is-bad .fig-plot__text { fill: var(--fig-bad); font-weight: 700; }
+.fig-plot__part.is-bad .fig-plot__line { stroke: var(--fig-bad); stroke-width: 2.25; }
+.fig-plot__part.is-bad .fig-plot__after { fill-opacity: 0.16; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fig-plot__part, .fig-plot__axes, .fig-plot__text, .fig-plot__line { transition: none; }
+}
+
+/* ── estimator (pyfig/estimator.ts): rows, an estimator box, fit and predict ── */
+.fig-est__part { transition: opacity 300ms ease; }
+.fig-est__part.is-hidden { opacity: 0; }
+.fig-est__part.is-dim { opacity: 0.35; }
+.fig-est__row { fill: rgb(var(--c-bg)); stroke: rgb(var(--c-border)); stroke-width: 1; transition: fill 240ms ease, stroke 240ms ease; }
+.fig-est__box { fill: rgb(var(--c-bg)); stroke: rgb(var(--c-muted)); stroke-width: 1.25; transition: stroke 240ms ease; }
+.fig-est__inner { fill: none; stroke: rgb(var(--c-border)); stroke-width: 1; }
+.fig-est__divider { fill: rgb(var(--c-muted)); }
+.fig-est__arrow { stroke: rgb(var(--c-muted)); stroke-width: 1.25; stroke-linejoin: round; stroke-linecap: round; transition: stroke 240ms ease; }
+.fig-est__text { font: 500 8px var(--font-sans, system-ui, sans-serif); fill: rgb(var(--c-muted)); transition: fill 240ms ease; }
+.fig-est__text.is-code, .fig-est__text.is-learned { font: 500 7.5px var(--font-mono, ui-monospace, monospace); }
+.fig-est__text.is-tag { font-weight: 700; fill: rgb(var(--c-fg)); }
+.fig-est__text.is-learned { fill: var(--fig-violet); }
+
+.fig-est__part.is-lit .fig-est__row { fill: color-mix(in srgb, rgb(var(--c-accent)) 16%, rgb(var(--c-bg))); stroke: rgb(var(--c-accent)); }
+.fig-est__part.is-lit .fig-est__box { stroke: rgb(var(--c-accent)); stroke-width: 2; }
+.fig-est__part.is-lit .fig-est__arrow { stroke: rgb(var(--c-accent)); stroke-width: 2; }
+.fig-est__part.is-lit .fig-est__text { fill: rgb(var(--c-accent)); font-weight: 700; }
+.fig-est__part.is-alt .fig-est__row { fill: color-mix(in srgb, var(--fig-violet) 14%, rgb(var(--c-bg))); stroke: var(--fig-violet); }
+.fig-est__part.is-alt .fig-est__text { fill: var(--fig-violet); font-weight: 700; }
+.fig-est__part.is-bad .fig-est__row { fill: color-mix(in srgb, var(--fig-bad) 14%, rgb(var(--c-bg))); stroke: var(--fig-bad); }
+.fig-est__part.is-bad .fig-est__arrow { stroke: var(--fig-bad); stroke-width: 2; }
+.fig-est__part.is-bad .fig-est__text { fill: var(--fig-bad); font-weight: 700; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fig-est__part, .fig-est__row, .fig-est__box, .fig-est__arrow, .fig-est__text { transition: none; }
+}
+
+/* ── graph-backward and device-move (pyfig/tensor.ts): a compute graph, and a
+   tensor on the CPU and a GPU ── */
+.fig-tensor__part { transition: opacity 300ms ease; }
+.fig-tensor__part.is-hidden { opacity: 0; }
+.fig-tensor__part.is-dim { opacity: 0.3; }
+.fig-tensor__box, .fig-tensor__cell { fill: rgb(var(--c-bg)); stroke: rgb(var(--c-border)); stroke-width: 1; transition: fill 240ms ease, stroke 240ms ease; }
+.fig-tensor__zone { fill: none; stroke: rgb(var(--c-border)); stroke-width: 1; stroke-dasharray: 3 2; }
+.fig-tensor__op { fill: rgb(var(--c-bg)); stroke: rgb(var(--c-muted)); stroke-width: 1.25; transition: stroke 240ms ease; }
+.fig-tensor__edge { stroke: rgb(var(--c-muted)); stroke-width: 1.25; stroke-linecap: round; stroke-linejoin: round; transition: stroke 240ms ease; }
+.fig-tensor__edge.is-back { stroke: rgb(var(--c-accent)); stroke-dasharray: 3 2; }
+.fig-tensor__text { font: 500 8px var(--font-sans, system-ui, sans-serif); fill: rgb(var(--c-muted)); transition: fill 240ms ease; }
+.fig-tensor__text.is-code, .fig-tensor__text.is-grad { font: 500 8px var(--font-mono, ui-monospace, monospace); }
+.fig-tensor__text.is-code { fill: rgb(var(--c-fg)); }
+.fig-tensor__text.is-grad { font-size: 7px; fill: var(--fig-violet); }
+.fig-tensor__text.is-op { font: 700 11px var(--font-sans, system-ui, sans-serif); fill: rgb(var(--c-fg)); }
+.fig-tensor__text.is-name { font: 700 10px var(--font-mono, ui-monospace, monospace); fill: rgb(var(--c-fg)); }
+.fig-tensor__text.is-zone { font-weight: 700; }
+
+.fig-tensor__part.is-lit .fig-tensor__box,
+.fig-tensor__part.is-lit .fig-tensor__cell { fill: color-mix(in srgb, rgb(var(--c-accent)) 16%, rgb(var(--c-bg))); stroke: rgb(var(--c-accent)); }
+.fig-tensor__part.is-lit .fig-tensor__op { stroke: rgb(var(--c-accent)); stroke-width: 2; }
+.fig-tensor__part.is-lit .fig-tensor__edge { stroke: rgb(var(--c-accent)); stroke-width: 2; }
+.fig-tensor__part.is-lit .fig-tensor__text { fill: rgb(var(--c-accent)); font-weight: 700; }
+.fig-tensor__part.is-alt .fig-tensor__box { fill: color-mix(in srgb, var(--fig-violet) 14%, rgb(var(--c-bg))); stroke: var(--fig-violet); }
+.fig-tensor__part.is-bad .fig-tensor__box,
+.fig-tensor__part.is-bad .fig-tensor__cell { fill: color-mix(in srgb, var(--fig-bad) 14%, rgb(var(--c-bg))); stroke: var(--fig-bad); }
+.fig-tensor__part.is-bad .fig-tensor__text { fill: var(--fig-bad); font-weight: 700; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fig-tensor__part, .fig-tensor__box, .fig-tensor__cell, .fig-tensor__op, .fig-tensor__edge, .fig-tensor__text { transition: none; }
+}

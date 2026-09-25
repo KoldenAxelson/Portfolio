@@ -1,0 +1,13 @@
+{{/* Python for ML — chapter page. The course's own assets (code colours, the
+     code stepper), then the body every chapter section shares
+     (partials/chapters/chapter-page.html). */}}
+{{ define "banner" }}
+{{ partial "page-banner.html" (dict
+  "title" .Title
+  "subtitle" (.Params.lead | default "")) }}
+{{ end }}
+
+{{ define "main" }}
+{{- partial "python-for-ml-assets.html" . }}
+{{- partial "chapters/chapter-page.html" . }}
+{{ end }}

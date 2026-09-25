@@ -1,0 +1,53 @@
+{{- /*
+  python-vocab-map — "what you now know": every glossary term the course has
+  taught, grouped under the chapter that first links it.
+
+    {{< python-vocab-map >}}
+
+  The chapter comes from the prose, not a field: each {{< term "key" >}} in a
+  chapter's raw Markdown is a term it uses, so there's no `chapter:` to keep in
+  step with the glossary (Hugo can't see its "# ── Chapter N" comments), and a
+  new chapter's terms join the map as soon as its prose links them.
+
+  Hidden chapters count (a chapter in review still teaches its words); pages
+  with `build.list: never`, like the components demo, aren't regular pages, so
+  they don't. A glossary key no chapter links can't be placed, so it warns.
+
+  Terms are func/term-buttons, so the definitions ship from the layout
+  (partials/definitions-assets.html). With JavaScript off it's still a readable
+  list of every term, by chapter.
+*/ -}}
+{{- $set := partial "func/glossary-set.html" (dict "page" .Page "default" "python") -}}
+{{- $glossary := index site.Data.glossary $set -}}
+{{- $seen := newScratch -}}
+{{- $groups := slice -}}
+{{- range .Page.CurrentSection.RegularPages.ByWeight -}}
+  {{- $page := . -}}
+  {{- $keys := slice -}}
+  {{- range findRESubmatch `\{\{<\s*term\s+"([^"]+)"` .RawContent -}}
+    {{- $key := index . 1 -}}
+    {{- if or ($seen.Get $key) (not (index $glossary $key)) }}{{ continue }}{{ end -}}
+    {{- $seen.Set $key true -}}
+    {{- $keys = $keys | append $key -}}
+  {{- end -}}
+  {{- with $keys }}{{ $groups = $groups | append (dict "page" $page "keys" .) }}{{ end -}}
+{{- end -}}
+{{- range $key, $_ := $glossary -}}
+  {{- if not ($seen.Get $key) -}}
+    {{- warnf "python-vocab-map: glossary term %q is linked by no chapter, so the map can't place it" $key -}}
+  {{- end -}}
+{{- end -}}
+<div class="not-prose my-6 space-y-5">
+  {{- range $groups }}
+  <section aria-labelledby="vocab-{{ .page.File.ContentBaseName }}">
+    <h3 id="vocab-{{ .page.File.ContentBaseName }}" class="m-0 text-sm font-semibold text-fg">
+      <a href="{{ .page.RelPermalink }}" class="no-underline hover:!text-accent">{{ .page.Title }}</a>
+    </h3>
+    <ul class="m-0 mt-2 flex list-none flex-wrap gap-x-4 gap-y-1 p-0 text-sm" role="list">
+      {{- range .keys }}
+      <li>{{ partial "func/term-button.html" (dict "key" . "set" $set "label" (index $glossary .).term) }}</li>
+      {{- end }}
+    </ul>
+  </section>
+  {{- end }}
+</div>

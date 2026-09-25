@@ -61,6 +61,10 @@
        for the red corner mark on that page's card. */ -}}
 {{- $known = $known | append "blurb" "icon" "prose" "hidden" "youtube" -}}
 
+{{- /* partials/chapter-select.html and partials/topnav.html — a section whose
+       chapters get the jump-to-chapter menu. Set by the section's cascade. */ -}}
+{{- $known = $known | append "chapters" -}}
+
 {{- /* partials/definitions-assets.html — which data/glossary/<set>.yaml a page
        ships, and (via shortcodes/term.html) which set a bare {{< term >}} call
        resolves against. A string or a list of set names. */ -}}

@@ -1,0 +1,1853 @@
+# Python for ML glossary — the single source of truth for the {{< term >}}
+# popovers on /misc/python-for-ml/. Key (lowercase-hyphen) is what you pass to
+# the shortcode; `term` is the label shown in the window header, `definition` is
+# the body. The course's _index.md cascades `glossary: "python"`, so every
+# chapter reads this set.
+#
+# Definitions are authored here and never rendered inline in a chapter — they're
+# the drill-down, reached by clicking a term. One plain sentence; `notes` for the
+# why or a tiny example. Function names are written as they are called
+# (np.reshape, df.loc) so the window header matches the code on the page.
+#
+# ── Shared with ml.yaml ───────────────────────────────────────────────
+# A page reads ONE glossary, so the few ideas the ML articles also define
+# (gradient, loss, epoch, overfitting, data leakage…) are COPIED here with the
+# same `term` and `definition` wording. Each copy carries a comment naming its
+# source entry: change both or neither.
+#
+# ── Cross-references ──────────────────────────────────────────────────
+# Inside a definition, [[key|display text]] marks another glossary term. ALWAYS
+# use the explicit two-part form. On desktop each opens another window, on
+# mobile it replaces the panel. **bold** also works.
+#
+# ── Word and term lists ───────────────────────────────────────────────
+# `wordgroups` / `termgroups`, same shapes as in basic-logic.yaml: one unlabelled
+# group renders as chips, two or more labelled groups as a comparison table.
+#
+# ── Aliases ───────────────────────────────────────────────────────────
+# `aliases` lists the other spellings the prose may link (plural, the method
+# form, the attribute form). scripts/check-terms.py accepts them.
+#
+# ── Figures ───────────────────────────────────────────────────────────
+# `figure` adds a micro-diagram (assets/scripts/site/def-figures-python.ts). One
+# drawing per family, highlighted differently per term — see the table in
+# docs/python-for-ml-authoring.md for every kind and its options.
+# ──────────────────────────────────────────────────────────────────────
+
+# ── Chapter 1: Python for people who already code ────────────────────
+
+list:
+  term: list
+  aliases: ['lists']
+  definition: >-
+    Python's ordered, growable sequence, written [3, 1, 2], which keeps
+    repeats and can hold values of any type.
+  notes:
+    - "The nearest thing to a Go slice or a TypeScript array: xs[0] reads the first value and xs.append(v) adds one to the end."
+  figure: { kind: py-values, highlight: list }
+
+dict:
+  term: dict
+  aliases: ['dicts', 'dictionary', 'dictionaries']
+  definition: >-
+    A mapping from keys to values, written {'lr': 0.1}, that looks a value up
+    by its key and keeps the keys in the order they were added.
+  notes:
+    - "The nearest thing to a Go map or a TypeScript object; d[key] raises KeyError for a missing key, and d.get(key) returns None instead."
+  figure: { kind: py-values, highlight: dict }
+
+set:
+  term: set
+  aliases: ['sets']
+  definition: >-
+    An unordered collection of distinct values, written {1, 2, 3}, used to
+    drop repeats and to test membership with x in s.
+  notes:
+    - "{} is an empty [[dict|dict]], not an empty set; write set() for that."
+  figure: { kind: py-values, highlight: set }
+
+comprehension:
+  term: comprehension
+  aliases: ['comprehensions', 'list comprehension', 'dict comprehension', 'set comprehension']
+  definition: >-
+    An expression that builds a new [[list|list]], [[dict|dict]] or
+    [[set|set]] from another sequence in one line: [x * x for x in xs if x > 0].
+  notes:
+    - "It replaces the Go loop that appends to a slice. {k: v for …} builds a dict and {v for …} a set."
+  figure: { kind: py-values, highlight: comprehension }
+
+f-string:
+  term: f-string
+  aliases: ['f-strings', 'formatted string literal']
+  definition: >-
+    A string literal prefixed with f whose {braces} hold expressions,
+    evaluated and formatted when the line runs: f'loss {loss:.3f}'.
+  notes:
+    - "Like a TypeScript template literal. After a colon inside the braces comes a format spec: .2f for two decimals, , for thousands separators."
+
+unpacking:
+  term: unpacking
+  aliases: ['unpack', 'unpacks', 'unpacked']
+  definition: >-
+    Assigning the parts of a sequence to several names at once, as in
+    a, b = pair, where one starred name can collect whatever is left:
+    first, *rest = xs.
+  notes:
+    - "It is how a function hands back several values: loss, acc = evaluate(model). Without a starred name the counts must match, or Python raises ValueError."
+  figure: { kind: py-values, highlight: unpacking }
+
+args-kwargs:
+  term: "*args and **kwargs"
+  aliases: ['*args', '**kwargs', 'args', 'kwargs']
+  definition: >-
+    Parameters that collect a call's extra arguments: *args gathers the
+    positional ones into a tuple and **kwargs the keyword ones into a
+    [[dict|dict]].
+  notes:
+    - "At a call the stars work the other way round: f(*xs) spreads a list into positional arguments and f(**config) spreads a dict into keyword arguments."
+  figure: { kind: py-values, highlight: args }
+
+dataclass:
+  term: dataclass
+  aliases: ['dataclasses', '@dataclass']
+  definition: >-
+    A decorator, @dataclass from the dataclasses module, that writes a class's
+    __init__, __repr__ and __eq__ for you from its annotated fields.
+  notes:
+    - "Close to a Go struct that comes with a constructor, printing and equality. The field types are [[type-hints|type hints]], so nothing checks them when the code runs."
+
+context-manager:
+  term: context manager
+  aliases: ['context managers', 'with statement', 'with block']
+  definition: >-
+    An object used in a with statement that sets something up on entry and
+    cleans it up on exit, even if the block raises: with path.open() as f:
+    closes the file when the block ends.
+  notes:
+    - "The nearest Go idea is defer f.Close(). The object defines __enter__ and __exit__."
+
+generator:
+  term: generator
+  aliases: ['generators', 'generator expression', 'generator function']
+  definition: >-
+    A function that uses yield, or an expression like (x * x for x in xs),
+    that produces its values one at a time as they are asked for instead of
+    building a whole [[list|list]] first.
+  notes:
+    - "Once it has run to the end it is used up: a second loop over it gets nothing, and nothing raises."
+  figure: { kind: py-values, highlight: generator }
+
+type-hints:
+  term: type hints
+  aliases: ['type hint', 'type annotations']
+  definition: >-
+    Annotations such as lr: float or def f(x: int) -> str that state the
+    expected types for readers, editors and checkers like mypy, but that
+    Python itself does not enforce when the code runs.
+  notes:
+    - "Unlike Go or TypeScript, a wrong type is not caught before the program runs unless you run a type checker yourself."
+
+pathlib-path:
+  term: pathlib.Path
+  aliases: ['pathlib', 'Path']
+  definition: >-
+    A file-system path as an object rather than a string: Path('data') /
+    'runs.csv' joins parts with /, and methods like .read_text(), .open() and
+    .exists() act on the file.
+  notes:
+    - "It uses the right separator for the operating system, so the same code runs on Windows, macOS and Linux."
+
+virtual-environment:
+  term: virtual environment
+  aliases: ['virtual environments', 'venv']
+  definition: >-
+    A folder holding its own set of installed packages on top of a base
+    Python, made with python3 -m venv <folder>, so each project's versions
+    stay apart from every other's.
+  notes:
+    - "Switch it on with its activate script (source <folder>/bin/activate on macOS and Linux). It gets its own [[pip|pip]] by default; think of a node_modules folder that comes with its own python command."
+
+pip:
+  term: pip
+  definition: >-
+    The package installer for Python: pip install -r requirements.txt installs
+    every version a requirements file pins into the active
+    [[virtual-environment|virtual environment]].
+  notes:
+    - "python -m pip … makes sure it is the pip that belongs to the Python you mean."
+
+uv:
+  term: uv
+  definition: >-
+    A Python package and project manager from Astral, written in Rust, that
+    can do [[pip|pip]]'s job and make virtual environments too: uv venv makes
+    one and uv pip install -r requirements.txt fills it.
+  notes:
+    - "Unlike pip, uv expects a virtual environment by default; uv venv makes one in .venv."
+
+jupyter-notebook:
+  term: Jupyter notebook
+  aliases: ['Jupyter notebooks', 'Jupyter', 'notebook', 'notebooks']
+  definition: >-
+    A document (.ipynb) of cells holding code, its output and notes, run one
+    cell at a time against a live Python process that keeps variables between
+    runs.
+
+# ── Chapter 2: arrays and shapes ─────────────────────────────────────
+
+ndarray:
+  term: ndarray
+  aliases: ['array', 'arrays', 'ndarrays', 'NumPy array']
+  definition: >-
+    NumPy's array: a grid of values that all share one [[dtype|dtype]], stored
+    as one block of memory, with a [[shape|shape]] giving its length along
+    each [[axis|axis]].
+  figure: { kind: array-grid, highlight: ndarray }
+
+shape:
+  term: shape
+  aliases: ['shapes', '.shape']
+  definition: >-
+    A tuple giving an array's length along each [[axis|axis]]: a grid of 3
+    rows and 4 columns has shape (3, 4), and a flat array of 12 values has
+    shape (12,).
+  figure: { kind: array-grid, highlight: shape }
+
+dtype:
+  term: dtype
+  aliases: ['dtypes', '.dtype', 'data type']
+  definition: >-
+    The one type every value in an array shares, such as int64 or float32,
+    which fixes how many bytes each value takes.
+  notes:
+    - "Change it with a.astype(np.float32), which returns a new array."
+    - "In a pandas [[dataframe|DataFrame]] each column has its own dtype, and pandas 3 reads text as the str dtype."
+    - "A PyTorch [[tensor|tensor]] writes it torch.float32 or torch.int64. Python floats become float32, not NumPy's float64, while [[from-numpy|torch.from_numpy]] keeps the array's dtype; change it with t.to(torch.float64) or t.float()."
+  figure: { kind: array-grid, highlight: dtype }
+
+axis:
+  term: axis
+  aliases: ['axes', 'axis=']
+  definition: >-
+    One dimension of an array, numbered from 0: in a 2-D array axis 0 runs
+    down the rows and axis 1 runs across the columns.
+  figure: { kind: array-grid, highlight: axis }
+
+np-array:
+  term: np.array
+  aliases: ['np.array()']
+  definition: >-
+    Makes an [[ndarray|ndarray]] from a Python list (nested lists for more
+    dimensions), copying the values and picking a [[dtype|dtype]] that fits
+    them all.
+  figure: { kind: array-grid, highlight: np-array }
+
+zeros:
+  term: np.zeros
+  aliases: ['zeros']
+  definition: >-
+    Makes an array of the given [[shape|shape]] filled with 0; the
+    [[dtype|dtype]] is float64 unless you pass dtype=.
+  figure: { kind: array-grid, highlight: zeros }
+
+ones:
+  term: np.ones
+  aliases: ['ones']
+  definition: >-
+    Makes an array of the given [[shape|shape]] filled with 1, float64 unless
+    you pass dtype=.
+  figure: { kind: array-grid, highlight: ones }
+
+full:
+  term: np.full
+  aliases: ['full']
+  definition: >-
+    Makes an array of the given [[shape|shape]] filled with one value you
+    choose, with a [[dtype|dtype]] taken from that value unless you pass one.
+  figure: { kind: array-grid, highlight: full }
+
+arange:
+  term: np.arange
+  aliases: ['arange']
+  definition: >-
+    Counts from a start (default 0) up to, but not including, a stop, in steps
+    (default 1), like Python's range but returning an array.
+  figure: { kind: array-grid, highlight: arange }
+
+linspace:
+  term: np.linspace
+  aliases: ['linspace']
+  definition: >-
+    Returns a fixed number of evenly spaced points from start to stop,
+    including both ends by default (50 points unless you pass num).
+  notes:
+    - "Use it when you know how many points you want; use [[arange|np.arange]] when you know the step."
+  figure: { kind: array-grid, highlight: linspace }
+
+default-rng:
+  term: np.random.default_rng
+  aliases: ['default_rng', 'random generator']
+  definition: >-
+    Makes a random number generator; give it a seed and it produces the same
+    numbers every run on the same NumPy version, which is what makes an
+    experiment repeatable.
+  notes:
+    - "Call its methods: rng.random(shape), rng.integers(low, high, size), rng.normal(size=…)."
+  figure:
+    kind: array-grid
+    highlight: default-rng
+    label: "np.random.default_rng(0).integers(0, 10, 4)"
+    values: [8, 6, 5, 2]
+
+indexing:
+  term: indexing
+  aliases: ['index', 'indexes', 'indexed']
+  definition: >-
+    Reading one value by giving one position per [[axis|axis]], counted from
+    0: a[1, 2] is row 1, column 2.
+  notes:
+    - "A negative position counts from the end: a[-1] is the last row."
+    - "Give fewer positions than axes and you get the rest whole: a[1] is all of row 1, and that axis is dropped from the [[shape|shape]]."
+  figure: { kind: array-grid, highlight: index }
+
+slicing:
+  term: slicing
+  aliases: ['slice', 'slices', 'sliced']
+  definition: >-
+    Reading a range along an [[axis|axis]] with start:stop:step, where stop is
+    excluded and any part can be left out: a[1:, ::2] is every row from 1 on,
+    every second column.
+  notes:
+    - "A slice keeps the axis it slices, and it is a [[view|view]] of the original, not a [[copy|copy]]."
+  figure: { kind: array-grid, highlight: slicing }
+
+boolean-mask:
+  term: boolean mask
+  aliases: ['mask', 'masks', 'masking', 'boolean masks', 'boolean indexing']
+  definition: >-
+    An array of True and False the same [[shape|shape]] as another; indexing
+    with it, a[a > 5], returns the values where it is True, as a 1-D array.
+  notes:
+    - "In pandas a boolean [[series|Series]] picks rows: df[df['loss'] < 0.4] keeps the rows where it is True, and a row whose loss is NaN gets False."
+  figure: { kind: array-grid, highlight: mask }
+
+fancy-indexing:
+  term: fancy indexing
+  aliases: ['integer array indexing']
+  definition: >-
+    Indexing with a list or array of positions, a[[2, 0]], which picks those
+    rows (or values) in that order, repeats allowed, and always returns a
+    [[copy|copy]].
+  figure: { kind: array-grid, highlight: fancy }
+
+reshape:
+  term: reshape
+  aliases: ['.reshape', 'np.reshape', 'reshaped', 'reshaping']
+  definition: >-
+    Reads the same values, in the same order, into a new [[shape|shape]]; the
+    old and new shapes must hold the same number of values.
+  notes:
+    - "It returns a [[view|view]] when the memory allows and a [[copy|copy]] when it doesn't."
+  figure: { kind: array-grid, highlight: reshape }
+
+reshape-minus-one:
+  term: -1 in reshape
+  aliases: ['-1']
+  definition: >-
+    One length in a [[reshape|reshape]] may be -1, meaning "whatever makes the
+    count work": a 12-value array reshaped to (6, -1) becomes (6, 2).
+  figure: { kind: array-grid, highlight: reshape-minus-one }
+
+ravel:
+  term: ravel
+  aliases: ['.ravel', 'np.ravel']
+  definition: >-
+    Lays an array out as one flat 1-D array, row by row, returning a
+    [[view|view]] of the original when it can and a [[copy|copy]] only when it
+    must.
+  figure: { kind: array-grid, highlight: ravel }
+
+flatten:
+  term: flatten
+  aliases: ['.flatten', 'flattened']
+  definition: >-
+    Lays an array out as one flat 1-D array, row by row, and always returns a
+    new [[copy|copy]].
+  figure: { kind: array-grid, highlight: flatten }
+
+transpose:
+  term: transpose
+  aliases: ['.T', 'T', 'transposed', 'np.transpose']
+  definition: >-
+    Reverses an array's axes, so rows become columns: a (3, 4) array's
+    transpose, a.T, has [[shape|shape]] (4, 3).
+  notes:
+    - "It is a [[view|view]], not a [[copy|copy]]."
+  figure: { kind: array-grid, highlight: transpose }
+
+# ── Chapter 3: vectorize everything ──────────────────────────────────
+
+vectorization:
+  term: vectorization
+  aliases: ['vectorize', 'vectorized', 'vectorizing']
+  definition: >-
+    Writing one operation over whole arrays instead of a Python loop over their
+    values, so the loop runs inside NumPy's compiled code.
+  notes:
+    - "np.vectorize is not this: its docs say it is essentially a for loop, provided for convenience."
+  figure: { kind: broadcast, highlight: vectorize }
+
+ufunc:
+  term: ufunc
+  aliases: ['ufuncs', 'universal function', 'universal functions']
+  definition: >-
+    A NumPy function that works element by element on arrays of any
+    [[shape|shape]], with [[broadcasting|broadcasting]]: np.sqrt, np.exp and
+    np.maximum are ufuncs, and a + b on arrays calls the ufunc np.add.
+  figure: { kind: broadcast, highlight: ufunc }
+
+broadcasting:
+  term: broadcasting
+  aliases: ['broadcast', 'broadcasts']
+  definition: >-
+    How NumPy combines arrays of different [[shape|shapes]]: it lines the
+    shapes up from the right, and each pair of lengths must be equal or one of
+    them 1; a length-1 or missing axis is stretched to match.
+  notes:
+    - "(3, 4) + (4,) works; (3, 4) + (3,) doesn't, because the last lengths, 4 and 3, differ and neither is 1."
+  figure: { kind: broadcast, highlight: row }
+
+reduction:
+  term: reduction
+  aliases: ['reductions', 'reduce', 'reduces']
+  definition: >-
+    An operation that turns many values into fewer, like [[sum|sum]] or
+    [[mean|mean]]: with no axis it returns one value, and with axis= it
+    collapses just that [[axis|axis]].
+  figure: { kind: axis-sweep, op: sum, axis: 0 }
+
+sum:
+  term: sum
+  aliases: ['.sum', 'np.sum', 'sums']
+  definition: >-
+    Adds values up: a.sum() is one number, and a.sum(axis=0) adds down the
+    rows, giving one total per column.
+  figure: { kind: axis-sweep, op: sum, axis: 0 }
+
+mean:
+  term: mean
+  aliases: ['.mean', 'np.mean', 'means', 'average']
+  definition: >-
+    The average of the values, over the whole array or along one
+    [[axis|axis]]; the result is a float even for integer input.
+  figure: { kind: axis-sweep, op: mean, axis: 1 }
+
+max:
+  term: max
+  aliases: ['.max', 'np.max']
+  definition: >-
+    The largest value, over the whole array or along one [[axis|axis]].
+  figure: { kind: axis-sweep, op: max, axis: 0 }
+
+argmax:
+  term: argmax
+  aliases: ['.argmax', 'np.argmax']
+  definition: >-
+    The position of the largest value rather than the value itself; along an
+    [[axis|axis]] it gives one position per row or column, which is how a
+    classifier's scores become predicted classes.
+  figure: { kind: axis-sweep, op: argmax, axis: 1 }
+
+keepdims:
+  term: keepdims
+  aliases: ['keepdims=True']
+  definition: >-
+    An option on a [[reduction|reduction]] that keeps the collapsed
+    [[axis|axis]] with length 1, so the result still lines up with the
+    original for [[broadcasting|broadcasting]].
+  notes:
+    - "x.mean(axis=1) on a (4, 3) array has shape (4,); with keepdims=True it is (4, 1), and x - x.mean(axis=1, keepdims=True) works row by row."
+  figure: { kind: axis-sweep, op: mean, axis: 1, keepdims: true }
+
+matmul:
+  term: matmul
+  aliases: ['@', 'np.matmul', 'matrix multiplication', 'matrix product']
+  definition: >-
+    Matrix multiplication, written a @ b: an (n, k) array times a (k, m)
+    array gives an (n, m) array, so the inner lengths must match.
+  notes:
+    - "Each result value is one row of a times one column of b, multiplied pairwise and summed: a [[reduction|reduction]] over the shared axis."
+  figure: { kind: axis-sweep, op: matmul }
+
+dot:
+  term: np.dot
+  aliases: ['dot', 'dot product']
+  definition: >-
+    The dot product: for two 1-D arrays, the sum of their pairwise products;
+    for 2-D arrays it is the same as [[matmul|matmul]], which NumPy's docs
+    prefer, written @.
+  figure: { kind: axis-sweep, op: matmul }
+
+concatenate:
+  term: np.concatenate
+  aliases: ['concatenate', 'concatenated']
+  definition: >-
+    Joins arrays end to end along an existing [[axis|axis]] (axis 0 unless you
+    say otherwise); every other length must match.
+  figure: { kind: array-grid, highlight: concatenate }
+
+stack:
+  term: np.stack
+  aliases: ['stack', 'stacked', 'stacking']
+  definition: >-
+    Joins arrays of the same [[shape|shape]] along a new [[axis|axis]]: two
+    (2, 3) arrays stack into one (2, 2, 3) array.
+  figure: { kind: array-grid, highlight: stack }
+
+where:
+  term: np.where
+  aliases: ['where']
+  definition: >-
+    np.where(condition, x, y) takes each value from x where the condition is
+    True and from y where it is False, [[broadcasting|broadcasting]] all
+    three.
+  notes:
+    - "With only a condition, np.where(condition) returns the positions where it is True, as a tuple of index arrays, one per axis; the docs prefer condition.nonzero() for that."
+  figure: { kind: array-grid, highlight: where }
+
+clip:
+  term: np.clip
+  aliases: ['clip', 'clipped', 'clipping']
+  definition: >-
+    Limits values to a range: anything below the low bound becomes the low
+    bound and anything above the high bound becomes the high bound.
+  figure: { kind: array-grid, highlight: clip }
+
+view:
+  term: view
+  aliases: ['views']
+  definition: >-
+    A new array object that shares its values' memory with another array, so
+    writing to one changes the other; [[slicing|slicing]] and
+    [[transpose|transpose]] return views.
+  notes:
+    - "np.shares_memory(a, b) tells you whether two arrays share memory."
+  figure: { kind: view-copy, highlight: view }
+
+copy:
+  term: copy
+  aliases: ['copies', '.copy', 'copied']
+  definition: >-
+    An array with its own memory, so changing it leaves the original alone;
+    make one with a.copy().
+  figure: { kind: view-copy, highlight: copy }
+
+save:
+  term: np.save
+  aliases: ['save']
+  definition: >-
+    Writes one array to a .npy file, keeping its [[dtype|dtype]] and
+    [[shape|shape]].
+  figure: { kind: view-copy, highlight: save }
+
+load:
+  term: np.load
+  aliases: ['load']
+  definition: >-
+    Reads an array back from a .npy file (or several from a .npz file) with
+    the [[dtype|dtype]] and [[shape|shape]] it was saved with.
+  figure: { kind: view-copy, highlight: save }
+
+# ── Chapter 4: tables ────────────────────────────────────────────────
+
+dataframe:
+  term: DataFrame
+  aliases: ['DataFrames', 'pd.DataFrame', 'data frame']
+  definition: >-
+    pandas' table: named columns that share one [[df-index|index]] of row
+    labels, where each column is a [[series|Series]] with its own
+    [[dtype|dtype]].
+  notes:
+    - "df.shape is (rows, columns); df.columns lists the names and df.dtypes the dtype of each column."
+  figure: { kind: frame, highlight: dataframe }
+
+series:
+  term: Series
+  aliases: ['pd.Series']
+  definition: >-
+    pandas' one-dimensional labelled data: values of one [[dtype|dtype]] with
+    an [[df-index|index]] that labels them, which is what each column of a
+    [[dataframe|DataFrame]] is.
+  notes:
+    - "df['loss'] gives a Series; df[['loss']], with a list, gives a one-column [[dataframe|DataFrame]]."
+  figure: { kind: frame, highlight: series }
+
+df-index:
+  term: index
+  aliases: ['.index', 'row labels']
+  definition: >-
+    The labels down the side of a [[dataframe|DataFrame]] or
+    [[series|Series]], which [[loc|loc]] looks rows up by; pd.read_csv numbers
+    the rows 0, 1, 2… unless you pass index_col.
+  notes:
+    - "Filtering or dropping rows keeps the labels the rows had, so they can have gaps; df.reset_index(drop=True) numbers them again."
+  figure: { kind: frame, highlight: index }
+
+read-csv:
+  term: pd.read_csv
+  aliases: ['read_csv']
+  definition: >-
+    Reads a CSV file into a [[dataframe|DataFrame]], working out a
+    [[dtype|dtype]] for each column and reading blank fields as
+    [[missing-value|missing values]].
+  notes:
+    - "index_col='run' makes that column the [[df-index|index]]; na_values=['?'] adds '?' to the markers read as missing."
+    - "In pandas 3, text columns come in as the str dtype, not object."
+  figure: { kind: frame, highlight: read-csv }
+
+read-parquet:
+  term: pd.read_parquet
+  aliases: ['read_parquet']
+  definition: >-
+    Reads a Parquet file, a binary format that stores each column's
+    [[dtype|dtype]] with its data, into a [[dataframe|DataFrame]].
+  notes:
+    - "df.to_parquet(path) writes one; both need pyarrow (or fastparquet) installed."
+    - "A CSV holds only text, so a float32 column written to CSV comes back float64; Parquet gives back float32."
+  figure: { kind: frame, highlight: read-parquet }
+
+head:
+  term: head
+  aliases: ['.head', 'df.head']
+  definition: >-
+    Returns the first n rows of a table, 5 unless you pass n, for a quick
+    look.
+  figure: { kind: frame, highlight: head }
+
+info:
+  term: info
+  aliases: ['.info', 'df.info']
+  definition: >-
+    Prints a summary of a [[dataframe|DataFrame]]: its [[df-index|index]], each
+    column's name, count of non-missing values and [[dtype|dtype]], and its
+    memory use.
+  figure: { kind: frame, highlight: info }
+
+describe:
+  term: describe
+  aliases: ['.describe', 'df.describe']
+  definition: >-
+    Returns summary statistics for each numeric column (count, mean, standard
+    deviation, min, quartiles and max), leaving out
+    [[missing-value|missing values]].
+  notes:
+    - "Text columns are skipped when a table has numeric ones; include='all' describes every column."
+  figure: { kind: frame, highlight: describe }
+
+column-selection:
+  term: column selection
+  aliases: ['column selections']
+  definition: >-
+    Picking columns by name in square brackets: df['loss'] returns one column
+    as a [[series|Series]], and df[['model', 'loss']], with a list, returns a
+    [[dataframe|DataFrame]].
+  figure: { kind: frame, highlight: column-selection }
+
+loc:
+  term: loc
+  aliases: ['.loc', 'df.loc']
+  definition: >-
+    Selects rows and columns by label, df.loc[rows, columns], where a label
+    slice includes its end: df.loc['r2':'r3'] is both rows.
+  notes:
+    - "It also takes a [[boolean-mask|boolean mask]] for the rows, df.loc[df['loss'] < 0.4, 'model'], and it is how to write into a table: df.loc['r2', 'loss'] = 0.5."
+  figure: { kind: frame, highlight: loc }
+
+iloc:
+  term: iloc
+  aliases: ['.iloc', 'df.iloc']
+  definition: >-
+    Selects rows and columns by position, counted from 0 as in NumPy,
+    df.iloc[1:3, 0:2], where a slice leaves out its end.
+  figure: { kind: frame, highlight: iloc }
+
+assign:
+  term: assign
+  aliases: ['.assign', 'df.assign']
+  definition: >-
+    Returns a new [[dataframe|DataFrame]] with extra (or replaced) columns,
+    each given as name=values: df.assign(steps=df['epochs'] * 250).
+  notes:
+    - "The original is left alone. A function in place of the values, steps=lambda d: d['epochs'] * 250, is called on the table as it is at that step."
+  figure: { kind: frame, highlight: assign }
+
+astype:
+  term: astype
+  aliases: ['.astype']
+  definition: >-
+    Returns a copy converted to another [[dtype|dtype]], for the whole table
+    or per column with a dict: df.astype({'epochs': 'int64'}).
+  notes:
+    - "A column holding NaN can't become int64, which has no missing value, so fill or drop the gaps first; float to int cuts off the fraction (1.9 becomes 1)."
+  figure: { kind: frame, highlight: astype }
+
+missing-value:
+  term: missing value
+  aliases: ['missing values', 'NaN']
+  definition: >-
+    A gap in the data, which pandas' default dtypes mark as NaN (NaT for dates
+    and times), and which [[reduction|reductions]] like [[sum|sum]] and
+    [[mean|mean]] leave out.
+  notes:
+    - "Comparing NaN with <, >, <=, >= or == gives False, even NaN == NaN (only != gives True), so test for gaps with [[isna|isna]], never with == np.nan."
+  figure: { kind: frame, highlight: missing-value }
+
+isna:
+  term: isna
+  aliases: ['.isna', 'isnull']
+  definition: >-
+    Returns True where a value is missing and False elsewhere, in the same
+    shape as the input.
+  notes:
+    - "df.isna().sum() counts the missing values in each column; isnull is another name for it."
+  figure: { kind: frame, highlight: isna }
+
+fillna:
+  term: fillna
+  aliases: ['.fillna']
+  definition: >-
+    Returns a copy with the [[missing-value|missing values]] replaced, by one
+    value everywhere or by a dict of values per column:
+    df.fillna({'epochs': 10}).
+  figure: { kind: frame, highlight: fillna }
+
+dropna:
+  term: dropna
+  aliases: ['.dropna']
+  definition: >-
+    Returns a copy without the rows that have any
+    [[missing-value|missing value]]; subset=['loss'] looks only at those
+    columns, and axis=1 drops columns instead.
+  figure: { kind: frame, highlight: dropna }
+
+value-counts:
+  term: value_counts
+  aliases: ['.value_counts']
+  definition: >-
+    Counts how often each distinct value appears in a [[series|Series]], most
+    common first, leaving out [[missing-value|missing values]] unless you
+    pass dropna=False.
+  figure: { kind: frame, highlight: value-counts }
+
+to-numpy:
+  term: to_numpy
+  aliases: ['.to_numpy']
+  definition: >-
+    Returns the values of a [[series|Series]] or [[dataframe|DataFrame]],
+    without their labels, as a NumPy [[ndarray|ndarray]] of one
+    [[dtype|dtype]] that fits every column.
+  notes:
+    - "Under [[copy-on-write|copy-on-write]] the array can be read-only when it shares memory with the table; take a .copy() to write to it."
+  figure: { kind: frame, highlight: to-numpy }
+
+copy-on-write:
+  term: copy-on-write
+  aliases: ['Copy-on-Write', 'CoW']
+  definition: >-
+    pandas 3's rule that anything taken from a [[dataframe|DataFrame]] or
+    [[series|Series]] behaves as a separate [[copy|copy]], though the data is
+    only copied once one of them is changed.
+  notes:
+    - "Always on since pandas 3.0. A change to a selection never reaches the table it came from, unlike a NumPy [[view|view]]; to change a table, change it directly, as in df.loc['r2', 'loss'] = 0.5."
+  figure: { kind: frame, highlight: copy-on-write }
+
+chained-assignment:
+  term: chained assignment
+  aliases: ['chained assignments']
+  definition: >-
+    Setting a value through two indexing steps, df['loss']['r2'] = 0.5, which
+    under [[copy-on-write|copy-on-write]] writes into a temporary copy and
+    leaves the table unchanged.
+  notes:
+    - "pandas 3 warns with a ChainedAssignmentError. Write it as one [[loc|loc]] step: df.loc['r2', 'loss'] = 0.5."
+  figure: { kind: frame, highlight: chained-assignment }
+
+# ── Chapter 5: reshape and combine ───────────────────────────────────
+
+groupby:
+  term: groupby
+  aliases: ['.groupby', 'df.groupby']
+  definition: >-
+    Splits a [[dataframe|DataFrame]]'s rows into groups by the values of one
+    or more key columns, so that a [[reduction|reduction]] runs once per group
+    and the results come back combined, one row per group.
+  notes:
+    - "The keys become the [[df-index|index]], sorted (sort=True is the default); as_index=False keeps them as a column. Rows whose key is missing are left out unless you pass dropna=False."
+  figure: { kind: split-apply-combine, highlight: groupby }
+
+agg:
+  term: agg
+  aliases: ['.agg', 'aggregate', '.aggregate']
+  definition: >-
+    Runs one or more [[reduction|reductions]] per group in one call; in the
+    named form, agg(requests=('ms', 'size')), each keyword names a result
+    column and gives the column to reduce and how.
+  notes:
+    - "'size' counts the rows in each group and 'count' only the values that aren't missing. A list gives one column per reduction: df.groupby('endpoint')['ms'].agg(['count', 'mean']) has columns count and mean, and df.groupby('endpoint').agg(['count', 'mean']) two levels of column names, the column then the reduction."
+  figure: { kind: split-apply-combine, highlight: agg }
+
+merge:
+  term: merge
+  aliases: ['.merge', 'pd.merge', 'merged', 'merges']
+  definition: >-
+    Joins two [[dataframe|DataFrames]] on a key, pairing each row with the
+    rows of the other table that have the same key: how='inner' (the default)
+    keeps only keys found in both, 'left' every row of the left table, and
+    'outer' every key from either.
+  notes:
+    - "A key with no partner gets [[missing-value|NaN]] in the other table's columns, which turns an int column into float. outer sorts the keys; inner and left keep the left table's order."
+    - "A key that repeats in the right table repeats the matching left rows too; validate='many_to_one' raises a MergeError instead."
+  figure: { kind: join, highlight: merge }
+
+pd-concat:
+  term: pd.concat
+  aliases: ['concat']
+  definition: >-
+    Stacks a list of [[dataframe|DataFrames]] or [[series|Series]] into one,
+    one under another (axis=1 puts them side by side), lining the columns up
+    by name.
+  notes:
+    - "The row labels are kept, so they can repeat; ignore_index=True numbers the rows 0, 1, 2… again. A column that one table lacks is filled with [[missing-value|NaN]] in its rows."
+  figure: { kind: join, highlight: concat }
+
+sort-values:
+  term: sort_values
+  aliases: ['.sort_values']
+  definition: >-
+    Returns the rows sorted by one or more columns, smallest first unless you
+    pass ascending=False, with [[missing-value|missing values]] last.
+  notes:
+    - "Each row keeps its [[df-index|index]] label. sort_values(['endpoint', 'ms']) sorts by endpoint, then by ms within each endpoint."
+  figure: { kind: frame, highlight: sort-values }
+
+pivot-table:
+  term: pivot_table
+  aliases: ['.pivot_table', 'pd.pivot_table', 'pivot table']
+  definition: >-
+    Reshapes a long table into a grid, with one row per value of index=, one
+    column per value of columns=, and in each cell the values for that pair
+    reduced by aggfunc, the [[mean|mean]] unless you pass another.
+  notes:
+    - "A pair with no rows gets [[missing-value|NaN]], or fill_value if you pass one. The numbers are those of a [[groupby|groupby]] on both keys, with one key spread across the columns."
+  figure: { kind: split-apply-combine, highlight: pivot-table }
+
+melt:
+  term: melt
+  aliases: ['.melt', 'pd.melt', 'melted']
+  definition: >-
+    Reshapes a wide table into a long one: the id_vars columns stay, and each
+    other column's values become rows, beside the name of the column they came
+    from.
+  notes:
+    - "The two new columns are called variable (or the columns' own name, if they have one) and value; var_name= and value_name= rename them. After reset_index(), it turns a [[pivot-table|pivot_table]] back into long form: one row per cell, empty cells included as NaN, not the rows that were reduced."
+  figure: { kind: split-apply-combine, highlight: melt }
+
+apply:
+  term: apply
+  aliases: ['.apply']
+  definition: >-
+    Calls a Python function on each value of a [[series|Series]] (or each row
+    or column of a [[dataframe|DataFrame]]) and collects the results, which
+    is a Python loop, so a [[vectorization|vectorized]] expression is far
+    faster when one exists.
+  notes:
+    - "On 200,000 values, ms.apply(lambda v: v / 1000) takes more than ten times as long as ms / 1000 (the chapter's example checks it). Keep apply for logic that no vectorized method covers."
+  figure: { kind: frame, highlight: apply }
+
+to-datetime:
+  term: pd.to_datetime
+  aliases: ['to_datetime']
+  definition: >-
+    Converts text (or numbers) to datetimes; parsed strings come back as the
+    [[dtype|dtype]] datetime64[us], microseconds, in pandas 3, or
+    datetime64[ns] when the text has nanoseconds.
+  notes:
+    - "Without format=, '01/09/2026' is read month first, as 9 January, with no warning. Give format='%d/%m/%Y' (or dayfirst=True) for day-first dates."
+    - "Strings with different UTC offsets raise a ValueError unless you pass utc=True."
+  figure: { kind: split-apply-combine, highlight: to-datetime }
+
+dt-accessor:
+  term: .dt
+  aliases: ['dt accessor']
+  definition: >-
+    The accessor for the parts of the datetimes in a [[series|Series]]:
+    s.dt.hour, s.dt.day_name() and s.dt.floor('h') work on every value at
+    once.
+  figure: { kind: split-apply-combine, highlight: dt }
+
+resample:
+  term: resample
+  aliases: ['.resample', 'resampled', 'resampling']
+  definition: >-
+    Groups rows into regular time bins, by a datetime [[df-index|index]] or
+    on= a datetime column, so that a [[reduction|reduction]] runs once per
+    bin; resample('h') makes one bin per hour, empty hours included.
+  notes:
+    - "For 'h', each bin runs from its start up to, but not including, the next hour and is labelled by its start (closed and label default to 'left')."
+    - "pandas 3 spells an hour 'h'; the old 'H' raises a ValueError."
+  figure: { kind: split-apply-combine, highlight: resample }
+
+rolling:
+  term: rolling
+  aliases: ['.rolling', 'rolling window']
+  definition: >-
+    A window that slides down a [[series|Series]] or
+    [[dataframe|DataFrame]]: rolling(3).mean() gives, at each row, the mean of
+    that row and the two before it.
+  notes:
+    - "A row without a full window gets [[missing-value|NaN]] unless you lower min_periods. With a datetime index, a window like '2h' covers a span of time instead of a count of rows."
+  figure: { kind: split-apply-combine, highlight: rolling }
+
+# ── Chapter 6: Matplotlib ────────────────────────────────────────────
+
+plt-subplots:
+  term: plt.subplots
+  aliases: ['subplots', 'fig, ax = plt.subplots()']
+  definition: >-
+    Makes a [[figure-object|Figure]] and the [[axes-object|Axes]] inside it
+    in one call, fig, ax = plt.subplots(), so you draw by calling methods on
+    ax.
+  notes:
+    - "plt.subplots(nrows, ncols) makes a [[subplot-grid|subplot grid]] instead; figsize=(width, height) in inches sets the size (6.4 × 4.8 by default), and layout='constrained' keeps labels from overlapping."
+  figure: { kind: plot-anatomy, highlight: subplots }
+
+figure-object:
+  term: Figure
+  aliases: ['figures', 'fig']
+  definition: >-
+    The whole image: the canvas that holds every [[axes-object|Axes]], and
+    what [[savefig|savefig]] writes to a file.
+  notes:
+    - "At the prompt a Figure prints as <Figure size 640x480 with 1 Axes>, naming its size in pixels and how many Axes it holds."
+  figure: { kind: plot-anatomy, highlight: figure }
+
+axes-object:
+  term: Axes
+  definition: >-
+    One plot area inside a [[figure-object|Figure]], with its own x and y
+    scales, tick labels, axis labels and title; its methods (ax.plot,
+    ax.set_title…) draw into it.
+  notes:
+    - "Axes is Matplotlib's name for one plot, not the plural of axis: each Axes has two Axis objects, the x and y scales with their ticks. It is also a different thing from a NumPy [[axis|axis]]."
+  figure: { kind: plot-anatomy, highlight: axes }
+
+ax-plot:
+  term: ax.plot
+  aliases: ['.plot', 'plt.plot']
+  definition: >-
+    Draws y against x as a line through the points, ax.plot(x, y), and each
+    further call adds another line to the same [[axes-object|Axes]] in the
+    next colour.
+  notes:
+    - "Given only y, x is 0, 1, 2…, except that a pandas [[series|Series]] uses its [[df-index|index]]. label='train' names the line for the [[legend|legend]]; a format string such as 'o--' sets markers and dashes."
+  figure: { kind: plot-anatomy, highlight: plot }
+
+scatter:
+  term: ax.scatter
+  aliases: ['scatter', 'scatter plot']
+  definition: >-
+    Draws one marker per (x, y) pair with no line between them, for how two
+    quantities go together, such as predictions against targets.
+  notes:
+    - "s= sets the marker size and c= can colour each point by a third value."
+  figure: { kind: plot-anatomy, highlight: scatter }
+
+hist:
+  term: ax.hist
+  aliases: ['hist', 'histogram', 'histograms']
+  definition: >-
+    Sorts values into bins and draws one bar per bin, its height the number
+    of values that fell in it, to show how values are spread.
+  notes:
+    - "bins=10 unless you pass another number (or the bin edges). It returns the counts, the bin edges and the bars."
+  figure: { kind: plot-anatomy, highlight: hist }
+
+bar:
+  term: ax.bar
+  aliases: ['bar', 'bar chart']
+  definition: >-
+    Draws one bar per category, ax.bar(names, heights), for comparing counts
+    or scores across a handful of labels.
+  notes:
+    - "Strings on x become categories in the order given. ax.barh draws the bars sideways, which suits long names."
+  figure: { kind: plot-anatomy, highlight: bar }
+
+imshow:
+  term: ax.imshow
+  aliases: ['imshow']
+  definition: >-
+    Draws a 2-D [[ndarray|array]] as a grid of coloured cells, one per value,
+    for images, attention maps and confusion matrices.
+  notes:
+    - "Row 0 is at the top (origin='upper') and the colours come from the 'viridis' colormap unless you pass cmap=; fig.colorbar(image) adds the key. A (height, width, 3) array is drawn as RGB."
+  figure: { kind: plot-anatomy, highlight: imshow }
+
+axis-labels:
+  term: ax.set_xlabel
+  aliases: ['set_xlabel', 'set_ylabel', 'ax.set_ylabel', 'axis label', 'axis labels']
+  definition: >-
+    Writes what the x (or, with set_ylabel, the y) direction measures under
+    or beside the [[axes-object|Axes]], such as 'epoch' and 'loss'.
+  notes:
+    - "In [[pyplot|pyplot style]] the same calls are plt.xlabel and plt.ylabel."
+  figure: { kind: plot-anatomy, highlight: labels }
+
+set-title:
+  term: ax.set_title
+  aliases: ['set_title', 'title', 'titles']
+  definition: >-
+    Writes a title above one [[axes-object|Axes]].
+  notes:
+    - "ax.title is the title's Text object, not a function: ax.title('loss') raises TypeError: 'Text' object is not callable. plt.title is the [[pyplot|pyplot]] function, and fig.suptitle titles the whole [[figure-object|Figure]]."
+  figure: { kind: plot-anatomy, highlight: title }
+
+legend:
+  term: ax.legend
+  aliases: ['legend', 'legends']
+  definition: >-
+    Draws a key that names each line, using the label= each drawing call was
+    given.
+  notes:
+    - "Called with no arguments it collects every artist whose label doesn't start with an underscore; with none, it warns 'No artists with labels found to put in legend'."
+  figure: { kind: plot-anatomy, highlight: legend }
+
+subplot-grid:
+  term: subplot grid
+  aliases: ['subplot grids', 'grid of subplots']
+  definition: >-
+    Several [[axes-object|Axes]] in rows and columns of one
+    [[figure-object|Figure]]: fig, axs = plt.subplots(2, 2) returns them as a
+    (2, 2) [[ndarray|array]], so axs[1, 0] is row 1, column 0.
+  notes:
+    - "One row or one column gives a 1-D array, axs[0] and axs[1]; squeeze=False always gives 2-D. sharex=True and sharey=True give the Axes the same scale, so panels compare at a glance."
+  figure: { kind: plot-anatomy, highlight: grid }
+
+log-scale:
+  term: log scale
+  aliases: ["set_yscale('log')", 'set_yscale', 'log scales', 'logarithmic scale']
+  definition: >-
+    An axis on which each equal step multiplies the value, set with
+    ax.set_yscale('log'), so a loss falling from 1 to 0.1 and from 0.1 to
+    0.01 take the same room.
+  notes:
+    - "It shows progress that a linear scale squashes flat near the bottom. Values of 0 or below have no logarithm; Matplotlib clips them by default (nonpositive='clip'). ax.set_xscale('log') does the same across."
+  figure: { kind: plot-anatomy, highlight: log-scale }
+
+savefig:
+  term: fig.savefig
+  aliases: ['savefig', 'plt.savefig']
+  definition: >-
+    Writes the [[figure-object|Figure]] to a file, in the format its
+    extension names: fig.savefig('loss.png') writes a PNG, 'loss.svg' an SVG.
+  notes:
+    - "dpi=150 sets a PNG's resolution (the figure's own 100 by default), and bbox_inches='tight' trims the empty margin. In a loop, plt.close(fig) after saving: pyplot keeps every figure open until closed and warns past 20."
+  figure: { kind: plot-anatomy, highlight: savefig }
+
+df-plot:
+  term: DataFrame.plot
+  aliases: ['df.plot', 'log.plot']
+  definition: >-
+    pandas' shortcut that draws a [[dataframe|DataFrame]] with Matplotlib, by
+    default one line per numeric column against the [[df-index|index]], with
+    a [[legend|legend]], and returns the [[axes-object|Axes]].
+  notes:
+    - "kind='bar', 'hist', 'scatter' and others pick the plot; logy=True sets a [[log-scale|log scale]], and ax= draws into an Axes you made, such as one cell of a [[subplot-grid|subplot grid]]. The index name becomes the x label."
+  figure: { kind: plot-anatomy, highlight: df-plot }
+
+pyplot:
+  term: pyplot
+  aliases: ['plt', 'matplotlib.pyplot', 'pyplot style']
+  definition: >-
+    Matplotlib's module of plain functions, imported as plt, which also
+    offers a style in which plt.plot, plt.title and plt.xlabel act on the
+    current [[axes-object|Axes]] instead of one you name.
+  notes:
+    - "The current Axes is the last one made, unless plt.sca(ax) picked another (plt.gca() returns it); calling an Axes' own methods doesn't change it, so after plt.subplots(1, 2) a plt.title call lands on the second one. Handy for a quick look at the prompt; Matplotlib's guide suggests the [[object-oriented-style|object-oriented style]] for anything bigger."
+  figure: { kind: plot-anatomy, highlight: pyplot }
+
+object-oriented-style:
+  term: object-oriented style
+  aliases: ['object-oriented', 'OO style']
+  definition: >-
+    Using Matplotlib by calling methods on the [[figure-object|Figure]] and
+    [[axes-object|Axes]] you made, ax.plot and ax.set_title, so every call
+    says which plot it changes.
+  notes:
+    - "Matplotlib's quick start calls it the explicit interface and suggests it for complicated plots and for functions and scripts meant to be reused."
+  figure: { kind: plot-anatomy, highlight: oo-style }
+
+# Copied from ml.yaml `overfitting` (same term and definition): change both or neither.
+overfitting:
+  term: Overfitting
+  aliases: ['overfit', 'overfits']
+  definition: >-
+    Fitting the training examples so closely, noise and all, that the model
+    does worse on new data. Memorizing the practice test.
+  figure: { kind: plot-anatomy, highlight: overfitting }
+
+# ── Chapter 7: the estimator pattern ─────────────────────────────────
+
+estimator:
+  term: estimator
+  aliases: ['estimators']
+  definition: >-
+    Any scikit-learn object that learns from data with [[fit|fit]]: a model,
+    a scaler, or a whole [[pipeline|Pipeline]] of them.
+  notes:
+    - "Settings go in when you make it, LogisticRegression(C=0.1); what it learns is stored in attributes ending in an underscore, coef_ or mean_, which exist only after fit. Models add [[predict|predict]]; preprocessors add [[transform|transform]]."
+  figure: { kind: estimator, highlight: estimator }
+
+fit:
+  term: fit
+  aliases: ['.fit', 'fitted', 'fits', 'fitting']
+  definition: >-
+    The method that makes an [[estimator|estimator]] learn from data, fit(X, y),
+    storing what it learned on the estimator and returning the estimator itself.
+  notes:
+    - "A second fit replaces what the first learned. Because fit returns the estimator, calls chain: LogisticRegression().fit(X_train, y_train).score(X_test, y_test). A preprocessor such as [[standard-scaler|StandardScaler]] takes fit(X) alone; its y is ignored."
+  figure: { kind: estimator, highlight: fit }
+
+predict:
+  term: predict
+  aliases: ['.predict', 'predicts', 'predicted']
+  definition: >-
+    A fitted model's method that returns one prediction per row of X: a class
+    for a classifier, a number for a regressor.
+  notes:
+    - "score(X, y) predicts and compares in one call: [[accuracy-score|accuracy]] for a classifier, R² for a regressor. A classifier's predict_proba gives each class's probability instead."
+  figure: { kind: estimator, highlight: predict }
+
+transform:
+  term: transform
+  aliases: ['.transform', 'transforms']
+  definition: >-
+    A fitted preprocessor's method that returns X rewritten with what
+    [[fit|fit]] learned, such as each column rescaled by the training mean and
+    spread.
+  notes:
+    - "An estimator with a transform method is called a transformer. It never learns anything new, so the test rows can go through transform safely."
+  figure: { kind: estimator, highlight: transform }
+
+fit-transform:
+  term: fit_transform
+  aliases: ['.fit_transform']
+  definition: >-
+    [[fit|fit]] then [[transform|transform]] on the same rows in one call: use
+    it on the training rows, and transform alone on every row after.
+  notes:
+    - "Called on the test rows, it fits a second time, so the test rows set their own scaling. A [[pipeline|Pipeline]] calls fit_transform on the training rows and transform on everything else for you."
+  figure: { kind: estimator, highlight: fit-transform }
+
+train-test-split:
+  term: train_test_split
+  definition: >-
+    Shuffles the rows and splits X and y into a training part and a
+    [[test-set|test set]], holding out a quarter of the rows (rounded up) by
+    default.
+  notes:
+    - "It returns four arrays in the order X_train, X_test, y_train, y_test. Pass random_state for the same split on every run, test_size to hold out another share, and stratify=y to keep each class's share the same in both parts."
+  figure: { kind: estimator, highlight: train-test-split }
+
+standard-scaler:
+  term: StandardScaler
+  definition: >-
+    A transformer that learns each column's mean and standard deviation in
+    [[fit|fit]], then rewrites every value as (x − mean) / std in
+    [[transform|transform]].
+  notes:
+    - "What it learned is in mean_ and scale_. Linear models, and anything trained by gradient descent, work better on scaled columns; tree models such as [[random-forest-classifier|RandomForestClassifier]] don't need them."
+  figure: { kind: estimator, highlight: standard-scaler }
+
+one-hot-encoder:
+  term: OneHotEncoder
+  definition: >-
+    A transformer that turns a text column into one 0/1 column per category
+    [[fit|fit]] saw, with a 1 in the column of each row's category.
+  notes:
+    - "By default a category fit never saw raises ValueError; handle_unknown='ignore' leaves the 0/1 columns of that feature at 0 instead. It returns a SciPy sparse matrix unless sparse_output=False, and the categories it learned are in categories_."
+  figure: { kind: estimator, highlight: one-hot-encoder }
+
+pipeline:
+  term: Pipeline
+  aliases: ['pipelines']
+  definition: >-
+    An [[estimator|estimator]] made of steps run in order: [[fit|fit]] fits
+    each step on the rows it is given and passes the output on, and
+    [[predict|predict]] sends new rows through the same fitted steps.
+  notes:
+    - "Steps are (name, estimator) pairs, and every step but the last must be a transformer. model['scale'] reads a step, and a step's setting is called step__setting, as in 'clf__C' for [[grid-search-cv|GridSearchCV]]. Because the preprocessing lives inside the model, [[cross-val-score|cross_val_score]] refits it on each fold's training rows too."
+  figure: { kind: estimator, highlight: pipeline }
+
+column-transformer:
+  term: ColumnTransformer
+  definition: >-
+    A transformer that sends each list of columns to its own transformer and
+    puts the results side by side, so text and number columns can be prepared
+    differently.
+  notes:
+    - "Columns that no transformer names are dropped by default (remainder='drop'); remainder='passthrough' keeps them as they are."
+  figure: { kind: estimator, highlight: column-transformer }
+
+linear-regression-class:
+  term: LinearRegression
+  definition: >-
+    scikit-learn's ordinary least squares model: [[fit|fit]] finds the
+    weights, coef_ and intercept_, of the straight line (or flat plane) with
+    the smallest squared error on the training rows.
+  notes:
+    - "predict returns numbers, not classes, and score returns R². Judge it with [[mean-squared-error|mean_squared_error]] on the test rows."
+  figure: { kind: estimator, highlight: linear-regression }
+
+logistic-regression:
+  term: LogisticRegression
+  definition: >-
+    A linear classifier: it weighs each row's features into a score (one per
+    class when there are more than two) and turns that into a probability for
+    each class.
+  notes:
+    - "Despite the name, it classifies. It is regularized by default (C=1.0, an L2 penalty); since scikit-learn 1.8 the penalty is set with l1_ratio and C, and penalty= is deprecated. With max_iter=100, unscaled columns can stop it short with a ConvergenceWarning: scale them first."
+  figure: { kind: estimator, highlight: logistic-regression }
+
+random-forest-classifier:
+  term: RandomForestClassifier
+  definition: >-
+    A classifier that trains many decision trees, 100 by default, each on a
+    resample of the rows, and predicts the class with the highest probability
+    averaged over the trees.
+  notes:
+    - "Each split in each tree looks at a random subset of the features, the square root of their number by default. Trees don't need scaled columns. Pass random_state to grow the same forest on every run."
+  figure: { kind: estimator, highlight: random-forest }
+
+accuracy-score:
+  term: accuracy_score
+  aliases: ['accuracy']
+  definition: >-
+    The share of predictions that match the true labels:
+    accuracy_score(y_true, y_pred).
+  notes:
+    - "It hides which mistakes a model makes: on data that is 95% one class, always guessing that class scores 0.95. A [[confusion-matrix|confusion matrix]] shows the mistakes."
+  figure: { kind: confusion, highlight: accuracy }
+
+# Not ml.yaml's `precision`, which means how many bits store a number.
+precision-score:
+  term: precision
+  aliases: ['precision_score']
+  definition: >-
+    Of the rows predicted as one class, the share that truly are that class:
+    precision_score(y_true, y_pred).
+  notes:
+    - "It counts false alarms; [[recall-score|recall]] counts misses. For two classes the class it scores is pos_label, 1 by default: pass pos_label=0 when 0 is the class you care about."
+  figure: { kind: confusion, highlight: precision }
+
+recall-score:
+  term: recall
+  aliases: ['recall_score']
+  definition: >-
+    Of the rows truly in one class, the share the model predicted as that
+    class: recall_score(y_true, y_pred).
+  notes:
+    - "It counts misses; [[precision-score|precision]] counts false alarms. Like precision_score it scores pos_label, 1 by default."
+  figure: { kind: confusion, highlight: recall }
+
+confusion-matrix:
+  term: confusion_matrix
+  aliases: ['confusion matrix', 'confusion matrices']
+  definition: >-
+    A table of counts in which row i, column j holds the number of rows whose
+    true class is i and predicted class is j, so the diagonal holds the right
+    answers.
+  notes:
+    - "Rows are the truth and columns the prediction, in sorted label order. [[precision-score|Precision]] for a class is its diagonal cell over its column's sum, [[recall-score|recall]] over its row's sum."
+  figure: { kind: confusion, highlight: confusion-matrix }
+
+mean-squared-error:
+  term: mean_squared_error
+  definition: >-
+    The mean of the squared differences between the true and the predicted
+    numbers: a score for a regressor, where lower is better.
+  notes:
+    - "It is in squared units, so root_mean_squared_error, its square root, reads in the target's own units. The squared= argument that once did that was removed in scikit-learn 1.6."
+  figure: { kind: estimator, highlight: mean-squared-error }
+
+cross-val-score:
+  term: cross_val_score
+  aliases: ['cross-validation']
+  definition: >-
+    Scores an [[estimator|estimator]] by cross-validation: it splits the rows
+    into folds, 5 by default, and fits a fresh copy on all but one fold and
+    scores it on that one, once per fold.
+  notes:
+    - "The spread of the scores shows how much one split's luck moves the number. For a classifier the folds keep each class's share (StratifiedKFold) and aren't shuffled. Run it on the training rows and keep the [[test-set|test set]] for the end."
+  figure: { kind: estimator, highlight: cross-val-score }
+
+grid-search-cv:
+  term: GridSearchCV
+  definition: >-
+    An [[estimator|estimator]] that scores every combination of settings in a
+    grid by [[cross-val-score|cross-validation]] and, with refit=True, the
+    default, refits the best one on all the rows it was given.
+  notes:
+    - "best_params_ and best_score_ name the winner, and predict and score then use the refit model. best_score_ picked the winner, so it flatters it; the untouched test set gives the honest number."
+  figure: { kind: estimator, highlight: grid-search-cv }
+
+# Copied from ml.yaml `data-leakage` (same term and definition): change both or neither.
+data-leakage:
+  term: Data Leakage
+  aliases: ['contamination', 'leakage', 'leaked']
+  definition: >-
+    When test examples, or close copies, sneak into the training data, so the
+    model's score measures memory instead of skill.
+  notes:
+    - "In scikit-learn the quiet way in is a preprocessing step fit before the split: a scaler, an encoder or a feature selector fit on every row carries the test rows into training. Fit every step on the training rows only, inside a [[pipeline|Pipeline]]."
+  figure: { kind: estimator, highlight: data-leakage }
+
+# Copied from ml.yaml `test-set` (same term and definition): change both or neither.
+# ml.yaml links "training" to its `training` entry; this set has none, so it is plain text here.
+test-set:
+  term: Test Set
+  aliases: ['held-out set', 'held-out data', 'test sets']
+  definition: >-
+    Examples kept out of training entirely, used only to measure
+    how well the finished model does on data it has never seen.
+  figure: { kind: estimator, highlight: test-set }
+
+# ── Chapter 8: tensors and autograd ──────────────────────────────────
+
+tensor:
+  term: tensor
+  aliases: ['tensors', 'torch.Tensor']
+  definition: >-
+    PyTorch's array: values of one [[dtype|dtype]] in a [[shape|shape]], like
+    an [[ndarray|ndarray]], that can also live on a [[gpu|GPU]] and record how it was
+    made so [[autograd|autograd]] can work out [[gradient|gradients]].
+  notes:
+    - "t.shape prints torch.Size([2, 3]), which is a tuple. Many NumPy methods have a tensor twin (reshape, sum, mean, @), and PyTorch calls an [[axis|axis]] a dim: t.sum(dim=0)."
+  figure: { kind: graph-backward, highlight: tensor }
+
+torch-tensor:
+  term: torch.tensor
+  aliases: ['torch.tensor()']
+  definition: >-
+    Makes a [[tensor|tensor]] from a list, a number or an array, always copying
+    the data, with a [[dtype|dtype]] taken from it: int64 for Python integers,
+    float32 for Python floats.
+  notes:
+    - "Pass requires_grad=True to have [[autograd|autograd]] track it, and dtype= or device= to choose those. From a NumPy array it keeps the array's dtype and copies; [[from-numpy|torch.from_numpy]] shares the memory instead."
+  figure: { kind: array-grid, highlight: torch-tensor }
+
+torch-zeros:
+  term: torch.zeros
+  aliases: ['torch.zeros()']
+  definition: >-
+    Makes a [[tensor|tensor]] of the given [[shape|shape]] filled with 0,
+    float32 unless you pass dtype=.
+  notes:
+    - "The shape can be separate numbers, torch.zeros(3, 4), or one tuple, torch.zeros((3, 4)). torch.ones works the same way."
+  figure: { kind: array-grid, highlight: torch-zeros }
+
+torch-randn:
+  term: torch.randn
+  aliases: ['torch.randn()']
+  definition: >-
+    Makes a [[tensor|tensor]] of the given [[shape|shape]] filled with random
+    numbers from the standard normal distribution (mean 0, variance 1),
+    float32 unless you pass dtype=.
+  notes:
+    - "Seed first, torch.manual_seed(0), to draw the same numbers on every run. PyTorch's reproducibility notes don't promise the same numbers across releases, platforms, or CPU and GPU."
+  figure:
+    kind: array-grid
+    highlight: torch-randn
+    label: "torch.manual_seed(0); torch.randn(3, 4), rounded"
+    values: [1.54, -0.29, -2.18, 0.57, -1.08, -1.4, 0.4, 0.84, -0.72, -0.4, -0.6, 0.18]
+
+device:
+  term: device
+  aliases: ['devices', '.device', 'torch.device']
+  definition: >-
+    Where a [[tensor|tensor]]'s values are stored and computed: 'cpu', or a
+    [[gpu|GPU]] such as 'cuda' (NVIDIA) or 'mps' (a Mac's GPU, through Metal, on macOS 14 or later).
+  notes:
+    - "t.device tells you. A result lands on the device its tensors are on, so a model and its data must be moved to the same one with [[tensor-to|.to()]]. To choose one in code: device = 'cuda' if torch.cuda.is_available() else 'cpu'."
+  figure: { kind: device-move, highlight: device }
+
+tensor-to:
+  term: .to()
+  aliases: ['.to', 'to()']
+  definition: >-
+    Returns a [[tensor|tensor]] on another [[device|device]] or with another
+    [[dtype|dtype]]: a copy, unless the tensor already has both, in which case
+    you get the tensor itself back.
+  notes:
+    - "t.to('cuda'), t.to(torch.float64), t.to(device). It never changes t in place, so keep the result: t = t.to(device)."
+  figure: { kind: device-move, highlight: to }
+
+from-numpy:
+  term: torch.from_numpy
+  aliases: ['from_numpy']
+  definition: >-
+    Makes a CPU [[tensor|tensor]] that shares a NumPy array's memory, so a
+    change to either shows in both, and keeps the array's [[dtype|dtype]].
+  notes:
+    - "A NumPy float64 array becomes a torch.float64 tensor, while a PyTorch layer's weights are float32 by default and a float64 input to one raises: add .float() when you mean to train on it."
+  figure: { kind: device-move, highlight: from-numpy }
+
+tensor-numpy:
+  term: .numpy()
+  aliases: ['.numpy', 'numpy()']
+  definition: >-
+    Returns a CPU [[tensor|tensor]]'s values as a NumPy array that shares the
+    tensor's memory.
+  notes:
+    - "It refuses a tensor that [[requires-grad|requires grad]] (use t.detach().numpy()) and one on a GPU (move it first, t.cpu().numpy()). numpy(force=True) does both, copying when it has to."
+  figure: { kind: device-move, highlight: numpy }
+
+requires-grad:
+  term: requires_grad
+  aliases: ['requires_grad=True', '.requires_grad']
+  definition: >-
+    A [[tensor|tensor]]'s flag that tells [[autograd|autograd]] to record what
+    is computed from it, so [[backward|backward]] can fill in its
+    [[gradient|gradient]].
+  notes:
+    - "Set it when you make the tensor, torch.tensor(2.0, requires_grad=True), or later with t.requires_grad_(). Only floating-point and complex tensors can have it. Results computed from it have it too, except integer and boolean ones such as w > 0 and w.argmax(), and anything made by [[detach|detach]] or inside [[no-grad|torch.no_grad]]."
+  figure: { kind: graph-backward, highlight: requires-grad }
+
+autograd:
+  term: autograd
+  aliases: ['torch.autograd']
+  definition: >-
+    PyTorch's automatic differentiation: it records the operations on tensors
+    that [[requires-grad|require grad]] as a graph, then walks that graph
+    backwards to work out [[gradient|gradients]].
+  notes:
+    - "That backward walk is [[backpropagation|backpropagation]]. Each result's grad_fn names the operation that made it, AddBackward0 for a +. The graph is built afresh on every forward pass, and backward frees it."
+  figure: { kind: graph-backward, highlight: autograd }
+
+backward:
+  term: backward
+  aliases: ['.backward', 'backward()', '.backward()']
+  definition: >-
+    The method that works out the [[gradient|gradient]] of a single-number
+    [[tensor|tensor]], such as a loss, with respect to every leaf tensor it was computed from that
+    [[requires-grad|requires grad]], and adds it to that tensor's
+    [[grad|.grad]].
+  notes:
+    - "It adds rather than replaces: compute the loss again, call it again, and .grad holds the sum, so clear the gradients before each step (w.grad = None; Chapter 9's optimizer.zero_grad() does it for every weight). Calling it twice on the same result raises instead when the graph saved values for the walk back, such as x in w * x, because the first call frees them. On a tensor of more than one value it needs a gradient argument."
+  figure: { kind: graph-backward, highlight: backward }
+
+grad:
+  term: .grad
+  aliases: ['grad']
+  definition: >-
+    A leaf [[tensor|tensor]]'s [[gradient|gradient]]: None until
+    [[backward|backward]] first fills it, then added to by every later
+    backward.
+  notes:
+    - "A leaf is a tensor you made yourself, not one computed from others. Set w.grad = None, or zero it with w.grad.zero_(), before the next backward."
+  figure: { kind: graph-backward, highlight: grad }
+
+# Not in ml.yaml, which defines gradient descent but not the gradient itself.
+gradient:
+  term: gradient
+  aliases: ['gradients']
+  definition: >-
+    How fast a number, such as a loss, changes as each input grows a little:
+    one value per input, in the input's [[shape|shape]].
+  notes:
+    - "For y = w * x + b, the gradient with respect to w is x, and with respect to b it is 1. Training steps each weight a little against its gradient, downhill on the loss."
+  figure: { kind: graph-backward, highlight: gradient }
+
+# Copied from ml.yaml `backpropagation` (same term and definition): change both or neither.
+# ml.yaml links "weight" and "loss" to its own entries; this set has neither, so they are plain text here.
+backpropagation:
+  term: Backpropagation
+  aliases: ['backprop']
+  definition: >-
+    The bookkeeping that works out, for every weight at once, which
+    way to nudge it to lower the loss.
+  notes:
+    - "In PyTorch, [[autograd|autograd]] does it when you call [[backward|backward]]."
+  figure: { kind: graph-backward, highlight: backpropagation }
+
+no-grad:
+  term: torch.no_grad
+  aliases: ['no_grad', 'torch.no_grad()']
+  definition: >-
+    A context manager, with torch.no_grad():, inside which PyTorch records no
+    graph, so results don't [[requires-grad|require grad]] even when their
+    inputs do.
+  notes:
+    - "Use it to step weights by hand and to run a trained model, where it also saves memory. It works as a decorator too, @torch.no_grad()."
+  figure: { kind: graph-backward, highlight: no-grad }
+
+detach:
+  term: detach
+  aliases: ['.detach', 'detach()', '.detach()', 'detached']
+  definition: >-
+    Returns a [[tensor|tensor]] with the same values, in the same memory, cut
+    off from the graph, so it never [[requires-grad|requires grad]].
+  notes:
+    - "Use it to log or plot a value without keeping its graph, and before .numpy(): t.detach().numpy(). The memory is shared, so an in-place change to either shows in both."
+  figure: { kind: graph-backward, highlight: detach }
+
+# Copied from ml.yaml `gpu` (same term and definition): change both or neither.
+gpu:
+  term: GPU
+  aliases: ['GPUs', 'graphics processing unit']
+  definition: >-
+    A chip with thousands of simple cores that all do the same math at once.
+    Built for graphics, now the workhorse of AI.
+  notes:
+    - "PyTorch reaches an NVIDIA GPU as the [[device|device]] 'cuda' and a Mac's (macOS 14 or later) as 'mps'. This course's examples all run on the CPU."
+  figure: { kind: device-move, highlight: gpu }
+
+# ── Chapter 9: models and the training loop ──────────────────────────
+
+training-loop:
+  term: training loop
+  aliases: ['training loops']
+  definition: >-
+    The code that trains a model: for each [[batch|batch]], clear the
+    gradients, run the model, compute the [[loss|loss]], call
+    [[backward|backward]] and step the [[optimizer|optimizer]], then repeat
+    for every [[epoch|epoch]].
+  notes:
+    - "Five lines per batch: optimizer.zero_grad(), logits = model(xb), loss = loss_fn(logits, yb), loss.backward(), optimizer.step(). [[zero-grad|zero_grad]] can come first or last in the body, but not between backward and step: there it clears the gradients the step needs, and the step skips every weight without raising."
+  figure: { kind: train-loop, highlight: training-loop }
+
+nn-module:
+  term: nn.Module
+  aliases: ['Module', 'torch.nn.Module', 'modules']
+  definition: >-
+    The base class of every PyTorch model and layer: you make its layers in
+    __init__, say how to use them in [[forward|forward]], and PyTorch keeps
+    track of their weights.
+  notes:
+    - "Call super().__init__() first. A layer set as an attribute, self.hidden = nn.Linear(2, 4), is registered, so model.parameters(), [[state-dict|state_dict]] and .to() find its weights; layers kept in a plain Python list are not (use nn.ModuleList). A module's .to() moves its weights in place and returns the module itself, unlike a tensor's [[tensor-to|.to()]]."
+  figure: { kind: train-loop, highlight: nn-module }
+
+forward:
+  term: forward
+  aliases: ['forward()', 'forward pass']
+  definition: >-
+    The method of an [[nn-module|nn.Module]] that turns an input into an
+    output; you call the model, model(x), and it runs forward.
+  notes:
+    - "Write forward, but call model(x), not model.forward(x): the call also runs any hooks registered on the module."
+  figure: { kind: train-loop, highlight: forward }
+
+nn-linear:
+  term: nn.Linear
+  aliases: ['Linear', 'linear layer', 'linear layers']
+  definition: >-
+    A layer that multiplies its input by a weight matrix and adds a bias,
+    x @ weight.T + bias, turning in_features numbers into out_features.
+  notes:
+    - "nn.Linear(2, 4).weight has shape (4, 2) and its bias (4,), both float32 and requiring grad. It works on the last dim, so a batch of shape (8, 2) comes out (8, 4). bias=False leaves the bias out."
+  figure: { kind: train-loop, highlight: nn-linear }
+
+nn-relu:
+  term: nn.ReLU
+  aliases: ['ReLU', 'torch.relu']
+  definition: >-
+    A layer that replaces every negative value with 0 and leaves the rest
+    alone: max(0, x).
+  notes:
+    - "Without something like it between them, two [[nn-linear|nn.Linear]] layers add up to one linear function, which can't separate classes that a straight line can't. torch.relu(x) does the same as a function."
+  figure: { kind: train-loop, highlight: nn-relu }
+
+nn-sequential:
+  term: nn.Sequential
+  aliases: ['Sequential']
+  definition: >-
+    An [[nn-module|nn.Module]] that runs the layers you give it in order, each
+    one's output the next one's input.
+  notes:
+    - "nn.Sequential(nn.Linear(2, 4), nn.ReLU(), nn.Linear(4, 2)). Its layers are numbered: model[0] is the first, and its [[state-dict|state_dict]] names read '0.weight'. For anything but a straight chain, write a module with its own [[forward|forward]]."
+  figure: { kind: train-loop, highlight: nn-sequential }
+
+nn-embedding:
+  term: nn.Embedding
+  aliases: ['Embedding']
+  definition: >-
+    A layer that holds one row of learned numbers per id and looks them up:
+    given integer ids, it returns their rows.
+  notes:
+    - "nn.Embedding(10, 3) has a (10, 3) weight, and ids of shape (3,) give (3, 3). It's how a language model turns token ids into vectors. An id of num_embeddings or more raises IndexError."
+  figure:
+    kind: array-grid
+    highlight: nn-embedding
+    label: "torch.manual_seed(0); emb = nn.Embedding(3, 4); emb.weight, rounded"
+    values: [1.54, -0.29, -2.18, 0.57, -1.08, -1.4, 0.4, 0.84, -0.72, -0.4, -0.6, 0.18]
+
+# Copied from ml.yaml `loss` (same term and definition): change both or neither.
+# ml.yaml links "Training" to its own entry; this set has none, so it is plain text here.
+loss:
+  term: Loss
+  aliases: ['loss function', 'loss functions', 'losses']
+  definition: >-
+    A single number for how wrong a model's guesses are on some examples.
+    Training tries to make it small.
+  notes:
+    - "In PyTorch a loss function is a module you call on the model's output and the targets, such as [[cross-entropy-loss|nn.CrossEntropyLoss]] for classes and [[mse-loss|nn.MSELoss]] for numbers. By default it averages over the [[batch|batch]]."
+  figure: { kind: train-loop, highlight: loss }
+
+cross-entropy-loss:
+  term: nn.CrossEntropyLoss
+  aliases: ['CrossEntropyLoss', 'cross-entropy']
+  definition: >-
+    A [[loss|loss]] for classification: it takes raw scores (logits), one per
+    class, and each example's class index, and is lower the more of the score
+    goes to the right class.
+  notes:
+    - "Don't softmax first: it applies log-softmax itself, and softmaxed input gives a wrong loss without raising. The targets are int64 class indices (torch.long), shape (N,); float or int32 targets raise, unless float ones have the scores' shape, in which case they are read as class probabilities."
+  figure: { kind: train-loop, highlight: cross-entropy-loss }
+
+mse-loss:
+  term: nn.MSELoss
+  aliases: ['MSELoss']
+  definition: >-
+    A [[loss|loss]] for predicting numbers: the mean of the squared
+    differences between the predictions and the targets.
+  notes:
+    - "Give both the same shape: an (8, 1) prediction against an (8,) target broadcasts to (8, 8) with only a warning, and the loss is wrong. Chapter 7's [[mean-squared-error|mean_squared_error]] is the same number as a score."
+  figure: { kind: train-loop, highlight: mse-loss }
+
+optimizer:
+  term: optimizer
+  aliases: ['optimizers', 'torch.optim']
+  definition: >-
+    The object that updates a model's weights from their gradients: made from
+    model.parameters(), it clears the gradients with [[zero-grad|zero_grad]]
+    and moves the weights with [[optimizer-step|optimizer.step()]].
+  notes:
+    - "torch.optim holds them, [[optim-sgd|SGD]] and [[adamw|AdamW]] among others. For both, lr, the [[learning-rate|learning rate]], defaults to 0.001 in PyTorch 2.14."
+  figure: { kind: train-loop, highlight: optimizer }
+
+optim-sgd:
+  term: torch.optim.SGD
+  aliases: ['SGD', 'optim.SGD']
+  definition: >-
+    An [[optimizer|optimizer]] that moves each weight a step against its
+    gradient, sized by the [[learning-rate|learning rate]]:
+    weight -= lr * weight.grad.
+  notes:
+    - "The name is stochastic gradient descent: stochastic because each step sees one shuffled [[batch|batch]]. momentum and weight_decay both default to 0; momentum=0.9 steps along a running sum of past gradients, each decayed by 0.9 per step."
+  figure: { kind: train-loop, highlight: sgd }
+
+adamw:
+  term: torch.optim.AdamW
+  aliases: ['AdamW', 'optim.AdamW']
+  definition: >-
+    An [[optimizer|optimizer]] that sizes each weight's step from running
+    averages of its gradient and of its squared gradient, and shrinks every
+    weight a little each step (weight decay).
+  notes:
+    - "Defaults: lr=0.001, betas=(0.9, 0.999), weight_decay=0.01. torch.optim.Adam's weight_decay defaults to 0 and is added to the gradient; AdamW applies the decay to the weights directly."
+  figure: { kind: train-loop, highlight: adamw }
+
+# Copied from ml.yaml `learning-rate` (same term and definition): change both or neither.
+# ml.yaml links "gradient descent" to its own entry; this set has none, so it is plain text here.
+learning-rate:
+  term: Learning Rate
+  aliases: ['learning rates']
+  definition: >-
+    How big a step gradient descent takes each time. Too
+    big and it overshoots; too small and it takes forever.
+  notes:
+    - "In PyTorch it's the optimizer's lr argument: torch.optim.SGD(model.parameters(), lr=0.1)."
+  figure: { kind: train-loop, highlight: learning-rate }
+
+zero-grad:
+  term: zero_grad
+  aliases: ['zero_grad()', 'optimizer.zero_grad()', '.zero_grad()']
+  definition: >-
+    Clears the [[grad|.grad]] of every weight an [[optimizer|optimizer]]
+    holds, so the next [[backward|backward]] starts fresh instead of adding on.
+  notes:
+    - "By default (set_to_none=True) it sets each .grad to None rather than to zeros. Leave it out and nothing raises: each step then uses the sum of its own batch's gradients and every earlier batch's. model.zero_grad() does the same for a model's weights."
+  figure: { kind: train-loop, highlight: zero-grad }
+
+optimizer-step:
+  term: optimizer.step()
+  aliases: ['step()', '.step()', 'optimizer.step']
+  definition: >-
+    Updates each weight the [[optimizer|optimizer]] holds from the gradient
+    [[backward|backward]] left in its [[grad|.grad]].
+  notes:
+    - "A weight whose .grad is None is skipped, so a [[zero-grad|zero_grad]] between backward and step makes the step do nothing, without an error."
+  figure: { kind: train-loop, highlight: optimizer-step }
+
+dataset:
+  term: Dataset
+  aliases: ['TensorDataset', 'torch.utils.data.Dataset', 'Datasets']
+  definition: >-
+    A class that hands out one example by index, dataset[i], and says how many
+    it has, len(dataset).
+  notes:
+    - "TensorDataset(X, y) wraps tensors whose first dims match, and dataset[0] is (X[0], y[0]). For your own data, subclass Dataset and write __getitem__ and __len__."
+  figure: { kind: train-loop, highlight: dataset }
+
+dataloader:
+  term: DataLoader
+  aliases: ['DataLoaders', 'torch.utils.data.DataLoader']
+  definition: >-
+    Wraps a [[dataset|Dataset]] and, when you loop over it, hands its examples
+    out in [[batch|batches]], stacked into tensors.
+  notes:
+    - "shuffle defaults to False: pass shuffle=True for training, and it reshuffles every [[epoch|epoch]]. The last batch is smaller when batch_size doesn't divide the data evenly, unless drop_last=True."
+  figure: { kind: train-loop, highlight: dataloader }
+
+# Not ml.yaml `batching`, which is requests served together at inference time.
+batch:
+  term: batch
+  aliases: ['batches', 'batch size', 'mini-batch']
+  definition: >-
+    The few examples one training step sees at once, stacked so the first dim
+    counts them: the batch size.
+  notes:
+    - "xb of shape (8, 2) is a batch of 8 examples with 2 features each. The [[loss|loss]] averages over the batch, so a step follows the mean gradient of those examples."
+  figure: { kind: train-loop, highlight: batch }
+
+# Copied from ml.yaml `epoch` (same term and definition): change both or neither.
+epoch:
+  term: Epoch
+  aliases: ['epochs']
+  definition: >-
+    One full pass through the training data.
+  notes:
+    - "With 16 examples and a [[batch|batch]] size of 8, an epoch is two steps of the [[training-loop|training loop]]."
+  figure: { kind: train-loop, highlight: epoch }
+
+model-train:
+  term: model.train()
+  aliases: ['train()', '.train()', 'training mode']
+  definition: >-
+    Puts a model and all its layers in training mode, which turns on the
+    layers that behave differently while training, such as
+    [[dropout|dropout]].
+  notes:
+    - "A new model starts in training mode, and model.training says which mode it's in. It trains nothing by itself. Call it at the top of each epoch when an evaluation ran in between."
+  figure: { kind: train-loop, highlight: model-train }
+
+model-eval:
+  term: model.eval()
+  aliases: ['eval()', '.eval()', 'evaluation mode', 'eval mode']
+  definition: >-
+    Puts a model in evaluation mode, which turns [[dropout|dropout]] off and
+    makes batch norm use its stored averages, for scoring and predicting.
+  notes:
+    - "It doesn't stop [[autograd|autograd]] recording: pair it with [[no-grad|torch.no_grad]]. Forget it and nothing raises; with dropout on, the scores are noisy and can change from call to call."
+  figure: { kind: train-loop, highlight: model-eval }
+
+dropout:
+  term: nn.Dropout
+  aliases: ['Dropout', 'dropout']
+  definition: >-
+    A layer that, in training mode, zeroes each value with probability p (0.5
+    by default) and scales the rest by 1 / (1 - p); in evaluation mode it
+    passes values through unchanged.
+  notes:
+    - "It keeps a model from leaning on any single value, which fights [[overfitting|overfitting]]."
+  figure: { kind: train-loop, highlight: dropout }
+
+state-dict:
+  term: state_dict
+  aliases: ['state_dict()', '.state_dict()', 'state dict']
+  definition: >-
+    A dictionary of a model's weights by name, such as '0.weight', from
+    model.state_dict(); load_state_dict copies one back into a model of the
+    same shape.
+  notes:
+    - "Buffers such as batch norm's running averages are in it too. An optimizer has its own state_dict: save both to resume training. load_state_dict raises when a name or a shape doesn't match; strict=False forgives missing or extra names, not shapes."
+  figure: { kind: train-loop, highlight: state-dict }
+
+torch-save:
+  term: torch.save
+  aliases: ['torch.save()']
+  definition: >-
+    Writes an object, such as a [[state-dict|state_dict]], to a file, using
+    pickle.
+  notes:
+    - "torch.save(model.state_dict(), 'model.pt'). Saving the whole model works too, but [[torch-load|torch.load]] refuses to read it back by default: save the state_dict."
+  figure: { kind: train-loop, highlight: torch-save }
+
+torch-load:
+  term: torch.load
+  aliases: ['torch.load()']
+  definition: >-
+    Reads back an object written by [[torch-save|torch.save]]; by default
+    (weights_only=True since PyTorch 2.6) it loads only tensors and plain Python values such as numbers, strings and dicts, not arbitrary pickled objects.
+  notes:
+    - "Unpickling can run code, which is why the default is restricted: pass weights_only=False only for a file you trust. map_location='cpu' reads a file saved on a GPU on a machine without one."
+  figure: { kind: train-loop, highlight: torch-load }
+
+mixed-precision:
+  term: mixed precision
+  aliases: ['automatic mixed precision', 'AMP', 'torch.autocast']
+  definition: >-
+    Training with some operations run in a 16-bit float, float16 or bfloat16,
+    while the weights stay float32, to save memory and time.
+  notes:
+    - "In PyTorch, torch.autocast chooses which operations; with float16, a torch.amp.GradScaler keeps small gradients from rounding to zero. This course's examples don't use it."
+
+# ── Chapter 10: putting it together ──────────────────────────────────
+
+seed:
+  term: seed
+  aliases: ['seeds', 'seeded', 'seeding', 'random seed']
+  definition: >-
+    The number a random generator starts from: the same seed gives the same
+    draws on every run, which makes a result you can reproduce.
+  notes:
+    - "Each library keeps its own: torch.manual_seed(0) for PyTorch, [[default-rng|np.random.default_rng(0)]] for NumPy, random_state=0 for scikit-learn functions such as [[train-test-split|train_test_split]]."
+    - "PyTorch's reproducibility notes don't promise the same numbers across releases, platforms, or CPU and GPU, even with the same seed."
+
+python-script:
+  term: script
+  aliases: ['scripts', 'Python script', 'Python scripts']
+  definition: >-
+    A .py file run with python file.py, top to bottom in a fresh process, so
+    every run starts from nothing and follows the same order.
+  notes:
+    - "The other half of the notebook trade: a [[jupyter-notebook|notebook]] keeps variables between cells run in any order, so it can show a result no top-to-bottom run gives. Explore in a notebook; move what works into a script."
+    - "Code under if __name__ == '__main__': runs when the file is run as a script, not when another file imports it."
+
+assert-statement:
+  term: assert
+  aliases: ['asserts', 'assert statement']
+  definition: >-
+    A statement, assert condition, message, that raises AssertionError with
+    the message when the condition is false and does nothing when it is true.
+  notes:
+    - "assert X.shape == (n, 3), X.shape stops a pipeline at the stage whose [[shape|shape]] is wrong and prints the shape it got."
+    - "python -O removes every assert, so use them for checks on your own code, not to validate input."
+
+perf-counter:
+  term: time.perf_counter
+  aliases: ['time.perf_counter()', 'perf_counter']
+  definition: >-
+    Returns a clock reading in seconds, with the highest resolution the system
+    has; only the difference between two readings means anything.
+  notes:
+    - "start = time.perf_counter(), then the code, then time.perf_counter() - start is how long it took, as a float."
+
+timeit:
+  term: "%timeit"
+  aliases: ['timeit']
+  definition: >-
+    An IPython and Jupyter command that runs one line many times and prints
+    the mean time per run and its spread.
+  notes:
+    - "In a notebook cell, %timeit np.sort(a) prints the mean ± std. dev. per loop and how many runs and loops it timed: 7 runs by default, each of as many loops as it takes to get a steady number."
+    - "Outside a notebook, the standard library's python -m timeit 'statement' also picks the number of loops, and prints the best of 5 repeats instead of a mean."
