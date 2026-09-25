@@ -1,0 +1,11 @@
+run,model,lr,epochs,accuracy,notes
+r1,cnn,0.1,10,0.91,baseline
+r2,cnn,0.01,20,0.94,
+r3,mlp,0.1,,0.82,epochs not logged
+r4,mlp,0.05,20,?,crashed
+r5,cnn,0.05,,0.93,
+r6,rnn,0.1,5,0.71,
+r7,mlp,0.01,20,?,crashed
+r8,cnn,0.01,30,0.95,best so far
+r9,rnn,0.05,10,,never evaluated
+r10,mlp,0.05,10,0.79,

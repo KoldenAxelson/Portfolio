@@ -1,0 +1,5 @@
+endpoint,team
+/search,search
+/login,identity
+/upload,storage
+/billing,payments

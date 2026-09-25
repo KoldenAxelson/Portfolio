@@ -1,0 +1,30 @@
+{{- /*
+  python-versions — the course's pinned stack, as a table, read straight from
+  the requirements.txt every workbook packet ships (path in
+  data/python/course.yaml). One file to bump; the page can't disagree with it.
+
+    {{< python-versions >}}
+
+  The "As of" date and the Python floor are read from that file's header
+  comment ("As of YYYY-MM-DD", "Python 3.12+").
+*/ -}}
+{{- $source := site.Data.python.course.requirements -}}
+{{- $text := readFile $source -}}
+{{- $asOf := index (findRESubmatch `As of (\d{4}-\d{2}-\d{2})` $text 1) 0 -}}
+{{- $python := index (findRESubmatch `Python (\d+\.\d+)\+` $text 1) 0 -}}
+{{- if not (and $asOf $python) -}}
+  {{- errorf "python-versions: %s needs \"As of YYYY-MM-DD\" and \"Python X.Y+\" in its header" $source -}}
+{{- end -}}
+<figure class="not-prose my-8">
+  <table class="w-full max-w-md border-collapse text-sm">
+    <caption class="mb-2 text-left text-xs text-muted">Pinned as of {{ index $asOf 1 | time.Format "January 2, 2006" }} · Python {{ index $python 1 }} or newer</caption>
+    <thead>
+      <tr class="border-b border-border text-left text-fg"><th scope="col" class="py-1.5 pr-4 font-medium">Library</th><th scope="col" class="py-1.5 font-medium">Version</th></tr>
+    </thead>
+    <tbody>
+      {{- range findRESubmatch `(?m)^([A-Za-z0-9_.-]+)==([^\s#]+)` $text }}
+      <tr class="border-b border-border/60"><td class="py-1.5 pr-4 text-fg">{{ index . 1 }}</td><td class="py-1.5 font-mono text-muted">{{ index . 2 }}</td></tr>
+      {{- end }}
+    </tbody>
+  </table>
+</figure>

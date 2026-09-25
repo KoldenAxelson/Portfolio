@@ -1,0 +1,49 @@
+{{- /*
+  code-stepper — a short snippet on the left, its data on the right. Each step
+  lights one line of the code and shows the arrays or tables that line made,
+  with the cells it touched highlighted. The course's version of Basic Logic's
+  arg-showcase.
+
+    {{< code-stepper "ch02/array-tour" >}}
+
+  The argument names workbooks/python-for-ml/examples/<chapter>/<name>.stepper.py;
+  its states come from data/python/steppers/<chapter>.yaml, which `make
+  examples` writes by running that file, so every panel is a value the code
+  really produced. The data format is in docs/python-for-ml-authoring.md.
+
+  The FIRST step is rendered here, so with JavaScript off the page shows the
+  whole snippet with its first line lit and that line's data. The Back / Next
+  buttons ship `hidden` and scripts/pages/code-stepper.ts reveals them. Assets
+  are emitted by partials/python-for-ml-assets.html.
+*/ -}}
+{{- $ref := .Get 0 -}}
+{{- $parts := split $ref "/" -}}
+{{- $chapter := index site.Data.python.steppers (index $parts 0) -}}
+{{- $data := cond (ne $chapter nil) (index $chapter (index $parts 1)) nil -}}
+{{- if not (and $data $data.steps) -}}
+  {{- errorf "code-stepper: no steps for %q in data/python/steppers/ — add workbooks/python-for-ml/examples/%s.stepper.py and run `make examples` (page: %s)" $ref $ref .Page.RelPermalink -}}
+{{- end -}}
+{{- $first := index $data.steps 0 -}}
+{{- $count := len $data.steps -}}
+<figure data-code-stepper class="code-stepper not-prose">
+  <figcaption class="cs-head" aria-live="polite" aria-atomic="true">
+    <span>{{ $data.caption }} &mdash; <span data-cs-label>{{ $first.label }}</span></span>
+    <span class="cs-count" data-cs-count>Step 1 of {{ $count }}</span>
+  </figcaption>
+  <div class="cs-body">
+    <pre class="cs-code chroma" aria-label="Code"><code>
+      {{- range $i, $line := $data.code -}}
+      <span class="cs-line{{ if eq $i $first.line }} is-active{{ end }}" data-cs-line="{{ $i }}">{{ transform.Highlight $line "python" (dict "hl_inline" true) }}</span>
+      {{- end -}}
+    </code></pre>
+    <div class="cs-panels" data-cs-panels>
+      {{- range $first.panels }}{{ partial "code-stepper-panel.html" . }}{{ end -}}
+    </div>
+  </div>
+  <p class="cs-note" data-cs-note{{ if not $first.note }} hidden{{ end }}>{{ $first.note }}</p>
+  <div class="cs-controls" data-cs-controls hidden>
+    <button type="button" class="cs-btn" data-cs-prev aria-label="Previous step">&larr; Back</button>
+    <button type="button" class="cs-btn cs-btn--primary" data-cs-next aria-label="Next step">Next &rarr;</button>
+  </div>
+  <script type="application/json" data-cs-data>{{ $data | jsonify | safeJS }}</script>
+</figure>

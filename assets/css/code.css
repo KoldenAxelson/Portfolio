@@ -1,0 +1,94 @@
+/* code — Python for ML code blocks (the py-example shortcode and plain fenced
+   blocks in a chapter), and the syntax colours Hugo's highlighter emits as
+   classes (hugo.toml: markup.highlight.noClasses = false). Loaded only by the
+   course layout (partials/python-for-ml-assets.html), so code elsewhere on the
+   site keeps its plain look.
+
+   The palette is five roles, not Chroma's thirty token classes: keywords take
+   the site accent, strings, numbers and builtins get one hue each, comments go
+   muted. Every hue clears WCAG AA against the block's own background in its
+   scheme. */
+
+:root {
+  --code-string: 154 52 18;   /* orange-800 */
+  --code-number: 29 78 216;   /* blue-700 */
+  --code-builtin: 109 40 217; /* violet-700 */
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --code-string: 134 239 172; /* green-300 */
+    --code-number: 147 197 253; /* blue-300 */
+    --code-builtin: 196 181 253; /* violet-300 */
+  }
+}
+
+.chroma { color: rgb(var(--c-fg)); background: transparent; }
+/* No ligatures: a reader learning the syntax should see == and != as typed. */
+.chroma, .py-example pre { font-variant-ligatures: none; }
+.chroma .k, .chroma .kn, .chroma .kd, .chroma .kr, .chroma .ow, .chroma .kc,
+.chroma .kp, .chroma .nd { color: rgb(var(--c-accent)); }
+.chroma .s, .chroma .s1, .chroma .s2, .chroma .sa, .chroma .sb, .chroma .sc,
+.chroma .sd, .chroma .se, .chroma .sh, .chroma .ss, .chroma .dl { color: rgb(var(--code-string)); }
+.chroma .si { color: rgb(var(--c-fg)); }
+.chroma .m, .chroma .mi, .chroma .mf, .chroma .mh, .chroma .mo, .chroma .mb,
+.chroma .il { color: rgb(var(--code-number)); }
+.chroma .nb, .chroma .bp, .chroma .fm { color: rgb(var(--code-builtin)); }
+.chroma .nf, .chroma .nc { font-weight: 600; }
+.chroma .c, .chroma .c1, .chroma .cm, .chroma .ch, .chroma .cs, .chroma .cp {
+  color: rgb(var(--c-muted));
+  font-style: italic;
+}
+.chroma .err { color: inherit; background: none; }
+
+/* A fenced block in a chapter: the base pre styling (assets/css/base.css) with
+   a little less padding, since these snippets are short. */
+article .highlight pre { padding: 0.85rem 1rem; font-size: 0.875rem; line-height: 1.6; }
+
+/* py-example: code chunks, each followed by what it printed. One bordered box,
+   so a chunk and its output read as one unit; the output sits on a tinted band
+   with a gutter arrow, the way a terminal separates input from what came back. */
+.py-example {
+  margin: 1.75rem 0;
+  border: 1px solid rgb(var(--c-border));
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background-color: rgb(var(--c-border) / 0.25);
+  font-size: 0.875rem;
+}
+.py-example pre {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 0.7rem 1rem;
+  line-height: 1.6;
+}
+.py-example__code + .py-example__code { border-top: 1px dashed rgb(var(--c-border)); }
+.py-example__out {
+  position: relative;
+  border-top: 1px solid rgb(var(--c-border));
+  background-color: rgb(var(--c-bg) / 0.7);
+  color: rgb(var(--c-muted));
+}
+.py-example__out pre { padding-left: 2rem; }
+.py-example__out::before {
+  content: '→';
+  position: absolute;
+  left: 0.85rem;
+  top: 0.7rem;
+  font: 0.875rem/1.6 'JetBrains Mono', ui-monospace, monospace;
+  color: rgb(var(--c-accent));
+}
+.py-example__out--figure { padding: 0.75rem 1rem 0.75rem 2rem; }
+.py-example__out--figure img { display: block; max-width: 100%; height: auto; border-radius: 0.375rem; background: #fff; }
+
+/* workbook card (shortcodes/workbook.html). The chapter article lights every
+   link while the pointer is anywhere over it (hover:[&_a]:!text-accent in
+   partials/chapters/chapter-page.html); the card's buttons should light only
+   when they themselves are hovered, so they hold their own colour otherwise.
+   Inside Tailwind's utilities layer on purpose: an !important rule outside a
+   layer loses to an !important one inside it, whatever its specificity. */
+@layer utilities {
+  .wb-card .wb-link:not(:hover):not(:focus-visible) { color: rgb(var(--c-fg)) !important; }
+  .wb-card .wb-link--quiet:not(:hover):not(:focus-visible) { color: rgb(var(--c-muted)) !important; }
+}

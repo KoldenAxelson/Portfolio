@@ -1,0 +1,4 @@
+endpoint,team
+/login,identity
+/search,search
+/billing,payments

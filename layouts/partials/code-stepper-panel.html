@@ -1,0 +1,45 @@
+{{- /*
+  code-stepper-panel — one value beside a code stepper: a grid (an array, or
+  layers of grids for 3-D), a table (a DataFrame or Series; the corner cell
+  names the index when it has a name), or plain text.
+  scripts/pages/code-stepper.ts builds the same markup for every later step;
+  change one and change the other.
+*/ -}}
+{{- $lit := .lit | default slice -}}
+<div class="cs-panel" data-cs-title="{{ .title }}">
+  <p class="cs-panel__title"><code>{{ .title }}</code>{{ with .meta }} <span class="cs-panel__meta">{{ . }}</span>{{ end }}</p>
+  {{- if eq .kind "grid" }}
+  <div class="cs-layers">
+    {{- range $layer, $cells := (.layers | default (slice .cells)) }}
+    <table class="cs-grid">
+      <tbody>
+        {{- range $row, $values := $cells }}
+        <tr>
+          {{- range $col, $value := $values }}
+          {{- $key := cond (ne $.layers nil) (printf "%d,%d,%d" $layer $row $col) (printf "%d,%d" $row $col) }}
+          <td{{ if in $lit $key }} class="is-lit"{{ end }}>{{ $value }}</td>
+          {{- end }}
+        </tr>
+        {{- end }}
+      </tbody>
+    </table>
+    {{- end }}
+  </div>
+  {{- else if eq .kind "table" }}
+  <table class="cs-table">
+    <thead><tr><th class="cs-table__index-name">{{ .index_name }}</th>{{ range .columns }}<th scope="col">{{ . }}</th>{{ end }}</tr></thead>
+    <tbody>
+      {{- range $row, $values := .rows }}
+      <tr>
+        <th scope="row">{{ index $.index $row }}</th>
+        {{- range $col, $value := $values }}
+        <td{{ if in $lit (printf "%d,%d" $row $col) }} class="is-lit"{{ end }}>{{ $value }}</td>
+        {{- end }}
+      </tr>
+      {{- end }}
+    </tbody>
+  </table>
+  {{- else }}
+  <pre class="cs-text">{{ .text }}</pre>
+  {{- end }}
+</div>

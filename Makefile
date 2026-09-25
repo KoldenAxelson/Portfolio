@@ -55,7 +55,7 @@ AI_PORT      := 6573    # localhost-only proxy port (ASCII "AI" = 65,73). Must
 # `?=` means an AI_MODEL from the environment wins and skips this detection.
 AI_MODEL     ?= $(shell command -v ollama >/dev/null 2>&1 && ollama list 2>/dev/null | awk 'NR==2 {print $$1}')
 
-.PHONY: help setup dev dev-drafts build css css-watch typecheck clean distclean ai-proxy ai-proxy-run ai-proxy-stop spinmasters verdant spacescape games seal
+.PHONY: help setup dev dev-drafts build css css-watch typecheck clean distclean ai-proxy ai-proxy-run ai-proxy-stop spinmasters verdant spacescape games seal workbooks workbooks-test examples examples-check
 
 help: ## Show this help
 	@echo "Portfolio — available commands:"
@@ -145,7 +145,7 @@ dev: $(HUGO) $(TAILWIND) ## Local server at :1313 with live CSS rebuild
 dev-drafts: ## Like `make dev`, but drafts and /misc/drafts render unsealed (for writing and auditing)
 	@HUGO_PARAMS_SEALSOURCE=true $(MAKE) --no-print-directory dev
 
-build: $(HUGO) $(TAILWIND) ## Production build to ./public
+build: $(HUGO) $(TAILWIND) workbooks ## Production build to ./public
 	@$(TAILWIND) -i $(CSS_IN) -o $(CSS_OUT) --minify
 	@$(HUGO) --minify
 
@@ -161,6 +161,34 @@ $(PHASER_TYPES):
 typecheck: $(TSGO) $(PHASER_TYPES) ## Type-check the TypeScript with tsgo (no emit)
 	@$(TSGO) --noEmit -p tsconfig.json
 	@echo "Type-check passed."
+
+# --- Python for ML workbooks -------------------------------------------------
+# Packet sources live in workbooks/python-for-ml/ (chNN/ and solutions/chNN/).
+# `make workbooks` zips them into static/downloads/ (gitignored, never
+# committed); `make build` and the deploy workflow run it before Hugo so the
+# chapter download links resolve. The tests need the pinned stack from
+# workbooks/python-for-ml/requirements.txt: point PYTHON at a venv that has it,
+# e.g. `make workbooks-test PYTHON=~/.venvs/python-for-ml/bin/python`.
+PYTHON          ?= python3
+WORKBOOKS_DIR   := workbooks/python-for-ml
+
+workbooks: ## Zip every Python for ML workbook packet into static/downloads/
+	@echo "Building workbook zips…"
+	@$(PYTHON) scripts/build-workbooks.py
+
+# Each folder runs on its own, as a reader would: every packet has its own
+# exercises.py, so one pytest session over all of them would import the wrong one.
+workbooks-test: ## Run every workbook's tests against its solutions (must all pass)
+	@set -e; for dir in $(WORKBOOKS_DIR)/solutions/*/; do \
+	  echo "pytest $$dir"; \
+	  (cd "$$dir" && $(PYTHON) -m pytest -q -p no:cacheprovider); \
+	done
+
+examples: ## Re-run the Python for ML page examples and rewrite their outputs in data/python/
+	@$(PYTHON) $(WORKBOOKS_DIR)/examples/run.py
+
+examples-check: ## Fail if any page example's saved output no longer matches a fresh run
+	@$(PYTHON) $(WORKBOOKS_DIR)/examples/run.py --check
 
 # --- WebAssembly games ------------------------------------------------------
 # `make spinmasters` rebuilds the game's wasm and copies it into assets/wasm/.

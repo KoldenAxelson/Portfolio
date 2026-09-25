@@ -1,0 +1,16 @@
+# Python for ML — the pinned stack every workbook packet runs on.
+# As of 2026-09-25: the newest release of each on PyPI that day. Needs Python 3.12+
+# (NumPy 2.5 requires it).
+#
+# One file for the whole course: `make workbooks` copies it into every packet,
+# and the course index reads the table on the page from it.
+#
+# CPU-only Linux: add `--extra-index-url https://download.pytorch.org/whl/cpu` for
+# torch, or pip fetches the CUDA build (several GB).
+numpy==2.5.3
+pandas==3.0.6
+pyarrow==25.0.1
+matplotlib==3.11.2
+scikit-learn==1.9.1
+torch==2.14.0
+pytest==9.1.1

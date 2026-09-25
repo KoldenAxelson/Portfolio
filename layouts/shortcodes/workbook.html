@@ -1,0 +1,50 @@
+{{- /*
+  workbook — the download card for a chapter's workbook packet.
+
+    {{< workbook "ch02" >}}
+
+  Links the exercises zip, the solutions zip and the packet's folder on GitHub.
+  The zips are built into static/downloads/ by `make workbooks` (run by
+  `make build` and the deploy workflow) from workbooks/python-for-ml/; they are
+  never committed. Sizes are read off the built files; a plain `hugo` run
+  without them warns and leaves the sizes out rather than failing.
+
+  Plain `download` links with hx-boost="false", the same as the résumé
+  buttons (partials/cv-actions.html): a boosted click would try to swap a zip
+  into the page.
+*/ -}}
+{{- $chapter := .Get 0 -}}
+{{- $course := site.Data.python.course -}}
+{{- $stem := printf "python-for-ml-%s" $chapter -}}
+{{- $number := int (strings.TrimLeft "ch0" $chapter | default "0") -}}
+{{- $files := slice
+  (dict "label" "Exercises" "note" "README, exercises and tests" "file" (printf "%s.zip" $stem) "primary" true)
+  (dict "label" "Solutions" "note" "worked answers, same tests" "file" (printf "%s-solutions.zip" $stem) "primary" false) -}}
+<div class="wb-card not-prose my-8 rounded-2xl border border-border p-5" style="background-color: rgb(var(--c-muted) / 0.05);">
+  <p class="m-0 flex items-center gap-2 text-sm font-medium text-fg">
+    {{ partial "func/svg-icon.html" (dict "name" "arrow-down-tray" "class" "h-5 w-5 shrink-0 text-accent" "width" "1.75") }}
+    <span>Chapter {{ $number }} workbook</span>
+  </p>
+  <ul class="m-0 mt-4 flex list-none flex-wrap gap-3 p-0">
+    {{- range $files }}
+    {{- $url := printf "%s/%s" $course.downloads .file -}}
+    {{- $size := "" -}}
+    {{- $built := printf "static%s" $url -}}
+    {{- if fileExists $built }}
+      {{- $size = printf " · %d KB" (math.Ceil (div (float (os.Stat $built).Size) 1024) | int) -}}
+    {{- else }}
+      {{- warnf "workbook: %s isn't built yet; run `make workbooks` before hugo (page: %s)" $built $.Page.RelPermalink -}}
+    {{- end }}
+    <li>
+      <a href="{{ partial "func/url.html" $url }}" download hx-boost="false" class="wb-link{{ if not .primary }} wb-link--quiet{{ end }} glass-btn inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm no-underline transition-colors duration-200 {{ if .primary }}!text-fg{{ else }}!text-muted{{ end }} hover:!text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
+        <span>{{ .label }}</span>
+        <span class="font-mono text-xs text-muted">zip{{ $size }}</span>
+      </a>
+    </li>
+    {{- end }}
+    <li>
+      <a href="{{ $course.source }}/{{ $chapter }}" rel="noopener" class="wb-link wb-link--quiet inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm !text-muted underline decoration-border hover:!text-accent">Read it on GitHub</a>
+    </li>
+  </ul>
+  <p class="m-0 mt-3 text-xs leading-snug text-muted">Unzip, follow the README once to set up, then run <code>pytest</code> until it's green.</p>
+</div>

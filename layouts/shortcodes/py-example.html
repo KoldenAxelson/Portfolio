@@ -1,0 +1,38 @@
+{{- /*
+  py-example — a block of Python with the output it really printed.
+
+    {{< py-example "ch02/slicing" >}}
+    {{< py-example name="ch06/loss-curve" alt="Train and validation loss by epoch…" >}}
+
+  The argument names a file in workbooks/python-for-ml/examples/ (chapter folder
+  / file name). Its code and captured output come from
+  data/python/examples/<chapter>.yaml, which `make examples` writes by running
+  the file on the pinned stack, so nothing shown here is typed by hand. The code
+  is split into chunks, each followed by what it printed, the way the Python
+  prompt shows it. `alt` describes any figure the example draws; Hugo can't mix
+  positional and named parameters, so an example with a figure names both.
+
+  A name with no data fails the build: a missing example is a missing output.
+*/ -}}
+{{- $ref := cond .IsNamedParams (.Get "name") (.Get 0) -}}
+{{- $parts := split $ref "/" -}}
+{{- $chapter := index site.Data.python.examples (index $parts 0) -}}
+{{- $chunks := cond (ne $chapter nil) (index $chapter (index $parts 1)) nil -}}
+{{- if not $chunks -}}
+  {{- errorf "py-example: no output for %q in data/python/examples/ — add workbooks/python-for-ml/examples/%s.py and run `make examples` (page: %s)" $ref $ref .Page.RelPermalink -}}
+{{- end -}}
+{{- $alt := cond .IsNamedParams (.Get "alt" | default "") "" -}}
+<figure class="py-example not-prose" aria-label="Python example">
+  {{- range $chunks }}
+  <div class="py-example__code">{{ transform.Highlight .code "python" }}</div>
+  {{- with .output }}
+  <div class="py-example__out"><span class="sr-only">Output:</span><pre><code>{{ . }}</code></pre></div>
+  {{- end }}
+  {{- range .figures }}
+  <div class="py-example__out py-example__out--figure">
+    {{- if not $alt }}{{ errorf "py-example: %q draws a figure; give the shortcode an alt= description (page: %s)" $ref $.Page.RelPermalink }}{{ end }}
+    <img src="{{ partial "func/url.html" . }}" alt="{{ $alt }}" loading="lazy" />
+  </div>
+  {{- end }}
+  {{- end }}
+</figure>

@@ -1,0 +1,12 @@
+{{- /*
+  glossary-set — the glossary set a page's terms read: its `glossary:` front
+  matter (a list gives its first entry), or `default` when it has none.
+
+    {{ $set := partial "func/glossary-set.html" (dict "page" .Page "default" "basic-logic") }}
+*/ -}}
+{{- $set := .default -}}
+{{- with .page.Params.glossary -}}
+  {{- $set = . -}}
+  {{- if reflect.IsSlice . }}{{ $set = index . 0 }}{{ end -}}
+{{- end -}}
+{{- return $set -}}

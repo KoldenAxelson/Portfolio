@@ -29,10 +29,7 @@
        reads to ship the data, so a page cannot use a set it did not load. A list
        takes the first entry; a page with two sets and terms from both would need
        a real parameter, and no page has that yet. */ -}}
-{{- $set := "basic-logic" -}}
-{{- with .Page.Params.glossary -}}
-  {{- if reflect.IsSlice . }}{{ $set = index . 0 }}{{ else }}{{ $set = . }}{{ end -}}
-{{- end -}}
+{{- $set := partial "func/glossary-set.html" (dict "page" .Page "default" "basic-logic") -}}
 {{- $key := .Get 0 -}}
 {{- $glossary := index site.Data.glossary $set -}}
 {{- $entry := index $glossary $key -}}

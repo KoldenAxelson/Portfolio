@@ -1,12 +1,12 @@
 {{- /*
-  chapter-select — floating "jump to chapter" FAB for Basic Logic chapter pages,
-  DESKTOP ONLY (lg+). Built on the shared auxiliary-button shell (.aux-fab, list
+  chapter-select — floating "jump to chapter" FAB for the chapters of any section
+  that cascades `chapters: true` (Basic Logic, Python for ML), DESKTOP ONLY (lg+). Built on the shared auxiliary-button shell (.aux-fab, list
   layout — see assets/css/auxiliary-button.css and ts/auxiliary-button.ts), so
   all it supplies is the icon and the chapter menu. The menu lists the section's
   chapters (current one marked, others linked). On mobile these same chapters
   live in the navbar tools button (topnav.html). Renders only on chapter pages.
 */ -}}
-{{- if and (eq .Type "basic-logic") (eq .Kind "page") -}}
+{{- if and .Params.chapters (eq .Kind "page") -}}
 {{- $cur := .RelPermalink -}}
 <details data-aux-fab class="fixed bottom-6 right-6 z-30 hidden lg:block print:!hidden">
   <summary class="aux-fab__btn relative flex h-12 w-12 cursor-pointer list-none items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50" aria-label="Select chapter" title="Select chapter">
@@ -20,9 +20,9 @@
     {{- /* The number column already conveys order, so drop a leading "Chapter N:" from the title. */ -}}
     {{- $name := replaceRE `^\s*Chapter\s+\d+\s*[:.\-–—]\s*` "" $ch.LinkTitle -}}
     {{- if eq $ch.RelPermalink $cur -}}
-    <span class="aux-fab__row aux-fab__row--current" aria-current="page"><span class="aux-fab__num">{{ add $i 1 }}</span><span class="aux-fab__name">{{ $name }}</span><span class="aux-fab__dot"></span></span>
+    <span class="aux-fab__row aux-fab__row--current" aria-current="page" style="--i: {{ add $i 1 }}"><span class="aux-fab__num">{{ add $i 1 }}</span><span class="aux-fab__name">{{ $name }}</span><span class="aux-fab__dot"></span></span>
     {{- else -}}
-    <a class="aux-fab__row" href="{{ $ch.RelPermalink }}" role="menuitem"><span class="aux-fab__num">{{ add $i 1 }}</span><span class="aux-fab__name">{{ $name }}</span></a>
+    <a class="aux-fab__row" href="{{ $ch.RelPermalink }}" role="menuitem" style="--i: {{ add $i 1 }}"><span class="aux-fab__num">{{ add $i 1 }}</span><span class="aux-fab__name">{{ $name }}</span></a>
     {{- end -}}
     {{- end }}
   </div>

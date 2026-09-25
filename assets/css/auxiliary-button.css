@@ -108,6 +108,9 @@ html[data-ai-ok]:has([data-ai-fab]) [data-aux-fab] { bottom: 5.25rem; }
 [data-aux-fab][open] .aux-fab__row:nth-child(6) { transition-delay: 0.15s; }
 [data-aux-fab][open] .aux-fab__row:nth-child(7) { transition-delay: 0.18s; }
 [data-aux-fab][open] .aux-fab__row:nth-child(8) { transition-delay: 0.21s; }
+/* A menu that numbers its rows (--i, as chapter-select does) staggers every
+   row, however many there are; the nth-child steps above stop at seven. */
+[data-aux-fab][open] .aux-fab__menu--list .aux-fab__row[style*="--i"] { transition-delay: calc(var(--i) * 0.03s); }
 .aux-fab__row:hover { background: rgb(var(--c-accent) / 0.1); color: rgb(var(--c-accent)); }
 .aux-fab__num { flex-shrink: 0; font: 600 0.7rem var(--font-mono, ui-monospace, monospace); color: rgb(var(--c-muted)); width: 1.6rem; }
 .aux-fab__row:hover .aux-fab__num { color: rgb(var(--c-accent)); }

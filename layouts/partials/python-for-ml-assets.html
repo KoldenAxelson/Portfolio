@@ -1,0 +1,20 @@
+{{- /*
+  python-for-ml-assets — the stylesheet and scripts a Python for ML chapter
+  needs, emitted once from the layout.
+
+  Decided here with `.HasShortcode`, not by each shortcode behind a `.Scratch`
+  guard: that guard goes stale across dev-server rebuilds and a page comes back
+  with no CSS (see the note in partials/skyrim-assets.html). code.css always
+  ships, since every chapter shows code, and so does figures-python.css, since
+  any term can open a figure; the stepper's script only when the page has one.
+*/ -}}
+{{- range slice "css/code.css" "css/figures-python.css" -}}
+{{- $css := resources.Get . | minify | fingerprint }}
+<link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" />
+{{- end }}
+{{- if .HasShortcode "code-stepper" }}
+{{- $css := resources.Get "css/code-stepper.css" | minify | fingerprint }}
+<link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" />
+{{- $js := resources.Get "scripts/pages/code-stepper.ts" | js.Build (dict "minify" true) | fingerprint }}
+<script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
+{{- end }}

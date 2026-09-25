@@ -1,0 +1,13 @@
+# Python for ML — course-wide settings read by the workbook and python-versions
+# shortcodes.
+
+# Where the packet sources are readable on GitHub. The workbook card links a
+# chapter's folder under it (`<source>/chNN`).
+source: "https://github.com/KoldenAxelson/Portfolio/tree/main/workbooks/python-for-ml"
+
+# The pinned stack. make workbooks copies this file into every packet; the
+# course index renders its table from it.
+requirements: "workbooks/python-for-ml/requirements.txt"
+
+# Where make workbooks writes the zips, as served (static/downloads/).
+downloads: "/downloads"

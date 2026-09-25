@@ -23,11 +23,12 @@
   {{- with $site.author.resume.pdf }}{{ $t = $t | append (dict "icon" "pdf" "label" "PDF" "href" . "download" true) }}{{ end -}}
   {{- $tools = $t -}}
 {{- end -}}
-{{- /* Basic Logic chapters auto-populate their toolbar with the section's other
-       chapters — a "jump to chapter" menu. On mobile it drops from the navbar
+{{- /* Chapters of a `chapters: true` section (Basic Logic, Python for ML)
+       auto-populate their toolbar with the section's other chapters — a "jump
+       to chapter" menu. On mobile it drops from the navbar
        button (shared tools panel); on desktop the inline toolbar is suppressed
        and the floating chapter-select FAB handles it (partials/chapter-select). */ -}}
-{{- if and (not $tools) (eq .Type "basic-logic") (eq .Kind "page") -}}
+{{- if and (not $tools) .Params.chapters (eq .Kind "page") -}}
   {{- $t := slice -}}
   {{- range .CurrentSection.RegularPages.ByWeight -}}
     {{- $t = $t | append (dict "label" .Title "href" .RelPermalink) -}}
@@ -84,8 +85,8 @@
       </a>
 
       {{- /* desktopFab pages (Viva) render their own floating FAB, so the centered
-             toolbar is suppressed there too, same as CV / Basic Logic. */ -}}
-      {{- if and $hasTools (ne .Layout "cv") (ne .Type "basic-logic") (ne .Type "dagea") (not $dageaGlobe) (not .Params.desktopFab) }}
+             toolbar is suppressed there too, same as CV / chapter sections. */ -}}
+      {{- if and $hasTools (ne .Layout "cv") (not .Params.chapters) (ne .Type "dagea") (not $dageaGlobe) (not .Params.desktopFab) }}
       <ul class="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-2 lg:flex">
         {{- range $tools }}
         <li>
@@ -142,7 +143,7 @@
         {{- end }}
         {{- if $mobileTools }}
         <button type="button" data-mobile-tools-trigger aria-label="Open page actions" class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-md text-muted transition-colors hover:bg-border/40 hover:text-fg focus-visible:bg-border/40 focus-visible:text-fg">
-          {{ partial "func/svg-icon.html" (dict "name" (.Params.toolsIcon | default (cond (eq .Type "basic-logic") "book-open" (cond (or (eq .Type "dagea") $dageaGlobe) "map-pin" "arrow-down-circle"))) "class" "h-7 w-7") }}
+          {{ partial "func/svg-icon.html" (dict "name" (.Params.toolsIcon | default (cond (eq .Params.chapters true) "book-open" (cond (or (eq .Type "dagea") $dageaGlobe) "map-pin" "arrow-down-circle"))) "class" "h-7 w-7") }}
         </button>
         {{- end }}
 

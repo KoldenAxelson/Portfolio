@@ -24,5 +24,7 @@ Read the matching skill in `private/skills/` before starting these tasks:
 
 Writing a blog article as the **writer agent**: start with
 [`private/blog-ideas/WRITER-HANDOFF.md`](private/blog-ideas/WRITER-HANDOFF.md).
+Building the Python for ML course as the **course builder**: start with
+[`private/misc-ideas/python-for-ml/COURSE-HANDOFF.md`](private/misc-ideas/python-for-ml/COURSE-HANDOFF.md).
 
 `private/` is gitignored, so these files exist only on Konrad's machine.

@@ -7,7 +7,8 @@ not a paraphrase. Usage:
 
     python3 scripts/check-terms.py content/articles/some-post.md [...]
 
-Reads the page's `glossary:` front matter (default basic-logic). Exit code 1 if
+Reads the page's `glossary:` front matter, or the one its section's _index.md
+cascades (default basic-logic). Exit code 1 if
 anything is flagged, so it can gate a commit.
 """
 import re
@@ -49,11 +50,21 @@ def load_glossary(name):
     return glossary
 
 
+GLOSSARY_KEY = re.compile(r'^\s*glossary:\s*\[?\s*["\']?([a-z0-9-]+)', re.M)
+
+
+def glossary_name(path, front):
+    """The page's own `glossary:`, else the one its section's _index.md cascades."""
+    named = GLOSSARY_KEY.search(front)
+    section = Path(path).parent / '_index.md'
+    if not named and section.exists() and Path(path).name != '_index.md':
+        named = GLOSSARY_KEY.search(section.read_text().split('---')[1])
+    return named.group(1) if named else 'basic-logic'
+
+
 def check(path):
     source = Path(path).read_text()
-    front = source.split('---')[1]
-    named = re.search(r'^glossary:\s*\[?\s*["\']?([a-z0-9-]+)', front, re.M)
-    glossary = load_glossary(named.group(1) if named else 'basic-logic')
+    glossary = load_glossary(glossary_name(path, source.split('---')[1]))
     flagged = 0
     for key, text in TERM.findall(source):
         entry = glossary.get(key)
