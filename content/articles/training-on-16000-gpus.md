@@ -5,8 +5,10 @@ pubDate: 2026-09-24
 tags: ['ml', 'training', 'distributed-systems', 'explainer']
 glossary: "ml"
 # In review: builds at its URL but stays off every list, feed and sitemap,
-# and is noindexed. Listed at /misc/drafts/. Publish by deleting these lines.
+# and is noindexed. Listed at /misc/drafts/ in reviewOrder (the validation
+# queue). Publish by deleting these lines.
 review: true
+reviewOrder: 7
 build:
   list: never
 thoughts:

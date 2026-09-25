@@ -14,6 +14,7 @@ sitemap:
   disable: true
 ---
 
-Each draft goes through a fact-check audit before it's published. To publish
+Listed in the order to validate them, top first. Each draft goes through a
+fact-check audit before it's published. To publish
 one, delete the `review` and `build` lines from its front matter and set its
 `pubDate`.

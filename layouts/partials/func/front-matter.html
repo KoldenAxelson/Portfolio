@@ -41,7 +41,7 @@
 
 {{- /* Articles in review: articles/single.html shows the draft banner, seo.html
        noindexes it, misc/drafts.html lists it. Paired with `build.list: never`. */ -}}
-{{- $known = $known | append "review" -}}
+{{- $known = $known | append "review" "revieworder" -}}
 
 {{- /* func/page-vault.html: seal the whole page into static/vault/<name>.json. */ -}}
 {{- $known = $known | append "vault" -}}
