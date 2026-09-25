@@ -1,0 +1,32 @@
+{{- /*
+  flow-steps — what happens, in order, and where it runs: a vertical rail of
+  steps, each tagged with the machine doing the work.
+
+    {{< flow-steps "order" >}}
+
+    flows:
+      order:
+        - { at: 'Cloudflare Worker', what: 'Checks the sold-out flag in KV…' }
+
+  `at` is the point of the thing. A request that crosses five systems reads as
+  a list of verbs until each line says whose verb it is.
+*/ -}}
+{{- $key := .Get 0 -}}
+{{- $flow := index (.Page.Params.flows | default dict) $key -}}
+{{- if not $flow -}}
+  {{- errorf "flow-steps: no flows.%s in the front matter of %s" $key .Page.RelPermalink -}}
+{{- else -}}
+<ol class="not-prose my-10 border-l border-border pl-6">
+  {{- $last := sub (len $flow) 1 }}
+  {{- range $i, $s := $flow }}
+  {{- /* The two ends are lit: where the customer starts and where the parcel
+         leaves. Everything between is machinery. */ -}}
+  {{- $isEnd := or (eq $i 0) (eq $i $last) }}
+  <li class="relative pb-6 last:pb-0">
+    <span aria-hidden="true" class="absolute -left-[1.84rem] top-1 h-3 w-3 rounded-full border-2 border-bg {{ cond $isEnd "bg-accent" "bg-muted/60" }}"></span>
+    <p class="font-mono text-xs uppercase tracking-wider text-muted">{{ $s.at }}</p>
+    <p class="mt-1 text-[0.95rem] leading-relaxed text-fg">{{ $s.what | markdownify }}</p>
+  </li>
+  {{- end }}
+</ol>
+{{- end -}}

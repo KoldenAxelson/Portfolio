@@ -66,7 +66,10 @@
 {{- $known = $known | append "blocks" -}}          {{/* now.html          */}}
 {{- $known = $known | append "stack" -}}           {{/* uses + colophon   */}}
 {{- $known = $known | append "groups" "games" "books" "wip" -}}  {{/* impossible-list */}}
-{{- $known = $known | append "decisions" "lighthouse" -}}        {{/* colophon        */}}
+{{- $known = $known | append "decisions" "lighthouse" -}}        {{/* colophon; lighthouse also shortcodes/lighthouse.html */}}
+{{- /* Page-local shortcode data, keyed so one page can hold several:
+       shortcodes/carousel.html, photo-steps.html, flow-steps.html. */ -}}
+{{- $known = $known | append "carousels" "steps" "flows" -}}
 {{- $known = $known | append "thoughts" -}}        {{/* index.html         */}}
 {{- $known = $known | append "updated" -}}         {{/* the "Last updated" line, where a page still has one */}}
 

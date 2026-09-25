@@ -1,6 +1,8 @@
 // Ring / bar meters. Originally colophon-only, now also driving the ancestry
-// rings on /misc/genes — anything inside a [data-perf-meters] root with a
-// [data-perf-panel] child gets swept.
+// rings on /misc/genes and the before/after Lighthouse runs on
+// /projects/visorplate — anything inside a [data-perf-meters] root with a
+// [data-perf-panel] child gets swept. One root per page: it is found with
+// querySelector, and no page has needed two.
 //
 // Two callers, two different starting states, and the difference is deliberate.
 // /colophon renders its rings and numbers EMPTY and depends on this module to

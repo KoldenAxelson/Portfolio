@@ -1,0 +1,73 @@
+{{- /*
+  plate-map — which states require a front license plate, as a tile map.
+
+    {{< plate-map >}}
+
+  DATA is data/front-plates.yaml. Every count on this widget is derived from it
+  here; nothing about how many states say what is typed anywhere else.
+
+  ONE SQUARE PER STATE, not a geographic map, so Rhode Island's law is as easy to
+  read as Texas's. It is complete in the HTML: colour, dashed outline and a
+  legend carry everything. ts/plate-map.ts only adds the readout line — point
+  at or tap a square and it names the state and what it requires, which a
+  `title` tooltip cannot do on a phone.
+
+  DROPPED states — ones that repealed the requirement — are drawn as a dashed
+  outline, so the map shows the market getting smaller rather than only its
+  current size.
+
+  `not-prose`, because the page sets prose and Typography would restyle the list.
+*/ -}}
+{{- $d := index site.Data "front-plates" -}}
+{{- if not $d -}}
+  {{- errorf "plate-map: data/front-plates.yaml is missing (page: %s)" .Page.RelPermalink -}}
+{{- else -}}
+
+{{- $required := 0 -}}
+{{- $dropped := slice -}}
+{{- $cols := 0 -}}
+{{- $rows := 0 -}}
+{{- range $code, $s := $d.states -}}
+  {{- if $s.required }}{{ $required = add $required 1 }}{{ end -}}
+  {{- with $s.dropped -}}
+    {{- $year := (time.AsTime .).Year -}}
+    {{- $dropped = $dropped | append (dict "name" $s.name "year" $year) -}}
+  {{- end -}}
+  {{- $cols = math.Max $cols (add $s.col 1) -}}
+  {{- $rows = math.Max $rows (add $s.row 1) -}}
+{{- end -}}
+{{- /* D.C. is in the data because it has a plate law; it is not a state, and
+       "29 states" would be a number nobody can check. */ -}}
+{{- $requiredStates := $required -}}
+{{- with index $d.states "DC" }}{{ if .required }}{{ $requiredStates = sub $required 1 }}{{ end }}{{ end -}}
+{{- $total := len $d.states -}}
+{{- $dropped = sort $dropped "year" -}}
+{{- $headline := printf "%d states and D.C. require a front plate." $requiredStates -}}
+
+<figure class="plate-map not-prose my-10" data-plate-map aria-label="Front license plate requirements by state">
+  <p class="h-5 text-center font-mono text-xs tabular-nums text-muted" data-plate-readout aria-live="polite">{{ $headline }}</p>
+
+  <ul class="mx-auto mt-5 grid max-w-md gap-1 sm:gap-1.5" style="grid-template-columns: repeat({{ $cols }}, minmax(0, 1fr)); grid-template-rows: repeat({{ $rows }}, auto)" aria-label="States, with front-plate requirement">
+    {{- range $code, $s := $d.states }}
+    {{- $state := "rear" -}}
+    {{- $says := "rear plate only" -}}
+    {{- if $s.required -}}
+      {{- $state = "required" }}{{ $says = "front plate required" -}}
+    {{- else if $s.dropped -}}
+      {{- $state = "dropped" }}{{ $says = printf "dropped the front plate in %d" (time.AsTime $s.dropped).Year -}}
+    {{- end }}
+    <li style="grid-column: {{ add $s.col 1 }}; grid-row: {{ add $s.row 1 }}">
+      <button type="button" data-plate-tile data-state="{{ $state }}" title="{{ $s.name }}: {{ $says }}" aria-label="{{ $s.name }}: {{ $says }}" class="plate-tile flex aspect-square w-full items-center justify-center rounded-[5px] font-mono text-[10px] font-semibold tracking-tight sm:text-[11px]">{{ $code }}</button>
+    </li>
+    {{- end }}
+  </ul>
+
+  <figcaption class="mx-auto mt-5 flex max-w-md flex-wrap justify-center gap-x-5 gap-y-2 text-xs text-muted">
+    <span class="inline-flex items-center gap-1.5"><span class="plate-tile inline-block h-3 w-3 rounded-[3px]" data-state="required"></span>Front plate required · {{ $required }}</span>
+    <span class="inline-flex items-center gap-1.5"><span class="plate-tile inline-block h-3 w-3 rounded-[3px]" data-state="rear"></span>Rear only · {{ sub $total (add $required (len $dropped)) }}</span>
+    {{- with $dropped }}
+    <span class="inline-flex items-center gap-1.5"><span class="plate-tile inline-block h-3 w-3 rounded-[3px]" data-state="dropped"></span>Dropped it: {{ range $i, $x := . }}{{ if $i }}, {{ end }}{{ $x.name }} {{ $x.year }}{{ end }}</span>
+    {{- end }}
+  </figcaption>
+</figure>
+{{- end -}}

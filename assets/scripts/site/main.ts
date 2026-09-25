@@ -15,6 +15,8 @@ import { initSkyrimNotes } from './skyrim-notes';
 import { initQuotes } from './quotes/index';
 import { initAncestryGlobe } from './ancestry-globe';
 import { initDageaGlobe } from './dagea-globe';
+import { initPlateMap } from './plate-map';
+import { initCarousels } from './carousel';
 import { initVault } from './vault';
 import { initGameEmbed } from './game-embed';
 
@@ -46,6 +48,8 @@ function initPage(): void {
   initQuotes();
   initAncestryGlobe();
   initDageaGlobe();
+  initPlateMap();
+  initCarousels();
   initVault();
   initGameEmbed();
 }
