@@ -1,0 +1,20 @@
+{{- /*
+  page-vault — the vault a whole page is sealed into, or "" when it isn't sealed.
+
+  A sealed page ships only a keypad; its real HTML lives as ciphertext in
+  static/vault/<name>.json, written by `make seal`. Sources of a name:
+    - `vault: "<name>"` in front matter (e.g. /misc/drafts → "drafts")
+    - `review: true` articles → "drafts/<file name>", so every draft is sealed
+
+  Sealed everywhere, `make dev` included, so local matches the live site. The
+  one exception is HUGO_PARAMS_SEALSOURCE=true: set by `make seal` to build the
+  plaintext it encrypts, and by `make dev-drafts` to preview drafts unlocked.
+*/ -}}
+{{- $name := .Params.vault | default "" -}}
+{{- if and (not $name) .Params.review -}}
+  {{- $name = printf "drafts/%s" .File.ContentBaseName -}}
+{{- end -}}
+{{- if site.Params.sealsource -}}
+  {{- $name = "" -}}
+{{- end -}}
+{{- return $name -}}

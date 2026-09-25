@@ -4,7 +4,11 @@ description: "No math required: loss, gradient descent, learning rates and overf
 pubDate: 2026-09-24
 tags: ['ml', 'training', 'fundamentals', 'explainer']
 glossary: "ml"
-draft: true
+# In review: builds at its URL but stays off every list, feed and sitemap,
+# and is noindexed. Listed at /misc/drafts/. Publish by deleting these lines.
+review: true
+build:
+  list: never
 thoughts:
   - "'The machine learns' sounds mystical. It's a very patient game of hot and cold."
   - "Picture training as 'roll downhill on the error' and half the jargon in ML stops being scary."

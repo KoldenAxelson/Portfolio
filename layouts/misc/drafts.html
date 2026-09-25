@@ -1,0 +1,55 @@
+{{- /*
+  misc/drafts — every article in review (`review: true`), newest first.
+
+  Review articles use `build.list: never`, so they're absent from .Pages and
+  site.RegularPages by design. They're found here by reading the articles folder
+  and fetching each page directly. An audit badge shows when
+  private/article-audits/<slug>.md exists (only on Konrad's machine; the
+  folder is gitignored, so the deployed page shows no badges).
+*/ -}}
+{{ define "banner" }}
+{{ partial "page-banner.html" (dict
+  "title" .Title
+  "subtitle" (.Params.lead | default "")) }}
+{{ end }}
+
+{{ define "main" }}
+{{- $drafts := slice -}}
+{{- range os.ReadDir "content/articles" -}}
+  {{- if and (not .IsDir) (strings.HasSuffix .Name ".md") (ne .Name "_index.md") -}}
+    {{- with site.GetPage (printf "/articles/%s" (strings.TrimSuffix ".md" .Name)) -}}
+      {{- if .Params.review }}{{ $drafts = $drafts | append . }}{{ end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- with .Content }}
+<section class="mb-10 max-w-prose space-y-4 text-base leading-relaxed text-muted [&_code]:text-fg">
+  {{ . }}
+</section>
+{{- end }}
+
+{{- if not $drafts }}
+<p class="font-mono text-sm text-muted">Nothing in review right now.</p>
+{{- else }}
+<p class="mb-4 font-mono text-xs uppercase tracking-widest text-muted">{{ len $drafts }} in review</p>
+<ul class="divide-y divide-border">
+  {{- range sort $drafts "Date" "desc" }}
+  {{- $slug := .File.ContentBaseName }}
+  {{- $audited := fileExists (printf "private/article-audits/%s.md" $slug) }}
+  <li class="py-5">
+    <h2 class="m-0 flex items-center gap-2 text-lg font-medium">
+      {{- partial "article-mark.html" (dict "page" .) }}
+      <a href="{{ .RelPermalink }}" class="text-fg no-underline hover:!text-accent">{{ .Title }}</a>
+    </h2>
+    <p class="mt-1 text-muted">{{ .Params.description }}</p>
+    <p class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs text-muted">
+      <span>{{ partial "formatted-date.html" (dict "date" .Date) }}</span>
+      {{- with .Params.tags }}<span>· {{ delimit . ", " }}</span>{{ end }}
+      {{- if $audited }}<span class="rounded bg-accent/10 px-1.5 py-0.5 text-accent">audited</span>{{ end }}
+    </p>
+  </li>
+  {{- end }}
+</ul>
+{{- end }}
+{{ end }}

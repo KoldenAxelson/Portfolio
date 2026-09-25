@@ -4,7 +4,11 @@ description: "Months of compute and a fortune in chips end up as one set of file
 pubDate: 2026-09-24
 tags: ['ml', 'security', 'explainer']
 glossary: "ml"
-draft: true
+# In review: builds at its URL but stays off every list, feed and sitemap,
+# and is noindexed. Listed at /misc/drafts/. Publish by deleting these lines.
+review: true
+build:
+  list: never
 thoughts:
   - "Almost every control in this post is one any ops team already runs. The file is just a lot more expensive."
   - "The most valuable thing a lab owns is a folder. Guard it accordingly."

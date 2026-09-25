@@ -4,7 +4,11 @@ description: "Training a frontier model is a distributed-systems problem with a 
 pubDate: 2026-09-24
 tags: ['ml', 'training', 'distributed-systems', 'explainer']
 glossary: "ml"
-draft: true
+# In review: builds at its URL but stays off every list, feed and sitemap,
+# and is noindexed. Listed at /misc/drafts/. Publish by deleting these lines.
+review: true
+build:
+  list: never
 thoughts:
   - "Most of what keeps any cluster alive applies here. The pager just costs a lot more per minute."
   - "Something in the cluster breaks every few hours and the job has to shrug it off. That's the whole post, really."

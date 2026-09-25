@@ -39,6 +39,13 @@
 {{- /* partials/head/seo.html */ -}}
 {{- $known = $known | append "noindex" "canonical" "image" "ogtype" "cover" -}}
 
+{{- /* Articles in review: articles/single.html shows the draft banner, seo.html
+       noindexes it, misc/drafts.html lists it. Paired with `build.list: never`. */ -}}
+{{- $known = $known | append "review" -}}
+
+{{- /* func/page-vault.html: seal the whole page into static/vault/<name>.json. */ -}}
+{{- $known = $known | append "vault" -}}
+
 {{- /* partials/page-banner.html, via every layout that has a banner */ -}}
 {{- $known = $known | append "lead" -}}
 

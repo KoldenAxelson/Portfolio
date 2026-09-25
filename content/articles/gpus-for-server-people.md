@@ -4,7 +4,11 @@ description: "GPUs for people who run servers: why AI runs on thousands of simpl
 pubDate: 2026-09-24
 tags: ['ml', 'hardware', 'inference', 'explainer']
 glossary: "ml"
-draft: true
+# In review: builds at its URL but stays off every list, feed and sitemap,
+# and is noindexed. Listed at /misc/drafts/. Publish by deleting these lines.
+review: true
+build:
+  list: never
 thoughts:
   - "On a server you blame the CPU first. On a GPU it almost never is the math."
   - "The fastest chip in the building, and its main job is waiting for the delivery truck."

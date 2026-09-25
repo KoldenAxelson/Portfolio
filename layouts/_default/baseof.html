@@ -1,6 +1,8 @@
 {{- /* Front matter is checked before anything is rendered from it, so a typo is
        a build failure rather than a page that quietly looks wrong. */ -}}
 {{- partial "func/front-matter.html" . -}}
+{{- /* A sealed page ships a keypad instead of its content; see func/page-vault. */ -}}
+{{- $sealed := partial "func/page-vault.html" . -}}
 <!doctype html>
 <html lang="{{ site.Data.site.locale | default `en-US` }}">
   <head>
@@ -90,7 +92,7 @@
       <div class="lg:flex lg:justify-between lg:gap-12">
         {{ partial "sidebar.html" . }}
         <main id="main" tabindex="-1" class="pt-8 lg:w-1/2 lg:pt-24 lg:pb-12">
-          {{ block "main" . }}{{ end }}
+          {{ with $sealed }}{{ partial "sealed-page.html" (dict "name" . "page" $) }}{{ else }}{{ block "main" . }}{{ end }}{{ end }}
         </main>
       </div>
       {{ partial "footer.html" . }}
@@ -98,9 +100,9 @@
     {{- else }}
     {{/* Optional full-bleed banner: pages opt in via {{ define "banner" }}.
          Sits outside the constrained column so it spans the full viewport. */}}
-    {{ block "banner" . }}{{ end }}
+    {{ if not $sealed }}{{ block "banner" . }}{{ end }}{{ end }}
     <div class="mx-auto px-6 py-12 lg:py-16 {{ cond (eq $mode "wide") "max-w-screen-xl lg:px-12" "max-w-3xl" }}">
-      <main id="main" tabindex="-1">{{ block "main" . }}{{ end }}</main>
+      <main id="main" tabindex="-1">{{ with $sealed }}{{ partial "sealed-page.html" (dict "name" . "page" $) }}{{ else }}{{ block "main" . }}{{ end }}{{ end }}</main>
       {{ partial "footer.html" . }}
     </div>
     {{- end }}
