@@ -1,0 +1,56 @@
+{{- /*
+  carousel — a swipeable row of captioned images, read from the page's own
+  front matter.
+
+    {{< carousel "road" >}}
+
+  with, in front matter:
+
+    carousels:
+      road:
+        caption: 'Optional line under the whole carousel.'
+        slides:
+          - { src: '/img/visorplate/miata.jpg', alt: '…', caption: '…', position: '50% 60%' }
+
+  `src` is an assets/ path in the func/cover.html convention and goes through
+  the same WebP pipeline. `position` is an optional CSS object-position for a
+  photo whose subject is off-centre once the 4:3 frame crops it.
+
+  EVERY SLIDE CARRIES ITS OWN CAPTION, so with no script the row is still a set
+  of captioned photos you can swipe. ts/carousel.ts adds arrows and dots on top,
+  both `hidden` in the markup until it does.
+
+  `not-prose`, because Typography would put margins on the figure and restyle
+  the captions.
+*/ -}}
+{{- $key := .Get 0 -}}
+{{- $c := index (.Page.Params.carousels | default dict) $key -}}
+{{- if not $c.slides -}}
+  {{- errorf "carousel: no carousels.%s.slides in the front matter of %s" $key .Page.RelPermalink -}}
+{{- else -}}
+{{- $n := len $c.slides -}}
+<figure class="not-prose my-10" data-carousel>
+  <div class="relative @container">
+    <div data-carousel-track tabindex="0" role="region" aria-roledescription="carousel" aria-label="{{ $c.label | default (printf "%d photos" $n) }}" class="flex snap-x snap-mandatory overflow-x-auto rounded-xl border border-border/60 bg-border/15 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg">
+      {{- range $i, $s := $c.slides }}
+      {{- $img := partial "func/cover.html" (dict "path" $s.src "width" 720) }}
+      <div class="w-full shrink-0 snap-center" role="group" aria-roledescription="slide" aria-label="{{ add $i 1 }} of {{ $n }}">
+        <img src="{{ $img.src }}"{{ with $img.srcset }} srcset="{{ . }}"{{ end }} alt="{{ $s.alt }}" width="720" height="540" loading="lazy" decoding="async" class="aspect-[4/3] w-full object-cover"{{ with $s.position }} style="object-position: {{ . | safeCSS }}"{{ end }} />
+        {{- with $s.caption }}
+        <p class="border-t border-border/60 px-4 py-2.5 text-sm text-muted"><span class="mr-2 font-mono text-xs tabular-nums text-muted/70">{{ printf "%02d" (add $i 1) }}</span>{{ . | markdownify }}</p>
+        {{- end }}
+      </div>
+      {{- end }}
+    </div>
+    {{- if gt $n 1 }}
+    {{- $btn := "absolute top-[37.5cqw] z-10 inline-flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-border/70 bg-bg/85 text-fg shadow-sm backdrop-blur transition-opacity hover:!text-accent disabled:pointer-events-none disabled:opacity-0" }}
+    <button type="button" data-carousel-prev hidden aria-label="Previous photo" class="{{ $btn }} left-3">{{ partial "func/svg-icon.html" (dict "name" "chevron-left" "class" "h-4 w-4" "width" "2") }}</button>
+    <button type="button" data-carousel-next hidden aria-label="Next photo" class="{{ $btn }} right-3">{{ partial "func/svg-icon.html" (dict "name" "chevron-right" "class" "h-4 w-4" "width" "2") }}</button>
+    {{- end }}
+  </div>
+  <div data-carousel-dots hidden aria-hidden="true" class="mt-3 flex justify-center gap-2"></div>
+  {{- with $c.caption }}
+  <figcaption class="mt-3 text-center text-xs text-muted">{{ . | markdownify }}</figcaption>
+  {{- end }}
+</figure>
+{{- end -}}

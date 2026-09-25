@@ -1,0 +1,71 @@
+# Which US jurisdictions require a front license plate on a passenger car.
+# Drawn by layouts/shortcodes/plate-map.html on /projects/visorplate.
+#
+# SOURCE. VisorPlate's own state checker (src/data/state-requirements.ts in the
+# VisorPlate repo), re-checked against state law and reporting in September 2026.
+# The only disagreement between sources was stale lists still counting Ohio,
+# Alaska or Utah — all three dropped the front plate, dated below.
+#
+# `dropped` is the date a state stopped requiring one. It is only set on states
+# that did so while front-plate laws were VisorPlate's market, which is why the
+# map can say the market was shrinking and point at exactly where.
+#
+# `col` / `row` place the state on the tile map: one square per state, laid out
+# so neighbours stay roughly neighbours. Every state gets the same square, which
+# is the point — Rhode Island's law counts as much as Texas's does.
+#
+# Counts ("28 states and D.C.") are derived from this file by the template.
+# Never write one into prose.
+verified: 2026-09
+states:
+  AK: { name: Alaska,         required: false, col: 0,  row: 0, dropped: 2022-08-22 }
+  ME: { name: Maine,          required: true,  col: 10, row: 0 }
+  WI: { name: Wisconsin,      required: true,  col: 5,  row: 1 }
+  VT: { name: Vermont,        required: true,  col: 9,  row: 1 }
+  NH: { name: New Hampshire,  required: true,  col: 10, row: 1 }
+  WA: { name: Washington,     required: true,  col: 0,  row: 2 }
+  ID: { name: Idaho,          required: true,  col: 1,  row: 2 }
+  MT: { name: Montana,        required: true,  col: 2,  row: 2 }
+  ND: { name: North Dakota,   required: true,  col: 3,  row: 2 }
+  MN: { name: Minnesota,      required: true,  col: 4,  row: 2 }
+  IL: { name: Illinois,       required: true,  col: 5,  row: 2 }
+  MI: { name: Michigan,       required: false, col: 6,  row: 2 }
+  NY: { name: New York,       required: true,  col: 8,  row: 2 }
+  MA: { name: Massachusetts,  required: true,  col: 9,  row: 2 }
+  OR: { name: Oregon,         required: true,  col: 0,  row: 3 }
+  NV: { name: Nevada,         required: true,  col: 1,  row: 3 }
+  WY: { name: Wyoming,        required: true,  col: 2,  row: 3 }
+  SD: { name: South Dakota,   required: true,  col: 3,  row: 3 }
+  IA: { name: Iowa,           required: true,  col: 4,  row: 3 }
+  IN: { name: Indiana,        required: false, col: 5,  row: 3 }
+  OH: { name: Ohio,           required: false, col: 6,  row: 3, dropped: 2020-07-01 }
+  PA: { name: Pennsylvania,   required: false, col: 7,  row: 3 }
+  NJ: { name: New Jersey,     required: true,  col: 8,  row: 3 }
+  CT: { name: Connecticut,    required: true,  col: 9,  row: 3 }
+  RI: { name: Rhode Island,   required: true,  col: 10, row: 3 }
+  CA: { name: California,     required: true,  col: 0,  row: 4 }
+  UT: { name: Utah,           required: false, col: 1,  row: 4, dropped: 2025-01-01 }
+  CO: { name: Colorado,       required: true,  col: 2,  row: 4 }
+  NE: { name: Nebraska,       required: true,  col: 3,  row: 4 }
+  MO: { name: Missouri,       required: true,  col: 4,  row: 4 }
+  KY: { name: Kentucky,       required: false, col: 5,  row: 4 }
+  WV: { name: West Virginia,  required: false, col: 6,  row: 4 }
+  VA: { name: Virginia,       required: true,  col: 7,  row: 4 }
+  MD: { name: Maryland,       required: true,  col: 8,  row: 4 }
+  DE: { name: Delaware,       required: false, col: 9,  row: 4 }
+  AZ: { name: Arizona,        required: false, col: 1,  row: 5 }
+  NM: { name: New Mexico,     required: false, col: 2,  row: 5 }
+  KS: { name: Kansas,         required: false, col: 3,  row: 5 }
+  AR: { name: Arkansas,       required: false, col: 4,  row: 5 }
+  TN: { name: Tennessee,      required: false, col: 5,  row: 5 }
+  NC: { name: North Carolina, required: false, col: 6,  row: 5 }
+  SC: { name: South Carolina, required: false, col: 7,  row: 5 }
+  DC: { name: Washington D.C., required: true, col: 8,  row: 5 }
+  OK: { name: Oklahoma,       required: false, col: 3,  row: 6 }
+  LA: { name: Louisiana,      required: false, col: 4,  row: 6 }
+  MS: { name: Mississippi,    required: false, col: 5,  row: 6 }
+  AL: { name: Alabama,        required: false, col: 6,  row: 6 }
+  GA: { name: Georgia,        required: false, col: 7,  row: 6 }
+  HI: { name: Hawaii,         required: true,  col: 0,  row: 7 }
+  TX: { name: Texas,          required: true,  col: 3,  row: 7 }
+  FL: { name: Florida,        required: false, col: 8,  row: 7 }

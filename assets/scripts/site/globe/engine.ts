@@ -599,9 +599,13 @@ export function createGlobe(opts: GlobeOptions): GlobeHandle {
       }
       lineGroups = Object.entries(d.lines ?? {})
         .flatMap(([group, list]) => list.map((l) => [group, l] as [string, GlobeLine]));
+      // Unhide BEFORE measuring. A `hidden` host has no clientWidth, resize()
+      // fell back to MAX_PX, and on a phone the 460px canvas pushed the whole
+      // page wider than the screen. All of this runs in one task, so nothing
+      // paints between the unhide and the first frame.
+      host.hidden = false;
       resize();
       draw();
-      host.hidden = false;
       if (opts.fallback) opts.fallback.hidden = true;
       canvas.style.cursor = 'grab';
       opts.onReady?.(d);

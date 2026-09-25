@@ -1,0 +1,16 @@
+{{- /*
+  lighthouse — the /colophon score rings, on any page, from its front matter.
+
+    {{< lighthouse >}}                 reads .Params.lighthouse
+    {{< lighthouse "Before and after" >}}   same, with its own heading
+
+  The data shape is the colophon's; see partials/perf-meters.html. `not-prose`
+  is on the wrapper because Typography would restyle the ring labels and lists.
+*/ -}}
+{{- with .Page.Params.lighthouse -}}
+<div class="not-prose my-12">
+{{ partial "perf-meters.html" (dict "lighthouse" . "heading" ($.Get 0 | default "Lighthouse") "id" "lighthouse-heading" "class" "") }}
+</div>
+{{- else -}}
+{{- errorf "lighthouse: no lighthouse block in the front matter of %s" .Page.RelPermalink -}}
+{{- end -}}

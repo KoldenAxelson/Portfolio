@@ -1,0 +1,36 @@
+{{- /*
+  photo-steps — a short numbered sequence, one photo per step, read from the
+  page's front matter.
+
+    {{< photo-steps "install" >}}
+
+    steps:
+      install:
+        - { src: '/img/visorplate/slide.jpg', alt: '…', title: 'Insert plate', body: '…' }
+
+  Three steps sit in a row from `sm` up; any other count wraps. On a phone each
+  step is a thumbnail beside its text — three full-width squares was two
+  screens of scrolling to read three sentences. The numbers are
+  the list's own order — never typed into the data, so reordering is one move.
+*/ -}}
+{{- $key := .Get 0 -}}
+{{- $steps := index (.Page.Params.steps | default dict) $key -}}
+{{- if not $steps -}}
+  {{- errorf "photo-steps: no steps.%s in the front matter of %s" $key .Page.RelPermalink -}}
+{{- else -}}
+<ol class="not-prose my-10 grid gap-5 sm:grid-cols-3">
+  {{- range $i, $s := $steps }}
+  {{- $img := partial "func/cover.html" (dict "path" $s.src "width" 320 "height" 320) }}
+  <li class="grid grid-cols-[6.5rem_1fr] items-start gap-4 sm:block">
+    <img src="{{ $img.src }}"{{ with $img.srcset }} srcset="{{ . }}"{{ end }} alt="{{ $s.alt }}" width="320" height="320" loading="lazy" decoding="async" class="aspect-square w-full rounded-xl border border-border/60 object-cover" />
+    <div>
+      <p class="flex items-baseline gap-2 sm:mt-3">
+        <span class="font-mono text-xs tabular-nums text-accent">{{ printf "%02d" (add $i 1) }}</span>
+        <span class="font-medium text-fg">{{ $s.title }}</span>
+      </p>
+      <p class="mt-1 text-sm leading-relaxed text-muted">{{ $s.body | markdownify }}</p>
+    </div>
+  </li>
+  {{- end }}
+</ol>
+{{- end -}}
