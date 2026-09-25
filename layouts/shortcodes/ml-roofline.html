@@ -1,0 +1,26 @@
+{{- /*
+  ml-roofline — why generating text waits on memory, and how batching fixes it.
+  Slide the batch size and watch one decoding step go from memory-bound to
+  compute-bound.
+
+    {{< ml-roofline >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml-demos-assets.html (css/ml-demos.css, scripts/pages/ml/).
+  Chip specs (dense BF16 TFLOPS, memory bandwidth) and the model size live in
+  the data-* attributes below. The static text is H100 at batch 1, so the demo
+  still reads with JavaScript off.
+*/ -}}
+<div class="not-prose mli-demo" id="mli-roof" data-billions="8" data-bytes-per-weight="2">
+<div class="mli-demo-label">Live · what the GPU waits on</div>
+<div class="mli-bits-models" role="group" aria-label="Chip"><span class="mli-bits-lab">Chip:</span><button class="mli-rag-q is-on" type="button" aria-pressed="true" data-tflops="989" data-tbps="3.35">H100 SXM</button><button class="mli-rag-q" type="button" aria-pressed="false" data-tflops="2250" data-tbps="8">B200</button></div>
+<div class="mli-row"><label for="mli-roof-r">Requests per batch: <span class="mli-val" id="mli-roof-v">1</span></label><input class="mli-range" id="mli-roof-r" type="range" min="0" max="10" step="1" value="0" aria-valuetext="1 request" /></div>
+<div class="mli-roof-bars">
+<div class="mli-roof-bar"><span class="mli-roof-lab">Reading weights</span><div class="mli-roof-track"><div class="mli-roof-fill" id="mli-roof-mem" style="width:100%"></div></div><span class="mli-roof-ms" id="mli-roof-memv">4.8 ms</span></div>
+<div class="mli-roof-bar"><span class="mli-roof-lab">Doing math</span><div class="mli-roof-track"><div class="mli-roof-fill is-math" id="mli-roof-math" style="width:0.3%"></div></div><span class="mli-roof-ms" id="mli-roof-mathv">0.02 ms</span></div>
+</div>
+<div class="mli-roof-badge" id="mli-roof-badge">Memory-bound</div>
+<div class="mli-cost" id="mli-roof-out">209 <small>tokens / second</small></div>
+<div class="mli-caption" id="mli-roof-cap">One request at a time: the math units are busy 0.3% of the time. The rest is waiting for weights to arrive from memory.</div>
+<div class="mli-caption">Real arithmetic on published peak specs (dense 16-bit), for an 8-billion-weight model at 16 bits: each step reads all 16 GB of weights once and does one multiply and one add per weight for each request. Real servers land below these peaks and also read the KV cache, so treat it as the shape, not a benchmark.</div>
+</div>

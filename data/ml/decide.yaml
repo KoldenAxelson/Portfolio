@@ -1,0 +1,37 @@
+# Questions for the {{< ml-decide >}} demo. A toy scorer stands in for a
+# decision model: each option's cue words raise its odds when they appear in the
+# ticket. `type` mirrors two of the three question shapes the article describes
+# (no scale question here).
+samples:
+  - "I was charged twice this month and nobody has answered my emails for 3 days. Fix this today or I'm cancelling."
+  - "Hi! Just wondering if there's a way to rename my account. No rush, thanks."
+  - "The app crashes every time I log in since the update. Still broken after a reinstall."
+questions:
+  - id: urgent
+    label: Is this urgent?
+    type: yes/no
+    options:
+      - label: "Yes"
+        cues: [today, now, urgent, asap, immediately, cancel, crash, broken, still, days, twice]
+      - label: "No"
+        cues: [no rush, whenever, wondering, curious, just, thanks, idea]
+  - id: team
+    label: Which team?
+    type: pick one
+    options:
+      - label: Billing
+        cues: [charge, invoice, refund, card, bill, payment, price, subscription, twice, cancel]
+      - label: Technical
+        cues: [crash, error, bug, log in, login, password, broken, slow, update, reinstall, sync]
+      - label: Account
+        cues: [rename, account, username, email address, profile, delete my, close my]
+  - id: tone
+    label: What's the tone?
+    type: pick one
+    options:
+      - label: Calm
+        cues: [thanks, please, wondering, curious, appreciate, hi]
+      - label: Annoyed
+        cues: [again, still, waiting, days, twice, every time, nobody]
+      - label: Angry
+        cues: [ridiculous, unacceptable, cancel, worst, lawyer, never, "!!"]

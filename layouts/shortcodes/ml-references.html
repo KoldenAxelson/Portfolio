@@ -1,0 +1,24 @@
+{{- /*
+  ml-references — the "References & further reading" card carousel.
+
+    {{< ml-references >}}                 reads data/ml/references/<this page's file name>.yaml
+    {{< ml-references set="other" >}}     reads data/ml/references/other.yaml
+
+  The list lives in data so a living article can add a source without touching
+  markup, and the "03 / 11" counters are computed rather than typed. Styles and
+  the carousel script ship from partials/ml-demos-assets.html.
+*/ -}}
+{{- $set := .Get "set" | default .Page.File.ContentBaseName -}}
+{{- $refs := index (site.Data.ml.references | default dict) $set -}}
+{{- if not $refs -}}
+  {{- errorf "ml-references: no data/ml/references/%s.yaml (page: %s)" $set .Page.RelPermalink -}}
+{{- end -}}
+{{- $total := printf "%02d" (len $refs) -}}
+<div class="not-prose mli-cite" id="mli-cite">
+<div class="mli-cite-view"><div class="mli-cite-track" id="mli-cite-track">
+{{- range $i, $ref := $refs }}
+<article class="mli-cite-card"><div class="mli-cite-top"><span class="mli-cite-tag">{{ $ref.tag }}</span><span class="mli-cite-num">{{ printf "%02d" (add $i 1) }} / {{ $total }}</span></div><h3 class="mli-cite-title"><a href="{{ $ref.url }}">{{ $ref.title }}</a></h3><div class="mli-cite-meta">{{ $ref.meta }}</div><p class="mli-cite-note">{{ $ref.note }}</p></article>
+{{- end }}
+</div></div>
+<div class="mli-cite-nav"><button class="mli-mo-btn" id="mli-cite-prev" type="button" aria-label="Previous reference">&lsaquo;</button><div class="mli-cite-dots" id="mli-cite-dots"></div><button class="mli-mo-btn" id="mli-cite-next" type="button" aria-label="Next reference">&rsaquo;</button></div>
+</div>

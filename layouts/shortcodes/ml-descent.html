@@ -1,0 +1,44 @@
+{{- /*
+  ml-descent — gradient descent on a straight line. Drag the points, pick a
+  learning rate, and step the line downhill on the error.
+
+    {{< ml-descent >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml-demos-assets.html (css/ml-demos.css, scripts/pages/ml/).
+  Starting points (x,y pairs in 0–1), the flat starting line and the run
+  length are set once here; the plot, loss and button label below are drawn
+  from them so the page reads the same with JavaScript off.
+*/ -}}
+{{- $points := "0.1,0.25 0.2,0.3 0.35,0.42 0.45,0.4 0.55,0.58 0.7,0.62 0.8,0.75 0.9,0.8" -}}
+{{- $pairs := split $points " " -}}
+{{- $width := 300 -}}
+{{- $height := 200 -}}
+{{- $intercept := 0.5 -}}
+{{- $runSteps := 30 -}}
+{{- $lineY := printf "%.1f" (sub $height (mul $intercept $height)) -}}
+{{- $squaredErrors := 0.0 -}}
+{{- range $pairs -}}
+  {{- $gap := sub $intercept (float (index (split . ",") 1)) -}}
+  {{- $squaredErrors = add $squaredErrors (mul $gap $gap) -}}
+{{- end -}}
+<div class="not-prose mli-demo" id="mli-gd" data-points="{{ $points }}" data-intercept="{{ $intercept }}">
+<div class="mli-demo-label">Live · rolling downhill on the error</div>
+<svg class="mli-gd-plot" id="mli-gd-plot" viewBox="0 0 {{ $width }} {{ $height }}" role="img" aria-label="Data points and the model's line">
+{{- range $pairs -}}
+{{- $xy := split . "," -}}
+{{- $x := printf "%.1f" (mul (float (index $xy 0)) $width) -}}
+<line class="mli-gd-err" x1="{{ $x }}" y1="{{ printf "%.1f" (sub $height (mul (float (index $xy 1)) $height)) }}" x2="{{ $x }}" y2="{{ $lineY }}"></line>
+{{- end -}}
+<line class="mli-gd-line" x1="0" y1="{{ $lineY }}" x2="{{ $width }}" y2="{{ $lineY }}"></line>
+{{- range $pairs -}}
+{{- $xy := split . "," -}}
+<circle class="mli-gd-dot" cx="{{ printf "%.1f" (mul (float (index $xy 0)) $width) }}" cy="{{ printf "%.1f" (sub $height (mul (float (index $xy 1)) $height)) }}" r="7"></circle>
+{{- end -}}
+</svg>
+<div class="mli-bits-models" role="group" aria-label="Learning rate"><span class="mli-bits-lab">Learning rate:</span><button class="mli-rag-q" type="button" aria-pressed="false" data-rate="0.02">Too small</button><button class="mli-rag-q is-on" type="button" aria-pressed="true" data-rate="0.6">About right</button><button class="mli-rag-q" type="button" aria-pressed="false" data-rate="1">Too big</button></div>
+<div class="mli-controls"><button class="mli-btn" id="mli-gd-step" type="button">One step</button><button class="mli-btn" id="mli-gd-run" type="button" data-run-steps="{{ $runSteps }}">Run {{ $runSteps }} steps</button><button class="mli-btn mli-btn-ghost" id="mli-gd-reset" type="button">Reset line</button></div>
+<div class="mli-cost" id="mli-gd-out">{{ printf "%.4f" (div $squaredErrors (len $pairs)) }} <small>loss before training</small></div>
+<div class="mli-caption" id="mli-gd-cap">With JavaScript on, drag any point and step the line downhill.</div>
+<div class="mli-caption">Real gradient descent on the average squared error, the loss used for fitting lines. Only two weights here: the slope and where the line starts. A language model does the same thing with billions.</div>
+</div>

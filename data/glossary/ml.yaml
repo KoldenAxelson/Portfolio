@@ -9,6 +9,9 @@
 #   term           the label in the window header
 #   definition     one plain sentence
 #   notes          optional paragraphs: why it matters, a real example
+#   aliases        other names the term really goes by ("8-bit" for INT8) or word
+#                  forms ("quantized"). Read only by scripts/check-terms.py, which
+#                  flags linked text that is none of these. Never a paraphrase.
 #   [[key|text]]   a cross-reference (always the two-part form)
 #   **bold**       emphasis
 #
@@ -42,6 +45,62 @@ weights:
     The learned numbers inside a [[model|model]]. [[training|Training]] sets
     them; once the model ships, they stay frozen.
 
+gradient-descent:
+  term: Gradient Descent
+  definition: >-
+    Nudging every [[weights|weight]] a little in the direction that makes the
+    model's error smaller, over and over.
+
+loss:
+  term: Loss
+  aliases: ['loss function']
+  definition: >-
+    A single number for how wrong a model's guesses are on some examples.
+    [[training|Training]] tries to make it small.
+
+learning-rate:
+  term: Learning Rate
+  definition: >-
+    How big a step [[gradient-descent|gradient descent]] takes each time. Too
+    big and it overshoots; too small and it takes forever.
+
+epoch:
+  term: Epoch
+  aliases: ['epochs']
+  definition: >-
+    One full pass through the training data.
+
+stochastic-gradient-descent:
+  term: Stochastic Gradient Descent (SGD)
+  definition: >-
+    [[gradient-descent|Gradient descent]] that steps on a small random batch of
+    examples at a time instead of all of them.
+  notes:
+    - >-
+      Strictly, the name means one example per step, but in practice it covers
+      small batches too.
+
+backpropagation:
+  term: Backpropagation
+  aliases: ['backprop']
+  definition: >-
+    The bookkeeping that works out, for every [[weights|weight]] at once, which
+    way to nudge it to lower the [[loss|loss]].
+
+overfitting:
+  term: Overfitting
+  aliases: ['overfit', 'overfits']
+  definition: >-
+    Fitting the training examples so closely, noise and all, that the model
+    does worse on new data. Memorizing the practice test.
+
+generalization:
+  term: Generalization
+  aliases: ['generalize', 'generalizes']
+  definition: >-
+    How well a model does on data it has never seen, the performance that
+    counts once it ships.
+
 linear-regression:
   term: Linear Regression
   definition: >-
@@ -55,9 +114,9 @@ neural-network:
     signals on to the next.
   notes:
     - >-
-      The digit reader in the article is a tiny one, about nineteen thousand
-      [[weights|weights]]. A chatbot's is millions of times bigger, but the same
-      shape.
+      The digit reader in *What Is ML Infrastructure?* is a tiny one, about
+      nineteen thousand [[weights|weights]]. A chatbot's is millions of times
+      bigger, but the same shape.
 
 llm:
   term: Large Language Model (LLM)
@@ -69,6 +128,29 @@ training-cutoff:
   term: Training Cutoff
   definition: >-
     The date a model's training data ends. It knows nothing that happened after.
+
+classification:
+  term: Classification
+  aliases: ['classify', 'classifier']
+  definition: >-
+    Sorting an input into one of a fixed set of categories, like "spam" or "not
+    spam".
+
+decision-model:
+  term: Decision Model
+  aliases: ['System One model']
+  definition: >-
+    A [[model|model]] that returns odds over answers you define, instead of
+    writing text.
+  notes:
+    - >-
+      TypeSafe AI calls its version, Jev, a "System One model". The name echoes
+      psychologist Daniel Kahneman's fast, intuitive System 1, as opposed to the
+      slow, deliberate System 2.
+    - >-
+      It's [[classification|classification]] with a twist: you write the
+      categories fresh for every question, in plain language, with no
+      [[training|training]] of your own.
 
 # ── The loop ─────────────────────────────────────────────────────────
 
@@ -82,6 +164,47 @@ mlops:
       What makes it its own discipline is [[continuous-training|continuous
       training]]: normal software stays correct until someone changes it; a
       model doesn't.
+
+test-set:
+  term: Test Set
+  aliases: ['held-out set', 'held-out data']
+  definition: >-
+    Examples kept out of [[training|training]] entirely, used only to measure
+    how well the finished model does on data it has never seen.
+
+validation-set:
+  term: Validation Set
+  definition: >-
+    Examples held out from [[training|training]] and used to choose settings
+    along the way, so the [[test-set|test set]] stays untouched.
+
+data-leakage:
+  term: Data Leakage
+  aliases: ['contamination', 'leakage', 'leaked']
+  definition: >-
+    When test examples, or close copies, sneak into the training data, so the
+    model's score measures memory instead of skill.
+
+benchmark:
+  term: Benchmark
+  aliases: ['benchmarks']
+  definition: >-
+    A public, fixed [[test-set|test set]] that everyone scores their models on,
+    so results can be compared.
+
+llm-as-judge:
+  term: LLM-as-Judge
+  aliases: ['LLM judge', 'judge model']
+  definition: >-
+    Using one language model to grade another's answers, as a cheap stand-in
+    for human reviewers.
+
+regression-suite:
+  term: Regression Suite
+  aliases: ['regression suites', 'regression tests']
+  definition: >-
+    A set of tests that every new version must pass, including every past bug,
+    so fixed problems stay fixed.
 
 continuous-training:
   term: Continuous Training
@@ -192,6 +315,7 @@ throughput:
 
 quantization:
   term: Quantization
+  aliases: ['quantized']
   definition: >-
     Storing a model's [[weights|weights]] at lower precision, like 8-bit instead
     of 16-bit, so it needs less memory and costs less to run.
@@ -212,6 +336,93 @@ batching:
     work.
   notes:
     - It trades a little [[latency|latency]] for a lot of [[throughput|throughput]].
+
+model-routing:
+  term: Model Routing
+  aliases: ['routing', 'router', 'routed']
+  definition: >-
+    Sending each request to whichever model should answer it, usually the
+    cheapest one that's good enough.
+
+cascade:
+  term: Cascade
+  aliases: ['cascades']
+  definition: >-
+    Trying a cheap model first and escalating to a bigger one only when the
+    first answer looks unreliable.
+
+confidence-threshold:
+  term: Confidence Threshold
+  definition: >-
+    The level of certainty below which a system stops trusting a model's answer
+    and escalates, asks a human, or falls back.
+  notes:
+    - >-
+      It's only as good as the model's [[calibration|calibration]]: an
+      overconfident model sails past any threshold.
+
+distillation:
+  term: Distillation
+  aliases: ['distilled', 'distill']
+  definition: >-
+    [[training|Training]] a small model to copy a big model's answers, so it
+    gets much of the skill at a fraction of the cost.
+
+semantic-cache:
+  term: Semantic Cache
+  aliases: ['semantic caching']
+  definition: >-
+    A cache that returns a stored answer when a new question means the same
+    thing as an old one, even if it's worded differently.
+  notes:
+    - >-
+      It matches questions by their [[embedding|embeddings]], so "how do I
+      reset my password" can hit the cached answer to "forgot my password".
+
+prompt-caching:
+  term: Prompt Caching
+  definition: >-
+    A provider feature that remembers the start of a prompt you send often, and
+    charges much less when you send it again.
+
+self-hosting:
+  term: Self-Hosting
+  aliases: ['self-host', 'self-hosted']
+  definition: >-
+    Running a model on machines you control, rented or owned, instead of
+    calling someone else's API.
+
+gpu-utilization:
+  term: GPU Utilization
+  aliases: ['utilization']
+  definition: >-
+    The share of time a [[gpu|GPU]] you're paying for is actually doing useful
+    work.
+  notes:
+    - An idle GPU still bills by the hour.
+
+break-even:
+  term: Break-Even Point
+  aliases: ['break-even', 'break even']
+  definition: >-
+    The usage level where two options cost the same.
+  notes:
+    - Below it one is cheaper; above it, the other.
+
+rate-limit:
+  term: Rate Limit
+  aliases: ['rate limits', 'rate-limited']
+  definition: >-
+    A provider's cap on how many requests or [[token|tokens]] you can send per
+    minute.
+  notes:
+    - Usually raised as your account's usage grows.
+
+zero-data-retention:
+  term: Zero Data Retention
+  definition: >-
+    An API arrangement where the provider doesn't store your prompts or outputs
+    after answering, usually granted case by case.
 
 # ── Precision ────────────────────────────────────────────────────────
 
@@ -252,6 +463,7 @@ fp8:
 
 int8:
   term: INT8
+  aliases: ['8-bit', '8 bits']
   definition: >-
     Storing each number as a whole number from −128 to 127, one byte apiece,
     plus a shared multiplier to turn it back into the real value.
@@ -264,6 +476,7 @@ int8:
 
 int4:
   term: INT4
+  aliases: ['4-bit', '4 bits']
   definition: >-
     Storing each number as a whole number from −8 to 7: half a byte apiece,
     with a shared multiplier per block.
@@ -346,6 +559,7 @@ gguf:
 
 1-bit-llm:
   term: 1-bit LLM
+  aliases: ['1-bit model']
   definition: >-
     A language model whose [[weights|weights]] are stored in about one bit each,
     often just −1, 0 or +1, and trained that way from the start.
@@ -366,6 +580,7 @@ guardrail:
 
 fallback:
   term: Fallback
+  aliases: ['fall back']
   definition: >-
     What you serve when a [[guardrail|guardrail]] fails: a simpler model, a cached
     answer, a safe default, or a human.
@@ -375,6 +590,336 @@ schema:
   definition: >-
     The shape an output must have, such as which fields it needs and what type
     each one is.
+
+structured-output:
+  term: Structured Output
+  definition: >-
+    Model output that always fits a fixed [[schema|schema]], such as JSON with
+    known fields, so a program can use it without parsing prose.
+
+calibration:
+  term: Calibration
+  aliases: ['calibrated', 'well-calibrated']
+  definition: >-
+    How well a model's stated confidence matches how often it's right: a
+    calibrated model that says "80%" is right about 80% of the time.
+  notes:
+    - >-
+      Accuracy asks "is it right?". Calibration asks "does it know when it's
+      right?". A calibrated model can be wrong often and still be useful,
+      because it tells you which answers to double-check.
+
+# ── Security ─────────────────────────────────────────────────────────
+
+prompt-injection:
+  term: Prompt Injection
+  aliases: ['injected']
+  definition: >-
+    Text that smuggles instructions into a model's input, so the model follows
+    the attacker instead of the person it works for.
+  notes:
+    - >-
+      Named by Simon Willison in September 2022, after SQL injection. The
+      difference: a database can keep code and data apart, and a language model
+      can't.
+
+sql-injection:
+  term: SQL Injection
+  definition: >-
+    Typing database code into a form field so the app runs it, because the app
+    glued user input straight into its query.
+  notes:
+    - >-
+      The fix is to send the query and the user's data separately
+      ("parameterized queries"), so input can never become code.
+
+indirect-prompt-injection:
+  term: Indirect Prompt Injection
+  definition: >-
+    [[prompt-injection|Prompt injection]] planted in content the model reads on
+    its own, like a web page, an email or a file, rather than typed by the user.
+
+jailbreak:
+  term: Jailbreak
+  aliases: ['jailbreaking']
+  definition: >-
+    Talking a model into ignoring its own safety rules.
+  notes:
+    - >-
+      Unlike [[prompt-injection|prompt injection]], it attacks the model
+      itself, not an app built on top of it.
+
+system-prompt:
+  term: System Prompt
+  definition: >-
+    The instructions an app gives a model before the user's input arrives: who
+    it is, what it may do, what to refuse.
+
+least-privilege:
+  term: Least Privilege
+  definition: >-
+    Giving a user, service or model only the access its job needs, so a mistake
+    or a takeover can do only limited damage.
+
+exfiltration:
+  term: Exfiltration
+  aliases: ['exfiltrate', 'exfiltrated']
+  definition: >-
+    Getting data out of a system without permission, whether by copying files,
+    sending messages or hiding it in a web request.
+
+lethal-trifecta:
+  term: Lethal Trifecta
+  definition: >-
+    An [[agent|agent]] that can read private data, sees untrusted content and
+    can send data out.
+  notes:
+    - With all three, one injected instruction can leak your data.
+    - >-
+      Simon Willison's name for it (June 2025). Remove any one leg and the
+      [[exfiltration|exfiltration]] path closes.
+
+insider-threat:
+  term: Insider Threat
+  aliases: ['insider', 'insiders']
+  definition: >-
+    Risk from people who already have legitimate access, such as employees or
+    contractors, whether they mean harm or are tricked.
+
+supply-chain-attack:
+  term: Supply-Chain Attack
+  aliases: ['supply chain']
+  definition: >-
+    Breaking into a target through something it trusts and installs, like a
+    software package, a downloaded model or a vendor's update.
+
+egress:
+  term: Egress
+  aliases: ['egress controls', 'egress limits']
+  definition: >-
+    Data leaving a network; egress controls cap or block it so a stolen file
+    can't simply stream out.
+  notes:
+    - >-
+      Model [[weights|weights]] are huge, which helps the defender: a
+      bandwidth cap that barely slows normal work can make copying hundreds of
+      gigabytes take long enough to get noticed.
+
+confidential-computing:
+  term: Confidential Computing
+  definition: >-
+    Hardware that walls data off while it's being processed, and encrypts
+    whatever leaves, so the machine's owner or a compromised host can't read it
+    from memory.
+
+safetensors:
+  term: Safetensors
+  definition: >-
+    A file format for model [[weights|weights]] that holds only numbers and a
+    short header, never code, so loading one can't run hidden code the way
+    older Python "pickle" files can.
+
+open-weights:
+  term: Open Weights
+  aliases: ['open-weight', 'open-weights model']
+  definition: >-
+    A model whose trained [[weights|weights]] are published for anyone to
+    download and run, as with Meta's Llama.
+
+# ── Hardware ─────────────────────────────────────────────────────────
+
+gpu:
+  term: GPU
+  aliases: ['GPUs', 'graphics processing unit']
+  definition: >-
+    A chip with thousands of simple cores that all do the same math at once.
+    Built for graphics, now the workhorse of AI.
+
+accelerator:
+  term: Accelerator
+  definition: >-
+    Any chip built to run one kind of work faster than a general-purpose CPU.
+    For AI: [[gpu|GPUs]], [[tpu|TPUs]] and their rivals.
+
+tpu:
+  term: TPU
+  aliases: ['tensor processing unit']
+  definition: >-
+    Google's own AI [[accelerator|accelerator]], mostly rented through Google
+    Cloud; a few giant buyers get whole racks.
+
+cuda:
+  term: CUDA
+  definition: >-
+    NVIDIA's platform for writing general-purpose programs that run on its
+    [[gpu|GPUs]]. Released in 2007, and a big reason NVIDIA leads in AI.
+
+flops:
+  term: FLOPS
+  aliases: ['FLOP', 'FLOPs', 'teraFLOPS', 'TFLOPS']
+  definition: >-
+    Floating-point operations per second: how much arithmetic a chip can do.
+    One trillion of them is a teraFLOPS.
+
+hbm:
+  term: HBM
+  aliases: ['high-bandwidth memory']
+  definition: >-
+    High-bandwidth memory: stacks of memory chips packed right beside the
+    processor, so data has a short, very wide road to travel.
+
+memory-bandwidth:
+  term: Memory Bandwidth
+  definition: >-
+    How many bytes per second a chip can pull from its memory. For many AI
+    jobs, it matters more than the chip's [[flops|FLOPS]].
+
+arithmetic-intensity:
+  term: Arithmetic Intensity
+  definition: >-
+    How much math a job does for each byte it reads from memory. Low means
+    [[memory-bound|memory-bound]]; high means [[compute-bound|compute-bound]].
+  notes:
+    - >-
+      The roofline model (Williams, Waterman and Patterson, 2009) plots speed
+      against it: below a certain intensity, memory sets the pace; above it,
+      the math units do.
+
+memory-bound:
+  term: Memory-Bound
+  definition: >-
+    Limited by how fast data arrives from memory, while the math units sit
+    idle. Generating text one [[token|token]] at a time usually is.
+
+compute-bound:
+  term: Compute-Bound
+  definition: >-
+    Limited by how fast the chip can do math. The point where adding more work
+    finally costs you speed.
+
+nvlink:
+  term: NVLink
+  definition: >-
+    NVIDIA's direct connection between [[gpu|GPUs]], many times faster than
+    ordinary networking, so a group of GPUs can work almost like one.
+
+# ── Government ───────────────────────────────────────────────────────
+
+fedramp:
+  term: FedRAMP
+  definition: >-
+    The US government's shared security review for cloud services, so each
+    agency doesn't have to vet the same vendor from scratch.
+  notes:
+    - >-
+      Services used to be rated Low, Moderate or High. Rules that took effect
+      on July 4, 2026 renamed "authorization" to "certification" and moved Low,
+      Moderate and High into Classes B, C and D, with a new pilot Class A.
+      Vendors still widely say "FedRAMP High".
+
+authority-to-operate:
+  term: Authority to Operate (ATO)
+  definition: >-
+    An agency official's formal sign-off that a system's remaining risk is
+    acceptable, which it needs before it can go live.
+
+cui:
+  term: Controlled Unclassified Information (CUI)
+  definition: >-
+    Government information that isn't classified but still has to be
+    protected, like personal records, law enforcement data or contract details.
+
+impact-level:
+  term: Impact Level
+  aliases: ['IL', 'impact levels']
+  definition: >-
+    The Defense Department's cloud ratings. IL2 is public and other
+    non-sensitive data, IL4 and IL5 are [[cui|CUI]], and IL6 is classified up
+    to Secret.
+
+govcloud:
+  term: GovCloud
+  aliases: ['government region']
+  definition: >-
+    A cloud provider's regions reserved for government work, physically
+    separate and run by screened US staff. Microsoft's version is Azure
+    Government.
+
+air-gapped:
+  term: Air-Gapped
+  aliases: ['air gap']
+  definition: >-
+    Physically cut off from the internet and other networks, so data can only
+    move in or out by hand.
+
+audit-log:
+  term: Audit Log
+  definition: >-
+    A tamper-resistant record of who did what, and when, kept so you can prove
+    it later.
+
+# ── Training at scale ───────────────────────────────────────────────
+
+data-parallelism:
+  term: Data Parallelism
+  aliases: ['data parallel']
+  definition: >-
+    Giving every [[gpu|GPU]] a full copy of the model and a different slice of
+    the training data, then averaging what they learned after every step.
+
+tensor-parallelism:
+  term: Tensor Parallelism
+  aliases: ['tensor parallel']
+  definition: >-
+    Splitting each layer of a model across several [[gpu|GPUs]], so they
+    compute every layer together.
+
+pipeline-parallelism:
+  term: Pipeline Parallelism
+  aliases: ['pipeline parallel']
+  definition: >-
+    Giving each [[gpu|GPU]] a different run of layers and passing data from one
+    to the next, like an assembly line.
+
+fsdp:
+  term: FSDP
+  aliases: ['fully sharded data parallel', 'ZeRO', 'sharded data parallelism']
+  definition: >-
+    Fully sharded data parallel: [[data-parallelism|data parallelism]] where
+    each GPU stores only a slice of the model and borrows the rest as needed.
+  notes:
+    - >-
+      PyTorch's name for it. Microsoft's DeepSpeed calls the same idea ZeRO.
+
+all-reduce:
+  term: All-Reduce
+  definition: >-
+    A group operation where every [[gpu|GPU]] contributes numbers and every GPU
+    ends up with the total, used to average gradients in training.
+
+nccl:
+  term: NCCL
+  definition: >-
+    NVIDIA's library for moving data between [[gpu|GPUs]] during training.
+    Pronounced "nickel".
+
+checkpoint:
+  term: Checkpoint
+  aliases: ['checkpointing', 'checkpoints']
+  definition: >-
+    A saved snapshot of a training run's full state, so it can restart from
+    there instead of from scratch.
+
+mfu:
+  term: MFU
+  aliases: ['model FLOPs utilization']
+  definition: >-
+    Model FLOPs utilization: the share of the hardware's peak
+    [[flops|FLOPS]] that actually went into training the model.
+  notes:
+    - >-
+      Google introduced it with PaLM in 2022, at 46.2%. Meta's Llama 3 run
+      reached 38–43% on up to 16,000 GPUs.
 
 # ── Language models ──────────────────────────────────────────────────
 
@@ -402,8 +947,8 @@ rag:
     the prompt, so the model answers from them instead of from memory.
   notes:
     - >-
-      The lookup is usually done with [[embedding|embeddings]] in a
-      [[vector-database|vector database]].
+      The lookup is often done with [[embedding|embeddings]] in a
+      [[vector-database|vector database]], frequently alongside keyword search.
 
 embedding:
   term: Embedding
@@ -414,15 +959,52 @@ embedding:
 vector-database:
   term: Vector Database
   definition: >-
-    A store built to find the [[embedding|embeddings]] most similar to a query,
-    in milliseconds.
+    A store built to quickly find the [[embedding|embeddings]] most similar to
+    a query.
+
+chunking:
+  term: Chunking
+  aliases: ['chunk', 'chunks']
+  definition: >-
+    Cutting documents into pieces small enough to search and paste into a
+    prompt, before any [[rag|retrieval]] happens.
+
+cosine-similarity:
+  term: Cosine Similarity
+  definition: >-
+    A score for how closely two [[embedding|embeddings]] point in the same
+    direction: the closer to 1, the more alike their meaning.
+
+bm25:
+  term: BM25
+  definition: >-
+    The classic keyword-ranking formula, the default in search engines such as
+    Elasticsearch: rare words that appear often in a document push it up the
+    list.
+
+hybrid-search:
+  term: Hybrid Search
+  definition: >-
+    Running keyword search and [[embedding|embedding]] search together and
+    merging their rankings, so each covers the other's blind spots.
+
+reranking:
+  term: Reranking
+  aliases: ['reranker', 'rerank']
+  definition: >-
+    A second, slower, pickier pass that reorders the top search results by
+    reading each one next to the question.
 
 fine-tuning:
   term: Fine-Tuning
   definition: >-
     Continuing to [[training|train]] a model's [[weights|weights]] on your own
-    data. Expensive and powerful.
+    data.
   notes:
+    - >-
+      The cost ranges widely. Qi et al. (2023) broke GPT-3.5 Turbo's safety
+      guardrails by fine-tuning it on 10 examples, for less than $0.20 through
+      OpenAI's API.
     - The cheaper alternative, usually enough, is better [[prompting|prompting]].
 
 prompting:
@@ -430,6 +1012,67 @@ prompting:
   definition: >-
     Steering a model with the instructions and context you give it, without
     changing its [[weights|weights]].
+
+transformer:
+  term: Transformer
+  aliases: ['transformers']
+  definition: >-
+    The [[neural-network|neural network]] design behind nearly every modern
+    language model, built around [[attention|attention]].
+
+attention:
+  term: Attention
+  definition: >-
+    The step where each [[token|token]] looks back at every earlier token and
+    decides which ones matter for understanding it.
+
+context-window:
+  term: Context Window
+  definition: >-
+    The most [[token|tokens]] a model can take in at once: your conversation,
+    documents and its own answer so far.
+
+sampling:
+  term: Sampling
+  aliases: ['sample', 'sampled']
+  definition: >-
+    Picking the next [[token|token]] at random according to the model's odds,
+    instead of always taking the most likely one.
+
+temperature:
+  term: Temperature
+  definition: >-
+    A setting that sharpens or flattens the model's odds before
+    [[sampling|sampling]]: low is predictable, high is adventurous.
+
+prefill:
+  term: Prefill
+  definition: >-
+    The first phase of answering: the model reads the whole prompt in one
+    parallel pass and fills the [[kv-cache|KV cache]].
+  notes:
+    - It's [[compute-bound|compute-bound]], and it's most of the wait before the first word appears.
+
+decode:
+  term: Decode
+  aliases: ['decoding']
+  definition: >-
+    The second phase of answering: generating the reply one [[token|token]] at
+    a time, each step reading the whole model from memory.
+  notes:
+    - It's [[memory-bound|memory-bound]], which is why [[batching|batching]] helps so much.
+
+time-to-first-token:
+  term: Time to First Token (TTFT)
+  definition: >-
+    How long a user waits between sending a request and seeing the first word
+    of the answer.
+
+speculative-decoding:
+  term: Speculative Decoding
+  definition: >-
+    Letting a small, fast model guess several [[token|tokens]] ahead and having
+    the big model check them all in one pass.
 
 kv-cache:
   term: KV Cache
@@ -440,6 +1083,97 @@ kv-cache:
     - >-
       Managing it well is half the battle for LLM speed and cost. vLLM pages it
       like OS virtual memory and gets 2–4× the [[throughput|throughput]].
+
+autoregressive:
+  term: Autoregressive
+  aliases: ['autoregression']
+  definition: >-
+    Generating output one [[token|token]] at a time, with each new token fed back
+    in as input for the next.
+  notes:
+    - >-
+      Every token is another full pass through the model, which is why long
+      answers are slow and why output tokens usually cost more than input.
+
+# ── Post-training ────────────────────────────────────────────────────
+
+pretraining:
+  term: Pretraining
+  aliases: ['pretrained', 'pre-training']
+  definition: >-
+    The first, biggest stage of [[training|training]] a language model:
+    predicting the next [[token|token]] across a huge pile of text.
+
+base-model:
+  term: Base Model
+  aliases: ['base models']
+  definition: >-
+    A model straight out of [[pretraining|pretraining]]. It continues text
+    rather than answering it, and hasn't been taught to be an assistant.
+
+post-training:
+  term: Post-Training
+  aliases: ['post-trained']
+  definition: >-
+    Everything done to a [[base-model|base model]] after
+    [[pretraining|pretraining]] to turn it into a helpful, safe assistant.
+
+supervised-fine-tuning:
+  term: Supervised Fine-Tuning (SFT)
+  definition: >-
+    [[fine-tuning|Fine-tuning]] on example conversations written or picked by
+    people, so the model learns what a good answer looks like.
+
+reward-model:
+  term: Reward Model
+  aliases: ['reward models']
+  definition: >-
+    A model trained to score answers the way people would, learned from many
+    "this one's better" comparisons.
+
+rlhf:
+  term: RLHF
+  aliases: ['reinforcement learning from human feedback']
+  definition: >-
+    Reinforcement learning from human feedback: letting a model practice and
+    rewarding answers a [[reward-model|reward model]] scores highly.
+
+dpo:
+  term: DPO
+  aliases: ['direct preference optimization']
+  definition: >-
+    Direct preference optimization: learning from "this one's better" pairs
+    directly, with no separate [[reward-model|reward model]] or practice loop.
+
+rlvr:
+  term: RLVR
+  aliases: ['reinforcement learning with verifiable rewards', 'verifiable rewards']
+  definition: >-
+    Reinforcement learning with verifiable rewards: rewarding answers that a
+    program can check, like a correct math result or code that passes its tests.
+
+constitutional-ai:
+  term: Constitutional AI
+  definition: >-
+    Anthropic's method of training a model to critique and improve its own
+    answers against a written list of principles, using AI feedback instead of
+    human labels for what counts as harmful.
+
+reward-hacking:
+  term: Reward Hacking
+  definition: >-
+    A model finding a way to score well that its designers didn't intend, like
+    special-casing the tests instead of fixing the code.
+
+sycophancy:
+  term: Sycophancy
+  aliases: ['sycophantic']
+  definition: >-
+    A model telling people what they want to hear instead of what's true.
+  notes:
+    - >-
+      Partly a side effect of [[rlhf|RLHF]]: people tend to rate agreeable
+      answers higher, and the model learns that.
 
 # ── Agents ───────────────────────────────────────────────────────────
 

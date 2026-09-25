@@ -1,0 +1,83 @@
+# References for content/articles/securing-model-weights.md, rendered by {{< ml-references >}}.
+# Listed in the order the article reaches them. Numbering is automatic.
+
+- tag: Scale
+  title: Llama 3.1 model card
+  url: https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/MODEL_CARD.md
+  meta: Meta · July 2024
+  note: 30.84M H100 GPU hours for the 405B model, 39.3M for the whole family.
+- tag: Risk
+  title: Fine-tuning Aligned Language Models Compromises Safety, Even When Users Do Not Intend To!
+  url: https://arxiv.org/abs/2310.03693
+  meta: Qi et al. · 2023
+  note: A handful of fine-tuning examples was enough to undo a model's safety training. With the weights in hand, nobody can stop you.
+- tag: Open
+  title: Open Source AI Is the Path Forward
+  url: https://about.fb.com/news/2024/07/open-source-ai-is-the-path-forward/
+  meta: Mark Zuckerberg · Meta · July 23, 2024
+  note: 'The case for open weights, including the argument that "stealing models that fit on a thumb drive is relatively easy."'
+- tag: Incident
+  title: Facebook's Powerful Large Language Model Leaks Online
+  url: https://www.vice.com/en/article/facebooks-powerful-large-language-model-leaks-online-4chan-llama/
+  meta: Vice · March 2023
+  note: LLaMA, shared with approved researchers only, ends up as a public torrent on 4chan.
+- tag: Incident
+  title: Former Google Engineer Found Guilty of Economic Espionage and Theft of Confidential AI Technology
+  url: https://www.justice.gov/opa/pr/former-google-engineer-found-guilty-economic-espionage-and-theft-confidential-ai-technology
+  meta: US Department of Justice · January 30, 2026
+  note: More than 2,000 pages on Google's TPU and GPU supercomputing systems, uploaded to a personal cloud account over about a year.
+- tag: Framework
+  title: 'Securing AI Model Weights: Preventing Theft and Misuse of Frontier Models'
+  url: https://www.rand.org/pubs/research_reports/RRA2849-1.html
+  meta: Nevo et al. · RAND · May 2024
+  note: 38 attack vectors, five security levels, 167 measures, and no silver bullets.
+- tag: Framework
+  title: A Playbook for Securing AI Model Weights
+  url: https://www.rand.org/pubs/research_briefs/RBA2849-1.html
+  meta: RAND research brief · 2024
+  note: The short version, with the SL1–SL5 attacker descriptions and the labs' estimates of how long each level takes.
+- tag: Practice
+  title: Activating AI Safety Level 3 Protections
+  url: https://www.anthropic.com/news/activating-asl3-protections
+  meta: Anthropic · May 22, 2025
+  note: More than 100 controls, including two-party authorization for weight access, binary allowlisting and egress bandwidth controls.
+- tag: Practice
+  title: Announcing Confidential Computing General Access on NVIDIA H100 Tensor Core GPUs
+  url: https://developer.nvidia.com/blog/announcing-confidential-computing-general-access-on-nvidia-h100-tensor-core-gpus/
+  meta: NVIDIA Technical Blog · April 2024
+  note: The H100 was the first GPU to support confidential computing, protecting data and models while they're in use.
+- tag: Practice
+  title: Creating the First Confidential GPUs
+  url: https://cacm.acm.org/practice/creating-the-first-confidential-gpus/
+  meta: NVIDIA engineers · Communications of the ACM
+  note: 'How H100 confidential computing works: GPU memory is firewalled, not encrypted ("The on-package HBM is … not encrypted"), and data leaving the protected region is encrypted.'
+- tag: Supply chain
+  title: Data Scientists Targeted by Malicious Hugging Face ML Models with Silent Backdoor
+  url: https://jfrog.com/blog/data-scientists-targeted-by-malicious-hugging-face-ml-models-with-silent-backdoor/
+  meta: JFrog · February 27, 2024
+  note: JFrog's finding of about 100 models that run code the moment they're loaded, mostly through Python's pickle format; one opened a reverse-shell backdoor.
+- tag: Supply chain
+  title: Safetensors
+  url: https://github.com/huggingface/safetensors
+  meta: Hugging Face · GitHub README
+  note: '"Safe: Can I use a file randomly downloaded and expect not to run arbitrary code?" Pickle: "Unsafe, runs arbitrary code."'
+- tag: Law
+  title: SB 53, Transparency in Frontier Artificial Intelligence Act
+  url: https://legiscan.com/CA/text/SB53/id/3271094
+  meta: California · Chapter 138, Statutes of 2025
+  note: Large frontier developers must publish a framework that covers securing unreleased model weights.
+- tag: Open
+  title: Meta has a competitive AI model but loses its open-source identity
+  url: https://www.artificialintelligence-news.com/news/meta-muse-spark-ai-model-open-source/
+  meta: AI News · April 10, 2026
+  note: Meta's flagship Muse Spark launches "entirely proprietary", unlike its earlier open-weight models.
+- tag: Open
+  title: 'Introducing Muse Glimmer: An Open Agentic Model That Runs on Your Device'
+  url: https://research.meta.ai/blog/introducing-muse-glimmer-open-agentic-model
+  meta: Meta · August 10, 2026
+  note: Meta keeps publishing some open weights, here under an Apache 2.0 license.
+- tag: Open
+  title: Dual-Use Foundation Models with Widely Available Model Weights
+  url: https://www.ntia.gov/issues/artificial-intelligence/open-model-weights-report
+  meta: NTIA · US Department of Commerce · July 30, 2024
+  note: No restrictions on open weights for now; the government should actively monitor the risks and be ready to act.

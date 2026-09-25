@@ -1,0 +1,27 @@
+# Strategies for the {{< ml-parallel >}} demo: 8 GPUs, a model of 8 layers.
+# The strings below say "8" and "an eighth"; change them with `gpus`.
+# `holds` says which layers each GPU stores: all, a slice of each, or a stage.
+# `sends` is what crosses the wire, `limit` is the catch.
+gpus: 8
+layers: 8
+strategies:
+  - id: data
+    label: Data parallel
+    holds: all
+    sends: "Every step, all 8 GPUs average their gradients with each other (an all-reduce), so every copy stays identical."
+    limit: "Each GPU needs the whole model, plus its training state, in memory. Big models don't fit."
+  - id: fsdp
+    label: Sharded (FSDP)
+    holds: shard
+    sends: "Each GPU stores an eighth of everything and borrows the other pieces just in time, layer by layer, then drops them."
+    limit: "About 50% more network traffic than plain data parallel, in exchange for storing an eighth of the model and its training state."
+  - id: tensor
+    label: Tensor parallel
+    holds: slice
+    sends: "Every layer is split across the GPUs, so they swap partial results several times per layer."
+    limit: "So much chatter that it's usually kept inside one server, on NVLink."
+  - id: pipeline
+    label: Pipeline parallel
+    holds: stage
+    sends: "Each GPU owns one layer and passes its output to the next GPU, like an assembly line."
+    limit: "The line takes time to fill and drain, and GPUs idle while it does: the pipeline bubble."

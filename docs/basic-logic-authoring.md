@@ -154,6 +154,16 @@ Everything it prints should be a change you meant — a case shift for sentence
 position, a singular/plural, or a typo fix. Anything else is a term that lost its
 wording.
 
+A second check covers the other direction, linked text that was never the term
+to begin with (`{{</* term "inference" */>}}running a model{{</* /term */>}}`):
+
+```bash
+python3 scripts/check-terms.py content/misc/basic-logic/chapter-01.md
+```
+
+It prints nothing when every link reads as its term. Legitimate other names
+and word forms go in the entry's `aliases`.
+
 ## Checking your work
 
 ```bash

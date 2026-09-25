@@ -1,0 +1,68 @@
+# References for content/articles/rag-from-scratch.md, rendered by {{< ml-references >}}.
+# Listed in the order the article reaches them. Numbering is automatic.
+
+- tag: Chunking
+  title: Introducing Contextual Retrieval
+  url: https://www.anthropic.com/news/contextual-retrieval
+  meta: Anthropic · September 19, 2024
+  note: Chunks that lack context, and a fix that cut top-20 retrieval failures by 49%, and by 67% with reranking.
+- tag: Chunking
+  title: Chunking Strategies for LLM Applications
+  url: https://www.pinecone.io/learn/chunking-strategies/
+  meta: Pinecone
+  note: The trade-off between chunks too big to be precise and too small to make sense.
+- tag: Keyword
+  title: 'The Probabilistic Relevance Framework: BM25 and Beyond'
+  url: https://www.staff.city.ac.uk/~sbrp622/papers/foundations_bm25_review.pdf
+  meta: Robertson & Zaragoza · 2009
+  note: Where BM25 comes from, one of the most successful text-retrieval algorithms.
+- tag: Keyword
+  title: Similarity settings
+  url: https://www.elastic.co/docs/reference/elasticsearch/index-settings/similarity
+  meta: Elastic · docs
+  note: BM25 is the default similarity.
+- tag: Vector
+  title: Embeddings
+  url: https://developers.openai.com/api/docs/guides/embeddings
+  meta: OpenAI · docs
+  note: '"We recommend cosine similarity. The choice of distance function typically doesn''t matter much."'
+- tag: Vector
+  title: Dense Passage Retrieval for Open-Domain Question Answering
+  url: https://arxiv.org/abs/2004.04906
+  meta: Karpukhin et al. · 2020
+  note: Learned embeddings beat BM25 by 9–19 points of top-20 retrieval accuracy.
+- tag: Vector
+  title: 'BEIR: A Heterogenous Benchmark for Zero-shot Evaluation of Information Retrieval Models'
+  url: https://arxiv.org/abs/2104.08663
+  meta: Thakur et al. · 2021
+  note: On unfamiliar data, BM25 is a robust baseline and dense models often underperform.
+- tag: Hybrid
+  title: Reciprocal Rank Fusion outperforms Condorcet and individual Rank Learning Methods
+  url: https://cormack.uwaterloo.ca/cormacksigir09-rrf.pdf
+  meta: Cormack, Clarke & Büttcher · SIGIR 2009
+  note: Merge rankings by summing 1 / (60 + rank). It consistently beat the individual systems it combined.
+- tag: Hybrid
+  title: Hybrid search
+  url: https://www.elastic.co/docs/solutions/search/hybrid-search
+  meta: Elastic · docs
+  note: Full-text and vector search in one request, merged with RRF.
+- tag: Reranking
+  title: Passage Re-ranking with BERT
+  url: https://arxiv.org/abs/1901.04085
+  meta: Nogueira & Cho · 2019
+  note: A BERT reranker at the top of the MS MARCO leaderboard, 27% better than the previous best.
+- tag: Reranking
+  title: An Overview of Cohere's Rerank Model
+  url: https://docs.cohere.com/docs/rerank-overview
+  meta: Cohere · docs
+  note: Reranking as an API call. Give it a query and documents; it returns them ordered by relevance.
+- tag: Failures
+  title: 'Lost in the Middle: How Language Models Use Long Contexts'
+  url: https://arxiv.org/abs/2307.03172
+  meta: Liu et al. · 2023
+  note: Performance is often highest when the relevant text is at the start or end of the context.
+- tag: Origin
+  title: Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks
+  url: https://arxiv.org/abs/2005.11401
+  meta: Lewis et al. · 2020
+  note: The paper that named RAG, pairing a generator with a searchable index of Wikipedia.

@@ -1,0 +1,28 @@
+{{- /*
+  ml-reward — pick the better of two answers, over and over, and watch a toy
+  reward model learn what you like.
+
+    {{< ml-reward >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml-demos-assets.html (css/ml-demos.css, scripts/pages/ml/).
+  Pairs and trait labels live in data/ml/preferences.yaml. With JavaScript off,
+  the first pair shows without the learning.
+*/ -}}
+{{- $data := site.Data.ml.preferences -}}
+{{- $first := index $data.pairs 0 -}}
+<div class="not-prose mli-demo" id="mli-rew" data-pairs="{{ jsonify $data.pairs }}">
+<div class="mli-demo-label">Live · you're the labeler</div>
+<div class="mli-rag-t" id="mli-rew-q">{{ $first.question }}</div>
+<div class="mli-judge-answers" role="group" aria-label="Pick the better answer">
+<button class="mli-judge-ans" type="button" data-side="a" id="mli-rew-a">{{ $first.a.text }}</button>
+<button class="mli-judge-ans" type="button" data-side="b" id="mli-rew-b">{{ $first.b.text }}</button>
+</div>
+<div class="mli-gi-sub mli-rew-sub">What the reward model has learned you like</div>
+<div class="mli-rew-bars">
+{{- range $data.traits }}<div class="mli-rew-bar" data-trait="{{ .id }}"><span class="mli-rew-lab">{{ .label }}</span><div class="mli-rew-track"><div class="mli-rew-fill"></div></div><span class="mli-rew-val">0.0</span></div>{{ end -}}
+</div>
+<div class="mli-controls"><button class="mli-btn mli-btn-ghost" id="mli-rew-reset" type="button">Start over</button><span class="mli-gi-sub" id="mli-rew-count">0 picks</span></div>
+<div class="mli-caption" id="mli-rew-cap">Pick the answer you'd rather get. Try being honest for a few rounds, then try being flattered.</div>
+<div class="mli-caption">A toy: the reward model is one number per trait, and the traits were labeled by hand. Real reward models are neural networks trained on huge numbers of comparisons, but they learn the same way: from which answer people picked.</div>
+</div>

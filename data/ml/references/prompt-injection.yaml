@@ -1,0 +1,83 @@
+# References for content/articles/prompt-injection.md, rendered by {{< ml-references >}}.
+# Listed in the order the article reaches them. Numbering is automatic.
+
+- tag: Origin
+  title: Prompt injection attacks against GPT-3
+  url: https://simonwillison.net/2022/Sep/12/prompt-injection/
+  meta: Simon Willison · September 12, 2022
+  note: 'The post that named it: "The obvious parallel here is SQL injection."'
+- tag: Why
+  title: Prompt injection is not SQL injection (it may be worse)
+  url: https://www.ncsc.gov.uk/blog-post/prompt-injection-is-not-sql-injection
+  meta: Dave Chismon · UK NCSC · December 8, 2025
+  note: No line between data and instructions inside a model, so the SQL-style fix doesn't exist. Treat the model as a confusable deputy and limit its privileges.
+- tag: Direct
+  title: Hacker Reveals Microsoft's New AI-Powered Bing Chat Search Secrets
+  url: https://www.forbes.com/sites/daveywinder/2023/02/13/hacker-reveals-microsofts-new-ai-powered-bing-chat-search-secrets/
+  meta: Forbes · February 13, 2023
+  note: '"Ignore previous instructions" gets Bing Chat to reveal its hidden rules and its codename, Sydney.'
+- tag: Indirect
+  title: "Not what you've signed up for: Compromising Real-World LLM-Integrated Applications with Indirect Prompt Injection"
+  url: https://arxiv.org/abs/2302.12173
+  meta: Greshake et al. · 2023
+  note: Instructions planted in content the app retrieves, with working attacks on Bing's GPT-4 chat and code-completion tools.
+- tag: Terms
+  title: Prompt injection and jailbreaking are not the same thing
+  url: https://simonwillison.net/2024/Mar/5/prompt-injection-jailbreaking/
+  meta: Simon Willison · March 5, 2024
+  note: Jailbreaks attack the model's own safety filters; prompt injection attacks the app built on top of it, by mixing untrusted input into a trusted prompt.
+- tag: Agents
+  title: 'GitHub MCP Exploited: Accessing private repositories via MCP'
+  url: https://invariantlabs.ai/blog/mcp-github-vulnerability
+  meta: Invariant Labs · May 26, 2025
+  note: A malicious public issue gets an AI agent with GitHub access to leak private repository data into a pull request.
+- tag: Agents
+  title: CVE-2025-32711 (EchoLeak)
+  url: https://nvd.nist.gov/vuln/detail/CVE-2025-32711
+  meta: NIST NVD · June 11, 2025
+  note: AI command injection in Microsoft 365 Copilot that could disclose information over a network. Microsoft rated it 9.3, critical.
+- tag: Agents
+  title: 'EchoLeak: The First Real-World Zero-Click Prompt Injection Exploit in a Production LLM System'
+  url: https://arxiv.org/abs/2509.10540
+  meta: arXiv · September 2025
+  note: One crafted email, no clicks, and Copilot leaks confidential data. Reported in January 2025, fixed server-side in May, disclosed in June.
+- tag: Agents
+  title: 'The lethal trifecta for AI agents: private data, untrusted content, and external communication'
+  url: https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/
+  meta: Simon Willison · June 16, 2025
+  note: The three capabilities that, together, turn an injection into a data leak.
+- tag: Defences
+  title: Delimiters won't save you from prompt injection
+  url: https://simonwillison.net/2023/May/11/delimiters-wont-save-you/
+  meta: Simon Willison · May 11, 2023
+  note: Why wrapping untrusted text in markers and asking the model to ignore it doesn't hold.
+- tag: Defences
+  title: 'The Attacker Moves Second: Stronger Adaptive Attacks Bypass Defenses Against LLM Jailbreaks and Prompt Injections'
+  url: https://arxiv.org/abs/2510.09023
+  meta: Nasr, Carlini, Tramèr et al. · October 2025
+  note: Twelve published defences, most of which reported near-zero attack success, broken at above 90% by attacks that adapt.
+- tag: Defences
+  title: Continuously hardening ChatGPT Atlas against prompt injection attacks
+  url: https://openai.com/index/hardening-atlas-against-prompt-injection/
+  meta: OpenAI · December 22, 2025
+  note: '"Unlikely to ever be fully solved", like scams and social engineering.'
+- tag: Defences
+  title: Mitigating the risk of prompt injections in browser use
+  url: https://www.anthropic.com/news/prompt-injection-defenses
+  meta: Anthropic · November 24, 2025
+  note: Big reductions in attack success for browser agents, and the reminder that 1% is still meaningful risk.
+- tag: Defences
+  title: 'LLM01:2025 Prompt Injection'
+  url: https://genai.owasp.org/llmrisk/llm01-prompt-injection/
+  meta: OWASP Top 10 for LLM Applications · 2025
+  note: Number one on the list. Mitigations include least privilege, human approval for high-risk actions, and segregating external content.
+- tag: Defences
+  title: The Dual LLM pattern for building AI assistants that can resist prompt injection
+  url: https://simonwillison.net/2023/Apr/25/dual-llm-pattern/
+  meta: Simon Willison · April 25, 2023
+  note: One model reads untrusted text and has no tools; another has tools and never sees the untrusted text.
+- tag: Defences
+  title: Defeating Prompt Injections by Design (CaMeL)
+  url: https://arxiv.org/abs/2503.18813
+  meta: Debenedetti et al. · Google, Google DeepMind, ETH Zurich · 2025
+  note: Untrusted data can never change the program's control flow. 77% of AgentDojo tasks solved with provable security, against 84% undefended.

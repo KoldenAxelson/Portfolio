@@ -1,0 +1,26 @@
+{{- /*
+  ml-route — a cascade: the small model answers first, and anything it's
+  unsure about goes up to the big one. Slide the confidence bar and watch cost
+  and quality trade off.
+
+    {{< ml-route >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml-demos-assets.html (css/ml-demos.css, scripts/pages/ml/).
+  The price ratio, request count and seed live in the data-* attributes
+  below. The requests are simulated from a fixed seed, so every reader sees the
+  same 100. The static text describes the demo with JavaScript off.
+*/ -}}
+<div class="not-prose mli-demo" id="mli-route" data-requests="100" data-big-cost="10" data-small-cost="1" data-seed="7">
+<div class="mli-demo-label">Live · a cheap model first, the big one when it's unsure</div>
+<div class="mli-row"><label for="mli-route-r">Escalate below <span class="mli-val" id="mli-route-v">70</span>% sure</label><input class="mli-range" id="mli-route-r" type="range" min="0" max="100" step="5" value="70" aria-valuetext="70 percent" /></div>
+<div class="mli-route-grid" id="mli-route-grid" aria-hidden="true"></div>
+<div class="mli-cal-key" aria-hidden="true"><span class="mli-route-key is-small"></span>small model answered <span class="mli-route-key is-big"></span>escalated to big model <span class="mli-route-key is-wrong"></span>wrong answer</div>
+<div class="mli-route-stats">
+<div><div class="mli-route-num" id="mli-route-cost">–</div><div class="mli-gi-sub">cost vs. always-big</div></div>
+<div><div class="mli-route-num" id="mli-route-right">–</div><div class="mli-gi-sub">answers right</div></div>
+<div><div class="mli-route-num" id="mli-route-bigright">–</div><div class="mli-gi-sub">always-big gets right</div></div>
+</div>
+<div class="mli-caption" id="mli-route-cap">With JavaScript on, 100 simulated requests flow through a cascade.</div>
+<div class="mli-caption">Simulated: 100 made-up requests of mixed difficulty. The big model costs 10× the small one, roughly the gap between the cheapest and priciest models on one provider's price list. An escalated request pays for both tries. This small model is fairly well calibrated; an overconfident one would let wrong answers through at any setting.</div>
+</div>

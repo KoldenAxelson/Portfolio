@@ -1,0 +1,22 @@
+{{- /*
+  ml-chunks — one document, split into chunks of a chosen size; a question
+  retrieves the best-matching chunk. See what the model actually gets.
+
+    {{< ml-chunks >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml-demos-assets.html (css/ml-demos.css, scripts/pages/ml/).
+  The document, questions, chunk sizes and stopwords live in
+  data/ml/chunking.yaml.
+*/ -}}
+{{- $data := site.Data.ml.chunking -}}
+<div class="not-prose mli-demo" id="mli-chk" data-sentences="{{ jsonify $data.sentences }}" data-sizes="{{ delimit $data.chunkSizes "," }}" data-stopwords="{{ $data.stopwords }}">
+<div class="mli-demo-label">Live · what the chunk size hands the model</div>
+<div class="mli-rag-qs" role="group" aria-label="Question">
+{{- range $i, $q := $data.questions }}<button class="mli-rag-q{{ if eq $i 0 }} is-on{{ end }}" type="button" aria-pressed="{{ eq $i 0 }}" data-needs="{{ delimit $q.needs "," }}">{{ $q.text }}</button>{{ end -}}
+</div>
+<div class="mli-row"><label for="mli-chk-r">Sentences per chunk: <span class="mli-val" id="mli-chk-v">1</span></label><input class="mli-range" id="mli-chk-r" type="range" min="0" max="{{ sub (len $data.chunkSizes) 1 }}" step="1" value="0" aria-valuetext="1" /></div>
+<div class="mli-chk-doc" id="mli-chk-doc">{{ range $data.sentences }}<span class="mli-chk-s">{{ . }}</span> {{ end }}</div>
+<div class="mli-inj-verdict" id="mli-chk-verdict"></div>
+<div class="mli-caption">Each box is one chunk; the highlighted one is what a keyword search retrieved and pasted into the prompt. A simplified search, but the three failure shapes are real: too small loses context, bad boundaries split answers, too big buries them.</div>
+</div>

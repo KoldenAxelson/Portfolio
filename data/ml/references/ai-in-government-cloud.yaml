@@ -1,0 +1,144 @@
+# References for content/articles/ai-in-government-cloud.md, rendered by {{< ml-references >}}.
+# Listed in the order the article reaches them. Numbering is automatic.
+# Accuracy-sensitive: re-check every entry when the article is updated.
+
+- tag: FedRAMP
+  title: Agency Authorization
+  url: https://www.fedramp.gov/rev5/agency-authorization/
+  meta: FedRAMP
+  note: Cloud providers work with an agency to get an Authority to Operate; the agency grants it.
+- tag: FedRAMP
+  title: Do Once, Use Many - How Agencies Can Reuse a FedRAMP Authorization
+  url: https://www.fedramp.gov/archive/2020-05-07-how-agencies-can-reuse-a-fedramp-authorization/
+  meta: FedRAMP · May 6, 2020
+  note: A provider is authorized once and any federal agency can reuse the security package; each agency still issues its own ATO.
+- tag: FedRAMP
+  title: Understanding Baselines and Impact Levels in FedRAMP
+  url: https://www.fedramp.gov/archive/2017-11-16-understanding-baselines-and-impact-levels/
+  meta: FedRAMP · 2017
+  note: Low, Moderate and High, by how severe the harm from a breach would be.
+- tag: FedRAMP
+  title: What's changing in the 2026 Consolidated Rules
+  url: https://www.fedramp.gov/2026/providers/updating/changes/
+  meta: FedRAMP · effective July 4, 2026
+  note: Authorization becomes Certification, Low, Moderate and High become Classes B, C and D (plus a new pilot Class A), and new Rev5 certifications stop on June 11, 2027.
+- tag: FedRAMP
+  title: Initial Outcome from RFC-0020 FedRAMP Authorization Designations
+  url: https://www.fedramp.gov/notices/0004
+  meta: FedRAMP · February 25, 2026
+  note: Class A is a new pilot baseline; Class B takes Li-SaaS and Low, Class C Moderate, Class D High.
+- tag: DoD
+  title: DoD Impact Level 5
+  url: https://learn.microsoft.com/en-us/azure/compliance/offerings/offering-dod-il5
+  meta: Microsoft Learn, quoting DISA's Cloud Computing SRG
+  note: CUI that needs more protection than IL4, plus National Security Systems.
+- tag: DoD
+  title: DoD Impact Level 6
+  url: https://learn.microsoft.com/en-us/azure/compliance/offerings/offering-dod-il6
+  meta: Microsoft Learn, quoting DISA's Cloud Computing SRG
+  note: Reserved for information classified up to Secret.
+- tag: Services
+  title: FedRAMP AI Prioritization
+  url: https://www.fedramp.gov/ai/
+  meta: FedRAMP · August 2025 to April 2026
+  note: Fast-tracked chat assistants for federal workers. ChatGPT Enterprise and API, Gemini for Government and Perplexity came out certified.
+- tag: Platforms
+  title: Amazon Bedrock models in scope for FedRAMP
+  url: https://aws.amazon.com/compliance/services-in-scope/FedRAMP/amazon-bedrock-models/
+  meta: AWS · updated September 18, 2026
+  note: Which models on Bedrock are FedRAMP High and DoD IL4/5 in AWS GovCloud (US).
+- tag: Platforms
+  title: Azure OpenAI Service now authorized for all U.S. Government data classification levels
+  url: https://devblogs.microsoft.com/azuregov/azure-openai-authorization/
+  meta: Microsoft · April 16, 2025
+  note: FedRAMP High and IL4/5 in 2024, IL6 in the Secret cloud and Top Secret in early 2025.
+- tag: Classified
+  title: Amazon Bedrock launches with Claude 3.5 Sonnet in the AWS Top Secret cloud
+  url: https://aws.amazon.com/blogs/publicsector/amazon-bedrock-launches-with-claude-3-5-sonnet-in-the-aws-top-secret-cloud/
+  meta: AWS · January 13, 2025
+  note: Bedrock generally available in the AWS Top Secret cloud.
+- tag: Classified
+  title: Amazon Bedrock is now available
+  url: https://aws.amazon.com/about-aws/whats-new/2025/11/amazon-bedrock-is-now-available/
+  meta: AWS · November 22, 2025
+  note: Bedrock at the Secret level.
+- tag: Classified
+  title: Announcing GPT-5.2 Availability in Azure for U.S. Government Secret and Top Secret Clouds
+  url: https://devblogs.microsoft.com/azuregov/advancing-ai-capabilities-in-azure-for-u-s-government-secret-and-top-secret-clouds/
+  meta: Microsoft · January 15, 2026
+  note: GPT-5.2 available in Azure's Secret and Top Secret clouds.
+- tag: Air-gapped
+  title: Gemini is now available anywhere
+  url: https://cloud.google.com/blog/topics/hybrid-cloud/gemini-is-now-available-anywhere
+  meta: Google Cloud · August 28, 2025
+  note: General availability of Gemini on Google Distributed Cloud air-gapped.
+- tag: CUI
+  title: 32 CFR 2002.14 Safeguarding
+  url: https://www.ecfr.gov/current/title-32/subtitle-B/chapter-XX/part-2002/subpart-B/section-2002.14
+  meta: eCFR · Controlled Unclassified Information rule
+  note: CUI Basic is categorized at no less than the moderate confidentiality impact level, the floor the demo uses.
+- tag: CUI
+  title: Certification Classes - FedRAMP Consolidated Rules for 2026
+  url: https://www.fedramp.gov/2026/agencies/use/classes/
+  meta: FedRAMP · 2026
+  note: Classes describe assurance, not impact level; Class C is presumed adequate for most Low or Moderate agency systems.
+- tag: Buying
+  title: GSA Announces New Partnership with OpenAI, Delivering Deep Discount to ChatGPT Gov-Wide Through MAS
+  url: https://www.gsa.gov/about-gsa/newsroom/news-releases/gsa-announces-new-partnership-with-openai-delivering-deep-discount-to-chatgpt-08062025
+  meta: GSA · August 6, 2025
+  note: ChatGPT Enterprise for $1 per agency for a year.
+- tag: Buying
+  title: GSA Strikes Another OneGov Deal with Anthropic to Offer Claude AI to all Branches of Gov for Just $1
+  url: https://www.gsa.gov/about-gsa/newsroom/news-releases/gsa-strikes-onegov-deal-with-anthropic-08122025
+  meta: GSA · August 12, 2025
+  note: Claude for Enterprise and Claude for Government for $1, across all three branches.
+- tag: Buying
+  title: GSA, Google Announce Transformative 'Gemini for Government' OneGov Agreement
+  url: https://www.gsa.gov/about-gsa/newsroom/news-releases/gsa-google-announce-gemini-onegov-agreement-08212025
+  meta: GSA · August 21, 2025
+  note: Gemini for Government at $0.47 per agency.
+- tag: Buying
+  title: GSA Expands OneGov AI Offerings with Discounted, Consumption-Based Access to OpenAI's ChatGPT
+  url: https://www.gsa.gov/about-gsa/newsroom/news-releases/gsa-expands-onegov-ai-offerings-with-discounted-openais-chatgpt-09102026
+  meta: GSA · September 10, 2026
+  note: A 50% discount on token-based ChatGPT usage, no minimums, in a 27-month offer expected to start October 1, 2026.
+- tag: Policy
+  title: 'M-25-21: Accelerating Federal Use of AI through Innovation, Governance, and Public Trust'
+  url: https://www.whitehouse.gov/wp-content/uploads/2025/02/M-25-21-Accelerating-Federal-Use-of-AI-through-Innovation-Governance-and-Public-Trust.pdf
+  meta: OMB · April 3, 2025
+  note: Chief AI Officers, and minimum practices (testing, impact assessment, human oversight) for high-impact AI.
+- tag: Policy
+  title: 'M-25-22: Driving Efficient Acquisition of Artificial Intelligence in Government'
+  url: https://www.whitehouse.gov/wp-content/uploads/2025/02/M-25-22-Driving-Efficient-Acquisition-of-Artificial-Intelligence-in-Government.pdf
+  meta: OMB · April 3, 2025
+  note: Contracts must permanently prohibit training public or commercial models on non-public agency inputs and outputs, absent explicit agency consent.
+- tag: Policy
+  title: GSA Issues Statement on Anthropic Preliminary Injunction
+  url: https://www.gsa.gov/about-gsa/newsroom/news-releases/gsa-issues-statement-on-anthropic-preliminary-injunction-04032026
+  meta: GSA · April 3, 2026
+  note: After the February 27 removal and a March 26 court order, GSA restores Anthropic to its prior status.
+- tag: Policy
+  title: Pentagon is still calling Anthropic a supply chain risk despite court ruling
+  url: https://qz.com/pentagon-anthropic-supply-chain-risk-designation-090326
+  meta: Quartz · September 3, 2026
+  note: After an August court ruling, a Defense Department official said the Pentagon's supply chain risk designation of Anthropic remained in force.
+- tag: Logging
+  title: 'M-26-14: Ensuring Effective and Efficient Agency Logging and Network Visibility to Defend Against Evolving Cyber Threats'
+  url: https://www.whitehouse.gov/wp-content/uploads/2026/05/M-26-14-Ensuring-Effective-and-Efficient-Agency-Logging-and-Network-Visibility-to-Defend-Against-Evolving-Cyber-Threats.pdf
+  meta: OMB · May 22, 2026
+  note: Rescinds M-21-31. Logs searchable for at least 6 months and retrievable for at least 12.
+- tag: Agents
+  title: Amazon Bedrock AgentCore is now available in AWS GovCloud (US-West)
+  url: https://aws.amazon.com/about-aws/whats-new/2026/05/bedrock-agentcore-launch-aws-govcloud-us/
+  meta: AWS · May 5, 2026
+  note: The agent runtime arrives in a government region.
+- tag: Agents
+  title: Advancing trusted AI innovation with Agents and new Azure OpenAI models in Azure Government
+  url: https://devblogs.microsoft.com/azuregov/advancing-ai-innovation-in-azure-government/
+  meta: Microsoft · September 9, 2026
+  note: Microsoft Foundry Agent Service is now available in Azure Government.
+- tag: Agents
+  title: Least Privilege (NIST glossary)
+  url: https://csrc.nist.gov/glossary/term/least_privilege
+  meta: NIST CSRC, citing SP 800-53 Rev. 5
+  note: Each entity gets only the resources and authorizations its function needs.

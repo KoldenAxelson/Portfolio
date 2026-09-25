@@ -1,0 +1,58 @@
+# References for content/articles/model-routing.md, rendered by {{< ml-references >}}.
+# Listed in the order the article reaches them. Numbering is automatic.
+
+- tag: Prices
+  title: Claude pricing
+  url: https://platform.claude.com/docs/en/about-claude/pricing
+  meta: Anthropic · as of September 2026
+  note: Haiku 4.5 at $1 / $5 per million input / output tokens, Fable 5.1 at $10 / $50.
+- tag: Routing
+  title: Intent Routing
+  url: https://docs.typesafe.ai/patterns/intent-routing
+  meta: TypeSafe AI · docs
+  note: A decision model classifies each request and sends it to fixed logic, a specialist LLM or a human.
+- tag: Routing
+  title: Introducing GPT-5
+  url: https://openai.com/index/introducing-gpt-5/
+  meta: OpenAI · August 2025
+  note: A fast model, a deeper reasoning model, and "a real-time router that quickly decides which to use."
+- tag: Routing
+  title: 'RouteLLM: An Open-Source Framework for Cost-Effective LLM Routing'
+  url: https://lmsys.org/blog/2024-07-01-routellm/
+  meta: LMSYS · July 2024
+  note: Routers trained on preference data cut costs by over 85% on MT Bench while keeping 95% of GPT-4's performance. Paper at arXiv 2406.18665.
+- tag: Routing
+  title: Amazon Bedrock Intelligent Prompt Routing
+  url: https://aws.amazon.com/bedrock/intelligent-prompt-routing/
+  meta: AWS
+  note: Routes within one model family and claims up to 30% lower costs without losing accuracy.
+- tag: Cascades
+  title: 'FrugalGPT: How to Use Large Language Models While Reducing Cost and Improving Performance'
+  url: https://arxiv.org/abs/2305.05176
+  meta: Chen, Zaharia & Zou · 2023
+  note: Learned cascades, with a small DistilBERT scoring each answer, matched GPT-4 with up to 98% cost reduction, or beat it by 4% at the same cost.
+- tag: Distillation
+  title: Distilling the Knowledge in a Neural Network
+  url: https://arxiv.org/abs/1503.02531
+  meta: Hinton, Vinyals & Dean · 2015
+  note: Names distillation and builds on Caruana's earlier work compressing an ensemble into a single model that's much easier to deploy.
+- tag: Distillation
+  title: 'DistilBERT, a distilled version of BERT: smaller, faster, cheaper and lighter'
+  url: https://arxiv.org/abs/1910.01108
+  meta: Sanh et al. · Hugging Face · 2019
+  note: 40% smaller, 60% faster, 97% of the language understanding.
+- tag: Distillation
+  title: 'DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning'
+  url: https://arxiv.org/abs/2501.12948v1
+  meta: DeepSeek-AI · January 2025
+  note: Six dense models from 1.5B to 70B, distilled from R1 on top of Qwen and Llama.
+- tag: Caching
+  title: GPTCache
+  url: https://github.com/zilliztech/GPTCache
+  meta: Zilliz · GitHub
+  note: An open-source semantic cache that matches new questions to past ones by embedding similarity.
+- tag: Caching
+  title: Prompt caching
+  url: https://platform.claude.com/docs/en/build-with-claude/prompt-caching
+  meta: Anthropic · docs
+  note: Cache reads cost 10% of the base input price on most models, even less on a few.

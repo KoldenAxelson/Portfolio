@@ -1,0 +1,68 @@
+# References for content/articles/post-training.md, rendered by {{< ml-references >}}.
+# Listed in the order the article reaches them. Numbering is automatic.
+
+- tag: SFT + RLHF
+  title: Training language models to follow instructions with human feedback (InstructGPT)
+  url: https://arxiv.org/abs/2203.02155
+  meta: Ouyang et al. · OpenAI · 2022
+  note: Supervised fine-tuning, a reward model, then reinforcement learning. A 1.3B tuned model preferred over the 175B GPT-3.
+- tag: SFT + RLHF
+  title: 'Llama 2: Open Foundation and Fine-Tuned Chat Models'
+  url: https://arxiv.org/abs/2307.09288
+  meta: Touvron et al. · Meta · 2023
+  note: SFT is capped by the writing skill of the best annotators; people can still judge answers better than they could write them.
+- tag: RLHF
+  title: Deep reinforcement learning from human preferences
+  url: https://arxiv.org/abs/1706.03741
+  meta: Christiano et al. · 2017
+  note: Agents learning complex behavior from people choosing between pairs of short clips, with feedback on under 1% of interactions.
+- tag: DPO
+  title: 'Direct Preference Optimization: Your Language Model is Secretly a Reward Model'
+  url: https://arxiv.org/abs/2305.18290
+  meta: Rafailov et al. · 2023
+  note: The RLHF objective solved with a simple classification loss on preference pairs, no sampling loop needed.
+- tag: DPO
+  title: The Llama 3 Herd of Models
+  url: https://arxiv.org/abs/2407.21783
+  meta: Llama Team · Meta · 2024
+  note: Pretrained on 15.6T tokens, then post-trained with rounds of SFT, rejection sampling and DPO.
+- tag: RLVR
+  title: 'Tulu 3: Pushing Frontiers in Open Language Model Post-Training'
+  url: https://arxiv.org/abs/2411.15124
+  meta: Lambert et al. · Allen Institute for AI · 2024
+  note: An open post-training recipe of SFT, then DPO, then a method it calls Reinforcement Learning with Verifiable Rewards.
+- tag: RLVR
+  title: 'DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning'
+  url: https://arxiv.org/abs/2501.12948v1
+  meta: DeepSeek-AI · January 2025 (v1)
+  note: R1-Zero, trained with RL and no supervised fine-tuning first, went from 15.6% to 71.0% on AIME 2024. A 2026 revision reports 77.9%.
+- tag: Character
+  title: 'Constitutional AI: Harmlessness from AI Feedback'
+  url: https://arxiv.org/abs/2212.08073
+  meta: Bai et al. · Anthropic · 2022
+  note: No human labels for harmful outputs; the only oversight for harmlessness is a list of principles. The model critiques itself, then trains with RL from AI feedback.
+- tag: Character
+  title: "Claude's new constitution"
+  url: https://www.anthropic.com/news/claude-new-constitution
+  meta: Anthropic · January 22, 2026
+  note: The full document, and how Claude uses it to construct its own training data.
+- tag: Failures
+  title: Faulty reward functions in the wild
+  url: https://openai.com/index/faulty-reward-functions/
+  meta: OpenAI · December 2016
+  note: The boat that scored higher by circling and crashing than by finishing the race.
+- tag: Failures
+  title: Natural Emergent Misalignment from Reward Hacking in Production RL
+  url: https://arxiv.org/abs/2511.18397
+  meta: MacDiarmid et al. · Anthropic · November 2025
+  note: A model that learned to reward hack generalized to worse behavior, including sabotage.
+- tag: Failures
+  title: Towards Understanding Sycophancy in Language Models
+  url: https://arxiv.org/abs/2310.13548
+  meta: Sharma et al. · Anthropic · 2023
+  note: People and preference models sometimes prefer convincing, sycophantic answers over correct ones.
+- tag: Failures
+  title: Sycophancy in GPT-4o
+  url: https://openai.com/index/sycophancy-in-gpt-4o/
+  meta: OpenAI · April 29, 2025
+  note: A rolled-back update that was "overly flattering or agreeable", traced to leaning too hard on short-term feedback.

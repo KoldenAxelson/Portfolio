@@ -12,7 +12,7 @@
   hidden and fade in (scripts/pages/ml/reveal.js). If the bundle never runs, the
   failsafe drops the class so the page can't be left invisible.
 */ -}}
-{{- $demos := slice "ml-digits" "ml-mlops-loop" "ml-garbage-in" "ml-drift" "ml-load" "ml-cost" "ml-tokens" "ml-rag" "ml-agent" "ml-bits" "ml-timeline" -}}
+{{- $demos := slice "ml-digits" "ml-mlops-loop" "ml-garbage-in" "ml-drift" "ml-load" "ml-cost" "ml-tokens" "ml-rag" "ml-agent" "ml-bits" "ml-timeline" "ml-references" "ml-decide" "ml-calibration" "ml-inject" "ml-roofline" "ml-threats" "ml-govflow" "ml-route" "ml-parallel" "ml-checkpoint" "ml-judge" "ml-reward" "ml-temperature" "ml-decode" "ml-breakeven" "ml-descent" "ml-overfit" "ml-chunks" "ml-search" -}}
 {{- $used := false -}}
 {{- range $demos }}{{ if $.HasShortcode . }}{{ $used = true }}{{ end }}{{ end -}}
 {{- if $used -}}

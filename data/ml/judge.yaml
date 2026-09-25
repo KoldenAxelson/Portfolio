@@ -1,0 +1,30 @@
+# Items for the {{< ml-judge >}} demo: a fictional bike shop's support bot,
+# two versions, and a scripted LLM judge. `judge` is the judge's pick when it
+# sees v1 first, `judgeSwapped` when it sees v2 first. Item 2 shows verbosity
+# bias; items 3 and 4 show position bias (it favours whichever version it reads first).
+policy:
+  - Unworn helmets can be returned within 30 days. Worn ones can't.
+  - A tune-up costs $89.
+  - Open Sundays 10 a.m.–4 p.m.
+  - E-bikes are serviced, but batteries go back to their maker.
+items:
+  - question: Can I return a helmet I've worn once?
+    v1: Yes, within 30 days.
+    v2: Worn helmets can't be returned, for safety reasons. Unworn ones can, within 30 days.
+    judge: v2
+    judgeSwapped: v2
+  - question: What are your hours on Sunday?
+    v1: 10 to 4.
+    v2: Great question! Our hours vary by day. On Sundays we're typically open from 10 a.m. to 4 p.m., though holiday hours may differ. Is there anything else I can help with?
+    judge: v2
+    judgeSwapped: v2
+  - question: Do you fix e-bikes?
+    v1: Yes, we service e-bikes.
+    v2: Yes, but batteries are sent back to the maker.
+    judge: v1
+    judgeSwapped: v2
+  - question: How much is a tune-up?
+    v1: A tune-up is $89.
+    v2: A tune-up is $79.
+    judge: v1
+    judgeSwapped: v2
