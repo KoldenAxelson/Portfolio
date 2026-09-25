@@ -1,0 +1,53 @@
+# References for content/articles/when-you-hit-enter.md, rendered by {{< ml-references >}}.
+# Listed in the order the article reaches them. Numbering is automatic.
+
+- tag: Tokens
+  title: What are tokens and how to count them?
+  url: https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them
+  meta: OpenAI Help Center
+  note: For English, a token is about 4 characters, or three-quarters of a word.
+- tag: Attention
+  title: Attention Is All You Need
+  url: https://arxiv.org/abs/1706.03762
+  meta: Vaswani et al. · Google · 2017
+  note: The transformer, "based solely on attention mechanisms". The design behind nearly every modern language model.
+- tag: Sampling
+  title: Create chat completion (temperature)
+  url: https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create
+  meta: OpenAI API reference
+  note: Temperature from 0 to 2; 0.8 is more random, 0.2 more focused and deterministic.
+- tag: Sampling
+  title: The Curious Case of Neural Text Degeneration
+  url: https://arxiv.org/abs/1904.09751
+  meta: Holtzman et al. · ICLR 2020
+  note: Nucleus (top-p) sampling, which cuts off the unreliable tail of the odds before rolling.
+- tag: Sampling
+  title: Defeating Nondeterminism in LLM Inference
+  url: https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/
+  meta: Horace He · Thinking Machines Lab · September 2025
+  note: Why temperature 0 isn't repeatable on real servers. Batch size changes with load, and most kernels aren't batch-invariant.
+- tag: Serving
+  title: 'Splitwise: Efficient generative LLM inference using phase splitting'
+  url: https://arxiv.org/abs/2311.18677
+  meta: Patel et al. · 2023
+  note: A compute-intensive prompt phase and a memory-intensive generation phase, and why they deserve different hardware.
+- tag: Serving
+  title: Efficient Memory Management for Large Language Model Serving with PagedAttention
+  url: https://arxiv.org/abs/2309.06180
+  meta: Kwon et al. · SOSP 2023
+  note: 800 KB of KV cache per token for OPT-13B, up to 1.6 GB per request, and paging that cache like virtual memory.
+- tag: Limits
+  title: Models overview
+  url: https://platform.claude.com/docs/en/models/overview
+  meta: Anthropic · docs · as of September 2026
+  note: 1M-token context windows on the larger Claude models.
+- tag: Speed
+  title: Fast Inference from Transformers via Speculative Decoding
+  url: https://arxiv.org/abs/2211.17192
+  meta: Leviathan, Kalman & Matias · ICML 2023
+  note: A small model drafts, the big one verifies. 2–3× faster on T5-XXL with identical outputs.
+- tag: Speed
+  title: 'DistServe: Disaggregating Prefill and Decoding for Goodput-optimized Large Language Model Serving'
+  url: https://arxiv.org/abs/2401.09670
+  meta: Zhong et al. · OSDI 2024
+  note: Prefill and decode on separate GPUs, tuned for time to first token and time per output token.

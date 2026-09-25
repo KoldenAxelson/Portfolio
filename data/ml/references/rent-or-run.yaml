@@ -1,0 +1,74 @@
+# References for content/articles/rent-or-run.md, rendered by {{< ml-references >}}.
+# Listed in the order the article reaches them. Numbering is automatic.
+# Price-sensitive: re-check every price, and the ml-breakeven data-* attributes, on each update.
+
+- tag: Prices
+  title: Claude pricing
+  url: https://platform.claude.com/docs/en/about-claude/pricing
+  meta: Anthropic · as of September 2026
+  note: Claude Sonnet 5 at $2 per million input tokens and $10 per million output.
+- tag: Prices
+  title: Together AI pricing
+  url: https://www.together.ai/pricing
+  meta: Together AI · as of September 2026
+  note: Llama 3.3 70B at $1.04 per million tokens, input or output.
+- tag: Prices
+  title: Lambda pricing
+  url: https://lambda.ai/pricing
+  meta: Lambda · as of September 2026
+  note: On-demand H100 SXM at $4.19 per GPU-hour in a two-GPU instance ($3.99 in an eight-GPU one), plus tax.
+- tag: Hardware
+  title: NVIDIA Blackwell GeForce RTX 50 Series Opens New World of AI Computer Graphics
+  url: https://nvidianews.nvidia.com/news/nvidia-blackwell-geforce-rtx-50-series-opens-new-world-of-ai-computer-graphics
+  meta: NVIDIA · January 2025
+  note: The RTX 5090 at $1,999, available January 30, 2025.
+- tag: Hardware
+  title: GeForce RTX 5090
+  url: https://www.nvidia.com/en-us/geforce/graphics-cards/50-series/rtx-5090/
+  meta: NVIDIA · specs
+  note: 32 GB of GDDR7 and 575 W total graphics power.
+- tag: Hardware
+  title: 'Electric Power Monthly, Table 5.6.A: Average price of electricity to ultimate customers'
+  url: https://www.eia.gov/electricity/monthly/epm_table_grapher.php?t=epmt_5_6_a
+  meta: US Energy Information Administration · preliminary, released September 2026
+  note: US average residential price of 18.31 cents per kWh in July 2026.
+- tag: Hardware
+  title: Mac Studio technical specifications
+  url: https://www.apple.com/mac-studio/specs/
+  meta: Apple · as of September 2026
+  note: M5 Ultra with up to 512 GB of unified memory at 1.2 TB/s.
+- tag: Hardware
+  title: NVIDIA DGX Spark
+  url: https://www.nvidia.com/en-us/products/workstations/dgx-spark/
+  meta: NVIDIA
+  note: 128 GB of unified memory in a desktop box, for models up to 200 billion parameters.
+- tag: Speed
+  title: Rate limits
+  url: https://platform.claude.com/docs/en/api/rate-limits
+  meta: Anthropic · docs
+  note: Usage tiers that rise automatically with usage history and account standing.
+- tag: Speed
+  title: NVIDIA NIM for LLMs performance benchmarks
+  url: https://docs.nvidia.com/nim/benchmarking/llm/1.0.0/performance.html
+  meta: NVIDIA · docs
+  note: With 200-token prompts, Llama 3.1 8B on one H100 at about 10 ms to first token with one user, and much higher total throughput, with slower answers, at 250.
+- tag: Privacy
+  title: Your data
+  url: https://developers.openai.com/api/docs/guides/your-data
+  meta: OpenAI · docs
+  note: API data isn't used to train OpenAI's models unless you opt in. Zero data retention needs prior approval.
+- tag: Privacy
+  title: Is my data used for model training?
+  url: https://privacy.claude.com/en/articles/7996868-is-my-data-used-for-model-training
+  meta: Anthropic Privacy Center
+  note: Inputs and outputs from Anthropic's commercial products aren't used for training by default.
+- tag: Quality
+  title: Text Arena leaderboard
+  url: https://arena.ai/leaderboard/text
+  meta: LMArena · as of September 2026
+  note: Every model in the top 16 is proprietary; the best open-weights model ranks 17th.
+- tag: Quality
+  title: Introducing gpt-oss
+  url: https://openai.com/index/introducing-gpt-oss/
+  meta: OpenAI · August 5, 2025
+  note: Open-weights models under Apache 2.0; the 120B one runs on a single 80 GB GPU.

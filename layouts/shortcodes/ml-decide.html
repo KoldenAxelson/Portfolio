@@ -1,0 +1,23 @@
+{{- /*
+  ml-decide — a decision model's answer: a question, fixed options, odds for each.
+
+    {{< ml-decide >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml-demos-assets.html (css/ml-demos.css, scripts/pages/ml/).
+  Questions, options, cue words and sample tickets live in data/ml/decide.yaml;
+  the script reads them from the data-* attributes rendered below.
+*/ -}}
+{{- $data := site.Data.ml.decide -}}
+<div class="not-prose mli-demo" id="mli-dec" data-samples="{{ jsonify $data.samples }}">
+<div class="mli-demo-label">Live · a question, fixed answers, odds for each</div>
+<textarea id="mli-dec-in" class="mli-tok-in" rows="3" aria-label="Support ticket to classify" spellcheck="false">{{ index $data.samples 0 }}</textarea>
+<div class="mli-controls mli-dec-top"><button class="mli-btn mli-btn-ghost" id="mli-dec-next" type="button">Try another ticket</button></div>
+<div class="mli-rag-qs mli-dec-qs" role="group" aria-label="Question to ask">
+{{- range $i, $q := $data.questions }}<button class="mli-rag-q{{ if eq $i 0 }} is-on{{ end }}" type="button" aria-pressed="{{ eq $i 0 }}" data-options="{{ jsonify $q.options }}">{{ $q.label }} <span class="mli-rag-tag">{{ $q.type }}</span></button>{{ end -}}
+</div>
+<div class="mli-dec-bars" id="mli-dec-bars"></div>
+<pre class="mli-dec-json" id="mli-dec-json" aria-label="What the program receives"></pre>
+<div class="mli-caption" id="mli-dec-cap">With JavaScript on, each answer gets a probability and the ticket gets routed.</div>
+<div class="mli-caption">Illustrative: a few lines of keyword matching stand in for the model, so it's easy to fool. What's real is the shape of the answer: odds over options you chose, a confidence, and no prose to parse.</div>
+</div>

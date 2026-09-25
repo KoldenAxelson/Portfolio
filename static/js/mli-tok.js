@@ -65,7 +65,8 @@ window.MliTok = (function () {
         var chars = text.length, n = toks.length;
         var cpt = n ? (chars / n).toFixed(1) : "0";
         stat.innerHTML = "<b>" + n + "</b> token" + (n === 1 ? "" : "s") + " · " + chars +
-          " characters · ~" + cpt + " chars/token. This count is exactly what the cost demo above was billing per request.";
+          " characters · ~" + cpt + " chars/token." +
+          (document.getElementById("mli-cost") ? " This count is what the cost demo above bills per request." : "");
       }
     }
     ta.addEventListener("input", render);

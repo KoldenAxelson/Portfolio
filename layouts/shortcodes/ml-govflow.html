@@ -1,0 +1,31 @@
+{{- /*
+  ml-govflow — pick a deployment option and a kind of data; see which
+  boundaries the prompt crosses and whether it's allowed.
+
+    {{< ml-govflow >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml-demos-assets.html (css/ml-demos.css, scripts/pages/ml/).
+  Options, hops and rules live in data/ml/gov-deploy.yaml. Every option is
+  rendered with its verdict for each kind of data, so with JavaScript off
+  they read as a list; the script shows one card and one verdict at a time.
+*/ -}}
+{{- $data := index site.Data.ml "gov-deploy" -}}
+<div class="not-prose mli-demo" id="mli-gov" data-verdicts="{{ jsonify $data.verdicts }}">
+<div class="mli-demo-label">Live · where does the prompt go?</div>
+<div class="mli-bits-models" role="group" aria-label="Kind of data"><span class="mli-bits-lab">Data:</span>
+{{- range $i, $kind := $data.kinds }}<button class="mli-rag-q{{ if eq $i 1 }} is-on{{ end }}" type="button" aria-pressed="{{ eq $i 1 }}" data-kind="{{ $kind.id }}">{{ $kind.label }}</button>{{ end -}}
+</div>
+<div class="mli-rag-qs mli-gov-opts" role="group" aria-label="Deployment option">
+{{- range $i, $opt := $data.options }}<button class="mli-rag-q{{ if eq $i 0 }} is-on{{ end }}" type="button" aria-pressed="{{ eq $i 0 }}" data-option="{{ $opt.id }}">{{ $opt.label }}</button>{{ end -}}
+</div>
+{{- range $data.options }}
+<div class="mli-gov-card" data-card="{{ .id }}" data-allowed="{{ jsonify .allowed }}">
+<div class="mli-gov-hops">{{ range $j, $hop := .hops }}{{ if $j }}<span class="mli-ag-arrow" aria-hidden="true">→</span>{{ end }}<span class="mli-gov-hop">{{ $hop }}</span>{{ end }}</div>
+<div class="mli-rag-x">{{ .crosses }}</div>
+{{- $allowed := .allowed }}
+<div class="mli-gov-verdict" data-verdict>{{ range $k, $kind := $data.kinds }}{{ if $k }} · {{ end }}{{ $kind.label }}: {{ index $data.verdicts (index $allowed $kind.id) }}{{ end }}</div>
+</div>
+{{- end }}
+<div class="mli-caption">Illustrative, not compliance advice. CUI is controlled unclassified information. Who may hold which data, at which level, is decided by your agency's authorizing official, not by a demo.</div>
+</div>

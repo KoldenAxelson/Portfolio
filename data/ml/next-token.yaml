@@ -1,0 +1,12 @@
+# Next-word candidates for the {{< ml-temperature >}} demo. Illustrative scores
+# (logits), not from a real model; the softmax-with-temperature math is real.
+prompt: "The best thing about weekends is"
+candidates:
+  - { token: " sleeping", logit: 3.2, rest: " in without an alarm." }
+  - { token: " the", logit: 2.9, rest: " slow coffee on Saturday morning." }
+  - { token: " having", logit: 2.3, rest: " time to finally read." }
+  - { token: " no", logit: 2.0, rest: " meetings, anywhere, at all." }
+  - { token: " brunch", logit: 1.1, rest: ", obviously." }
+  - { token: " spending", logit: 0.9, rest: " them with family." }
+  - { token: " quietly", logit: -0.6, rest: " reorganizing the garage." }
+  - { token: " penguins", logit: -2.8, rest: ". I can't explain it." }

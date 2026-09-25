@@ -1,0 +1,25 @@
+{{- /*
+  ml-decode — press Enter and watch the two phases: the prompt read all at
+  once (prefill), then the answer one token at a time (decode), with the KV
+  cache growing as it goes.
+
+    {{< ml-decode >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml-demos-assets.html (css/ml-demos.css, scripts/pages/ml/).
+  The prompt, answer, timings and the per-token cache size live in the data-*
+  attributes below. Tokens are split on spaces, a simplification.
+*/ -}}
+<div class="not-prose mli-demo" id="mli-dcd" data-prompt="Why is the sky blue?" data-answer="Sunlight scatters off air molecules, and blue light scatters the most, so blue reaches your eyes from every direction." data-prefill-ms="350" data-token-ms="120" data-kb-per-token="800">
+<div class="mli-demo-label">Live · what happens when you hit Enter</div>
+<div class="mli-controls mli-dcd-top"><button class="mli-btn" id="mli-dcd-go" type="button">Hit Enter ⏎</button><span class="mli-ag-pill" id="mli-dcd-phase">Idle</span></div>
+<div class="mli-dcd-text" id="mli-dcd-text" aria-live="polite">Why is the sky blue?</div>
+<div class="mli-gi-sub mli-dcd-sub">KV cache: one slot per token the model has seen</div>
+<div class="mli-dcd-cache" id="mli-dcd-cache" aria-hidden="true"></div>
+<div class="mli-route-stats">
+<div><div class="mli-route-num" id="mli-dcd-ttft">–</div><div class="mli-gi-sub">time to first token</div></div>
+<div><div class="mli-route-num" id="mli-dcd-tokens">0</div><div class="mli-gi-sub">tokens in the cache</div></div>
+<div><div class="mli-route-num" id="mli-dcd-mb">0 MB</div><div class="mli-gi-sub">cache memory</div></div>
+</div>
+<div class="mli-caption">Timings are illustrative and slowed down. The cache size is real for one model: the vLLM paper works it out at 800 KB per token for the 13-billion-weight OPT-13B. Words stand in for tokens.</div>
+</div>

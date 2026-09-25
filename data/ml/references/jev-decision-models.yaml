@@ -1,0 +1,58 @@
+# References for content/articles/jev-decision-models.md, rendered by {{< ml-references >}}.
+# Listed in the order the article reaches them. Numbering is automatic.
+
+- tag: Launch
+  title: Introducing System One Models & Jev
+  url: https://typesafe.ai/blog/introducing-system-one-models-and-jev
+  meta: TypeSafe AI · September 15, 2026
+  note: The launch post. Parallel answers instead of token-by-token text, the RLCD training method, and the 193.6× / 444.6× claims, with the caveat that TypeSafe's own team built the test workflows.
+- tag: Launch
+  title: TypeSafe AI Manifesto
+  url: https://typesafe.ai/manifesto
+  meta: TypeSafe AI · 2026
+  note: 'The pitch in one line: let software "branch on common sense, understanding, and intent."'
+- tag: Docs
+  title: TypeSafe documentation
+  url: https://docs.typesafe.ai/
+  meta: TypeSafe AI · jev-1.13
+  note: The three question types (yes/no, choice, score), the request shape, and the models page with prices, limits and context size.
+- tag: Docs
+  title: Confidence
+  url: https://docs.typesafe.ai/confidence
+  meta: TypeSafe AI · docs
+  note: How the confidence number is computed from the odds, and the act / review / hand-off tiers it's meant to drive.
+- tag: Docs
+  title: Jev 1.13 jaggedness
+  url: https://docs.typesafe.ai/model-jaggedness/jev-1.13
+  meta: TypeSafe AI · docs
+  note: 'The company''s own list of failure modes: math, dates, indirection, noisy input, adversarial content, contradictions, generation.'
+- tag: Calibration
+  title: On Calibration of Modern Neural Networks
+  url: https://arxiv.org/abs/1706.04599
+  meta: Guo, Pleiss, Sun & Weinberger · ICML 2017
+  note: Showed that deeper, more accurate networks had grown overconfident, and that a one-number fix called temperature scaling repairs much of it.
+- tag: Calibration
+  title: GPT-4 Technical Report
+  url: https://arxiv.org/abs/2303.08774
+  meta: OpenAI · 2023
+  note: Its calibration plot shows the pre-trained model well calibrated and the post-trained chatbot less so.
+- tag: Coverage
+  title: This $200 Million Startup Wants To Fix AI's Overconfidence Problem
+  url: https://www.forbes.com/sites/the-prompt/2026/09/15/this-200-million-startup-wants-to-fix-ais-overconfidence-problem/
+  meta: Forbes · September 15, 2026
+  note: The $40M seed led by DCVC, the founder's four years on ChatGPT at OpenAI, and the insurance example.
+- tag: Benchmark
+  title: 'AIM-Decision: Jev vs Kev vs LLMs'
+  url: https://aimultiple.com/decision-models
+  meta: AIMultiple (Berk Kalelioğlu) · updated September 24, 2026
+  note: 'Independent test on 50 browser tasks: GPT-6 Astra finished 47, Jev 17, Kev-9B 20. Jev cost $0.002 per finished task to Astra''s $0.226.'
+- tag: Open
+  title: kev
+  url: https://github.com/jaredpalmer/kev
+  meta: Jared Palmer · GitHub · Apache-2.0
+  note: An open-weights, Jev-style decision model you can train and run on a laptop.
+- tag: Pattern
+  title: 'FrugalGPT: How to Use Large Language Models While Reducing Cost and Improving Performance'
+  url: https://arxiv.org/abs/2305.05176
+  meta: Chen, Zaharia & Zou · 2023
+  note: Chaining cheap and expensive models matched the best single model at up to 98% less cost. An early LLM example of the cheap-decider pattern.

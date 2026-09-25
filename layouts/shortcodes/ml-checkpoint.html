@@ -1,0 +1,23 @@
+{{- /*
+  ml-checkpoint — a day of training on a big cluster: machines fail, and the
+  checkpoint interval decides how much work each failure throws away.
+
+    {{< ml-checkpoint >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml-demos-assets.html (css/ml-demos.css, scripts/pages/ml/).
+  The failure rate (mean minutes between failures), the restart time and the
+  two checkpoint costs live in the data-* attributes below. Failure times are
+  drawn from a fixed seed, so every reader sees the same days; the strip shows
+  the first, the numbers average thirty.
+*/ -}}
+<div class="not-prose mli-demo" id="mli-ckpt" data-mtbf-min="186" data-restart-min="10" data-hours="24" data-seed="83">
+<div class="mli-demo-label">Live · a day on a 16,000-GPU cluster</div>
+<div class="mli-bits-models" role="group" aria-label="Saving a checkpoint takes"><span class="mli-bits-lab">Saving takes:</span><button class="mli-rag-q is-on" type="button" aria-pressed="true" data-save-min="5">5 min, training paused</button><button class="mli-rag-q" type="button" aria-pressed="false" data-save-min="0.5">30 s pause, rest in the background</button></div>
+<div class="mli-row"><label for="mli-ckpt-r">Checkpoint every <span class="mli-val" id="mli-ckpt-v">60</span> min</label><input class="mli-range" id="mli-ckpt-r" type="range" min="5" max="240" step="5" value="60" aria-valuetext="60 minutes" /></div>
+<div class="mli-ckpt-strip" id="mli-ckpt-strip" aria-hidden="true"></div>
+<div class="mli-cal-key" aria-hidden="true"><span class="mli-ckpt-key is-work"></span>useful training <span class="mli-ckpt-key is-save"></span>saving <span class="mli-ckpt-key is-lost"></span>redone or restarting</div>
+<div class="mli-cost" id="mli-ckpt-out">– <small>of the time was useful</small></div>
+<div class="mli-caption" id="mli-ckpt-cap">With JavaScript on, failures land through the day and each one rolls training back to the last checkpoint.</div>
+<div class="mli-caption">Simulated, with a real failure rate: Meta's Llama 3 run on up to 16,000 GPUs saw 419 unexpected interruptions in 54 days, about one every 3 hours. Restarting is assumed to take 10 minutes, and the save times are illustrative.</div>
+</div>

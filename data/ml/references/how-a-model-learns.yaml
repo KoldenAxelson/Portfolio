@@ -1,0 +1,58 @@
+# References for content/articles/how-a-model-learns.md, rendered by {{< ml-references >}}.
+# Listed in the order the article reaches them. Numbering is automatic.
+
+- tag: Loss
+  title: 'Linear regression: Loss'
+  url: https://developers.google.com/machine-learning/crash-course/linear-regression/loss
+  meta: Google Machine Learning Crash Course
+  note: '"A numerical metric that describes how wrong a model''s predictions are."'
+- tag: Loss
+  title: 'Language Models'
+  url: https://d2l.ai/chapter_recurrent-neural-networks/language-model.html
+  meta: Dive into Deep Learning · §9.3
+  note: Next-token cross-entropy, the average surprise at each real token.
+- tag: Descent
+  title: Cauchy and the Gradient Method
+  url: https://ems.press/content/book-chapter-files/27368?nt=1
+  meta: Claude Lemaréchal · Documenta Mathematica · 2012
+  note: How gradient descent traces back to Cauchy's note of October 18, 1847.
+- tag: Descent
+  title: Learning representations by back-propagating errors
+  url: https://www.nature.com/articles/323533a0
+  meta: Rumelhart, Hinton & Williams · Nature · 1986
+  note: Backpropagation, the method for working out every weight's slope at once.
+- tag: Descent
+  title: 'Linear regression: Hyperparameters'
+  url: https://developers.google.com/machine-learning/crash-course/linear-regression/hyperparameters
+  meta: Google Machine Learning Crash Course
+  note: Learning rate, batch size and epochs, and what happens when the learning rate is too low or too high.
+- tag: Scale
+  title: 'Optimization: Stochastic Gradient Descent'
+  url: https://cs231n.github.io/optimization-1/
+  meta: Stanford CS231n course notes
+  note: Why real training steps on small random batches instead of the whole dataset.
+- tag: Scale
+  title: The Llama 3 Herd of Models
+  url: https://arxiv.org/abs/2407.21783
+  meta: Llama Team, Meta · 2024
+  note: AdamW with a peak learning rate of 8 × 10⁻⁵, 8,000 warm-up steps and a cosine schedule over 1.2M steps.
+- tag: Overfitting
+  title: 'Overfitting'
+  url: https://developers.google.com/machine-learning/crash-course/overfitting/overfitting
+  meta: Google Machine Learning Crash Course
+  note: Memorizing the training set, and why training data must look like real-world data.
+- tag: Overfitting
+  title: MNIST digits classification dataset
+  url: https://keras.io/api/datasets/mnist/
+  meta: Keras documentation
+  note: 60,000 training images and 10,000 test images of handwritten digits.
+- tag: Overfitting
+  title: 'Datasets: Dividing the original dataset'
+  url: https://developers.google.com/machine-learning/crash-course/overfitting/dividing-datasets
+  meta: Google Machine Learning Crash Course
+  note: Training, validation and test sets, and what each one is for.
+- tag: Overfitting
+  title: 'Deep Double Descent: Where Bigger Models and More Data Hurt'
+  url: https://arxiv.org/abs/1912.02292
+  meta: Nakkiran et al. · 2019
+  note: Test error that gets worse, then better, as models grow.

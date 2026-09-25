@@ -1,0 +1,24 @@
+{{- /*
+  ml-parallel — eight GPUs, one model: what each GPU holds, and what it has to
+  send, under four ways of splitting the work.
+
+    {{< ml-parallel >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml-demos-assets.html (css/ml-demos.css, scripts/pages/ml/).
+  Strategies live in data/ml/parallelism.yaml. The pipeline view gives each
+  GPU one layer, so `layers` must equal `gpus`. The GPU grid is drawn by the
+  script; with JavaScript off, the strategy descriptions show as a list.
+*/ -}}
+{{- $data := site.Data.ml.parallelism -}}
+<div class="not-prose mli-demo" id="mli-par" data-gpus="{{ $data.gpus }}" data-layers="{{ $data.layers }}">
+<div class="mli-demo-label">Live · {{ $data.gpus }} GPUs, one model</div>
+<div class="mli-rag-qs" role="group" aria-label="Parallelism strategy">
+{{- range $i, $s := $data.strategies }}<button class="mli-rag-q{{ if eq $i 0 }} is-on{{ end }}" type="button" aria-pressed="{{ eq $i 0 }}" data-strategy="{{ $s.id }}" data-holds="{{ $s.holds }}">{{ $s.label }}</button>{{ end -}}
+</div>
+<div class="mli-par-grid" id="mli-par-grid" aria-hidden="true"></div>
+{{- range $data.strategies }}
+<div class="mli-par-card" data-card="{{ .id }}"><p class="mli-mo-p"><b>{{ .label }}.</b> {{ .sends }}</p><p class="mli-mo-p mli-par-limit">Catch: {{ .limit }}</p></div>
+{{- end }}
+<div class="mli-caption">Each GPU box shows the model's {{ $data.layers }} layers. Solid means stored, a thin stripe means 1/{{ $data.gpus }} of that layer, dashed means borrowed for a moment. Real runs combine these: Meta trained Llama 3 with four kinds of parallelism at once.</div>
+</div>

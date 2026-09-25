@@ -1,0 +1,92 @@
+# References for content/articles/quantization-living-history.md, rendered by {{< ml-references >}}.
+# Listed in the order the article reaches them. Numbering is automatic:
+# add, remove or reorder entries freely. Fields are plain text.
+
+- tag: Phones
+  title: 'Deep Compression: Compressing Deep Neural Networks with Pruning, Trained Quantization and Huffman
+    Coding'
+  url: https://arxiv.org/abs/1510.00149
+  meta: Han, Mao & Dally · ICLR 2016
+  note: 'Pruning plus rounding to about 5 bits: AlexNet from 240 MB to 6.9 MB with no accuracy loss. Where
+    the modern story starts.'
+- tag: Phones
+  title: Quantization and Training of Neural Networks for Efficient Integer-Arithmetic-Only Inference
+  url: https://arxiv.org/abs/1712.05877
+  meta: Jacob et al. · Google · CVPR 2018
+  note: 8-bit integers plus a shared scale, run on phone CPUs. The scheme TensorFlow Lite adopted.
+- tag: 8-bit
+  title: 'LLM.int8(): 8-bit Matrix Multiplication for Transformers at Scale'
+  url: https://arxiv.org/abs/2208.07339
+  meta: Dettmers et al. · NeurIPS 2022
+  note: Found the outliers that break naive rounding in large models, and kept them in 16-bit. 175B in
+    8-bit, no degradation.
+- tag: 8-bit
+  title: 'SmoothQuant: Accurate and Efficient Post-Training Quantization for Large Language Models'
+  url: https://arxiv.org/abs/2211.10438
+  meta: Xiao et al. · ICML 2023
+  note: 'Moves the hard-to-round part from the running numbers onto the weights, so both fit in 8 bits:
+    up to 1.56× faster, half the memory.'
+- tag: 4-bit
+  title: 'GPTQ: Accurate Post-Training Quantization for Generative Pre-trained Transformers'
+  url: https://arxiv.org/abs/2210.17323
+  meta: Frantar et al. · ICLR 2023
+  note: Rounds weights one at a time and corrects for each error. 175B models to 3–4 bits in about four
+    GPU hours.
+- tag: 4-bit
+  title: 'AWQ: Activation-aware Weight Quantization for LLM Compression and Acceleration'
+  url: https://arxiv.org/abs/2306.00978
+  meta: Lin et al. · MLSys 2024, Best Paper
+  note: Protect the 1% of weights that matter most and 4-bit keeps its accuracy.
+- tag: Local
+  title: llama.cpp
+  url: https://github.com/ggml-org/llama.cpp
+  meta: Georgi Gerganov & contributors · 2023–
+  note: The C/C++ engine that put 4-bit language models on laptops, and home of the GGUF file format.
+- tag: Fine-tuning
+  title: 'QLoRA: Efficient Finetuning of Quantized LLMs'
+  url: https://arxiv.org/abs/2305.14314
+  meta: Dettmers et al. · NeurIPS 2023
+  note: Freeze the model in 4-bit, train a small add-on. A 65B model fine-tuned on a single 48 GB GPU.
+- tag: Hardware
+  title: FP8 Formats for Deep Learning
+  url: https://arxiv.org/abs/2209.05433
+  meta: Micikevicius et al. · NVIDIA, Arm & Intel · 2022
+  note: The two 8-bit floating-point formats now built into data-center GPUs, shown to train as well as
+    16-bit.
+- tag: Hardware
+  title: Microscaling (MX) formats standard
+  url: https://www.opencompute.org/blog/amd-arm-intel-meta-microsoft-nvidia-and-qualcomm-standardize-next-generation-narrow-precision-data-formats-for-ai
+  meta: Open Compute Project · 2023
+  note: Seven companies agree on block-scaled formats down to 4 bits, including the MXFP4 that gpt-oss
+    ships in.
+- tag: Hardware
+  title: Introducing NVFP4 for Efficient and Accurate Low-Precision Inference
+  url: https://developer.nvidia.com/blog/introducing-nvfp4-for-efficient-and-accurate-low-precision-inference/
+  meta: NVIDIA Technical Blog · 2025
+  note: A clear explainer of 4-bit floating point with fine-grained scales, and what it costs in accuracy.
+- tag: Born small
+  title: Pretraining Large Language Models with NVFP4
+  url: https://arxiv.org/abs/2509.25149
+  meta: NVIDIA · 2025
+  note: A 12B model trained on 10 trillion tokens in 4-bit, matching the 8-bit baseline.
+- tag: 1-bit
+  title: 'BitNet: 1-bit Pre-training for Large Language Models'
+  url: http://www.jmlr.org/papers/volume26/24-2050/24-2050.pdf
+  meta: Wang, Ma et al. · JMLR 2025
+  note: The journal version of the BitNet line, covering both the 1-bit and 1.58-bit models in one place.
+- tag: 1-bit
+  title: 'The Era of 1-bit LLMs: All Large Language Models are in 1.58 Bits'
+  url: https://arxiv.org/abs/2402.17764
+  meta: Ma et al. · Microsoft Research · 2024
+  note: Weights of −1, 0 and +1, trained in, matching full precision at the same size and data.
+- tag: 1-bit
+  title: Exploring 1-bit LLMs
+  url: https://thejeshgn.com/2026/08/25/exploring-1-bit-llms/
+  meta: Thejesh GN · 2026
+  note: A hands-on account of running 1-bit models locally, with the storage math spelled out.
+- tag: Practice
+  title: 'LLM Quantization Explained: INT4, INT8, FP8, AWQ and GPTQ in 2026'
+  url: https://vrlatech.com/llm-quantization-explained-int4-int8-fp8-awq-and-gptq-in-2026/
+  meta: VRLA Tech · 2026
+  note: A practical buyer's-eye overview of today's formats and memory math. It's from a hardware vendor,
+    so take its quality percentages as rough.

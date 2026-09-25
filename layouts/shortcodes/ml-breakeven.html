@@ -1,0 +1,48 @@
+{{- /*
+  ml-breakeven — pay an API by the token, or lease GPUs and serve the model
+  yourself? Slide the daily volume and watch the monthly bills cross.
+
+    {{< ml-breakeven >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml-demos-assets.html (css/ml-demos.css, scripts/pages/ml/).
+  Every price is set once below, with its as-of date in the caption; the
+  data-* attributes and the JS-off bills both read from these variables.
+  Blended prices assume 3 input tokens per output token.
+*/ -}}
+{{- $hoursPerMonth := 730.0 -}}
+{{- $inputShare := 0.75 -}}
+{{- $minTokensPerDay := 1000000 -}}
+{{- $stepsPerDecade := 10.0 -}}
+{{- $defaultStep := 10 -}}
+{{- $openPerM := 1.04 -}}
+{{- $frontierInPerM := 2.0 -}}
+{{- $frontierOutPerM := 10.0 -}}
+{{- $gpus := 2 -}}
+{{- $perGpuHour := 4.19 -}}
+
+{{- /* Same maths as breakeven.ts, so the page reads fully with JS off. */ -}}
+{{- $daysPerMonth := div $hoursPerMonth 24.0 -}}
+{{- $defaultTokensPerDay := mul $minTokensPerDay (math.Pow 10 (div (float $defaultStep) $stepsPerDecade)) -}}
+{{- $frontierPerM := add (mul $inputShare $frontierInPerM) (mul (sub 1.0 $inputShare) $frontierOutPerM) -}}
+{{- $tokensPerMonthInM := div (mul $defaultTokensPerDay $daysPerMonth) 1e6 -}}
+{{- $openCost := mul $tokensPerMonthInM $openPerM -}}
+{{- $frontierCost := mul $tokensPerMonthInM $frontierPerM -}}
+{{- $gpuCost := mul (mul (float $gpus) $perGpuHour) $hoursPerMonth -}}
+{{- $cheapest := math.Min $openCost (math.Min $frontierCost $gpuCost) -}}
+{{- $breakEvenPerDay := div $gpuCost (div (mul $daysPerMonth $openPerM) 1e6) -}}
+{{- $breakEvenPerSecond := math.Round (div $breakEvenPerDay 86400.0) -}}
+{{- $defaultTokensLabel := printf "%.0fM" (div $defaultTokensPerDay 1e6) -}}
+{{- $breakEvenLabel := printf "%.0fM" (div $breakEvenPerDay 1e6) -}}
+{{- if ge $breakEvenPerDay 1e9 }}{{ $breakEvenLabel = printf "%.1fB" (div $breakEvenPerDay 1e9) }}{{ end -}}
+<div class="not-prose mli-demo" id="mli-be" data-hours-per-month="{{ $hoursPerMonth }}" data-input-share="{{ $inputShare }}" data-min-tokens-per-day="{{ $minTokensPerDay }}" data-steps-per-decade="{{ $stepsPerDecade }}">
+<div class="mli-demo-label">Live · pay by the token, or lease the GPUs?</div>
+<div class="mli-row"><label for="mli-be-r">Tokens / day: <span class="mli-val" id="mli-be-v">{{ $defaultTokensLabel }}</span></label><input class="mli-range" id="mli-be-r" type="range" min="0" max="30" step="1" value="{{ $defaultStep }}" aria-valuetext="{{ $defaultTokensLabel }} tokens a day" /></div>
+<div class="mli-be-rows">
+<div class="mli-be-row{{ if eq $openCost $cheapest }} is-cheapest{{ end }}" data-kind="api" data-baseline data-in-per-m="{{ $openPerM }}" data-out-per-m="{{ $openPerM }}"><span class="mli-be-lab">Hosted open 70B model <small>API, ${{ $openPerM }} per million tokens</small></span><span class="mli-be-cost">${{ lang.FormatNumber 0 $openCost }} / mo</span></div>
+<div class="mli-be-row{{ if eq $frontierCost $cheapest }} is-cheapest{{ end }}" data-kind="api" data-in-per-m="{{ $frontierInPerM }}" data-out-per-m="{{ $frontierOutPerM }}"><span class="mli-be-lab">Frontier model <small>Claude Sonnet 5 API, ${{ $frontierInPerM }} in / ${{ $frontierOutPerM }} out</small></span><span class="mli-be-cost">${{ lang.FormatNumber 0 $frontierCost }} / mo</span></div>
+<div class="mli-be-row{{ if eq $gpuCost $cheapest }} is-cheapest{{ end }}" data-kind="gpu" data-gpus="{{ $gpus }}" data-per-gpu-hour="{{ $perGpuHour }}"><span class="mli-be-lab">Two rented H100s, always on <small>${{ $perGpuHour }} per GPU-hour, you run the 70B model</small></span><span class="mli-be-cost">${{ lang.FormatNumber 0 $gpuCost }} / mo</span></div>
+</div>
+<div class="mli-caption" id="mli-be-cap">To beat the hosted API on price, the two GPUs need about {{ $breakEvenLabel }} tokens a day: {{ lang.FormatNumber 0 $breakEvenPerSecond }} every second, around the clock.</div>
+<div class="mli-caption">Prices as of September 2026 from Together AI, Anthropic and Lambda, assuming 3 input tokens per output token. The frontier model is a stronger model than the 70B one, so its row compares price, not quality. The GPU bill ignores the engineer who keeps them running.</div>
+</div>

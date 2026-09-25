@@ -1,0 +1,58 @@
+# References for content/articles/training-on-16000-gpus.md, rendered by {{< ml-references >}}.
+# Listed in the order the article reaches them. Numbering is automatic.
+
+- tag: Run report
+  title: The Llama 3 Herd of Models
+  url: https://arxiv.org/abs/2407.21783
+  meta: Llama Team, Meta · 2024
+  note: Up to 16K H100s, four kinds of parallelism, 466 interruptions in 54 days (419 unexpected, about 78% hardware), more than 90% effective training time, and 38–43% MFU.
+- tag: Talking
+  title: Bringing HPC Techniques to Deep Learning (ring all-reduce)
+  url: https://andrew.gibiansky.com/blog/machine-learning/baidu-allreduce/
+  meta: Andrew Gibiansky · Baidu Research · 2017
+  note: The ring all-reduce, whose per-GPU traffic stays constant as GPUs are added.
+- tag: Splitting
+  title: 'ZeRO: Memory Optimizations Toward Training Trillion Parameter Models'
+  url: https://arxiv.org/abs/1910.02054
+  meta: Rajbhandari et al. · Microsoft · SC 2020
+  note: Shard the optimizer state, then the gradients, then the weights themselves, for memory savings that grow with the number of GPUs.
+- tag: Splitting
+  title: 'Megatron-LM: Training Multi-Billion Parameter Language Models Using Model Parallelism'
+  url: https://arxiv.org/abs/1909.08053
+  meta: Shoeybi et al. · NVIDIA · 2019
+  note: Splitting each layer across GPUs with a few added communication steps. 8.3B parameters on 512 GPUs.
+- tag: Splitting
+  title: 'GPipe: Efficient Training of Giant Neural Networks using Pipeline Parallelism'
+  url: https://arxiv.org/abs/1811.06965
+  meta: Huang et al. · Google · 2018
+  note: Pipelines of layers fed with micro-batches, and the idle "bubble" that comes with them.
+- tag: Failures
+  title: A first order approximation to the optimum checkpoint interval
+  url: https://dl.acm.org/doi/10.1145/361147.361115
+  meta: John W. Young · Communications of the ACM · 1974
+  note: The square-root rule for how often to checkpoint, later refined by Daly (2006).
+- tag: Failures
+  title: Reducing Model Checkpointing Times by Over 10x with PyTorch Distributed Asynchronous Checkpointing
+  url: https://pytorch.org/blog/reducing-checkpointing-times/
+  meta: PyTorch blog · Meta & IBM · June 2024
+  note: Saving in the background cut checkpoint pauses 10–20×; for a 7B model, from 148.8 s to 6.3 s.
+- tag: Efficiency
+  title: 'PaLM: Scaling Language Modeling with Pathways'
+  url: https://arxiv.org/abs/2204.02311
+  meta: Chowdhery et al. · Google · 2022
+  note: Introduced model FLOPs utilization, at 46.2% on 6,144 TPU v4 chips.
+- tag: Efficiency
+  title: Efficient Large-Scale Language Model Training on GPU Clusters Using Megatron-LM
+  url: https://arxiv.org/abs/2104.04473
+  meta: Narayanan et al. · NVIDIA · 2021
+  note: A 1-trillion-parameter model at 502 petaFLOP/s on 3,072 GPUs, 52% of peak per GPU.
+- tag: Run report
+  title: DeepSeek-V3 Technical Report
+  url: https://arxiv.org/abs/2412.19437
+  meta: DeepSeek-AI · December 2024
+  note: 2.788M H800 GPU hours on 2,048 GPUs, $5.576M at $2/hour, excluding prior research and ablations. No irrecoverable loss spikes or rollbacks.
+- tag: Try it
+  title: Kaggle Notebooks documentation
+  url: https://www.kaggle.com/docs/notebooks
+  meta: Kaggle
+  note: Free notebooks with a two-T4 GPU option, enough for a tiny data-parallel run.

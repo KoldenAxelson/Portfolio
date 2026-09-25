@@ -1,0 +1,93 @@
+# References for content/articles/gpus-for-server-people.md, rendered by {{< ml-references >}}.
+# Listed in the order the article reaches them. Numbering is automatic.
+
+- tag: Specs
+  title: NVIDIA H100 Tensor Core GPU
+  url: https://www.nvidia.com/en-us/data-center/h100/
+  meta: NVIDIA · spec sheet
+  note: 80 GB, 3.35 TB/s, and 1,979 teraFLOPS of 16-bit math with sparsity (about 989 without it).
+- tag: Specs
+  title: NVIDIA Hopper Architecture In-Depth
+  url: https://developer.nvidia.com/blog/nvidia-hopper-architecture-in-depth/
+  meta: NVIDIA Technical Blog · 2022
+  note: 132 streaming multiprocessors, 16,896 CUDA cores and 528 Tensor Cores per H100 SXM5.
+- tag: Specs
+  title: AMD EPYC 9965
+  url: https://www.amd.com/en/products/processors/server/epyc/9005-series/amd-epyc-9965.html
+  meta: AMD · spec sheet
+  note: 192 cores and 614 GB/s of memory bandwidth per socket. The CPU in the comparison.
+- tag: History
+  title: CUDA Toolkit Archive
+  url: https://developer.nvidia.com/cuda-toolkit-archive
+  meta: NVIDIA
+  note: CUDA Toolkit 1.0, June 2007.
+- tag: Memory wall
+  title: AI and Memory Wall
+  url: https://arxiv.org/abs/2403.14123
+  meta: Gholami et al. · 2024
+  note: Peak compute up about 60,000× in 20 years, memory bandwidth about 100×, interconnect about 30×.
+- tag: Memory wall
+  title: 'Hitting the Memory Wall: Implications of the Obvious'
+  url: https://dl.acm.org/doi/10.1145/216585.216588
+  meta: Wulf & McKee · Computer Architecture News · 1995
+  note: The paper that named the memory wall, back when the worry was CPUs.
+- tag: Specs
+  title: 'Inside NVIDIA Blackwell Ultra: The Chip Powering the AI Factory Era'
+  url: https://developer.nvidia.com/blog/inside-nvidia-blackwell-ultra-the-chip-powering-the-ai-factory-era/
+  meta: NVIDIA Technical Blog · August 2025
+  note: B200 and B300 side by side, both at 8 TB/s.
+- tag: Specs
+  title: NVIDIA HGX Platform
+  url: https://www.nvidia.com/en-us/data-center/hgx/
+  meta: NVIDIA · spec sheet
+  note: 'HGX B200: 36 PFLOPS of 16-bit math with sparsity across 8 GPUs, about 2.25 PFLOPS per GPU without it. The B200 figure in the demo.'
+- tag: Roofline
+  title: 'Roofline: An Insightful Visual Performance Model for Multicore Architectures'
+  url: https://people.eecs.berkeley.edu/~kubitron/cs252/handouts/papers/RooflineVyNoYellow.pdf
+  meta: Williams, Waterman & Patterson · preprint of the CACM 2009 paper
+  note: 'One chart for "memory-bound or compute-bound?": speed is the lower of peak math and bandwidth × intensity.'
+- tag: Serving
+  title: Efficient Memory Management for Large Language Model Serving with PagedAttention
+  url: https://arxiv.org/abs/2309.06180
+  meta: Kwon et al. · SOSP 2023
+  note: Why token-by-token generation is memory-bound, and why batching many requests pays off.
+- tag: Specs
+  title: AMD Instinct MI355X
+  url: https://www.amd.com/en/products/accelerators/instinct/mi350/mi355x.html
+  meta: AMD · spec sheet
+  note: 288 GB of HBM3E at 8 TB/s.
+- tag: Specs
+  title: Cloud TPU release notes
+  url: https://docs.cloud.google.com/tpu/docs/release-notes
+  meta: Google Cloud · docs
+  note: TPU7x generally available on March 31, 2026 (preview from November 24, 2025).
+- tag: Specs
+  title: TPU7x (Ironwood)
+  url: https://docs.cloud.google.com/tpu/docs/tpu7x
+  meta: Google Cloud · docs
+  note: 192 GiB and 7.38 TB/s per chip, 9,216 chips per pod.
+- tag: Specs
+  title: "Anthropic's $21 billion chip deal with Broadcom"
+  url: https://rcrtech.com/semiconductor-news/anthropics-broadcom-chip-deal/
+  meta: RCR Tech · January 15, 2026
+  note: Broadcom delivers fully assembled Ironwood racks that Anthropic drops into its own data centers.
+- tag: Specs
+  title: Amazon EC2 Trn3 UltraServers
+  url: https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-ec2-trn3-ultraservers/
+  meta: AWS · December 2, 2025
+  note: Trainium3 with 144 GB of HBM3e at 4.9 TB/s per chip.
+- tag: Scale-up
+  title: NVIDIA NVLink
+  url: https://www.nvidia.com/en-us/data-center/nvlink/
+  meta: NVIDIA
+  note: 900 GB/s per GPU on Hopper, 1.8 TB/s on Blackwell.
+- tag: Scale-up
+  title: NVIDIA Blackwell Platform Arrives to Power a New Era of Computing
+  url: https://nvidianews.nvidia.com/news/nvidia-blackwell-platform-arrives-to-power-a-new-era-of-computing
+  meta: NVIDIA Newsroom · March 2024
+  note: Fifth-generation NVLink at 1.8 TB/s bidirectional per GPU, so 900 GB/s each way against an 800 Gb/s (100 GB/s) network card.
+- tag: Scale-up
+  title: NVIDIA GB200 NVL72
+  url: https://www.nvidia.com/en-us/data-center/gb200-nvl72/
+  meta: NVIDIA
+  note: 72 GPUs in one NVLink domain with 130 TB/s between them.

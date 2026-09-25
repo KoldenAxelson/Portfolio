@@ -19,6 +19,10 @@ Read the matching skill in `private/skills/` before starting these tasks:
 | [`private/skills/ChapterPageMakeLogic.md`](private/skills/ChapterPageMakeLogic.md) | Writing or reworking a Basic Logic chapter (`content/misc/basic-logic/`). Read after ChapterPageMake.md. |
 | [`private/skills/ChapterHomeworkMake.md`](private/skills/ChapterHomeworkMake.md) | Adding a Homework section (interactive exercises) to a chapter. Optional per chapter. |
 | [`private/skills/ArticlePageMake.md`](private/skills/ArticlePageMake.md) | Writing or reworking a text-lite blog article (`content/articles/`). |
-| [`private/skills/AuditSkill.md`](private/skills/AuditSkill.md) | Auditing, re-auditing or grading the repo or a feature. |
+| [`private/skills/AuditCode.md`](private/skills/AuditCode.md) | Auditing, re-auditing or grading the codebase or a feature. |
+| [`private/skills/AuditArticle.md`](private/skills/AuditArticle.md) | Fact-checking and reviewing an article or chapter before it publishes. Never in the session that wrote it. |
+
+Writing a blog article as the **writer agent**: start with
+[`private/blog-ideas/WRITER-HANDOFF.md`](private/blog-ideas/WRITER-HANDOFF.md).
 
 `private/` is gitignored, so these files exist only on Konrad's machine.

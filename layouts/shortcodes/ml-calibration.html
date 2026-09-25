@@ -1,0 +1,41 @@
+{{- /*
+  ml-calibration — does "90% sure" mean 90% right? A reliability chart for two
+  simulated models, plus an act-automatically threshold.
+
+    {{< ml-calibration >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml-demos-assets.html (css/ml-demos.css, scripts/pages/ml/).
+  The simulated numbers are the slices below: how many of 1,000 answers land in
+  each confidence band ($counts, starting at $bins), and each model's real hit
+  rate per band. The article says both models are about equally accurate
+  overall (overconfident 790/1000 right, calibrated 792/1000), so keep that
+  true when changing them. The JS-off result is computed here from the same
+  numbers: the overconfident model at the slider's starting threshold.
+*/ -}}
+{{- $bins := slice 50 60 70 80 90 -}}
+{{- $counts := slice 120 150 200 250 280 -}}
+{{- $overconfident := slice 0.78 0.78 0.79 0.79 0.80 -}}
+{{- $calibrated := slice 0.55 0.65 0.75 0.85 0.95 -}}
+{{- $threshold := 90 -}}
+{{- $handled := 0 -}}
+{{- $wrongExact := 0.0 -}}
+{{- range $i, $start := $bins -}}
+  {{- if ge $start $threshold -}}
+    {{- $count := index $counts $i -}}
+    {{- $handled = add $handled $count -}}
+    {{- $wrongExact = add $wrongExact (mul (float $count) (sub 1.0 (index $overconfident $i))) -}}
+  {{- end -}}
+{{- end -}}
+{{- $wrong := int (math.Round $wrongExact) -}}
+{{- $wrongPercent := int (math.Round (mul 100.0 (div (float $wrong) $handled))) -}}
+<div class="not-prose mli-demo" id="mli-cal" data-bins="{{ delimit $bins "," }}" data-counts="{{ delimit $counts "," }}">
+<div class="mli-demo-label">Live · does "90% sure" mean 90% right?</div>
+<div class="mli-bits-models" role="group" aria-label="Model"><span class="mli-bits-lab">Model:</span><button class="mli-rag-q is-on" type="button" aria-pressed="true" data-accuracy="{{ delimit $overconfident "," }}">Overconfident</button><button class="mli-rag-q" type="button" aria-pressed="false" data-accuracy="{{ delimit $calibrated "," }}">Calibrated</button></div>
+<div class="mli-cal-chart" id="mli-cal-chart" aria-hidden="true"></div>
+<div class="mli-cal-key" aria-hidden="true"><span class="mli-cal-key-fill"></span>how often it was right <span class="mli-cal-key-mark"></span>how sure it said it was</div>
+<div class="mli-row"><label for="mli-cal-r">Act alone when ≥ <span class="mli-val" id="mli-cal-v">{{ $threshold }}</span>% sure</label><input class="mli-range" id="mli-cal-r" type="range" min="{{ index $bins 0 }}" max="{{ index $bins (sub (len $bins) 1) }}" step="10" value="{{ $threshold }}" aria-valuetext="{{ $threshold }} percent" /></div>
+<div class="mli-cost" id="mli-cal-out">{{ $wrong }} wrong <small>of {{ $handled }} handled alone</small></div>
+<div class="mli-caption" id="mli-cal-cap">The overconfident model says {{ $threshold }}% or more, and in that range it's wrong {{ $wrongPercent }}% of the time.</div>
+<div class="mli-caption">Simulated: 1,000 made-up answers per model, sorted into bands by the confidence each one stated. The two models make the same claims; only one of them keeps its word.</div>
+</div>

@@ -177,6 +177,32 @@ img {
   padding: 0.5rem 1rem;
 }
 
+/* Article links that open another page get a small ↗, so they can't be mistaken
+   for glossary terms (.term), which share the accent colour but open a window in
+   place. Demos and reference cards opt out via .not-prose; in-page #anchors are
+   exempt because they don't leave the page. */
+.article-body :where(p, li, blockquote, td) a[href]:not([href^="#"]):not(:where(.not-prose *))::after {
+  content: "";
+  display: inline-block;
+  width: 0.62em;
+  height: 0.62em;
+  margin-left: 0.18em;
+  vertical-align: 0.12em;
+  background-color: currentColor;
+  -webkit-mask: var(--link-out-icon) center / contain no-repeat;
+  mask: var(--link-out-icon) center / contain no-repeat;
+  transition: transform 0.15s ease;
+}
+.article-body :where(p, li, blockquote, td) a[href]:not([href^="#"]):hover::after {
+  transform: translate(1px, -1px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .article-body a[href]::after { transition: none; }
+}
+:root {
+  --link-out-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.5 8.5l5-5M4.5 3.5h4v4'/%3E%3C/svg%3E");
+}
+
 /* Remap the typography plugin's colors onto our tokens (no prose-invert needed —
    the --c-* tokens already swap for dark mode). */
 .prose {

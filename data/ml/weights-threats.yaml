@@ -1,0 +1,27 @@
+# Attack paths and controls for the {{< ml-threats >}} demo. Illustrative: a
+# simplified mapping in the spirit of RAND's "Securing AI Model Weights" (2024),
+# not a real threat model. A path closes when any control in `stoppedBy` is on;
+# the logging control never closes a path, it only makes an open one visible.
+controls:
+  - { id: keys, label: Hardware security keys }
+  - { id: two-person, label: Two-person access }
+  - { id: egress, label: Bandwidth caps }
+  - { id: allowlist, label: Software allowlisting }
+  - { id: confidential, label: Confidential computing }
+  - { id: logging, label: Logging and alerts, detectsOnly: true }
+paths:
+  - name: Stolen password
+    how: A phished engineer's login is used to download the weights.
+    stoppedBy: [keys, two-person]
+  - name: Insider
+    how: Someone with legitimate access copies the files out.
+    stoppedBy: [two-person, egress]
+  - name: Poisoned dependency
+    how: A tampered package runs inside the training cluster.
+    stoppedBy: [allowlist]
+  - name: Compromised server
+    how: An attacker on a serving machine streams the weights out.
+    stoppedBy: [egress]
+  - name: Nosy host
+    how: Someone who controls the machine reads the weights straight from GPU memory.
+    stoppedBy: [confidential]

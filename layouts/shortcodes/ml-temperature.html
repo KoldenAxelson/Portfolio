@@ -1,0 +1,20 @@
+{{- /*
+  ml-temperature — one prompt, the model's odds for the next word, and a
+  temperature slider that reshapes them. Sample to see what comes out.
+
+    {{< ml-temperature >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml-demos-assets.html (css/ml-demos.css, scripts/pages/ml/).
+  The prompt and candidate scores live in data/ml/next-token.yaml.
+*/ -}}
+{{- $data := index site.Data.ml "next-token" -}}
+<div class="not-prose mli-demo" id="mli-temp" data-candidates="{{ jsonify $data.candidates }}">
+<div class="mli-demo-label">Live · the next word is a dice roll</div>
+<div class="mli-temp-prompt">{{ $data.prompt }}<span class="mli-temp-cursor" aria-hidden="true">▍</span></div>
+<div class="mli-row"><label for="mli-temp-r">Temperature: <span class="mli-val" id="mli-temp-v">1.0</span></label><input class="mli-range" id="mli-temp-r" type="range" min="0" max="20" step="1" value="10" aria-valuetext="1.0" /></div>
+<div class="mli-dec-bars" id="mli-temp-bars"></div>
+<div class="mli-controls"><button class="mli-btn" id="mli-temp-go" type="button">Sample 5 times</button></div>
+<ol class="mli-temp-out" id="mli-temp-out"></ol>
+<div class="mli-caption">Illustrative odds for one made-up prompt; the math is the real one. At temperature 0 the model always takes the top word. Higher temperatures flatten the odds, so unlikely words get picked more often.</div>
+</div>

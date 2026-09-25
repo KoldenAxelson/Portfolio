@@ -1,0 +1,20 @@
+# Documents and queries for the {{< ml-search >}} demo. `at` is a hand-placed
+# 2D position standing in for an embedding (0–1 on both axes): documents about
+# similar things sit close together. Keyword search matches exact words.
+docs:
+  - { text: Connecting to the VPN from home, at: [0.18, 0.80] }
+  - { text: VPN client keeps disconnecting, at: [0.26, 0.70] }
+  - { text: Setting up a printer, at: [0.42, 0.88] }
+  - { text: "ERR-4031: your badge has expired", at: [0.18, 0.22] }
+  - { text: Lost or damaged badges, at: [0.28, 0.13] }
+  - { text: Common error messages in the expense app, at: [0.58, 0.47] }
+  - { text: When the screen shows an error, at: [0.46, 0.58] }
+  - { text: Submitting an expense report, at: [0.82, 0.40] }
+  - { text: Travel reimbursement limits, at: [0.88, 0.28] }
+  - { text: Cafeteria hours, at: [0.84, 0.84] }
+queries:
+  - { text: "my laptop can't reach the office network from home", at: [0.24, 0.74] }
+  - { text: what does ERR-4031 mean, at: [0.52, 0.52] }
+stopwords: my can't the from what does mean a an to of in your has or when
+rrfK: 60
+topK: 3

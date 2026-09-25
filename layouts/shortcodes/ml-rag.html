@@ -12,5 +12,21 @@
 <div class="mli-rag-qs" id="mli-rag-qs"></div>
 <div class="mli-rag-kb" id="mli-rag-kb"></div>
 <div class="mli-rag-ans" id="mli-rag-ans"></div>
-<div class="mli-caption">The retrieval is real: every document is ranked by how well it matches your question (watch the relevance bars), and the top one is handed to the model. The answers are illustrative, but the contrast is exact: with no retrieval the model guesses; with it, it answers from the document.</div>
+<noscript>
+<div class="mli-rag-qs"><span class="mli-rag-q is-on">How long do customers have to get a refund?</span></div>
+<div class="mli-rag-kb">
+<div class="mli-rag-card is-hit"><div class="mli-rag-t">Returns policy</div><div class="mli-rag-x">Customers can request a refund within 14 days of delivery. After 14 days all sales are final.</div></div>
+<div class="mli-rag-card is-dim"><div class="mli-rag-t">Billing ownership</div><div class="mli-rag-x">The billing service is owned by the Payments team. On-call is Dana Okafor.</div></div>
+<div class="mli-rag-card is-dim"><div class="mli-rag-t">Office hours</div><div class="mli-rag-x">Office hours are 9 to 5. The office is closed on the last Friday of every month for maintenance.</div></div>
+<div class="mli-rag-card is-dim"><div class="mli-rag-t">Brand guide</div><div class="mli-rag-x">Our logo uses Northwind Blue on all marketing materials and packaging.</div></div>
+<div class="mli-rag-card is-dim"><div class="mli-rag-t">App support</div><div class="mli-rag-x">The mobile app supports iOS 15 and later and Android 11 and later.</div></div>
+<div class="mli-rag-card is-dim"><div class="mli-rag-t">Onboarding</div><div class="mli-rag-x">New hires receive a laptop on day one and complete security training in their first week.</div></div>
+</div>
+<div class="mli-rag-ans">
+<div class="mli-rag-panel is-no"><div class="mli-rag-h">Model alone <span class="mli-rag-tag">guessing from memory</span></div><p>Most stores use a 30-day return window, so probably around 30 days.</p></div>
+<div class="mli-rag-panel is-yes"><div class="mli-rag-h">Model + retrieval <span class="mli-rag-tag">grounded in a document</span></div><div class="mli-rag-ctx">retrieved &rarr; &ldquo;Customers can request a refund within 14 days of delivery. After 14 days all sales are final.&rdquo;</div><p>14 days from delivery — after that, all sales are final. <span class="mli-rag-src">Returns policy</span></p></div>
+</div>
+<p class="mli-caption">JavaScript is off, so this is a fixed snapshot of the first question: the highlighted card is the one retrieval picked. Turn JavaScript on to try other questions and watch every card get scored.</p>
+</noscript>
+<div class="mli-caption">The retrieval is real: every document is ranked by how well it matches your question (with JavaScript on, watch the relevance bars), and the top one is handed to the model. The answers are illustrative, but the contrast is exact: with no retrieval the model guesses; with it, it answers from the document.</div>
 </div>

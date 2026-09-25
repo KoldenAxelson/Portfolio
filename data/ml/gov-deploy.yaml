@@ -1,0 +1,33 @@
+# Deployment options and data kinds for the {{< ml-govflow >}} demo.
+# Illustrative, not compliance advice: the real answer is whatever your
+# agency's authorizing official signs. `allowed` maps a data kind to yes / no.
+# CUI floor: 32 CFR 2002.14(g), CUI Basic is at least moderate confidentiality; FedRAMP presumes Class C adequate for most moderate systems.
+kinds:
+  - { id: public, label: Public info }
+  - { id: cui, label: CUI }
+  - { id: secret, label: Secret }
+options:
+  - id: public-app
+    label: Public AI app
+    hops: [Your desk, Public internet, Vendor's commercial cloud]
+    crosses: Your data leaves every government boundary. Nothing is certified for it.
+    allowed: { public: check, cui: "no", secret: "no" }
+  - id: saas
+    label: FedRAMP Class C or D AI service
+    hops: [Your desk, Internet (encrypted), Vendor's certified environment]
+    crosses: Leaves your network, into a vendor environment FedRAMP has certified at Class C (formerly Moderate) or higher, the class FedRAMP presumes adequate for most moderate systems. CUI must be protected at moderate or above. Your agency still grants the ATO.
+    allowed: { public: "yes", cui: "yes", secret: "no" }
+  - id: govcloud
+    label: Model service in a GovCloud region
+    hops: [Your agency's VPC, Cloud provider's government region]
+    crosses: Stays inside a government-only region of your cloud account, run by screened US staff.
+    allowed: { public: "yes", cui: "yes", secret: "no" }
+  - id: airgap
+    label: Classified cloud or accredited air-gapped system
+    hops: [Classified network, Model on hardware with no internet]
+    crosses: Never touches the internet. The model comes to the data, not the other way round. Secret work still needs a system accredited for classified data.
+    allowed: { public: "yes", cui: "yes", secret: "yes" }
+verdicts:
+  "yes": Allowed, within the ATO.
+  "no": Not allowed. Wrong side of the boundary.
+  check: Only if your agency's policy allows it. Many don't.

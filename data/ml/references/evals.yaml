@@ -1,0 +1,58 @@
+# References for content/articles/evals.md, rendered by {{< ml-references >}}.
+# Listed in the order the article reaches them. Numbering is automatic.
+
+- tag: Basics
+  title: 'The ML Test Score: A Rubric for ML Production Readiness and Technical Debt Reduction'
+  url: https://research.google/pubs/the-ml-test-score-a-rubric-for-ml-production-readiness-and-technical-debt-reduction/
+  meta: Breck et al. · Google · IEEE Big Data 2017
+  note: A checklist of the tests and monitoring an ML system needs before production.
+- tag: Leakage
+  title: A Careful Examination of Large Language Model Performance on Grade School Arithmetic
+  url: https://arxiv.org/abs/2405.00332
+  meta: Zhang et al. · Scale AI · 2024
+  note: GSM1k, new problems written to mirror a popular math benchmark. Accuracy drops of up to 8%, and signs of overfitting in several model families.
+- tag: Saturation
+  title: "Humanity's Last Exam"
+  url: https://arxiv.org/abs/2501.14249
+  meta: Phan et al. · January 2025
+  note: Built because models passed 90% on MMLU. Frontier models scored low on its expert-written questions at launch.
+- tag: Saturation
+  title: "'Improving ratings': audit in the British University system"
+  url: https://www.cambridge.org/core/product/identifier/S1062798700002660/type/journal_article
+  meta: Marilyn Strathern · European Review · 1997
+  note: "Source of the usual phrasing of Goodhart's law: 'When a measure becomes a target, it ceases to be a good measure.'"
+- tag: Judges
+  title: Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena
+  url: https://arxiv.org/abs/2306.05685
+  meta: Zheng et al. · 2023
+  note: 'GPT-4 as judge agrees with humans over 80% of the time, like humans with each other. It shows position and verbosity biases; self-preference was too small to confirm.'
+- tag: Judges
+  title: Large Language Models are not Fair Evaluators
+  url: https://arxiv.org/abs/2305.17926
+  meta: Wang et al. · 2023
+  note: Reordering answers let Vicuna-13B beat ChatGPT on 66 of 80 questions, with ChatGPT judging.
+- tag: Practice
+  title: Define success criteria and build evaluations
+  url: https://platform.claude.com/docs/en/test-and-evaluate/develop-tests
+  meta: Anthropic · docs
+  note: '"Be task-specific" and "prioritize volume over quality": many automatically graded cases over a few hand-graded ones.'
+- tag: Leaderboards
+  title: The Leaderboard Illusion
+  url: https://arxiv.org/abs/2504.20879
+  meta: Singh et al. · April 2025
+  note: Private testing of many variants, with only the best published, biases Chatbot Arena's rankings.
+- tag: Tools
+  title: CI/CD integration
+  url: https://www.promptfoo.dev/docs/integrations/ci-cd/
+  meta: promptfoo · docs
+  note: Run prompt and model evals automatically in your deployment pipeline.
+- tag: Tools
+  title: Inspect
+  url: https://inspect.aisi.org.uk/
+  meta: UK AI Security Institute
+  note: An open-source framework for large language model evaluations.
+- tag: Tools
+  title: GPT-4
+  url: https://openai.com/index/gpt-4-research/
+  meta: OpenAI · March 14, 2023
+  note: The launch that open-sourced OpenAI Evals, a framework for writing and running benchmarks.

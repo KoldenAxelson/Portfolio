@@ -1,0 +1,20 @@
+# Document and questions for the {{< ml-chunks >}} demo. `needs` lists the
+# sentence indexes (from 0) a complete answer requires. Retrieval is a simple
+# keyword score, a stand-in for a real search index.
+sentences:
+  - Remote access policy.
+  - Staff working from home connect through the company VPN.
+  - The VPN client must be updated every month.
+  - It stops working after 30 days without an update.
+  - Two-factor login is required for every connection.
+  - Lost your security key? Contact the help desk before 5 p.m.
+  - Personal devices may not connect to the VPN.
+  - Printers on the office network are not reachable over the VPN.
+  - Report suspected phishing to the security team.
+  - Security reviews this policy every January.
+questions:
+  - { text: "How long can the VPN client go without an update?", needs: [2, 3] }
+  - { text: "Can I use my personal laptop on the VPN?", needs: [6] }
+  - { text: "Who do I contact about a lost security key?", needs: [5] }
+chunkSizes: [1, 2, 3, 5, 10]
+stopwords: the a an to of on in for is are be can i my do how who what about go every this it may not must your over with through without

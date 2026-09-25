@@ -1,0 +1,34 @@
+{{- /*
+  ml-inject — an email assistant meets a poisoned newsletter. Pick the attack,
+  toggle defences, and watch what the agent does.
+
+    {{< ml-inject >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml-demos-assets.html (css/ml-demos.css, scripts/pages/ml/).
+  The scenario (emails, attack text, agent steps, verdicts) lives in
+  data/ml/inject.yaml. The static state is the undefended run, so the demo
+  still reads with JavaScript off.
+*/ -}}
+{{- $data := site.Data.ml.inject -}}
+<div class="not-prose mli-demo" id="mli-inj" data-attacks="{{ jsonify $data.attacks }}" data-steps="{{ jsonify $data.steps }}" data-answers="{{ jsonify $data.answers }}" data-verdicts="{{ jsonify $data.verdicts }}">
+<div class="mli-demo-label">Live · an assistant reads a poisoned email</div>
+<div class="mli-inj-task">You ask: <b>{{ $data.task }}</b></div>
+<div class="mli-inj-inbox">
+{{- range $data.emails }}
+<div class="mli-inj-mail{{ if .poisoned }} is-poisoned{{ end }}"><div class="mli-rag-t">{{ .from }} · {{ .subject }}</div><div class="mli-rag-x">{{ .body }}{{ if .poisoned }} <span class="mli-inj-hidden" id="mli-inj-hidden">{{ $data.attacks.blunt }}</span>{{ end }}</div></div>
+{{- end }}
+</div>
+<div class="mli-bits-models mli-inj-row" role="group" aria-label="Attack"><span class="mli-bits-lab">Hidden text:</span><button class="mli-rag-q is-on" type="button" aria-pressed="true" data-attack="blunt">Blunt</button><button class="mli-rag-q" type="button" aria-pressed="false" data-attack="disguised">Disguised</button></div>
+<div class="mli-controls mli-inj-row" role="group" aria-label="Defences">
+<label class="mli-toggle"><input type="checkbox" data-defence="prompt" /> Warn the model in its prompt</label>
+<label class="mli-toggle"><input type="checkbox" data-defence="tools" /> Read-only tools</label>
+<label class="mli-toggle"><input type="checkbox" data-defence="approval" /> Human approves sends</label>
+</div>
+<div class="mli-ag-log" id="mli-inj-log">
+{{- range (slice "hijacked" "sent") }}{{ range index $data.steps . }}<div class="mli-ag-step t-{{ .kind }}"><span class="mli-ag-lab">{{ .label }}</span><span class="mli-ag-body">{{ .text }}</span></div>{{ end }}{{ end -}}
+<div class="mli-ag-step t-answer"><span class="mli-ag-lab">ANSWER</span><span class="mli-ag-body">{{ $data.answers.quiet }}</span></div>
+</div>
+<div class="mli-inj-verdict is-bad" id="mli-inj-verdict">{{ $data.verdicts.sent }}</div>
+<div class="mli-caption">Scripted, not a live model, and every address is fake. Real models are less predictable: a warning in the prompt stops some attacks and misses others, which is exactly the problem. The hidden text is shown here; in a real email it would be white-on-white or tucked in the HTML.</div>
+</div>

@@ -1,0 +1,70 @@
+# References for content/articles/what-is-ml-infrastructure.md, rendered by {{< ml-references >}}.
+# Listed in the order the article reaches them. Numbering is automatic:
+# add, remove or reorder entries freely. Fields are plain text.
+
+- tag: Foundations
+  title: Hidden Technical Debt in Machine Learning Systems
+  url: https://proceedings.neurips.cc/paper_files/paper/2015/hash/86df7dcfd896fcaf2674f757a2463eba-Abstract.html
+  meta: Sculley et al. · NeurIPS 2015
+  note: 'The paper that put a diagram to "the model is the small part": in a real system the ML code is
+    a tiny box surrounded by data, serving, and monitoring infrastructure that dwarfs it.'
+- tag: Practice
+  title: 'Rules of Machine Learning: Best Practices for ML Engineering'
+  url: https://developers.google.com/machine-learning/guides/rules-of-ml
+  meta: Martin Zinkevich · Google
+  note: Forty-three hard-won rules from Google's practice; the through-line is that infrastructure and
+    metrics matter more than the model early on.
+- tag: The loop
+  title: 'MLOps: Continuous Delivery and Automation Pipelines in Machine Learning'
+  url: https://cloud.google.com/architecture/mlops-continuous-delivery-and-automation-pipelines-in-machine-learning
+  meta: Google Cloud
+  note: The canonical write-up of the retrain-and-ship loop, including continuous training as the property
+    unique to ML systems.
+- tag: Testing
+  title: 'The ML Test Score: A Rubric for ML Production Readiness'
+  url: https://research.google/pubs/the-ml-test-score-a-rubric-for-ml-production-readiness-and-technical-debt-reduction/
+  meta: Breck et al. · Google, 2017
+  note: A 28-point checklist for the testing and monitoring that keep a silently-broken model from reaching
+    users; the backbone of the "when it breaks, it lies" section.
+- tag: Data layer
+  title: 'Meet Michelangelo: Uber''s Machine Learning Platform'
+  url: https://www.uber.com/us/en/blog/michelangelo-machine-learning-platform/
+  meta: Uber Engineering
+  note: A real, company-wide ML platform, and a clear look at feature stores and the train/serve skew
+    problem from the data-layer section.
+- tag: Monitoring
+  title: Designing Machine Learning Systems
+  url: https://www.oreilly.com/library/view/designing-machine-learning/9781098107956/
+  meta: Chip Huyen · O'Reilly, 2022
+  note: The best single book on the whole picture; especially good on data distribution shifts, drift,
+    and what to actually monitor.
+- tag: LLMs
+  title: Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks
+  url: https://arxiv.org/abs/2005.11401
+  meta: Lewis et al. · NeurIPS 2020
+  note: 'The paper that coined RAG: pair a frozen model with a searchable index of Wikipedia and it answers
+    more specifically and factually.'
+- tag: Serving
+  title: Efficient Memory Management for LLM Serving with PagedAttention
+  url: https://arxiv.org/abs/2309.06180
+  meta: Kwon et al. · SOSP 2023
+  note: 'The vLLM paper; the clearest explanation of why the KV cache makes LLM serving its own discipline:
+    2–4× throughput by paging it like OS memory.'
+- tag: Cost
+  title: 'LLM.int8(): 8-bit Matrix Multiplication for Transformers at Scale'
+  url: https://arxiv.org/abs/2208.07339
+  meta: Dettmers et al. · NeurIPS 2022
+  note: 'Quantization made concrete: run a 175-billion-parameter model in 8-bit, roughly half the memory,
+    with no measurable loss in accuracy.'
+- tag: Agents
+  title: 'ReAct: Synergizing Reasoning and Acting in Language Models'
+  url: https://arxiv.org/abs/2210.03629
+  meta: Yao et al. · 2022
+  note: An early, readable version of the reason-act-observe loop that sits at the heart of every agent
+    harness.
+- tag: Agents
+  title: Building Effective Agents
+  url: https://www.anthropic.com/engineering/building-effective-agents
+  meta: Anthropic · 2024
+  note: Practical patterns for the harness layer, and a useful line between fixed workflows and genuinely
+    agentic systems.

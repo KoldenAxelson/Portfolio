@@ -1,0 +1,41 @@
+{{- /*
+  ml-search — keyword vs. vector vs. hybrid search on a map of documents.
+
+    {{< ml-search >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml-demos-assets.html (css/ml-demos.css, scripts/pages/ml/).
+  Documents, their hand-placed map positions, queries and the fusion constant
+  live in data/ml/search-map.yaml.
+*/ -}}
+{{- $data := index site.Data.ml "search-map" -}}
+<div class="not-prose mli-demo" id="mli-srch" data-docs="{{ jsonify $data.docs }}" data-stopwords="{{ $data.stopwords }}" data-rrf-k="{{ $data.rrfK }}" data-top-k="{{ $data.topK }}">
+<div class="mli-demo-label">Live · meaning vs. exact words</div>
+<div class="mli-rag-qs" role="group" aria-label="Query">
+{{- range $i, $q := $data.queries }}<button class="mli-rag-q{{ if eq $i 0 }} is-on{{ end }}" type="button" aria-pressed="{{ eq $i 0 }}" data-at="{{ delimit $q.at "," }}">{{ $q.text }}</button>{{ end -}}
+</div>
+<div class="mli-bits-models mli-srch-modes" role="group" aria-label="Search type"><span class="mli-bits-lab">Search:</span><button class="mli-rag-q" type="button" aria-pressed="false" data-mode="keyword">Keyword</button><button class="mli-rag-q is-on" type="button" aria-pressed="true" data-mode="vector">Vector</button><button class="mli-rag-q" type="button" aria-pressed="false" data-mode="hybrid">Hybrid</button></div>
+{{- /* Static first state (first query, vector search) so the demo reads with JS off; the script redraws both on load. */ -}}
+{{- $q := index $data.queries 0 -}}
+{{- $qx := index $q.at 0 -}}{{- $qy := index $q.at 1 -}}
+{{- $ranked := slice -}}
+{{- range $i, $d := $data.docs -}}
+{{- $dx := sub (index $d.at 0) $qx -}}{{- $dy := sub (index $d.at 1) $qy -}}
+{{- $ranked = $ranked | append (dict "i" $i "dist" (add (mul $dx $dx) (mul $dy $dy))) -}}
+{{- end -}}
+{{- $top := slice -}}
+{{- range first $data.topK (sort $ranked "dist") }}{{ $top = $top | append .i }}{{ end -}}
+{{- $qsx := mul $qx 300 -}}{{- $qsy := sub 200 (mul $qy 200) -}}
+<svg class="mli-gd-plot mli-srch-map" id="mli-srch-map" viewBox="0 0 300 200" role="img" aria-label="Documents placed by meaning, with the query and its top results">
+{{- range $top }}{{ $d := index $data.docs . }}<line x1="{{ $qsx }}" y1="{{ $qsy }}" x2="{{ mul (index $d.at 0) 300 }}" y2="{{ sub 200 (mul (index $d.at 1) 200) }}" class="mli-srch-link"/>{{ end -}}
+{{- range $i, $d := $data.docs -}}
+{{- $x := mul (index $d.at 0) 300 -}}{{- $y := sub 200 (mul (index $d.at 1) 200) -}}
+{{- $isTop := in $top $i -}}{{- $right := gt (index $d.at 0) 0.65 -}}
+{{- $label := $d.text -}}{{- if gt (len $label) 22 }}{{ $label = printf "%s…" (substr $label 0 21) }}{{ end -}}
+<circle cx="{{ $x }}" cy="{{ $y }}" r="{{ cond $isTop 5 3.5 }}" class="mli-srch-doc{{ if $isTop }} is-top{{ end }}"/><text x="{{ cond $right (sub $x 6) (add $x 6) }}" y="{{ add $y 3 }}" text-anchor="{{ cond $right "end" "start" }}" class="mli-srch-label{{ if $isTop }} is-top{{ end }}">{{ $label }}</text>
+{{- end -}}
+<circle cx="{{ $qsx }}" cy="{{ $qsy }}" r="6" class="mli-srch-query"/></svg>
+<ol class="mli-srch-out" id="mli-srch-out">{{ range $top }}<li>{{ (index $data.docs .).text }}</li>{{ end }}</ol>
+<noscript><p class="mli-caption">JavaScript is off, so this is a fixed snapshot: the first query, ranked by vector search. Turn it on to switch queries and search types.</p></noscript>
+<div class="mli-caption">Illustrative: the map is hand-drawn in 2D, where real embeddings have hundreds or thousands of dimensions. Vector search ranks by closeness on the map, keyword search by shared words, and hybrid merges the two rankings with reciprocal rank fusion.</div>
+</div>
