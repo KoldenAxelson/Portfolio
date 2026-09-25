@@ -4,7 +4,11 @@ description: "Evals, explained for people who ship software: test sets and the l
 pubDate: 2026-09-24
 tags: ['ml', 'evals', 'mlops', 'explainer']
 glossary: "ml"
-draft: true
+# In review: builds at its URL but stays off every list, feed and sitemap,
+# and is noindexed. Listed at /misc/drafts/. Publish by deleting these lines.
+review: true
+build:
+  list: never
 thoughts:
   - "Evals are just tests. Tests where the expected output is 'something good'. That's the hard part."
   - "I trust a model roughly as much as I trust the eval suite behind it."

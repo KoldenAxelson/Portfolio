@@ -4,7 +4,11 @@ description: "Most questions don't need your most expensive model. Routing, casc
 pubDate: 2026-09-24
 tags: ['ml', 'inference', 'efficiency', 'cost', 'explainer']
 glossary: "ml"
-draft: true
+# In review: builds at its URL but stays off every list, feed and sitemap,
+# and is noindexed. Listed at /misc/drafts/. Publish by deleting these lines.
+review: true
+build:
+  list: never
 thoughts:
   - "Third in the 'make AI cheap' trio, after quantization and decision models. This one is mostly plumbing, which is why I like it."
   - "You wouldn't page the principal engineer to reset a password. Same idea."

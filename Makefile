@@ -55,7 +55,7 @@ AI_PORT      := 6573    # localhost-only proxy port (ASCII "AI" = 65,73). Must
 # `?=` means an AI_MODEL from the environment wins and skips this detection.
 AI_MODEL     ?= $(shell command -v ollama >/dev/null 2>&1 && ollama list 2>/dev/null | awk 'NR==2 {print $$1}')
 
-.PHONY: help setup dev build css css-watch typecheck clean distclean ai-proxy ai-proxy-run ai-proxy-stop spinmasters verdant spacescape games seal
+.PHONY: help setup dev dev-drafts build css css-watch typecheck clean distclean ai-proxy ai-proxy-run ai-proxy-stop spinmasters verdant spacescape games seal
 
 help: ## Show this help
 	@echo "Portfolio — available commands:"
@@ -142,6 +142,9 @@ dev: $(HUGO) $(TAILWIND) ## Local server at :1313 with live CSS rebuild
 	trap 'kill $$tw 2>/dev/null' EXIT INT TERM; \
 	$(HUGO) server --buildDrafts --disableFastRender
 
+dev-drafts: ## Like `make dev`, but drafts and /misc/drafts render unsealed (for writing and auditing)
+	@HUGO_PARAMS_SEALSOURCE=true $(MAKE) --no-print-directory dev
+
 build: $(HUGO) $(TAILWIND) ## Production build to ./public
 	@$(TAILWIND) -i $(CSS_IN) -o $(CSS_OUT) --minify
 	@$(HUGO) --minify
@@ -217,21 +220,16 @@ ai-proxy-stop: ## Stop all running ai-proxy instances (started by ai-proxy-run)
 # and opened in the browser by assets/scripts/site/vault.ts. Re-run whenever
 # the source page changes — the site serves the sealed file, not the source,
 # so an edited source with a stale seal is invisible until re-sealed.
-# Defaults cover the GrowGo pitch; override NAME/IN for another page.
+# Pages sealed whole (every draft in review, /misc/drafts) work the same way;
+# see layouts/partials/func/page-vault.html.
 #
-#   make seal                                   # prompts for the passcode
-#   VAULT_CODE=4769 make seal                   # non-interactive
-#   make seal NAME=foo IN=path/to/page.html     # another vault
-VAULT_NAME ?= growgo
+#   make seal                                        # menu (Drafts | GrowGo), then a PIN
+#   SEAL_TARGET=drafts VAULT_CODE=4769 make seal     # non-interactive
+#   make seal VAULT_IN=path/to/pitch.html            # GrowGo from another source
 VAULT_IN   ?= ../GrowGo/pitch/web/index.html
-NAME       ?= $(VAULT_NAME)
-IN         ?= $(VAULT_IN)
 
-seal: ## Seal a page into static/vault/<NAME>.json (NAME=growgo IN=…; passcode via $VAULT_CODE or prompt)
-	@command -v go >/dev/null 2>&1 || { echo "Go not found on PATH — install from https://go.dev/dl/" >&2; exit 1; }
-	@[ -f "$(IN)" ] || { echo "Source page not found: $(IN) (set IN=path/to/page.html)" >&2; exit 1; }
-	@go run scripts/vault-seal.go -in "$(IN)" -out "static/vault/$(NAME).json"
-	@echo "Now rebuild (make build / make dev) and commit static/vault/$(NAME).json."
+seal: $(HUGO) $(TAILWIND) ## Seal a vault: pick Drafts or GrowGo, then set its PIN (scripts/seal.sh)
+	@HUGO="$(HUGO)" TAILWIND="$(TAILWIND)" GROWGO_SOURCE="$(VAULT_IN)" bash scripts/seal.sh
 
 clean: ## Remove build artifacts (public/, resources/, generated CSS, proxy binary)
 	@rm -rf public resources $(CSS_OUT) $(AI_PROXY_BIN)

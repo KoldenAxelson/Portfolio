@@ -108,7 +108,10 @@
       {{- end }}
       <div class="flex min-w-0 flex-1 items-center justify-between gap-3">
         <div class="min-w-0">
-          <a href="{{ $perm }}" class="font-medium text-fg no-underline hover:!text-accent">{{ .Title }}</a>
+          <span class="flex items-center gap-2">
+            {{- partial "article-mark.html" (dict "page" .) }}
+            <a href="{{ $perm }}" class="font-medium text-fg no-underline hover:!text-accent">{{ .Title }}</a>
+          </span>
           <p class="mt-0.5 font-mono text-xs text-muted">{{ partial "formatted-date.html" (dict "date" .Date) }}</p>
         </div>
         <div class="shrink-0 self-end">

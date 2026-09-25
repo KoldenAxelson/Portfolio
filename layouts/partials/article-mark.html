@@ -1,0 +1,20 @@
+{{- /*
+  article-mark — the topic icon for an article, from data/article-marks.yaml.
+
+    {{ partial "article-mark.html" (dict "page" . "class" "h-4 w-4") }}
+
+  Renders nothing when no mark matches the page's tags. The icon inherits the
+  surrounding text colour.
+*/ -}}
+{{- $tags := .page.Params.tags | default slice -}}
+{{- $class := .class | default "h-4 w-4" -}}
+{{- $mark := false -}}
+{{- range index site.Data "article-marks" -}}
+  {{- if and (not $mark) (in $tags .tag) }}{{ $mark = . }}{{ end -}}
+{{- end -}}
+{{- with $mark -}}
+<span class="inline-flex shrink-0 align-middle text-muted" title="{{ .label }}">
+  {{- partial "func/svg-icon.html" (dict "name" .icon "class" $class) -}}
+  <span class="sr-only">{{ .label }}</span>
+</span>
+{{- end -}}

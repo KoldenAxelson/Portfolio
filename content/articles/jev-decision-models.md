@@ -4,7 +4,11 @@ description: "Jev is a decision model: you ask a question and list the allowed a
 pubDate: 2026-09-24
 tags: ['ml', 'decision-models', 'efficiency', 'explainer']
 glossary: "ml"
-draft: true
+# In review: builds at its URL but stays off every list, feed and sitemap,
+# and is noindexed. Listed at /misc/drafts/. Publish by deleting these lines.
+review: true
+build:
+  list: never
 thoughts:
   - "A lot of what we ask chatbots is a yes/no question wearing a paragraph."
   - "An if-statement with opinions. I'm not sure whether to be thrilled or worried."

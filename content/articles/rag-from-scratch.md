@@ -4,7 +4,11 @@ description: "Retrieval-augmented generation looks easy in a demo and breaks in 
 pubDate: 2026-09-24
 tags: ['ml', 'rag', 'search', 'explainer']
 glossary: "ml"
-draft: true
+# In review: builds at its URL but stays off every list, feed and sitemap,
+# and is noindexed. Listed at /misc/drafts/. Publish by deleting these lines.
+review: true
+build:
+  list: never
 thoughts:
   - "The RAG bugs worth chasing usually turn out to be search bugs wearing a chatbot costume."
   - "The model can only answer from what you hand it. Most of the work is deciding what to hand it."

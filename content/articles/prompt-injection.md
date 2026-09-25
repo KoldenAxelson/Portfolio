@@ -4,7 +4,11 @@ description: "Prompt injection is SQL injection's younger sibling: instructions 
 pubDate: 2026-09-24
 tags: ['ml', 'security', 'agents', 'explainer']
 glossary: "ml"
-draft: true
+# In review: builds at its URL but stays off every list, feed and sitemap,
+# and is noindexed. Listed at /misc/drafts/. Publish by deleting these lines.
+review: true
+build:
+  list: never
 thoughts:
   - "Every security lesson from running servers seems to apply to chatbots. Unfortunately."
   - "We finally fixed SQL injection, then built a machine that's all injection."

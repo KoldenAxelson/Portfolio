@@ -4,10 +4,13 @@
 */ -}}
 {{- $site := site.Data.site -}}
 {{- $siteUrl := partial "func/site-url.html" . -}}
+{{- /* A sealed page (func/page-vault.html) must not leak its title or summary
+       through the head: generic title and description, no per-page schema. */ -}}
+{{- $sealed := partial "func/page-vault.html" . -}}
 {{- $pageTitle := "" -}}
-{{- if and .Title (not .IsHome) -}}{{ $pageTitle = .Title }}{{- end -}}
+{{- if and .Title (not .IsHome) -}}{{ $pageTitle = cond (ne $sealed "") "Locked" .Title }}{{- end -}}
 {{- $fullTitle := cond (ne $pageTitle "") (printf "%s — %s" $pageTitle $site.title) $site.title -}}
-{{- $description := .Params.description | default $site.description -}}
+{{- $description := cond (ne $sealed "") "This page is passcode-locked." (.Params.description | default $site.description) -}}
 {{- $isArticleKind := and (eq .Kind "page") (in (slice "articles" "projects") .Section) -}}
 {{- $type := .Params.ogtype | default (cond $isArticleKind "article" "website") -}}
 {{- $image := .Params.image | default .Params.cover | default $site.ogImage -}}
@@ -25,7 +28,7 @@
 <title>{{ $fullTitle }}</title>
 <meta name="description" content="{{ $description }}" />
 <link rel="canonical" href="{{ $canonical }}" />
-{{- if .Params.noindex }}
+{{- if or .Params.noindex .Params.review $sealed }}
 <meta name="robots" content="noindex,nofollow" />
 {{- end }}
 
@@ -71,7 +74,7 @@
 {{- with $site.author.location }}{{ $person = merge $person (dict "address" (dict "@type" "PostalAddress" "addressLocality" .)) }}{{ end -}}
 <script type="application/ld+json">{{ $website | jsonify | safeJS }}</script>
 <script type="application/ld+json">{{ $person | jsonify | safeJS }}</script>
-{{- if and (eq .Kind "page") (eq .Section "articles") }}{{ partial "schema/article.html" . }}{{ end -}}
+{{- if and (eq .Kind "page") (eq .Section "articles") (not $sealed) }}{{ partial "schema/article.html" . }}{{ end -}}
 {{- if and (eq .Kind "page") (eq .Section "projects") }}{{ partial "schema/project.html" . }}{{ end -}}
 {{- if eq .Layout "cv" }}{{ partial "schema/cv.html" . }}{{ end -}}
 {{- if eq .Layout "certificates" }}{{ partial "schema/certificates.html" . }}{{ end -}}

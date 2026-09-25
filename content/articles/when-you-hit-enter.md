@@ -4,7 +4,11 @@ description: "From keypress to streaming words: tokens, attention, next-token pr
 pubDate: 2026-09-24
 tags: ['ml', 'llm', 'inference', 'explainer']
 glossary: "ml"
-draft: true
+# In review: builds at its URL but stays off every list, feed and sitemap,
+# and is noindexed. Listed at /misc/drafts/. Publish by deleting these lines.
+review: true
+build:
+  list: never
 thoughts:
   - "Every step in this post is something somebody has to serve, scale and pay for. That's the part I find interesting."
   - "A chatbot doesn't know what it's going to say. It finds out one word at a time, same as you."

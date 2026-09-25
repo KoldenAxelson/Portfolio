@@ -4,7 +4,11 @@ description: "A freshly trained language model doesn't answer questions; it cont
 pubDate: 2026-09-24
 tags: ['ml', 'llm', 'post-training', 'explainer']
 glossary: "ml"
-draft: true
+# In review: builds at its URL but stays off every list, feed and sitemap,
+# and is noindexed. Listed at /misc/drafts/. Publish by deleting these lines.
+review: true
+build:
+  list: never
 thoughts:
   - "Pretraining gives a model its knowledge. Everything that makes it pleasant, or unbearable, to talk to happens afterwards."
   - "The scariest demo on this blog is the one where you teach a model to flatter you in six clicks."

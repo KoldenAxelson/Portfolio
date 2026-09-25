@@ -1,0 +1,19 @@
+{{- /*
+  sealed-page — what a whole-page vault ships instead of its content (see
+  func/page-vault.html). Nothing from the page itself is rendered here, not
+  even its title: the plaintext exists only inside static/vault/<name>.json.
+
+  Vaults named "<group>/<page>" share their group's code (every draft opens
+  with the drafts PIN, entered once per tab).
+*/ -}}
+{{- $name := .name -}}
+{{- $group := index (split $name "/") 0 -}}
+<section class="py-8 text-center">
+  <h1 class="text-2xl font-medium text-fg">Locked</h1>
+  {{- if fileExists (printf "static/vault/%s.json" $name) }}
+  <p class="mt-2 text-muted">Enter the passcode to open this page.</p>
+  {{ partial "vault-gate.html" (dict "name" $name "group" $group) }}
+  {{- else }}
+  <p class="mt-2 text-muted">This page hasn't been sealed yet.</p>
+  {{- end }}
+</section>

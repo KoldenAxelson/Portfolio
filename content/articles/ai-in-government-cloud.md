@@ -4,7 +4,11 @@ description: "Running AI in a government cloud: FedRAMP, GovCloud regions, air-g
 pubDate: 2026-09-24
 tags: ['ml', 'government', 'security', 'compliance', 'explainer']
 glossary: "ml"
-draft: true
+# In review: builds at its URL but stays off every list, feed and sitemap,
+# and is noindexed. Listed at /misc/drafts/. Publish by deleting these lines.
+review: true
+build:
+  list: never
 thoughts:
   - "Everyone wants the chatbot. The compliance team wants to know where the prompt goes. Both are right."
   - "In the private sector the question is 'does it work?'. In government it's 'does it work, and can you prove where the data went?'"

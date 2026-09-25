@@ -1,0 +1,7 @@
+# Topic marks: a small icon beside an article's title wherever articles are
+# listed (articles index, homepage, /misc/drafts) and in the article header.
+# An article shows the first mark whose tag it carries. Icons are keys in
+# data/icons.yaml; the label is what screen readers and the hover title say.
+- tag: ml
+  icon: robot
+  label: AI / ML topic

@@ -68,12 +68,43 @@ async function decrypt(payload: VaultPayload, code: string): Promise<string> {
   return new TextDecoder().decode(plain);
 }
 
+// Vaults in a group ([data-vault-group], e.g. every draft) share one code. A
+// correct entry is kept for this tab only, so moving between drafts doesn't
+// ask again; closing the tab forgets it. Storage can throw (privacy modes,
+// blocked site data); then the visitor just types the code each time.
+const CODE_KEY = 'vault-code:';
+
+function recallCode(group: string): string {
+  try {
+    return sessionStorage.getItem(CODE_KEY + group) ?? '';
+  } catch {
+    return '';
+  }
+}
+
+function rememberCode(group: string, code: string): void {
+  try {
+    sessionStorage.setItem(CODE_KEY + group, code);
+  } catch {
+    // Not remembered; the next page in the group asks again.
+  }
+}
+
+function forgetCode(group: string): void {
+  try {
+    sessionStorage.removeItem(CODE_KEY + group);
+  } catch {
+    // Nothing stored to forget.
+  }
+}
+
 function createVault(root: HTMLElement): Vault | null {
   const gate = root.querySelector<HTMLElement>('[data-vault-gate]');
   const outlet = root.querySelector<HTMLElement>('[data-vault-outlet]');
   const dotsRow = root.querySelector<HTMLElement>('[data-vault-dots]');
   const status = root.querySelector<HTMLElement>('[data-vault-status]');
   const src = root.dataset.vaultSrc;
+  const group = root.dataset.vaultGroup ?? '';
   if (!gate || !outlet || !dotsRow || !status || !src) return null;
 
   let buffer = '';
@@ -186,17 +217,26 @@ function createVault(root: HTMLElement): Vault | null {
     say('');
   };
 
-  const submit = async (): Promise<void> => {
+  // `remembered`: the code came from this tab's group memory, not the keypad.
+  // If it no longer opens the vault (re-sealed with a new code), drop it and
+  // show a fresh keypad instead of a "wrong code" the visitor never typed.
+  const submit = async (remembered = false): Promise<void> => {
     busy = true;
     say('Checking…');
     const code = buffer;
     try {
       const data = payload ?? (await load());
       const html = await decrypt(data, code);
+      if (group) rememberCode(group, code);
       say('');
       reveal(html, data.render);
     } catch (err) {
-      if (err instanceof DOMException && err.name === 'OperationError') {
+      if (err instanceof DOMException && err.name === 'OperationError' && remembered) {
+        forgetCode(group);
+        buffer = '';
+        paint();
+        say('');
+      } else if (err instanceof DOMException && err.name === 'OperationError') {
         // AES-GCM authentication failed — that's "wrong code" in WebCrypto.
         reject();
       } else {
@@ -259,6 +299,13 @@ function createVault(root: HTMLElement): Vault | null {
   void load().catch(() => {
     // Quiet at init — the visitor hasn't typed yet. Surfaced on submit instead.
   });
+
+  const remembered = group ? recallCode(group) : '';
+  if (remembered) {
+    buffer = remembered;
+    paint();
+    void submit(true);
+  }
 
   for (const key of Array.from(gate.querySelectorAll<HTMLButtonElement>('[data-vault-key]'))) {
     key.addEventListener('click', () => vault.press(key.dataset.vaultKey || ''));

@@ -4,7 +4,11 @@ description: "API or your own GPUs? The cost crossover, speed, privacy, quality 
 pubDate: 2026-09-24
 tags: ['ml', 'inference', 'cost', 'explainer']
 glossary: "ml"
-draft: true
+# In review: builds at its URL but stays off every list, feed and sitemap,
+# and is noindexed. Listed at /misc/drafts/. Publish by deleting these lines.
+review: true
+build:
+  list: never
 thoughts:
   - "Every infra team has the build-versus-buy argument eventually. This is the AI edition, with numbers."
   - "Prices in this post will be wrong by Christmas. The shape of the answer won't be."
