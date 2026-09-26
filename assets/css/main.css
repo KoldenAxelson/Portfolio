@@ -1,7 +1,7 @@
 /* Portfolio — Tailwind v4 entry stylesheet (built with the standalone binary). */
 
 @import "tailwindcss";
-@import "./base.css";
+@import "./site/base.css";
 
 /* Used for article and project case-study bodies (.prose); colors remapped to
    our tokens below. */

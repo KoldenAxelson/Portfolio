@@ -44,7 +44,7 @@
   Referrer-Policy: strict-origin-when-cross-origin
 
 # Standalone game documents (/games/<name>/) exist to be framed by their own
-# project page's click-to-play embed (partials/game-embed.html), so the DENY
+# project page's click-to-play embed (partials/components/game-embed.html), so the DENY
 # above would break them. Cloudflare Pages merges every matching rule; the
 # leading "!" detaches the inherited header before the same-origin one is set.
 /games/*

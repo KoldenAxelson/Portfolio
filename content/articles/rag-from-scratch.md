@@ -15,7 +15,7 @@ Real documents aren't six tidy cards. They're thousands of PDFs, wiki pages and 
 
 When a {{< term "rag" >}}RAG{{< /term >}} system gets something wrong, it's tempting to blame the model. Often, though, the model did fine with what it was given. The search handed it the wrong text.
 
-{{< ml-rag >}}
+{{< ml/rag >}}
 
 ## Cutting documents into pieces
 
@@ -23,7 +23,7 @@ You can't paste a whole library into a prompt, so documents are split into chunk
 
 Too small, and a chunk loses its context: "It stops working after 30 days" is useless if the chunk doesn't say what *it* is. Too big, and the answer is diluted. Pinecone's guide warns that large chunks ["may introduce noise or dilute the significance of individual sentences"](https://www.pinecone.io/learn/chunking-strategies/). Then there are boundaries: an answer split across two chunks may never be retrieved whole.
 
-{{< ml-chunks >}}
+{{< ml/chunks >}}
 
 A fix Anthropic published in 2024, contextual retrieval, has a model write a sentence of context onto each chunk before it's indexed ("This chunk is from the remote access policy…"). Combined with keyword search (below), it cut top-20 retrieval failures [by 49% in Anthropic's tests, and by 67% with reranking](https://www.anthropic.com/news/contextual-retrieval).
 
@@ -43,7 +43,7 @@ Each method has a blind spot. Vector search understands that "can't reach the of
 
 So a common fix is {{< term "hybrid-search" >}}hybrid search{{< /term >}}: both searches at once, with their rankings merged. A popular merge, and the one Elasticsearch recommends, is [reciprocal rank fusion](https://cormack.uwaterloo.ca/cormacksigir09-rrf.pdf), a 2009 method that gives each document a score from its position in each list. Its authors found it consistently beat the individual systems it combined. Elasticsearch [offers it built in](https://www.elastic.co/docs/solutions/search/hybrid-search).
 
-{{< ml-search >}}
+{{< ml/search >}}
 
 ## Then read more carefully
 
@@ -65,4 +65,4 @@ Often because it was handed the wrong text. The six tidy cards hid the hard part
 
 In the order the article reaches them, plus the paper that named RAG.
 
-{{< ml-references >}}
+{{< ml/references >}}

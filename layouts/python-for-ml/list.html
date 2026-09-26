@@ -2,7 +2,7 @@
      restyled on its own; the intro and chapter cards are shared with every
      chapter-by-chapter section (partials/chapters/section-list.html). */}}
 {{ define "banner" }}
-{{ partial "page-banner.html" (dict
+{{ partial "site/page-banner.html" (dict
   "title" (.Title | default "Python for ML")
   "subtitle" (.Params.lead | default "")) }}
 {{ end }}

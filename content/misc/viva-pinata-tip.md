@@ -605,7 +605,7 @@ Each species changes colour when you feed it the listed items. Tick a species an
   .vp-empty { margin: 0.9rem 0 0; font-size: 0.95rem; color: rgb(var(--c-muted)); }
 
   /* The floating Save / Load speed-dial uses the shared auxiliary-button shell
-     (.aux-fab, in assets/css/auxiliary-button.css) — no FAB styles needed here. */
+     (.aux-fab, in assets/css/site/auxiliary-button.css) — no FAB styles needed here. */
 
   /* ---- Modal ---- */
   .vp-modal { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 1rem; }
@@ -805,6 +805,6 @@ Each species changes colour when you feed it the listed items. Tick a species an
       });
     });
     // The FAB's own outside-click / Escape close is handled globally by
-    // ts/auxiliary-button.ts, so no per-page handler is needed here.
+    // scripts/site/nav/auxiliary-button.ts, so no per-page handler is needed here.
   })();
 </script>

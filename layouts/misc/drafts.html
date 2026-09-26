@@ -1,16 +1,16 @@
 {{- /*
   misc/drafts — every article in review (`review: true`), in validation order:
   `reviewOrder` ascending (set from the priority list in
-  private/blog-ideas/WRITER-HANDOFF.md), then any unnumbered drafts, newest first.
+  private/ideas/blog/WRITER-HANDOFF.md), then any unnumbered drafts, newest first.
 
   Review articles use `build.list: never`, so they're absent from .Pages and
   site.RegularPages by design. They're found here by reading the articles folder
   and fetching each page directly. An audit badge shows when
-  private/article-audits/<slug>.md exists (only on Konrad's machine; the
+  private/audits/articles/<slug>.md exists (only on Konrad's machine; the
   folder is gitignored, so the deployed page shows no badges).
 */ -}}
 {{ define "banner" }}
-{{ partial "page-banner.html" (dict
+{{ partial "site/page-banner.html" (dict
   "title" .Title
   "subtitle" (.Params.lead | default "")) }}
 {{ end }}
@@ -42,16 +42,16 @@
 <ul class="divide-y divide-border">
   {{- range $drafts }}
   {{- $slug := .File.ContentBaseName }}
-  {{- $audited := fileExists (printf "private/article-audits/%s.md" $slug) }}
+  {{- $audited := fileExists (printf "private/audits/articles/%s.md" $slug) }}
   <li class="py-5">
     <h2 class="m-0 flex items-center gap-2 text-lg font-medium">
       {{- with .Params.reviewOrder }}<span class="w-6 shrink-0 font-mono text-sm text-muted" title="Validation order">{{ . }}.</span>{{ end }}
-      {{- partial "article-mark.html" (dict "page" .) }}
+      {{- partial "components/article-mark.html" (dict "page" .) }}
       <a href="{{ .RelPermalink }}" class="text-fg no-underline hover:!text-accent">{{ .Title }}</a>
     </h2>
     <p class="mt-1 text-muted">{{ .Params.description }}</p>
     <p class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs text-muted">
-      <span>{{ partial "formatted-date.html" (dict "date" .Date) }}</span>
+      <span>{{ partial "components/formatted-date.html" (dict "date" .Date) }}</span>
       {{- with .Params.tags }}<span>· {{ delimit . ", " }}</span>{{ end }}
       {{- if $audited }}<span class="rounded bg-accent/10 px-1.5 py-0.5 text-accent">audited</span>{{ end }}
     </p>

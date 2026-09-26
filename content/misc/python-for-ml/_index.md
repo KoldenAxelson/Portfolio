@@ -24,7 +24,7 @@ and tests you download and fill in on your own machine, the same way ML code is
 tested at work. Set up the environment once, with the versions below, and every
 packet runs in it.
 
-{{< python-versions >}}
+{{< python-for-ml/versions >}}
 
 **Changelog**
 

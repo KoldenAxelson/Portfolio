@@ -16,7 +16,7 @@
 #
 # THE WIDGETS FOLLOW THE SAME CONTRACT as the gc-/mli- ones, deliberately —
 # same box, same "Live · …" label, same lazy loader at the bottom of the page.
-# Each module is a `window.RtThing.init(root)` in static/js/, fetched only when
+# Each module is a `window.RtThing.init(root)` in static/js/resume-tips/, fetched only when
 # its section scrolls near, and each init() is idempotent (data-rt-ready).
 # Adding one means three things: the markup here, a file there, and a mount()
 # line in the script block at the bottom.
@@ -434,7 +434,7 @@ done.
       var root = document.getElementById(id);
       if (!root) return;
       whenVisible(root, function () {
-        loadScript("/js/" + file, function () { if (window[global]) window[global].init(root); });
+        loadScript("/js/resume-tips/" + file, function () { if (window[global]) window[global].init(root); });
       });
     }
     mount("rt-skim", "rt-skim.js", "RtSkim");

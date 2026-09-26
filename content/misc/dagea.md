@@ -8,7 +8,7 @@
 # key exists, and this page changes when the map does, which is not a cadence.
 #
 # The geometry is generated, by hand, once, from the drawing itself:
-# scripts/build-dagea-globe.py. Nothing in `make build` regenerates it. See
+# scripts/maps/build-dagea-globe.py. Nothing in `make build` regenerates it. See
 # that script's header for how a picture becomes polygons.
 # ─────────────────────────────────────────────────────────────────────────────
 title: "Dagea"
@@ -29,4 +29,4 @@ Six regions, forty landmasses. Point at one to light it up, or use the list
 underneath, which works the same and does not require you to hit a four-pixel
 islet. The back half of the world is open ocean: I only drew the front.
 
-{{< dagea-globe >}}
+{{< dagea/globe >}}

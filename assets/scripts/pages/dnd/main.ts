@@ -1,5 +1,5 @@
 // Entry point for the /misc/dnd/ bundle, shipped only on the page that uses one of
-// the campaign shortcodes — see partials/dnd-assets.html.
+// the campaign shortcodes — see partials/dnd/assets.html.
 //
 // Same isolation rule as the Skyrim bundle: a widget that throws on start takes only
 // itself down, so a page with one broken widget still works everywhere else. Each

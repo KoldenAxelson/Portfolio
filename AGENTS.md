@@ -1,11 +1,14 @@
 # AGENTS.md
 
-Instructions for AI agents working in this repo.
+Instructions for AI agents working in this repo. This is the only instruction
+file: there is deliberately no CLAUDE.md (Claude Code reads AGENTS.md when
+CLAUDE.md is absent), so put agent guidance here, not in a second file.
 
 ## Context
 
-- `CONTEXT.md`: who Konrad is and what this site is.
-- `PRODUCT.md`: product decisions and framing rules.
+- [`services/ai-proxy/context.md`](services/ai-proxy/context.md): who Konrad is and what this site is.
+  It is also the AI chat proxy's knowledge file, so keep it accurate.
+- [`docs/product.md`](docs/product.md): product decisions and framing rules.
 - `docs/`: authoring guides per section.
 
 ## Skills
@@ -15,6 +18,7 @@ Read the matching skill in `private/skills/` before starting these tasks:
 | Skill | Use when |
 |---|---|
 | [`private/skills/CodeStandards.md`](private/skills/CodeStandards.md) | **Always**, for any code you write, edit or review. |
+| [`private/skills/FileStructure.md`](private/skills/FileStructure.md) | **Always**, before creating, moving, renaming or deleting any file or folder. |
 | [`private/skills/ChapterPageMake.md`](private/skills/ChapterPageMake.md) | Writing a chapter of any text-lite deep dive, or starting a new subject section. |
 | [`private/skills/ChapterPageMakeLogic.md`](private/skills/ChapterPageMakeLogic.md) | Writing or reworking a Basic Logic chapter (`content/misc/basic-logic/`). Read after ChapterPageMake.md. |
 | [`private/skills/ChapterPageMakePython.md`](private/skills/ChapterPageMakePython.md) | Writing or fixing a Python for ML chapter or its workbook packet. Read after ChapterPageMake.md and ChapterHomeworkMake.md. |
@@ -24,9 +28,9 @@ Read the matching skill in `private/skills/` before starting these tasks:
 | [`private/skills/AuditArticle.md`](private/skills/AuditArticle.md) | Fact-checking and reviewing an article or chapter before it publishes. Never in the session that wrote it. |
 
 Writing a blog article as the **writer agent**: start with
-[`private/blog-ideas/WRITER-HANDOFF.md`](private/blog-ideas/WRITER-HANDOFF.md).
+[`private/ideas/blog/WRITER-HANDOFF.md`](private/ideas/blog/WRITER-HANDOFF.md).
 Building the Python for ML course as the **course builder**: start with
-[`private/misc-ideas/python-for-ml/COURSE-HANDOFF.md`](private/misc-ideas/python-for-ml/COURSE-HANDOFF.md).
+[`private/ideas/misc/python-for-ml/COURSE-HANDOFF.md`](private/ideas/misc/python-for-ml/COURSE-HANDOFF.md).
 
 **Linux sandboxes:** `bin/` holds macOS binaries. Fetch Linux ones with
 `make BIN=<dir> setup` and pass `BIN=<dir>` to make; never overwrite `bin/`.

@@ -1,5 +1,8 @@
-# Wrangler config for Cloudflare Pages. Optional (the dashboard works too), but
-# lets you run `wrangler pages dev public` and deploy from the CLI. Hugo → ./public.
+# Cloudflare PAGES config for the site itself — local use only. It lets you run
+# `wrangler pages dev public` (Hugo builds into ./public) and deploy by hand from
+# the CLI. CI doesn't depend on it: .github/workflows/cloudflare-pages.yml passes
+# the output dir and `--project-name=portfolio` as flags. Not a Worker config — each Worker keeps
+# its own wrangler.toml under services/workers/<name>/.
 
 name = "portfolio"
 compatibility_date = "2025-01-15"

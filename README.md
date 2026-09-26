@@ -46,17 +46,30 @@ CI before every deploy.
    homepage Experience section, and the `Person.hasOccupation` JSON-LD).
 3. **`content/`** — projects, articles, and the `now`/`uses` pages as Markdown
    with front matter. **`data/`** — `network/` and `certificates/` as YAML.
-4. **`assets/css/base.css`** — the five theme tokens (`--c-*`) for light/dark.
+4. **`assets/css/site/base.css`** — the five theme tokens (`--c-*`) for light/dark.
 
 ## Structure
 
 ```
-assets/         CSS (Tailwind entry + base) and TypeScript interactivity
-content/        projects, articles, now, uses, network, cv, certificates
-data/           site.yaml, cv.yaml, icons, network/, certificates/, archive/
-layouts/        Hugo templates (baseof, pages, partials, schema/, JSON-LD)
-static/         fonts, textures, covers, badges, favicon, og image
+assets/
+  css/            main.css (Tailwind entry) · site/ (global) · pages/<feature>/
+  scripts/        site/ (the global bundle, grouped by role) · pages/<feature>/
+  img/            covers, badges, games, skyrim, … (served from the site root)
+  geo/ wasm/ vendor/
+content/          Markdown pages; the folder tree is the URL tree
+data/             site.yaml, cv.yaml, icons.yaml + one folder per feature
+layouts/
+  partials/       site/ components/ func/ schema/ head/ + one folder per feature
+  shortcodes/     site-wide ones at the root, feature ones in <feature>/
+static/           fonts, js/<feature>/, img/ (served from the root), games, vault
+scripts/          hand-run tools: maps/ writing/ workbooks/ vault/ ai/
+docs/             authoring/ games/ ops/ product.md
+services/         ai-proxy/ (Go proxy + context.md) · workers/ (Cloudflare Workers)
+workbooks/        Python for ML packets (tested in CI, zipped into static/downloads/)
 ```
+
+Folder rules (and how to move a file safely) live in the FileStructure skill
+(`private/skills/FileStructure.md`, local only).
 
 ## Deploying
 

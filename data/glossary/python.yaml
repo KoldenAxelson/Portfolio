@@ -26,12 +26,12 @@
 #
 # ── Aliases ───────────────────────────────────────────────────────────
 # `aliases` lists the other spellings the prose may link (plural, the method
-# form, the attribute form). scripts/check-terms.py accepts them.
+# form, the attribute form). scripts/writing/check-terms.py accepts them.
 #
 # ── Figures ───────────────────────────────────────────────────────────
-# `figure` adds a micro-diagram (assets/scripts/site/def-figures-python.ts). One
+# `figure` adds a micro-diagram (assets/scripts/site/definitions/def-figures-python.ts). One
 # drawing per family, highlighted differently per term — see the table in
-# docs/python-for-ml-authoring.md for every kind and its options.
+# docs/authoring/python-for-ml.md for every kind and its options.
 # ──────────────────────────────────────────────────────────────────────
 
 # ── Chapter 1: Python for people who already code ────────────────────

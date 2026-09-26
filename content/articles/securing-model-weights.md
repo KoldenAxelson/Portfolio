@@ -40,7 +40,7 @@ The downloaded-model problem has a boring fix too. In 2024, JFrog found [about 1
 
 Try closing the paths yourself:
 
-{{< ml-threats >}}
+{{< ml/threats >}}
 
 Notice that no single control closes everything, and logging closes nothing. It only tells you what's happening. RAND's version of that lesson: security "cannot be ensured by implementing a small number of 'silver bullet' security measures."
 
@@ -64,4 +64,4 @@ The same way you'd protect any crown-jewel system: few people with access and ne
 
 The incidents, then the frameworks, then the open-weights side.
 
-{{< ml-references >}}
+{{< ml/references >}}

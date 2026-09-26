@@ -1,4 +1,4 @@
-# Questions for the {{< ml-decide >}} demo. A toy scorer stands in for a
+# Questions for the {{< ml/decide >}} demo. A toy scorer stands in for a
 # decision model: each option's cue words raise its odds when they appear in the
 # ticket. `type` mirrors two of the three question shapes the article describes
 # (no scale question here).

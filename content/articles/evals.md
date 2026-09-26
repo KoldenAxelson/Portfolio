@@ -31,7 +31,7 @@ The cheap alternative is an {{< term "llm-as-judge" >}}LLM-as-judge{{< /term >}}
 
 It also has known biases. The same study measured a preference for longer answers, and saw hints, too weak to call, that judges favour their own writing. Another found [position bias](https://arxiv.org/abs/2305.17926): just by changing the order of the answers, a small model beat ChatGPT on 66 of 80 questions, with ChatGPT as the judge. Try being the grader, then hand it to the judge:
 
-{{< ml-judge >}}
+{{< ml/judge >}}
 
 The fixes are dull, and most of them work. Ask twice with the order swapped and only count consistent verdicts. Don't trust an instruction to ignore length: in the study that measured the length preference, two of three judges still preferred padded answers. Give it the facts to grade against, like the shop policy in the demo.
 
@@ -57,4 +57,4 @@ You write down what "better" means before you look. A locked test set that never
 
 The testing basics first, then judges and leaderboards.
 
-{{< ml-references >}}
+{{< ml/references >}}

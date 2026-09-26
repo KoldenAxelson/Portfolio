@@ -1,7 +1,7 @@
 // The "John Skyrim" module on /misc/skyrim/ — screen navigation, the levelling model
 // behind the perk slider, and the gear doll's mode switch.
 //
-// Everything visible is server-rendered by layouts/shortcodes/john-skyrim.html. The only
+// Everything visible is server-rendered by layouts/shortcodes/skyrim/john.html. The only
 // thing computed here is the answer to one question the page previously just asserted.
 //
 // ── BACK IS A STACK, NOT A DESTINATION ──────────────────────────────────────

@@ -45,6 +45,29 @@ disableKinds = ["taxonomy", "term"]
     lineNos = false
     tabWidth = 2
 
+# Images live under assets/img/ and static/img/, one folder per kind (covers,
+# badges, games, skyrim, …), but are served from the site root: assets/img/covers/x
+# resolves as resources.Get "covers/x" and publishes at /covers/…, and
+# static/img/covers/x is served at /covers/x. So front-matter paths stay short
+# ("/covers/foo.webp") and published URLs (og:image, JSON-LD) never changed when
+# the files were grouped. Declaring a mount replaces that component's default, so
+# the plain assets/ and static/ mounts are restated with img/ excluded.
+[module]
+  [[module.mounts]]
+    source = "assets"
+    target = "assets"
+    excludeFiles = ["img/**"]
+  [[module.mounts]]
+    source = "assets/img"
+    target = "assets"
+  [[module.mounts]]
+    source = "static"
+    target = "static"
+    excludeFiles = ["img/**"]
+  [[module.mounts]]
+    source = "static/img"
+    target = "static"
+
 [params]
   # Identity and site data live in data/site.yaml, not here.
 

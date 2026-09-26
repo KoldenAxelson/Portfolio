@@ -1,5 +1,5 @@
 {{ define "banner" }}
-{{ partial "page-banner.html" (dict
+{{ partial "site/page-banner.html" (dict
   "title" "What I'm doing now"
   "subtitle" (.Params.lead | default "")) }}
 {{ end }}
@@ -7,7 +7,7 @@
 {{ define "main" }}
 {{- with .Params.updated }}
 <p class="mb-10 font-mono text-xs text-muted">
-  Last updated {{ partial "formatted-date.html" (dict "date" .) }}.
+  Last updated {{ partial "components/formatted-date.html" (dict "date" .) }}.
 </p>
 {{- end }}
 

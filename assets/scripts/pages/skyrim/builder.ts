@@ -591,7 +591,7 @@ function artFor(catalogue: Catalogue, ingredient: Ingredient, alt = ''): string 
 }
 
 /**
- * Same shape as partials/skyrim-dlc.html, off the same map — duplicated here only because
+ * Same shape as partials/skyrim/dlc.html, off the same map — duplicated here only because
  * JS cannot reach Hugo at runtime. The code is a glyph a screen reader says as "D B", so
  * the name rides alongside it in `.sky-sr`.
  *
@@ -882,7 +882,7 @@ export function sharesEffectWith(candidate: Ingredient, chosen: Ingredient[]): b
 }
 
 /**
- * One ingredient tile, matching partials/skyrim-ingredients.html so the two share their
+ * One ingredient tile, matching partials/skyrim/ingredients.html so the two share their
  * CSS and a recipe card and the mortar look like the same thing.
  */
 function tileMarkup(catalogue: Catalogue, ingredient: Ingredient, removable = false): string {

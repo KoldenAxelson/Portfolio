@@ -1,4 +1,4 @@
-# Documents and queries for the {{< ml-search >}} demo. `at` is a hand-placed
+# Documents and queries for the {{< ml/search >}} demo. `at` is a hand-placed
 # 2D position standing in for an embedding (0–1 on both axes): documents about
 # similar things sit close together. Keyword search matches exact words.
 docs:

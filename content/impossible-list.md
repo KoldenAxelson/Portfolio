@@ -23,7 +23,7 @@ groups:
       - { text: "Learn to free-dive past 20 meters", done: false }
       - { text: "Build something with my hands that outlives the warranty", done: false }
 # Games — a checklist (crossed out when 100%-ed). Completed entries carry a
-# rating (of 5), a blurb, and shot (PNG in assets/games/, optimized to WebP at
+# rating (of 5), a blurb, and shot (PNG in assets/img/games/, optimized to WebP at
 # build); clicking one opens the drill-down modal. To-do entries are plain.
 games:
   label: "Games"
@@ -131,7 +131,7 @@ games:
       shot: "skyrim.webp"
       blurb: "This is a comfort game for me. When I want to just 'take a walk' digitally, this feels like walking around my old neighborhood. Over time some new things are added in, and it's fun to discover things I never saw before. I'm not huge into the modding scene — I appreciate it, but I like having the shared experience."
 # Books — same checklist + drill-down pattern as games. Covers live in
-# assets/achievements/<cover>.<ext> (any raster type; -1, -2 … = extra
+# assets/img/achievements/<cover>.<ext> (any raster type; -1, -2 … = extra
 # carousel images). rating → stars; status → a progress/state note.
 books:
   label: "Books"

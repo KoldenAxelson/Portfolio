@@ -11,7 +11,7 @@
 # THE FEATURES DO NOT RENDER AS CARDS. A grid of ten always-open cards is a wall
 # to scroll past. Each feature name in the level table is a click-through instead,
 # opening a draggable window built from the entry below — see
-# partials/dnd-popovers.html, which synthesises a glossary set out of this list so
+# partials/dnd/popovers.html, which synthesises a glossary set out of this list so
 # the existing window manager does the work.
 #
 #   level    which row of the table names it

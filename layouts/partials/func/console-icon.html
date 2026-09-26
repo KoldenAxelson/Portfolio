@@ -1,5 +1,5 @@
 {{- /*
-  console-icon — inline a console logo SVG from static/consoles/<code>.svg,
+  console-icon — inline a console logo SVG from static/img/consoles/<code>.svg,
   flattening its fills and strokes to currentColor so it takes the site accent
   color and adapts to light/dark. `none` values are preserved (so hollow shapes
   stay hollow), and width/height attrs are stripped so CSS controls the size (the
@@ -10,7 +10,7 @@
      the same sphere mark) alias onto that icon file instead of duplicating it. */ -}}
 {{- $aliases := dict "XSX" "xbox" -}}
 {{- $file := index $aliases .code | default (lower .code) -}}
-{{- $path := printf "static/consoles/%s.svg" $file -}}
+{{- $path := printf "static/img/consoles/%s.svg" $file -}}
 {{- if os.FileExists $path -}}
   {{- $s := os.ReadFile $path -}}
   {{- $s = replace $s `fill="none"` `fill="__keepf__"` -}}

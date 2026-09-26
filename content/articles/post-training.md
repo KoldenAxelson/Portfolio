@@ -27,7 +27,7 @@ That's {{< term "rlhf" >}}RLHF{{< /term >}}, reinforcement learning from human f
 
 It worked dramatically. In InstructGPT, people preferred answers from a tuned model with 1.3 billion {{< term "weights" >}}weights{{< /term >}} over the 175-billion-weight GPT-3, ["despite having 100x fewer parameters"](https://arxiv.org/abs/2203.02155). Try being the labeler:
 
-{{< ml-reward >}}
+{{< ml/reward >}}
 
 The RL step is fiddly, so in 2023 researchers showed a shortcut. {{< term "dpo" >}}DPO{{< /term >}} learns straight from the preference pairs with ["only a simple classification loss"](https://arxiv.org/abs/2305.18290), no separate reward model or practice loop. It became a common choice for {{< term "open-weights" >}}open-weight{{< /term >}} models: Meta's [Llama 3](https://arxiv.org/abs/2407.21783) and AI2's Tulu 3 both use it.
 
@@ -55,4 +55,4 @@ In layers, on top of the knowledge from pretraining: example answers teach the f
 
 The methods in the order they appeared, then the failures.
 
-{{< ml-references >}}
+{{< ml/references >}}

@@ -45,12 +45,12 @@ const STANDALONE = [
 
 for (const demo of STANDALONE) {
   const root = byId(demo.id);
-  whenVisible(root, () => loadScripts(demo.scripts.map((s) => `/js/${s}.js`), () => demo.init(root)));
+  whenVisible(root, () => loadScripts(demo.scripts.map((s) => `/js/ml/${s}.js`), () => demo.init(root)));
 }
 
 const pad = byId('mli-nn-pad');
 if (pad?.getContext) {
-  whenVisible(pad, () => loadScripts(['/js/tiny-digits.js'], () => window.TinyDigits && initDigits(pad, window.TinyDigits)));
+  whenVisible(pad, () => loadScripts(['/js/ml/tiny-digits.js'], () => window.TinyDigits && initDigits(pad, window.TinyDigits)));
 }
 
 const loop = byId('mli-mo');

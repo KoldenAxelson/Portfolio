@@ -27,7 +27,7 @@ A {{< term "cascade" >}}cascade{{< /term >}} skips the upfront guess. The small 
 
 The catch is that escalated requests pay twice, and the whole thing rests on {{< term "calibration" >}}calibration{{< /term >}}: a small model that's confidently wrong never escalates. Drag the threshold:
 
-{{< ml-route >}}
+{{< ml/route >}}
 
 Set it too low and wrong answers slip through cheaply. Set it too high and you're paying for both models on most requests. The sweet spot is where quality stops rising, and you find it by measuring.
 
@@ -61,4 +61,4 @@ You shouldn't: most of your traffic is toast. Let a line cook handle it, send th
 
 In the order the post cites them.
 
-{{< ml-references >}}
+{{< ml/references >}}

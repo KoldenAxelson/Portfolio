@@ -42,14 +42,14 @@ VERDANT_DIR     ?= ../Micro/Portfolio/verdant
 # builds the wasm and copies index.{html,js,wasm,data} into static/games/spacescape/.
 SPACESCAPE_DIR  ?= ../Playgrounds/Odin/SpaceScape
 
-# AI chat proxy (Go, stdlib-only — see docs/ai-tunnel.md). The binary is built
+# AI chat proxy (Go, stdlib-only — see docs/ops/ai-tunnel.md). The binary is built
 # into its own dir and is gitignored; never commit it.
-AI_PROXY_DIR := ai-proxy
+AI_PROXY_DIR := services/ai-proxy
 AI_PROXY_BIN := $(AI_PROXY_DIR)/ai-proxy
-AI_CONTEXT   := CONTEXT.md
+AI_CONTEXT   := $(AI_PROXY_DIR)/context.md
 AI_PORT      := 6573    # localhost-only proxy port (ASCII "AI" = 65,73). Must
-                        # match the proxy default in ai-proxy/main.go, PROXY_PORT
-                        # in scripts/setup-ai-tunnel.sh, and the tunnel ingress.
+                        # match the proxy default in services/ai-proxy/main.go, PROXY_PORT
+                        # in scripts/ai/setup-ai-tunnel.sh, and the tunnel ingress.
 # Default to whatever model Ollama actually has installed (first one listed), so
 # `make ai-proxy-run` just works without respecifying. Override with AI_MODEL=…
 # `?=` means an AI_MODEL from the environment wins and skips this detection.
@@ -174,7 +174,7 @@ WORKBOOKS_DIR   := workbooks/python-for-ml
 
 workbooks: ## Zip every Python for ML workbook packet into static/downloads/
 	@echo "Building workbook zips…"
-	@$(PYTHON) scripts/build-workbooks.py
+	@$(PYTHON) scripts/workbooks/build-workbooks.py
 
 # Each folder runs on its own, as a reader would: every packet has its own
 # exercises.py, so one pytest session over all of them would import the wrong one.
@@ -228,7 +228,7 @@ ai-proxy-run: ai-proxy ## Build + run the proxy (env: AI_PROXY_SECRET; AI_MODEL 
 	@[ -n "$$AI_PROXY_SECRET" ] || { echo "Set AI_PROXY_SECRET first: export AI_PROXY_SECRET=…" >&2; exit 1; }
 	@model='$(AI_MODEL)'; model="$${model:-llama3.2}"; \
 	  echo "Running ai-proxy on :$(AI_PORT) (model $$model, context $(AI_CONTEXT))…"; \
-	  cd $(AI_PROXY_DIR) && ./ai-proxy -context ../$(AI_CONTEXT) -port $(AI_PORT) -model "$$model"
+	  cd $(AI_PROXY_DIR) && ./ai-proxy -context "$(CURDIR)/$(AI_CONTEXT)" -port $(AI_PORT) -model "$$model"
 
 # Stop our proxy by exact executable name (NOT by port, NOT by args), so it
 # catches every ai-proxy instance regardless of how it was started, while never
@@ -244,8 +244,8 @@ ai-proxy-stop: ## Stop all running ai-proxy instances (started by ai-proxy-run)
 
 # --- Passcode vault ---------------------------------------------------------
 # Pages under {{< vault name=… >}} never ship readable: the HTML is sealed with
-# AES-GCM into static/vault/<NAME>.json (scripts/vault-seal.go, stdlib-only)
-# and opened in the browser by assets/scripts/site/vault.ts. Re-run whenever
+# AES-GCM into static/vault/<NAME>.json (scripts/vault/vault-seal.go, stdlib-only)
+# and opened in the browser by assets/scripts/site/widgets/vault.ts. Re-run whenever
 # the source page changes — the site serves the sealed file, not the source,
 # so an edited source with a stale seal is invisible until re-sealed.
 # Pages sealed whole (every draft in review, /misc/drafts) work the same way;
@@ -256,8 +256,8 @@ ai-proxy-stop: ## Stop all running ai-proxy instances (started by ai-proxy-run)
 #   make seal VAULT_IN=path/to/pitch.html            # GrowGo from another source
 VAULT_IN   ?= ../GrowGo/pitch/web/index.html
 
-seal: $(HUGO) $(TAILWIND) ## Seal a vault: pick Drafts or GrowGo, then set its PIN (scripts/seal.sh)
-	@HUGO="$(HUGO)" TAILWIND="$(TAILWIND)" GROWGO_SOURCE="$(VAULT_IN)" bash scripts/seal.sh
+seal: $(HUGO) $(TAILWIND) ## Seal a vault: pick Drafts or GrowGo, then set its PIN (scripts/vault/seal.sh)
+	@HUGO="$(HUGO)" TAILWIND="$(TAILWIND)" GROWGO_SOURCE="$(VAULT_IN)" bash scripts/vault/seal.sh
 
 clean: ## Remove build artifacts (public/, resources/, generated CSS, proxy binary)
 	@rm -rf public resources $(CSS_OUT) $(AI_PROXY_BIN)

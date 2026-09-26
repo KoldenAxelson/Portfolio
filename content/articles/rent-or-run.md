@@ -21,7 +21,7 @@ An API is a meter. Anthropic charges [$2 per million input tokens and $10 per mi
 
 {{< term "self-hosting" >}}Self-hosting{{< /term >}} is a lease. Lambda rents H100s from [$4.19 an hour each in a two-GPU machine](https://lambda.ai/pricing), and a 70-billion-weight model at 16 bits needs two of them just to hold its 140 GB of {{< term "weights" >}}weights{{< /term >}}. Leave them on all month and that's about $6,100, whether they answer ten questions or ten million. So what decides the cost per token is {{< term "gpu-utilization" >}}GPU utilization{{< /term >}}: a GPU earns its keep only while it's busy.
 
-{{< ml-breakeven >}}
+{{< ml/breakeven >}}
 
 That {{< term "break-even" >}}break-even point{{< /term >}} is sobering. Hosted open-model prices are so low that two rented GPUs have to stay busy around the clock to compete. Big, steady workloads can get there, especially with heavy {{< term "batching" >}}batching{{< /term >}} and {{< term "quantization" >}}quantization{{< /term >}}. Many teams can't, and they'd be paying for idle GPUs overnight.
 
@@ -61,4 +61,4 @@ Many teams end up with both: an API for the hard questions and a small self-host
 
 Prices first (all as of September 2026), then the rest.
 
-{{< ml-references >}}
+{{< ml/references >}}

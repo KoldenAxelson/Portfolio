@@ -3,8 +3,8 @@
 
   The protected content never appears in the built HTML. It lives as
   AES-256-GCM ciphertext in static/vault/<name>.json, sealed at authoring time
-  by `make seal` (scripts/vault-seal.go) and opened in the browser by
-  ts/vault.ts (WebCrypto: PBKDF2-SHA256 → AES-GCM). Crawlers, view-source, and
+  by `make seal` (scripts/vault/vault-seal.go) and opened in the browser by
+  scripts/site/widgets/vault.ts (WebCrypto: PBKDF2-SHA256 → AES-GCM). Crawlers, view-source, and
   the llms/feed outputs see only this keypad.
 
   Honesty note: a 4-digit code is 10,000 guesses — this is a door lock, not a
@@ -25,7 +25,7 @@
     hint (optional)  — one quiet line under the keypad label.
 
   The sealed JSON carries the code length and render mode, so the shortcode
-  needs neither: ts/vault.ts resizes the dots row and auto-submits when enough
+  needs neither: scripts/site/widgets/vault.ts resizes the dots row and auto-submits when enough
   digits are in. `render: document` (a full standalone page, e.g. the GrowGo
   pitch) replaces the whole document on unlock; `render: fragment` reveals
   into [data-vault-outlet] below the gate.
@@ -35,6 +35,6 @@
   {{- errorf "vault shortcode: %s needs name=<vault> naming a sealed file in static/vault/." .Position -}}
 {{- end -}}
 {{- if not (fileExists (printf "static/vault/%s.json" $name)) -}}
-  {{- errorf "vault shortcode: %s names %q, but static/vault/%s.json does not exist. Seal it first: make seal (add a target in scripts/seal.sh for a new vault)" .Position $name $name -}}
+  {{- errorf "vault shortcode: %s names %q, but static/vault/%s.json does not exist. Seal it first: make seal (add a target in scripts/vault/seal.sh for a new vault)" .Position $name $name -}}
 {{- end -}}
-{{- partial "vault-gate.html" (dict "name" $name "hint" (.Get "hint" | default "")) -}}
+{{- partial "vault/gate.html" (dict "name" $name "hint" (.Get "hint" | default "")) -}}

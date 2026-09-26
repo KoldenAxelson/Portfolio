@@ -1,4 +1,4 @@
-# Document and questions for the {{< ml-chunks >}} demo. `needs` lists the
+# Document and questions for the {{< ml/chunks >}} demo. `needs` lists the
 # sentence indexes (from 0) a complete answer requires. Retrieval is a simple
 # keyword score, a stand-in for a real search index.
 sentences:

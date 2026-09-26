@@ -7,7 +7,7 @@
 // Substring matching over one prepared `data-search` string per row — name, summary,
 // benefits, prerequisite — so the filter never has to know how a row is marked up.
 // The full text of a feat is not in the DOM at all; it opens in a glossary window
-// from a synthesised set (partials/dnd-popovers.html), which is why the search index
+// from a synthesised set (partials/dnd/popovers.html), which is why the search index
 // has to be built server-side rather than read off the page.
 
 function queryAll<T extends Element>(root: ParentNode, selector: string): T[] {

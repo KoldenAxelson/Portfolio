@@ -8,7 +8,7 @@
                      web-dev-sites) and wrong for anything long-form.
 
        prose: true   Tailwind Typography, already remapped to the site's --c-*
-                     tokens in assets/css/base.css and used the same way by
+                     tokens in assets/css/site/base.css and used the same way by
                      layouts/articles/single.html. Gives headings, tables, code
                      blocks and lists their weight for free.
 
@@ -17,7 +17,7 @@
      `not-prose` on their root, or Typography restyles their lists and tables —
      the puzzle-solver shortcode does. */}}
 {{ define "banner" }}
-{{ partial "page-banner.html" (dict
+{{ partial "site/page-banner.html" (dict
   "title" .Title
   "subtitle" (.Params.lead | default "")) }}
 {{ end }}
@@ -27,12 +27,12 @@
        `.HasShortcode` is exact and evaluated per build, so there is no flag to go stale
        and no dependence on which shortcodes Hugo chose to re-render. The previous shape
        — every shortcode calling the partial behind a `.Scratch` guard — silently shipped
-       no CSS and no JS after any dev-server rebuild. See partials/skyrim-assets.html. */ -}}
+       no CSS and no JS after any dev-server rebuild. See partials/skyrim/assets.html. */ -}}
 {{- $skyrim := false -}}
-{{- range slice "potions" "potion-builder" "resto-loop" "enchant-max" "skyrim-selfcheck" "john-skyrim" -}}
+{{- range slice "skyrim/potions" "skyrim/potion-builder" "skyrim/resto-loop" "skyrim/enchant-max" "skyrim/selfcheck" "skyrim/john" -}}
   {{- if $.HasShortcode . }}{{ $skyrim = true }}{{ end -}}
 {{- end -}}
-{{- if $skyrim }}{{ partial "skyrim-assets.html" . }}{{ end }}
+{{- if $skyrim }}{{ partial "skyrim/assets.html" . }}{{ end }}
 
 {{- /* Dagean campaign widgets — same lazy, layout-emitted pattern as Skyrim above,
        and for the same reason. The stylesheet ships whenever any campaign
@@ -41,27 +41,27 @@
        shortcode has to be added to the second list or it ships inert. */ -}}
 {{- $dndStyle := false -}}
 {{- $dndScript := false -}}
-{{- range slice "character-builder" "maneuver-picker" "fighter-table" "fighting-styles" "feat-cards" "house-rules" -}}
+{{- range slice "dnd/character-builder" "dnd/maneuver-picker" "dnd/fighter-table" "dnd/fighting-styles" "dnd/feat-cards" "dnd/house-rules" -}}
   {{- if $.HasShortcode . }}{{ $dndStyle = true }}{{ end -}}
 {{- end -}}
-{{- range slice "character-builder" "maneuver-picker" "feat-cards" "fighting-styles" -}}
+{{- range slice "dnd/character-builder" "dnd/maneuver-picker" "dnd/feat-cards" "dnd/fighting-styles" -}}
   {{- if $.HasShortcode . }}{{ $dndScript = true }}{{ end -}}
 {{- end -}}
 {{- if $dndStyle }}
-  {{- if $dndScript }}{{ partial "dnd-assets.html" . }}
-  {{- else }}{{ partial "dnd-assets.html" (dict "page" . "styleOnly" true) }}{{ end }}
+  {{- if $dndScript }}{{ partial "dnd/assets.html" . }}
+  {{- else }}{{ partial "dnd/assets.html" (dict "page" . "styleOnly" true) }}{{ end }}
 {{- end }}
 
 {{- /* Glossary windows, for a page that declares `glossary:` in front matter.
        Emitted here rather than by shortcodes/term.html — see the partial. */ -}}
-{{ partial "definitions-assets.html" . }}
+{{ partial "definitions/assets.html" . }}
 {{- /* And the two sets synthesised out of the campaign's own data files, so a class
        feature or a feat opens in the same window a hand-written term does. */ -}}
-{{ partial "dnd-popovers.html" . }}
+{{ partial "dnd/popovers.html" . }}
 
 {{- /* `prose-measure` caps the running text at a readable measure when the page has
        asked for a wide column. Without it the prose inherits the grid's width and sets
-       to ~105 characters. See assets/css/base.css. */ -}}
+       to ~105 characters. See assets/css/site/base.css. */ -}}
 {{- if .Params.prose }}
 <article class="prose prose-lg max-w-none{{ if eq .Params.container "wide" }} prose-measure{{ end }}">
   {{ .Content }}
@@ -74,10 +74,10 @@
 
 {{/* Floating "jump to section" FAB, for long single pages that declare
      `sections:` in front matter. Renders nothing on every other misc page. */}}
-{{ partial "section-nav.html" . }}
+{{ partial "components/section-nav.html" . }}
 
 {{/* And the Dagea navigation FAB, for the one misc page that draws the globe. It
      renders nothing anywhere else, and no misc page has both — the globe declares
      no `sections:`, so the two never fight for the same corner. */}}
-{{ partial "dagea-nav.html" . }}
+{{ partial "dagea/nav.html" . }}
 {{ end }}

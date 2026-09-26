@@ -1,6 +1,6 @@
 # Skyrim potion recipes — the whole potions section of /misc/skyrim/ lives here.
 #
-# One flat list, rendered by a single {{< potions >}} call in
+# One flat list, rendered by a single {{< skyrim/potions >}} call in
 # content/misc/skyrim.md. Cards appear in the order written below, so reorder by
 # moving entries.
 #

@@ -9,7 +9,7 @@
 #
 # The body is two widgets and nothing else, deliberately. Everything this page
 # has to say, it says by being looked at; the caveats that used to sit here as
-# prose live in the comments at the top of data/genes.yaml, where they belong to
+# prose live in the comments at the top of data/genes/ancestry.yaml, where they belong to
 # whoever edits the numbers rather than to whoever reads them.
 # ─────────────────────────────────────────────────────────────────────────────
 title: "Genes"
@@ -21,6 +21,6 @@ icon: "globe"
 prose: true
 ---
 
-{{< ancestry-map >}}
+{{< genes/ancestry-map >}}
 
-{{< ancestry >}}
+{{< genes/ancestry >}}

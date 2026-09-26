@@ -25,7 +25,7 @@
        template problem.
 
        The page says which glossary it uses instead, once, in front matter:
-       `glossary: "dnd"`. That is the same key partials/definitions-assets.html
+       `glossary: "dnd"`. That is the same key partials/definitions/assets.html
        reads to ship the data, so a page cannot use a set it did not load. A list
        takes the first entry; a page with two sets and terms from both would need
        a real parameter, and no page has that yet. */ -}}
@@ -43,7 +43,7 @@
   {{- .Page.Scratch.Set $seen true -}}
 {{- end -}}
 {{- if not (.Page.Scratch.Get "definitionsAssets") -}}
-  {{- $css := resources.Get "css/definitions.css" | minify | fingerprint -}}
+  {{- $css := resources.Get "css/site/definitions.css" | minify | fingerprint -}}
   <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" />
   {{- .Page.Scratch.Set "definitionsAssets" true -}}
 {{- end -}}

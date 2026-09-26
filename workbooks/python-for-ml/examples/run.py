@@ -11,7 +11,7 @@ typed from memory, and a version bump is one command:
 
 Two kinds of file, in examples/chNN/:
 
-  name.py          an example, shown with {{< py-example "chNN/name" >}}. Run a
+  name.py          an example, shown with {{< python-for-ml/example "chNN/name" >}}. Run a
                    statement at a time, like the Python prompt: an expression's
                    value is printed the way the REPL would, and so is anything
                    the statement prints. The page shows the code in chunks, each
@@ -29,7 +29,7 @@ Two kinds of file, in examples/chNN/:
                    memory address, and none tells the reader more than the
                    figure does.
 
-  name.stepper.py  a code stepper, shown with {{< code-stepper "chNN/name" >}}.
+  name.stepper.py  a code stepper, shown with {{< python-for-ml/code-stepper "chNN/name" >}}.
                    Built with the Stepper helper (stepper.py); see its docstring.
 
 Each file runs in its own process, from its own folder, so examples can't leak

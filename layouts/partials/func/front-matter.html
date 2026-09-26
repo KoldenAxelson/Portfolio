@@ -46,10 +46,10 @@
 {{- /* func/page-vault.html: seal the whole page into static/vault/<name>.json. */ -}}
 {{- $known = $known | append "vault" -}}
 
-{{- /* partials/page-banner.html, via every layout that has a banner */ -}}
+{{- /* partials/site/page-banner.html, via every layout that has a banner */ -}}
 {{- $known = $known | append "lead" -}}
 
-{{- /* partials/topnav.html and partials/section-nav.html — the toolbar and the
+{{- /* partials/site/topnav.html and partials/components/section-nav.html — the toolbar and the
        jump-to-section menu. `sections` entries are shape-checked below. */ -}}
 {{- $known = $known | append "sections" "sectionslabel" "tools" "toolsicon" "desktopfab" "mobiletools" -}}
 
@@ -61,11 +61,11 @@
        for the red corner mark on that page's card. */ -}}
 {{- $known = $known | append "blurb" "icon" "prose" "hidden" "youtube" -}}
 
-{{- /* partials/chapter-select.html and partials/topnav.html — a section whose
+{{- /* partials/chapters/chapter-select.html and partials/site/topnav.html — a section whose
        chapters get the jump-to-chapter menu. Set by the section's cascade. */ -}}
 {{- $known = $known | append "chapters" -}}
 
-{{- /* partials/definitions-assets.html — which data/glossary/<set>.yaml a page
+{{- /* partials/definitions/assets.html — which data/glossary/<set>.yaml a page
        ships, and (via shortcodes/term.html) which set a bare {{< term >}} call
        resolves against. A string or a list of set names. */ -}}
 {{- $known = $known | append "glossary" -}}
@@ -84,7 +84,7 @@
 {{- $known = $known | append "thoughts" -}}        {{/* index.html         */}}
 {{- $known = $known | append "updated" -}}         {{/* the "Last updated" line, where a page still has one */}}
 
-{{- /* projects: list.html, single.html, partials/project-card.html,
+{{- /* projects: list.html, single.html, partials/components/project-card.html,
        partials/schema/project.html, and the three bespoke project pages */ -}}
 {{- $known = $known | append "tier" "year" "role" "status" "featured" "types" "links" "boost" "agarworkerbase" -}}
 

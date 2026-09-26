@@ -24,17 +24,17 @@ The trade is simple. Half the bits, half the memory. And memory is the hard limi
 
 Pick a model size and drag it down the bit widths. GPT-3 is the one on the right.
 
-{{< ml-bits >}}
+{{< ml/bits >}}
 
 Look at the 70B model at 4 bits: 35 GB, more than a typical 16–32 GB laptop holds, though a high-end 64 GB one can take it. That gap is where a lot of the action has been. And all that memory lands on the bill, too. Here's the cost toy from the last post. Its switch bundles quantization with {{< term "batching" >}}batching{{< /term >}}, so read it as the direction of the saving, not its exact size.
 
-{{< ml-cost >}}
+{{< ml/cost >}}
 
 ## The whole story, one dot at a time
 
 Here's the map. Each dot is a milestone: tap one for what changed, how many bits it's about, and a link to the original paper or announcement. The sections after it tell the story in order.
 
-{{< ml-timeline >}}
+{{< ml/timeline >}}
 
 ## Before chatbots: squeezing models onto phones
 
@@ -110,7 +110,7 @@ It got there one fewer mark on the ruler at a time. First, phones taught us that
 
 The original papers and announcements behind every milestone, in the order the story reaches them.
 
-{{< ml-references >}}
+{{< ml/references >}}
 
 ## Changelog
 

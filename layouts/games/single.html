@@ -1,10 +1,10 @@
 {{- /*
   Standalone game document for content/games/<game>/. Deliberately NOT built
   on baseof.html: no nav, no htmx, no Tailwind, no site bundle — a full page of
-  its own that the project page loads in a lazy iframe (partials/game-embed.html)
+  its own that the project page loads in a lazy iframe (partials/components/game-embed.html)
   and that also works opened directly at /games/<game>/.
 
-  Why a separate document (see docs/microgames.md): the iframe isolates the game
+  Why a separate document (see docs/games/microgames.md): the iframe isolates the game
   from hx-boost body swaps (fresh document per load, no leaked state, no
   double-initialised loops) and from Tailwind's preflight, and none of Phaser's
   ~300 KB is fetched by the host page until the visitor opts in.

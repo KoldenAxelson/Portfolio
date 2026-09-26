@@ -1,5 +1,5 @@
 // Entry point for the Skyrim page bundle, shipped only on pages that use one of
-// the shortcodes — see partials/skyrim-assets.html.
+// the shortcodes — see partials/skyrim/assets.html.
 //
 // Each widget is started in isolation. They share nothing, so a malformed
 // payload in one should not take the others down with it: before this, a single

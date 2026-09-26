@@ -1,24 +1,24 @@
 // Entry point. Each init() is idempotent so it can re-run after every hx-boost
 // body swap (see htmx:afterSettle below).
-import { initNav } from './nav';
-import { initScrollTop } from './scrolltop';
-import { initSidebar } from './sidebar';
-import { initConstellation } from './constellation';
-import { initProjectFilter } from './project-filter';
-import { initMiscFilter } from './misc-filter';
-import { initGameModal } from './impossible-modal';
-import { initPerfMeters } from './perf-meters';
-import { initAiWidget } from './ai-widget';
-import { initAuxButton } from './auxiliary-button';
-import { initDefinitions } from './definitions';
-import { initSkyrimNotes } from './skyrim-notes';
+import { initNav } from './nav/nav';
+import { initScrollTop } from './nav/scrolltop';
+import { initSidebar } from './nav/sidebar';
+import { initConstellation } from './widgets/constellation';
+import { initProjectFilter } from './filters/project-filter';
+import { initMiscFilter } from './filters/misc-filter';
+import { initGameModal } from './games/impossible-modal';
+import { initPerfMeters } from './widgets/perf-meters';
+import { initAiWidget } from './widgets/ai-widget';
+import { initAuxButton } from './nav/auxiliary-button';
+import { initDefinitions } from './definitions/definitions';
+import { initSkyrimNotes } from './widgets/skyrim-notes';
 import { initQuotes } from './quotes/index';
-import { initAncestryGlobe } from './ancestry-globe';
-import { initDageaGlobe } from './dagea-globe';
-import { initPlateMap } from './plate-map';
-import { initCarousels } from './carousel';
-import { initVault } from './vault';
-import { initGameEmbed } from './game-embed';
+import { initAncestryGlobe } from './globe/ancestry-globe';
+import { initDageaGlobe } from './globe/dagea-globe';
+import { initPlateMap } from './widgets/plate-map';
+import { initCarousels } from './widgets/carousel';
+import { initVault } from './widgets/vault';
+import { initGameEmbed } from './games/game-embed';
 
 declare global {
   interface Window {

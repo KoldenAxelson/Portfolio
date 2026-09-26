@@ -1,5 +1,5 @@
 // Fades article blocks in as they scroll into view. The `mli-anim` class that
-// hides them is set inline by partials/ml-demos-assets.html before first paint.
+// hides them is set inline by partials/ml/assets.html before first paint.
 
 const BLOCKS = '.prose > *:not(header)';
 

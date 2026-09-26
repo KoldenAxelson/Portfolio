@@ -1,13 +1,13 @@
 {{ define "banner" }}
 {{- $sub := .Params.lead | default "" -}}
 {{- if .Params.wip }}{{ $sub = printf "%s · Work in progress." $sub | strings.TrimSpace }}{{ end -}}
-{{ partial "page-banner.html" (dict "title" "Impossible List" "subtitle" $sub) }}
+{{ partial "site/page-banner.html" (dict "title" "Impossible List" "subtitle" $sub) }}
 {{ end }}
 
 {{ define "main" }}
 {{- $consoleNames := dict "N64" "Nintendo 64" "GCN" "Nintendo GameCube" "GBC" "Game Boy Color" "GBA" "Game Boy Advance" "XBOX" "Xbox 360" "XSX" "Xbox Series X|S" "PC" "PC" -}}
 {{- with .Params.updated }}
-<p class="mb-10 font-mono text-xs text-muted">Last updated {{ partial "formatted-date.html" (dict "date" .) }}.</p>
+<p class="mb-10 font-mono text-xs text-muted">Last updated {{ partial "components/formatted-date.html" (dict "date" .) }}.</p>
 {{- end }}
 
 <div class="space-y-8">
@@ -88,7 +88,7 @@
 
 {{- if or .Params.games .Params.books }}
 {{/* Drill-down modal for games + books. Layout/motion live in base.css
-     ([data-game-modal] block); ts/impossible-modal.ts removes [hidden] and
+     ([data-game-modal] block); scripts/site/games/impossible-modal.ts removes [hidden] and
      toggles [data-open]. Mobile drops from the top, desktop slides in from the
      right. Media is a carousel; rating→stars, status→note, series→progress
      checklist. Inert and hidden without JS. */}}

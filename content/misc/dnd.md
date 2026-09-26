@@ -11,10 +11,10 @@
 #                  carries `not-prose` so it keeps its hands off them.
 # glossary dnd   : ships data/glossary/dnd.yaml + definitions.css, from the
 #                  LAYOUT rather than from shortcodes/term.html — see
-#                  partials/definitions-assets.html for why that matters.
+#                  partials/definitions/assets.html for why that matters.
 # sections       : drives BOTH the desktop jump-to-section FAB
-#                  (partials/section-nav.html) and the mobile navbar list
-#                  (partials/topnav.html). Each id must match a heading id
+#                  (partials/components/section-nav.html) and the mobile navbar list
+#                  (partials/site/topnav.html). Each id must match a heading id
 #                  below — the `{#create}` suffixes pin them.
 # desktopFab     : suppress the centered navbar toolbar; the FAB covers desktop.
 #
@@ -60,35 +60,35 @@ Human, and {{< term "subraces" >}}subraces are pending{{< /term >}}.
 Fighter, {{< term "warlord" >}}Warlord{{< /term >}}. Magic belongs to
 monsters; every other kind of person is a story told to children.
 
-{{< character-builder >}}
+{{< dnd/character-builder >}}
 
 ## Fighter {#fighter}
 
 Warlord is the only archetype, so the table names its features where the book would
 have said "Martial Archetype".
 
-{{< fighter-table >}}
+{{< dnd/fighter-table >}}
 
 ### Fighting Style {#fighting-style}
 
-{{< fighting-styles >}}
+{{< dnd/fighting-styles >}}
 
 ## Maneuvers {#maneuvers}
 
 One per attack, and the {{< term "family" >}}family{{< /term >}} tells you when it
 happens. Tap to build a list; it keeps itself and counts nothing against you.
 
-{{< maneuver-picker >}}
+{{< dnd/maneuver-picker >}}
 
 ## Feats {#feats}
 
 Three at 1st level, from an {{< term "allow-list" >}}allow-list{{< /term >}}.
 {{< term "mental-doubling" >}}Mental abilities count double{{< /term >}}.
 
-{{< feat-cards >}}
+{{< dnd/feat-cards >}}
 
 ## Rules {#rules}
 
 Everything not on this list is 5e until it gets in the way.
 
-{{< house-rules >}}
+{{< dnd/house-rules >}}

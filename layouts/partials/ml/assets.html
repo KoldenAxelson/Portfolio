@@ -1,0 +1,31 @@
+{{- /*
+  ml-demos-assets — ship the ML demo styles and scripts, once, from the LAYOUT,
+  on any page that uses an ml/* shortcode.
+
+    {{ partial "ml/assets.html" . }}      call before {{ .Content }}
+
+  From the layout (not the shortcodes) for the same reason as
+  definitions-assets.html: a .Scratch guard inside a shortcode goes stale on the
+  dev server.
+
+  The inline script sets `mli-anim` before first paint so article blocks start
+  hidden and fade in (scripts/pages/ml/reveal.js). If the bundle never runs, the
+  failsafe drops the class so the page can't be left invisible.
+*/ -}}
+{{- $demos := slice "ml/digits" "ml/mlops-loop" "ml/garbage-in" "ml/drift" "ml/load" "ml/cost" "ml/tokens" "ml/rag" "ml/agent" "ml/bits" "ml/timeline" "ml/references" "ml/decide" "ml/calibration" "ml/inject" "ml/roofline" "ml/threats" "ml/govflow" "ml/route" "ml/parallel" "ml/checkpoint" "ml/judge" "ml/reward" "ml/temperature" "ml/decode" "ml/breakeven" "ml/descent" "ml/overfit" "ml/chunks" "ml/search" -}}
+{{- $used := false -}}
+{{- range $demos }}{{ if $.HasShortcode . }}{{ $used = true }}{{ end }}{{ end -}}
+{{- if $used -}}
+  {{- $css := resources.Get "css/pages/ml/demos.css" | minify | fingerprint -}}
+  <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" />
+  <script>
+    (function () {
+      var root = document.documentElement;
+      if (!window.matchMedia || !matchMedia("(prefers-reduced-motion: no-preference)").matches) return;
+      root.classList.add("mli-anim");
+      addEventListener("load", function () { if (!("mliReady" in root.dataset)) root.classList.remove("mli-anim"); });
+    })();
+  </script>
+  {{- $js := resources.Get "scripts/pages/ml/main.js" | js.Build (dict "minify" true) | fingerprint -}}
+  <script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
+{{- end -}}

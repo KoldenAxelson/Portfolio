@@ -1,0 +1,36 @@
+{{- /*
+  cv-actions — floating "document actions" FAB for the CV page, DESKTOP ONLY
+  (lg+). Built on the shared auxiliary-button shell (.aux-fab, pills layout — see
+  assets/css/site/auxiliary-button.css and scripts/site/nav/auxiliary-button.ts): a download toggle
+  opens Print / DOCX / PDF pills. DOCX / PDF come from site.yaml and only render
+  when set. On mobile these same actions live in the navbar download button (the
+  shared tools panel — see topnav.html). Hidden in print.
+*/ -}}
+{{- if eq .Layout "cv" }}
+{{- $resume := site.Data.site.author.resume -}}
+<details data-aux-fab class="fixed bottom-6 right-6 z-30 hidden lg:block print:!hidden">
+  <summary class="aux-fab__btn relative flex h-12 w-12 cursor-pointer list-none items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50" aria-label="Document actions" title="Save or print">
+    <span class="sr-only">Document actions</span>
+    {{ partial "func/svg-icon.html" (dict "name" "arrow-down-tray" "class" "aux-fab__icon aux-fab__icon--main h-6 w-6" "width" "1.75") }}
+    <svg class="aux-fab__icon aux-fab__icon--close h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18 18 6M6 6l12 12" /></svg>
+  </summary>
+  <div class="aux-fab__menu aux-fab__menu--pills">
+    <button type="button" onclick="window.print()" aria-label="Print this page" class="aux-fab__pill group/act glass-btn flex h-12 items-center rounded-full border-0 !text-fg transition-colors duration-200 hover:!text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
+      <span class="aux-fab__label">Print</span>
+      <span class="flex h-12 w-12 shrink-0 items-center justify-center">{{ partial "func/svg-icon.html" (dict "name" "printer" "class" "h-6 w-6" "width" "1.75") }}</span>
+    </button>
+    {{- with $resume.docx }}
+    <a href="{{ partial "func/url.html" . }}" download hx-boost="false" aria-label="Download DOCX résumé" class="aux-fab__pill group/act glass-btn flex h-12 items-center rounded-full !text-fg no-underline transition-colors duration-200 hover:!text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
+      <span class="aux-fab__label">DOCX</span>
+      <span class="flex h-12 w-12 shrink-0 items-center justify-center">{{ partial "func/svg-icon.html" (dict "name" "docx" "class" "h-6 w-6") }}</span>
+    </a>
+    {{- end }}
+    {{- with $resume.pdf }}
+    <a href="{{ partial "func/url.html" . }}" download hx-boost="false" aria-label="Download PDF résumé" class="aux-fab__pill group/act glass-btn flex h-12 items-center rounded-full !text-fg no-underline transition-colors duration-200 hover:!text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
+      <span class="aux-fab__label">PDF</span>
+      <span class="flex h-12 w-12 shrink-0 items-center justify-center">{{ partial "func/svg-icon.html" (dict "name" "pdf" "class" "h-6 w-6") }}</span>
+    </a>
+    {{- end }}
+  </div>
+</details>
+{{- end }}

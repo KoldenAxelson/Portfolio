@@ -11,8 +11,8 @@ status: 'in progress'
 featured: false
 layout: 'digital-pet-place'
 container: 'wide'
-# Card thumbnail + og:image. Source in assets/covers/ (build-time webp for the
-# card and the click-to-play poster); the static/covers/ copy backs the stable
+# Card thumbnail + og:image. Source in assets/img/covers/ (build-time webp for the
+# card and the click-to-play poster); the static/img/covers/ copy backs the stable
 # metadata url — see partials/func/cover.html for why both exist.
 cover: '/covers/digital-pet-place.webp'
 thoughts:

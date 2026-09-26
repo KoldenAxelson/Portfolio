@@ -36,7 +36,7 @@ A hijacked chatbot mostly just says something wrong. A hijacked {{< term "agent"
 
 Willison has a name for the dangerous combination, the {{< term "lethal-trifecta" >}}lethal trifecta{{< /term >}}: an agent that [can read your private data, sees untrusted content, and can send data out](https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/). Give it all three and one poisoned document is enough for {{< term "exfiltration" >}}exfiltration{{< /term >}}. Try it on an email assistant:
 
-{{< ml-inject >}}
+{{< ml/inject >}}
 
 ## Defences that don't hold
 
@@ -61,4 +61,4 @@ Because there's no bug to patch. SQL injection was a flaw in how programs built 
 
 The original write-ups first, then the defences.
 
-{{< ml-references >}}
+{{< ml/references >}}

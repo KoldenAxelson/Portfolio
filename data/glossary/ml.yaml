@@ -10,12 +10,12 @@
 #   definition     one plain sentence
 #   notes          optional paragraphs: why it matters, a real example
 #   aliases        other names the term really goes by ("8-bit" for INT8) or word
-#                  forms ("quantized"). Read only by scripts/check-terms.py, which
+#                  forms ("quantized"). Read only by scripts/writing/check-terms.py, which
 #                  flags linked text that is none of these. Never a paraphrase.
 #   [[key|text]]   a cross-reference (always the two-part form)
 #   **bold**       emphasis
 #
-# Figures (assets/scripts/site/def-figures.ts). The ML kind so far:
+# Figures (assets/scripts/site/definitions/def-figures.ts). The ML kind so far:
 #
 #   kind: levels      a ruler with one mark per value the format can hold; a
 #                     true value wanders and gets stored at the nearest mark.

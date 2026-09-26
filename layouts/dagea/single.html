@@ -21,7 +21,7 @@
      already carries that information. */}}
 
 {{ define "banner" }}
-{{ partial "page-banner.html" (dict "title" .Title "subtitle" (.Params.summary | default "")) }}
+{{ partial "site/page-banner.html" (dict "title" .Title "subtitle" (.Params.summary | default "")) }}
 {{ end }}
 
 {{ define "main" }}
@@ -75,6 +75,6 @@
 </footer>
 
 {{/* Desktop: the Dagea navigation FAB. Mobile gets the same rows from the navbar
-     tools button — see partials/topnav.html. */}}
-{{ partial "dagea-nav.html" . }}
+     tools button — see partials/site/topnav.html. */}}
+{{ partial "dagea/nav.html" . }}
 {{ end }}

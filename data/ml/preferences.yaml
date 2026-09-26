@@ -1,4 +1,4 @@
-# Pairs for the {{< ml-reward >}} demo. Each answer is hand-labeled with four
+# Pairs for the {{< ml/reward >}} demo. Each answer is hand-labeled with four
 # traits (1 = has it). The toy reward model learns one weight per trait from
 # the reader's picks. Invented examples; no real model wrote these.
 traits:

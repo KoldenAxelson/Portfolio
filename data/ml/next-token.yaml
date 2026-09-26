@@ -1,4 +1,4 @@
-# Next-word candidates for the {{< ml-temperature >}} demo. Illustrative scores
+# Next-word candidates for the {{< ml/temperature >}} demo. Illustrative scores
 # (logits), not from a real model; the softmax-with-temperature math is real.
 prompt: "The best thing about weekends is"
 candidates:

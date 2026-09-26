@@ -1,12 +1,12 @@
 {{ define "banner" }}
-{{ partial "page-banner.html" (dict
+{{ partial "site/page-banner.html" (dict
   "title" "How this site is built"
   "subtitle" (.Params.lead | default "")) }}
 {{ end }}
 
 {{ define "main" }}
 {{- with .Params.lighthouse }}
-{{ partial "perf-meters.html" (dict "lighthouse" . "heading" "Performance") }}
+{{ partial "components/perf-meters.html" (dict "lighthouse" . "heading" "Performance") }}
 {{- end }}
 
 {{- with .Params.decisions }}

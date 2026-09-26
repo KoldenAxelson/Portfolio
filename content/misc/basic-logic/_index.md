@@ -12,7 +12,7 @@ icon: "academic-cap"
 # their styling (headers, etc.) is isolated from the rest of the site. Remove
 # this block to fall back to the shared layouts/misc/* templates.
 # `chapters: true` gives every chapter the jump-to-chapter menu (see
-# partials/chapter-select.html and topnav.html).
+# partials/chapters/chapter-select.html and topnav.html).
 cascade:
   type: "basic-logic"
   chapters: true

@@ -2,7 +2,7 @@
 # Dagea — what to say about each place on the map.
 #
 # GEOMETRY IS NOT IN HERE. map.json next door is generated from the drawing by
-# scripts/build-dagea-globe.py and overwritten every time that runs; this file is
+# scripts/maps/build-dagea-globe.py and overwritten every time that runs; this file is
 # hand-written and never touched by it. Shapes come from the picture, words come
 # from a person.
 #

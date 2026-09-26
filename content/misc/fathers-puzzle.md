@@ -21,7 +21,7 @@ every column contains all six numbers and all six colors**.
 Try it before you read further. Click a block, then click a square. The two
 buttons solve it for you, quickly or slowly.
 
-{{< puzzle-solver >}}
+{{< puzzle/solver >}}
 
 Now look at the box below the board. The box is more important than the board.
 Orange has the numbers 1, 1, 3, 3, 6 and 6. Orange has no 2, no 4 and no 5.
@@ -44,7 +44,7 @@ Replace "regiment" with "color" and "rank" with "number". That is this puzzle,
 with one difference. Euler's officers include each combination one time only.
 There are no duplicates and no gaps.
 
-{{< puzzle-boxes >}}
+{{< puzzle/boxes >}}
 
 Euler could not solve his version. He decided that nobody could solve it. He
 believed that it is impossible for 6, 10, 14, and every size of the form 4k+2.
@@ -85,7 +85,7 @@ block of each color. The same is true of each column. Each color therefore makes
 a pattern that touches each row one time and each column one time. Lay the
 colors down one at a time and you can see it happen.
 
-{{< puzzle-build >}}
+{{< puzzle/build >}}
 
 ## Part three: how many answers there are
 
@@ -99,7 +99,7 @@ It has rather more than that.
 
 ### Rows and columns move freely
 
-{{< puzzle-swap >}}
+{{< puzzle/swap >}}
 
 This is Tarry's fact, shown directly. Move two whole rows and the board stays
 correct. Move two whole columns and it stays correct. Move two single blocks and
@@ -127,7 +127,7 @@ This box can produce **72** of them. The other 9,336 are correct Latin squares,
 but this box cannot color them. The most regular square of all is one of the
 9,336:
 
-{{< puzzle-grid rows="123456,234561,345612,456123,561234,612345" label="A cyclic Latin square: each row is the row above it, moved one place to the left" >}}
+{{< puzzle/grid rows="123456,234561,345612,456123,561234,612345" label="A cyclic Latin square: each row is the row above it, moved one place to the left" >}}
 
 No answer from this box reduces to it, and renumbering the blocks does not
 change that. A box with 24 kinds of block can reach 72 of the 9,408 patterns.
@@ -139,7 +139,7 @@ Exchange blue with purple, and green with yellow. Then exchange the number 1
 with 3, and 2 with 5. Leave orange, red, 4 and 6 alone. Do all of it at the same
 time, and the box becomes itself again.
 
-{{< puzzle-mirror >}}
+{{< puzzle/mirror >}}
 
 Each answer therefore has a twin. A test of all 204 answers gives the same
 result each time. Each mirror image is a correct board, and no answer is its own
@@ -168,7 +168,7 @@ box gives you no way to judge a move when you make it.
 Fill one row on its own. There are 76 ways to do this. Only **44** of those 76
 rows occur in a complete answer. This row is one of the other 32:
 
-{{< puzzle-blocks blocks="1 orange, 2 blue, 4 green, 3 red, 6 yellow, 5 purple" label="A legal row that is in no answer" >}}
+{{< puzzle/blocks blocks="1 orange, 2 blue, 4 green, 3 red, 6 yellow, 5 purple" label="A legal row that is in no answer" >}}
 
 Nothing is wrong with it. Every block exists. No number repeats and no color
 repeats. But no complete board contains it.

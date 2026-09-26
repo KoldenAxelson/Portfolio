@@ -11,9 +11,9 @@ build:
 
 An {{< term "ndarray" >}}ndarray{{< /term >}} has a {{< term "shape" >}}shape{{< /term >}} and a {{< term "dtype" >}}dtype{{< /term >}}.
 
-{{< py-example "ch00/basics" >}}
+{{< python-for-ml/example "ch00/basics" >}}
 
-{{< code-stepper "ch00/array-tour" >}}
+{{< python-for-ml/code-stepper "ch00/array-tour" >}}
 
 A plain fenced block, highlighted by Hugo:
 

@@ -1,5 +1,5 @@
 {{ define "banner" }}
-{{ partial "page-banner.html" (dict
+{{ partial "site/page-banner.html" (dict
   "title" "Projects"
   "subtitle" (.Params.lead | default "")) }}
 {{ end }}
@@ -15,7 +15,7 @@
      (data/icons.yaml via func/svg-icon.html); "web" reuses the existing globe.
      The "all" bubble always shows; every other bubble renders only if at least
      one project carries that type, so the bar never shows an empty filter. Toggle
-     behavior is wired by ts/project-filter.ts via the data-project-filter /
+     behavior is wired by scripts/site/filters/project-filter.ts via the data-project-filter /
      data-filter-type hooks; cards carry data-project-types. Active state is the
      button's aria-pressed, styled by the group-aria-[pressed=true] variants
      below. Renders fully without JS (all shown). */}}
@@ -55,7 +55,7 @@
   <div class="space-y-4">
     {{- range . }}
     <div data-project-types="{{ delimit .Params.types "," }}">
-      {{ partial "project-card.html" (dict "project" .) }}
+      {{ partial "components/project-card.html" (dict "project" .) }}
     </div>
     {{- end }}
   </div>
@@ -68,7 +68,7 @@
   <div class="space-y-3">
     {{- range . }}
     <div data-project-types="{{ delimit .Params.types "," }}">
-      {{ partial "project-card.html" (dict "project" . "compact" true) }}
+      {{ partial "components/project-card.html" (dict "project" . "compact" true) }}
     </div>
     {{- end }}
   </div>

@@ -1,4 +1,4 @@
-# Strategies for the {{< ml-parallel >}} demo: 8 GPUs, a model of 8 layers.
+# Strategies for the {{< ml/parallel >}} demo: 8 GPUs, a model of 8 layers.
 # The strings below say "8" and "an eighth"; change them with `gpus`.
 # `holds` says which layers each GPU stores: all, a slice of each, or a stage.
 # `sends` is what crosses the wire, `limit` is the catch.

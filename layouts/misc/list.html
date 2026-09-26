@@ -1,5 +1,5 @@
 {{ define "banner" }}
-{{ partial "page-banner.html" (dict
+{{ partial "site/page-banner.html" (dict
   "title" (.Title | default "Misc")
   "subtitle" (.Params.lead | default "")) }}
 {{ end }}
@@ -40,7 +40,7 @@
 {{- end -}}
 
 {{- with $cards }}
-{{- /* Search field. Shipped `hidden` and revealed by ts/misc-filter.ts: an input
+{{- /* Search field. Shipped `hidden` and revealed by scripts/site/filters/misc-filter.ts: an input
        that filters nothing is worse than no input at all, so with JS off the
        reader just gets the full grid. */ -}}
 <div data-misc-search-wrap hidden class="{{ if $.Content }}mt-12 {{ end }}mb-6">

@@ -16,7 +16,7 @@
      to a table that IS the article. */}}
 
 {{ define "banner" }}
-{{ partial "page-banner.html" (dict "title" .Title "subtitle" (.Params.lead | default "")) }}
+{{ partial "site/page-banner.html" (dict "title" .Title "subtitle" (.Params.lead | default "")) }}
 {{ end }}
 
 {{ define "main" }}
@@ -103,6 +103,6 @@
 </div>
 
 {{/* Desktop: jump anywhere else in Dagea, including the globe. Mobile reads the
-     same list from the navbar tools button — see partials/topnav.html. */}}
-{{ partial "dagea-nav.html" . }}
+     same list from the navbar tools button — see partials/site/topnav.html. */}}
+{{ partial "dagea/nav.html" . }}
 {{ end }}

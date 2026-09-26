@@ -11,8 +11,8 @@ status: 'in progress'
 featured: false
 layout: 'spacescape'
 container: 'wide'
-# Card thumbnail + click-to-play poster. Add assets/covers/spacescape.webp and
-# static/covers/spacescape.webp (a 1280x720 screenshot) — see func/cover.html.
+# Card thumbnail + click-to-play poster. Add assets/img/covers/spacescape.webp and
+# static/img/covers/spacescape.webp (a 1280x720 screenshot) — see func/cover.html.
 cover: '/covers/spacescape.webp'
 thoughts:
   - "Flight runs on a fixed 60 Hz simulation step with interpolated rendering, so the ship feels identical at 30 or 240 fps and a recorded input stream replays exactly."

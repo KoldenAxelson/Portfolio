@@ -38,7 +38,7 @@ The classic picture of this is the [roofline model](https://people.eecs.berkeley
 
 The fix is {{< term "batching" >}}batching{{< /term >}}. Read the weights once and use them for many users' requests at the same time. The memory trip costs the same, and the math, which was nearly free, finally gets used:
 
-{{< ml-roofline >}}
+{{< ml/roofline >}}
 
 At one request, the chip is idle almost the whole step. Around a few hundred, math catches up with memory and the step is as full as it gets. This is why serving systems fight so hard to batch, why {{< term "quantization" >}}quantization{{< /term >}} speeds things up (fewer bytes to read), and why the {{< term "kv-cache" >}}KV cache{{< /term >}} matters: it's more memory to read on every step.
 
@@ -68,4 +68,4 @@ That's why so much AI performance work is really data-movement work: batch more 
 
 Spec sheets and papers, in the order the post uses them.
 
-{{< ml-references >}}
+{{< ml/references >}}

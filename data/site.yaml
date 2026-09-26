@@ -88,7 +88,7 @@ ogImage: "/og-default.png"
 # Paths are matched against a page's RelPermalink, base-path aware, trailing slash
 # optional. Adding a path here is the whole job — see
 # partials/func/ai-enabled.html, which both baseof.html (the desktop FAB) and
-# partials/topnav.html (the mobile button) read.
+# partials/site/topnav.html (the mobile button) read.
 #
 # The endpoint itself is `aiChatURL` in hugo.toml. With that unset nothing renders
 # anywhere, whatever this list says.

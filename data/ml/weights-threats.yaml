@@ -1,4 +1,4 @@
-# Attack paths and controls for the {{< ml-threats >}} demo. Illustrative: a
+# Attack paths and controls for the {{< ml/threats >}} demo. Illustrative: a
 # simplified mapping in the spirit of RAND's "Securing AI Model Weights" (2024),
 # not a real threat model. A path closes when any control in `stoppedBy` is on;
 # the logging control never closes a path, it only makes an open one visible.

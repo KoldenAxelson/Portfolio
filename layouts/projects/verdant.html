@@ -93,7 +93,7 @@
   "attack1_down" "attack1_up" "attack1_left" "attack1_right" -}}
 {{- $sprites := slice -}}
 {{- range $names -}}
-  {{- $s := resources.Get (printf "img/verdant/sprites/%s.png" .) | fingerprint -}}
+  {{- $s := resources.Get (printf "verdant/sprites/%s.png" .) | fingerprint -}}
   {{- $sprites = $sprites | append $s.RelPermalink -}}
 {{- end -}}
 

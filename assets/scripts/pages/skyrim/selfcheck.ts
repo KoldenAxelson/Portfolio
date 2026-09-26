@@ -680,7 +680,7 @@ function checkBuilder(catalogue: Catalogue): void {
 
   // A tile draws its art when the file is there and falls back to the "?" disc until it
   // lands. WHICH branch a given ingredient takes depends on what is sitting in
-  // assets/skyrim/ingredients today, so pin both against a catalogue with the images map
+  // assets/img/skyrim/ingredients today, so pin both against a catalogue with the images map
   // swapped rather than against whatever art happens to exist — asserting "salmon roe has
   // no art" was true right up until the art arrived, and then this went red for no reason.
   const bare = { ...catalogue, images: {} };

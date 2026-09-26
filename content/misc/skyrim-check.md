@@ -32,7 +32,7 @@ checking them, so this page can be entirely green over code that does not typech
 other half is `tsc --noEmit` against the repo's `tsconfig.json`, which is editor-only —
 nothing in the build runs it. Do both before pushing.
 
-{{< skyrim-selfcheck >}}
+{{< skyrim/selfcheck >}}
 
-<div hidden>{{< potion-builder >}}</div>
-<div hidden>{{< john-skyrim >}}</div>
+<div hidden>{{< skyrim/potion-builder >}}</div>
+<div hidden>{{< skyrim/john >}}</div>

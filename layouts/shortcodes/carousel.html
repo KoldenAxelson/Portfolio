@@ -10,14 +10,14 @@
       road:
         caption: 'Optional line under the whole carousel.'
         slides:
-          - { src: '/img/visorplate/miata.jpg', alt: '…', caption: '…', position: '50% 60%' }
+          - { src: '/visorplate/miata.jpg', alt: '…', caption: '…', position: '50% 60%' }
 
   `src` is an assets/ path in the func/cover.html convention and goes through
   the same WebP pipeline. `position` is an optional CSS object-position for a
   photo whose subject is off-centre once the 4:3 frame crops it.
 
   EVERY SLIDE CARRIES ITS OWN CAPTION, so with no script the row is still a set
-  of captioned photos you can swipe. ts/carousel.ts adds arrows and dots on top,
+  of captioned photos you can swipe. scripts/site/widgets/carousel.ts adds arrows and dots on top,
   both `hidden` in the markup until it does.
 
   `not-prose`, because Typography would put margins on the figure and restyle

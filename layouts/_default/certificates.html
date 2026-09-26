@@ -1,5 +1,5 @@
 {{ define "banner" }}
-{{ partial "page-banner.html" (dict
+{{ partial "site/page-banner.html" (dict
   "title" "Certifications"
   "subtitle" (.Params.lead | default "")
   "printHidden" true) }}
@@ -16,7 +16,7 @@
   <ul class="divide-y divide-border">
     {{- range . }}
     <li id="{{ .id }}" class="scroll-mt-24 print:break-inside-avoid">
-      {{ partial "cert-row.html" (dict "cert" . "badge" (.badge | default "")) }}
+      {{ partial "components/cert-row.html" (dict "cert" . "badge" (.badge | default "")) }}
     </li>
     {{- end }}
   </ul>
@@ -29,7 +29,7 @@
   <ul class="divide-y divide-border">
     {{- range . }}
     <li id="{{ .id }}" class="scroll-mt-24 print:break-inside-avoid">
-      {{ partial "cert-row.html" (dict "cert" . "badge" (.badge | default "")) }}
+      {{ partial "components/cert-row.html" (dict "cert" . "badge" (.badge | default "")) }}
     </li>
     {{- end }}
   </ul>

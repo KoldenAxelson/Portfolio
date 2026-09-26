@@ -1,4 +1,4 @@
-// types.ts — the vocabulary of the garden (docs/digital-pet-place.md). core/ is
+// types.ts — the vocabulary of the garden (docs/games/digital-pet-place.md). core/ is
 // plain data and pure functions, deliberately free of Phaser, so the rules can
 // be reasoned about without a renderer.
 

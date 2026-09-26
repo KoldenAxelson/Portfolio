@@ -1,0 +1,364 @@
+{{- /*
+  potion-builder — nine screens, one question each.
+
+    {{< skyrim/potion-builder >}}
+
+  1. Potion, poison, either — or one of the three side entrances below.
+  2. The effects you want. Anything that cannot share a bottle greys out as you go.
+  3. The brews, ranked, with the rest behind "show more".
+  9. That rest, eight to a page.
+  8. One brew, with every effect each of its ingredients carries.
+  4. The mortar, live: put up to three things in and the bottle updates. This asks
+     "what does this make", where 1-3 ask "what makes this".
+  5. Every effect, and 6. what carries one.
+  7. Saved recipes.
+
+  The sections are in `data-scr` order 1,2,3,8,9,4,5,6,7 — reading order, not numeric,
+  since 8 and 9 hang off 3.
+
+  Everything is server-rendered — the effect list is real markup, and the
+  ingredient table ships as one JSON blob that assets/scripts/pages/skyrim/builder.ts reads.
+  Nothing here is fetched at runtime.
+
+  The ingredient payload uses single-letter keys — s(lug), n(ame),
+  a(vailability), d(lc), f(our effect ids) — because 183 ingredients × full key
+  names is several KB of repeated text for no benefit. The f-values index the
+  effect-name array that precedes them.
+
+  `not-prose` keeps Tailwind Typography off the controls.
+*/ -}}
+{{- $fx := site.Data.skyrim.effects -}}
+{{- $index := dict -}}
+{{- range $i, $e := $fx }}{{ $index = merge $index (dict $e.name $i) }}{{ end -}}
+{{- /* Two builders on one page must not collide on the skip target's id. */ -}}
+{{- $uid := printf "sky-build-%d" .Ordinal -}}
+
+<div class="sky-build not-prose" data-builder data-screen="1">
+
+  {{- /* ── 1 ────────────────────────────────────────────────────────────── */}}
+  {{- /* No heading: the choices under a "Builder" heading are already the question.
+         Each is an icon and one word — the descriptive second line under each ("Restore,
+         Fortify, Resist, Regenerate, Cure") was a gloss on a word that needs none, and it
+         set the height of all four tiles.
+
+         The grid is auto-fit rather than a fixed 2x2, so a fifth and sixth option drop in
+         without a breakpoint being retuned.
+
+         Every screen is `tabindex="-1"` and carries an aria-label: builder.ts focuses the
+         incoming one on each transition. Hiding the outgoing screen destroys focus —
+         including the button that was just pressed — and the browser drops it to <body>,
+         which on a 22,000px page silently returns a keyboard user to the very top. */}}
+  <section class="sky-scr" data-scr="1" tabindex="-1" aria-label="What do you want to make?">
+    <div class="sky-pick">
+      <button type="button" class="sky-pick__b" data-mode="favorites">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m12 3.2 2.7 5.7 6.1.9-4.4 4.3 1 6.1L12 17.3l-5.4 2.9 1-6.1L3.2 9.8l6.1-.9L12 3.2Z" /></svg>
+        <b>Favorites</b>
+      </button>
+      {{- /* aria-hidden on every glyph: the word under it is the accessible name, and a
+             flask read aloud as "flask" beside the word "Potion" is the same fact twice. */}}
+      <button type="button" class="sky-pick__b" data-kind="good">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9.5 3h5M10.5 3v6.4l-5.1 8.9A1.7 1.7 0 0 0 6.9 21h10.2a1.7 1.7 0 0 0 1.5-2.7l-5.1-8.9V3" /><path d="M7.8 15h8.4" /></svg>
+        <b>Potion</b>
+      </button>
+      <button type="button" class="sky-pick__b" data-kind="bad">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3a7 7 0 0 0-4 12.7V18a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.3A7 7 0 0 0 12 3Z" /><path d="M9.7 10.2h.01M14.3 10.2h.01M10.5 19v2M13.5 19v2" /></svg>
+        <b>Poison</b>
+      </button>
+      <button type="button" class="sky-pick__b" data-kind="any">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="9" cy="12" r="6" /><circle cx="15" cy="12" r="6" /></svg>
+        <b>Mixture</b>
+      </button>
+      <button type="button" class="sky-pick__b" data-mode="ingredient">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3.5 10.5h17a8.5 8.5 0 0 1-8.5 8.5 8.5 8.5 0 0 1-8.5-8.5Z" /><path d="M12 19v2M9 21h6M15.2 8.4 20 3.6" /></svg>
+        <b>Ingredients</b>
+      </button>
+      {{- /* The star went to Favorites, where it means what a star means. This one is an
+             effect radiating out of an ingredient — a shape none of the other five could
+             be confused for at 28px. */}}
+      <button type="button" class="sky-pick__b" data-mode="effects">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="2.4" /><path d="M16.3 7.7a6 6 0 0 1 0 8.6M7.7 16.3a6 6 0 0 1 0-8.6M19.3 4.7a10 10 0 0 1 0 14.6M4.7 19.3a10 10 0 0 1 0-14.6" /></svg>
+        <b>Effects</b>
+      </button>
+    </div>
+  </section>
+
+  {{- /* ── 2 ────────────────────────────────────────────────────────────── */}}
+  <section class="sky-scr" data-scr="2" hidden tabindex="-1" aria-label="Which effects?">
+    <div class="sky-scr__head">
+      {{ partial "skyrim/back.html" dict }}
+      {{- /* Names the tile you pressed, not the question: "Poison" is the one thing this
+             screen cannot show you, because every pill on it looks the same either way. */}}
+      <h3 class="sky-scr__q" data-kind-head></h3>
+      {{- /* The add-ons decide which effects can still be reached at all — turn Dragonborn
+             off and every effect carried only by its ingredients greys out here. The mortar
+             had this control from the start; this screen asks the same question of the same
+             data and had no way to answer it. */}}
+      {{- partial "skyrim/dlc-group.html" dict }}
+    </div>
+    <ul class="sky-fx">
+      {{- range $i, $e := $fx }}
+      <li><button type="button" class="sky-fx__b" data-fx="{{ $i }}" data-kind="{{ $e.kind }}" aria-pressed="false">{{ $e.name }}</button></li>
+      {{- end }}
+    </ul>
+    {{- /* No [data-picked] readout. It restated the effects you had just pressed, next to
+           the pressed pills themselves, and before a pick it carried "Pick one. Anything
+           that cannot share a bottle with it will grey out" — an instruction for a control
+           that greys out in front of you. Each pill announces its own aria-pressed, which
+           is the same reasoning the mortar's tiles are not a live region for. */}}
+    <div class="sky-scr__foot sky-scr__foot--end">
+      <button type="button" class="sky-go" data-brew disabled>Brew</button>
+    </div>
+  </section>
+
+  {{- /* ── 3 ────────────────────────────────────────────────────────────── */}}
+  <section class="sky-scr" data-scr="3" hidden tabindex="-1" aria-label="The brews">
+    <div class="sky-scr__head">
+      {{ partial "skyrim/back.html" dict }}
+      <h3 class="sky-scr__q" data-result-head></h3>
+      {{- /* Here it re-runs the search. A brew built out of an add-on you do not own is not
+             a recipe, it is a shopping list, and finding that out one screen back — after
+             reading the card — is the wrong place to find it out. */}}
+      {{- partial "skyrim/dlc-group.html" dict }}
+    </div>
+    {{- /* NOT a live region. builder.ts focuses this screen when Brew is pressed, so a
+           screen reader already lands on the results and reads them at its own pace —
+           the live region was a second, redundant delivery of the same text. With
+           `aria-atomic` it was worse than redundant: pressing "show more" restated all
+           24 cards as one uninterruptible 714-word announcement. */ -}}
+    <div data-results></div>
+  </section>
+
+  {{- /* ── 8 ────────────────────────────────────────────────────────────── */}}
+  {{- /* One brew, on its own. The card on screen 3 is a summary in a 15rem column;
+         everything worth knowing about a mixture — what each of its ingredients
+         also carries, and which of those the other two happened to share — needs
+         the whole width to be readable, so it gets a screen instead of expanding
+         inside the grid it was sitting in. Back goes to the results it came from. */}}
+  <section class="sky-scr" data-scr="8" hidden tabindex="-1" aria-label="This brew">
+    <div class="sky-scr__head">
+      {{ partial "skyrim/back.html" (dict "to" "3" "label" "Back to the brews") }}
+      <h3 class="sky-scr__q sky-brewtitle" data-brew-head></h3>
+    </div>
+    <div data-brew-detail></div>
+  </section>
+
+  {{- /* ── 9 ────────────────────────────────────────────────────────────── */}}
+  {{- /* The overflow. "Show more" used to append 24 cards to screen 3, which turned the
+         answer into a 27-card wall whose bottom two thirds were unranked, unlabelled and
+         indistinguishable — and the button's own count promised more than the list held.
+         It is a screen now, eight brews to a page, with the pager below them. Only the
+         page you are on is in the DOM; the mixtures behind the rest are already in memory,
+         so turning a page costs a slice and eight cards' worth of markup.
+
+         The pager and the position line are written by builder.ts. With JavaScript off
+         there is no screen 3 either, so nothing here is a fallback for anything. */}}
+  <section class="sky-scr" data-scr="9" hidden tabindex="-1" aria-label="Every brew">
+    <div class="sky-scr__head">
+      {{ partial "skyrim/back.html" (dict "to" "3" "label" "Back to the best brews") }}
+      <h3 class="sky-scr__q" data-all-head></h3>
+      {{- /* Same control, same state. Toggling here rebuilds the list and returns to page
+             one — the pages are a slice of a list that just changed length, so holding the
+             old index would land you somewhere unrelated to where you were. */}}
+      {{- partial "skyrim/dlc-group.html" dict }}
+    </div>
+    <div class="sky-page" data-all-page></div>
+    <nav class="sky-pager" aria-label="Pages of brews" data-all-pager></nav>
+    {{- /* Where you are, spoken. The cards themselves are NOT announced: eight of them
+           read out on every arrow press is the mistake screen 3's live region used to
+           make, with a shorter list. */}}
+    <p class="sky-sr" aria-live="polite" data-all-live></p>
+  </section>
+
+  {{- /* ── 4 ────────────────────────────────────────────────────────────── */}}
+  {{- /* Hangs off screen 1 rather than following 3, so its Back says where to go. */}}
+  <section class="sky-scr" data-scr="4" hidden tabindex="-1" aria-label="The mortar — pick up to three ingredients">
+    <div class="sky-scr__head">
+      {{ partial "skyrim/back.html" (dict "to" "1") }}
+      <h3 class="sky-scr__q">Ingredients</h3>
+      {{- partial "skyrim/dlc-group.html" dict }}
+    </div>
+    {{- /* Tiles and verdict together, both ABOVE the grid. The verdict used to render after
+           183 pills, so on a phone "what is in the mortar" and "what it makes" were a wall
+           apart and never on screen at the same time — on the one screen whose entire
+           question is what those three things make. Input and answer are now adjacent. */}}
+    {{- /* NOT a live region. The tiles are a visual echo of state the pill already
+           announced through its own aria-pressed, so a live region here made one tap
+           speak three times: the tile list, then the verdict, then the pressed state. */}}
+    <div class="sky-mortar" data-mortar></div>
+    {{- /* This one IS the answer, and nothing else says it — rewritten on every pick with
+           no page load, so it announces itself. */}}
+    <div class="sky-scr__foot sky-scr__foot--live" tabindex="-1" data-live aria-live="polite"></div>
+    {{- /* Matches the effect names as well as the ingredient's own, so "mark" finds every
+           carrier of Fortify Marksman — a question that used to need a different screen.
+           No count beside it: how many of 183 survive a filter is not what anyone typed
+           it to ask, and the message below the list still covers nothing surviving. */}}
+    <div class="sky-tools">
+      <input type="search" class="sky-search" data-ing-filter placeholder="Filter by ingredient or effect" aria-label="Filter by ingredient or effect" />
+      {{- /* Quick or deep, for what gets struck through.
+             PRESSED (the default) is the quick rule: an ingredient is offered only if it
+             already pairs with something in the mortar. That is cheap and pessimistic —
+             pick Hanging Moss and Juniper Berries greys out, though Canis Root shares
+             Fortify One-Handed with one and Fortify Marksman with the other and makes all
+             three work.
+             UNPRESSED looks one slot ahead for a bridge like that. The bolt is the quick
+             calculation, so pressed-means-fast; unpressed is the patient answer.
+             Ships hidden, like the DLC circles beside it — with JavaScript off nothing
+             strikes anything through, so a control over that behaviour is a dead button. */}}
+      <button type="button" class="sky-quick" data-quick-toggle hidden aria-pressed="true"
+              aria-label="Quick compatibility check" title="Quick compatibility check — off looks one slot ahead for a bridging ingredient">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M13 2 4.5 13.2a.6.6 0 0 0 .48.96H11l-1 7.84 8.5-11.2a.6.6 0 0 0-.48-.96H12l1-7.84Z" /></svg>
+      </button>
+    </div>
+    {{- /* 183 buttons in one unbroken tab run. The answer sits above them now, so this
+           skips a keyboard user OUT of the list rather than into it. Hidden until focused. */}}
+    <a class="sky-skip" href="#{{ $uid }}-end">Skip past the ingredient list</a>
+    {{- /* `role="group"` over the implicit list role: these are 183 toggle buttons, not
+           prose items, and a bare <ul> will not announce an aria-label. */}}
+    <ul class="sky-fx sky-fx--ings" role="group" aria-label="Ingredients">
+      {{- range $slug, $ing := site.Data.skyrim.ingredients }}
+      <li><button type="button" class="sky-fx__b" data-ing="{{ $slug }}" aria-pressed="false">{{ $ing.name }}{{ partial "skyrim/dlc.html" $ing.dlc }}</button></li>
+      {{- end }}
+    </ul>
+    {{- /* Sits after the list, where the missing rows would have been. */}}
+    <p class="sky-empty" data-ing-empty hidden>No ingredients match that filter.</p>
+    <span id="{{ $uid }}-end" tabindex="-1"></span>
+  </section>
+
+  {{- /* ── 5 ────────────────────────────────────────────────────────────── */}}
+  {{- /* The index. Every other screen asks about a bottle; this one starts from an effect
+         and works outwards — what carries it, and what else each carrier brings with it,
+         since an ingredient never arrives alone.
+
+         Server-rendered from the same effects.yaml as screen 2, so the list is real markup
+         and the filter is an enhancement over it rather than the only way to see it. */}}
+  <section class="sky-scr" data-scr="5" hidden tabindex="-1" aria-label="Effects">
+    <div class="sky-scr__head">
+      {{ partial "skyrim/back.html" (dict "to" "1") }}
+      <h3 class="sky-scr__q">Effects</h3>
+    </div>
+    <div class="sky-tools">
+      <input type="search" class="sky-search" data-fx-filter placeholder="Filter effects" aria-label="Filter effects" />
+    </div>
+    {{- /* `role="group"`, as on the mortar's pills: these are controls, not prose items,
+           and a bare <ul> will not announce an aria-label. */}}
+    <ul class="sky-fx" role="group" aria-label="Effects">
+      {{- range $i, $e := $fx }}
+      <li><button type="button" class="sky-fx__b" data-fxinfo="{{ $i }}">{{ $e.name }}</button></li>
+      {{- end }}
+    </ul>
+    <p class="sky-empty" data-fx-empty hidden>No effects match that filter.</p>
+  </section>
+
+  {{- /* ── 6 ────────────────────────────────────────────────────────────── */}}
+  {{- /* One effect's carriers. Its own screen rather than a panel inside 5, so it inherits
+         the focus handling and the back stack the other transitions already have. The
+         heading is the effect's name — dynamic, like screen 3's, and the only thing on the
+         screen that says which effect you are looking at. */}}
+  <section class="sky-scr" data-scr="6" hidden tabindex="-1" aria-label="Ingredients carrying this effect">
+    <div class="sky-scr__head">
+      {{ partial "skyrim/back.html" (dict "to" "5") }}
+      <h3 class="sky-scr__q" data-fx-head></h3>
+    </div>
+    {{- /* NOT a live region: showScreen focuses this section on the transition, so a screen
+           reader already lands here and reads at its own pace. */}}
+    <div data-fx-detail></div>
+  </section>
+
+  {{- /* ── 7 ────────────────────────────────────────────────────────────── */}}
+  {{- /* Favorites — the recipes worth keeping, which used to be a module of its own at the
+         top of the page. It was a card list with a search box above it; that is a screen,
+         and having it outside meant the page opened with twelve recipes before it offered
+         to answer a question about any of them.
+
+         No count beside the filter. There are twelve cards and the reader can see them. */}}
+  <section class="sky-scr" data-scr="7" hidden tabindex="-1" aria-label="Favorite recipes">
+    <div class="sky-scr__head">
+      {{ partial "skyrim/back.html" (dict "to" "1") }}
+      <h3 class="sky-scr__q">Favorites</h3>
+    </div>
+    <div class="sky-tools" data-sky-tools hidden>
+      <label class="sky-sr" for="{{ $uid }}-search">Filter recipes</label>
+      <input id="{{ $uid }}-search" type="search" autocomplete="off" spellcheck="false" class="sky-search"
+             placeholder="Filter by recipe, effect, or ingredient…" data-sky-search />
+    </div>
+    {{ partial "skyrim/potion-cards.html" .Page }}
+    <p class="sky-empty" data-sky-empty hidden>No recipes match that filter.</p>
+  </section>
+
+  {{- /* Effect names, plus the magnitude/duration multipliers that make Creation
+       Club ingredients silly. `x` runs parallel to `e`: for each effect, a map
+       of ingredient slug -> [magnitude multiplier, duration multiplier]. Most
+       are empty.
+
+       `bm`/`bd`/`bc`/`k` are each effect's base magnitude, base duration, base
+       gold cost and whether it is harmful, each kept as its own flat array
+       (Hugo's `append` flattens a slice argument, so a list of tuples would
+       come apart). Magnitude tells the builder whether an effect's strength
+       lives in its magnitude or, when that is 0, its duration. The other three
+       decide potion-or-poison: the costliest effect in the bottle is the one in
+       charge, and if it is harmful the mortar hands you a poison. */ -}}
+  {{- $payload := dict "e" (apply $fx "index" "." "name") -}}
+  {{- $mults := slice -}}
+  {{- $baseMag := slice -}}
+  {{- $baseDur := slice -}}
+  {{- $baseCost := slice -}}
+  {{- $harmful := slice -}}
+  {{- range $e := $fx -}}
+    {{- $m := dict -}}
+    {{- range $slug, $v := $e.mult -}}
+      {{- /* isset, NOT `| default 1`: Hugo's `default` treats 0 as empty, so the four
+             deliberate `dur: 0` rows in effects.yaml (River Betty, Emperor Parasol Moss,
+             Nirnroot, Thistle Branch — "this ingredient makes the effect instantaneous")
+             were silently shipping as 1. That is a factor of ~12.6 on the duration term
+             of the gold cost, and it flipped 1,448 potion/poison verdicts. */ -}}
+      {{- $mag := 1.0 -}}{{ if isset $v "mag" }}{{ $mag = float $v.mag }}{{ end -}}
+      {{- $dur := 1.0 -}}{{ if isset $v "dur" }}{{ $dur = float $v.dur }}{{ end -}}
+      {{- $m = merge $m (dict $slug (slice $mag $dur)) -}}
+    {{- end -}}
+    {{- $mults = $mults | append $m -}}
+    {{- $baseMag = $baseMag | append (float $e.baseMag) -}}
+    {{- $baseDur = $baseDur | append (float $e.baseDur) -}}
+    {{- $baseCost = $baseCost | append (float $e.baseCost) -}}
+    {{- $harmful = $harmful | append (eq $e.kind "bad") -}}
+  {{- end -}}
+  {{- $payload = merge $payload (dict "x" $mults "bm" $baseMag "bd" $baseDur "bc" $baseCost "k" $harmful) -}}
+  {{- $rows := slice -}}
+  {{- $imgs := dict -}}
+  {{- range $slug, $ing := site.Data.skyrim.ingredients -}}
+    {{- $ids := slice -}}
+    {{- range $e := $ing.effects -}}
+      {{- $id := index $index $e -}}
+      {{- if eq $id nil -}}
+        {{- warnf "potion-builder: %q lists effect %q, which is not in data/skyrim/effects.yaml" $slug $e -}}
+      {{- else -}}
+        {{- $ids = $ids | append $id -}}
+      {{- end -}}
+    {{- end -}}
+    {{- /* A map, not a positional slice: Hugo's `append` flattens a slice
+           argument, so rows would come apart into their fields. */ -}}
+    {{- $rows = $rows | append (dict
+        "s" $slug
+        "n" $ing.name
+        "a" (int ($ing.avail | default 3))
+        "d" ($ing.dlc | default "")
+        "f" $ids) -}}
+    {{- /* Art, resolved and fingerprinted here because JS cannot reach Hugo Pipes. Same
+           lookup order as partials/skyrim/ingredients.html. Only slugs with a file appear,
+           so the map stays empty until art arrives and the builder falls back to the same
+           "?" placeholder the recipe cards use. */ -}}
+    {{- $img := "" -}}
+    {{- range $ext := slice "png" "webp" "jpg" "jpeg" -}}
+      {{- if not $img }}{{ with resources.Get (printf "skyrim/ingredients/%s.%s" $slug $ext) }}{{ $img = . }}{{ end }}{{ end -}}
+    {{- end -}}
+    {{- with $img -}}
+      {{- $r := . -}}
+      {{- if gt .Width 192 }}{{ $r = .Fit "192x192 webp q85" }}{{ end -}}
+      {{- $imgs = merge $imgs (dict $slug $r.RelPermalink) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $payload = merge $payload (dict "i" $rows "g" $imgs) }}
+  {{- /* safeJS: Go's contextual escaper treats a <script> body as JavaScript and
+         would re-encode the JSON as a quoted string. The payload is built from
+         our own data files, never user input. */ -}}
+  <script type="application/json" data-builder-data>{{ $payload | jsonify | safeJS }}</script>
+</div>

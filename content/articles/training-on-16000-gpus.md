@@ -29,7 +29,7 @@ Data parallelism breaks the moment the model is bigger than one GPU's memory, an
 - {{< term "tensor-parallelism" >}}Tensor parallelism{{< /term >}}, as in NVIDIA's [Megatron-LM](https://arxiv.org/abs/1909.08053), splits every layer across GPUs, which talk constantly.
 - {{< term "pipeline-parallelism" >}}Pipeline parallelism{{< /term >}} gives each GPU a run of layers and passes data down the line. Google's [GPipe](https://arxiv.org/abs/1811.06965) named its cost, the "bubble" while the line fills and drains.
 
-{{< ml-parallel >}}
+{{< ml/parallel >}}
 
 Real runs stack them. Llama 3 used [four kinds of parallelism at once](https://arxiv.org/abs/2407.21783). The art is placing each one where the network can carry it: the chatty tensor parallelism inside a server over {{< term "nvlink" >}}NVLink{{< /term >}}, the lighter traffic across the slower links between servers.
 
@@ -41,7 +41,7 @@ The defence is the {{< term "checkpoint" >}}checkpoint{{< /term >}}: a periodic 
 
 Save too often and you waste time saving. Save too rarely and every failure throws away hours. There's a classic formula for the balance, the [Young–Daly interval](https://dl.acm.org/doi/10.1145/361147.361115), which says to save about every √(2 × save time × time between failures).
 
-{{< ml-checkpoint >}}
+{{< ml/checkpoint >}}
 
 Try the background-save option. That's why labs work so hard on fast, asynchronous checkpoints. PyTorch reported cutting checkpoint pauses [by 10 to 20 times](https://pytorch.org/blog/reducing-checkpointing-times/) that way. Meta's paper says it aimed to "increase checkpoint frequency to reduce the amount of lost work after a recovery."
 
@@ -61,4 +61,4 @@ Like any big distributed system, with more at stake. Split the work so each piec
 
 In the order the article reaches them.
 
-{{< ml-references >}}
+{{< ml/references >}}

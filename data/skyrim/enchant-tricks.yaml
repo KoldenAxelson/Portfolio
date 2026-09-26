@@ -1,7 +1,7 @@
 # Everything that makes an enchantment you CREATE come out stronger.
 #
 # The formulae and where they came from live in the header of
-# assets/js/skyrim/enchant.ts. This file is just the list of levers, so a trick
+# assets/scripts/pages/skyrim/enchant.ts. This file is just the list of levers, so a trick
 # can be added or a number corrected without touching code.
 #
 #   id       must match the `data-f` the shortcode renders. Lowercase, no spaces.

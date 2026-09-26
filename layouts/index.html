@@ -41,7 +41,7 @@
           <ul class="flex flex-wrap gap-1.5">
             {{- range .stack }}<li class="rounded bg-border/70 px-2 py-0.5 font-mono text-xs text-fg/85">{{ . }}</li>{{ end }}
           </ul>
-          {{ partial "bio-indicator.html" (dict "messages" (.thoughts | default slice) "label" (printf "%s at %s" .role .employer)) }}
+          {{ partial "site/bio-indicator.html" (dict "messages" (.thoughts | default slice) "label" (printf "%s at %s" .role .employer)) }}
         </div>
       </div>
     </li>
@@ -58,9 +58,9 @@
   <div class="space-y-4">
     {{- range . }}
     <div class="relative">
-      {{ partial "project-card.html" (dict "project" .) }}
+      {{ partial "components/project-card.html" (dict "project" .) }}
       <div class="pointer-events-none absolute bottom-3 right-3 z-20">
-        <div class="pointer-events-auto">{{ partial "bio-indicator.html" (dict "messages" (.Params.thoughts | default slice) "label" .Params.title) }}</div>
+        <div class="pointer-events-auto">{{ partial "site/bio-indicator.html" (dict "messages" (.Params.thoughts | default slice) "label" .Params.title) }}</div>
       </div>
     </div>
     {{- end }}
@@ -80,13 +80,13 @@
     {{- $external := and .verifyUrl (ne .verifyUrl "") -}}
     <li class="relative py-3 pr-10">
       <a href="{{ $href }}"{{ if $external }} rel="noopener"{{ end }} class="group/cert flex items-start gap-3 no-underline">
-        {{ partial "cert-badge.html" (dict "badge" (.badge | default "") "alt" (printf "%s badge" .name) "size" "sm") }}
+        {{ partial "components/cert-badge.html" (dict "badge" (.badge | default "") "alt" (printf "%s badge" .name) "size" "sm") }}
         <div class="min-w-0 flex-1">
           <p class="m-0 font-medium leading-snug text-fg group-hover/cert:!text-accent">{{ .name }}</p>
-          <p class="m-0 mt-0.5 text-xs text-muted">{{ .issuer }}<span class="ml-1 font-mono">· {{ partial "formatted-date.html" (dict "date" .issueDate) }}{{ with .expirationDate }} – {{ partial "formatted-date.html" (dict "date" .) }}{{ end }}{{ with .cvNote }} · {{ . }}{{ end }}</span></p>
+          <p class="m-0 mt-0.5 text-xs text-muted">{{ .issuer }}<span class="ml-1 font-mono">· {{ partial "components/formatted-date.html" (dict "date" .issueDate) }}{{ with .expirationDate }} – {{ partial "components/formatted-date.html" (dict "date" .) }}{{ end }}{{ with .cvNote }} · {{ . }}{{ end }}</span></p>
         </div>
       </a>
-      <div class="absolute right-0 top-3">{{ partial "bio-indicator.html" (dict "messages" (.thoughts | default slice) "label" (printf "%s from %s" .name .issuer)) }}</div>
+      <div class="absolute right-0 top-3">{{ partial "site/bio-indicator.html" (dict "messages" (.thoughts | default slice) "label" (printf "%s from %s" .name .issuer)) }}</div>
     </li>
     {{- end }}
   </ul>
@@ -112,13 +112,13 @@
       <div class="flex min-w-0 flex-1 items-center justify-between gap-3">
         <div class="min-w-0">
           <span class="flex items-center gap-2">
-            {{- partial "article-mark.html" (dict "page" .) }}
+            {{- partial "components/article-mark.html" (dict "page" .) }}
             <a href="{{ $perm }}" class="font-medium text-fg no-underline hover:!text-accent">{{ .Title }}</a>
           </span>
-          <p class="mt-0.5 font-mono text-xs text-muted">{{ partial "formatted-date.html" (dict "date" .Date) }}</p>
+          <p class="mt-0.5 font-mono text-xs text-muted">{{ partial "components/formatted-date.html" (dict "date" .Date) }}</p>
         </div>
         <div class="shrink-0 self-end">
-          {{ partial "bio-indicator.html" (dict "messages" (.Params.thoughts | default slice) "label" .Title) }}
+          {{ partial "site/bio-indicator.html" (dict "messages" (.Params.thoughts | default slice) "label" .Title) }}
         </div>
       </div>
     </li>

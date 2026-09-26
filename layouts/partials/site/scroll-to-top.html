@@ -1,0 +1,16 @@
+{{- /*
+  scroll-to-top — mobile-only floating return-to-top button (assets/scripts/site/nav/scrolltop.ts).
+  Shown on every page including CV: the CV document-actions FAB is desktop-only,
+  so the two never share the bottom-right corner on the same viewport.
+*/ -}}
+<button data-scroll-top type="button" aria-label="Scroll to top" title="Scroll to top" class="glass-btn pointer-events-none fixed bottom-6 right-6 z-30 inline-flex h-12 w-12 -translate-y-2 scale-90 items-center justify-center rounded-full text-fg opacity-0 transition-all duration-200 ease-out hover:!text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50 motion-reduce:transition-none lg:!hidden print:!hidden">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-6 w-6"><path d="M12 19.5v-15m0 0-6.75 6.75M12 4.5l6.75 6.75" /></svg>
+</button>
+
+<style>
+  [data-scroll-top].is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+</style>

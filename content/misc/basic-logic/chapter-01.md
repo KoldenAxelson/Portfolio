@@ -17,7 +17,7 @@ weight: 1
 
 {{< term "standard-form" >}}Standard form{{< /term >}} is how we'll lay these arguments out, to keep the presentation clean. It makes {{< term "premise-indicator" >}}premise indicators{{< /term >}} and {{< term "conclusion-indicator" >}}conclusion indicators{{< /term >}} easy to point out. It also helps you tell a {{< term "deductive" >}}deductive argument{{< /term >}} from an {{< term "inductive" >}}inductive argument{{< /term >}} by spotting {{< term "inferential-claim-indicator" >}}inferential claim indicators{{< /term >}}.
 
-{{< arg-showcase >}}
+{{< basic-logic/arg-showcase >}}
 
 Not every passage is an argument. A {{< term "non-inferential-passage" >}}non-inferential passage{{< /term >}} can be built from {{< term "statement" >}}statements{{< /term >}} that have {{< term "truth-value" >}}truth values{{< /term >}}, and still argue nothing, because no part of it is offered in {{< term "support" >}}support{{< /term >}} of another. There are eight kinds: {{< term "advice" >}}Advice{{< /term >}}, {{< term "conditional" >}}Conditional{{< /term >}}, {{< term "expository" >}}Expository{{< /term >}}, {{< term "illustration" >}}Illustration{{< /term >}}, {{< term "report" >}}Report{{< /term >}}, {{< term "statement-of-belief" >}}Statement of Belief{{< /term >}}, {{< term "warning" >}}Warning{{< /term >}}, and {{< term "explanation" >}}Explanation{{< /term >}}. Being on that list does not keep a passage out of an argument. It only means the passage is not one on its own.
 
@@ -27,22 +27,22 @@ Once you know which kind of argument you have, you can judge how well it holds u
 
 Keep form and fact apart. This is where most people slip. An argument can be valid and still rest on false premises, because validity is a claim about the shape of the argument, not about the world.
 
-{{< arg-showcase set="evaluate-ch01" >}}
+{{< basic-logic/arg-showcase set="evaluate-ch01" >}}
 
 ## Homework
 
 Reading an argument out of everyday speech and rebuilding it in {{< term "standard-form" >}}standard form{{< /term >}} is the skill the whole chapter builds toward. Tap a sentence to break it into its pieces, assemble each premise and the conclusion word by word, then check your work.
 
-{{< arg-builder >}}
+{{< basic-logic/arg-builder >}}
 
 Every argument is either deductive or inductive. The tell is the {{< term "inferential-claim-indicator" >}}inferential claim indicator{{< /term >}} — the word in the conclusion that reveals which kind of support is being claimed. Read each one, decide which it is, then tap the word that gives it away.
 
-{{< indicator-picker >}}
+{{< basic-logic/indicator-picker >}}
 
 Some passages only give advice, sound a warning, report events, explain a settled fact, or state a condition. Read each one, decide whether it argues anything, and if it does not, name what it is instead.
 
-{{< recognize-passage >}}
+{{< basic-logic/recognize-passage >}}
 
 Now judge them. A deductive argument is valid or invalid; an inductive one is strong or weak. Remember that this is a question of form, not fact — an argument can be perfectly valid and still rest on a false premise.
 
-{{< validity-picker >}}
+{{< basic-logic/validity-picker >}}

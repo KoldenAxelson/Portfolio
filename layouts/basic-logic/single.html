@@ -2,7 +2,7 @@
      restyled on its own; the body is shared with every chapter-by-chapter
      section (partials/chapters/chapter-page.html). */}}
 {{ define "banner" }}
-{{ partial "page-banner.html" (dict
+{{ partial "site/page-banner.html" (dict
   "title" .Title
   "subtitle" (.Params.lead | default "")) }}
 {{ end }}

@@ -41,8 +41,8 @@
     {{/* CSS inlined (not render-blocking); persists across hx-boost body swaps. */}}
     {{ $css := resources.Get "css/app.css" | minify }}
     <style>{{ $css.Content | safeCSS }}</style>
-    {{/* Shared floating-FAB shell (CV / Viva / Basic Logic) — behavior in ts/auxiliary-button.ts. */}}
-    {{ $auxcss := resources.Get "css/auxiliary-button.css" | minify }}
+    {{/* Shared floating-FAB shell (CV / Viva / Basic Logic) — behavior in scripts/site/nav/auxiliary-button.ts. */}}
+    {{ $auxcss := resources.Get "css/site/auxiliary-button.css" | minify }}
     <style>{{ $auxcss.Content | safeCSS }}</style>
 
     {{/* htmx + the TS bundle load in <head> (deferred) so they survive hx-boost swaps. */}}
@@ -65,7 +65,7 @@
   </head>
 
   {{/* Noise textures: emit a compressed WebP via Hugo Pipes when the source
-       lives in assets/textures/; otherwise fall back to the static /textures
+       lives in assets/img/textures/; otherwise fall back to the static /textures
        file so the build never breaks. */}}
   {{- $noiseLight := partial "func/url.html" "/textures/noise.png" -}}
   {{- $noiseDark := partial "func/url.html" "/textures/noise-dark.png" -}}
@@ -84,38 +84,38 @@
          so it scrolls away while the nav stays pinned. Empty (no-op) elsewhere. */}}
     {{ block "topbanner" . }}{{ end }}
 
-    {{ partial "topnav.html" . }}
+    {{ partial "site/topnav.html" . }}
 
     {{ $mode := .Params.container | default "default" }}
     {{- if eq $mode "split" }}
     <div class="mx-auto max-w-screen-xl px-6 lg:px-12">
       <div class="lg:flex lg:justify-between lg:gap-12">
-        {{ partial "sidebar.html" . }}
+        {{ partial "site/sidebar.html" . }}
         <main id="main" tabindex="-1" class="pt-8 lg:w-1/2 lg:pt-24 lg:pb-12">
-          {{ with $sealed }}{{ partial "sealed-page.html" (dict "name" . "page" $) }}{{ else }}{{ block "main" . }}{{ end }}{{ end }}
+          {{ with $sealed }}{{ partial "vault/sealed-page.html" (dict "name" . "page" $) }}{{ else }}{{ block "main" . }}{{ end }}{{ end }}
         </main>
       </div>
-      {{ partial "footer.html" . }}
+      {{ partial "site/footer.html" . }}
     </div>
     {{- else }}
     {{/* Optional full-bleed banner: pages opt in via {{ define "banner" }}.
          Sits outside the constrained column so it spans the full viewport. */}}
     {{ if not $sealed }}{{ block "banner" . }}{{ end }}{{ end }}
     <div class="mx-auto px-6 py-12 lg:py-16 {{ cond (eq $mode "wide") "max-w-screen-xl lg:px-12" "max-w-3xl" }}">
-      <main id="main" tabindex="-1">{{ with $sealed }}{{ partial "sealed-page.html" (dict "name" . "page" $) }}{{ else }}{{ block "main" . }}{{ end }}{{ end }}</main>
-      {{ partial "footer.html" . }}
+      <main id="main" tabindex="-1">{{ with $sealed }}{{ partial "vault/sealed-page.html" (dict "name" . "page" $) }}{{ else }}{{ block "main" . }}{{ end }}{{ end }}</main>
+      {{ partial "site/footer.html" . }}
     </div>
     {{- end }}
 
     {{/* Outside both layout branches so they're fixed to the viewport. */}}
-    {{ partial "cv-actions.html" . }}
-    {{ partial "scroll-to-top.html" . }}
+    {{ partial "site/cv-actions.html" . }}
+    {{ partial "site/scroll-to-top.html" . }}
 
     {{/* AI chat widget. OFF BY DEFAULT — the five pages that offer it are listed
          in data/site.yaml under `ai.pages`. See partials/func/ai-enabled.html for
          why that is an allow-list and not the deny-list it used to be. */}}
     {{- if partial "func/ai-enabled.html" . }}
-    {{ partial "ai-widget.html" . }}
+    {{ partial "site/ai-widget.html" . }}
     {{- end }}
   </body>
 </html>

@@ -27,7 +27,7 @@ Picture every possible setting of the weights as a landscape, with the loss as t
 
 That's {{< term "gradient-descent" >}}gradient descent{{< /term >}}, and it's old: it's usually credited to [Augustin-Louis Cauchy in 1847](https://ems.press/content/book-chapter-files/27368?nt=1). The "feel the slope" part, for millions of weights at once, is {{< term "backpropagation" >}}backpropagation{{< /term >}}, popularized in [a 1986 Nature paper](https://www.nature.com/articles/323533a0). Try it with the simplest model there is, a straight line with two weights:
 
-{{< ml-descent >}}
+{{< ml/descent >}}
 
 The {{< term "learning-rate" >}}learning rate{{< /term >}} is the size of each step. Google's course describes both ways it fails: too low and the model ["can take a long time to converge"](https://developers.google.com/machine-learning/crash-course/linear-regression/hyperparameters), too high and it ["bounces around"](https://developers.google.com/machine-learning/crash-course/linear-regression/hyperparameters) the bottom instead of settling. Choosing it is one of the fiddliest parts of training real models.
 
@@ -45,7 +45,7 @@ The defence is to hold data back. Train on one set, and score the model on a {{<
 
 In practice there's often [a third slice](https://developers.google.com/machine-learning/crash-course/overfitting/dividing-datasets), a {{< term "validation-set" >}}validation set{{< /term >}}, for choosing settings like the learning rate along the way, so the test set stays untouched until the very end. Watch the two scores part ways:
 
-{{< ml-overfit >}}
+{{< ml/overfit >}}
 
 One modern wrinkle: very large {{< term "neural-network" >}}neural networks{{< /term >}} don't always follow this textbook curve. Researchers found that past a certain size, test error can [fall again after rising](https://arxiv.org/abs/1912.02292), called "double descent". The rule of checking on held-out data holds either way.
 
@@ -61,4 +61,4 @@ By being wrong in a measurable way, and stepping toward less wrong, over and ove
 
 Every claim above traces back to one of these, in the order the article reaches them.
 
-{{< ml-references >}}
+{{< ml/references >}}

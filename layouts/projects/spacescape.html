@@ -3,12 +3,12 @@
   wasm) published as static files at /games/spacescape/ by `make spacescape`
   (which runs `make publish` in the SpaceScape repo). Like digital-pet-place,
   nothing of the game is fetched until the visitor clicks Play; the site bundle
-  (scripts/site/game-embed.ts) then swaps in a lazy iframe.
+  (scripts/site/games/game-embed.ts) then swaps in a lazy iframe.
 
   Keyboard: the game's own document swallows Space and the arrows, so they
   never page-scroll — but only while the iframe has focus, which the bundle
   gives it on load and Fullscreen gives it again. Ordinary boosted page: no
-  per-page runtime, nothing in <head>. See docs/microgames.md.
+  per-page runtime, nothing in <head>. See docs/games/microgames.md.
 */}}
 
 {{ define "main" }}
@@ -37,7 +37,7 @@
   </div>
   {{- else }}
   <div class="mx-auto max-w-[1280px]" data-game-frame>
-    {{ partial "game-embed.html" (dict
+    {{ partial "components/game-embed.html" (dict
       "src" "/games/spacescape/"
       "title" $d.title
       "cover" $d.cover

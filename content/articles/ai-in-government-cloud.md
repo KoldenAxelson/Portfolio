@@ -29,7 +29,7 @@ For years, FedRAMP rated services [Low, Moderate or High](https://www.fedramp.go
 - A classified cloud: Bedrock runs in AWS's [Top Secret](https://aws.amazon.com/blogs/publicsector/amazon-bedrock-launches-with-claude-3-5-sonnet-in-the-aws-top-secret-cloud/) and [Secret](https://aws.amazon.com/about-aws/whats-new/2025/11/amazon-bedrock-is-now-available/) regions, and Microsoft brought [GPT-5.2 to its Secret and Top Secret clouds](https://devblogs.microsoft.com/azuregov/advancing-ai-capabilities-in-azure-for-u-s-government-secret-and-top-secret-clouds/) in January 2026.
 - Your own hardware: run an {{< term "open-weights" >}}open-weights{{< /term >}} model inside your own boundary, even an {{< term "air-gapped" >}}air-gapped{{< /term >}} one. Google sells [Gemini on air-gapped hardware](https://cloud.google.com/blog/topics/hybrid-cloud/gemini-is-now-available-anywhere), so "no internet" no longer means "open models only."
 
-{{< ml-govflow >}}
+{{< ml/govflow >}}
 
 Cost is less of a barrier than it used to be. In August 2025, GSA, the government's central buyer, struck deals putting [ChatGPT Enterprise](https://www.gsa.gov/about-gsa/newsroom/news-releases/gsa-announces-new-partnership-with-openai-delivering-deep-discount-to-chatgpt-08062025) and [Claude](https://www.gsa.gov/about-gsa/newsroom/news-releases/gsa-strikes-onegov-deal-with-anthropic-08122025) in front of agencies for $1 each for a year, and [Gemini for Government](https://www.gsa.gov/about-gsa/newsroom/news-releases/gsa-google-announce-gemini-onegov-agreement-08212025) for 47 cents through 2026. In September 2026, GSA said ChatGPT would move to [50% off pay-as-you-go pricing](https://www.gsa.gov/about-gsa/newsroom/news-releases/gsa-expands-onegov-ai-offerings-with-discounted-openais-chatgpt-09102026) from October 1.
 
@@ -59,4 +59,4 @@ Increasingly, yes, just not the one on your phone. The same families of models n
 
 FedRAMP and DoD first, then the platforms, buying and policy, then logging and agents.
 
-{{< ml-references >}}
+{{< ml/references >}}

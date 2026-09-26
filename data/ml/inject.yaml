@@ -1,4 +1,4 @@
-# Scenario for the {{< ml-inject >}} demo: an email assistant, one poisoned
+# Scenario for the {{< ml/inject >}} demo: an email assistant, one poisoned
 # newsletter, and three defences. Scripted, not a live model. Every address is
 # on a reserved example domain.
 task: Summarize my unread email.

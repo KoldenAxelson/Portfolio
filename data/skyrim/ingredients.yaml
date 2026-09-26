@@ -22,7 +22,7 @@
 #           sums it, and the dots on each result card show it.
 #   effects all four, IN GAME ORDER
 #
-# Slugs are also the image filenames — see assets/skyrim/ingredients/README.md.
+# Slugs are also the image filenames — see assets/img/skyrim/ingredients/README.md.
 
 abecean-longfin:
   name: "Abecean Longfin"

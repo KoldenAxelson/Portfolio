@@ -5,8 +5,8 @@
 
     {{ $menu := partial "func/dagea-menu.html" . }}
 
-  ONE SOURCE, TWO SURFACES. partials/dagea-nav.html renders it as the desktop FAB
-  and partials/topnav.html renders it as the mobile navbar list. They used to be
+  ONE SOURCE, TWO SURFACES. partials/dagea/nav.html renders it as the desktop FAB
+  and partials/site/topnav.html renders it as the mobile navbar list. They used to be
   the same list written twice for Basic Logic and again for the campaign page;
   here it is written once.
 
@@ -25,7 +25,7 @@
   front matter that could go stale.
 */ -}}
 {{- $items := slice -}}
-{{- if or (eq .Type "dagea") (.HasShortcode "dagea-globe") -}}
+{{- if or (eq .Type "dagea") (.HasShortcode "dagea/globe") -}}
   {{- $cur := .RelPermalink -}}
   {{- $add := slice -}}
 

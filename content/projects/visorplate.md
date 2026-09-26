@@ -24,29 +24,29 @@ carousels:
   product:
     label: 'The product, four photos'
     slides:
-      - { src: '/img/visorplate/display.jpg', alt: 'A Texas license plate in front of the clear VisorPlate sleeve.', caption: 'A clear vinyl sleeve, sized for a standard US plate.' }
-      - { src: '/img/visorplate/slide.jpg', alt: 'A license plate half slid into the sleeve.', caption: 'The plate slides in from the side. No screws, no brackets.' }
-      - { src: '/img/visorplate/front-in.jpg', alt: 'The finished VisorPlate from the front, plate fully inside.', caption: 'Loaded. The plate reads straight through the vinyl.' }
-      - { src: '/img/visorplate/back.jpg', alt: 'The back of the VisorPlate: black fabric with two velcro straps.', caption: 'The back: two velcro straps that wrap the sun visor.' }
+      - { src: '/visorplate/display.jpg', alt: 'A Texas license plate in front of the clear VisorPlate sleeve.', caption: 'A clear vinyl sleeve, sized for a standard US plate.' }
+      - { src: '/visorplate/slide.jpg', alt: 'A license plate half slid into the sleeve.', caption: 'The plate slides in from the side. No screws, no brackets.' }
+      - { src: '/visorplate/front-in.jpg', alt: 'The finished VisorPlate from the front, plate fully inside.', caption: 'Loaded. The plate reads straight through the vinyl.' }
+      - { src: '/visorplate/back.jpg', alt: 'The back of the VisorPlate: black fabric with two velcro straps.', caption: 'The back: two velcro straps that wrap the sun visor.' }
   road:
     label: 'VisorPlate on nine cars'
     caption: 'Store photography. The plate sits behind the windshield on the passenger side, where the visor is.'
     slides:
-      - { src: '/img/visorplate/bugeye.jpg', alt: 'A red bugeye Subaru WRX with a sample plate behind the windshield.', caption: 'Bugeye WRX' }
-      - { src: '/img/visorplate/miata.jpg', alt: 'A red NA Miata at sunset with a plate on the passenger visor.', caption: 'NA Miata', position: '50% 60%' }
-      - { src: '/img/visorplate/s2000.jpg', alt: 'A silver-blue Honda S2000 with a plate on the visor.', caption: 'Honda S2000' }
-      - { src: '/img/visorplate/cayman.jpg', alt: 'An orange Porsche Cayman with a sample plate behind the glass.', caption: 'Porsche Cayman' }
-      - { src: '/img/visorplate/240sx.jpg', alt: 'A black Nissan 240SX at a car meet, plate on the visor.', caption: 'Nissan 240SX at a meet — the whole reason it has to come off fast' }
-      - { src: '/img/visorplate/mustang.jpg', alt: 'A black Ford Mustang with a plate behind the windshield.', caption: 'Ford Mustang' }
-      - { src: '/img/visorplate/amg-gt.jpg', alt: 'A matte grey Mercedes-AMG GT with a sample plate on the visor.', caption: 'Mercedes-AMG GT' }
-      - { src: '/img/visorplate/wrx.jpg', alt: 'A white Subaru WRX with a plate on the visor.', caption: 'Subaru WRX' }
-      - { src: '/img/visorplate/m4.jpg', alt: 'A red BMW M4 at sunset with a plate on the passenger visor.', caption: 'BMW M4' }
+      - { src: '/visorplate/bugeye.jpg', alt: 'A red bugeye Subaru WRX with a sample plate behind the windshield.', caption: 'Bugeye WRX' }
+      - { src: '/visorplate/miata.jpg', alt: 'A red NA Miata at sunset with a plate on the passenger visor.', caption: 'NA Miata', position: '50% 60%' }
+      - { src: '/visorplate/s2000.jpg', alt: 'A silver-blue Honda S2000 with a plate on the visor.', caption: 'Honda S2000' }
+      - { src: '/visorplate/cayman.jpg', alt: 'An orange Porsche Cayman with a sample plate behind the glass.', caption: 'Porsche Cayman' }
+      - { src: '/visorplate/240sx.jpg', alt: 'A black Nissan 240SX at a car meet, plate on the visor.', caption: 'Nissan 240SX at a meet — the whole reason it has to come off fast' }
+      - { src: '/visorplate/mustang.jpg', alt: 'A black Ford Mustang with a plate behind the windshield.', caption: 'Ford Mustang' }
+      - { src: '/visorplate/amg-gt.jpg', alt: 'A matte grey Mercedes-AMG GT with a sample plate on the visor.', caption: 'Mercedes-AMG GT' }
+      - { src: '/visorplate/wrx.jpg', alt: 'A white Subaru WRX with a plate on the visor.', caption: 'Subaru WRX' }
+      - { src: '/visorplate/m4.jpg', alt: 'A red BMW M4 at sunset with a plate on the passenger visor.', caption: 'BMW M4' }
 
 steps:
   install:
-    - { src: '/img/visorplate/slide.jpg', alt: 'Sliding a plate into the sleeve.', title: 'Insert the plate', body: 'Slide your front plate into the sleeve.' }
-    - { src: '/img/visorplate/install.jpg', alt: 'The VisorPlate strapped to a passenger sun visor.', title: 'Strap it on', body: 'Wrap the velcro around the passenger sun visor and flip it down.' }
-    - { src: '/img/visorplate/miata.jpg', alt: 'A Miata with the plate showing through the windshield.', title: 'Drive', body: 'Plate faces forward. Car show? Pull it off and toss it in the glovebox.' }
+    - { src: '/visorplate/slide.jpg', alt: 'Sliding a plate into the sleeve.', title: 'Insert the plate', body: 'Slide your front plate into the sleeve.' }
+    - { src: '/visorplate/install.jpg', alt: 'The VisorPlate strapped to a passenger sun visor.', title: 'Strap it on', body: 'Wrap the velcro around the passenger sun visor and flip it down.' }
+    - { src: '/visorplate/miata.jpg', alt: 'A Miata with the plate showing through the windshield.', title: 'Drive', body: 'Plate faces forward. Car show? Pull it off and toss it in the glovebox.' }
 
 flows:
   order:
@@ -93,7 +93,7 @@ People with nice cars hate the front license plate. It breaks the lines of the
 bumper, and bolting it on means drilling holes through a front end that cost
 more than some people's first car. Most of the country says you need one anyway.
 
-{{< plate-map >}}
+{{< visorplate/plate-map >}}
 
 That's the market: the lit states, where the choice was drill the bumper, prop
 the plate on the dash, or eat the ticket.

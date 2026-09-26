@@ -16,25 +16,25 @@ Loops, functions and types work in Python much as they do in any language you al
 
 A {{< term "list" >}}list{{< /term >}} is like a Go slice or a JavaScript array: ordered, growable, repeats allowed. A {{< term "dict" >}}dict{{< /term >}} maps keys to values, like a map or hash table elsewhere, and a {{< term "set" >}}set{{< /term >}} keeps each value once. A {{< term "comprehension" >}}comprehension{{< /term >}} builds any of the three in one expression, with the loop, the filter and the append folded together.
 
-{{< py-example "ch01/containers" >}}
+{{< python-for-ml/example "ch01/containers" >}}
 
 One small job puts several of these to work: reading a CSV of training runs by hand. {{< term "pathlib-path" >}}pathlib.Path{{< /term >}} names the file, {{< term "unpacking" >}}unpacking{{< /term >}} splits the header from the other lines, and a {{< term "comprehension" >}}comprehension{{< /term >}} turns each line into a {{< term "dict" >}}dict{{< /term >}}.
 
-{{< code-stepper "ch01/read-csv" >}}
+{{< python-for-ml/code-stepper "ch01/read-csv" >}}
 
 Every value came back a string, which is why step six joins two losses as text instead of adding them, with no error. pandas, in Chapter 4, reads a file like it into typed columns in one call.
 
 An {{< term "f-string" >}}f-string{{< /term >}} puts expressions inside a string, with an optional format after a colon: `{loss:.2f}` prints two decimals. In a function's parameters, {{< term "args-kwargs" >}}*args{{< /term >}} collects extra positional arguments into a tuple and {{< term "args-kwargs" >}}**kwargs{{< /term >}} collects extra keyword arguments into a {{< term "dict" >}}dict{{< /term >}}. At a call the stars work the other way round, so `train(**config)` feeds a config {{< term "dict" >}}dict{{< /term >}} straight into a function.
 
-{{< py-example "ch01/functions" >}}
+{{< python-for-ml/example "ch01/functions" >}}
 
 A {{< term "dataclass" >}}dataclass{{< /term >}} is a struct, as in Go or C, with its constructor, printing and equality written for you. Its fields carry {{< term "type-hints" >}}type hints{{< /term >}}, and here Python parts ways with statically typed languages: no compiler checks them, and Python doesn't either when the code runs. This is the easy one to get wrong. `Run('b', '0.05')` builds without complaint, and the string shows up later: as a `TypeError` if you're lucky, or, as below, as a wrong answer with no error.
 
-{{< py-example "ch01/dataclass" >}}
+{{< python-for-ml/example "ch01/dataclass" >}}
 
 A {{< term "context-manager" >}}context manager{{< /term >}} works like Go's `defer` or Java's try-with-resources, in block form: `with path.open() as f:` closes the file when the block ends, even if it raises. A {{< term "generator" >}}generator{{< /term >}} makes its values one at a time, only when asked, so a file bigger than memory can be read line by line. Once it has run out it stays empty, and a second loop over it gets nothing, with no error.
 
-{{< py-example "ch01/lazy" >}}
+{{< python-for-ml/example "ch01/lazy" >}}
 
 Last, the setup every later chapter runs in. A {{< term "virtual-environment" >}}virtual environment{{< /term >}} is a folder of packages for one project, like `node_modules` with its own `python`. {{< term "pip" >}}pip{{< /term >}} installs the pinned versions into it. {{< term "uv" >}}uv{{< /term >}}, from Astral, can do the same job, and its docs describe it as extremely fast.
 
@@ -52,4 +52,4 @@ The habit to keep: convert what comes from a file or a caller to the type you me
 
 The packet first checks that your {{< term "virtual-environment" >}}virtual environment{{< /term >}} has Python 3.12 or newer and every pinned version. Then you read a CSV of training runs into {{< term "list" >}}lists{{< /term >}}, {{< term "dict" >}}dicts{{< /term >}} and {{< term "set" >}}sets{{< /term >}} with {{< term "comprehension" >}}comprehensions{{< /term >}}, fill in a {{< term "dataclass" >}}dataclass{{< /term >}} and an {{< term "f-string" >}}f-string{{< /term >}}, and finish with a {{< term "generator" >}}generator{{< /term >}}, {{< term "unpacking" >}}unpacking{{< /term >}}, {{< term "args-kwargs" >}}*args{{< /term >}} and {{< term "args-kwargs" >}}**kwargs{{< /term >}}.
 
-{{< workbook "ch01" >}}
+{{< python-for-ml/workbook "ch01" >}}

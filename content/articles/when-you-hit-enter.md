@@ -15,7 +15,7 @@ You type a question into a chatbot and press Enter. A beat later, words start st
 
 A model can't read letters. Your message is first chopped into {{< term "token" >}}tokens{{< /term >}}, common chunks of text learned from data with {{< term "byte-pair-encoding" >}}byte-pair encoding{{< /term >}}. As a rule of thumb for English, one token is [about four characters, or three-quarters of a word](https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them). Each token becomes an ID number, and each ID is swapped for an {{< term "embedding" >}}embedding{{< /term >}}, a long list of numbers standing for its meaning.
 
-{{< ml-tokens >}}
+{{< ml/tokens >}}
 
 ## Every word looks back at the words before it
 
@@ -27,7 +27,7 @@ The output of all that is a single thing: a score for every token in the vocabul
 
 The model doesn't simply take the top-scoring token. It rolls weighted dice, which is {{< term "sampling" >}}sampling{{< /term >}}. {{< term "temperature" >}}Temperature{{< /term >}} reshapes the dice first: low values make the favourite almost certain, high values give long shots a real chance. OpenAI's API documents it as a number from 0 to 2, where ["higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic."](https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create)
 
-{{< ml-temperature >}}
+{{< ml/temperature >}}
 
 Many systems also let you trim the unlikely tail before rolling, a trick called [nucleus sampling](https://arxiv.org/abs/1904.09751). And even at temperature 0, answers can differ run to run. In 2025, researchers at Thinking Machines [traced that to the server](https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/): how many other users' requests are batched with yours changes the arithmetic very slightly, and one flipped token sends the rest of the answer somewhere new.
 
@@ -43,7 +43,7 @@ Then {{< term "decode" >}}decode{{< /term >}}: one token per step, each step rea
 
 What makes decode affordable is the {{< term "kv-cache" >}}KV cache{{< /term >}}. It keeps each token's attention data, so the model doesn't reprocess the whole conversation for every new word. It isn't small, either: for one 13-billion-weight model, the vLLM paper works out [800 KB per token, and up to 1.6 GB for a single long request](https://arxiv.org/abs/2309.06180). Hit Enter and watch it fill:
 
-{{< ml-decode >}}
+{{< ml/decode >}}
 
 That cache is one reason a model's {{< term "context-window" >}}context window{{< /term >}} has a limit, and one reason long conversations cost more. As of September 2026, Anthropic's larger Claude models take [1 million tokens](https://platform.claude.com/docs/en/models/overview), and every one of them needs a slot.
 
@@ -61,4 +61,4 @@ Your text becomes tokens, tokens become numbers, and the transformer turns them 
 
 In the order a request meets them.
 
-{{< ml-references >}}
+{{< ml/references >}}

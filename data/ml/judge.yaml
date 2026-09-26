@@ -1,4 +1,4 @@
-# Items for the {{< ml-judge >}} demo: a fictional bike shop's support bot,
+# Items for the {{< ml/judge >}} demo: a fictional bike shop's support bot,
 # two versions, and a scripted LLM judge. `judge` is the judge's pick when it
 # sees v1 first, `judgeSwapped` when it sees v2 first. Item 2 shows verbosity
 # bias; items 3 and 4 show position bias (it favours whichever version it reads first).

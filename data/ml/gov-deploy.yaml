@@ -1,4 +1,4 @@
-# Deployment options and data kinds for the {{< ml-govflow >}} demo.
+# Deployment options and data kinds for the {{< ml/govflow >}} demo.
 # Illustrative, not compliance advice: the real answer is whatever your
 # agency's authorizing official signs. `allowed` maps a data kind to yes / no.
 # CUI floor: 32 CFR 2002.14(g), CUI Basic is at least moderate confidentiality; FedRAMP presumes Class C adequate for most moderate systems.

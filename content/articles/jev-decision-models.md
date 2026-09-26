@@ -24,7 +24,7 @@ With Jev, you don't prompt for prose. You send some text (TypeSafe calls it the 
 
 That's {{< term "classification" >}}classification{{< /term >}}, a very old idea in machine learning. The twist is that you invent the categories in plain English at request time, with no {{< term "training" >}}training{{< /term >}} of your own. Try it on a support ticket:
 
-{{< ml-decide >}}
+{{< ml/decide >}}
 
 Look at the box under the bars: that's all the program gets. It can act on an answer like "Billing" directly. It can't act on "It sounds like this might be a billing issue, though…".
 
@@ -46,7 +46,7 @@ TypeSafe says it trains Jev for calibration directly, but it hasn't published ca
 
 Both models below make identical claims about how sure they are. Slide the threshold and watch the answers you let through without a human:
 
-{{< ml-calibration >}}
+{{< ml/calibration >}}
 
 The overconfident model isn't much less accurate overall. It just can't tell you *which* answers to double-check. [TypeSafe's own guidance](https://docs.typesafe.ai/confidence) is built on this: act automatically on high confidence, flag medium for review, and send low confidence to a person.
 
@@ -85,4 +85,4 @@ Jev may or may not be the product that wins, and TypeSafe's calibration claims s
 
 The primary sources first, then the independent test.
 
-{{< ml-references >}}
+{{< ml/references >}}

@@ -10,9 +10,9 @@
 
   DELIBERATELY EMITS NO ASSETS. The shortcode ships the glossary JSON and
   definitions.css behind a `.Page.Scratch` guard, which is unsound across
-  dev-server rebuilds (see the long note in partials/skyrim-assets.html). A page
+  dev-server rebuilds (see the long note in partials/skyrim/assets.html). A page
   that uses this partial must declare `glossary:` in front matter, and its layout
-  emits both, once, from the layout — see partials/definitions-assets.html.
+  emits both, once, from the layout — see partials/definitions/assets.html.
 
   `label` defaults to nothing, which renders the icon-only form: a card whose
   heading already says "Superiority Dice" does not need a link underneath it that

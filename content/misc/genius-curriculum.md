@@ -14,7 +14,7 @@
 #
 # THE WIDGETS FOLLOW THE ML ARTICLE'S CONTRACT, deliberately — same .gc-/.mli-
 # box, same "Live · …" label, same lazy loader at the bottom of the page. Each
-# module is a `window.GcThing.init(root)` in static/js/, fetched only when its
+# module is a `window.GcThing.init(root)` in static/js/genius-curriculum/, fetched only when its
 # section scrolls near, so a reader who stops after method two never downloads
 # the other four. Adding one means three things: the markup here, a file there,
 # and a whenVisible() line in the script block at the bottom.
@@ -509,7 +509,7 @@ exactly what Session 3 would have me do.
       var root = document.getElementById(id);
       if (!root) return;
       whenVisible(root, function () {
-        loadScript("/js/" + file, function () { if (window[global]) window[global].init(root); });
+        loadScript("/js/genius-curriculum/" + file, function () { if (window[global]) window[global].init(root); });
       });
     }
     mount("gc-braid", "gc-braid.js", "GcBraid");

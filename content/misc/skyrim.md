@@ -5,8 +5,8 @@
 # prose true     : Tailwind Typography for the writing. Every widget root
 #                  carries `not-prose` so it keeps its hands off them.
 # sections       : drives BOTH the desktop jump-to-section FAB
-#                  (partials/section-nav.html) and the mobile navbar list
-#                  (partials/topnav.html). Each id must match a heading id
+#                  (partials/components/section-nav.html) and the mobile navbar list
+#                  (partials/site/topnav.html). Each id must match a heading id
 #                  below — the `{#combat}` suffixes pin them.
 # desktopFab     : suppress the centered navbar toolbar; the FAB covers desktop.
 #
@@ -38,7 +38,7 @@ sections:
 
 ## Alchemy {#alchemy}
 
-{{< potion-builder >}}
+{{< skyrim/potion-builder >}}
 
 <details class="sky-more">
 <summary>Why some of those come out as poisons</summary>
@@ -47,7 +47,7 @@ sections:
 harmful one the mortar hands you a poison no matter what else is in there. Each card
 outlines the effect responsible.
 
-{{< formula "gold-cost" >}}
+{{< skyrim/formula "gold-cost" >}}
 
 Aloe Vera Leaves and Butterfly Wing share Restore Health and Damage Magicka; Damage
 Magicka costs 7.37 against 2.94, so that is a **poison** with a Restore Health passenger.
@@ -68,14 +68,14 @@ read **Potion or poison** rather than a guess.
 
 ## Resto loop {#resto}
 
-{{< resto-loop target="235" effect="Fortify Alchemy" >}}
+{{< skyrim/resto-loop target="235" effect="Fortify Alchemy" >}}
 
 <details class="sky-more">
 <summary>The formulae, and why the gear count is the throttle</summary>
 
-{{< formula "alchemy-magnitude" >}}
+{{< skyrim/formula "alchemy-magnitude" >}}
 
-{{< formula "enchanting-magnitude" >}}
+{{< skyrim/formula "enchanting-magnitude" >}}
 
 **The loop.** A Fortify Restoration potion boosts every `Fortify <Skill>` enchantment you
 are **wearing** while it runs, because those enchantments are internally
@@ -84,7 +84,7 @@ what order you put them on — if it is on your body it reads `base × (1 + the 
 And because you never wait for the potion to expire, one is always live, which is what
 makes it compound: the potion you drink is scaled by the one already running.
 
-{{< formula "resto-round" >}}
+{{< skyrim/formula "resto-round" >}}
 
 So a round offers exactly **one** choice: how many pieces you have on while you brew. With
 growth this violent, that brake is the only reason landing on an exact number is possible
@@ -147,7 +147,7 @@ exact.
 
 ## Enchant max {#ceiling}
 
-{{< enchant-max effect="Fortify Alchemy" >}}
+{{< skyrim/enchant-max effect="Fortify Alchemy" >}}
 
 <details class="sky-more">
 <summary>Why the order in that breakdown is the whole point</summary>
@@ -172,7 +172,7 @@ the module enforces that.
 
 ## John Skyrim {#john}
 
-{{< john-skyrim >}}
+{{< skyrim/john >}}
 
 <details class="sky-more">
 <summary>Additional information</summary>

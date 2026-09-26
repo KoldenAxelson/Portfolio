@@ -5,7 +5,7 @@ layout: "now"
 updated: 2026-08-18
 # `blocks`, not `sections`: `sections:` is reserved site-wide for the
 # jump-to-section convention ({id, label}) that topnav.html and
-# partials/section-nav.html read. This page uses a different shape
+# partials/components/section-nav.html read. This page uses a different shape
 # (label + items), so it gets its own key.
 blocks:
   - label: "Building"

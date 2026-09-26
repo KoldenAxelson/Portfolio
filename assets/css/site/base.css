@@ -1,0 +1,802 @@
+/* Portfolio base styles: @font-face, theme tokens, base elements, hand-authored
+   utilities. Tailwind owns the utility layer + preflight.
+   To rebrand: tweak the five --c-* values below. */
+
+/* Self-hosted fonts (no third-party request in the critical path).
+   Inter (the body/LCP font) uses font-display: optional: it gets a ~100ms
+   window to paint, and if it misses that window on a cold, uncached load the
+   browser keeps the system fallback for that one pageview (Inter is used on the
+   next visit, straight from the year-long cache). This avoids the late font
+   *swap* that repaints the LCP text and pushes the LCP metric out — the swap,
+   not the download, was the cost. Inter regular is preloaded (see baseof.html)
+   so it usually wins the window anyway. JetBrains Mono stays on swap: it's only
+   for code, never the LCP element, and code should always render in mono. */
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: optional;
+  src: url('/fonts/InterVariable.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: optional;
+  src: url('/fonts/InterVariable-Italic.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url('/fonts/JetBrainsMono-Variable.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: italic;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url('/fonts/JetBrainsMono-Variable-Italic.woff2') format('woff2');
+}
+
+/* Theme tokens — source of truth. Light default; dark via media query. */
+:root {
+  --c-bg: 250 250 247;       /* warm paper white */
+  --c-fg: 24 24 27;          /* zinc-900 */
+  --c-muted: 82 82 91;       /* zinc-600 — WCAG AA on warm-white (6.5:1) */
+  --c-accent: 3 119 55;      /* logo green #037737 — AA ~5.4:1 on warm-white bg */
+  --c-border: 228 228 231;   /* zinc-200 */
+
+  /* Glassmorphism 2.0 ("liquid glass") tokens. --glass-bg tints the frosted
+     surface (≈ page bg); --glass-hi is the specular edge highlight. */
+  --glass-bg: 255 255 255;   /* lighter than paper-white so glass reads as a pane */
+  --glass-hi: 255 255 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --c-bg: 9 9 11;          /* zinc-950 */
+    --c-fg: 244 244 245;     /* zinc-100 */
+    --c-muted: 161 161 170;  /* zinc-400 */
+    --c-accent: 252 211 77;  /* amber-300 */
+    --c-border: 39 39 42;    /* zinc-800 */
+
+    --glass-bg: 24 24 27;    /* zinc-900 tint over the dark page */
+    --glass-hi: 255 255 255;
+  }
+}
+
+html {
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  background-color: rgb(var(--c-bg));
+  color: rgb(var(--c-fg));
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Smooth scroll for in-page anchors, gated by motion preference. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Matte noise texture (128×128 tile per scheme). baseof injects the
+   base-path-aware URLs onto <body> as --noise-bg-light / --noise-bg-dark. */
+body {
+  min-height: 100dvh;
+  background-image: var(--noise-bg-light, none);
+  background-size: 128px 128px;
+  background-repeat: repeat;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-image: var(--noise-bg-dark, none);
+  }
+}
+
+/* Links underlined by default (WCAG 1.4.1 — don't rely on color alone).
+   Opt out with class="no-underline". */
+a {
+  color: rgb(var(--c-accent));
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  transition: color 150ms ease;
+}
+
+a:hover {
+  color: rgb(var(--c-fg));
+  text-decoration-thickness: 2px;
+}
+
+.no-underline {
+  text-decoration: none;
+}
+.no-underline:hover {
+  text-decoration: none;
+}
+
+code {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.9em;
+  background-color: rgb(var(--c-border) / 0.5);
+  padding: 0.1em 0.35em;
+  border-radius: 3px;
+}
+
+pre {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  overflow-x: auto;
+  padding: 1rem;
+  border-radius: 6px;
+  background-color: rgb(var(--c-border) / 0.4);
+  border: 1px solid rgb(var(--c-border));
+}
+
+pre code {
+  background: transparent;
+  padding: 0;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+:focus-visible {
+  outline: 2px solid rgb(var(--c-accent));
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* main.ts focuses #main after each hx-boost navigation so keyboard / screen-reader
+   users land in the new content. It's a tabindex=-1 landmark, never a tab stop, so
+   suppress the focus ring (Safari draws one around the whole region otherwise). */
+#main:focus,
+#main:focus-visible {
+  outline: none;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+}
+.skip-link:focus {
+  left: 1rem;
+  top: 1rem;
+  z-index: 100;
+  background: rgb(var(--c-bg));
+  border: 2px solid rgb(var(--c-accent));
+  padding: 0.5rem 1rem;
+}
+
+/* Article links that open another page get a small ↗, so they can't be mistaken
+   for glossary terms (.term), which share the accent colour but open a window in
+   place. Demos and reference cards opt out via .not-prose; in-page #anchors are
+   exempt because they don't leave the page. */
+.article-body :where(p, li, blockquote, td) a[href]:not([href^="#"]):not(:where(.not-prose *))::after {
+  content: "";
+  display: inline-block;
+  width: 0.62em;
+  height: 0.62em;
+  margin-left: 0.18em;
+  vertical-align: 0.12em;
+  background-color: currentColor;
+  -webkit-mask: var(--link-out-icon) center / contain no-repeat;
+  mask: var(--link-out-icon) center / contain no-repeat;
+  transition: transform 0.15s ease;
+}
+.article-body :where(p, li, blockquote, td) a[href]:not([href^="#"]):hover::after {
+  transform: translate(1px, -1px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .article-body a[href]::after { transition: none; }
+}
+:root {
+  --link-out-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.5 8.5l5-5M4.5 3.5h4v4'/%3E%3C/svg%3E");
+}
+
+/* Remap the typography plugin's colors onto our tokens (no prose-invert needed —
+   the --c-* tokens already swap for dark mode). */
+.prose {
+  --tw-prose-body: rgb(var(--c-fg) / 0.88);
+  --tw-prose-headings: rgb(var(--c-fg));
+  --tw-prose-lead: rgb(var(--c-muted));
+  --tw-prose-links: rgb(var(--c-accent));
+  --tw-prose-bold: rgb(var(--c-fg));
+  --tw-prose-counters: rgb(var(--c-muted));
+  --tw-prose-bullets: rgb(var(--c-border));
+  --tw-prose-hr: rgb(var(--c-border));
+  --tw-prose-quotes: rgb(var(--c-fg));
+  --tw-prose-quote-borders: rgb(var(--c-border));
+  --tw-prose-captions: rgb(var(--c-muted));
+  --tw-prose-code: rgb(var(--c-fg));
+  --tw-prose-pre-code: rgb(var(--c-fg));
+  --tw-prose-pre-bg: rgb(var(--c-border) / 0.4);
+  --tw-prose-th-borders: rgb(var(--c-border));
+  --tw-prose-td-borders: rgb(var(--c-border));
+}
+
+/* Readable measure inside a wide column.
+   `container: wide` exists so a card grid can run three across, and the prose sharing
+   that column then sets to ~105 characters — a third past where a line stops being
+   comfortable to track back from. This caps the running text and nothing else: the
+   widgets carry `not-prose` and are untouched, and tables, code blocks and images keep
+   the full width, which is the reason the page asked to be wide in the first place.
+   Applied by layouts/misc/single.html only when the page is both wide and prose. */
+/* Cap the RUNNING TEXT at a readable measure when a page has asked for a wide
+   column, so the prose does not set to ~105 characters while a widget beside it
+   uses the full width.
+
+   `:not(.not-prose)` is the escape hatch, and it is load-bearing. A widget whose
+   root is a bare <ul> — the campaign's feature-card and feat-card grids — is a
+   direct child here, and without the exclusion it gets capped at 68ch and lays
+   out two columns in a space that fits three. `not-prose` already means
+   "Typography, hands off"; this is the same instruction and the same marker. */
+.prose-measure > :is(p, ul, ol, blockquote):not(.not-prose),
+.prose-measure > details > :is(p, ul, ol, blockquote):not(.not-prose),
+.prose-measure > details > summary {
+  max-width: 68ch;
+}
+
+.nav-scroll::-webkit-scrollbar {
+  display: none;
+}
+.nav-scroll {
+  scrollbar-width: none;
+  /* Firefox sub-pixel-reflows the whole card while the dot/line states animate
+     their size on hover and scroll-spy. Layout containment makes the nav its own
+     layout boundary, so those internal animations can't resize the parent card. */
+  contain: layout;
+}
+
+/* Slim, theme-aware scrollbar for scrollable lists (e.g. /network). */
+.scroll-slim::-webkit-scrollbar {
+  width: 6px;
+}
+.scroll-slim::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scroll-slim::-webkit-scrollbar-thumb {
+  background: rgb(var(--c-border));
+  border-radius: 3px;
+}
+.scroll-slim::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--c-muted));
+}
+.scroll-slim {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(var(--c-border)) transparent;
+}
+
+/* ── Glassmorphism 2.0 ──────────────────────────────────────────────────────
+   Layered translucent "liquid glass": heavy blur + saturation boost behind a
+   lightly tinted pane, a specular highlight along the top edge, and a soft cast
+   shadow. The no-backdrop-filter fallback is a near-opaque panel so text stays
+   legible. Tuned per surface below. */
+
+/* Top nav. Mobile: a floating "island" — full border, rounded, lifted off the
+   page (the template adds the side + top margins). Desktop: a flush full-width
+   bar with just a bottom hairline. The fill is nearly invisible over a flat page
+   bg, so the edge (border + specular) and shadow carry the look. */
+.glass-nav {
+  background-color: rgb(var(--glass-bg) / 0.82);
+  border: 1px solid rgb(var(--c-border));
+  border-radius: 1.25rem;
+  box-shadow:
+    inset 0 1px 0 0 rgb(var(--glass-hi) / 0.5),
+    0 10px 30px -12px rgb(0 0 0 / 0.3);
+}
+
+/* Mobile nav menu: a detached floating panel that matches the island — full
+   edge, rounded all round (via the template), deep shadow. Mobile-only. */
+.glass-panel {
+  background-color: rgb(var(--glass-bg) / 0.85);
+  border: 1px solid rgb(var(--c-border));
+  box-shadow:
+    inset 0 1px 0 0 rgb(var(--glass-hi) / 0.55),
+    0 18px 44px -16px rgb(0 0 0 / 0.28);
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  /* Glass, not frosted plastic: a modest blur so the tiled noise texture behind
+     doesn't smear into streaks, a saturation bump for the "liquid" vibrancy, and
+     a transparent fill. No white veil gradient — that read as milky film. The
+     edge (border + specular highlight) does the work of defining the pane. */
+  .glass-nav {
+    background-color: rgb(var(--glass-bg) / 0.42);
+    -webkit-backdrop-filter: blur(12px) saturate(160%);
+    backdrop-filter: blur(12px) saturate(160%);
+  }
+  .glass-panel {
+    background-color: rgb(var(--glass-bg) / 0.46);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+    backdrop-filter: blur(14px) saturate(160%);
+  }
+}
+
+/* Desktop: revert the nav island to a flush full-width bar. */
+@media (min-width: 1024px) {
+  .glass-nav {
+    border: 0;
+    border-bottom: 1px solid rgb(var(--c-border));
+    border-radius: 0;
+    box-shadow:
+      inset 0 1px 0 0 rgb(var(--glass-hi) / 0.6),
+      0 6px 18px -8px rgb(0 0 0 / 0.18);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  /* On the dark theme the white specular line runs too hot, and the cast shadow
+     needs more weight to register against near-black. */
+  .glass-nav {
+    box-shadow:
+      inset 0 1px 0 0 rgb(var(--glass-hi) / 0.12),
+      0 10px 30px -12px rgb(0 0 0 / 0.7);
+  }
+  .glass-panel {
+    box-shadow:
+      inset 0 1px 0 0 rgb(var(--glass-hi) / 0.1),
+      0 18px 44px -16px rgb(0 0 0 / 0.75);
+  }
+}
+@media (min-width: 1024px) and (prefers-color-scheme: dark) {
+  .glass-nav {
+    box-shadow:
+      inset 0 1px 0 0 rgb(var(--glass-hi) / 0.12),
+      0 6px 22px -10px rgb(0 0 0 / 0.7);
+  }
+}
+
+/* AI chat trigger gate. scripts/site/widgets/ai-widget.ts sets data-ai-ok on <html> once a backend
+   health check passes (cached in localStorage). Until then we HIDE the triggers
+   with an override, rather than supplying their display — so the buttons keep
+   their own responsive layout/centering, and a missing/stale rule degrades to
+   "visible but correct", never a broken icon. The FAB is desktop-only; the mobile
+   button's parent is lg:hidden. */
+html:not([data-ai-ok]) [data-ai-fab],
+html:not([data-ai-ok]) [data-ai-mobile-trigger] { display: none !important; }
+
+/* Floating glass button (e.g. the mobile scroll-to-top). The button carries its
+   own transform for the show/hide animation; since that transform is on the same
+   element as the backdrop-filter it doesn't break the blur. */
+.glass-btn {
+  background-color: rgb(var(--glass-bg) / 0.6);
+  border: 1px solid rgb(var(--c-border));
+  box-shadow:
+    inset 0 1px 0 0 rgb(var(--glass-hi) / 0.5),
+    0 6px 18px -6px rgb(0 0 0 / 0.25);
+}
+.glass-btn:hover {
+  background-color: rgb(var(--glass-bg) / 0.72);
+}
+
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass-btn {
+    background-color: rgb(var(--glass-bg) / 0.42);
+    -webkit-backdrop-filter: blur(12px) saturate(160%);
+    backdrop-filter: blur(12px) saturate(160%);
+  }
+  .glass-btn:hover {
+    background-color: rgb(var(--glass-bg) / 0.55);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .glass-btn {
+    box-shadow:
+      inset 0 1px 0 0 rgb(var(--glass-hi) / 0.12),
+      0 6px 18px -6px rgb(0 0 0 / 0.6);
+  }
+}
+
+/* Glass surface for the identity pane. Mobile: a full-bleed banner flush under
+   the nav — square, bottom border only, shallow shadow (the template adds the
+   negative gutter margins). Desktop: the sticky left-pane card — bordered all
+   round, rounded, lifted. Fallback fill is near-opaque without backdrop-filter. */
+.glass-card {
+  padding: 1.5rem;
+  border-bottom: 1px solid rgb(var(--c-border));
+  background-color: rgb(var(--glass-bg) / 0.9);
+  box-shadow:
+    inset 0 1px 0 0 rgb(var(--glass-hi) / 0.45),
+    0 8px 20px -12px rgb(0 0 0 / 0.25);
+}
+@supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass-card {
+    background-color: rgb(var(--glass-bg) / 0.4);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+    backdrop-filter: blur(14px) saturate(160%);
+  }
+}
+@media (min-width: 1024px) {
+  .glass-card {
+    padding: 1.75rem;
+    border: 1px solid rgb(var(--c-border));
+    border-radius: 1rem;
+    box-shadow:
+      inset 0 1px 0 0 rgb(var(--glass-hi) / 0.45),
+      0 12px 34px -16px rgb(0 0 0 / 0.2);
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .glass-card {
+    box-shadow:
+      inset 0 1px 0 0 rgb(var(--glass-hi) / 0.1),
+      0 8px 20px -12px rgb(0 0 0 / 0.6);
+  }
+}
+@media (min-width: 1024px) and (prefers-color-scheme: dark) {
+  .glass-card {
+    box-shadow:
+      inset 0 1px 0 0 rgb(var(--glass-hi) / 0.1),
+      0 12px 34px -16px rgb(0 0 0 / 0.6);
+  }
+}
+
+/* Cross-page crossfade (View Transitions). Feeds two paths: htmx-boosted body
+   swaps (via main.ts) and full-document loads (@view-transition below, used by
+   /network which opts out of boost). No API → instant swap, no first-paint cost. */
+@view-transition {
+  navigation: auto;
+}
+
+/* Outgoing page fades out; incoming fades in while rising a few px. */
+@keyframes vt-content-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes vt-content-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+::view-transition-old(root) {
+  animation: 320ms ease both vt-content-out;
+}
+::view-transition-new(root) {
+  animation: 560ms cubic-bezier(0.22, 1, 0.36, 1) both vt-content-in;
+}
+
+/* Give the nav its own transition group so it holds steady while content fades.
+   NB: this lives on the glass bar itself, NOT on [data-top-nav]. An element with
+   a view-transition-name is a backdrop root, so putting it on an ancestor of the
+   glass bar would neutralise the bar's backdrop-filter (it'd have nothing behind
+   it to blur). Keeping name + backdrop-filter on the same element avoids that. */
+.glass-nav {
+  view-transition-name: site-nav;
+}
+/* Hide the old nav snapshot rather than crossfade it: the nav is translucent and
+   its active highlight differs per page, so showing both would ghost an after-image. */
+::view-transition-old(site-nav) {
+  animation: none;
+  opacity: 0;
+}
+::view-transition-new(site-nav) {
+  animation: none;
+}
+
+/* Respect users who ask for less motion — no fade or movement, instant cut. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root),
+  ::view-transition-old(site-nav),
+  ::view-transition-new(site-nav) {
+    animation: none;
+  }
+}
+
+/* Colophon performance meters: rings + bars start empty and are filled by
+   scripts/site/widgets/perf-meters.ts when scrolled into view.
+
+   NO CSS TRANSITIONS HERE, deliberately. There used to be a motion-gated block
+   transitioning `.perf-ring`'s stroke-dasharray and `.perf-bar`'s width, described as
+   "these transitions carry the sweep". They carried nothing: perf-meters.ts sets
+   `style.transition = 'none'` on every ring and bar before it animates, and drives the
+   whole sweep with requestAnimationFrame instead — because Firefox will not reliably
+   animate a two-value stroke-dasharray list, which left the rings stuck when toggling to
+   a panel that started hidden. The rules were dead, the comment was actively misleading,
+   and the `width` one was a standing layout-thrash finding for an animation that never
+   ran. Reduced motion is honoured in the module, not here. */
+
+/* Mobile / desktop segmented toggle. */
+.perf-toggle {
+  color: rgb(var(--c-muted));
+}
+.perf-toggle[aria-pressed='true'] {
+  background: rgb(var(--c-fg));
+  color: rgb(var(--c-bg));
+}
+.perf-toggle[aria-pressed='false']:hover {
+  color: rgb(var(--c-fg));
+}
+
+/* Reference checkpoints on a vital's bar (web-average / poor thresholds),
+   each with a hover/focus tooltip. */
+.perf-dot {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  width: 14px;
+  height: 14px;
+  cursor: help;
+}
+.perf-dot-visual {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  /* Ring in the page background so the dot reads against the green fill. */
+  box-shadow: 0 0 0 2px rgb(var(--c-bg));
+}
+.perf-tip {
+  position: absolute;
+  bottom: calc(100% + 7px);
+  left: 50%;
+  transform: translateX(-50%) translateY(3px);
+  white-space: nowrap;
+  background: rgb(var(--c-fg));
+  color: rgb(var(--c-bg));
+  font-size: 0.7rem;
+  line-height: 1;
+  padding: 0.32rem 0.46rem;
+  border-radius: 4px;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 20;
+  transition: opacity 150ms ease, transform 150ms ease;
+}
+.perf-dot:hover .perf-tip,
+.perf-dot:focus .perf-tip,
+.perf-dot:focus-visible .perf-tip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .perf-tip {
+    transition: none;
+  }
+}
+
+/* ── Impossible-list game detail drawer (desktop only) ──────────────────────
+   Desktop (>=1024px): a full-height card sliding in from the right. On mobile the
+   game detail is shown inside the top-nav panel instead (a 'game' mode -- see
+   topnav.html / nav.ts), so this drawer is disabled below 1024px. Hidden by
+   default ([hidden]); scripts/site/games/impossible-modal.ts removes it and toggles [data-open]. */
+[data-game-modal] {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none; /* let clicks reach the page; only the card re-enables them */
+}
+@media (max-width: 1023px) {
+  [data-game-modal] {
+    display: none; /* mobile uses the nav panel */
+  }
+}
+
+[data-game-shell] {
+  position: absolute;
+  inset: 0;
+  max-width: 99rem; /* track the centered content; card sits beside it, not at the edge */
+  margin-inline: auto;
+  display: flex;
+  align-items: center; /* float, vertically centered */
+  justify-content: flex-end; /* …on the right */
+  padding: 1.5rem;
+  pointer-events: none;
+}
+[data-game-dialog] {
+  pointer-events: auto;
+  display: flex;
+  width: 24rem;
+  max-width: calc(100vw - 3rem);
+  max-height: calc(100dvh - 3rem);
+  transform: translateX(calc(100% + 2rem)); /* off-screen incl. the gutter */
+  opacity: 0;
+  transition:
+    transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 240ms ease;
+}
+[data-game-modal][data-open] [data-game-dialog] {
+  transform: translateX(0);
+  opacity: 1;
+}
+/* Glass "long card": the .glass-panel + rounded-2xl classes (in the markup)
+   supply the frosted fill, border, shadow, and blur, matching the mobile panel. */
+[data-game-card] {
+  position: relative;
+  width: 100%;
+  max-height: calc(100dvh - 3rem);
+  overflow-y: auto;
+}
+
+/* Letterbox the game screenshots inside their 16:9 frames. Needed because the
+   global `img { height: auto }` base rule is unlayered and would otherwise beat
+   Tailwind's h-full utility, leaving the image to overflow and clip. */
+[data-game-figure] img,
+[data-mobile-panel-game] img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Media carousel inside the detail modal (games + books). Horizontal scroll-snap;
+   slides are injected by the TS. game kind = 16:9 frame, book kind = portrait. */
+[data-game-media],
+[data-game-mobile-media] {
+  display: flex;
+  width: 100%;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  background-color: rgb(var(--c-border) / 0.15);
+  scrollbar-width: none;
+}
+[data-game-media]::-webkit-scrollbar,
+[data-game-mobile-media]::-webkit-scrollbar {
+  display: none;
+}
+[data-game-media] {
+  border-bottom: 1px solid rgb(var(--c-border) / 0.6);
+}
+[data-game-mobile-media] {
+  border: 1px solid rgb(var(--c-border) / 0.6);
+  border-radius: 0.75rem;
+}
+[data-game-media][data-kind='game'],
+[data-game-mobile-media][data-kind='game'] {
+  aspect-ratio: 16 / 9;
+}
+[data-game-media][data-kind='book'],
+[data-game-mobile-media][data-kind='book'] {
+  height: 20rem;
+}
+
+/* Desktop lightbox — enlarge a carousel image over the drawer. */
+[data-game-lightbox] {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  pointer-events: auto; /* re-enable, since the modal root is now click-through */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: rgb(0 0 0 / 0.9);
+  cursor: zoom-out;
+}
+[data-game-lightbox] img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-game-dialog] {
+    transition: none;
+  }
+}
+
+/* Passcode gate (the vault shortcode + scripts/site/widgets/vault.ts). Entry dots and the
+   wrong-code shake live here beside the other data-attribute components; the
+   keypad buttons themselves are plain utilities in the shortcode. The shake is
+   feedback, not information — the dots emptying and the status line say the
+   same thing, so under prefers-reduced-motion it simply never runs. */
+[data-vault-dot] {
+  display: block;
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 9999px;
+  border: 1px solid rgb(var(--c-muted) / 0.55);
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease,
+    transform 120ms ease;
+}
+[data-vault-dot][data-filled] {
+  background-color: rgb(var(--c-accent));
+  border-color: rgb(var(--c-accent));
+  transform: scale(1.15);
+}
+
+@keyframes vault-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-6px);
+  }
+  40% {
+    transform: translateX(6px);
+  }
+  60% {
+    transform: translateX(-4px);
+  }
+  80% {
+    transform: translateX(4px);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-vault-shake] {
+    animation: vault-shake 320ms ease;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-vault-dot] {
+    transition: none;
+  }
+  [data-vault-dot][data-filled] {
+    transform: none;
+  }
+}
+
+/* Front-plate tile map (shortcodes/visorplate/plate-map.html + scripts/site/widgets/plate-map.ts). Three
+   states read by fill alone would lean on colour, so "dropped" is also the only
+   dashed one — it survives greyscale and a colour-blind reader. aria-pressed
+   marks the tile the readout is showing after a tap. */
+.plate-tile {
+  border: 1px solid transparent;
+  transition:
+    background-color 120ms ease,
+    color 120ms ease,
+    transform 120ms ease,
+    box-shadow 120ms ease;
+}
+.plate-tile[data-state='required'] {
+  background-color: rgb(var(--c-accent) / 0.85);
+  color: rgb(var(--c-bg));
+}
+.plate-tile[data-state='rear'] {
+  background-color: rgb(var(--c-muted) / 0.16);
+  color: rgb(var(--c-muted));
+}
+.plate-tile[data-state='dropped'] {
+  background-color: rgb(var(--c-accent) / 0.08);
+  border: 1px dashed rgb(var(--c-accent) / 0.8);
+  color: rgb(var(--c-accent));
+}
+button.plate-tile {
+  cursor: pointer;
+}
+button.plate-tile:hover,
+button.plate-tile[aria-pressed='true'] {
+  transform: scale(1.12);
+  box-shadow: 0 0 0 2px rgb(var(--c-bg)), 0 0 0 3.5px rgb(var(--c-fg) / 0.7);
+}
+button.plate-tile:focus-visible {
+  outline: 2px solid rgb(var(--c-fg));
+  outline-offset: 2px;
+}
+
+/* Image carousel (shortcodes/carousel.html + scripts/site/widgets/carousel.ts). The track is plain
+   horizontal scroll-snap, so it swipes and keyboard-scrolls with no script at
+   all; the script only adds the arrows and dots. */
+[data-carousel-track] {
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+[data-carousel-track]::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plate-tile {
+    transition: none;
+  }
+  button.plate-tile:hover,
+    button.plate-tile[aria-pressed='true'] {
+    transform: none;
+  }
+}

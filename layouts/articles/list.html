@@ -1,5 +1,5 @@
 {{ define "banner" }}
-{{ partial "page-banner.html" (dict
+{{ partial "site/page-banner.html" (dict
   "title" "Articles"
   "subtitle" (.Params.lead | default "")) }}
 {{ end }}
@@ -21,12 +21,12 @@
       {{- end }}
       <div class="min-w-0 flex-1">
         <h2 class="m-0 flex items-center gap-2 text-lg font-medium">
-          {{- partial "article-mark.html" (dict "page" .) }}
+          {{- partial "components/article-mark.html" (dict "page" .) }}
           <a href="{{ .RelPermalink }}" class="no-underline">{{ .Title }}</a>
         </h2>
         <p class="mt-1 text-muted">{{ .Params.description }}</p>
         <p class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-xs text-muted">
-          <span class="shrink-0">{{ partial "formatted-date.html" (dict "date" .Date) }}</span>
+          <span class="shrink-0">{{ partial "components/formatted-date.html" (dict "date" .Date) }}</span>
           {{- with .Params.tags }}<span>· {{ delimit . ", " }}</span>{{ end }}
         </p>
       </div>

@@ -24,7 +24,7 @@
 #
 # ── Figures ───────────────────────────────────────────────────────────
 # `figure` adds a micro-diagram under the definition (see
-# assets/scripts/site/def-figures.ts). The kinds:
+# assets/scripts/site/definitions/def-figures.ts). The kinds:
 #
 #   kind: argument-map    two premises flowing into a conclusion. ONE drawing
 #                         shared by argument / premise / conclusion / support /

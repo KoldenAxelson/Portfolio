@@ -2,7 +2,7 @@
  *
  * This file exists to be edited. It starts as the current best solver and is
  * where the next guess goes, so experiments never touch a solver the page
- * depends on. Reach it with {{< puzzle-solver solver="hypothesis" >}} and
+ * depends on. Reach it with {{< puzzle/solver solver="hypothesis" >}} and
  * compare it against `support` side by side on the same page.
  *
  * Guesses already tried and rejected on this box, so they don't get tried

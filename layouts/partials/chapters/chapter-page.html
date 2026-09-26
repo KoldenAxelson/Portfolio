@@ -10,11 +10,11 @@
   definitions-assets runs before .Content so term.html finds the glossary already
   shipped; it renders nothing for a section without `glossary:` (Basic Logic).
 */ -}}
-{{- partial "definitions-assets.html" . }}
+{{- partial "definitions/assets.html" . }}
 <article class="space-y-4 text-base leading-relaxed text-muted
   [&_h2]:mt-10 [&_h2]:mb-1 [&_h2]:text-xl [&_h2]:font-semibold [&_h2]:tracking-tight [&_h2]:text-fg
   [&_h3]:mt-6 [&_h3]:mb-1 [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-fg
   [&_a]:text-fg [&_a]:underline [&_a]:decoration-border hover:[&_a]:!text-accent">
   {{ .Content }}
 </article>
-{{ partial "chapter-select.html" . -}}
+{{ partial "chapters/chapter-select.html" . -}}

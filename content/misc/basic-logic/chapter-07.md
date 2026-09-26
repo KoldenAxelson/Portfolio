@@ -44,10 +44,10 @@ Where the book had you work an exercise by hand, drop in a widget. This one is
 a placeholder until the interactive pieces are built (see the authoring guide),
 but it already renders as a styled, self-contained card:
 
-{{< logic-widget name="truth-values" title="Statement or not?" icon="puzzle-piece" >}}
+{{< basic-logic/widget name="truth-values" title="Statement or not?" icon="puzzle-piece" >}}
 Decide whether each sentence is a statement (can be true or false) or not.
 *Interactive version coming soon — this text is the fallback shown until then.*
-{{< /logic-widget >}}
+{{< /basic-logic/widget >}}
 
 ## Takeaways
 
