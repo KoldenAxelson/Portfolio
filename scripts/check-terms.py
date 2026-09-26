@@ -6,6 +6,12 @@ short form in its label like "RAG", or one of the entry's `aliases`),
 not a paraphrase. Usage:
 
     python3 scripts/check-terms.py content/articles/some-post.md [...]
+    python3 scripts/check-terms.py --unlinked content/articles/some-post.md
+
+--unlinked lists glossary words that appear in the prose without a term link
+(every occurrence should be linked, including terms from earlier chapters). It
+is advisory and always exits 0: ordinary English words ("where", "loss") can
+match a key, so read each hit and ignore those.
 
 Reads the page's `glossary:` front matter, or the one its section's _index.md
 cascades (default basic-logic). Exit code 1 if
@@ -77,6 +83,38 @@ def check(path):
     return flagged
 
 
+def prose_only(source):
+    """The visible prose, with term links, code, links, shortcodes and HTML removed."""
+    body = source.split('---', 2)[2]
+    body = re.sub(r'```.*?```', ' ', body, flags=re.S)
+    body = TERM.sub(' ', body)
+    body = re.sub(r'\{\{[<%].*?[>%]\}\}', ' ', body, flags=re.S)
+    body = re.sub(r'<!--.*?-->', ' ', body, flags=re.S)
+    body = re.sub(r'`[^`]*`', ' ', body)
+    body = re.sub(r'\[[^\]]*\]\([^)]*\)', ' ', body)
+    lines = [l for l in body.splitlines() if not l.lstrip().startswith(('<', '#'))]
+    return '\n'.join(lines)
+
+
+def unlinked(path):
+    source = Path(path).read_text()
+    glossary = load_glossary(glossary_name(path, source.split('---')[1]))
+    prose = prose_only(source)
+    for key, entry in sorted(glossary.items()):
+        names = sorted(forms(key, entry['term'], entry.get('aliases', [])), key=len, reverse=True)
+        for name in (n for n in names if len(n) >= 3):
+            hit = re.search(r'(?<![\w-])' + re.escape(name).replace(r'\ ', r'[\s-]') + r'(e?s)?(?![\w-])', prose, re.I)
+            if hit:
+                snippet = prose[max(0, hit.start() - 30):hit.end() + 30].replace('\n', ' ')
+                print(f'{path}: "{hit.group(0)}" could link {key}  …{snippet}…')
+                break
+
+
 if __name__ == '__main__':
-    total = sum(check(p) for p in sys.argv[1:])
+    args = sys.argv[1:]
+    if '--unlinked' in args:
+        for p in (a for a in args if a != '--unlinked'):
+            unlinked(p)
+        sys.exit(0)
+    total = sum(check(p) for p in args)
     sys.exit(1 if total else 0)
