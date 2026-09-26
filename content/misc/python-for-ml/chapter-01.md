@@ -18,7 +18,7 @@ A {{< term "list" >}}list{{< /term >}} is like a Go slice or a JavaScript array:
 
 {{< py-example "ch01/containers" >}}
 
-Here is the chapter in one small job: reading a CSV of training runs by hand. {{< term "pathlib-path" >}}pathlib.Path{{< /term >}} names the file, {{< term "unpacking" >}}unpacking{{< /term >}} splits the header from the other lines, and a {{< term "comprehension" >}}comprehension{{< /term >}} turns each line into a {{< term "dict" >}}dict{{< /term >}}.
+One small job puts several of these to work: reading a CSV of training runs by hand. {{< term "pathlib-path" >}}pathlib.Path{{< /term >}} names the file, {{< term "unpacking" >}}unpacking{{< /term >}} splits the header from the other lines, and a {{< term "comprehension" >}}comprehension{{< /term >}} turns each line into a {{< term "dict" >}}dict{{< /term >}}.
 
 {{< code-stepper "ch01/read-csv" >}}
 
@@ -32,7 +32,7 @@ A {{< term "dataclass" >}}dataclass{{< /term >}} is a struct, as in Go or C, wit
 
 {{< py-example "ch01/dataclass" >}}
 
-A {{< term "context-manager" >}}context manager{{< /term >}} works like Go's `defer` or Java's try-with-resources, in block form: `with path.open() as f:` closes the file when the block ends, even if it raises. A {{< term "generator" >}}generator{{< /term >}} makes its values one at a time, only when asked, so a file bigger than memory can be read line by line. Once it has run out it stays empty, and a second loop over it quietly gets nothing.
+A {{< term "context-manager" >}}context manager{{< /term >}} works like Go's `defer` or Java's try-with-resources, in block form: `with path.open() as f:` closes the file when the block ends, even if it raises. A {{< term "generator" >}}generator{{< /term >}} makes its values one at a time, only when asked, so a file bigger than memory can be read line by line. Once it has run out it stays empty, and a second loop over it gets nothing, with no error.
 
 {{< py-example "ch01/lazy" >}}
 

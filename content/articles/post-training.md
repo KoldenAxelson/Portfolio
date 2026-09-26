@@ -1,16 +1,9 @@
 ---
 title: 'How Does a Text Predictor Become an Assistant?'
 description: "A freshly trained language model doesn't answer questions; it continues them. Post-training explained: example answers, human preferences, RLHF and DPO, rewards a program can check, written principles, and the ways it all goes wrong."
-pubDate: 2026-09-24
+pubDate: 2026-09-05
 tags: ['ml', 'llm', 'post-training', 'explainer']
 glossary: "ml"
-# In review: builds at its URL but stays off every list, feed and sitemap,
-# and is noindexed. Listed at /misc/drafts/ in reviewOrder (the validation
-# queue). Publish by deleting these lines.
-review: true
-reviewOrder: 9
-build:
-  list: never
 thoughts:
   - "Pretraining gives a model its knowledge. Everything that makes it pleasant, or unbearable, to talk to happens afterwards."
   - "The scariest demo on this blog is the one where you teach a model to flatter you in six clicks."

@@ -22,13 +22,13 @@ A (3, 4) {{< term "ndarray" >}}array{{< /term >}} plus a (4,) row adds the row t
 
 {{< py-example "ch03/broadcast" >}}
 
-Here is a line you will write again and again in ML preprocessing: normalizing a batch so each column has {{< term "mean" >}}mean{{< /term >}} 0 and spread 1.
+ML preprocessing uses this line again and again: normalizing a batch so each column has {{< term "mean" >}}mean{{< /term >}} 0 and spread 1.
 
 {{< code-stepper "ch03/normalize" >}}
 
 A {{< term "reduction" >}}reduction{{< /term >}} turns many values into fewer: {{< term "sum" >}}sum{{< /term >}}, {{< term "mean" >}}mean{{< /term >}}, {{< term "max" >}}max{{< /term >}}, and {{< term "argmax" >}}argmax{{< /term >}}, which gives the position of the largest value instead of the value. With no {{< term "axis" >}}axis{{< /term >}}, they return one number. With `axis=` they collapse only that {{< term "axis" >}}axis{{< /term >}}, so `axis=0` gives one value per column.
 
-{{< term "keepdims" >}}keepdims=True{{< /term >}} keeps the collapsed {{< term "axis" >}}axis{{< /term >}} with length 1, so the result still lines up with the original. This is where most people slip. To normalize rows instead of columns, the row {{< term "mean" >}}means{{< /term >}} need {{< term "keepdims" >}}keepdims{{< /term >}}: without it they have {{< term "shape" >}}shape{{< /term >}} (rows,), which lines up with the columns, so the subtraction fails or, on a square {{< term "ndarray" >}}array{{< /term >}}, quietly subtracts the wrong numbers.
+{{< term "keepdims" >}}keepdims=True{{< /term >}} keeps the collapsed {{< term "axis" >}}axis{{< /term >}} with length 1, so the result still lines up with the original. This is where most people slip. To normalize rows instead of columns, the row {{< term "mean" >}}means{{< /term >}} need {{< term "keepdims" >}}keepdims{{< /term >}}: without it they have {{< term "shape" >}}shape{{< /term >}} (rows,), which lines up with the columns, so the subtraction fails or, on a square {{< term "ndarray" >}}array{{< /term >}}, subtracts the wrong numbers without an error.
 
 {{< py-example "ch03/reduce" >}}
 
@@ -36,7 +36,7 @@ A {{< term "reduction" >}}reduction{{< /term >}} turns many values into fewer: {
 
 {{< py-example "ch03/combine" >}}
 
-One more trap, and it's quiet. A {{< term "slicing" >}}slice{{< /term >}} is a {{< term "view" >}}view{{< /term >}}: it shares memory with the {{< term "ndarray" >}}array{{< /term >}} it came from, so writing into the {{< term "slicing" >}}slice{{< /term >}} writes into the original. A function that edits a {{< term "slicing" >}}slice{{< /term >}} of its argument changes the caller's data, and nothing warns you. Call `.copy()` when you need a {{< term "copy" >}}copy{{< /term >}} of your own, and ask `np.shares_memory` when you aren't sure.
+One more trap raises no error at all. A {{< term "slicing" >}}slice{{< /term >}} is a {{< term "view" >}}view{{< /term >}}: it shares memory with the {{< term "ndarray" >}}array{{< /term >}} it came from, so writing into the {{< term "slicing" >}}slice{{< /term >}} writes into the original. A function that edits a {{< term "slicing" >}}slice{{< /term >}} of its argument changes the caller's data, and nothing warns you. Call `.copy()` when you need a {{< term "copy" >}}copy{{< /term >}} of your own, and ask `np.shares_memory` when you aren't sure.
 
 {{< py-example "ch03/view-copy" >}}
 
@@ -48,6 +48,6 @@ The habit from the last chapter gains two checks. Before you write a loop over a
 
 ## Homework
 
-The packet has three parts: predict the {{< term "shape" >}}shapes{{< /term >}} that {{< term "broadcasting" >}}broadcasting{{< /term >}} and {{< term "reduction" >}}reductions{{< /term >}} produce, write five small functions as whole-array expressions with no loop, then fix two bugs: a slow loop (the test times it) and a function that quietly changes its input through a {{< term "view" >}}view{{< /term >}}.
+The packet has three parts: predict the {{< term "shape" >}}shapes{{< /term >}} that {{< term "broadcasting" >}}broadcasting{{< /term >}} and {{< term "reduction" >}}reductions{{< /term >}} produce, write five small functions as whole-array expressions with no loop, then fix two bugs: a slow loop (the test times it) and a function that silently changes its input through a {{< term "view" >}}view{{< /term >}}.
 
 {{< workbook "ch03" >}}

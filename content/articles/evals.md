@@ -1,18 +1,11 @@
 ---
 title: 'How Do You Know a Model Got Better?'
 description: "Evals, explained for people who ship software: test sets and the leaks that ruin them, why grading language is hard, LLM judges and their biases, and turning all of it into a gate your deploys have to pass."
-pubDate: 2026-09-24
+pubDate: 2026-09-03
 tags: ['ml', 'evals', 'mlops', 'explainer']
 glossary: "ml"
-# In review: builds at its URL but stays off every list, feed and sitemap,
-# and is noindexed. Listed at /misc/drafts/ in reviewOrder (the validation
-# queue). Publish by deleting these lines.
-review: true
-reviewOrder: 8
-build:
-  list: never
 thoughts:
-  - "Evals are just tests. Tests where the expected output is 'something good'. That's the hard part."
+  - "Evals are just tests where the expected output is 'something good', which is the hard part."
   - "I trust a model roughly as much as I trust the eval suite behind it."
 ---
 
@@ -40,7 +33,7 @@ It also has known biases. The same study measured a preference for longer answer
 
 {{< ml-judge >}}
 
-The fixes are dull, and most of them work. Ask twice with the order swapped and only count consistent verdicts. Don't trust an instruction to ignore length: in the study that measured the length preference, two of three judges still preferred padded answers anyway. Give it the facts to grade against, like the shop policy in the demo.
+The fixes are dull, and most of them work. Ask twice with the order swapped and only count consistent verdicts. Don't trust an instruction to ignore length: in the study that measured the length preference, two of three judges still preferred padded answers. Give it the facts to grade against, like the shop policy in the demo.
 
 And spot-check it against a person, often.
 
@@ -58,7 +51,7 @@ Then keep evaluating after the deploy. {{< term "monitoring" >}}Monitoring{{< /t
 
 ## So how do you know it got better?
 
-You write down what "better" means before you look. A locked test set that never leaks, a regression suite of every past failure, checks in code wherever an answer can be checked, and a judge you've caught being biased and corrected. None of it is glamorous, but it's the difference between shipping a model you believe improved and shipping one you can show improved. That's what the gate is for.
+You write down what "better" means before you look. A locked test set that never leaks, a regression suite of every past failure, checks in code wherever an answer can be checked, and a judge you've caught being biased and corrected. None of it is glamorous, but it lets you show that a model improved instead of just believing it did, and that's the gate's job.
 
 ## References & further reading
 

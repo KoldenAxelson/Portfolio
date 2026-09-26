@@ -1,22 +1,16 @@
 ---
 title: 'How Do You Protect a Model''s Weights?'
 description: "Months of compute and a fortune in chips end up as one set of files. Why AI labs treat model weights as crown jewels, how they get stolen, the controls that stop it, and the case for giving them away."
-pubDate: 2026-09-24
+pubDate: 2026-09-16
 tags: ['ml', 'security', 'explainer']
 glossary: "ml"
-# In review: builds at its URL but stays off every list, feed and sitemap,
-# and is noindexed. Listed at /misc/drafts/ in reviewOrder (the validation
-# queue). Publish by deleting these lines.
-review: true
-reviewOrder: 4
-build:
-  list: never
+featured: true
 thoughts:
-  - "Almost every control in this post is one any ops team already runs. The file is just a lot more expensive."
-  - "The most valuable thing a lab owns is a folder. Guard it accordingly."
+  - "Almost every control in this post is one any ops team already runs, pointed at a very expensive file."
+  - "The most valuable thing a lab owns is a folder of numbers."
 ---
 
-Meta trained Llama 3.1 405B on H100 {{< term "gpu" >}}GPUs{{< /term >}} for [30.84 million GPU hours](https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/MODEL_CARD.md). All of that work, the data, the electricity, the months of engineering, ends up as 405 billion {{< term "weights" >}}weights{{< /term >}}. At 16 bits apiece, that's about 810 GB. It fits on a single 1 TB consumer SSD.
+Meta trained Llama 3.1 405B on H100 {{< term "gpu" >}}GPUs{{< /term >}} for [30.84 million GPU hours](https://github.com/meta-llama/llama-models/blob/main/models/llama3_1/MODEL_CARD.md). All of that data, electricity and months of engineering ends up as 405 billion {{< term "weights" >}}weights{{< /term >}}. At 16 bits apiece, that's about 810 GB. It fits on a single 1 TB consumer SSD.
 
 That's the security problem: a model's weights *are* the product. Whoever holds them can run it, sell it, or use {{< term "fine-tuning" >}}fine-tuning{{< /term >}} to [strip its safety training back out](https://arxiv.org/abs/2310.03693). And unlike a factory, you can copy them in an afternoon. Mark Zuckerberg made the point himself in 2024: ["stealing models that fit on a thumb drive is relatively easy"](https://about.fb.com/news/2024/07/open-source-ai-is-the-path-forward/).
 
@@ -24,19 +18,19 @@ That's the security problem: a model's weights *are* the product. Whoever holds 
 
 It's already happened. In February 2023, Meta shared its first LLaMA with approved researchers only. Within about a week, someone [posted it as a torrent on 4chan](https://www.vice.com/en/article/facebooks-powerful-large-language-model-leaks-online-4chan-llama/). Meta sent takedown notices, but couldn't un-leak it.
 
-In January 2026, a jury [convicted a former Google engineer](https://www.justice.gov/opa/pr/former-google-engineer-found-guilty-economic-espionage-and-theft-confidential-ai-technology) of economic espionage and theft of trade secrets. Over about a year, he'd uploaded more than 2,000 pages about Google's AI supercomputers, including its {{< term "tpu" >}}TPU{{< /term >}} chips, to his personal cloud account. That wasn't weights, but it's the textbook {{< term "insider-threat" >}}insider threat{{< /term >}}: legitimate access, used quietly, for a long time.
+In January 2026, a jury [convicted a former Google engineer](https://www.justice.gov/opa/pr/former-google-engineer-found-guilty-economic-espionage-and-theft-confidential-ai-technology) of economic espionage and theft of trade secrets. Over about a year, he'd uploaded more than 2,000 pages about Google's AI supercomputers, including its {{< term "tpu" >}}TPU{{< /term >}} chips, to his personal cloud account. That wasn't weights, but it's the textbook {{< term "insider-threat" >}}insider threat{{< /term >}}: legitimate access, used discreetly for a long time.
 
 A thorough map of the problem is RAND's 2024 report, [Securing AI Model Weights](https://www.rand.org/pubs/research_reports/RRA2849-1.html). It counts 38 distinct ways to steal them. RAND groups them into nine families, and most are ones any ops person knows: malicious code on a server, stolen credentials, a {{< term "supply-chain-attack" >}}supply-chain attack{{< /term >}}, insiders and bribes, and physical access to the hardware.
 
 ## The controls you already know
 
-Here's the reassuring part: almost every defence is one you've configured before. When Anthropic [raised its security bar in May 2025](https://www.anthropic.com/news/activating-asl3-protections), it said its approach uses more than 100 controls. Among them:
+Reassuringly, almost every defence is one you've configured before. When Anthropic [raised its security bar in May 2025](https://www.anthropic.com/news/activating-asl3-protections), it said its approach uses more than 100 controls. Among them:
 
-- **Two-person access.** No single employee can touch the weights alone. That's two-party authorization, the rule for nuclear launch keys and bank vaults.
-- **Software allowlisting.** Only approved programs run on the machines near the weights.
-- **Bandwidth caps.** {{< term "egress" >}}Egress{{< /term >}} from the secure environment is rate-limited. Weights are huge, so a cap that barely touches normal work turns a quick copy into a slow, visible one.
+- Two-person access: no single employee can touch the weights alone. That's two-party authorization, the rule for nuclear launch keys and bank vaults.
+- Software allowlisting: only approved programs run on the machines near the weights.
+- Bandwidth caps: {{< term "egress" >}}egress{{< /term >}} from the secure environment is rate-limited. Weights are huge, so a cap that barely touches normal work turns a quick copy into a slow, visible one.
 
-Add the usual suspects: hardware security keys against phishing, and logging that someone actually reads.
+Add the usual suspects: hardware security keys against phishing, and logs that someone reads.
 
 ## What's new about guarding a model
 
@@ -60,11 +54,11 @@ The law has started asking too. California's SB 53, [signed in September 2025](h
 
 Not everyone thinks locking weights up is the goal. As of September 2026, Mistral, DeepSeek and Meta all publish {{< term "open-weights" >}}open-weights{{< /term >}} models on purpose, though Meta launched its April 2026 flagship, Muse Spark, closed. Zuckerberg's 2024 argument was that secrecy mostly fails anyway, and openness lets everyone study, fix and build on the models. In July 2024, the US Commerce Department's NTIA [reviewed the question](https://www.ntia.gov/issues/artificial-intelligence/open-model-weights-report) and recommended that the government "actively monitor" the risks rather than restrict open weights for now.
 
-Both positions can be true at once. Publishing a model you've decided is safe to share is a choice. Having an unreleased one taken from you isn't. The security work in this post is about making sure the release is always the lab's decision.
+The two positions conflict less than they seem to. Publishing a model you've decided is safe to share is a choice; having an unreleased one taken from you isn't. The security work in this post is about keeping the release the lab's decision.
 
 ## So how do you protect the weights?
 
-The same way you'd protect any crown-jewel system: few people with access and never one alone, nothing runs that you didn't approve, nothing leaves faster than you can notice, and logs that someone reads. The real difference is the file. It's 810 GB, it cost a fortune, and one copy is enough to lose it for good.
+The same way you'd protect any crown-jewel system: few people with access and never one alone, nothing runs that you didn't approve, nothing leaves faster than you can notice, and logs that someone reads. What's different is the file. It's 810 GB, it cost a fortune, and one copy is enough to lose it for good.
 
 ## References & further reading
 

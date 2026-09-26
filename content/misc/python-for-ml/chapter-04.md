@@ -36,7 +36,7 @@ A CSV stores only text, so every read guesses the {{< term "dtype" >}}dtypes{{< 
 
 {{< py-example "ch04/parquet" >}}
 
-The habit this chapter adds is to look after every step. Check the {{< term "dtype" >}}dtypes{{< /term >}} with {{< term "info" >}}info{{< /term >}}, count the gaps with {{< term "isna" >}}isna{{< /term >}}, and compare the number of rows before and after each filter. A table that lost a row without a word trains a model that is quietly wrong.
+The habit this chapter adds is to look after every step. Check the {{< term "dtype" >}}dtypes{{< /term >}} with {{< term "info" >}}info{{< /term >}}, count the gaps with {{< term "isna" >}}isna{{< /term >}}, and compare the number of rows before and after each filter. A table that lost a row without a word trains a model that is wrong without anyone noticing.
 
 ## Homework
 

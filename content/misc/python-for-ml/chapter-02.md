@@ -12,7 +12,7 @@ description: "Chapter 2 of Python for ML: NumPy arrays, their shape and dtype, a
 weight: 2
 ---
 
-Every ML library you will touch keeps its numbers in NumPy's {{< term "ndarray" >}}ndarray{{< /term >}} or something built like it. An image, a batch of token ids and a layer's weights are all {{< term "ndarray" >}}arrays{{< /term >}}. Many bugs in ML code aren't wrong math but the wrong {{< term "shape" >}}shape{{< /term >}}: a (32, 10) where the code expected (10, 32). This chapter is about reading {{< term "shape" >}}shapes{{< /term >}}.
+Every ML library you will touch keeps its numbers in NumPy's {{< term "ndarray" >}}ndarray{{< /term >}} or something built like it. An image, a batch of token ids and a layer's weights are all {{< term "ndarray" >}}arrays{{< /term >}}. Many bugs in ML code come from the wrong {{< term "shape" >}}shape{{< /term >}}: a (32, 10) where the code expected (10, 32). This chapter is about reading {{< term "shape" >}}shapes{{< /term >}}.
 
 An {{< term "ndarray" >}}array{{< /term >}} is its values, its {{< term "shape" >}}shape{{< /term >}}, and its {{< term "dtype" >}}dtype{{< /term >}}. Make one from a list with {{< term "np-array" >}}np.array{{< /term >}}, or from nothing with {{< term "zeros" >}}np.zeros{{< /term >}}, {{< term "ones" >}}np.ones{{< /term >}} and {{< term "full" >}}np.full{{< /term >}}. {{< term "arange" >}}np.arange{{< /term >}} counts in steps, and {{< term "linspace" >}}np.linspace{{< /term >}} spaces a set number of points between two ends. Random values come from a generator that {{< term "default-rng" >}}np.random.default_rng{{< /term >}} makes; give it a seed and a run can be repeated.
 
