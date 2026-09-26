@@ -46,7 +46,7 @@ Dates written day first are the other trap. {{< term "to-datetime" >}}pd.to_date
 
 {{< py-example "ch05/apply" >}}
 
-The habit this chapter adds is to count rows around every combine. Before a {{< term "groupby" >}}groupby{{< /term >}}, a {{< term "merge" >}}merge{{< /term >}} or a {{< term "resample" >}}resample{{< /term >}}, say how many rows it should give, then check. A join that quietly doubled some rows reports numbers that are simply wrong.
+The habit this chapter adds is to count rows around every combine. Before a {{< term "groupby" >}}groupby{{< /term >}}, a {{< term "merge" >}}merge{{< /term >}} or a {{< term "resample" >}}resample{{< /term >}}, say how many rows it should give, then check. A join that doubled some rows without a warning reports wrong numbers.
 
 ## Homework
 

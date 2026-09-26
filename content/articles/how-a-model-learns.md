@@ -1,16 +1,9 @@
 ---
 title: 'How Does a Model Actually Learn?'
 description: "No math required: loss, gradient descent, learning rates and overfitting, with a line you can train by hand and a curve you can watch memorize the practice test."
-pubDate: 2026-09-24
+pubDate: 2026-09-01
 tags: ['ml', 'training', 'fundamentals', 'explainer']
 glossary: "ml"
-# In review: builds at its URL but stays off every list, feed and sitemap,
-# and is noindexed. Listed at /misc/drafts/ in reviewOrder (the validation
-# queue). Publish by deleting these lines.
-review: true
-reviewOrder: 12
-build:
-  list: never
 thoughts:
   - "'The machine learns' sounds mystical. It's a very patient game of hot and cold."
   - "Picture training as 'roll downhill on the error' and half the jargon in ML stops being scary."
@@ -46,7 +39,7 @@ The numbers get large, but the ideas don't change. Meta trained Llama 3 405B wit
 
 ## Step three: don't memorize the practice test
 
-Here's the trap. A flexible enough model can drive the loss on its training examples almost to zero by memorizing them, noise and all. That's {{< term "overfitting" >}}overfitting{{< /term >}}: a model that ["matches (memorizes) the training set so closely that the model fails to make correct predictions on new data"](https://developers.google.com/machine-learning/crash-course/overfitting/overfitting).
+The trap is that a flexible enough model can drive the loss on its training examples almost to zero by memorizing them, noise and all. That's {{< term "overfitting" >}}overfitting{{< /term >}}: a model that ["matches (memorizes) the training set so closely that the model fails to make correct predictions on new data"](https://developers.google.com/machine-learning/crash-course/overfitting/overfitting).
 
 The defence is to hold data back. Train on one set, and score the model on a {{< term "test-set" >}}test set{{< /term >}} it never trained on. The classic handwritten-digit dataset, MNIST, ships that way: [60,000 training images and 10,000 test images](https://keras.io/api/datasets/mnist/). The test score is the honest measure of {{< term "generalization" >}}generalization{{< /term >}}: how the model does on data it has never seen.
 

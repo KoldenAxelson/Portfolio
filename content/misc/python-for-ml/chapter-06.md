@@ -26,7 +26,7 @@ Read it from the left. Both losses fall while the model learns patterns that hol
 
 Matplotlib offers two ways in. In {{< term "pyplot" >}}pyplot style{{< /term >}}, `plt.plot` and `plt.title` act on the current {{< term "axes-object" >}}Axes{{< /term >}}: the one made last, unless `plt.sca(ax)` picked another. In the {{< term "object-oriented-style" >}}object-oriented style{{< /term >}}, you call the method on the {{< term "axes-object" >}}Axes{{< /term >}} you want, so every line says which plot it changes.
 
-This is where people slip. With two {{< term "axes-object" >}}Axes{{< /term >}}, `plt.title` quietly lands on the second one, with no error. And an {{< term "axes-object" >}}Axes{{< /term >}} spells the same jobs differently: `ax.title` is a Text object, not a function, so calling it raises, and the method is {{< term "set-title" >}}set_title{{< /term >}}.
+This is where people slip. With two {{< term "axes-object" >}}Axes{{< /term >}}, `plt.title` lands on the second one, with no error. And an {{< term "axes-object" >}}Axes{{< /term >}} spells the same jobs differently: `ax.title` is a Text object, not a function, so calling it raises, and the method is {{< term "set-title" >}}set_title{{< /term >}}.
 
 {{< py-example "ch06/pyplot-slip" >}}
 

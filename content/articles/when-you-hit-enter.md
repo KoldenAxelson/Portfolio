@@ -1,22 +1,15 @@
 ---
 title: 'What Happens When You Hit Enter?'
 description: "From keypress to streaming words: tokens, attention, next-token prediction, temperature, and the two phases of serving (prefill and decode) that decide how fast an answer arrives and what it costs."
-pubDate: 2026-09-24
+pubDate: 2026-09-11
 tags: ['ml', 'llm', 'inference', 'explainer']
 glossary: "ml"
-# In review: builds at its URL but stays off every list, feed and sitemap,
-# and is noindexed. Listed at /misc/drafts/ in reviewOrder (the validation
-# queue). Publish by deleting these lines.
-review: true
-reviewOrder: 10
-build:
-  list: never
 thoughts:
-  - "Every step in this post is something somebody has to serve, scale and pay for. That's the part I find interesting."
+  - "Every step in this post is something somebody has to serve, scale and pay for, which is the part I find interesting."
   - "A chatbot doesn't know what it's going to say. It finds out one word at a time, same as you."
 ---
 
-You type a question into a chatbot and press Enter. A beat later, words start streaming out, a few at a time, like someone typing fast. It feels like one action. It's actually a small pipeline, and each stage explains something you've probably noticed: why the first word takes a moment, why the rest flow quickly, and why the same question gets a different answer twice.
+You type a question into a chatbot and press Enter. A beat later, words start streaming out, a few at a time, like someone typing fast. It feels like one action, but it's a small pipeline, and each stage explains something you've probably noticed: why the first word takes a moment, why the rest flow quickly, and why the same question gets a different answer twice.
 
 ## Text becomes numbers
 
@@ -26,9 +19,9 @@ A model can't read letters. Your message is first chopped into {{< term "token" 
 
 ## Every word looks back at the words before it
 
-Now the {{< term "transformer" >}}transformer{{< /term >}} does its work. Its key step is {{< term "attention" >}}attention{{< /term >}}, which the 2017 paper [Attention Is All You Need](https://arxiv.org/abs/1706.03762) made the whole design: each token looks back at all the tokens before it and weighs which ones matter. In "we sat on the river bank", *bank* pays attention to *river* and settles on the right meaning. A model repeats this through dozens of layers, each refining every token's meaning a little further.
+Now the {{< term "transformer" >}}transformer{{< /term >}} does its work. Its main step is {{< term "attention" >}}attention{{< /term >}}, which the 2017 paper [Attention Is All You Need](https://arxiv.org/abs/1706.03762) made the whole design: each token looks back at all the tokens before it and weighs which ones matter. In "we sat on the river bank", *bank* pays attention to *river* and settles on the right meaning. A model repeats this through dozens of layers, each refining every token's meaning a little further.
 
-The output of all that is a single thing: a score for every token in the vocabulary, saying how likely each one is to come *next*. That's all a language model ever produces. One next token.
+The output of all that is a single thing: a score for every token in the vocabulary, saying how likely each one is to come *next*. That's all a language model ever produces: one next token.
 
 ## The next word is a dice roll
 

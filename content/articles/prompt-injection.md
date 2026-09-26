@@ -1,18 +1,12 @@
 ---
 title: 'What Is Prompt Injection, and Why Can''t We Patch It?'
 description: "Prompt injection is SQL injection's younger sibling: instructions hidden in data. Why language models can't tell the two apart, why agents raise the stakes, and the defences that actually help."
-pubDate: 2026-09-24
+pubDate: 2026-09-18
 tags: ['ml', 'security', 'agents', 'explainer']
 glossary: "ml"
-# In review: builds at its URL but stays off every list, feed and sitemap,
-# and is noindexed. Listed at /misc/drafts/ in reviewOrder (the validation
-# queue). Publish by deleting these lines.
-review: true
-reviewOrder: 2
-build:
-  list: never
+featured: true
 thoughts:
-  - "Every security lesson from running servers seems to apply to chatbots. Unfortunately."
+  - "Unfortunately, every security lesson from running servers seems to apply to chatbots too."
   - "We finally fixed SQL injection, then built a machine that's all injection."
 ---
 
@@ -20,7 +14,7 @@ If you've run a web app, you know the oldest trick in the book. A login form exp
 
 In September 2022, Riley Goodside showed GPT-3 obeying text like "Ignore the above directions" slipped into its input. Programmer Simon Willison [named it prompt injection](https://simonwillison.net/2022/Sep/12/prompt-injection/) and wrote: "The obvious parallel here is SQL injection."
 
-Four years on, the parallel holds everywhere except the part that matters. SQL injection got a fix. As of 2026, {{< term "prompt-injection" >}}prompt injection{{< /term >}} hasn't.
+Four years on, the parallel breaks down at the fix: SQL injection got one, and as of 2026, {{< term "prompt-injection" >}}prompt injection{{< /term >}} hasn't.
 
 ## One channel for everything
 
@@ -52,14 +46,12 @@ Detection models that flag suspicious input have the same problem. In October 20
 
 ## Defences that do
 
-What works is what works on servers: assume the component will be compromised, and limit what it can do. The [OWASP Top 10 for LLM applications](https://genai.owasp.org/llmrisk/llm01-prompt-injection/) ranked prompt injection first in its 2025 edition. Its advice, plus Willison's, reads like an ops runbook:
+What works is what works on servers: assume the component will be compromised, and limit what it can do so its mistakes stay small. The [OWASP Top 10 for LLM applications](https://genai.owasp.org/llmrisk/llm01-prompt-injection/) ranked prompt injection first in its 2025 edition. Its advice, plus Willison's, reads like an ops runbook:
 
-- **Only the tools it needs.** An email summarizer under {{< term "least-privilege" >}}least privilege{{< /term >}} doesn't get a send button.
-- **Human approval for risky actions.** Sending, paying and deleting wait for a person who reads what they approve.
-- **Break the trifecta.** An agent that reads untrusted web pages shouldn't also hold your secrets, or else shouldn't reach the internet.
-- **Isolation.** One model reads the untrusted text; another, which never sees it, decides what to do. Willison sketched this in 2023 as the [dual LLM pattern](https://simonwillison.net/2023/Apr/25/dual-llm-pattern/). Google's [CaMeL](https://arxiv.org/abs/2503.18813) builds it properly, so untrusted data "can never impact the program flow".
-
-None of this makes the model smarter, just its mistakes smaller.
+- Only the tools it needs: an email summarizer under {{< term "least-privilege" >}}least privilege{{< /term >}} doesn't get a send button.
+- Human approval for risky actions: sending, paying and deleting wait for a person who reads what they approve.
+- Break the trifecta: an agent that reads untrusted web pages shouldn't also hold your secrets, or else shouldn't reach the internet.
+- Isolation: one model reads the untrusted text; another, which never sees it, decides what to do. Willison sketched this in 2023 as the [dual LLM pattern](https://simonwillison.net/2023/Apr/25/dual-llm-pattern/). Google's [CaMeL](https://arxiv.org/abs/2503.18813) builds it properly, so untrusted data "can never impact the program flow".
 
 ## So why can't we patch it?
 

@@ -1,24 +1,18 @@
 ---
 title: 'Can a Government Agency Just Use ChatGPT?'
 description: "Running AI in a government cloud: FedRAMP, GovCloud regions, air-gapped models, audit logs and agents, as of September 2026. Same plumbing as anywhere else, with the boundaries drawn in ink."
-pubDate: 2026-09-24
+pubDate: 2026-09-26
 tags: ['ml', 'government', 'security', 'compliance', 'explainer']
 glossary: "ml"
-# In review: builds at its URL but stays off every list, feed and sitemap,
-# and is noindexed. Listed at /misc/drafts/ in reviewOrder (the validation
-# queue). Publish by deleting these lines.
-review: true
-reviewOrder: 5
-build:
-  list: never
+featured: true
 thoughts:
-  - "Everyone wants the chatbot. The compliance team wants to know where the prompt goes. Both are right."
-  - "In the private sector the question is 'does it work?'. In government it's 'does it work, and can you prove where the data went?'"
+  - "Everyone wants the chatbot. Compliance wants to know where the prompt goes first, and they have a point."
+  - "Outside government, 'does it work?' is usually enough. Inside, you also have to prove where the data went."
 ---
 
-Somewhere in a federal agency right now, someone has pasted a paragraph into a chatbot to make it sound less like a memo. Then someone from the security office walks by and asks the only question that matters: *where did that paragraph just go?*
+Somewhere in a federal agency right now, someone has pasted a paragraph into a chatbot to make it sound less like a memo. Then someone from the security office walks by and asks: *where did that paragraph just go?*
 
-That's the whole subject in one question. The model is the same model everywhere. What changes in government is the boundary around it: who runs the servers, whose staff can see the prompts, what the data is allowed to touch, and who signed off.
+The model is the same model everywhere. What changes in government is the boundary around it: who runs the servers, whose staff can see the prompts, what the data is allowed to touch, and who signed off.
 
 Everything below is as of September 2026. This field moves fast and the rules move with it, so check the dates before you rely on any of it.
 
@@ -30,12 +24,10 @@ For years, FedRAMP rated services [Low, Moderate or High](https://www.fedramp.go
 
 ## Four places a model can live
 
-An agency has four options:
-
-- **A certified AI service.** FedRAMP [fast-tracked chat assistants](https://www.fedramp.gov/ai/) from August 2025 to April 2026. ChatGPT Enterprise, Gemini for Government and Perplexity were certified. One condition: anything a model learned from customer data had to stay inside the customer's environment unless the customer said otherwise.
-- **A model service in a government region.** AWS lists [Claude, Llama, OpenAI and other models on Bedrock](https://aws.amazon.com/compliance/services-in-scope/FedRAMP/amazon-bedrock-models/) at FedRAMP High (now Class D) and IL4/5 in its {{< term "govcloud" >}}GovCloud{{< /term >}} regions. Microsoft has had [Azure OpenAI at FedRAMP High since 2024](https://devblogs.microsoft.com/azuregov/azure-openai-authorization/).
-- **A classified cloud.** Bedrock runs in AWS's [Top Secret](https://aws.amazon.com/blogs/publicsector/amazon-bedrock-launches-with-claude-3-5-sonnet-in-the-aws-top-secret-cloud/) and [Secret](https://aws.amazon.com/about-aws/whats-new/2025/11/amazon-bedrock-is-now-available/) regions, and Microsoft brought [GPT-5.2 to its Secret and Top Secret clouds](https://devblogs.microsoft.com/azuregov/advancing-ai-capabilities-in-azure-for-u-s-government-secret-and-top-secret-clouds/) in January 2026.
-- **Your own hardware.** Run an {{< term "open-weights" >}}open-weights{{< /term >}} model inside your own boundary, even an {{< term "air-gapped" >}}air-gapped{{< /term >}} one. Google sells [Gemini on air-gapped hardware](https://cloud.google.com/blog/topics/hybrid-cloud/gemini-is-now-available-anywhere), so "no internet" no longer means "open models only."
+- A certified AI service: FedRAMP [fast-tracked chat assistants](https://www.fedramp.gov/ai/) from August 2025 to April 2026. ChatGPT Enterprise, Gemini for Government and Perplexity were certified. One condition: anything a model learned from customer data had to stay inside the customer's environment unless the customer said otherwise.
+- A model service in a government region: AWS lists [Claude, Llama, OpenAI and other models on Bedrock](https://aws.amazon.com/compliance/services-in-scope/FedRAMP/amazon-bedrock-models/) at FedRAMP High (now Class D) and IL4/5 in its {{< term "govcloud" >}}GovCloud{{< /term >}} regions. Microsoft has had [Azure OpenAI at FedRAMP High since 2024](https://devblogs.microsoft.com/azuregov/azure-openai-authorization/).
+- A classified cloud: Bedrock runs in AWS's [Top Secret](https://aws.amazon.com/blogs/publicsector/amazon-bedrock-launches-with-claude-3-5-sonnet-in-the-aws-top-secret-cloud/) and [Secret](https://aws.amazon.com/about-aws/whats-new/2025/11/amazon-bedrock-is-now-available/) regions, and Microsoft brought [GPT-5.2 to its Secret and Top Secret clouds](https://devblogs.microsoft.com/azuregov/advancing-ai-capabilities-in-azure-for-u-s-government-secret-and-top-secret-clouds/) in January 2026.
+- Your own hardware: run an {{< term "open-weights" >}}open-weights{{< /term >}} model inside your own boundary, even an {{< term "air-gapped" >}}air-gapped{{< /term >}} one. Google sells [Gemini on air-gapped hardware](https://cloud.google.com/blog/topics/hybrid-cloud/gemini-is-now-available-anywhere), so "no internet" no longer means "open models only."
 
 {{< ml-govflow >}}
 
@@ -45,7 +37,7 @@ Cost is less of a barrier than it used to be. In August 2025, GSA, the governmen
 
 Two memos from the White House budget office (OMB) in April 2025 set the ground rules. [M-25-21](https://www.whitehouse.gov/wp-content/uploads/2025/02/M-25-21-Accelerating-Federal-Use-of-AI-through-Innovation-Governance-and-Public-Trust.pdf) requires testing, impact assessments and human oversight for "high-impact" AI, meaning AI whose output is a principal basis for decisions with a legal, material, binding or significant effect on rights or safety. [M-25-22](https://www.whitehouse.gov/wp-content/uploads/2025/02/M-25-22-Driving-Efficient-Acquisition-of-Artificial-Intelligence-in-Government.pdf) has agencies write contracts that "permanently prohibit" vendors from training public or commercial models on non-public agency inputs and outputs without the agency's explicit consent.
 
-Vendor choice is now a policy question too. On February 27, 2026, agencies were directed to stop using Anthropic's models. After a federal court paused that directive, [GSA restored them](https://www.gsa.gov/about-gsa/newsroom/news-releases/gsa-issues-statement-on-anthropic-preliminary-injunction-04032026) in April 2026, though the dispute was [still unresolved as of September 2026](https://qz.com/pentagon-anthropic-supply-chain-risk-designation-090326). The ops lesson isn't about any one vendor: design so you can swap the model behind your app without re-certifying everything around it.
+Vendor choice is now a policy question too. On February 27, 2026, agencies were directed to stop using Anthropic's models. After a federal court paused that directive, [GSA restored them](https://www.gsa.gov/about-gsa/newsroom/news-releases/gsa-issues-statement-on-anthropic-preliminary-injunction-04032026) in April 2026, though an appeals court [upheld the Pentagon's risk label](https://www.defenseone.com/threats/2026/09/anthropic-lawsuit-supply-chain-risk/416252/) on September 25. The ops lesson applies to any vendor: design so you can swap the model behind your app without re-certifying everything around it.
 
 ## Proving what happened
 
@@ -61,7 +53,7 @@ An agent that can file, send or change records needs {{< term "least-privilege" 
 
 ## So can they just use ChatGPT?
 
-Increasingly, yes, just not the one on your phone. The same families of models now run in certified services, government regions, classified clouds and air-gapped racks. The work is the plumbing it always was: pick the environment that matches the data, keep the prompts inside the boundary, log everything, and keep a person in charge of anything irreversible. It's the same job as anywhere else, with more paperwork, and the paperwork is what earns the trust.
+Increasingly, yes, just not the one on your phone. The same families of models now run in certified services, government regions, classified clouds and air-gapped racks. The work is the plumbing it always was: pick the environment that matches the data, keep the prompts inside the boundary, log everything, and keep a person in charge of anything irreversible. It's the same job as anywhere else, with more paperwork.
 
 ## References & further reading
 

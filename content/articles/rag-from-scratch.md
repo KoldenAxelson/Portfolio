@@ -1,18 +1,11 @@
 ---
 title: 'Why Does RAG Get the Wrong Answer?'
 description: "Retrieval-augmented generation looks easy in a demo and breaks in production. Chunking, embeddings, keyword vs. vector vs. hybrid search, reranking, and why a wrong answer is often a search bug."
-pubDate: 2026-09-24
+pubDate: 2026-09-08
 tags: ['ml', 'rag', 'search', 'explainer']
 glossary: "ml"
-# In review: builds at its URL but stays off every list, feed and sitemap,
-# and is noindexed. Listed at /misc/drafts/ in reviewOrder (the validation
-# queue). Publish by deleting these lines.
-review: true
-reviewOrder: 13
-build:
-  list: never
 thoughts:
-  - "The RAG bugs worth chasing usually turn out to be search bugs wearing a chatbot costume."
+  - "Chase a RAG bug long enough and it usually turns out to be a search bug."
   - "The model can only answer from what you hand it. Most of the work is deciding what to hand it."
 ---
 
@@ -26,7 +19,7 @@ When a {{< term "rag" >}}RAG{{< /term >}} system gets something wrong, it's temp
 
 ## Cutting documents into pieces
 
-You can't paste a whole library into a prompt, so documents are split into chunks first. {{< term "chunking" >}}Chunking{{< /term >}} sounds like housekeeping, and it quietly decides what your system can answer. Anthropic's write-up on the problem says it plainly: ["The choice of chunk size, chunk boundary, and chunk overlap can affect retrieval performance."](https://www.anthropic.com/news/contextual-retrieval)
+You can't paste a whole library into a prompt, so documents are split into chunks first. {{< term "chunking" >}}Chunking{{< /term >}} sounds like housekeeping, but it decides what your system can answer. Anthropic's write-up on the problem says it plainly: ["The choice of chunk size, chunk boundary, and chunk overlap can affect retrieval performance."](https://www.anthropic.com/news/contextual-retrieval)
 
 Too small, and a chunk loses its context: "It stops working after 30 days" is useless if the chunk doesn't say what *it* is. Too big, and the answer is diluted. Pinecone's guide warns that large chunks ["may introduce noise or dilute the significance of individual sentences"](https://www.pinecone.io/learn/chunking-strategies/). Then there are boundaries: an answer split across two chunks may never be retrieved whole.
 
@@ -42,7 +35,7 @@ The newer way is vector search. Each chunk becomes an {{< term "embedding" >}}em
 
 ## Where each one slips
 
-In 2020, a retriever built on learned embeddings [beat BM25 by 9 to 19 points](https://arxiv.org/abs/2004.04906) on finding the right passage for open-domain questions. But not everywhere. The 2021 BEIR {{< term "benchmark" >}}benchmark{{< /term >}} tested retrievers on new kinds of data they weren't trained for and found ["BM25 is a robust baseline"](https://arxiv.org/abs/2104.08663), while the embedding-based models often did worse.
+In 2020, a retriever built on learned embeddings [beat BM25 by 9 to 19 points](https://arxiv.org/abs/2004.04906) on finding the right passage for open-domain questions, but not everywhere. The 2021 BEIR {{< term "benchmark" >}}benchmark{{< /term >}} tested retrievers on new kinds of data they weren't trained for and found ["BM25 is a robust baseline"](https://arxiv.org/abs/2104.08663), while the embedding-based models often did worse.
 
 Each method has a blind spot. Vector search understands that "can't reach the office network" is about the VPN, and shrugs at "ERR-4031". Keyword search is the other way round.
 

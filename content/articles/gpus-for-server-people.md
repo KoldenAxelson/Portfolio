@@ -1,16 +1,10 @@
 ---
 title: 'Why Does a GPU Spend Most of Its Time Waiting?'
 description: "GPUs for people who run servers: why AI runs on thousands of simple cores, why memory bandwidth matters more than raw speed, and why batching is one of the biggest tricks in serving."
-pubDate: 2026-09-24
+pubDate: 2026-09-10
 tags: ['ml', 'hardware', 'inference', 'explainer']
 glossary: "ml"
-# In review: builds at its URL but stays off every list, feed and sitemap,
-# and is noindexed. Listed at /misc/drafts/ in reviewOrder (the validation
-# queue). Publish by deleting these lines.
-review: true
-reviewOrder: 3
-build:
-  list: never
+featured: true
 thoughts:
   - "On a server you blame the CPU first. On a GPU it almost never is the math."
   - "The fastest chip in the building, and its main job is waiting for the delivery truck."
@@ -28,7 +22,7 @@ That's a bad design for running a web server and a perfect one for AI, because a
 
 ## The real limit is memory
 
-Here's the part people miss. Doing arithmetic has become cheap. Moving numbers to where the arithmetic happens hasn't. A 2024 paper charted the gap: over 20 years, peak compute on server hardware [grew about 60,000 times, while memory bandwidth grew about 100 times](https://arxiv.org/abs/2403.14123).
+Doing arithmetic has become cheap. Moving numbers to where the arithmetic happens hasn't. A 2024 paper charted the gap: over 20 years, peak compute on server hardware [grew about 60,000 times, while memory bandwidth grew about 100 times](https://arxiv.org/abs/2403.14123).
 
 Engineers call this the memory wall, a phrase [coined in the mid-1990s](https://dl.acm.org/doi/10.1145/216585.216588) about CPUs, and it has only gotten taller.
 
@@ -52,11 +46,11 @@ At one request, the chip is idle almost the whole step. Around a few hundred, ma
 
 NVIDIA isn't the only option. As of September 2026, the other main {{< term "accelerator" >}}accelerators{{< /term >}} you'll meet are:
 
-- **AMD Instinct.** The MI355X has [288 GB of HBM at 8 TB per second](https://www.amd.com/en/products/accelerators/instinct/mi350/mi355x.html), more memory per chip than an H100 or B200.
-- **Google.** Its {{< term "tpu" >}}TPUs{{< /term >}}: the seventh-generation Ironwood became [generally available in March 2026](https://docs.cloud.google.com/tpu/docs/release-notes), with [192 GiB and 7.38 TB per second](https://docs.cloud.google.com/tpu/docs/tpu7x) per chip. Most customers rent them from Google Cloud; only a few giants, such as Anthropic, [buy whole racks](https://rcrtech.com/semiconductor-news/anthropics-broadcom-chip-deal/).
-- **AWS Trainium.** Trainium3 launched in [December 2025](https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-ec2-trn3-ultraservers/) with 144 GB at 4.9 TB per second. It's Amazon's own design, available only on AWS.
+- AMD Instinct: the MI355X has [288 GB of HBM at 8 TB per second](https://www.amd.com/en/products/accelerators/instinct/mi350/mi355x.html), more memory per chip than an H100 or B200.
+- Google's {{< term "tpu" >}}TPUs{{< /term >}}: the seventh-generation Ironwood became [generally available in March 2026](https://docs.cloud.google.com/tpu/docs/release-notes), with [192 GiB and 7.38 TB per second](https://docs.cloud.google.com/tpu/docs/tpu7x) per chip. Most customers rent them from Google Cloud; only a few giants, such as Anthropic, [buy whole racks](https://rcrtech.com/semiconductor-news/anthropics-broadcom-chip-deal/).
+- AWS Trainium: Trainium3 launched in [December 2025](https://aws.amazon.com/about-aws/whats-new/2025/12/amazon-ec2-trn3-ultraservers/) with 144 GB at 4.9 TB per second. It's Amazon's own design, available only on AWS.
 
-Notice that every spec starts with memory. For an ops team, "supporting a new accelerator" rarely means racking hardware. It means drivers, a compiler, the {{< term "inference" >}}inference{{< /term >}} software's support for the chip, and finding out which of your models actually run well on it.
+Notice that every spec starts with memory. For an ops team, "supporting a new accelerator" is mostly software work: drivers, a compiler, the {{< term "inference" >}}inference{{< /term >}} software's support for the chip, and finding out which of your models actually run well on it.
 
 ## Many GPUs as one
 

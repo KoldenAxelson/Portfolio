@@ -3,7 +3,10 @@
 {{- $cv := site.Data.cv -}}
 {{- $recentRoles := first 3 $cv.experience -}}
 {{- $featured := first 4 (sort (where (where site.RegularPages "Section" "projects") "Params.featured" true) "Params.year" "desc") -}}
-{{- $recentPosts := first 5 (sort (where (where site.RegularPages "Section" "articles") "Params.draft" "!=" true) "Date" "desc") -}}
+{{- $articles := sort (where (where site.RegularPages "Section" "articles") "Params.draft" "!=" true) "Date" "desc" -}}
+{{- /* Articles marked `featured: true` take the homepage slots; newest articles fill any left over. */ -}}
+{{- $featuredPosts := where $articles "Params.featured" true -}}
+{{- $recentPosts := first 5 ($featuredPosts | append (complement $featuredPosts $articles)) -}}
 {{- $certSplit := partial "func/active-certs.html" . -}}
 {{- $activeCerts := $certSplit.active -}}
 {{- /* With no active certs, fall back to lapsed ones that carry a cvNote:

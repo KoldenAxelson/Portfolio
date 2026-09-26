@@ -7,7 +7,7 @@ cover: '/covers/community-as-infrastructure.webp'
 canonical: 'https://dev.to/konradwright/community-as-infrastructure-40k2'
 thoughts:
   - "Wrote this after realizing five people who give a damn beat a thousand anonymous followers."
-  - "Community is something you build, not something you wait to find."
+  - "Nobody hands you a community; you have to build one."
 ---
 
 If you're *alone*, plugging away at a keyboard with **no one** to share your concepts with, you've got an *infrastructure* problem.

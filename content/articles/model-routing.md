@@ -1,19 +1,12 @@
 ---
 title: 'Why Pay for the Smartest Model Every Time?'
 description: "Most questions don't need your most expensive model. Routing, cascades, distillation and caching: the four ways to send each request to the cheapest model that can handle it, and how to know it's still good enough."
-pubDate: 2026-09-24
+pubDate: 2026-09-25
 tags: ['ml', 'inference', 'efficiency', 'cost', 'explainer']
 glossary: "ml"
-# In review: builds at its URL but stays off every list, feed and sitemap,
-# and is noindexed. Listed at /misc/drafts/ in reviewOrder (the validation
-# queue). Publish by deleting these lines.
-review: true
-reviewOrder: 6
-build:
-  list: never
 thoughts:
   - "Third in the 'make AI cheap' trio, after quantization and decision models. This one is mostly plumbing, which is why I like it."
-  - "You wouldn't page the principal engineer to reset a password. Same idea."
+  - "Same reason you don't page the principal engineer to reset a password."
 ---
 
 A restaurant doesn't send every order to the head chef. Toast goes to the line cook. The head chef gets the dish that can go wrong. Plenty of AI apps do the opposite: every request, from "what's your refund policy?" to a thorny legal question, goes to the same big, expensive {{< term "model" >}}model{{< /term >}}.
@@ -36,7 +29,7 @@ The catch is that escalated requests pay twice, and the whole thing rests on {{<
 
 {{< ml-route >}}
 
-Set it too low and wrong answers slip through cheaply. Set it too high and you're paying for both models on most requests. The sweet spot is where quality stops rising, and finding it takes measurement, not guesswork.
+Set it too low and wrong answers slip through cheaply. Set it too high and you're paying for both models on most requests. The sweet spot is where quality stops rising, and you find it by measuring.
 
 ## Distillation: teach the small model your job
 
@@ -54,9 +47,9 @@ Providers also offer {{< term "prompt-caching" >}}prompt caching{{< /term >}} fo
 
 ## Keeping it honest
 
-Every one of these trades a little quality risk for a lot of money, so the only safe way to run them is with measurement. Keep a {{< term "test-set" >}}test set{{< /term >}} of real requests with known good answers. Run it against the cheap path and the expensive path, and gate every change to thresholds, routes or distilled models on the result. That's the {{< term "eval-gate" >}}eval gate{{< /term >}} from [the first post in this series](/articles/what-is-ml-infrastructure/), applied to cost: a change ships only if quality holds.
+Every one of these trades a little quality risk for a lot of money, so the only safe way to run them is with measurement. Keep a {{< term "test-set" >}}test set{{< /term >}} of real requests with known good answers. Run it against the cheap path and the expensive path before any change to thresholds, routes or distilled models goes out. That's the {{< term "eval-gate" >}}eval gate{{< /term >}} from [the first post in this series](/articles/what-is-ml-infrastructure/), applied to cost: a change ships only if quality holds.
 
-Then watch it in production. Routing fails quietly. A misrouted hard question gets a confident, wrong, cheap answer, and nothing crashes.
+Then watch it in production, because routing failures are silent: a misrouted hard question gets a confident, wrong, cheap answer, and nothing crashes.
 
 Traffic also {{< term "drift" >}}drifts{{< /term >}}: a new product launch fills your stream with questions the small model has never seen, and quality slides a percent at a time. Sample escalations and non-escalations, grade them, and track the numbers like any other SLO.
 
