@@ -1,0 +1,199 @@
+# Harmony Pulse showcase — every word on /misc/harmony-pulse, read by
+# layouts/misc/harmony-pulse.html. Images live in assets/img/harmony-pulse/.
+#
+# Rules for this copy: nothing here diagnoses a horse or a rider, and nothing
+# claims a download, a price or a user count the app doesn't have (HarmonyPulse
+# docs/00-product.md). Coach lines are quoted verbatim from
+# App/HarmonyPulse/Voice/lines.json, dashes included. Everything else follows
+# private/skills/HumanizeWriting.md. The `vision` block is Kirstin's own pitch
+# (Harmony_Pulse_Vision_Pitch.pptx) and describes things that are not built.
+
+brand: 'Harmony Pulse'
+contactLabel: 'Get in touch'
+contactSubject: 'Harmony Pulse'
+
+hero:
+  title: 'A coach in your ear that listens to two hearts.'
+  lead: 'Harmony Pulse reads a heart-rate strap on your horse and one on you. It speaks short cues while you ride and writes up the session afterwards. All of it runs on your phone, with no wifi or cell service.'
+  secondary: { label: 'See how a session goes', href: '#session' }
+  proof:
+    - { value: 'Two straps', label: 'one on the horse, one on the rider' }
+    - { value: 'No signal needed', label: 'everything runs on the phone' }
+    - { value: 'In testing', label: 'with real horses' }
+  phones:
+    front: { src: '/harmony-pulse/today.jpg', alt: 'The Today screen: a photo of a horse under a cherry tree, this week''s activity, today''s tip, and a card to start a session with Bowie.' }
+    back: { src: '/harmony-pulse/session-setup.jpg', alt: 'The session setup screen for Bowie, with Schooling, Trail, Groundwork and Liberty modes and the two heart straps.' }
+  tags:
+    - 'Long exhale — then ask.'
+    - 'Works with Apple Watch'
+
+# Drawn to tempo: beats across a ten-second strip, and a dot that pulses at the
+# real rate. A resting horse sits around 28–44 bpm (HarmonyPulse AGENTS.md).
+pulse:
+  caption: 'Drawn to tempo. A horse at rest beats about half as fast as the person standing beside him.'
+  lanes:
+    - { who: 'Horse', bpm: 36, tone: 'horse' }
+    - { who: 'Rider', bpm: 78, tone: 'rider' }
+
+gap:
+  eyebrow: 'Why it exists'
+  title: 'The lesson ends, and most of it leaves with the trainer.'
+  story:
+    heading: 'It started with one rider.'
+    paragraphs:
+      - 'Kirstin rides two horses, Bowie and Denali. She has a lesson or two a week and rides alone the rest of the time, with only her memory of how each ride felt.'
+      - 'She wanted those rides to have a voice while they happen and a record once they are over. Her son started building one.'
+  pains:
+    - { title: 'The correction fades', body: 'The aid that finally worked in the lesson is hard to recall by the next ride.' }
+    - { title: 'Most rides happen alone', body: 'Nobody is at the rail to say what they saw.' }
+    - { title: 'Your trainer starts cold', body: 'The next lesson begins with catching up on the rides in between.' }
+
+session:
+  eyebrow: 'How a session goes'
+  title: 'Strap up, ride, look back.'
+  steps:
+    - title: 'Strap up'
+      body: 'One chest strap on his girth, one on you. Choose Schooling, Trail, Groundwork or Liberty, and say what you are working on.'
+      shot: { src: '/harmony-pulse/session-setup.jpg', alt: 'Choosing a session mode for Bowie: Schooling, Trail, Groundwork or Liberty.', crop: 'top' }
+    - title: 'Ride'
+      body: 'The phone stays in your pocket and the coach speaks through your headphones. It speaks when something is worth saying and stays quiet the rest of the time.'
+      cues:
+        - 'Count it: one-two, one-two.'
+        - 'Long exhale — then ask.'
+        - 'Good. Keep that breath.'
+    - title: 'Look back'
+      body: 'Every session ends with a report card, a heart-rate chart, a map of where it happened and a short debrief.'
+      shot: { src: '/harmony-pulse/report-card.png', alt: 'A sample report card: an overall score of 80, with separate grades for calm, breathing, follow-through, rhythm and transitions.', crop: 'report' }
+    - title: 'Keep practising'
+      body: 'Quests are short guided sessions, from six minutes of slow breathing to walk and trot on cue. A daily tip keeps the habit going.'
+      shot: { src: '/harmony-pulse/quests.jpg', alt: 'The Quests screen, listing six guided sessions from Slow breathing to Canter on cue.', crop: 'top' }
+  note: 'The app screens on this page are the real app, running a development build.'
+
+reads:
+  eyebrow: 'What it listens for'
+  title: 'What each strap tells it'
+  lead: 'Both straps are off-the-shelf Polar H10 heart monitors. The one on the girth also carries a motion sensor, and that is how the app knows what his feet are doing.'
+  columns:
+    - who: 'From his strap'
+      tone: 'horse'
+      items:
+        - { title: 'Gait', body: 'Halt, walk, trot and canter, read from how the girth moves.' }
+        - { title: 'Rhythm and tempo', body: 'How even his strides are, and whether the tempo is creeping.' }
+        - { title: 'Transitions', body: 'How many strides it takes him to settle into the new pace.' }
+        - { title: 'Effort and recovery', body: 'His heart rate against what this pace usually costs him.' }
+    - who: 'From yours'
+      tone: 'rider'
+      items:
+        - { title: 'Breathing', body: 'The moments you stop breathing, usually right before you ask for something.' }
+        - { title: 'Calm', body: 'How smooth and even your heart rhythm is at halt and walk.' }
+        - { title: 'Heart-rate zones', body: 'How hard you were working, minute by minute.' }
+
+coach:
+  eyebrow: 'The coach'
+  title: 'Short, calm lines, written by a person.'
+  lead: 'Every line the coach can say was written by hand and recorded in two voices. Fixed rules decide when a line is spoken. No AI model runs while you ride, so the coach cannot make something up.'
+  groups:
+    - label: 'Rhythm'
+      lines: ['Tempo''s creeping — steady it.', 'Calm, four-beat walk.']
+    - label: 'Your breath'
+      lines: ['Breathe.', 'Drop your shoulders, slow your breath.']
+    - label: 'For him'
+      lines: ['Ease off a moment — let him catch his breath.', 'He''s still blowing — stay in walk a while longer.']
+    - label: 'Praise'
+      lines: ['Nice, same rhythm through the transition.', 'Lovely, even breathing — stay with it.']
+  restraint: { value: '6 spoken, 22 held back', body: 'In the sample ride below, the coach noticed 28 moments and spoke about six of them.' }
+
+report:
+  eyebrow: 'After the ride'
+  title: 'Something to show your trainer.'
+  lead: 'The whole session comes out as one file you can send. Your trainer opens it in any browser and arrives at the next lesson already knowing what happened.'
+  shots:
+    - { src: '/harmony-pulse/report-card.png', alt: 'The top of a sample trainer report for Denali: an 11-minute schooling ride graded 80, Strong.' }
+    - { src: '/harmony-pulse/report-heart.png', alt: 'A sample chart of horse and rider heart rate across the ride, with gait bands underneath and marks where the coach spoke.' }
+  caption: 'A sample report, made by the app from a simulated ride.'
+  points:
+    - { title: 'A grade once you are done', body: 'Calm, breathing, rhythm and transitions each get a score. The app never scores you while you ride.' }
+    - { title: 'Both hearts on one chart', body: 'His and yours, over the gaits, with a mark wherever the coach spoke.' }
+    - { title: 'Where it happened', body: 'The route on a map, with the moments worth a look numbered on it.' }
+    - { title: 'Your own words', body: 'The notes you write after a session are printed on the report.' }
+
+offline:
+  eyebrow: 'No signal needed'
+  title: 'It works where the wifi does not reach.'
+  lead: 'Ranches and barns are some of the worst places for wifi and cell service. Harmony Pulse was built for that. Everything it does during a ride and after it happens on the phone in your pocket.'
+  statusBar: 'No service'
+  works:
+    heading: 'Works with no connection'
+    items:
+      - { title: 'Both heart straps', body: 'They talk straight to the phone over Bluetooth.' }
+      - { title: 'The coach', body: 'The rules and every recorded line live inside the app.' }
+      - { title: 'Recording and the route', body: 'GPS comes from satellites, so the route is traced with no service.' }
+      - { title: 'The report card and debrief', body: 'Graded and written on the phone as soon as you finish.' }
+      - { title: 'The trainer report', body: 'Saved as one file, ready to send when you are back in range.' }
+  waits:
+    heading: 'Waits until you are back in range'
+    items:
+      - 'Sending a report to your trainer.'
+      - 'The satellite photo behind the route map.'
+  footnotes:
+    - { title: 'No account', body: 'There is nothing to sign up for and no password to lose.' }
+    - { title: 'Nothing uploaded', body: 'Your rides stay on your phone unless you choose to send one.' }
+    - { title: 'Old rides get better', body: 'Every sensor reading is kept as it arrived, so each improvement to the app re-reads the rides you already have.' }
+
+status:
+  eyebrow: 'Where it stands'
+  title: 'The whole loop is built, and now it is learning from real rides.'
+  done:
+    - { title: 'It works end to end', body: 'Recording, live coaching, debrief and trainer report all run on an iPhone, with an Apple Watch app for marks and voice notes.' }
+    - { title: 'New builds keep coming', body: 'Kirstin rides with each one, and her notes shape the next.' }
+    - { title: 'Tested on real rides', body: 'Schooling, trail, groundwork, liberty and solo practice, with Bowie and Denali.' }
+    - { title: 'Started 26 August 2026', body: 'From the first line of code to a coach that talks took about five weeks.' }
+  next:
+    heading: 'What we are teaching it next'
+    items:
+      - 'Canter, the gait it has had the least practice with.'
+      - 'Transitions, measured against what a clean one really looks like.'
+      - 'Breath-holds, which it still flags too often.'
+
+vision:
+  eyebrow: 'Where it is going'
+  badge: 'Not built yet'
+  title: 'Next, a coach that remembers your lessons.'
+  lead: 'This part is Kirstin''s idea. A lesson or a clinic costs real money, and most of what was taught is gone by the next ride. She wants the app to keep it and turn it into something she can ride from.'
+  steps:
+    - { title: 'Capture', body: 'Record a voice memo at the rail, add video if you have it, and say how the ride felt.' }
+    - { title: 'Return', body: 'Get the takeaways back in plain language, with a short riding plan for the week.' }
+    - { title: 'Refine', body: 'Answer with a question, a correction, or what the horse actually did.' }
+    - { title: 'Carry', body: 'The next session picks up where the last one stopped, so the same horse and the same habit stay in view.' }
+  note: 'None of this replaces a trainer. It carries the lesson into the rides in between.'
+
+team:
+  eyebrow: 'Who is behind it'
+  title: 'The rider and the engineer are family.'
+  people:
+    - name: 'Kirstin Wright'
+      role: 'Rider and first tester'
+      initials: 'KW'
+      tone: 'rider'
+      points:
+        - 'Rides Bowie and Denali'
+        - 'Tests each version with her own horses'
+        - 'Sets the direction for what it becomes'
+    - name: 'Konrad Wright'
+      role: 'Design and engineering'
+      initials: 'KW'
+      tone: 'horse'
+      points:
+        - 'Designed and built the iPhone and Apple Watch apps'
+        - 'Fifteen years of professional software work'
+        - 'Early engineer at Draftboard, acquired by DraftKings'
+
+closing:
+  eyebrow: 'What happens next'
+  title: 'First, it becomes everything one rider wants it to be.'
+  body: 'There is no launch date and no price yet. The plan is to finish it properly for Kirstin and her horses, then decide where it goes. If you ride or train and want to follow along, say hello.'
+  secondary: { label: 'How it was built', href: '/projects/harmony-pulse/' }
+
+footer:
+  tagline: 'Feel, timing, rhythm and partnership.'
+  legal: 'Harmony Pulse is in development and is not available to download. It is a training aid, not a veterinary or medical device. Polar and H10 are trademarks of Polar Electro; Apple Watch and iPhone are trademarks of Apple Inc. Harmony Pulse is not affiliated with either.'

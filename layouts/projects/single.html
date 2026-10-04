@@ -20,8 +20,13 @@
     </dl>
     {{- end }}
 
-    {{- if or $links.live $links.repo }}
-    <p class="mt-4 flex gap-4 text-sm">
+    {{- if or $links.live $links.repo $links.showcase }}
+    <p class="mt-4 flex flex-wrap items-center gap-4 text-sm">
+      {{- /* A showcase is a standalone document with its own <head> (e.g.
+             layouts/misc/harmony-pulse.html), so the link must not be boosted. */}}
+      {{- with $links.showcase }}
+      <a href="{{ partial "func/url.html" . }}" hx-boost="false" class="group/cta inline-flex items-center gap-1 rounded-full bg-accent px-4 py-2 font-medium !text-bg no-underline transition hover:opacity-90">See the showcase<span aria-hidden="true" class="inline-block transition-transform duration-200 ease-out motion-reduce:transition-none group-hover/cta:translate-x-0.5">→</span></a>
+      {{- end }}
       {{- with $links.live }}
       <a href="{{ . }}" rel="noopener" class="group/cta no-underline"><span class="underline underline-offset-2 decoration-1 group-hover/cta:decoration-2">Live</span><span aria-hidden="true" class="ml-0.5 inline-block transition-transform duration-200 ease-out motion-reduce:transition-none group-hover/cta:translate-x-0.5">→</span></a>
       {{- end }}

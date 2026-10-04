@@ -1,0 +1,353 @@
+{{- /*
+  harmony-pulse — the public showcase for the Harmony Pulse app, selected by
+  `layout: harmony-pulse` on content/misc/harmony-pulse.md.
+
+  A standalone document on purpose: no `define` blocks, so baseof.html and the
+  site chrome stay out of it. The page is handed around on a phone by someone
+  who is showing off an app, and a portfolio nav above it would be the wrong
+  frame. Same shape as the GrowGo pitch, minus the vault.
+
+  Because it has its own <head>, every link INTO this page needs
+  hx-boost="false" — a boosted swap would bring the body and leave the
+  stylesheet behind. Copy lives in data/harmony-pulse/showcase.yaml.
+*/ -}}
+{{- partial "func/front-matter.html" . -}}
+{{- $copy := (index site.Data "harmony-pulse").showcase -}}
+{{- $mail := printf "mailto:%s?subject=%s" site.Data.site.author.email (urlquery $copy.contactSubject) -}}
+{{- $icon := partial "func/cover.html" (dict "path" "/harmony-pulse/app-icon.png" "width" 40 "height" 40) -}}
+{{- $mark := partial "func/cover.html" (dict "path" "/harmony-pulse/mark.png" "width" 360) -}}
+{{- $phoneWidthPx := 300 -}}
+<!doctype html>
+<html lang="{{ site.Data.site.locale | default `en-US` }}">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f5f4f0" />
+    <link rel="icon" type="image/svg+xml" href="{{ partial "func/url.html" "/favicon.svg" }}" />
+    {{ partial "head/seo.html" . }}
+    {{ $css := resources.Get "css/pages/harmony-pulse/harmony-pulse.css" | minify }}
+    <style>{{ $css.Content | safeCSS }}</style>
+  </head>
+  <body>
+    <a href="#main" class="skip">Skip to content</a>
+
+    <header class="bar">
+      <a class="brand" href="#top">
+        <img src="{{ $icon.src }}"{{ with $icon.srcset }} srcset="{{ . }}"{{ end }} width="28" height="28" alt="" />
+        <span>{{ $copy.brand }}</span>
+      </a>
+      <a class="btn btn-primary btn-small" href="{{ $mail }}">{{ $copy.contactLabel }}</a>
+    </header>
+
+    <main id="main">
+      {{- with $copy.hero }}
+      <section class="hero" id="top">
+        <div class="wrap hero-grid">
+          <div class="hero-copy">
+            <h1>{{ .title }}</h1>
+            <p class="lead">{{ .lead }}</p>
+            <div class="actions">
+              <a class="btn btn-primary" href="{{ $mail }}">{{ $copy.contactLabel }}</a>
+              <a class="btn btn-quiet" href="{{ .secondary.href }}">{{ .secondary.label }}</a>
+            </div>
+            <dl class="proof">
+              {{- range .proof }}
+              <div><dt>{{ .value }}</dt><dd>{{ .label }}</dd></div>
+              {{- end }}
+            </dl>
+          </div>
+
+          <div class="stage">
+            <img class="stage-mark" src="{{ $mark.src }}"{{ with $mark.srcset }} srcset="{{ . }}"{{ end }} width="{{ $mark.width }}" height="{{ $mark.height }}" alt="" />
+            {{- $back := partial "func/cover.html" (dict "path" .phones.back.src "width" $phoneWidthPx "q" 88) }}
+            {{- $front := partial "func/cover.html" (dict "path" .phones.front.src "width" $phoneWidthPx "q" 88) }}
+            <img class="phone phone-back" src="{{ $back.src }}" srcset="{{ $back.srcset }}" width="{{ $back.width }}" height="{{ $back.height }}" alt="{{ .phones.back.alt }}" />
+            <img class="phone phone-front" src="{{ $front.src }}" srcset="{{ $front.srcset }}" width="{{ $front.width }}" height="{{ $front.height }}" alt="{{ .phones.front.alt }}" />
+            <p class="tag tag-cue"><span class="voice" aria-hidden="true"></span><q>{{ index .tags 0 }}</q></p>
+            <p class="tag tag-watch">{{ index .tags 1 }}</p>
+          </div>
+        </div>
+      </section>
+      {{- end }}
+
+      {{- with $copy.pulse }}
+      <section class="pulse" aria-label="Horse and rider heart rates, drawn to tempo">
+        <div class="wrap">
+          {{- $stripSeconds := 10.0 -}}
+          {{- $stripWidth := 600.0 -}}
+          {{- range .lanes }}
+          {{- $beats := int (math.Round (div (mul (float .bpm) $stripSeconds) 60.0)) -}}
+          {{- $spacing := div $stripWidth (float $beats) -}}
+          {{- $trace := "M0 26" -}}
+          {{- range $beat := seq 0 (sub $beats 1) -}}
+            {{- $x := add (mul (float $beat) $spacing) (div $spacing 2) -}}
+            {{- $trace = printf "%s L%.1f 26 L%.1f 22 L%.1f 26 L%.1f 5 L%.1f 35 L%.1f 26" $trace (sub $x 9) (sub $x 6) (sub $x 3) $x (add $x 3) (add $x 6) -}}
+          {{- end -}}
+          {{- $trace = printf "%s L%.0f 26" $trace $stripWidth }}
+          <div class="lane lane-{{ .tone }}" style="--beat: {{ printf "%.3f" (div 60.0 (float .bpm)) }}s">
+            <span class="lane-dot" aria-hidden="true"></span>
+            <span class="lane-who">{{ .who }}</span>
+            <svg viewBox="0 0 600 40" preserveAspectRatio="none" aria-hidden="true"><path d="{{ $trace }}" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" vector-effect="non-scaling-stroke" /></svg>
+            <span class="lane-bpm">{{ .bpm }} <small>bpm</small></span>
+          </div>
+          {{- end }}
+          <p class="pulse-caption">{{ .caption }}</p>
+        </div>
+      </section>
+      {{- end }}
+
+      {{- with $copy.gap }}
+      <section class="band">
+        <div class="wrap">
+          <p class="eyebrow">{{ .eyebrow }}</p>
+          <h2>{{ .title }}</h2>
+          <div class="split">
+            <div class="story">
+              <h3>{{ .story.heading }}</h3>
+              {{- range .story.paragraphs }}
+              <p>{{ . }}</p>
+              {{- end }}
+            </div>
+            <ul class="plain-list">
+              {{- range .pains }}
+              <li><h3>{{ .title }}</h3><p>{{ .body }}</p></li>
+              {{- end }}
+            </ul>
+          </div>
+        </div>
+      </section>
+      {{- end }}
+
+      {{- with $copy.session }}
+      <section id="session">
+        <div class="wrap">
+          <p class="eyebrow">{{ .eyebrow }}</p>
+          <h2>{{ .title }}</h2>
+          <ol class="steps">
+            {{- range .steps }}
+            <li class="step">
+              <div class="step-copy">
+                <h3>{{ .title }}</h3>
+                <p>{{ .body }}</p>
+              </div>
+              {{- with .shot }}
+              {{- $shot := partial "func/cover.html" (dict "path" .src "width" 320 "q" 88) }}
+              <div class="step-shot step-shot-{{ .crop }}">
+                <img src="{{ $shot.src }}" srcset="{{ $shot.srcset }}" width="{{ $shot.width }}" height="{{ $shot.height }}" alt="{{ .alt }}" loading="lazy" decoding="async" />
+              </div>
+              {{- end }}
+              {{- with .cues }}
+              <div class="step-shot step-shot-cues">
+                {{- range . }}
+                <p class="cue"><span class="voice" aria-hidden="true"></span><q>{{ . }}</q></p>
+                {{- end }}
+              </div>
+              {{- end }}
+            </li>
+            {{- end }}
+          </ol>
+          <p class="note">{{ .note }}</p>
+        </div>
+      </section>
+      {{- end }}
+
+      {{- with $copy.offline }}
+      <section class="offline">
+        <div class="wrap">
+          <p class="no-service"><span class="bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span>{{ .statusBar }}</p>
+          <p class="eyebrow">{{ .eyebrow }}</p>
+          <h2>{{ .title }}</h2>
+          <p class="section-lead">{{ .lead }}</p>
+          <div class="offline-grid">
+            <div>
+              <h3 class="list-heading">{{ .works.heading }}</h3>
+              <ul class="checks">
+                {{- range .works.items }}
+                <li><h3>{{ .title }}</h3><p>{{ .body }}</p></li>
+                {{- end }}
+              </ul>
+            </div>
+            <div class="waits">
+              <h3 class="list-heading">{{ .waits.heading }}</h3>
+              <ul>
+                {{- range .waits.items }}
+                <li>{{ . }}</li>
+                {{- end }}
+              </ul>
+            </div>
+          </div>
+          <ul class="tiles">
+            {{- range .footnotes }}
+            <li><h3>{{ .title }}</h3><p>{{ .body }}</p></li>
+            {{- end }}
+          </ul>
+        </div>
+      </section>
+      {{- end }}
+
+      {{- with $copy.reads }}
+      <section class="band">
+        <div class="wrap">
+          <p class="eyebrow">{{ .eyebrow }}</p>
+          <h2>{{ .title }}</h2>
+          <p class="section-lead">{{ .lead }}</p>
+          <div class="hearts">
+            {{- range .columns }}
+            <div class="heart heart-{{ .tone }}">
+              <h3>{{ .who }}</h3>
+              <dl>
+                {{- range .items }}
+                <div><dt>{{ .title }}</dt><dd>{{ .body }}</dd></div>
+                {{- end }}
+              </dl>
+            </div>
+            {{- end }}
+          </div>
+        </div>
+      </section>
+      {{- end }}
+
+      {{- with $copy.coach }}
+      <section>
+        <div class="wrap">
+          <p class="eyebrow">{{ .eyebrow }}</p>
+          <h2>{{ .title }}</h2>
+          <p class="section-lead">{{ .lead }}</p>
+          <div class="cue-groups">
+            {{- range .groups }}
+            <div class="cue-group">
+              <h3>{{ .label }}</h3>
+              {{- range .lines }}
+              <p class="cue"><span class="voice" aria-hidden="true"></span><q>{{ . }}</q></p>
+              {{- end }}
+            </div>
+            {{- end }}
+          </div>
+          <div class="restraint">
+            <p class="restraint-value">{{ .restraint.value }}</p>
+            <p>{{ .restraint.body }}</p>
+          </div>
+        </div>
+      </section>
+      {{- end }}
+
+      {{- with $copy.report }}
+      <section class="band">
+        <div class="wrap">
+          <p class="eyebrow">{{ .eyebrow }}</p>
+          <h2>{{ .title }}</h2>
+          <p class="section-lead">{{ .lead }}</p>
+          <div class="report">
+            <figure class="report-sheets">
+              {{- range .shots }}
+              {{- $sheet := partial "func/cover.html" (dict "path" .src "width" 560 "q" 88) }}
+              <img src="{{ $sheet.src }}" srcset="{{ $sheet.srcset }}" width="{{ $sheet.width }}" height="{{ $sheet.height }}" alt="{{ .alt }}" loading="lazy" decoding="async" />
+              {{- end }}
+              <figcaption>{{ .caption }}</figcaption>
+            </figure>
+            <ul class="plain-list">
+              {{- range .points }}
+              <li><h3>{{ .title }}</h3><p>{{ .body }}</p></li>
+              {{- end }}
+            </ul>
+          </div>
+        </div>
+      </section>
+      {{- end }}
+
+      {{- with $copy.status }}
+      <section>
+        <div class="wrap">
+          <p class="eyebrow">{{ .eyebrow }}</p>
+          <h2>{{ .title }}</h2>
+          <div class="status">
+            <ul class="checks">
+              {{- range .done }}
+              <li><h3>{{ .title }}</h3><p>{{ .body }}</p></li>
+              {{- end }}
+            </ul>
+            <div class="next">
+              <h3>{{ .next.heading }}</h3>
+              <ul>
+                {{- range .next.items }}
+                <li>{{ . }}</li>
+                {{- end }}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+      {{- end }}
+
+      {{- with $copy.vision }}
+      <section class="band">
+        <div class="wrap">
+          <p class="eyebrow">{{ .eyebrow }}<span class="badge">{{ .badge }}</span></p>
+          <h2>{{ .title }}</h2>
+          <p class="section-lead">{{ .lead }}</p>
+          <ol class="vision-steps">
+            {{- range .steps }}
+            <li><h3>{{ .title }}</h3><p>{{ .body }}</p></li>
+            {{- end }}
+          </ol>
+          <p class="note">{{ .note }}</p>
+        </div>
+      </section>
+      {{- end }}
+
+      {{- with $copy.team }}
+      <section>
+        <div class="wrap">
+          <p class="eyebrow">{{ .eyebrow }}</p>
+          <h2>{{ .title }}</h2>
+          <div class="people">
+            {{- range .people }}
+            <div class="person">
+              <span class="avatar avatar-{{ .tone }}" aria-hidden="true">{{ .initials }}</span>
+              <div>
+                <h3>{{ .name }}</h3>
+                <p class="role">{{ .role }}</p>
+                <ul>
+                  {{- range .points }}
+                  <li>{{ . }}</li>
+                  {{- end }}
+                </ul>
+              </div>
+            </div>
+            {{- end }}
+          </div>
+        </div>
+      </section>
+      {{- end }}
+
+      {{- with $copy.closing }}
+      <section class="closing">
+        <div class="wrap narrow">
+          <p class="eyebrow">{{ .eyebrow }}</p>
+          <h2>{{ .title }}</h2>
+          <p class="section-lead">{{ .body }}</p>
+          <div class="actions">
+            <a class="btn btn-light" href="{{ $mail }}">{{ $copy.contactLabel }}</a>
+            <a class="btn btn-outline" href="{{ partial "func/url.html" .secondary.href }}">{{ .secondary.label }}</a>
+          </div>
+          <p class="address">{{ site.Data.site.author.email }}</p>
+        </div>
+      </section>
+      {{- end }}
+    </main>
+
+    {{- with $copy.footer }}
+    <footer>
+      <div class="wrap">
+        <p class="brand">
+          <img src="{{ $icon.src }}"{{ with $icon.srcset }} srcset="{{ . }}"{{ end }} width="28" height="28" alt="" />
+          <span>{{ $copy.brand }}</span>
+        </p>
+        <p>{{ .tagline }}</p>
+        <p>Built by <a href="{{ partial "func/url.html" "/" }}">{{ site.Data.site.author.name }}</a> · © {{ now.Year }}</p>
+        <p class="legal">{{ .legal }}</p>
+      </div>
+    </footer>
+    {{- end }}
+  </body>
+</html>

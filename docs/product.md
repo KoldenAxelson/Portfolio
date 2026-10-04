@@ -118,7 +118,11 @@ Real, verifiable, and safe to use:
 - **In progress:** Widda (widda.club), private development, pre-launch. GrowGo
   (hyperlocal food marketplace), resurrected August 2026 — working Flutter
   prototype + Cloudflare Workers/D1 backend, pre-launch; its investor pitch is
-  passcode-gated at `/misc/growgo`.
+  passcode-gated at `/misc/growgo`. Harmony Pulse (iPhone and Apple Watch app
+  coaching horse riders from two heart-rate straps), started August 2026 —
+  built for one client, Konrad's mother Kirstin Wright; in testing with her
+  two horses, not released (do not quote a version number, it changes weekly). Its public showcase is `/misc/harmony-pulse`
+  (copy in `data/harmony-pulse/showcase.yaml`).
 - **Employment history:** 2010–2025 across Neurotopia/SenseLabs, Cumulus,
   Draftboard (acquired by DraftKings 2019), UNCOMN LLC. Concrete claim on record:
   1,000+ Fortify-flagged vulnerabilities resolved on the CPA project.
@@ -131,7 +135,9 @@ logos, no user counts, no revenue figures, no press coverage, no case studies,
 and no performance benchmarks. Konrad's degree-level education is general college
 coursework at Cuesta College — do not upgrade it. Widda has not launched; do not
 imply it has. GrowGo has not launched and has no revenue; do not imply otherwise,
-and never surface or guess its pitch passcode.
+and never surface or guess its pitch passcode. Harmony Pulse is not on the App
+Store and has no price, launch date or users beyond its one tester; it is a
+training aid and must never be described as a veterinary or medical device.
 
 ## Product Principles
 
