@@ -1274,6 +1274,57 @@ mcp:
       Released by Anthropic in November 2024 and donated to the Linux
       Foundation's Agentic AI Foundation in December 2025.
 
+mcp-server:
+  term: MCP Server
+  definition: >-
+    A program that offers tools, data or prompt templates to AI apps over
+    [[mcp|MCP]]. It might run on your laptop as a subprocess or on a remote
+    host over HTTPS.
+  notes:
+    - >-
+      Installing one is installing software: MCP's own security policy says a
+      local server is "trusted like any other software you install".
+
+tool-poisoning:
+  term: Tool Poisoning
+  definition: >-
+    Hiding instructions for the model inside a tool's description, which the
+    model reads but the user usually never sees.
+  notes:
+    - >-
+      A form of [[prompt-injection|prompt injection]], shown against
+      [[mcp|MCP]] by Invariant Labs in April 2025. A changed description after
+      you've approved the tool is called a rug pull.
+
+a2a:
+  term: Agent2Agent Protocol (A2A)
+  definition: >-
+    An open standard for [[agent|agents]] from different companies to hand each
+    other work as peers: send a task, answer questions, get a result, without
+    seeing each other's internals.
+  notes:
+    - >-
+      Launched by Google in April 2025, now run under the Linux Foundation.
+      Where [[mcp|MCP]] connects an agent to its tools, A2A connects it to other
+      agents.
+
+agent-card:
+  term: Agent Card
+  definition: >-
+    A JSON file an [[a2a|A2A]] agent publishes at a well-known web address,
+    listing what it can do, where to reach it and how to log in.
+  notes:
+    - >-
+      Like a business card, anyone can print one. Cards can be signed, so a
+      client can check who published it before trusting it.
+
+multi-agent-system:
+  term: Multi-Agent System
+  aliases: ['multi-agent', 'multi-agent systems', 'multi-agent setups']
+  definition: >-
+    Several [[agent|agents]] splitting one job: usually a lead agent handing
+    pieces to others and combining what comes back.
+
 # ── Agent payments ───────────────────────────────────────────────────
 
 mandate:
@@ -1326,35 +1377,6 @@ web-bot-auth:
     - >-
       Built on HTTP Message Signatures (RFC 9421) and now an IETF draft. Visa
       and Cloudflare use it to tell shopping agents from scrapers.
-
-a2a:
-  term: Agent2Agent Protocol (A2A)
-  definition: >-
-    An open standard for [[agent|agents]] from different companies to hand each
-    other work as peers: send a task, answer questions, get a result, without
-    seeing each other's internals.
-  notes:
-    - >-
-      Launched by Google in April 2025, now run under the Linux Foundation.
-      Where [[mcp|MCP]] connects an agent to its tools, A2A connects it to other
-      agents.
-
-agent-card:
-  term: Agent Card
-  definition: >-
-    A JSON file an [[a2a|A2A]] agent publishes at a well-known web address,
-    listing what it can do, where to reach it and how to log in.
-  notes:
-    - >-
-      Like a business card, anyone can print one. Cards can be signed, so a
-      client can check who published it before trusting it.
-
-multi-agent-system:
-  term: Multi-Agent System
-  aliases: ['multi-agent', 'multi-agent systems', 'multi-agent setups']
-  definition: >-
-    Several [[agent|agents]] splitting one job: usually a lead agent handing
-    pieces to others and combining what comes back.
 
 # ── Measuring agents ─────────────────────────────────────────────────
 

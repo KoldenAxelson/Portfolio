@@ -423,12 +423,14 @@
 .mli-mnd-checks .is-pass .mli-mnd-mark{color:rgb(var(--c-accent));}
 .mli-mnd-checks .is-fail{color:rgb(var(--c-fg));font-weight:600;}
 .mli-mnd-checks .is-fail .mli-mnd-mark{color:#d9534f;}
-/* ml-handoff: one agent hands a job to another over A2A */
-.mli-hand .mli-ag-lab{width:5.4rem;}
-.mli-hand .mli-ag-phases{margin-top:0;}
-.mli-hand .mli-ag-pill{font-size:.62rem;}
-.mli-hand .mli-inj-verdict[hidden]{display:none;}
-@media (max-width:520px){.mli-hand .mli-ag-step{flex-direction:column;gap:.2rem;}.mli-hand .mli-ag-lab{width:auto;align-self:flex-start;}}
+/* ml-handoff and ml-wire: step-by-step traces (scripts/pages/ml/trace.ts) */
+.mli-trace .mli-ag-lab{width:5.4rem;}
+.mli-trace .mli-ag-phases{margin-top:0;}
+.mli-trace .mli-ag-pill{font-size:.62rem;}
+.mli-trace .mli-ag-body{overflow-wrap:anywhere;}
+.mli-trace .mli-inj-verdict[hidden]{display:none;}
+.mli-trace-hl{color:inherit;background:rgba(217,83,79,.12);outline:1px dashed rgba(217,83,79,.6);border-radius:.2rem;padding:0 .1rem;}
+@media (max-width:520px){.mli-trace .mli-ag-step{flex-direction:column;gap:.2rem;}.mli-trace .mli-ag-lab{width:auto;align-self:flex-start;}}
 /* ml-horizon: METR time horizons on a log scale */
 .mli-hz-wrap{position:relative;margin-top:.8rem;}
 .mli-hz-plot{display:block;width:100%;height:auto;overflow:visible;}

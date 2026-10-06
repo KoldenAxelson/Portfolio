@@ -12,7 +12,7 @@
   normal run, so the demo still reads with JavaScript off.
 */ -}}
 {{- $d := site.Data.ml.handoff -}}
-<div class="not-prose mli-demo mli-hand" id="mli-hand" data-groups="{{ jsonify $d.groups }}" data-scenarios="{{ jsonify $d.scenarios }}" data-verdicts="{{ jsonify $d.verdicts }}">
+<div class="not-prose mli-demo mli-trace" id="mli-hand" data-groups="{{ jsonify $d.groups }}" data-scenarios="{{ jsonify $d.scenarios }}" data-verdicts="{{ jsonify $d.verdicts }}">
 <div class="mli-demo-label">Live · a travel planner hands a job to a flight agent</div>
 <div class="mli-ag-phases" id="mli-hand-states" role="group" aria-label="Task state">
 {{- range $i, $s := $d.states }}{{ if $i }}<span class="mli-ag-arrow" aria-hidden="true">→</span>{{ end }}<span class="mli-ag-pill{{ if eq $s "COMPLETED" }} is-active{{ end }}" data-state="{{ $s }}">{{ replace $s "_" " " }}</span>{{ end -}}

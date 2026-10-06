@@ -1,0 +1,33 @@
+{{- /*
+  ml-wire — MCP on the wire: an app lists a server's tools and calls one, under
+  either spec version. Then swap in a server whose tool description carries
+  hidden instructions, and choose what the approval box shows.
+
+    {{< ml/wire >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml/assets.html (css/pages/ml/demos.css, scripts/pages/ml/). The
+  step player is shared with ml/handoff (scripts/pages/ml/trace.ts).
+  Messages and verdicts live in data/ml/wire.yaml. The static state is the
+  honest run under the 2026-07-28 spec, so the demo still reads with
+  JavaScript off.
+*/ -}}
+{{- $d := site.Data.ml.wire -}}
+{{- $fill := index $d.fills "2026" -}}
+<div class="not-prose mli-demo mli-trace" id="mli-wire" data-groups="{{ jsonify $d.groups }}" data-fills="{{ jsonify $d.fills }}" data-verdicts="{{ jsonify $d.verdicts }}">
+<div class="mli-demo-label">Live · an AI app and an MCP server, on the wire</div>
+<div class="mli-bits-models" role="group" aria-label="Spec version"><span class="mli-bits-lab">Spec:</span><button class="mli-rag-q" type="button" aria-pressed="false" data-version="2025">2025-11-25, with handshake</button><button class="mli-rag-q is-on" type="button" aria-pressed="true" data-version="2026">2026-07-28, stateless</button></div>
+<div class="mli-controls mli-inj-row" role="group" aria-label="Scenario">
+<label class="mli-toggle"><input type="checkbox" data-opt="malicious" /> A malicious server</label>
+<label class="mli-toggle"><input type="checkbox" data-opt="arguments" /> Approval box shows the arguments</label>
+</div>
+<div class="mli-ag-log" id="mli-wire-log">
+{{- range slice "hello-2026" "list" "weather" "weather-ok-blind" "weather-call" }}{{ range index $d.groups . }}
+{{- $text := replace .text "⟨,meta⟩" (printf ",%s" $fill.meta) | replaceRE "⟨meta⟩" $fill.meta | replaceRE "⟨rt⟩" $fill.rt | replaceRE "[⟦⟧]" "" -}}
+<div class="mli-ag-step t-{{ .kind }} is-shown"><span class="mli-ag-lab">{{ .who }}</span><span class="mli-ag-body">{{ $text }}</span></div>
+{{- end }}{{ end -}}
+</div>
+<div class="mli-inj-verdict" id="mli-wire-verdict" aria-live="polite">{{ $d.verdicts.honest }}</div>
+<div class="mli-controls"><button class="mli-btn" id="mli-wire-replay" type="button">Replay</button><button class="mli-btn mli-btn-ghost" id="mli-wire-step" type="button">Step &rsaquo;</button></div>
+<div class="mli-caption">Scripted, not a live model. The messages are the spec's own examples, trimmed with "…"; the poisoned tool is Invariant Labs' April 2025 proof of concept, and the password is fake. The spec says there "SHOULD always be a human in the loop with the ability to deny tool invocations". That only helps if the human can see what they're approving.</div>
+</div>
