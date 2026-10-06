@@ -100,6 +100,21 @@ First professional role, at an EEG neurotech startup. Owned the Ruby backend for
 ## Articles published
 
 - **"Community as Infrastructure"** (May 2026) — On building a support structure for your work with five people, a Discord server, and the discipline to keep showing up. Originally on dev.to: https://dev.to/konradwright/community-as-infrastructure-40k2
+- **"What Is ML Infrastructure?"** (July 2026) — Machine learning infrastructure is what's built around AI models to turn a chatbot into a real business: hooking up tools and housing it on architecture that serves millions.
+- **"How Does a Model Actually Learn?"** (September 2026) — A no-math explainer of loss, gradient descent, learning rates and overfitting, with a line you can train by hand and a curve you can watch memorize the practice test.
+- **"How Do You Know a Model Got Better?"** (September 2026) — Evals for people who ship software: test sets and the leaks that ruin them, why grading language is hard, LLM judges and their biases, and turning all of it into a gate your deploys have to pass.
+- **"How Does a Text Predictor Become an Assistant?"** (September 2026) — How a language model that only continues text is post-trained into an assistant: example answers, human preferences, RLHF and DPO, rewards a program can check, written principles, and the ways it all goes wrong.
+- **"Why Does RAG Get the Wrong Answer?"** (September 2026) — Why retrieval-augmented generation looks easy in a demo and breaks in production: chunking, embeddings, keyword vs. vector vs. hybrid search, reranking, and why a wrong answer is often a search bug.
+- **"Why Does a GPU Spend Most of Its Time Waiting?"** (September 2026) — GPUs for people who run servers: why AI runs on thousands of simple cores, why memory bandwidth matters more than raw speed, and why batching is one of the biggest tricks in serving.
+- **"What Happens When You Hit Enter?"** (September 2026) — From keypress to streaming words: tokens, attention, next-token prediction, temperature, and the two phases of serving (prefill and decode) that decide how fast an answer arrives and what it costs.
+- **"How Do You Train One Model on 16,000 GPUs?"** (September 2026) — Training a frontier model as a distributed-systems problem: how the work is split across thousands of GPUs, how they talk, what breaks, and how labs measure the waste.
+- **"How Do You Protect a Model's Weights?"** (September 2026) — Why AI labs treat model weights, months of compute in one set of files, as crown jewels: how they get stolen, the controls that stop it, and the case for giving them away.
+- **"What Is Prompt Injection, and Why Can't We Patch It?"** (September 2026) — Prompt injection is SQL injection's younger sibling, instructions hidden in data: why language models can't tell the two apart, why agents raise the stakes, and the defences that actually help.
+- **"Should You Rent AI or Run Your Own?"** (September 2026) — API or your own GPUs, compared on cost crossover, speed, privacy, quality and who gets paged at 3 a.m., with September 2026 prices and a break-even calculator.
+- **"Quantization: A Living History"** (September 2026) — A kept-current timeline of how AI models shrank from racks of GPUs toward laptops and phones one fewer bit at a time, from 2015's phone models to today's 1-bit LLMs.
+- **"What Is Jev, and Why Doesn't It Talk?"** (September 2026) — Jev is a decision model that takes a question and a list of allowed answers and returns calibrated odds instead of text: what that buys you, where it breaks, and why the pattern will outlast any one product.
+- **"Why Pay for the Smartest Model Every Time?"** (September 2026) — Routing, cascades, distillation and caching: the four ways to send each request to the cheapest model that can handle it, and how to know it's still good enough.
+- **"Can a Government Agency Just Use ChatGPT?"** (September 2026) — Running AI in a government cloud (FedRAMP, GovCloud regions, air-gapped models, audit logs and agents) as of September 2026: same plumbing as anywhere else, with the boundaries drawn in ink.
 
 ## Konrad's skills
 
