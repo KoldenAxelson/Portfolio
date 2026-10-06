@@ -127,7 +127,16 @@ Real, verifiable, and safe to use:
   Draftboard (acquired by DraftKings 2019), UNCOMN LLC. Concrete claim on record:
   1,000+ Fortify-flagged vulnerabilities resolved on the CPA project.
 - **Certification:** CompTIA Security+, issued July 2023, expires July 2026.
-- **Writing:** "Community as Infrastructure" (May 2026), also on dev.to.
+- **Writing:** "Community as Infrastructure" (May 2026), also on dev.to. Fifteen
+  ML explainers: "What Is ML Infrastructure?" (July 2026), then, all September
+  2026, "How Does a Model Actually Learn?", "How Do You Know a Model Got
+  Better?", "How Does a Text Predictor Become an Assistant?", "Why Does RAG Get
+  the Wrong Answer?", "Why Does a GPU Spend Most of Its Time Waiting?", "What
+  Happens When You Hit Enter?", "How Do You Train One Model on 16,000 GPUs?",
+  "How Do You Protect a Model's Weights?", "What Is Prompt Injection, and Why
+  Can't We Patch It?", "Should You Rent AI or Run Your Own?", "Quantization: A
+  Living History", "What Is Jev, and Why Doesn't It Talk?", "Why Pay for the
+  Smartest Model Every Time?", "Can a Government Agency Just Use ChatGPT?".
 - **Résumé downloads:** `/resume.pdf`, `/resume.docx`.
 
 **Absences that must not be fabricated:** there are no testimonials, no customer
