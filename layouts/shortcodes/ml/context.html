@@ -1,0 +1,50 @@
+{{- /*
+  ml-context — the context window as a budget. Load skills and tool
+  definitions in full or on demand, add work, and watch what's left for the job.
+
+    {{< ml/context >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml/assets.html (css/pages/ml/demos.css, scripts/pages/ml/).
+  The token counts and their sources live in data/ml/context-budget.yaml. The
+  static state is the everything-up-front setup, so the demo still reads with
+  JavaScript off.
+*/ -}}
+{{- $d := index site.Data.ml "context-budget" -}}
+{{- $window := float $d.window -}}
+{{- $skills := index $d.skills.options 0 -}}
+{{- $tools := index $d.tools.options 0 -}}
+{{- $work := mul $d.default_steps $d.step_tokens -}}
+{{- $setup := add $skills.tokens $tools.tokens -}}
+{{- range $d.fixed }}{{ $setup = add $setup .tokens }}{{ end -}}
+{{- $used := add $setup $work -}}
+<div class="not-prose mli-demo" id="mli-ctx" data-config="{{ jsonify $d }}">
+<div class="mli-demo-label">Live · what an agent reads before it starts work</div>
+<div class="mli-bits-models" role="group" aria-label="Skills"><span class="mli-bits-lab">Skills:</span>
+{{- range $i, $o := $d.skills.options }}<button class="mli-rag-q{{ if eq $i 0 }} is-on{{ end }}" type="button" aria-pressed="{{ eq $i 0 }}" data-skills="{{ $o.id }}">{{ $o.label }}</button>{{ end -}}
+</div>
+<div class="mli-bits-models mli-ctx-group" role="group" aria-label="MCP tools"><span class="mli-bits-lab">MCP tools:</span>
+{{- range $i, $o := $d.tools.options }}<button class="mli-rag-q{{ if eq $i 0 }} is-on{{ end }}" type="button" aria-pressed="{{ eq $i 0 }}" data-tools="{{ $o.id }}">{{ $o.label }}</button>{{ end -}}
+</div>
+<div class="mli-row"><label for="mli-ctx-r">Files read, tests run: <span class="mli-val" id="mli-ctx-v">{{ $d.default_steps }}</span></label><input class="mli-range" id="mli-ctx-r" type="range" min="0" max="{{ $d.max_steps }}" step="1" value="{{ $d.default_steps }}" aria-valuetext="{{ $d.default_steps }} steps" /></div>
+<label class="mli-toggle mli-ctx-compact"><input type="checkbox" id="mli-ctx-compact" /> Compact the work past {{ lang.FormatNumber 0 $d.compact_at }} tokens</label>
+<div class="mli-roof-bars">
+{{- range $d.fixed }}
+<div class="mli-roof-bar"><span class="mli-roof-lab">{{ .label }}</span><div class="mli-roof-track"><div class="mli-roof-fill" style="width:{{ printf "%.2f" (mul (div (float .tokens) $window) 100) }}%"></div></div><span class="mli-roof-ms">{{ lang.FormatNumber 0 .tokens }}</span></div>
+{{- end }}
+<div class="mli-roof-bar" data-row="skills"><span class="mli-roof-lab">{{ $d.skills.label }}</span><div class="mli-roof-track"><div class="mli-roof-fill" style="width:{{ printf "%.2f" (mul (div (float $skills.tokens) $window) 100) }}%"></div></div><span class="mli-roof-ms">{{ lang.FormatNumber 0 $skills.tokens }}</span></div>
+<div class="mli-roof-bar" data-row="tools"><span class="mli-roof-lab">{{ $d.tools.label }}</span><div class="mli-roof-track"><div class="mli-roof-fill" style="width:{{ printf "%.2f" (mul (div (float $tools.tokens) $window) 100) }}%"></div></div><span class="mli-roof-ms">{{ lang.FormatNumber 0 $tools.tokens }}</span></div>
+<div class="mli-roof-bar" data-row="work"><span class="mli-roof-lab">Work so far</span><div class="mli-roof-track"><div class="mli-roof-fill is-math" style="width:{{ printf "%.2f" (mul (div (float $work) $window) 100) }}%"></div></div><span class="mli-roof-ms">{{ lang.FormatNumber 0 $work }}</span></div>
+</div>
+<div class="mli-ctx-total">
+<div class="mli-ctx-head"><span>Context window</span><span class="mli-val" id="mli-ctx-used">{{ lang.FormatNumber 0 $used }} / {{ lang.FormatNumber 0 $d.window }}</span></div>
+<div class="mli-bar mli-ctx-bar"><div class="mli-bar-fill" id="mli-ctx-fill" style="width:{{ printf "%.2f" (mul (div (float $used) $window) 100) }}%"></div><span class="mli-ctx-mark" id="mli-ctx-mark" style="left:{{ printf "%.2f" (mul (div (float $d.compact_at) $window) 100) }}%" hidden></span></div>
+</div>
+<div class="mli-route-stats">
+<div><div class="mli-route-num" id="mli-ctx-free">{{ lang.FormatNumber 0 (sub $d.window $used) }}</div><div class="mli-gi-sub">tokens left for the job</div></div>
+<div><div class="mli-route-num" id="mli-ctx-setup">{{ printf "%.0f" (mul (div (float $setup) $window) 100) }}%</div><div class="mli-gi-sub">spent before any work</div></div>
+<div><div class="mli-route-num" id="mli-ctx-tools">{{ $tools.choices }}</div><div class="mli-gi-sub">tools to pick from</div></div>
+</div>
+<div class="mli-caption" id="mli-ctx-cap">Everything loaded up front: {{ printf "%.0f" (mul (div (float $setup) $window) 100) }}% of the window is gone before the agent reads a single file.</div>
+<div class="mli-caption">Representative numbers, not one real setup. The system prompt and AGENTS.md sizes are Claude Code's documented examples; a skill costs about 100 tokens until it's used and up to 5,000 in full; the 58 tools are Anthropic's own five-server example (GitHub, Slack, Sentry, Grafana, Splunk). The window is 200,000 tokens. The biggest models now take a million, but accuracy slides long before any window is full. The summary keeping 12% of the work is illustrative.</div>
+</div>

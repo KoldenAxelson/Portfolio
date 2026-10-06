@@ -1,0 +1,83 @@
+# References for content/articles/agent-time-horizons.md, rendered by {{< ml/references >}}.
+# Listed in the order the article reaches them. Numbering is automatic.
+
+- tag: METR
+  title: Measuring AI Ability to Complete Long Tasks
+  url: https://metr.org/blog/2025-03-19-measuring-ai-ability-to-complete-long-tasks/
+  meta: Kwa, West, Becker et al. · METR · March 19, 2025
+  note: The original chart. The 50% time horizon, "doubling approximately every 7 months for the last 6 years".
+- tag: METR
+  title: Measuring AI Ability to Complete Long Software Tasks
+  url: https://arxiv.org/abs/2503.14499
+  meta: Kwa, West, Becker et al. · arXiv · 2025, revised 2026
+  note: 'The full paper: 170 tasks, human baselines, Claude 3.7 Sonnet at 59 minutes, and 80% horizons "roughly 5x shorter".'
+- tag: METR
+  title: Time Horizon 1.1
+  url: https://metr.org/blog/2026-1-29-time-horizon-1-1/
+  meta: METR · January 29, 2026
+  note: The task suite grows from 170 to 228, with more long tasks, and METR warns the confidence intervals "are still very wide".
+- tag: METR
+  title: METR on its March 2026 correction
+  url: https://x.com/METR_Evals/status/2028948235486937098
+  meta: METR · March 3, 2026
+  note: '"A mistake in our modeling that inflated recent 50%-time horizons by 10-20%", fixed in public with an apology.'
+- tag: METR
+  title: Task-Completion Time Horizons of Frontier AI Models
+  url: https://metr.org/time-horizons/
+  meta: METR · last updated May 8, 2026
+  note: The live dashboard and FAQ. Time horizon is "a measure of the difficulty of a task", and estimates above 16 hours are unreliable.
+- tag: METR
+  title: Time Horizon 1.1 results file
+  url: https://metr.org/assets/benchmark_results_1_1.yaml
+  meta: METR · 2026
+  note: The numbers behind the chart above, including the 128.7-day doubling time since 2023.
+- tag: METR
+  title: METR on an early Claude Mythos Preview
+  url: https://x.com/METR_Evals/status/2052896621760004602
+  meta: METR · May 8, 2026
+  note: '"At least 16hrs", "at the upper end of what we can measure without new tasks."'
+- tag: Vendors
+  title: Introducing Claude Sonnet 4.5
+  url: https://www.anthropic.com/news/claude-sonnet-4-5
+  meta: Anthropic · September 29, 2025
+  note: Seen "maintaining focus for more than 30 hours on complex, multi-step tasks."
+- tag: Vendors
+  title: Building more with GPT-5.1-Codex-Max
+  url: https://openai.com/index/gpt-5-1-codex-max/
+  meta: OpenAI · November 19, 2025
+  note: Observed working "on tasks for more than 24 hours" in internal evaluations.
+- tag: Caveats
+  title: Frontier Risk Report (February to March 2026)
+  url: https://metr.org/blog/2026-05-19-frontier-risk-report/
+  meta: METR · May 19, 2026
+  note: Saturated benchmarks, cheating in at least 16% of successful long runs, and real-world performance weaker than the scores suggest.
+- tag: Caveats
+  title: METR on its GPT-5.6 Sol evaluation
+  url: https://x.com/METR_Evals/status/2070584332977336802
+  meta: METR · June 26, 2026
+  note: About 11.3 hours with cheating marked as failure, and "beyond 270hrs" if the cheats count as successes.
+- tag: Field trial
+  title: Measuring the Impact of Early-2025 AI on Experienced Open-Source Developer Productivity
+  url: https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/
+  meta: Becker, Rush, Barnes, Rein · METR · July 10, 2025
+  note: Sixteen developers, 246 real issues. With AI they took 19% longer, and believed they'd been 20% faster.
+- tag: Field trial
+  title: We are Changing our Developer Productivity Experiment Design
+  url: https://metr.org/blog/2026-02-24-uplift-update/
+  meta: METR · February 24, 2026
+  note: Developers are probably faster in 2026, but selection effects make the new data "an unreliable signal".
+- tag: Further
+  title: This is the most misunderstood graph in AI
+  url: https://www.technologyreview.com/2026/02/05/1132254/this-is-the-most-misunderstood-graph-in-ai/
+  meta: MIT Technology Review · February 5, 2026
+  note: METR's own researchers on the ways people read too much into the chart.
+- tag: Further
+  title: Against the METR graph
+  url: https://www.transformernews.ai/p/against-the-metr-graph-coding-capabilities-software-jobs-task-ai
+  meta: Transformer · January 20, 2026
+  note: The sharpest critique, on human baselines, messy tasks and what the trend can carry.
+- tag: Further
+  title: METR/eval-analysis-public
+  url: https://github.com/METR/eval-analysis-public
+  meta: METR · GitHub
+  note: The code and raw runs behind the horizons, so anyone can refit the trend.

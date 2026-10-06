@@ -1,0 +1,45 @@
+{{- /*
+  ml-horizon — METR's time horizons on a log scale: the length of task, in
+  skilled-human time, that each model finishes at a chosen success rate, and
+  the doubling trend through the frontier models.
+
+    {{< ml/horizon >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml/assets.html (css/pages/ml/demos.css, scripts/pages/ml/).
+  The numbers live in data/ml/horizons.yaml, generated from METR's results
+  file. The chart is drawn by the script; the same numbers ship as a static
+  table, so the demo still reads with JavaScript off.
+*/ -}}
+{{- $d := site.Data.ml.horizons -}}
+<div class="not-prose mli-demo" id="mli-hz" data-models="{{ jsonify $d.models }}" data-fit-from="{{ time.Format "2006-01-02" $d.fit_from }}" data-fit-max="{{ $d.fit_max_minutes }}" data-reference="{{ $d.reference }}">
+<div class="mli-demo-label">Live · how long a task AI agents can finish, by how often they must succeed</div>
+<div class="mli-bits-models" role="group" aria-label="Success rate"><span class="mli-bits-lab">Succeeds:</span><button class="mli-rag-q is-on" type="button" aria-pressed="true" data-level="50">Half the time</button><button class="mli-rag-q" type="button" aria-pressed="false" data-level="80">80% of the time</button><button class="mli-rag-q" type="button" aria-pressed="false" data-level="95">95% (extrapolated)</button></div>
+<div class="mli-hz-wrap">
+<svg class="mli-hz-plot" id="mli-hz-plot" viewBox="0 0 640 360" role="img" aria-label="METR time horizons by model release date, on a log scale, with a doubling trend line"></svg>
+<div class="mli-hz-tip" id="mli-hz-tip" role="status" hidden></div>
+</div>
+<div class="mli-cal-key" aria-hidden="true"><span class="mli-hz-key is-frontier"></span>beat every earlier model <span class="mli-hz-key is-other"></span>didn't <span class="mli-hz-key is-trend"></span>trend through the leaders</div>
+<div class="mli-route-stats mli-hz-stats">
+<div><div class="mli-route-num" id="mli-hz-double">–</div><div class="mli-gi-sub">doubling time since 2023</div></div>
+<div><div class="mli-route-num" id="mli-hz-ref">–</div><div class="mli-gi-sub" id="mli-hz-ref-lab">{{ $d.reference }}</div></div>
+</div>
+<div class="mli-caption" id="mli-hz-cap">With JavaScript on, this draws METR's measurements on a log scale. The numbers are in the table below.</div>
+<details class="mli-hz-table">
+<summary>The numbers</summary>
+<table>
+<thead><tr><th scope="col">Model</th><th scope="col">Released</th><th scope="col">50% horizon</th><th scope="col">80% horizon</th></tr></thead>
+<tbody>
+{{- range $d.models }}
+<tr><th scope="row">{{ .name }}</th><td>{{ time.Format "Jan 2006" .released }}</td>
+{{- range slice .p50 .p80 -}}
+{{- $m := float . -}}
+<td>{{ if lt $m 1.0 }}{{ printf "%.0f sec" (mul $m 60) }}{{ else if lt $m 60.0 }}{{ printf "%.0f min" $m }}{{ else }}{{ $t := int (math.Round $m) }}{{ if mod $t 60 }}{{ printf "%d hr %d min" (div $t 60) (mod $t 60) }}{{ else }}{{ printf "%d hr" (div $t 60) }}{{ end }}{{ end }}</td>
+{{- end -}}
+</tr>
+{{- end }}
+</tbody>
+</table>
+</details>
+<div class="mli-caption">METR's Time Horizon 1.1 measurements of agents on software tasks, with the 95% extrapolation ours, not METR's: it extends each model's own success curve beyond what METR measures. METR says estimates above 16 hours are unreliable with its current tasks, and leaves them out of the trend.</div>
+</div>

@@ -1,0 +1,62 @@
+{{- /*
+  ml-mandate — you sign a mandate; a shopping agent brings back six carts; the
+  payment layer checks each one without asking the model anything.
+
+    {{< ml/mandate >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml/assets.html (css/pages/ml/demos.css, scripts/pages/ml/).
+  The mandate, checks and carts live in data/ml/mandate.yaml. Every cart is
+  rendered with its checks at the default limit, so with JavaScript off they
+  read as a list; the script shows one at a time and re-checks on the slider.
+*/ -}}
+{{- $d := site.Data.ml.mandate -}}
+{{- $m := $d.mandate -}}
+{{- $limit := float $m.limit.value -}}
+<div class="not-prose mli-demo" id="mli-mnd" data-mandate="{{ jsonify $m }}" data-checks="{{ jsonify $d.checks }}" data-paid="{{ $d.paid }}">
+<div class="mli-demo-label">Live · a signed mandate vs. what the agent brings back</div>
+<div class="mli-mnd-mandate">
+<div class="mli-rag-t">Your mandate, signed on your phone</div>
+<div class="mli-rag-x">{{ $m.wants }} · only from {{ $m.merchant }} · good for {{ mul $m.days 24 }} hours · one purchase</div>
+<div class="mli-row"><label for="mli-mnd-r">Spend up to <span class="mli-val" id="mli-mnd-v">${{ $m.limit.value }}</span></label><input class="mli-range" id="mli-mnd-r" type="range" min="{{ $m.limit.min }}" max="{{ $m.limit.max }}" step="{{ $m.limit.step }}" value="{{ $m.limit.value }}" aria-valuetext="{{ $m.limit.value }} dollars" /></div>
+</div>
+<div class="mli-rag-qs mli-mnd-picks" role="group" aria-label="What the agent brings back">
+{{- range $i, $c := $d.carts }}<button class="mli-rag-q{{ if eq $i 0 }} is-on{{ end }}" type="button" aria-pressed="{{ eq $i 0 }}" data-pick="{{ $c.id }}">{{ $c.label }}</button>{{ end -}}
+</div>
+{{- range $d.carts }}
+{{- $cart := . -}}
+{{- $total := 0.0 -}}
+{{- range .items }}{{ $total = add $total .price }}{{ end -}}
+{{- $results := dict
+  "merchant" (eq .shop $m.merchant)
+  "signed" (eq .signed true)
+  "charge" (eq (printf "%.2f" (float .charge)) (printf "%.2f" $total))
+  "limit" (le $total $limit)
+  "expiry" (le .day $m.days)
+  "token" (not .reused) -}}
+{{- $failed := slice -}}
+{{- range $d.checks }}{{ if not (index $results .id) }}{{ $failed = $failed | append .fail }}{{ end }}{{ end -}}
+{{- $verdict := $d.paid -}}
+{{- with $failed }}{{ $verdict = printf "Blocked. %s" (index . 0) }}{{ end -}}
+{{- $vars := dict "{shop}" .shop "{total}" (printf "$%.2f" $total) "{charge}" (printf "$%.2f" (float .charge)) "{limit}" (printf "$%.0f" $limit) "{hours}" (string (mul $m.days 24)) -}}
+{{- range $k, $v := $vars }}{{ $verdict = replace $verdict $k $v }}{{ end }}
+<div class="mli-mnd-card" data-card="{{ .id }}" data-detail="{{ jsonify (dict "shop" .shop "signed" .signed "total" $total "charge" .charge "day" .day "reused" (.reused | default false)) }}">
+<div class="mli-ag-step t-thought is-shown"><span class="mli-ag-lab">AGENT</span><span class="mli-ag-body">“{{ .says }}”</span></div>
+<div class="mli-mnd-story">{{ .story }}</div>
+<dl class="mli-mnd-receipt">
+<dt>shop</dt><dd>{{ .shop }}</dd>
+<dt>cart</dt><dd>{{ range .items }}{{ .name }}, ${{ printf "%.2f" (float .price) }}{{ end }} · {{ if .signed }}signed by the shop{{ else }}no signature you can check{{ end }}</dd>
+<dt>charge</dt><dd>${{ printf "%.2f" (float .charge) }}</dd>
+<dt>when</dt><dd>{{ if eq .day 0 }}today{{ else }}{{ .day }} days after you signed{{ end }}</dd>
+<dt>token</dt><dd>{{ if .reused }}already used once{{ else }}fresh{{ end }}</dd>
+</dl>
+<ul class="mli-mnd-checks">
+{{- range $d.checks }}{{ $ok := index $results .id }}
+<li class="{{ if $ok }}is-pass{{ else }}is-fail{{ end }}" data-check="{{ .id }}"><span class="mli-mnd-mark" aria-hidden="true">{{ if $ok }}✓{{ else }}✗{{ end }}</span>{{ .label }}<span class="sr-only">{{ if $ok }} (passed){{ else }} (failed){{ end }}</span></li>
+{{- end }}
+</ul>
+<div class="mli-inj-verdict" data-verdict>{{ $verdict }}</div>
+</div>
+{{- end }}
+<div class="mli-caption">Scripted, not a live model, and every shop is on a reserved example domain. The checks are modelled on real protocol fields: AP2's allowed merchants, amount range, expiry and merchant-signed cart, and the single-use payment token in OpenAI and Stripe's checkout protocol. Not one of them asks the model whether it's sure.</div>
+</div>

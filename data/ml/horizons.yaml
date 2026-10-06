@@ -1,0 +1,39 @@
+# METR's task-completion time horizons, for the {{< ml/horizon >}} demo.
+# Generated from METR's own results file for Time Horizon 1.1
+# (https://metr.org/assets/benchmark_results_1_1.yaml, unchanged July to
+# September 2026, after METR's March 3, 2026 correction). Every model METR
+# measured from 2023 on. Minutes of skilled-human task time; ranges are 95%
+# confidence intervals. `frontier` is METR's is_sota flag: the model beat every
+# model released before it. Do not edit numbers by hand; regenerate from the file.
+#
+# The demo fits its trend the way METR does: log2(p50) against release date,
+# over frontier models released from 2023 on, leaving out estimates above 16
+# hours. On this data that gives METR's own 128.7-day doubling time.
+source: https://metr.org/time-horizons/
+fit_from: 2023-01-01
+fit_max_minutes: 960
+reference: Claude Opus 4.6
+models:
+  - { name: "GPT-4", released: 2023-03-14, frontier: true, p50: 3.99, p50_ci: [1.93, 8.0], p80: 0.89, p80_ci: [0.34, 2.52] }
+  - { name: "GPT-4 (1106)", released: 2023-11-06, frontier: true, p50: 4.04, p50_ci: [1.87, 8.44], p80: 0.78, p80_ci: [0.28, 2.36] }
+  - { name: "Claude 3 Opus", released: 2024-03-04, frontier: false, p50: 3.95, p50_ci: [1.71, 8.76], p80: 0.64, p80_ci: [0.19, 2.12] }
+  - { name: "GPT-4 Turbo", released: 2024-04-09, frontier: false, p50: 3.73, p50_ci: [1.98, 6.74], p80: 0.93, p80_ci: [0.43, 2.2] }
+  - { name: "GPT-4o", released: 2024-05-13, frontier: true, p50: 6.99, p50_ci: [4.0, 12.9], p80: 1.27, p80_ci: [0.56, 3.02] }
+  - { name: "Claude 3.5 Sonnet", released: 2024-06-20, frontier: true, p50: 11.4, p50_ci: [5.49, 22.4], p80: 1.67, p80_ci: [0.58, 4.57] }
+  - { name: "o1-preview", released: 2024-09-12, frontier: true, p50: 20.3, p50_ci: [11.7, 33.4], p80: 4.42, p80_ci: [2.01, 8.91] }
+  - { name: "Claude 3.5 Sonnet (Oct)", released: 2024-10-22, frontier: true, p50: 20.5, p50_ci: [10.1, 40.8], p80: 2.6, p80_ci: [0.89, 7.36] }
+  - { name: "o1", released: 2024-12-05, frontier: true, p50: 38.8, p50_ci: [21.2, 65.0], p80: 7.09, p80_ci: [3.04, 16.6] }
+  - { name: "Claude 3.7 Sonnet", released: 2025-02-24, frontier: true, p50: 60.4, p50_ci: [33.0, 104.2], p80: 12.1, p80_ci: [4.58, 28.9] }
+  - { name: "o3", released: 2025-04-16, frontier: true, p50: 119.7, p50_ci: [74.6, 190.9], p80: 30.0, p80_ci: [15.1, 57.8] }
+  - { name: "Claude Opus 4", released: 2025-05-22, frontier: false, p50: 100.4, p50_ci: [60.0, 163.5], p80: 20.4, p80_ci: [8.48, 41.9] }
+  - { name: "Claude Opus 4.1", released: 2025-08-05, frontier: false, p50: 100.5, p50_ci: [59.3, 159.5], p80: 23.5, p80_ci: [10.5, 47.8] }
+  - { name: "GPT-5", released: 2025-08-07, frontier: true, p50: 203.0, p50_ci: [112.6, 405.6], p80: 38.3, p80_ci: [19.2, 70.1] }
+  - { name: "Gemini 3 Pro", released: 2025-11-18, frontier: true, p50: 224.3, p50_ci: [139.6, 379.2], p80: 54.1, p80_ci: [25.7, 103.3] }
+  - { name: "GPT-5.1-Codex-Max", released: 2025-11-19, frontier: false, p50: 223.7, p50_ci: [134.3, 396.2], p80: 50.6, p80_ci: [27.3, 88.4] }
+  - { name: "Claude Opus 4.5", released: 2025-11-24, frontier: true, p50: 293.0, p50_ci: [161.7, 623.7], p80: 49.4, p80_ci: [20.7, 104.6] }
+  - { name: "GPT-5.2", released: 2025-12-11, frontier: true, p50: 352.2, p50_ci: [198.1, 815.2], p80: 66.0, p80_ci: [31.7, 131.7] }
+  - { name: "Claude Opus 4.6", released: 2026-02-05, frontier: true, p50: 718.8, p50_ci: [316.7, 3633.8], p80: 69.9, p80_ci: [27.0, 170.4] }
+  - { name: "GPT-5.3-Codex", released: 2026-02-05, frontier: false, p50: 349.5, p50_ci: [194.9, 816.4], p80: 54.7, p80_ci: [22.4, 122.1] }
+  - { name: "Gemini 3.1 Pro", released: 2026-02-19, frontier: false, p50: 384.1, p50_ci: [233.5, 694.8], p80: 89.8, p80_ci: [52.0, 158.6] }
+  - { name: "GPT-5.4", released: 2026-03-05, frontier: false, p50: 341.7, p50_ci: [186.6, 768.8], p80: 53.9, p80_ci: [24.0, 108.7] }
+  - { name: "Claude Mythos Preview (early)", released: 2026-04-07, frontier: true, p50: 1044.8, p50_ci: [508.9, 3304.3], p80: 185.9, p80_ci: [97.3, 398.5] }
