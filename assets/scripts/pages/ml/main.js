@@ -26,6 +26,11 @@ import { initDescent } from './descent.ts';
 import { initOverfit } from './overfit.ts';
 import { initChunks } from './chunks.ts';
 import { initSearch } from './search.ts';
+import { initContext } from './context.ts';
+import { initMandate } from './mandate.ts';
+import { initHandoff } from './handoff.ts';
+import { initHorizon } from './horizon.ts';
+import { initWire } from './wire.ts';
 
 // Tells the inline failsafe in ml-demos-assets.html that the reveal is handled.
 document.documentElement.dataset.mliReady = '';
@@ -98,3 +103,13 @@ const chunks = byId('mli-chk');
 whenVisible(chunks, () => initChunks(chunks));
 const search = byId('mli-srch');
 whenVisible(search, () => initSearch(search));
+const context = byId('mli-ctx');
+whenVisible(context, () => initContext(context));
+const mandate = byId('mli-mnd');
+whenVisible(mandate, () => initMandate(mandate));
+const handoff = byId('mli-hand');
+whenVisible(handoff, () => initHandoff(handoff));
+const horizonChart = byId('mli-hz');
+whenVisible(horizonChart, () => initHorizon(horizonChart));
+const wire = byId('mli-wire');
+whenVisible(wire, () => initWire(wire));

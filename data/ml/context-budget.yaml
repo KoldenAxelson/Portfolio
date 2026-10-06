@@ -1,0 +1,34 @@
+# What an agent reads before it starts work, for the {{< ml/context >}} demo.
+# Token counts are the vendors' own representative figures, not measurements of
+# one setup:
+#   system prompt, AGENTS.md: Claude Code docs, "Explore the context window"
+#     (code.claude.com/docs/en/context-window), representative startup costs.
+#   skills: Agent Skills overview (platform.claude.com), ~100 tokens of name and
+#     description per skill; a full body is "under 5k tokens".
+#   tools: Anthropic, "Introducing advanced tool use" (Nov 24, 2025): GitHub,
+#     Slack, Sentry, Grafana and Splunk, 58 tools, ~55K tokens up front; with
+#     tool search, ~500 tokens plus 3-5 tools found on demand (~3K).
+#   work: a file read is 1,100-2,400 tokens and a test run ~1,200 in the same
+#     Claude Code docs, so one step here is 2,000.
+#   compaction: the Claude API's default trigger is 150,000 input tokens. The
+#     summary keeping ~12% of the history is the ratio in Anthropic's own
+#     context-window simulation, so it's illustrative.
+window: 200000
+compact_at: 150000
+compact_keep: 0.12
+step_tokens: 2000
+max_steps: 60
+default_steps: 15
+fixed:
+  - { label: System prompt, tokens: 4200 }
+  - { label: AGENTS.md, tokens: 1800 }
+skills:
+  label: Skills
+  options:
+    - { id: full, label: All 20 in full, tokens: 100000 }
+    - { id: names, label: Names only, tokens: 2000 }
+tools:
+  label: MCP tools
+  options:
+    - { id: upfront, label: All 58 up front, tokens: 55000, choices: "58" }
+    - { id: search, label: Tool search, tokens: 3500, choices: "3–5" }

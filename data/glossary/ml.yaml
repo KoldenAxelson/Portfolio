@@ -1192,3 +1192,202 @@ agent:
   definition: >-
     A model inside a [[harness|harness]] that loops: reason, act with a tool,
     observe the result, and pick the next step.
+
+# ── Context ──────────────────────────────────────────────────────────
+
+context-engineering:
+  term: Context Engineering
+  definition: >-
+    Deciding what goes into a model's [[context-window|context window]] at each
+    step, and what stays out, so it has what the task needs and little else.
+  notes:
+    - >-
+      Popularized in June 2025 as a better name than "prompt engineering": the
+      prompt you type is a small part of what an [[agent|agent]] actually reads.
+
+context-rot:
+  term: Context Rot
+  definition: >-
+    A model getting worse at using what's in its [[context-window|context
+    window]] as the window fills, long before it's full.
+  notes:
+    - >-
+      A 2023 study found facts in the middle of a long input are recalled worst.
+      In July 2025, Chroma tested 18 models and every one got less reliable as
+      the input grew.
+
+agents-md:
+  term: AGENTS.md
+  definition: >-
+    A Markdown file at the root of a repository that tells coding
+    [[agent|agents]] how the project works: how to build it, test it, and what
+    not to touch.
+  notes:
+    - >-
+      "A README for agents." Launched in August 2025 by OpenAI and others, and
+      now looked after by the Linux Foundation's Agentic AI Foundation.
+
+agent-skill:
+  term: Agent Skill
+  aliases: ['skill', 'agent skills']
+  definition: >-
+    A folder of instructions, scripts and reference files that an
+    [[agent|agent]] loads only when a task calls for it.
+  notes:
+    - >-
+      Up front, the agent sees just each skill's name and one-line description,
+      about 100 [[token|tokens]]. That's
+      [[progressive-disclosure|progressive disclosure]].
+
+progressive-disclosure:
+  term: Progressive Disclosure
+  definition: >-
+    Showing a model a short summary first and loading the details only when it
+    asks for them.
+
+tool-search:
+  term: Tool Search
+  definition: >-
+    Letting an [[agent|agent]] look up the tools it needs when it needs them,
+    instead of loading every tool's description up front.
+
+compaction:
+  term: Compaction
+  aliases: ['compact', 'compacted', 'compacts']
+  definition: >-
+    Summarizing an [[agent|agent's]] history when its [[context-window|context
+    window]] is nearly full, then carrying on from the summary.
+  notes:
+    - >-
+      It frees room, but whatever the summary leaves out is gone. Long-running
+      agents also write notes to files, which survive it.
+
+# ── Agent protocols ──────────────────────────────────────────────────
+
+mcp:
+  term: Model Context Protocol (MCP)
+  definition: >-
+    An open standard for plugging tools and data into AI apps: wrap a tool once
+    as an MCP server, and any app that speaks MCP can use it.
+  notes:
+    - >-
+      Released by Anthropic in November 2024 and donated to the Linux
+      Foundation's Agentic AI Foundation in December 2025.
+
+mcp-server:
+  term: MCP Server
+  definition: >-
+    A program that offers tools, data or prompt templates to AI apps over
+    [[mcp|MCP]]. It might run on your laptop as a subprocess or on a remote
+    host over HTTPS.
+  notes:
+    - >-
+      Installing one is installing software: MCP's own security policy says a
+      local server is "trusted like any other software you install".
+
+tool-poisoning:
+  term: Tool Poisoning
+  definition: >-
+    Hiding instructions for the model inside a tool's description, which the
+    model reads but the user usually never sees.
+  notes:
+    - >-
+      A form of [[prompt-injection|prompt injection]], shown against
+      [[mcp|MCP]] by Invariant Labs in April 2025. A changed description after
+      you've approved the tool is called a rug pull.
+
+a2a:
+  term: Agent2Agent Protocol (A2A)
+  definition: >-
+    An open standard for [[agent|agents]] from different companies to hand each
+    other work as peers: send a task, answer questions, get a result, without
+    seeing each other's internals.
+  notes:
+    - >-
+      Launched by Google in April 2025, now run under the Linux Foundation.
+      Where [[mcp|MCP]] connects an agent to its tools, A2A connects it to other
+      agents.
+
+agent-card:
+  term: Agent Card
+  definition: >-
+    A JSON file an [[a2a|A2A]] agent publishes at a well-known web address,
+    listing what it can do, where to reach it and how to log in.
+  notes:
+    - >-
+      Like a business card, anyone can print one. Cards can be signed, so a
+      client can check who published it before trusting it.
+
+multi-agent-system:
+  term: Multi-Agent System
+  aliases: ['multi-agent', 'multi-agent systems', 'multi-agent setups']
+  definition: >-
+    Several [[agent|agents]] splitting one job: usually a lead agent handing
+    pieces to others and combining what comes back.
+
+# ── Agent payments ───────────────────────────────────────────────────
+
+mandate:
+  term: Mandate
+  aliases: ['mandates']
+  definition: >-
+    A signed record of what you allowed an [[agent|agent]] to buy: either the
+    exact cart, or rules like a price cap, a list of shops and an expiry date.
+  notes:
+    - >-
+      The core idea of Google's [[ap2|AP2]]. The shop and the bank check the
+      signature and the rules, not the agent's account of what you wanted.
+
+ap2:
+  term: Agent Payments Protocol (AP2)
+  definition: >-
+    Google's open protocol for proving what a user authorized an
+    [[agent|agent]] to buy, using signed [[mandate|mandates]].
+  notes:
+    - >-
+      Announced in September 2025 with more than 60 partners, from card
+      networks to banks to shops. Version 0.2 went to the FIDO Alliance in 2026.
+
+payment-token:
+  term: Payment Token
+  definition: >-
+    A stand-in for a card number that only works within set limits, such as
+    one shop, one amount, one use and a deadline.
+  notes:
+    - >-
+      If an [[agent|agent]] leaks it or gets tricked into spending it, the
+      damage is capped by those limits, not by the agent's judgment.
+
+x402:
+  term: x402
+  definition: >-
+    A protocol that uses the web's long-unused "402 Payment Required" status
+    code so a program can pay per request, then retry and get the data.
+  notes:
+    - >-
+      Launched by Coinbase in 2025 and usually settled in stablecoins. Built
+      for machines paying machines: an [[agent|agent]] buying one API call.
+
+web-bot-auth:
+  term: Web Bot Auth
+  definition: >-
+    A proposed standard where bots and [[agent|agents]] sign their web
+    requests, so a site can check who sent them instead of guessing.
+  notes:
+    - >-
+      Built on HTTP Message Signatures (RFC 9421) and now an IETF draft. Visa
+      and Cloudflare use it to tell shopping agents from scrapers.
+
+# ── Measuring agents ─────────────────────────────────────────────────
+
+time-horizon:
+  term: Time Horizon
+  aliases: ['time horizons']
+  definition: >-
+    The length of task, measured by how long it takes a skilled person, that an
+    AI [[agent|agent]] finishes successfully half the time.
+  notes:
+    - >-
+      METR's measure, introduced in March 2025. It's about how hard a task is,
+      not how long the agent runs: agents are usually faster than people at the
+      tasks they do finish.

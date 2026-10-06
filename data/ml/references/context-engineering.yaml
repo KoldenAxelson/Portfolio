@@ -1,0 +1,88 @@
+# References for content/articles/context-engineering.md, rendered by {{< ml/references >}}.
+# Listed in the order the article reaches them. Numbering is automatic.
+
+- tag: Term
+  title: '"I really like the term context engineering over prompt engineering"'
+  url: https://x.com/tobi/status/1935533422589399127
+  meta: Tobi Lütke · X · June 2025
+  note: 'The post that named it: "the art of providing all the context for the task to be plausibly solvable by the LLM."'
+- tag: Term
+  title: Effective context engineering for AI agents
+  url: https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents
+  meta: Rajasekaran, Dixon, Ryan, Hadfield · Anthropic · September 29, 2025
+  note: Context as "a finite resource with diminishing marginal returns", and the goal of "the smallest possible set of high-signal tokens".
+- tag: Evidence
+  title: Context windows
+  url: https://platform.claude.com/docs/en/build-with-claude/context-windows
+  meta: Anthropic docs · as of October 2026
+  note: 'Window sizes, and the warning: "As token count grows, accuracy and recall degrade, a phenomenon known as context rot."'
+- tag: Evidence
+  title: 'Lost in the Middle: How Language Models Use Long Contexts'
+  url: https://arxiv.org/abs/2307.03172
+  meta: Liu et al. · 2023
+  note: Models use information best at the start or end of a long input, and significantly worse when it sits in the middle.
+- tag: Evidence
+  title: 'Context Rot: How Increasing Input Tokens Impacts LLM Performance'
+  url: https://research.trychroma.com/context-rot
+  meta: Hong, Troynikov, Huber · Chroma · July 14, 2025
+  note: Eighteen models tested on deliberately simple tasks. Performance slides as input grows, and a ~300-token focused prompt beats the ~113,000-token original.
+- tag: AGENTS.md
+  title: AGENTS.md
+  url: https://agents.md/
+  meta: OpenAI, Amp, Google Jules, Cursor, Factory · since August 2025
+  note: '"A README for agents": build steps, test commands and conventions in one file every coding agent can read.'
+- tag: AGENTS.md
+  title: Donating the Model Context Protocol and establishing the Agentic AI Foundation
+  url: https://www.anthropic.com/news/donating-the-model-context-protocol-and-establishing-of-the-agentic-ai-foundation
+  meta: Anthropic · December 9, 2025
+  note: The Linux Foundation fund co-founded by Anthropic, Block and OpenAI, with MCP, goose and AGENTS.md as its founding projects.
+- tag: AGENTS.md
+  title: How Claude remembers your project
+  url: https://code.claude.com/docs/en/memory
+  meta: Claude Code docs · as of October 2026
+  note: Claude Code reads AGENTS.md when there's no CLAUDE.md (from v2.1.277), and the advice to keep these files under 200 lines.
+- tag: Skills
+  title: Equipping agents for the real world with Agent Skills
+  url: https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills
+  meta: Zhang, Lazuka, Murag · Anthropic · October 16, 2025
+  note: Skills as folders, and progressive disclosure "like a well-organized manual that starts with a table of contents".
+- tag: Skills
+  title: Agent Skills
+  url: https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview
+  meta: Anthropic docs · as of October 2026
+  note: What loads when. About 100 tokens per skill at startup, under 5,000 when triggered, and bundled files cost nothing until read.
+- tag: Skills
+  title: Skills for organizations, partners, the ecosystem
+  url: https://claude.com/blog/organization-skills-and-directory
+  meta: Anthropic · December 18, 2025
+  note: Agent Skills published as an open standard, "portable across tools and platforms".
+- tag: Skills
+  title: Agent Skills specification
+  url: https://github.com/agentskills/agentskills
+  meta: agentskills.io · community project
+  note: The open format, and the list of clients that read it, including GitHub Copilot, OpenAI Codex and Gemini CLI.
+- tag: Tools
+  title: Introducing advanced tool use on the Claude Developer Platform
+  url: https://www.anthropic.com/engineering/advanced-tool-use
+  meta: Bin Wu et al. · Anthropic · November 24, 2025
+  note: Five MCP servers, 58 tools, ~55,000 tokens up front. Tool search cuts that by about 85%, and Opus 4's accuracy rises from 49% to 74%.
+- tag: Tools
+  title: Tool search tool
+  url: https://platform.claude.com/docs/en/agents-and-tools/tool-use/tool-search-tool
+  meta: Anthropic docs · as of October 2026
+  note: Picking the right tool "degrades once you exceed 30–50 available tools"; search loads the 3–5 a task needs.
+- tag: Long jobs
+  title: Managing context on the Claude Developer Platform
+  url: https://claude.com/blog/context-management
+  meta: Anthropic · September 29, 2025
+  note: Clearing stale tool results plus a memory file improved one agent eval by 39%; clearing alone cut tokens by 84% over 100 turns.
+- tag: Long jobs
+  title: Effective harnesses for long-running agents
+  url: https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents
+  meta: Justin Young · Anthropic · November 26, 2025
+  note: '"Compaction isn''t sufficient." A progress file, a feature list and git commits let each new session pick up where the last left off.'
+- tag: Failure
+  title: An update on recent Claude Code quality reports
+  url: https://www.anthropic.com/engineering/april-23-postmortem
+  meta: Anthropic · April 23, 2026
+  note: A change meant to clear old reasoning once instead cleared it every turn, leaving the agent working "without memory of why".

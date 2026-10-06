@@ -1,0 +1,98 @@
+# References for content/articles/mcp.md, rendered by {{< ml/references >}}.
+# Listed in the order the article reaches them. Numbering is automatic.
+
+- tag: Launch
+  title: Introducing the Model Context Protocol
+  url: https://www.anthropic.com/news/model-context-protocol
+  meta: Anthropic · November 25, 2024
+  note: '"Every new data source requires its own custom implementation." Open-sourced with SDKs and servers for Google Drive, Slack, GitHub and Postgres.'
+- tag: Launch
+  title: What is the Model Context Protocol (MCP)?
+  url: https://modelcontextprotocol.io/docs/getting-started/intro
+  meta: MCP docs · 2026
+  note: '"Think of MCP like a USB-C port for AI applications."'
+- tag: Basics
+  title: Key Concepts and Terminology
+  url: https://huggingface.co/learn/mcp-course/unit1/key-concepts
+  meta: Hugging Face MCP Course · 2025
+  note: The M×N integration problem, and how one protocol turns it into M+N.
+- tag: Basics
+  title: Specification (2025-11-25)
+  url: https://modelcontextprotocol.io/specification/2025-11-25
+  meta: MCP project · November 25, 2025
+  note: Hosts, clients and servers over JSON-RPC 2.0, and the Language Server Protocol it takes "some inspiration" from.
+- tag: Adoption
+  title: OpenAI Agents SDK v0.0.7
+  url: https://github.com/openai/openai-agents-python/releases/tag/v0.0.7
+  meta: OpenAI · March 26, 2025
+  note: The release that added MCP support to OpenAI's agent toolkit.
+- tag: Adoption
+  title: GitHub MCP Server v0.1.0
+  url: https://github.com/github/github-mcp-server/releases/tag/v0.1.0
+  meta: GitHub · April 4, 2025
+  note: GitHub's own server, now also hosted remotely with a read-only mode.
+- tag: Adoption
+  title: Model Context Protocol (MCP) is now generally available in Microsoft Copilot Studio
+  url: https://www.microsoft.com/en-us/microsoft-copilot/blog/copilot-studio/model-context-protocol-mcp-is-now-generally-available-in-microsoft-copilot-studio
+  meta: Zankar Desai · Microsoft · May 29, 2025
+  note: MCP servers as building blocks for Copilot Studio agents.
+- tag: Adoption
+  title: Announcing Model Context Protocol (MCP) support for Google services
+  url: https://cloud.google.com/blog/products/ai-machine-learning/announcing-official-mcp-support-for-google-services
+  meta: Michael Bachman, Anna Berenberg · Google Cloud · December 10, 2025
+  note: Fully managed remote MCP servers for Maps, BigQuery, Compute Engine and Kubernetes Engine.
+- tag: Governance
+  title: Donating the Model Context Protocol and establishing the Agentic AI Foundation
+  url: https://www.anthropic.com/news/donating-the-model-context-protocol-and-establishing-of-the-agentic-ai-foundation
+  meta: Anthropic · December 9, 2025
+  note: MCP moves to a Linux Foundation fund co-founded with Block and OpenAI, at more than 10,000 active public servers.
+- tag: Governance
+  title: Bringing MCP 2026-07-28 to Claude
+  url: https://claude.com/blog/bringing-mcp-2026-07-28-to-claude
+  meta: Anthropic · July 28, 2026
+  note: More than 400 million SDK downloads a month, "a 4x increase this year".
+- tag: Stateless
+  title: Exploring the Future of MCP Transports
+  url: https://blog.modelcontextprotocol.io/posts/2025-12-19-mcp-transport-future/
+  meta: Kurtis Van Gent, Shaun Smith · MCP blog · December 19, 2025
+  note: Why stateful sessions fight load balancers and auto-scaling, written for people who run them.
+- tag: Stateless
+  title: The 2026-07-28 Specification
+  url: https://blog.modelcontextprotocol.io/posts/2026-07-28/
+  meta: David Soria Parra, Den Delimarsky · MCP blog · July 28, 2026
+  note: The handshake and session ID retired, so any request can land on any instance. Roots, Sampling and Logging deprecated.
+- tag: Security
+  title: MCP security policy
+  url: https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/SECURITY.md
+  meta: MCP project
+  note: '"Local MCP servers are trusted like any other software you install." Running commands over stdio is a feature, not a bug.'
+- tag: Security
+  title: MCP injection experiments
+  url: https://github.com/invariantlabs-ai/mcp-injection-experiments
+  meta: Invariant Labs · April 2025
+  note: Working tool poisoning, shadowing and "sleeper rug pull" attacks, where a server changes its tools on the second load.
+- tag: Security
+  title: mcp-remote exposed to OS command injection via untrusted MCP server connections
+  url: https://github.com/advisories/GHSA-6xpm-ggf7-wc3p
+  meta: GitHub Advisory Database · CVE-2025-6514 · July 9, 2025
+  note: A malicious server could run commands on the machine connecting to it. Rated 9.6 out of 10.
+- tag: Security
+  title: MCP Authentication Bypass via OAuth2 Passthrough Fallback
+  url: https://github.com/BerriAI/litellm/security/advisories/GHSA-7488-6r32-c95q
+  meta: LiteLLM · CVE-2026-59822 · June 30, 2026
+  note: Any bearer token could open an authenticated MCP session. CISA added it to its known-exploited list on September 2, 2026.
+- tag: Security
+  title: Tools (2026-07-28)
+  url: https://modelcontextprotocol.io/specification/2026-07-28/server/tools
+  meta: MCP specification
+  note: 'Tool lists and calls, and the rule: there "SHOULD always be a human in the loop with the ability to deny tool invocations."'
+- tag: Cost
+  title: Introducing advanced tool use on the Claude Developer Platform
+  url: https://www.anthropic.com/engineering/advanced-tool-use
+  meta: Bin Wu et al. · Anthropic · November 24, 2025
+  note: Five servers, 58 tools, about 55,000 tokens before the conversation starts. Tool search cuts that by 85%.
+- tag: Cost
+  title: 'Code execution with MCP: Building more efficient agents'
+  url: https://www.anthropic.com/engineering/code-execution-with-mcp
+  meta: Adam Jones, Conor Kelly · Anthropic · November 4, 2025
+  note: Presenting tools as code the agent calls took one example from 150,000 tokens to 2,000.

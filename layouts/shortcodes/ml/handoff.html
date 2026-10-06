@@ -1,0 +1,30 @@
+{{- /*
+  ml-handoff — a travel-planner agent hands a job to a flight agent over A2A:
+  fetch the agent card, send the task, answer its question, get the result.
+  Add a look-alike card to the directory, and choose whether the planner checks
+  cards before trusting them.
+
+    {{< ml/handoff >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml/assets.html (css/pages/ml/demos.css, scripts/pages/ml/).
+  The steps and verdicts live in data/ml/handoff.yaml. The static state is the
+  normal run, so the demo still reads with JavaScript off.
+*/ -}}
+{{- $d := site.Data.ml.handoff -}}
+<div class="not-prose mli-demo mli-trace" id="mli-hand" data-groups="{{ jsonify $d.groups }}" data-scenarios="{{ jsonify $d.scenarios }}" data-verdicts="{{ jsonify $d.verdicts }}">
+<div class="mli-demo-label">Live · a travel planner hands a job to a flight agent</div>
+<div class="mli-ag-phases" id="mli-hand-states" role="group" aria-label="Task state">
+{{- range $i, $s := $d.states }}{{ if $i }}<span class="mli-ag-arrow" aria-hidden="true">→</span>{{ end }}<span class="mli-ag-pill{{ if eq $s "COMPLETED" }} is-active{{ end }}" data-state="{{ $s }}">{{ replace $s "_" " " }}</span>{{ end -}}
+</div>
+<div class="mli-controls mli-inj-row" role="group" aria-label="Scenario">
+<label class="mli-toggle"><input type="checkbox" data-opt="attack" /> A look-alike card in the directory</label>
+<label class="mli-toggle"><input type="checkbox" data-opt="verify" /> Planner checks cards</label>
+</div>
+<div class="mli-ag-log" id="mli-hand-log">
+{{- range (index $d.scenarios "normal") }}{{ range index $d.groups . }}<div class="mli-ag-step t-{{ .kind }} is-shown"><span class="mli-ag-lab">{{ .who }}</span><span class="mli-ag-body">{{ .text }}</span></div>{{ end }}{{ end -}}
+</div>
+<div class="mli-inj-verdict" id="mli-hand-verdict" aria-live="polite">{{ $d.verdicts.normal }}</div>
+<div class="mli-controls"><button class="mli-btn" id="mli-hand-replay" type="button">Replay</button><button class="mli-btn mli-btn-ghost" id="mli-hand-step" type="button">Step &rsaquo;</button></div>
+<div class="mli-caption">Scripted, not a live model. Every domain is a reserved example and the card numbers are masked. The method and state names are A2A v1.0's, and the card sits at the spec's well-known address. Signing a card is optional in the spec, and checking the signature is a "should", not a "must".</div>
+</div>

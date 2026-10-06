@@ -1,0 +1,83 @@
+# References for content/articles/agent-to-agent.md, rendered by {{< ml/references >}}.
+# Listed in the order the article reaches them. Numbering is automatic.
+
+- tag: Launch
+  title: Announcing the Agent2Agent Protocol (A2A)
+  url: https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/
+  meta: Google for Developers · April 9, 2025
+  note: Launched with more than 50 technology partners as an open protocol that "complements Anthropic's Model Context Protocol".
+- tag: Spec
+  title: Agent2Agent (A2A) Protocol Specification
+  url: https://a2a-protocol.org/latest/specification/
+  meta: A2A Project · v1.0
+  note: Agent Cards at /.well-known/agent-card.json, the task states, JSON-RPC, gRPC and HTTP bindings, and optional signed cards.
+- tag: Spec
+  title: 'A2A Protocol Ships v1.0: Production-Ready Standard for Agent-to-Agent Communication'
+  url: https://github.com/a2aproject/A2A/blob/main/docs/blog/posts/announcing-1.0.md
+  meta: A2A Protocol Community · March 12, 2026
+  note: 'The first stable version, eight companies on the steering committee, and the one-liner: "MCP inside agents, A2A between agents."'
+- tag: Spec
+  title: A2A changelog
+  url: https://github.com/a2aproject/A2A/blob/main/CHANGELOG.md
+  meta: A2A Project · through v1.0.1, May 2026
+  note: Version 0.3.0 moved the card from agent.json to agent-card.json and added card signatures.
+- tag: Spec
+  title: Agent2Agent protocol (A2A) is getting an upgrade
+  url: https://cloud.google.com/blog/products/ai-machine-learning/agent2agent-protocol-is-getting-an-upgrade
+  meta: Rao Surapaneni, Philip Stephens · Google Cloud · July 31, 2025
+  note: Version 0.3 brings gRPC support and signed security cards, with over 150 organizations behind the protocol.
+- tag: Spec
+  title: Streaming and Asynchronous Operations for Long-Running Tasks
+  url: https://github.com/a2aproject/A2A/blob/main/docs/topics/streaming-and-async.md
+  meta: A2A Project docs
+  note: Server-Sent Events for live updates, webhooks for long jobs, and the warning that blindly calling client-supplied URLs invites server-side request forgery.
+- tag: Governance
+  title: Linux Foundation Launches the Agent2Agent Protocol Project
+  url: https://www.linuxfoundation.org/press/linux-foundation-launches-the-agent2agent-protocol-project-to-enable-secure-intelligent-communication-between-ai-agents
+  meta: Linux Foundation · June 23, 2025
+  note: Google hands A2A to the Linux Foundation, with AWS, Cisco, Microsoft, Salesforce, SAP and ServiceNow as founding members.
+- tag: Governance
+  title: ACP Joins Forces with A2A Under the Linux Foundation
+  url: https://github.com/orgs/i-am-bee/discussions/5
+  meta: Kate Blair · IBM Research · August 25, 2025
+  note: IBM winds down its Agent Communication Protocol and contributes to A2A instead.
+- tag: Governance
+  title: 'A New Chapter for A2A: Joining the Agentic AI Foundation'
+  url: https://github.com/a2aproject/A2A/blob/main/docs/blog/posts/a2a-joins-aaif.md
+  meta: A2A Protocol Community · August 27, 2026
+  note: A2A becomes a Growth Stage project of the Agentic AI Foundation, alongside MCP, goose and AGENTS.md.
+- tag: Adoption
+  title: Enable incoming A2A on a Foundry agent
+  url: https://github.com/MicrosoftDocs/azure-ai-docs/blob/main/articles/foundry/agents/how-to/enable-agent-to-agent-endpoint.md
+  meta: Microsoft docs · September 11, 2026
+  note: A2A 1.0 support with limits that matter in practice. JSON-RPC only, text only, and no streaming.
+- tag: Adoption
+  title: Donating the Model Context Protocol and establishing the Agentic AI Foundation
+  url: https://www.anthropic.com/news/donating-the-model-context-protocol-and-establishing-of-the-agentic-ai-foundation
+  meta: Anthropic · December 9, 2025
+  note: More than 10,000 active public MCP servers and 97 million monthly SDK downloads, for scale.
+- tag: Cost
+  title: How we built our multi-agent research system
+  url: https://www.anthropic.com/engineering/multi-agent-research-system
+  meta: Hadfield et al. · Anthropic · June 13, 2025
+  note: Agents use about 4× the tokens of chat and multi-agent systems about 15×. Good for parallel research, a poor fit for tightly dependent work.
+- tag: Cost
+  title: Don't Build Multi-Agents
+  url: https://cognition.ai/blog/dont-build-multi-agents
+  meta: Walden Yan · Cognition · June 2025
+  note: '"Actions carry implicit decisions, and conflicting decisions carry bad results." The case for one agent with full context.'
+- tag: Cost
+  title: Why Do Multi-Agent LLM Systems Fail?
+  url: https://arxiv.org/abs/2503.13657
+  meta: Cemri et al. · UC Berkeley · 2025
+  note: Fourteen failure modes in three groups, from bad specs to agents talking past each other to weak checking of the result.
+- tag: Security
+  title: Agentic exploits and incidents tracker
+  url: https://github.com/OWASP/www-project-top-10-for-large-language-model-applications/blob/main/initiatives/agent_security_initiative/ASI%20Agentic%20Exploits%20%26%20Incidents/ASI_Agentic_Exploits_Incidents.md
+  meta: OWASP GenAI Security Project · ongoing
+  note: Trustwave's "agent in the middle", a fake Agent Card claiming high trust that the choosing agent picked, then leaked data to.
+- tag: Security
+  title: OWASP Top 10 for Agentic Applications for 2026
+  url: https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/
+  meta: OWASP GenAI Security Project · December 2025
+  note: Insecure inter-agent communication gets its own entry, ASI07.
