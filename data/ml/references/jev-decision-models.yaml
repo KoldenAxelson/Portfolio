@@ -56,3 +56,69 @@
   url: https://arxiv.org/abs/2305.05176
   meta: Chen, Zaharia & Zou · 2023
   note: Chaining cheap and expensive models matched the best single model at up to 98% less cost. An early LLM example of the cheap-decider pattern.
+# Added with the October 15, 2026 addendum.
+- tag: Calibration
+  title: Evaluating and Benchmarking the System One Model Jev
+  url: https://arxiv.org/abs/2609.37647
+  meta: Deußer, Sparrenberg & Sifa · arXiv · September 29, 2026
+  note: 'A large independent test: jev-1.13 on 37 datasets, 346,009 requests for $9.15. List-question odds well calibrated (pooled ECE 0.028); yes/no odds rank well but need tuned thresholds (UNFAIR-ToS micro-F1 0.50 to 0.75).'
+- tag: Docs
+  title: Noul
+  url: https://docs.typesafe.ai/primitives/noul
+  meta: TypeSafe AI · docs
+  note: The yes/no question type, and TypeSafe's advice that where to set the threshold depends on the cost of being wrong.
+- tag: Benchmark
+  title: We ran some benchmarks
+  url: https://youtu.be/dW-ktsvhQQI
+  meta: marimo (Vincent Warmerdam) · YouTube · October 12, 2026
+  note: Jev zero-shot against SetFit and embedding baselines trained on eight examples per class, plus BoolQ, decider, and using Jev to find bad labels. The numbers quoted here match the benchmark notebook linked from the video's description.
+- tag: Benchmark
+  title: jev benchmarks
+  url: https://molab.marimo.io/notebooks/nb_7REFHYJHRWKqgd9juvCT1T
+  meta: marimo (Vincent Warmerdam) · molab notebook
+  note: The runs behind the video. Jev zero-shot against SetFit and embedding baselines on 1,000-row samples of four datasets, decider and Qwen base models, a calibration check, and the rows where Jev disagrees with the gold label.
+- tag: Docs
+  title: Choice
+  url: https://docs.typesafe.ai/primitives/choice
+  meta: TypeSafe AI · docs
+  note: The list question type. Option names and their descriptions both go to the model; TypeSafe advises starting with a one-line description per option and writing richer ones when the model confuses two.
+- tag: Research
+  title: 'Gen-Z: Generative Zero-Shot Text Classification with Contextualized Label Descriptions'
+  url: https://arxiv.org/abs/2311.07115
+  meta: Kumar, Park & Tsvetkov · ICLR 2024
+  note: Classifying with natural-language descriptions of each label, plus a little context, beat both zero-shot and few-shot baselines across six open model families and made results less sensitive to prompt wording.
+- tag: Benchmark
+  title: fine tuning a jev like model
+  url: https://molab.marimo.io/notebooks/nb_9KvTaqK6kwhStJkqFKa9kd
+  meta: marimo · molab notebook
+  note: The BoolQ runs behind the video. The small Qwen3.5 base models are LoRA-tuned on BoolQ's own training labels, not on Jev's answers.
+- tag: Docs
+  title: Models
+  url: https://docs.typesafe.ai/models
+  meta: TypeSafe AI · jev-1.13 and jev-1.14
+  note: Same weights for every account, no fine-tuning on customer data, English as the strongest language, and the unchanged $0.042 per million input tokens.
+- tag: Docs
+  title: Put Jev to work
+  url: https://typesafe.ai/enterprise
+  meta: TypeSafe AI · enterprise page and FAQ
+  note: 'Jev runs only on the hosted API ("No. Jev is currently available only through our hosted API."), data is processed in the US, and zero data retention is offered to enterprise customers.'
+- tag: Open
+  title: decider
+  url: https://github.com/Mapika/decider
+  meta: Mapika · GitHub · Apache-2.0
+  note: Open-weights, Jev-style decision models fine-tuned from Qwen3.5 (and Gemma), with the training code to build your own.
+- tag: Images
+  title: 'Image Decision Models for RPA: Forms, Scans and Screenshots'
+  url: https://youtu.be/L8YxigQoLaM
+  meta: Sam Witteveen · YouTube · October 2, 2026
+  note: A form checker on two open image decision models, and a lesson in phrasing; the same check asked as yes/no and as a list can get different answers.
+- tag: Open
+  title: imajev
+  url: https://github.com/mohit67890/imajev
+  meta: Mohit Garg · GitHub
+  note: Open Jev-style models (2B, 4B, 9B) that read photos as well as text and are trained to answer "can't tell". About $676 of rented GPU time for the whole project.
+- tag: Launch
+  title: 'Jev: For the builders AND dreamers'
+  url: https://typesafe.ai/blog/jev-1-14
+  meta: TypeSafe AI · October 14, 2026
+  note: 'Jev 1.14 and the "danger zone" flags: images (on 1.13 too, which "was multimodal all along"), the box question type, and long context, none yet vouched for in production. Also TypeSafe''s first published calibration numbers: an internal chart (error 1.8 for jev-1.13.0, 1.6 for jev-1.14.0) stamped "Please don''t trust them".'

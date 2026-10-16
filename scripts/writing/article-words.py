@@ -8,8 +8,10 @@ term is counted as the word itself (it is visible). Usage:
     python3 scripts/writing/article-words.py content/articles/some-post.md [--max 1500]
     python3 scripts/writing/article-words.py --sections content/articles/some-post.md
 
-With --max, exits 1 when any file is over budget. --sections lists the words in
-each stretch between headings or demos, flagging any over 150.
+With --max, exits 1 when any file's body is over budget. Addenda (a
+"## Addendum: <date>" section, up to the next "##" heading) don't count toward
+the body; each is counted on its own and fails over 900. --sections lists the
+words in each stretch between headings or demos, flagging any over 150.
 """
 import re
 import sys
@@ -32,6 +34,26 @@ def visible_words(source):
 
 
 SECTION_LIMIT = 150
+ADDENDUM_LIMIT = 900
+ADDENDUM = re.compile(r'^## Addendum\b.*$', re.M)
+H2 = re.compile(r'^## .*$', re.M)
+
+
+def split_addenda(source):
+    """Return (body, [(heading, text), ...]) with each addendum cut out of the body."""
+    front, sep, rest = source.partition('---')[2].partition('---')
+    head = '---' + front + '---'
+    body, addenda, pos = [], [], 0
+    for match in ADDENDUM.finditer(rest):
+        if match.start() < pos:
+            continue
+        body.append(rest[pos:match.start()])
+        nxt = H2.search(rest, match.end())
+        end = nxt.start() if nxt else len(rest)
+        addenda.append((match.group().lstrip('# ').strip(), rest[match.end():end]))
+        pos = end
+    body.append(rest[pos:])
+    return head + ''.join(body), addenda
 
 
 def print_sections(path):
@@ -62,11 +84,18 @@ def main(args):
         return 0
     over = False
     for path in args:
-        count = visible_words(Path(path).read_text())
+        body, addenda = split_addenda(Path(path).read_text())
+        count = visible_words(body)
         flag = ''
         if budget and count > budget:
             flag, over = f'  OVER by {count - budget}', True
         print(f'{count:6d}  {path}{flag}')
+        for heading, text in addenda:
+            words = visible_words('---\n---\n' + text)
+            flag = ''
+            if words > ADDENDUM_LIMIT:
+                flag, over = f'  OVER by {words - ADDENDUM_LIMIT}', True
+            print(f'{words:6d}    {heading}{flag}')
     return 1 if over else 0
 
 

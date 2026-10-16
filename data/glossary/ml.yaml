@@ -192,6 +192,18 @@ benchmark:
     A public, fixed [[test-set|test set]] that everyone scores their models on,
     so results can be compared.
 
+f1-score:
+  term: F1 Score
+  aliases: ['F1']
+  definition: >-
+    One number from 0 to 1 that rewards a yes/no classifier for catching the
+    real cases and penalizes it for false alarms.
+  notes:
+    - >-
+      It averages two rates, how many flagged cases were real and how many real
+      cases got flagged, so a model can't score well by flagging everything
+      when real cases are rare.
+
 llm-as-judge:
   term: LLM-as-Judge
   aliases: ['LLM judge', 'judge model']
@@ -997,6 +1009,7 @@ reranking:
 
 fine-tuning:
   term: Fine-Tuning
+  aliases: ['fine-tune', 'fine-tuned']
   definition: >-
     Continuing to [[training|train]] a model's [[weights|weights]] on your own
     data.
@@ -1094,6 +1107,17 @@ autoregressive:
     - >-
       Every token is another full pass through the model, which is why long
       answers are slow and why output tokens usually cost more than input.
+
+zero-shot:
+  term: Zero-Shot
+  definition: >-
+    Asking a model to do a task with no worked examples, only the instructions.
+
+multimodal:
+  term: Multimodal
+  definition: >-
+    Able to take more than one kind of input, such as text and images, in the
+    same request.
 
 # ── Post-training ────────────────────────────────────────────────────
 

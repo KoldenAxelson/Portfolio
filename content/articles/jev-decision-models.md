@@ -2,6 +2,7 @@
 title: 'What Is Jev, and Why Doesn''t It Talk?'
 description: "Jev is a decision model: you ask a question and list the allowed answers, and it returns calibrated odds instead of text. What that buys you, where it breaks, and why the pattern will outlast any one product."
 pubDate: 2026-09-24
+updatedDate: 2026-10-15
 tags: ['ml', 'decision-models', 'efficiency', 'explainer']
 glossary: "ml"
 featured: true
@@ -42,7 +43,7 @@ A probability is only useful if you can take it at its word. When a model says "
 
 Modern neural networks are famously bad at this. A 2017 study found that [networks had become overconfident](https://arxiv.org/abs/1706.04599) as they got bigger. OpenAI saw a related effect in GPT-4: on multiple-choice test questions, [the raw model was well calibrated](https://arxiv.org/abs/2303.08774), and the {{< term "post-training" >}}post-training{{< /term >}} that made it a good chatbot made it less so.
 
-TypeSafe says it trains Jev for calibration directly, but it hasn't published calibration numbers of its own yet, so that part is still a promise.
+TypeSafe says it trains Jev for calibration directly. Outside testers have since checked, and TypeSafe has shared internal numbers too (see the [addendum](#addendum-october-15-2026)).
 
 Both models below make identical claims about how sure they are. Slide the threshold and watch the answers you let through without a human:
 
@@ -57,7 +58,7 @@ Anywhere a program needs a judgment call in well under a second, thousands of ti
 - Triage and routing: which team gets this ticket, and is this email a sales lead?
 - Moderation: does this post break a rule, and how sure is the model?
 - Agent safety checks: before an {{< term "agent" >}}agent{{< /term >}} deletes a file or sends an email, a second, cheap model votes on whether the action matches what the user asked for.
-- Business rules that need reading: [Forbes' launch coverage](https://www.forbes.com/sites/the-prompt/2026/09/15/this-200-million-startup-wants-to-fix-ais-overconfidence-problem/) describes an insurance use: the odds that a property has had a fire, from its records.
+- Business rules that need reading: [Forbes' launch coverage](https://www.forbes.com/sites/the-prompt/2026/09/15/this-200-million-startup-wants-to-fix-ais-overconfidence-problem/) describes an insurance use, the odds that a property has had a fire, from its records.
 
 ## Where it falls over
 
@@ -79,10 +80,46 @@ The [FrugalGPT paper](https://arxiv.org/abs/2305.05176) showed in 2023 that chai
 
 Because most of the time, your program doesn't need a paragraph. It needs an if-statement that can read.
 
-Jev may or may not be the product that wins, and TypeSafe's calibration claims still need independent checking. Ever-bigger models aren't going away, but the idea behind Jev will stick: pick the right-sized model for each decision, and know how far to trust its answer.
+Jev may or may not be the product that wins, and as of October 2026, outside checks of its calibration are only a few weeks old. Ever-bigger models aren't going away, but the idea behind Jev will stick: pick the right-sized model for each decision, and know how far to trust its answer.
+
+## Addendum: October 15, 2026
+
+In the three weeks since this post went up, an outside team measured Jev's odds, another benchmarked it against an older way of building a classifier, and TypeSafe switched on image input. The first of those answers the question this post left open.
+
+### The odds, checked
+
+On September 29, [three researchers](https://arxiv.org/abs/2609.37647) ran Jev through 37 datasets: 346,009 requests for $9.15. On list questions, its stated odds were within about three points of how often it was right, on average. That's well calibrated. [TypeSafe's own numbers](https://typesafe.ai/blog/jev-1-14) followed on October 14, with a warning not to trust them: an internal chart puts Jev 1.13's calibration error at 1.8, against 10.3 to 35.0 for the open models TypeSafe compared.
+
+Yes/no questions were messier. Asked one at a time, Jev leaned slightly toward "no", so plenty of true answers came back under 50%. Asked many at once, like 28 emotions about one comment, it said yes far too often. Either way, true answers still tended to score above false ones, so the main problem was where the 50% cutoff sat:
+
+{{< ml/cutoff >}}
+
+The fix is cheap. Picking each cutoff from 1,000 labelled examples lifted Jev's {{< term "f1-score" >}}F1{{< /term >}} on one legal-clause test from 0.50 to 0.75. [TypeSafe's docs](https://docs.typesafe.ai/primitives/noul) already say the right threshold depends on your use; the paper shows how much it matters.
+
+### Against the old way
+
+The marimo team [benchmarked Jev](https://youtu.be/dW-ktsvhQQI) against SetFit, a popular way to build a classifier from a few examples. With no examples at all, a {{< term "zero-shot" >}}zero-shot{{< /term >}} setup, Jev beat SetFit trained on eight per category by about 9 points on news topics. Against other few-example baselines, it won on two more datasets and roughly tied the best one on a third. In the video, describing each category in plain words helped further, as [TypeSafe's docs](https://docs.typesafe.ai/primitives/choice) advise and [earlier research](https://arxiv.org/abs/2311.07115) found.
+
+On 500 yes/no reading questions, Jev scored 93% and small open {{< term "base-model" >}}base models{{< /term >}} scored lower. After the team [fine-tuned them](https://molab.marimo.io/notebooks/nb_9KvTaqK6kwhStJkqFKa9kd) on the dataset's own answers, the 4B one climbed from 84% to about 92%. They also sorted the cases where Jev disagreed with a dataset's {{< term "label" >}}label{{< /term >}} by its confidence: the most confident ones are good places to look for labelling mistakes.
+
+### What you can't change
+
+You can't {{< term "fine-tuning" >}}fine-tune{{< /term >}} Jev. [TypeSafe's docs](https://docs.typesafe.ai/models) say every account gets the same weights, shaped only through the request, and that English is where it's most accurate. And Jev runs only on TypeSafe's [hosted API](https://typesafe.ai/enterprise), so your data leaves your building.
+
+If any of that rules it out, the look-alikes have multiplied. In marimo's runs, [decider](https://github.com/Mapika/decider), an {{< term "open-weights" >}}open-weights{{< /term >}} model built on Qwen, traded wins with Jev on plain classification, and its training code is public.
+
+### Jev can see, in beta
+
+On October 2, Sam Witteveen [built a form checker](https://youtu.be/L8YxigQoLaM) on two open image models, while Jev's API still took only text. Is the form signed? Is the date of birth filled in? One of them, [imajev-4b](https://github.com/mohit67890/imajev), can answer "can't tell", and Mohit Garg's whole project to build it cost about $676 of rented GPU time.
+
+Twelve days later, with the [Jev 1.14 release](https://typesafe.ai/blog/jev-1-14), TypeSafe switched on images for Jev, 1.13 included, which it says was {{< term "multimodal" >}}multimodal{{< /term >}} all along. Images can go anywhere in a request, behind a "danger zone" header, and TypeSafe says the feature still has too many rough edges to vouch for in production. Witteveen's demo, on the open models, shows the kind of edge to watch for: asked "is it signed?" as yes/no, one model said yes, and asked "what's missing?" as a list, it said the signature.
+
+### What changes
+
+The cheap decider in front of the expensive thinker still holds. It now comes hosted or open, for text or images, and whichever you choose, its yes/no cutoffs should come from your own labelled examples.
 
 ## References & further reading
 
-The primary sources first, then the independent test.
+The original sources first, then the ones added on October 15.
 
 {{< ml/references >}}

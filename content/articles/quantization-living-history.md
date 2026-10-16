@@ -2,7 +2,7 @@
 title: 'Quantization: A Living History'
 description: "How AI models shrank from racks of GPUs toward laptops and phones, one fewer bit at a time. A kept-current timeline of quantization, from 2015's phone models to today's 1-bit LLMs."
 pubDate: 2026-09-24
-updatedDate: 2026-09-24
+updatedDate: 2026-10-15
 tags: ['ml', 'quantization', 'efficiency', 'explainer']
 glossary: "ml"
 thoughts:
@@ -88,7 +88,7 @@ It's been moving from paper to practice. Microsoft's [bitnet.cpp](https://arxiv.
 
 ## A different road to cheap
 
-Everything above makes each number cheaper to store. There's another road: have the model do less work. In September 2026, TypeSafe AI [released Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev), a "decision model". Instead of writing text, it takes a question plus the answers you allow and returns the odds for each one. Writing an answer one {{< term "token" >}}token{{< /term >}} at a time is slow and costly, and a model that only has to pick skips nearly all of it. It's a different kind of cheap, and it gets its own post soon.
+Everything above makes each number cheaper to store. There's another road: have the model do less work. In September 2026, TypeSafe AI [released Jev](https://typesafe.ai/blog/introducing-system-one-models-and-jev), a "decision model". Instead of writing text, it takes a question plus the answers you allow and returns the odds for each one. Writing an answer one {{< term "token" >}}token{{< /term >}} at a time is slow and costly, and a model that only has to pick skips nearly all of it. It's a different kind of cheap, and it has [its own post](/articles/jev-decision-models/).
 
 ## Where it stands now
 
@@ -115,3 +115,4 @@ The original papers and announcements behind every milestone, in the order the s
 ## Changelog
 
 - **2026-09-24:** First published. The timeline covers October 2015 to September 2026.
+- **2026-10-15:** The Jev paragraph now links to the full post on decision models instead of promising one.

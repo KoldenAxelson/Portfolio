@@ -1,0 +1,47 @@
+{{- /*
+  ml-cutoff — a yes/no model can rank answers well and still say "yes" at the
+  wrong odds. Slide the cutoff, or tune it on a labelled sample.
+
+    {{< ml/cutoff >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml/assets.html (css/pages/ml/demos.css, scripts/pages/ml/).
+  The simulated odds live in data/ml/cutoff.yaml. The JS-off result below is
+  computed from the first scenario at the slider's starting cutoff.
+*/ -}}
+{{- $scenarios := site.Data.ml.cutoff.scenarios -}}
+{{- $first := index $scenarios 0 -}}
+{{- $cutoff := 50 -}}
+{{- $at := div (float $cutoff) 100 -}}
+{{- $positives := $first.shown.positives -}}
+{{- $negatives := $first.shown.negatives -}}
+{{- $falseAlarms := 0 -}}
+{{- range $negatives }}{{ if ge . $at }}{{ $falseAlarms = add $falseAlarms 1 }}{{ end }}{{ end -}}
+{{- $caught := 0 -}}
+{{- range $positives }}{{ if ge . $at }}{{ $caught = add $caught 1 }}{{ end }}{{ end -}}
+{{- $f1 := div (mul 2.0 $caught) (add (mul 2 $caught) $falseAlarms (sub (len $positives) $caught)) -}}
+{{- $tuningSize := add (len $first.tuning.positives) (len $first.tuning.negatives) -}}
+<div class="not-prose mli-demo" id="mli-cut" data-scenarios="{{ jsonify $scenarios }}">
+<div class="mli-demo-label">Live · good order, wrong cutoff</div>
+<div class="mli-bits-models" role="group" aria-label="How the questions are asked"><span class="mli-bits-lab">Asked:</span>
+{{- range $i, $s := $scenarios }}<button class="mli-rag-q{{ if eq $i 0 }} is-on{{ end }}" type="button" aria-pressed="{{ eq $i 0 }}" data-id="{{ $s.id }}">{{ $s.label }}</button>{{ end -}}
+</div>
+<div class="mli-caption" id="mli-cut-blurb">{{ $first.blurb }}</div>
+<div class="mli-cut-plot" aria-hidden="true">
+<span class="mli-cut-lab">Truly yes</span><div class="mli-cut-lane" id="mli-cut-yes">
+{{- range $positives }}<span class="mli-cut-dot is-yes{{ if ge . $at }} is-said-yes{{ end }}" style="left:{{ printf "%.1f" (mul . 100) }}%"></span>{{ end -}}
+</div>
+<span class="mli-cut-lab">Truly no</span><div class="mli-cut-lane" id="mli-cut-no">
+{{- range $negatives }}<span class="mli-cut-dot is-no{{ if ge . $at }} is-said-yes{{ end }}" style="left:{{ printf "%.1f" (mul . 100) }}%"></span>{{ end -}}
+</div>
+<span></span><div class="mli-cut-axis"><span>0%</span><span>50%</span><span>100%</span></div>
+<div class="mli-cut-line" id="mli-cut-line" style="--cut:{{ $cutoff }}"></div>
+</div>
+<div class="mli-cut-key" aria-hidden="true"><span class="mli-cut-dot is-yes is-said-yes"></span>caught <span class="mli-cut-dot is-yes"></span>missed <span class="mli-cut-dot is-no is-said-yes"></span>false alarm</div>
+<div class="mli-row"><label for="mli-cut-r">Answer yes at ≥ <span class="mli-val" id="mli-cut-v">{{ $cutoff }}</span>%</label><input class="mli-range" id="mli-cut-r" type="range" min="5" max="95" step="5" value="{{ $cutoff }}" aria-valuetext="{{ $cutoff }} percent" /></div>
+<div class="mli-cost" id="mli-cut-out">{{ $caught }} of {{ len $positives }} <small>yeses caught · {{ $falseAlarms }} false alarm{{ if ne $falseAlarms 1 }}s{{ end }} · F1 {{ lang.FormatNumber 2 $f1 }}</small></div>
+<div class="mli-controls"><button class="mli-btn" id="mli-cut-tune" type="button">Tune on {{ $tuningSize }} labelled examples</button></div>
+{{- $missed := sub (len $positives) $caught }}
+<div class="mli-caption" id="mli-cut-cap">At {{ $cutoff }}%, it misses {{ $missed }} real {{ if eq $missed 1 }}yes{{ else }}yeses{{ end }} and raises {{ $falseAlarms }} false alarm{{ if ne $falseAlarms 1 }}s{{ end }}.</div>
+<div class="mli-caption">Simulated: made-up odds shaped like the yes/no results in an independent test of Jev, with the effect enlarged so it's easy to see. In both setups the yeses mostly sit to the right of the noes; only the best place for the line moves. In the real test, tuning the line paid off most when many questions were asked at once.</div>
+</div>
