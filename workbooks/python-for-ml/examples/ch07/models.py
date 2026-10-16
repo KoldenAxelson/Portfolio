@@ -17,4 +17,5 @@ X, y = load_diabetes(return_X_y=True)
 X_tr, X_te, y_tr, y_te = train_test_split(X, y, random_state=0)
 reg = LinearRegression().fit(X_tr, y_tr)
 reg.predict(X_te[:3]).round(1), y_te[:3]
-mean_squared_error(y_te, reg.predict(X_te))
+# Rounded: the last digits vary with the CPU the maths ran on
+round(mean_squared_error(y_te, reg.predict(X_te)), 2)

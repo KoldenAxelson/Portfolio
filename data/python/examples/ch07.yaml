@@ -105,8 +105,10 @@ models:
       reg = LinearRegression().fit(X_tr, y_tr)
       reg.predict(X_te[:3]).round(1), y_te[:3]
     output: "(array([241.8, 250.1, 165. ]), array([321., 215., 127.]))"
-  - code: "mean_squared_error(y_te, reg.predict(X_te))"
-    output: "3180.1596481558445"
+  - code: |-
+      # Rounded: the last digits vary with the CPU the maths ran on
+      round(mean_squared_error(y_te, reg.predict(X_te)), 2)
+    output: "3180.16"
 tuning:
   - code: |-
       from sklearn.datasets import load_breast_cancer
