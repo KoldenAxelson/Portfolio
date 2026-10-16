@@ -1,0 +1,63 @@
+# References for content/articles/bacterial-memory.md, rendered by {{< ml/references >}}.
+# Listed in the order the article reaches them. Numbering is automatic.
+
+- tag: Video
+  title: 'Bacteria Are Forming Memories'
+  url: https://youtu.be/OtuNKZh2gnA
+  meta: Anton Petrov · YouTube
+  note: The video that strings the four bacterial studies together.
+- tag: Iron
+  title: A heritable iron memory enables decision-making in Escherichia coli
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC10691332
+  meta: Bhattacharyya et al. · PNAS · 2023
+  note: Swarming memory is the cell's iron level; it lasts to the fourth generation and is gone by the seventh.
+- tag: Nickel
+  title: A sensor of oxidative stress confers virulence via response memory in Acinetobacter baumannii
+  url: https://www.biorxiv.org/content/10.64898/2026.04.08.717352v1
+  meta: Ngo et al. · bioRxiv preprint · 2026 · not peer reviewed
+  note: A nickel-dependent sensor, PmrB, keeps peroxide defenses primed for 30 to 90 minutes after the signal is gone.
+- tag: Networks
+  title: Bacterial cells transmit memories to offspring
+  url: https://news.northwestern.edu/stories/2024/august/bacterial-cells-transmit-memories-to-offspring
+  meta: Northwestern News on Wytock, Zhao, Reynolds & Motter · Science Advances · 2024
+  note: Brief perturbations tip the modeled gene regulatory network into self-sustaining, inheritable states. Simulation; lab validation ongoing.
+- tag: Ribosomes
+  title: Bacteria learn and store memories like AI neural networks
+  url: https://www.the-scientist.com/bacteria-learn-and-store-memories-like-ai-neural-networks-75062
+  meta: Shiladitya Banerjee · The Scientist, on Kratz et al., PRX Life · 2026
+  note: Cells with a fluctuating past adapt faster; fast and slow ribosome pools act as a multi-timescale memory, likened to a gated recurrent network.
+- tag: Adam
+  title: 'Adam: A Method for Stochastic Optimization'
+  url: https://arxiv.org/abs/1412.6980
+  meta: Kingma & Ba · 2014
+  note: Two exponential moving averages, of the gradient and its square, with default decays of 0.9 and 0.999.
+- tag: Emergence
+  title: 'Combining THREE Sims in Godot: Boids + Particle Life + Slime Mold'
+  url: https://youtu.be/FhGKnjOtvQo
+  meta: The Pathfinder's Codex · YouTube
+  note: Slime trails as environmental memory, and the open question of how to couple them to other forces.
+- tag: Emergence
+  title: Particle swarm optimization
+  url: https://doi.org/10.1109/ICNN.1995.488968
+  meta: Kennedy & Eberhart · IEEE ICNN · 1995
+  note: A flock of candidate solutions pulled toward the best positions found so far.
+- tag: Emergence
+  title: 'Ant system: optimization by a colony of cooperating agents'
+  url: https://doi.org/10.1109/3477.484436
+  meta: Dorigo, Maniezzo & Colorni · IEEE Trans. SMC-B · 1996
+  note: Ant colony optimization, where pheromone laid on good paths guides later ants.
+- tag: Emergence
+  title: Rules for biologically inspired adaptive network design
+  url: https://doi.org/10.1126/science.1177894
+  meta: Tero et al. · Science · 2010
+  note: The slime mould Physarum grows a network comparable to the Tokyo-area rail system.
+- tag: Scale
+  title: Population Based Training of Neural Networks
+  url: https://arxiv.org/abs/1711.09846
+  meta: Jaderberg et al. · DeepMind · 2017
+  note: A population of training runs where weaker members inherit from stronger ones.
+- tag: Forgetting
+  title: Overcoming catastrophic forgetting in neural networks
+  url: https://arxiv.org/abs/1612.00796
+  meta: Kirkpatrick et al. · PNAS · 2017
+  note: The standard statement of the forgetting problem, and one fix for it.

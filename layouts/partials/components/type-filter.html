@@ -1,0 +1,32 @@
+{{- /*
+  components/type-filter: the row of round, icon-led filter bubbles used by
+  /projects/ and /misc/cool-sites/.
+
+    {{ partial "components/type-filter.html" (dict "cats" $cats "present" $present "label" "Filter projects by focus area") }}
+
+  cats    : ordered slice of dicts {key, label, icon}; key "" is "All".
+  present : the keys at least one item carries. A bubble renders only for a
+            present key (plus "All"), so the bar never offers an empty filter.
+
+  Behaviour is scripts/site/filters/type-filter.ts, through these hooks: the
+  group is [data-type-filter], each button [data-filter-type], each item
+  [data-types="a,b"], a heading block that should vanish when emptied
+  [data-type-section], and anything that only makes sense unfiltered
+  [data-filter-all-only]. Active state is the button's aria-pressed. Renders
+  fully without JS (all shown).
+*/ -}}
+{{- $circle := "flex h-14 w-14 items-center justify-center rounded-full border border-border text-muted transition group-hover:border-accent group-hover:text-accent group-aria-[pressed=true]:border-accent group-aria-[pressed=true]:bg-accent/10 group-aria-[pressed=true]:text-accent" -}}
+{{- $caption := "font-mono text-xs text-muted transition group-hover:text-fg group-aria-[pressed=true]:text-fg group-aria-[pressed=true]:font-medium" -}}
+{{- $present := .present -}}
+{{- with $present }}
+<div role="group" aria-label="{{ $.label }}" class="grid grid-cols-3 justify-items-center gap-x-2 gap-y-6 sm:flex sm:flex-wrap sm:justify-center sm:gap-x-9 sm:gap-y-5" data-type-filter>
+  {{- range $.cats }}
+  {{- if or (eq .key "") (in $present .key) }}
+  <button type="button" aria-pressed="{{ if eq .key "" }}true{{ else }}false{{ end }}" data-filter-type="{{ .key }}" class="group flex flex-col items-center gap-2 focus:outline-none focus-visible:outline-none">
+    <span class="{{ $circle }}">{{ partial "func/svg-icon.html" (dict "name" .icon "class" "h-6 w-6") }}</span>
+    <span class="{{ $caption }}">{{ .label }}</span>
+  </button>
+  {{- end }}
+  {{- end }}
+</div>
+{{- end }}

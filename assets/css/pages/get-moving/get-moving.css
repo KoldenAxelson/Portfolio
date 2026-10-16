@@ -1,0 +1,24 @@
+/* Widgets on /misc/get-moving/. The shared box is css/pages/video-notes/shell.css. */
+.gm-lab{display:block;font-family:var(--font-mono);font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:rgb(var(--c-muted));margin-bottom:.3rem;}
+.gm-inline{display:inline;margin:0 0 0 .4rem;}
+
+/* ── the pact ───────────────────────────────────────────────────────────── */
+.gm-formula{margin:0;font-size:1.05rem;color:rgb(var(--c-fg));}
+.gm-blank{display:inline-block;min-width:5rem;padding:0 .3rem;border-bottom:2px solid rgb(var(--c-accent) / .6);font-family:var(--font-mono);font-size:.8rem;color:rgb(var(--c-muted));}
+.gm-fields{display:grid;gap:.6rem;margin-top:.9rem;}
+@media (min-width:640px){.gm-fields{grid-template-columns:2fr 1fr 1fr;align-items:end;}}
+.gm-pact-line{margin:0;padding:.6rem .75rem;border-left:3px solid rgb(var(--c-accent));font-size:1rem;font-weight:600;color:rgb(var(--c-fg));}
+.gm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(2.4rem,1fr));gap:.35rem;margin-top:.9rem;}
+.gm-cell{font:inherit;font-family:var(--font-mono);font-size:.75rem;aspect-ratio:1;border-radius:.4rem;border:1px solid rgb(var(--c-border));background:rgb(var(--c-bg));color:rgb(var(--c-muted));cursor:pointer;transition:background-color .15s ease,border-color .15s ease;}
+.gm-cell:focus-visible{outline:2px solid rgb(var(--c-accent));outline-offset:1px;}
+.gm-cell.is-done{border-color:rgb(var(--c-accent));background:rgb(var(--c-accent) / .2);color:rgb(var(--c-fg));font-size:.95rem;}
+.gm-cell.is-skip{border-style:dashed;color:rgb(var(--c-fg));font-size:.95rem;}
+.gm-tally{margin:.8rem 0 0;font-size:.88rem;line-height:1.55;color:rgb(var(--c-fg));}
+
+/* ── the timer ──────────────────────────────────────────────────────────── */
+.gm-clock{font-family:var(--font-mono);font-size:2.6rem;font-weight:700;line-height:1;color:rgb(var(--c-fg));font-variant-numeric:tabular-nums;}
+.gm-track{height:.4rem;border-radius:999px;background:rgb(var(--c-border) / .55);overflow:hidden;margin-top:.8rem;}
+.gm-bar{display:block;height:100%;width:0;background:rgb(var(--c-accent));border-radius:999px;}
+.gm-len{min-width:2.6rem;padding-left:.55rem;padding-right:.55rem;}
+.gm-done{margin:.7rem 0 0;font-size:.9rem;font-weight:600;color:rgb(var(--c-fg));}
+.gm-done:empty{display:none;}

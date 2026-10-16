@@ -99,8 +99,8 @@ window.RtBullet = (function () {
       var zs = z.value.trim().replace(/[.\s]+$/, "");
       if (!xs || !ys || !zs) {
         verdict.hidden = false;
-        verdict.className = "rt-verdict is-bad";
-        verdict.textContent = "All three parts, or it isn't the formula — a claim (X), the measure (Y), and the how (Z).";
+        verdict.className = "vn-verdict is-bad";
+        verdict.textContent = "All three parts, or it isn't the formula: a claim (X), the measure (Y), and the how (Z).";
         out.hidden = true; copy.hidden = true;
         return;
       }
@@ -111,17 +111,17 @@ window.RtBullet = (function () {
       copy.hidden = false;
 
       var flags = [];
-      if (s.verb === "passenger") flags.push('"' + s.first + '" is passenger language — it marks you as present while things happened. Swap it for a verb that owns the outcome (the chips above).');
-      if (s.verb === "neutral" && s.first) flags.push('"' + s.first + '" isn\'t on either list — fine, as long as it\'s a verb that owns the outcome rather than describes attendance.');
-      if (!s.num) flags.push("Y still has no number. Nobody audits your percentages — estimate honestly and stay believable — but without one, this reads as a task, not a result.");
-      if (s.silver.length) flags.push('"' + s.silver[0] + '" is silverware — a basic expectation of being employable, not a dish. The menu doesn\'t list the forks.');
+      if (s.verb === "passenger") flags.push('"' + s.first + '" is passenger language. It marks you as present while things happened. Swap it for a verb that owns the outcome (the chips above).');
+      if (s.verb === "neutral" && s.first) flags.push('"' + s.first + '" isn\'t on either list. That\'s fine, as long as it\'s a verb that owns the outcome rather than describes attendance.');
+      if (!s.num) flags.push("Y still has no number. Nobody audits your percentages (estimate honestly and stay believable), but without one this reads as a task instead of a result.");
+      if (s.silver.length) flags.push('"' + s.silver[0] + '" is silverware, a basic expectation of being employable. The menu doesn\'t list the forks.');
 
       verdict.hidden = false;
       if (!flags.length) {
-        verdict.className = "rt-verdict is-good";
-        verdict.textContent = "Claims, proves, explains — in that order, leading with a verb that owns it. Paste it in, and say it the same way out loud.";
+        verdict.className = "vn-verdict is-good";
+        verdict.textContent = "Claims, proves, explains, in that order, leading with a verb that owns it. Paste it in, and say it the same way out loud.";
       } else {
-        verdict.className = "rt-verdict is-bad";
+        verdict.className = "vn-verdict is-bad";
         verdict.textContent = flags.join(" ");
       }
     }

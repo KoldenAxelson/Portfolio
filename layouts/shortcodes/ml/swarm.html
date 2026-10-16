@@ -1,0 +1,20 @@
+{{- /*
+  ml-swarm — a population of Adam optimizers on a toy loss landscape, alone,
+  independent, or sharing a slime-mould trail that survives into the next
+  generation.
+
+    {{< ml/swarm >}}
+
+  Markup only; behaviour is scripts/pages/ml/swarm.ts, styles css/pages/ml/demos.css.
+*/ -}}
+<div class="not-prose mli-demo" id="mli-swarm">
+<div class="mli-demo-label">Live · many optimizers, one shared trail</div>
+<canvas class="mli-swarm-canvas" id="mli-swarm-canvas" width="320" height="200" role="img" aria-label="A loss landscape seen from above: brighter is lower loss. White dots are optimizers; orange is the shared trail."></canvas>
+<div id="mli-swarm-controls" hidden>
+<div class="mli-bits-models" role="group" aria-label="Optimizer setup"><span class="mli-bits-lab">Run:</span><button class="mli-rag-q" type="button" aria-pressed="false" data-swarm-mode="alone">One Adam</button><button class="mli-rag-q" type="button" aria-pressed="false" data-swarm-mode="swarm">24 Adams, alone</button><button class="mli-rag-q is-on" type="button" aria-pressed="true" data-swarm-mode="trail">24 Adams + trail</button></div>
+<label class="mli-swarm-slide"><span class="mli-bits-lab">Trail coupling: how much each step follows the trail instead of its own gradient</span><input id="mli-swarm-coupling" type="range" min="0" max="0.9" step="0.05" value="0.5" /></label>
+<div class="mli-controls"><button class="mli-btn" id="mli-swarm-run" type="button">Run</button><button class="mli-btn" id="mli-swarm-next" type="button">Next generation, keep the trail</button><button class="mli-btn mli-btn-ghost" id="mli-swarm-reset" type="button">Reset</button></div>
+</div>
+<div class="mli-caption mli-swarm-out" id="mli-swarm-out" aria-live="polite">With JavaScript on, run a population of optimizers across this landscape.</div>
+<div class="mli-caption">A toy, not a benchmark: two weights instead of billions, so the whole landscape fits on screen. Each dot runs real Adam on noisy gradients. With the trail, each one deposits where its loss is good, and the trail diffuses and evaporates every step, the same three knobs as a slime-mould simulation. The ringed spot is the deepest valley. A trail can also lock everyone into the wrong valley; run it a few times.</div>
+</div>

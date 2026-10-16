@@ -1,0 +1,15 @@
+{{- /* how-to-learn/braid: live widget; behaviour in static/js/how-to-learn/gc-braid.js. */ -}}
+<div class="not-prose vn-demo" id="gc-braid" data-vn-src="/js/how-to-learn/gc-braid.js" data-vn-init="GcBraid">
+<div class="vn-demo-label">Live · the Vedic recitation patterns, built from your own sentence</div>
+<label><span class="vn-sr">A short phrase to braid</span>
+<input class="vn-input" id="gc-braid-in" type="text" maxlength="70" autocomplete="off" value="the list should always outrun you" /></label>
+<div class="gc-braid-src" id="gc-braid-src"></div>
+<div class="gc-tabs" id="gc-braid-tabs" role="tablist" aria-label="Recitation pattern"></div>
+<div class="gc-braid-out" id="gc-braid-out" aria-live="polite"></div>
+<div class="gc-braid-note" id="gc-braid-note"></div>
+<div class="vn-controls">
+  <button class="vn-btn" id="gc-braid-play" type="button">Recite it</button>
+  <span class="gc-braid-stat" id="gc-braid-stat"></span>
+</div>
+<div class="vn-caption">Hover or tab to a word to light every place it is spoken. The bar beside it is how many times — that redundancy is the error correction, and it is the entire reason a text survives three thousand years of mouths without drifting.</div>
+</div>

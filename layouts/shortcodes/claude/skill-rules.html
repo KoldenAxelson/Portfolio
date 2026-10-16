@@ -1,0 +1,9 @@
+{{- /* claude/skill-rules: the numbered rule list, from data/claude/skill-rules.yaml. Static, no JS. */ -}}
+{{- $rules := site.Data.claude | default dict -}}
+{{- $rules = index $rules "skill-rules" -}}
+{{- if not $rules }}{{ errorf "claude/skill-rules: data/claude/skill-rules.yaml is missing (page: %s)" .Page.RelPermalink }}{{ end -}}
+<ol class="not-prose cl-rules">
+{{- range $i, $r := $rules }}
+<li class="cl-rule"><span class="cl-rule-n">{{ printf "%02d" (add $i 1) }}</span><div><b>{{ $r.rule }}</b><p>{{ $r.detail }}</p><span class="cl-src cl-src-{{ $r.source }}">{{ if eq $r.source "docs" }}Anthropic docs{{ else }}the video{{ end }}</span></div></li>
+{{- end }}
+</ol>

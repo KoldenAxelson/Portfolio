@@ -1,0 +1,19 @@
+{{- /*
+  ml-clocks — one noisy signal remembered at two speeds, through calm and
+  chaotic environments.
+
+    {{< ml/clocks >}}
+
+  Markup only; behaviour is scripts/pages/ml/clocks.ts, styles css/pages/ml/demos.css.
+*/ -}}
+<div class="not-prose mli-demo" id="mli-clk">
+<div class="mli-demo-label">Live · one signal, two memories, two speeds</div>
+<svg class="mli-clk-plot" id="mli-clk-plot" viewBox="0 0 300 200" role="img" aria-label="Feast and famine signal over time, with a fast and a slow moving average"></svg>
+<div class="mli-clk-key"><span class="mli-clk-k mli-clk-k-fast">fast memory</span><span class="mli-clk-k mli-clk-k-slow">slow memory</span><span class="mli-clk-k mli-clk-k-dot">feast (up) / famine (down)</span></div>
+<div id="mli-clk-controls" hidden>
+<div class="mli-bits-models" role="group" aria-label="Environment"><span class="mli-bits-lab">Environment now:</span><button class="mli-rag-q is-on" type="button" aria-pressed="true" data-clk-env="calm">Calm</button><button class="mli-rag-q" type="button" aria-pressed="false" data-clk-env="chaos">Chaotic</button></div>
+<div class="mli-controls"><button class="mli-btn" id="mli-clk-play" type="button">Play</button></div>
+</div>
+<div class="mli-caption mli-clk-out" id="mli-clk-out" aria-live="polite">With JavaScript on, the plot shows a chaotic stretch, then a switch to calm.</div>
+<div class="mli-caption">Two exponential moving averages of the same signal, one fast and one slow (decay 0.8 and 0.98, faster than Adam's 0.9 and 0.999 so it fits on screen). Adam's two averages track the gradient and its square rather than one signal, but the structure is the same: one input, two rates of forgetting. Switch environments and watch the slow line lag.</div>
+</div>

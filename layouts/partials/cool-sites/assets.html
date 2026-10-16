@@ -1,0 +1,12 @@
+{{- /*
+  cool-sites/assets: the page stylesheet plus one script per card preview, for
+  /misc/cool-sites/. Called from layouts/misc/single.html when the page uses the
+  cool-sites/grid shortcode. Each preview script is a self-contained IIFE that
+  finds its canvas by id (see partials/cool-sites/previews/) and quits if absent.
+*/ -}}
+{{- $css := resources.Get "css/pages/cool-sites/cool-sites.css" | minify | fingerprint -}}
+<link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" />
+{{- $sites := (index site.Data "cool-sites").sites -}}
+{{- range $sites }}{{ with .preview }}
+<script defer src="{{ printf "/js/cool-sites/%s.js" . | relURL }}"></script>
+{{- end }}{{ end -}}

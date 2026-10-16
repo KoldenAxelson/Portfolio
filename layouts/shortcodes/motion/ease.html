@@ -1,0 +1,15 @@
+{{- /* motion/ease: live widget; behaviour in static/js/motion/mo-ease.js. */ -}}
+<div class="not-prose vn-demo" id="mo-ease" data-vn-src="/js/motion/mo-ease.js" data-vn-init="MoEase">
+<div class="vn-demo-label">Live · same start, same end, different feel</div>
+<div class="mo-ease-picks" id="mo-ease-picks" role="group" aria-label="Easing curve"></div>
+<div class="mo-ease-stage">
+  <svg class="mo-ease-plot" id="mo-ease-plot" viewBox="0 0 200 200" role="img" aria-label="Position over time for the chosen curve"></svg>
+  <div class="mo-ease-tracks">
+    <div class="mo-track"><span class="mo-dot" id="mo-ease-dot"></span></div>
+    <div class="mo-track mo-strobe" id="mo-ease-strobe" aria-hidden="true"></div>
+    <p class="mo-ease-note" id="mo-ease-note">Turn on JavaScript to compare curves.</p>
+  </div>
+</div>
+<div class="vn-controls" id="mo-ease-controls" hidden><button class="vn-btn" id="mo-ease-play" type="button">Play</button></div>
+<div class="vn-caption">The top track moves the dot; the bottom one shows where it was every 50 milliseconds, so bunched marks mean slow and spread marks mean fast. The red line is the end point; springs overshoot it and come back. The spring presets are the gentle, snappy and bouncy kinds the app-animation video demonstrates; the exact constants are mine.</div>
+</div>

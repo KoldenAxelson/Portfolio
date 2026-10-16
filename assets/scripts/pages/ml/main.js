@@ -32,6 +32,8 @@ import { initMandate } from './mandate.ts';
 import { initHandoff } from './handoff.ts';
 import { initHorizon } from './horizon.ts';
 import { initWire } from './wire.ts';
+import { initSwarm } from './swarm.ts';
+import { initClocks } from './clocks.ts';
 
 // Tells the inline failsafe in ml-demos-assets.html that the reveal is handled.
 document.documentElement.dataset.mliReady = '';
@@ -116,3 +118,7 @@ const horizonChart = byId('mli-hz');
 whenVisible(horizonChart, () => initHorizon(horizonChart));
 const wire = byId('mli-wire');
 whenVisible(wire, () => initWire(wire));
+const swarm = byId('mli-swarm');
+whenVisible(swarm, () => initSwarm(swarm));
+const clocks = byId('mli-clk');
+whenVisible(clocks, () => initClocks(clocks));

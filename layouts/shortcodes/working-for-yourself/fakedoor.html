@@ -1,0 +1,13 @@
+{{- /* working-for-yourself/fakedoor: live widget; behaviour in static/js/working-for-yourself/wy-fakedoor.js. */ -}}
+<div class="not-prose vn-demo" id="wy-fakedoor" data-vn-src="/js/working-for-yourself/wy-fakedoor.js" data-vn-init="WyFakedoor">
+<div class="vn-demo-label">Live · the fake-door test, and how much rides on one guess</div>
+<div class="wy-fields">
+  <label><span class="wy-lab">Visits a month</span><input class="vn-input" id="wy-fd-visits" type="number" min="0" step="1000" value="60000" /></label>
+  <label><span class="wy-lab">Clicked "buy my book", %</span><input class="vn-input" id="wy-fd-click" type="number" min="0" max="100" step="1" value="10" /></label>
+  <label><span class="wy-lab">Price</span><input class="vn-input" id="wy-fd-price" type="number" min="0" step="1" value="20" /></label>
+</div>
+<label class="wy-slide"><span class="wy-lab">Clickers who would actually buy: <b id="wy-fd-convlab">10%</b></span>
+<input id="wy-fd-conv" type="range" min="1" max="20" step="1" value="10" /></label>
+<div class="wy-out" id="wy-fd-out" aria-live="polite">6,000 clicks a month × 10% × $20 = <b>$12,000 a month</b>.</div>
+<div class="vn-caption">The defaults are the video's chef example: 30,000 visits and 3,000 clicks every two weeks, and a 10% purchase rate borrowed from Amazon book pages. The slider is my addition. Everything downstream scales with that one borrowed number, so test it before you trust it.</div>
+</div>

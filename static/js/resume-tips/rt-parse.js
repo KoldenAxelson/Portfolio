@@ -137,7 +137,7 @@ window.RtParse = (function () {
         note.textContent = single
           ? "Same text, one column: every line survives, in order. The fix was structural, not clever."
           : "Two work histories are now shuffled into one paragraph, the skill meters extracted as nothing (dots aren't text), and the photo extracted as nothing." +
-            (ghost.checked ? " The white-font block extracted in full — and it pastes in full when a recruiter forwards this to the hiring manager." : "");
+            (ghost.checked ? " The white-font block extracted in full, and it pastes in full when a recruiter forwards this to the hiring manager." : "");
         run.disabled = false;
         timer = null;
       }

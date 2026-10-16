@@ -1,0 +1,122 @@
+/* Cards on /misc/cool-sites/ (the wds- prefix is from the page's first name,
+   Web Dev Sites). Preview scripts live in static/js/cool-sites/. */
+.wds-root{margin-top:1.5rem;}
+.wds-root a{text-decoration:none !important;color:inherit;}
+.wds-grid{display:grid;gap:1rem;}
+@media (min-width:768px){.wds-grid{grid-template-columns:1fr 1fr;}}
+.wds-card{position:relative;border:1px solid rgb(var(--c-border));border-radius:.9rem;overflow:hidden;background:rgb(var(--c-bg));transition:border-color .2s ease,transform .12s ease;display:flex;flex-direction:column;}
+.wds-card:hover{border-color:rgb(var(--c-accent) / .5);}
+.wds-card:active{transform:scale(.985);}
+.wds-feature{grid-column:1 / -1;}
+@media (min-width:768px){.wds-feature{flex-direction:row;}.wds-feature .wds-preview{width:44%;min-height:250px;}.wds-feature .wds-body{flex:1;}}
+.wds-preview{position:relative;min-height:200px;display:flex;align-items:center;justify-content:center;overflow:hidden;border-bottom:1px solid rgb(var(--c-border) / .6);}
+@media (min-width:768px){.wds-feature .wds-preview{border-bottom:none;border-right:1px solid rgb(var(--c-border) / .6);}}
+.wds-body{padding:1.1rem 1.25rem 1.25rem;display:flex;flex-direction:column;gap:.4rem;justify-content:center;}
+.wds-title{font-weight:600;font-size:1.02rem;color:rgb(var(--c-fg));line-height:1.3;transition:color .15s ease;}
+.wds-card:hover .wds-title{color:rgb(var(--c-accent));}
+.wds-arrow{display:inline-block;transition:transform .15s ease;will-change:transform;}
+.wds-card:hover .wds-arrow{transform:translate(2px,-2px);}
+.wds-desc{font-size:.86rem;color:rgb(var(--c-muted));line-height:1.55;margin:0;max-width:65ch;}
+.wds-domain{font-family:var(--font-mono);font-size:.7rem;color:rgb(var(--c-muted));letter-spacing:.02em;margin-top:.15rem;}
+.wds-cover{position:absolute;inset:0;z-index:3;}
+.wds-logowrap{background:radial-gradient(120% 120% at 50% 28%,rgb(var(--c-border) / .35),rgb(var(--c-bg)));}
+.wds-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;}
+.wds-src{display:none;}
+.wds-cloud{background:linear-gradient(#cbd6e6,#4b6791);}
+/* The buffer is a fraction of the element's size and the browser blows it
+   back up. Nearest-neighbour is the whole point — smooth it and the dither
+   pattern turns to mush. */
+.wds-cloudcanvas{position:absolute;inset:0;width:100%;height:100%;display:block;
+  image-rendering:-moz-crisp-edges;image-rendering:crisp-edges;image-rendering:pixelated;}
+.wds-chip{position:absolute;left:.6rem;bottom:.5rem;z-index:1;font-family:var(--font-mono);font-size:.6rem;letter-spacing:.08em;color:#fff;background:rgba(0,0,0,.38);padding:.28rem .55rem;border-radius:999px;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);}
+.wds-plum{background:rgb(var(--c-border) / .12);}
+.wds-plumcanvas{position:absolute;inset:0;width:100%;height:100%;display:block;}
+/* The gradient is the fallback: it's what shows if WebGL2 or float render
+   targets aren't there, and the canvas paints over it otherwise. */
+.wds-smoke{background:linear-gradient(#10131a,#252b38);}
+.wds-smokecanvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;}
+/* ASCII Object — a terminal panel. Glyphs are drawn, so the only thing the
+   stylesheet owns is the ground they sit on. */
+.wds-ascii{background:#0a0d12;}
+.wds-asciicanvas{position:absolute;inset:0;width:100%;height:100%;display:block;}
+
+/* Impeccable — one mock component, two states. Every property that moves is
+   an anti-pattern the real tool checks for: gradient fill, bloom shadow,
+   over-rounding, centred body copy, decorative emoji. The transition is the
+   point, so it is slow enough to read. */
+.wds-imp{background:rgb(var(--c-border) / .14);padding:1.4rem;}
+.imp-mock{width:100%;max-width:19rem;padding:1rem 1.1rem;display:flex;flex-direction:column;gap:.45rem;
+  transition:background .6s ease,border-color .6s ease,border-radius .6s ease,box-shadow .6s ease,color .6s ease,text-align .6s ease;}
+.imp-h{margin:0;font-size:.95rem;line-height:1.25;}
+.imp-p{margin:0;font-size:.72rem;line-height:1.5;opacity:.85;}
+.imp-btn{align-self:flex-start;font-size:.7rem;padding:.35rem .8rem;transition:all .6s ease;}
+.imp-badge{font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;align-self:center;
+  padding:.2rem .55rem;border-radius:999px;background:rgba(255,255,255,.25);
+  transition:opacity .4s ease,max-height .6s ease;overflow:hidden;}
+.imp-after{display:none;}
+/* Slop */
+[data-state="slop"] .imp-mock{background:linear-gradient(135deg,#7c3aed,#db2777 55%,#f59e0b);
+  border:0 solid transparent;border-radius:1.5rem;box-shadow:0 16px 34px -8px rgba(124,58,237,.65);color:#fff;text-align:center;}
+[data-state="slop"] .imp-btn{align-self:center;border-radius:999px;background:rgba(255,255,255,.92);color:#7c3aed;font-weight:700;box-shadow:0 6px 16px rgba(0,0,0,.25);}
+/* Polished */
+[data-state="clean"] .imp-mock{background:rgb(var(--c-bg));border:1px solid rgb(var(--c-border));
+  border-radius:.5rem;box-shadow:none;color:rgb(var(--c-fg));text-align:left;}
+[data-state="clean"] .imp-badge{opacity:0;max-height:0;padding:0;}
+[data-state="clean"] .imp-before{display:none;}
+[data-state="clean"] .imp-after{display:inline;}
+[data-state="clean"] .imp-btn{border-radius:.3rem;background:transparent;border:1px solid rgb(var(--c-border));color:rgb(var(--c-fg));font-weight:500;box-shadow:none;}
+.imp-cmd{position:absolute;top:.55rem;right:.6rem;font-family:var(--font-mono);font-size:.6rem;
+  color:rgb(var(--c-accent));opacity:0;transition:opacity .3s ease;}
+.imp-cmd.is-on{opacity:1;}
+
+/* Taste Skill — the same words under three design directions. Nothing about
+   the content changes between them; only type, spacing and colour do, which
+   is the argument the site is making. */
+.wds-taste{padding:1.4rem;transition:background .5s ease;}
+.taste-card{width:100%;max-width:17rem;padding:1.05rem 1.15rem;display:flex;flex-direction:column;gap:.5rem;
+  transition:background .5s ease,border .5s ease,border-radius .5s ease,box-shadow .5s ease;}
+.taste-kicker,.taste-meta{font-family:var(--font-mono);font-size:.58rem;transition:all .5s ease;}
+.taste-word{margin:0;transition:all .5s ease;}
+.taste-dir{position:absolute;top:.55rem;right:.7rem;font-family:var(--font-mono);font-size:.6rem;
+  letter-spacing:.1em;text-transform:uppercase;opacity:.75;transition:color .5s ease;}
+[data-dir="brutalist"]{background:#111;}
+[data-dir="brutalist"] .taste-card{background:#111;border:3px solid #fff;border-radius:0;}
+[data-dir="brutalist"] .taste-word{font-size:1.5rem;font-weight:800;line-height:.95;letter-spacing:-.02em;text-transform:uppercase;color:#fff;}
+[data-dir="brutalist"] .taste-kicker,[data-dir="brutalist"] .taste-meta{color:#fff;letter-spacing:.18em;}
+[data-dir="minimal"]{background:#fbfbf9;}
+[data-dir="minimal"] .taste-card{background:#fbfbf9;border:1px solid #e6e5e0;border-radius:.15rem;}
+[data-dir="minimal"] .taste-word{font-size:1.15rem;font-weight:300;line-height:1.5;letter-spacing:.04em;color:#1c1c1a;}
+[data-dir="minimal"] .taste-kicker,[data-dir="minimal"] .taste-meta{color:#9a998f;letter-spacing:.05em;}
+[data-dir="soft"]{background:#f4ece4;}
+[data-dir="soft"] .taste-card{background:#fffaf5;border:1px solid #e8d9c9;border-radius:1.15rem;box-shadow:0 6px 18px -10px rgba(120,80,50,.4);}
+[data-dir="soft"] .taste-word{font-size:1.25rem;font-weight:500;line-height:1.35;letter-spacing:0;color:#5a4636;}
+[data-dir="soft"] .taste-kicker,[data-dir="soft"] .taste-meta{color:#b09277;letter-spacing:.06em;}
+[data-dir="brutalist"] .taste-dir{color:#fff;}
+[data-dir="minimal"] .taste-dir{color:#9a998f;}
+[data-dir="soft"] .taste-dir{color:#b09277;}
+
+.wds-intro{max-width:58ch;}
+.wds-cover:focus-visible{outline:2px solid rgb(var(--c-accent));outline-offset:2px;border-radius:.9rem;}
+.wds-title:focus-visible{outline:2px solid rgb(var(--c-accent));outline-offset:2px;border-radius:.3rem;}
+@keyframes wdsIn{from{opacity:0;transform:translateY(10px) scale(.98);}to{opacity:1;transform:none;}}
+@media (prefers-reduced-motion:no-preference){
+  .wds-card{animation:wdsIn .3s cubic-bezier(.16,1,.3,1) backwards;}
+  .wds-card:nth-child(1){animation-delay:.02s;}
+  .wds-card:nth-child(2){animation-delay:.10s;}
+  .wds-card:nth-child(3){animation-delay:.18s;}
+  .wds-card:nth-child(4){animation-delay:.26s;}
+  .wds-card:nth-child(5){animation-delay:.34s;}
+  .wds-card:nth-child(6){animation-delay:.42s;}
+  .wds-card:nth-child(7){animation-delay:.50s;}
+}
+
+/* Filter and plain cards: the filter hides a card with [hidden], which
+   .wds-card's display:flex would otherwise override. */
+.wds-card[hidden]{display:none;}
+.wds-filter{margin:0 0 2rem;}
+.wds-plain .wds-body{padding-top:1.2rem;}
+.wds-plain{border-top:3px solid rgb(var(--c-accent) / .35);}
+.wds-desc a{position:relative;z-index:4;text-decoration:underline !important;text-decoration-color:rgb(var(--c-border)) !important;text-underline-offset:2px;}
+.wds-desc a:hover{color:rgb(var(--c-accent));}
+.wds-source{margin-top:2.5rem;font-size:.86rem;color:rgb(var(--c-muted));}
+.wds-source a{text-decoration:underline;text-underline-offset:2px;}

@@ -1,0 +1,14 @@
+{{- /* working-for-yourself/breakeven: live widget; behaviour in static/js/working-for-yourself/wy-breakeven.js. */ -}}
+<div class="not-prose vn-demo" id="wy-breakeven" data-vn-src="/js/working-for-yourself/wy-breakeven.js" data-vn-init="WyBreakeven">
+<div class="vn-demo-label">Live · break-even, and why the gap between price and cost decides it</div>
+<div class="wy-fields">
+  <label><span class="wy-lab">Price per unit</span><input class="vn-input" id="wy-be-price" type="number" min="0" step="1" value="10" /></label>
+  <label><span class="wy-lab">Variable cost per unit</span><input class="vn-input" id="wy-be-var" type="number" min="0" step="0.5" value="3" /></label>
+  <label><span class="wy-lab">Fixed costs a month</span><input class="vn-input" id="wy-be-fixed" type="number" min="0" step="100" value="2100" /></label>
+</div>
+<label class="wy-slide"><span class="wy-lab">Variable cost: <b id="wy-be-varlab">$3.00</b></span>
+<input id="wy-be-slide" type="range" min="0" max="10" step="0.5" value="3" /></label>
+<div class="wy-bar" aria-hidden="true"><span class="wy-bar-cm" id="wy-be-cm"></span><span class="wy-bar-vc" id="wy-be-vc"></span></div>
+<div class="wy-out" id="wy-be-out" aria-live="polite">Each unit contributes $7.00 toward fixed costs. Break-even: <b>300 units a month</b>.</div>
+<div class="vn-caption">Break-even units = fixed costs ÷ contribution margin, where contribution margin = price − variable cost. The numbers are illustrative. Drag the variable cost toward the price and watch the break-even run away, which is the video's warning made literal.</div>
+</div>

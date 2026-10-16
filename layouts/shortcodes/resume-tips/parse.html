@@ -1,0 +1,21 @@
+{{- /* resume-tips/parse: live widget; behaviour in static/js/resume-tips/rt-parse.js. */ -}}
+<div class="not-prose vn-demo" id="rt-parse" data-vn-src="/js/resume-tips/rt-parse.js" data-vn-init="RtParse">
+<div class="vn-demo-label">Live · what the filing cabinet actually keeps</div>
+<div class="rt-px-wrap">
+<div>
+<p class="rt-px-pane-lab" id="rt-parse-deslab">What you designed</p>
+<div class="rt-cv" id="rt-parse-cv"></div>
+</div>
+<div>
+<p class="rt-px-pane-lab">What gets extracted</p>
+<div class="rt-px-out" id="rt-parse-out" aria-live="polite">—</div>
+</div>
+</div>
+<div class="vn-controls">
+  <button class="vn-btn" id="rt-parse-run" type="button">Run the extraction</button>
+  <button class="vn-btn vn-btn-ghost" id="rt-parse-flip" type="button">Same resume, one column</button>
+  <label class="rt-toggle"><input type="checkbox" id="rt-parse-ghost" /> <span>Reveal the white-font block</span></label>
+</div>
+<div class="rt-note" id="rt-parse-note"></div>
+<div class="vn-caption">The two-column reading order is her specific warning; she names Workday as a system that can't read more than a single column. The skill dots aren't text, so they extract as nothing (&ldquo;I don't know what those dots mean&hellip; it's like an interpretive dance&rdquo;). So does the headshot, while the hidden keyword block extracts as everything.</div>
+</div>

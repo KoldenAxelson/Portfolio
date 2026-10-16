@@ -1,0 +1,15 @@
+{{- /* pixel-art/cel: live widget; behaviour in static/js/pixel-art/pa-cel.js. */ -}}
+<div class="not-prose vn-demo" id="pa-cel" data-vn-src="/js/pixel-art/pa-cel.js" data-vn-init="PaCel">
+<div class="vn-demo-label">Live · cel shading and rim light, one pixel at a time</div>
+<div class="pa-stage">
+  <canvas class="pa-canvas pa-cel-canvas" id="pa-cel-canvas" width="64" height="64" role="img" aria-label="A shaded sphere rendered at 64 by 64 pixels"></canvas>
+  <div class="pa-controls" id="pa-cel-controls" hidden>
+    <span class="pa-lab">Light steps</span>
+    <div class="pa-row" id="pa-cel-steps" role="group" aria-label="Light steps"></div>
+    <label class="pa-slide"><span class="pa-lab">Light angle</span><input id="pa-cel-angle" type="range" min="0" max="360" step="5" value="135" /></label>
+    <label class="pa-toggle"><input type="checkbox" id="pa-cel-rim" /> <span>Rim light</span></label>
+    <p class="pa-note" id="pa-cel-note" aria-live="polite"></p>
+  </div>
+</div>
+<div class="vn-caption">The formulas are the video's: brightness is the dot product of the surface normal and the light direction; cel shading rounds it up to a fixed number of steps (multiply, ceil, divide); the rim is one minus the dot of normal and view, times the light, stepped the same way and squared to sharpen it. The sphere is mine, drawn at 64 pixels and scaled up without smoothing.</div>
+</div>

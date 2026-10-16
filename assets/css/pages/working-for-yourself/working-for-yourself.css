@@ -1,0 +1,15 @@
+/* Widgets on /misc/working-for-yourself/. The shared box is css/pages/video-notes/shell.css. */
+.wy-lab{display:block;font-family:var(--font-mono);font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:rgb(var(--c-muted));margin-bottom:.3rem;}
+.wy-lab b{color:rgb(var(--c-fg));font-variant-numeric:tabular-nums;}
+.wy-fields{display:grid;gap:.6rem;}
+@media (min-width:640px){.wy-fields{grid-template-columns:repeat(3,1fr);align-items:end;}}
+#wy-floor .wy-fields{grid-template-columns:1fr;}
+@media (min-width:640px){#wy-floor .wy-fields{grid-template-columns:1fr 1fr;}}
+.wy-slide{display:block;margin-top:.9rem;}
+.wy-slide input{width:100%;accent-color:rgb(var(--c-accent));}
+.wy-out{margin-top:.9rem;padding:.7rem .85rem;border-radius:.5rem;border:1px solid rgb(var(--c-accent) / .45);background:rgb(var(--c-accent) / .06);font-size:.9rem;line-height:1.55;color:rgb(var(--c-fg));font-variant-numeric:tabular-nums;}
+.wy-out.is-loss{border-color:rgba(217,83,79,.55);background:rgba(217,83,79,.06);}
+.wy-bar{display:flex;height:.55rem;border-radius:999px;overflow:hidden;margin-top:.8rem;background:rgb(var(--c-border) / .5);}
+.wy-bar-cm{display:block;height:100%;width:70%;background:rgb(var(--c-accent));}
+.wy-bar-vc{display:block;height:100%;width:30%;background:rgba(217,83,79,.7);}
+@media (prefers-reduced-motion:no-preference){.wy-bar span{transition:width .2s ease;}}

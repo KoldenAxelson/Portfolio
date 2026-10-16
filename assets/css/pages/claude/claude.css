@@ -1,0 +1,41 @@
+/* Widgets and data blocks on /misc/claude/. The shared box is css/pages/video-notes/shell.css. */
+.cl-lab{display:block;font-family:var(--font-mono);font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:rgb(var(--c-muted));margin-bottom:.3rem;}
+.cl-lab b{color:rgb(var(--c-fg));font-variant-numeric:tabular-nums;}
+
+/* ── the rules list ─────────────────────────────────────────────────────── */
+.cl-rules{list-style:none;margin:1.4rem 0;padding:0;display:grid;gap:.5rem;}
+.cl-rule{display:flex;gap:.8rem;padding:.65rem .85rem;border:1px solid rgb(var(--c-border));border-radius:.6rem;background:rgb(var(--c-border) / .1);}
+.cl-rule-n{flex:0 0 auto;font-family:var(--font-mono);font-size:.78rem;font-weight:700;color:rgb(var(--c-accent));padding-top:.1rem;}
+.cl-rule b{display:block;font-size:.93rem;color:rgb(var(--c-fg));}
+.cl-rule p{margin:.2rem 0 .35rem;font-size:.85rem;line-height:1.5;color:rgb(var(--c-muted));}
+.cl-src{font-family:var(--font-mono);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;padding:.1rem .4rem;border-radius:999px;border:1px solid rgb(var(--c-border));color:rgb(var(--c-muted));}
+.cl-src-docs{border-color:rgb(var(--c-accent) / .5);color:rgb(var(--c-fg));}
+
+/* ── the mods grid ──────────────────────────────────────────────────────── */
+.cl-mods{display:grid;gap:.6rem;margin:1.4rem 0;}
+@media (min-width:640px){.cl-mods{grid-template-columns:1fr 1fr;}}
+.cl-mod{padding:.75rem .85rem;border:1px solid rgb(var(--c-border));border-radius:.6rem;background:rgb(var(--c-bg));}
+.cl-mod h3{margin:0;font-size:.95rem;font-weight:700;color:rgb(var(--c-fg));}
+.cl-mod p{margin:.3rem 0 0;font-size:.84rem;line-height:1.5;color:rgb(var(--c-muted));}
+.cl-mod-tags{display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.5rem;}
+.cl-mod-tags:empty{display:none;}
+.cl-tag{font-family:var(--font-mono);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;padding:.12rem .45rem;border-radius:999px;border:1px solid rgb(var(--c-border));color:rgb(var(--c-muted));}
+.cl-tag.is-cost{border-color:rgba(217,83,79,.55);color:rgb(var(--c-fg));}
+
+/* ── the linter ─────────────────────────────────────────────────────────── */
+.cl-lint-in{min-height:14rem;resize:vertical;font-family:var(--font-mono);font-size:.76rem;line-height:1.55;}
+.cl-lint-out{list-style:none;margin:.9rem 0 0;padding:0;display:grid;gap:.35rem;}
+.cl-check{padding:.45rem .65rem .45rem .8rem;border-left:3px solid rgb(var(--c-border));border-radius:.3rem;background:rgb(var(--c-bg));font-size:.84rem;line-height:1.5;color:rgb(var(--c-fg));}
+.cl-check.is-good{border-left-color:rgb(var(--c-accent));}
+.cl-check.is-warn{border-left-color:rgb(212 160 23);}
+.cl-check.is-bad{border-left-color:rgba(217,83,79,.85);}
+
+/* ── jevons ─────────────────────────────────────────────────────────────── */
+.cl-jv-bars{position:relative;display:flex;align-items:flex-end;gap:2px;height:9rem;padding-top:.3rem;border-bottom:1px solid rgb(var(--c-border));}
+.cl-jv-bar{flex:1;min-height:2px;border-radius:2px 2px 0 0;background:rgb(var(--c-border));}
+.cl-jv-bar.is-built{background:rgb(var(--c-accent));}
+.cl-jv-line{position:absolute;left:0;right:0;height:0;border-top:2px dashed rgba(217,83,79,.85);pointer-events:none;}
+@media (prefers-reduced-motion:no-preference){.cl-jv-bar{transition:background-color .15s ease;}.cl-jv-line{transition:bottom .1s linear;}}
+.cl-jv-slide{display:block;margin-top:.9rem;}
+.cl-jv-slide input{width:100%;accent-color:rgb(var(--c-accent));}
+.cl-jv-out{margin-top:.7rem;font-size:.9rem;font-weight:600;color:rgb(var(--c-fg));font-variant-numeric:tabular-nums;}

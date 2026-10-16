@@ -1,0 +1,23 @@
+{{- /* resume-tips/bullet: live widget; behaviour in static/js/resume-tips/rt-bullet.js. */ -}}
+<div class="not-prose vn-demo" id="rt-bullet" data-vn-src="/js/resume-tips/rt-bullet.js" data-vn-init="RtBullet">
+<div class="vn-demo-label">Live · the bullet forge: X · Y · Z, enforced</div>
+<div class="rt-fg-fields">
+  <label><span class="rt-fg-lab"><b>X</b> · what changed because of you, starting with the verb</span>
+  <input class="vn-input" id="rt-fg-x" type="text" maxlength="120" autocomplete="off" placeholder="Cut onboarding time for new support hires" /></label>
+  <div>
+    <div class="rt-fg-chips" id="rt-fg-chips"></div>
+  </div>
+  <label><span class="rt-fg-lab"><b>Y</b> · how it's measured (needs a number)</span>
+  <input class="vn-input" id="rt-fg-y" type="text" maxlength="120" autocomplete="off" placeholder="from 6 weeks to 3 across ~40 hires a quarter" /></label>
+  <label><span class="rt-fg-lab"><b>Z</b> · how you did it</span>
+  <input class="vn-input" id="rt-fg-z" type="text" maxlength="140" autocomplete="off" placeholder="rebuilding the training program around real tickets" /></label>
+</div>
+<div class="rt-fg-read" id="rt-fg-read"></div>
+<div class="vn-controls">
+  <button class="vn-btn" id="rt-fg-build" type="button">Forge it</button>
+  <button class="vn-btn vn-btn-ghost" id="rt-fg-copy" type="button" hidden>Copy</button>
+</div>
+<div class="rt-fg-out" id="rt-fg-out" hidden></div>
+<div class="vn-verdict" id="rt-fg-verdict" hidden></div>
+<div class="vn-caption">The forge reads your first word and sorts it as owner, passenger, or silverware. It won't pass Y without a digit, because &ldquo;improved efficiency&rdquo; is a task and &ldquo;improved efficiency 30%&rdquo; is a result. It also flags silverware phrases (&ldquo;team player,&rdquo; &ldquo;detail-oriented&rdquo;) wherever they appear. Nothing you type leaves this page.</div>
+</div>

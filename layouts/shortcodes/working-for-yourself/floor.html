@@ -1,0 +1,12 @@
+{{- /* working-for-yourself/floor: live widget; behaviour in static/js/working-for-yourself/wy-floor.js. */ -}}
+<div class="not-prose vn-demo" id="wy-floor" data-vn-src="/js/working-for-yourself/wy-floor.js" data-vn-init="WyFloor">
+<div class="vn-demo-label">Live · your floor price per project</div>
+<div class="wy-fields">
+  <label><span class="wy-lab">Yearly income you want</span><input class="vn-input" id="wy-fl-goal" type="number" min="0" step="1000" value="80000" /></label>
+  <label><span class="wy-lab">Projects you can take a year</span><input class="vn-input" id="wy-fl-projects" type="number" min="1" step="1" value="40" /></label>
+  <label><span class="wy-lab">Margin buffer, %</span><input class="vn-input" id="wy-fl-buffer" type="number" min="0" max="200" step="5" value="25" /></label>
+  <label><span class="wy-lab">What a subcontractor at your level charges per project (optional)</span><input class="vn-input" id="wy-fl-sub" type="number" min="0" step="100" placeholder="e.g. 2200" /></label>
+</div>
+<div class="wy-out" id="wy-fl-out" aria-live="polite">$80,000 ÷ 40 projects, plus a 25% buffer: no projects under <b>$2,500</b>.</div>
+<div class="vn-caption">The first three fields are Jamie's worked example, which lands on $2,500. The actual rule is the fourth field: price what it would cost to hire someone at your level to do the job, plus your margin. When you fill it in, the floor is whichever of the two is higher. That combination is mine.</div>
+</div>

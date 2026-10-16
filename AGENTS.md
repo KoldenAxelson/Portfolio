@@ -24,13 +24,9 @@ Read the matching skill in `private/skills/` before starting these tasks:
 | [`private/skills/ChapterPageMakePython.md`](private/skills/ChapterPageMakePython.md) | Writing or fixing a Python for ML chapter or its workbook packet. Read after ChapterPageMake.md and ChapterHomeworkMake.md. |
 | [`private/skills/ChapterHomeworkMake.md`](private/skills/ChapterHomeworkMake.md) | Adding a Homework section (interactive exercises) to a chapter. Optional per chapter. |
 | [`private/skills/ArticlePageMake.md`](private/skills/ArticlePageMake.md) | Writing or reworking a text-lite blog article (`content/articles/`). |
+| [`private/skills/VideoNotesPageMake.md`](private/skills/VideoNotesPageMake.md) | Writing or extending a `/misc` page from YouTube transcripts (`private/ideas/misc/videos/`). Read after ArticlePageMake.md. |
 | [`private/skills/AuditCode.md`](private/skills/AuditCode.md) | Auditing, re-auditing or grading the codebase or a feature. |
 | [`private/skills/AuditArticle.md`](private/skills/AuditArticle.md) | Fact-checking and reviewing an article or chapter before it publishes. Never in the session that wrote it. |
-
-Writing a blog article as the **writer agent**: start with
-[`private/ideas/blog/WRITER-HANDOFF.md`](private/ideas/blog/WRITER-HANDOFF.md).
-Building the Python for ML course as the **course builder**: start with
-[`private/ideas/misc/python-for-ml/COURSE-HANDOFF.md`](private/ideas/misc/python-for-ml/COURSE-HANDOFF.md).
 
 **Linux sandboxes:** `bin/` holds macOS binaries. Fetch Linux ones with
 `make BIN=<dir> setup` and pass `BIN=<dir>` to make; never overwrite `bin/`.

@@ -1,0 +1,18 @@
+/* Widgets on /misc/pixel-art/. The shared box is css/pages/video-notes/shell.css.
+   Both canvases render tiny and scale up unsmoothed: that's the pixel-art look. */
+.pa-lab{display:block;font-family:var(--font-mono);font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:rgb(var(--c-muted));margin-bottom:.3rem;}
+.pa-canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges;border-radius:.4rem;border:1px solid rgb(var(--c-border));}
+.pa-stage{display:grid;gap:1rem;align-items:center;}
+@media (min-width:640px){.pa-stage{grid-template-columns:auto 1fr;}}
+.pa-cel-canvas{width:16rem;max-width:100%;height:auto;aspect-ratio:1;background:rgb(var(--c-bg));}
+.pa-wind-canvas{width:100%;height:auto;aspect-ratio:160 / 72;}
+.pa-row{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.8rem;}
+.pa-pick{min-width:2.4rem;font-size:.8rem;padding:.3rem .6rem;}
+.pa-slide{display:block;margin-top:.6rem;}
+.pa-slide input{width:100%;accent-color:rgb(var(--c-accent));}
+.pa-sliders{display:grid;gap:.2rem .9rem;}
+@media (min-width:640px){.pa-sliders{grid-template-columns:1fr 1fr;}}
+.pa-toggle{display:inline-flex;align-items:center;gap:.45rem;margin-top:.7rem;font-size:.84rem;color:rgb(var(--c-fg));cursor:pointer;}
+.pa-toggle input{accent-color:rgb(var(--c-accent));width:1rem;height:1rem;}
+.pa-wind-controls .vn-controls .pa-toggle{margin-top:0;}
+.pa-note{margin:.7rem 0 0;font-size:.86rem;line-height:1.5;color:rgb(var(--c-fg));}

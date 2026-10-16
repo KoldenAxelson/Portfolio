@@ -1,0 +1,35 @@
+{{- /*
+  cool-sites/grid: the filter bar and every card on /misc/cool-sites/, from
+  data/cool-sites/sites.yaml. Cards with a `preview` include
+  partials/cool-sites/previews/<preview>.html; their scripts ship from
+  partials/cool-sites/assets.html (called by layouts/misc/single.html).
+*/ -}}
+{{- $sites := (index site.Data "cool-sites").sites -}}
+{{- if not $sites }}{{ errorf "cool-sites/grid: data/cool-sites/sites.yaml is missing (page: %s)" .Page.RelPermalink }}{{ end -}}
+{{- $cats := slice
+  (dict "key" ""         "label" "All"      "icon" "squares-2x2")
+  (dict "key" "web-dev"  "label" "Web dev"  "icon" "globe")
+  (dict "key" "tools"    "label" "Tools"    "icon" "wrench-screwdriver")
+  (dict "key" "learning" "label" "Learning" "icon" "academic-cap")
+  (dict "key" "research" "label" "Research" "icon" "magnifying-glass")
+  (dict "key" "ideas"    "label" "Ideas"    "icon" "brain")
+-}}
+{{- $types := slice -}}
+{{- range $sites }}{{ $types = $types | append .types }}{{ end -}}
+<div class="not-prose wds-root">
+<div class="wds-filter">{{ partial "components/type-filter.html" (dict "cats" $cats "present" (uniq $types) "label" "Filter sites by kind") }}</div>
+<div class="wds-grid">
+{{- range $sites }}
+{{- $isCover := ne .cover false }}
+<article class="wds-card{{ if .feature }} wds-feature{{ end }}{{ if not .preview }} wds-plain{{ end }}" data-types="{{ delimit .types "," }}">
+{{- if $isCover }}<a class="wds-cover" href="{{ .url }}" rel="noopener" aria-label="{{ .name }}"></a>{{ end }}
+{{- with .preview }}{{ partial (printf "cool-sites/previews/%s.html" .) dict }}{{ end }}
+<div class="wds-body">
+<a class="wds-title" href="{{ .url }}" rel="noopener">{{ .name }} <span class="wds-arrow" aria-hidden="true">↗</span></a>
+<p class="wds-desc">{{ .desc | safeHTML }}</p>
+<span class="wds-domain">{{ .domain }}</span>
+</div>
+</article>
+{{- end }}
+</div>
+</div>

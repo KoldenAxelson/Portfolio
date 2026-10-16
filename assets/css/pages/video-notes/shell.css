@@ -1,0 +1,21 @@
+/* The shared box every video-notes widget sits in: label, caption, buttons,
+   inputs, verdicts. Deliberately the same look as the ML articles' .mli-demo, so a reader
+   who has met one recognises the other. Widget-specific rules live in
+   css/pages/<page-slug>/<page-slug>.css. */
+.vn-demo{border:1px solid rgb(var(--c-border));border-radius:.75rem;background:rgb(var(--c-border) / .12);padding:1.1rem 1.15rem;margin:1.9rem 0;}
+.vn-demo-label{font-family:var(--font-mono);font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;color:rgb(var(--c-muted));margin-bottom:.85rem;}
+.vn-caption{font-size:.8rem;color:rgb(var(--c-muted));margin-top:.9rem;line-height:1.5;}
+.vn-controls{display:flex;flex-wrap:wrap;align-items:center;gap:.75rem;margin-top:1rem;}
+.vn-btn{font:inherit;font-size:.85rem;font-weight:500;padding:.42rem .9rem;border-radius:.5rem;border:1px solid rgb(var(--c-accent) / .5);background:rgb(var(--c-accent) / .12);color:rgb(var(--c-fg));cursor:pointer;transition:transform .12s ease,background-color .15s ease;}
+.vn-btn:hover:not(:disabled){background:rgb(var(--c-accent) / .2);}
+.vn-btn:active:not(:disabled){transform:scale(.97);}
+.vn-btn:disabled{opacity:.45;cursor:default;}
+.vn-btn-ghost{background:transparent;border-color:rgb(var(--c-border));}
+.vn-btn-ghost:hover:not(:disabled){background:rgb(var(--c-border) / .3);}
+.vn-input{width:100%;box-sizing:border-box;font:inherit;font-size:.95rem;padding:.5rem .65rem;border:1px solid rgb(var(--c-border));border-radius:.45rem;background:rgb(var(--c-bg));color:rgb(var(--c-fg));}
+.vn-input:focus-visible{outline:2px solid rgb(var(--c-accent));outline-offset:1px;}
+.vn-sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
+.vn-btn[aria-pressed="true"]{border-color:rgb(var(--c-accent));background:rgb(var(--c-accent) / .16);}
+.vn-verdict{margin-top:1rem;padding:.6rem .7rem;border-radius:.45rem;font-size:.84rem;line-height:1.55;border:1px solid rgb(var(--c-border));color:rgb(var(--c-muted));}
+.vn-verdict.is-good{border-color:rgb(var(--c-accent) / .55);background:rgb(var(--c-accent) / .07);color:rgb(var(--c-fg));}
+.vn-verdict.is-bad{border-color:rgba(217,83,79,.5);background:rgba(217,83,79,.06);color:rgb(var(--c-fg));}

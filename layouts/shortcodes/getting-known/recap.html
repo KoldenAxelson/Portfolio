@@ -1,0 +1,25 @@
+{{- /* getting-known/recap: live widget; behaviour in static/js/getting-known/gk-recap.js. */ -}}
+<div class="not-prose vn-demo" id="gk-recap" data-vn-src="/js/getting-known/gk-recap.js" data-vn-init="GkRecap">
+<div class="vn-demo-label">Live · the recap email, written while you still remember the meeting</div>
+<div class="gk-rc-fields">
+  <label><span class="gk-lab">Who asked</span><input class="vn-input" id="gk-rc-who" type="text" maxlength="60" autocomplete="off" placeholder="Dana" /></label>
+  <label><span class="gk-lab">What it's about</span><input class="vn-input" id="gk-rc-topic" type="text" maxlength="80" autocomplete="off" placeholder="the login migration" /></label>
+  <label><span class="gk-lab">What we agreed, one item per line</span><textarea class="vn-input gk-rc-area" id="gk-rc-what" placeholder="Move the login service to the new auth provider&#10;Keep the old one running until traffic is under 1%"></textarea></label>
+  <label><span class="gk-lab">Who does what, one per line (optional)</span><textarea class="vn-input gk-rc-area" id="gk-rc-owners" placeholder="Me: the migration&#10;Sam: the dashboard"></textarea></label>
+  <label><span class="gk-lab">Done by</span><input class="vn-input" id="gk-rc-when" type="text" maxlength="40" autocomplete="off" placeholder="Friday the 30th" /></label>
+</div>
+<div class="vn-controls">
+  <button class="vn-btn vn-btn-ghost" id="gk-rc-copy" type="button" hidden>Copy</button>
+</div>
+<pre class="gk-rc-out" id="gk-rc-out" aria-live="polite">Subject: Recap: the login migration
+
+Hi Dana,
+
+Thanks for the time today. Writing down what we agreed so we're working from the same page:
+
+- Move the login service to the new auth provider
+- Keep the old one running until traffic is under 1%
+
+I'll have it done by Friday the 30th. If I've got any of this wrong, reply and I'll correct it before I start.</pre>
+<div class="vn-caption">The shape is the one the office-politics video gives: thank them, restate what was agreed, name the date, invite corrections. It updates as you type. Nothing you type leaves this page.</div>
+</div>

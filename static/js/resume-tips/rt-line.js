@@ -18,35 +18,35 @@ window.RtLine = (function () {
     {
       move: "Your title was Coordinator. Your resume says “Director.”",
       safe: false,
-      why: "That's not translating the work, it's inflating the level — and titles are one phone call verifiable. Coordinator → the accurate functional title, never coordinator → director."
+      why: "That inflates the level instead of translating the work, and a title takes one phone call to verify. Coordinator becomes the accurate functional title, never director."
     },
     {
-      move: "“Managed a team of five” — you had no direct reports, ever.",
+      move: "“Managed a team of five” when you never had a direct report.",
       safe: false,
       why: "Management responsibility is verifiable and gets checked. “Led,” “drove,” “owned” are yours to claim about work; people who reported to you either existed or didn't."
     },
     {
       move: "Your title was Marketing Coordinator, but you actually led the Q3 campaign. The bullet: “Led the Q3 email campaign from concept to execution.”",
       safe: true,
-      why: "This is the one she begs high performers to do. Decisions and owned outcomes are accurate descriptions of what happened — waiting for the title to say so is how someone with more confidence takes your job."
+      why: "This is the one she begs high performers to do. Decisions and owned outcomes are accurate descriptions of what happened. Waiting for the title to say so is how someone with more confidence takes your job."
     },
     {
       move: "Engagement actually rose 18%. The bullet says 25%.",
       safe: true,
-      why: "Her ruling: nobody verifies percentages — estimate up, stay believable, and never claim numbers bigger than the company. (The one ruling I'd argue with: the believability budget is also a credibility budget, and 18% was already a result.)"
+      why: "Her ruling: nobody verifies percentages, so estimate up, stay believable, and never claim numbers bigger than the company. (The one ruling I'd argue with: the believability budget is also a credibility budget, and 18% was already a result.)"
     },
     {
       move: "You're three credit hours short of the degree. The resume says “B.S., completed.”",
       safe: false,
-      why: "Her example, and the offer was pulled — for a role that didn't even require the degree. Education checks take about a minute; claiming an unfinished credential is falsifying the application."
+      why: "Her example, and the offer was pulled for a role that didn't even require the degree. Education checks take about a minute; claiming an unfinished credential is falsifying the application."
     },
     {
-      move: "A six-week wrong-fit job, left off the resume — and off LinkedIn.",
+      move: "A six-week wrong-fit job, left off the resume and off LinkedIn.",
       safe: true,
       why: "Omission is your call: background checks verify what you supply, they don't surface every job you've ever held. The cost of explaining a short stint in every interview is higher than the risk."
     },
     {
-      move: "Same six-week job, off the resume — but still sitting on your LinkedIn.",
+      move: "Same six-week job, off the resume but still sitting on your LinkedIn.",
       safe: false,
       why: "Now it's not an omission, it's an inconsistency, and LinkedIn is one of the first places a recruiter looks. Whatever the resume omits, LinkedIn omits too, or the gap between them becomes the story."
     },
@@ -58,7 +58,7 @@ window.RtLine = (function () {
     {
       move: "A year-long gap where you regularly helped a friend run their business. The resume: “Consultant” for that company.",
       safe: true,
-      why: "Real work, framed generously — allowed, along with freelance as freelance and your actual LLC as founder. The rule is that it has to have existed; the deal-breaker is the invented company."
+      why: "Real work, framed generously. That's allowed, along with freelance as freelance and your actual LLC as founder. It has to have existed; the deal-breaker is the invented company."
     }
   ];
 
@@ -78,12 +78,12 @@ window.RtLine = (function () {
         '<div class="rt-ln-count">move ' + (i + 1) + " / " + DECK.length +
         '&ensp;·&ensp;<span class="rt-ln-score">' + right + " with her so far</span></div>" +
         '<p class="rt-ln-move">' + c.move + "</p>" +
-        '<div class="rt-controls">' +
-        '<button class="rt-btn" id="rt-ln-safe" type="button">She’d write it</button>' +
-        '<button class="rt-btn rt-btn-ghost" id="rt-ln-pull" type="button">She’d call it a deal-breaker</button>' +
+        '<div class="vn-controls">' +
+        '<button class="vn-btn" id="rt-ln-safe" type="button">She’d write it</button>' +
+        '<button class="vn-btn vn-btn-ghost" id="rt-ln-pull" type="button">She’d call it a deal-breaker</button>' +
         "</div>" +
         '<div class="rt-ln-ruling" id="rt-ln-ruling" hidden></div>' +
-        '<div class="rt-controls"><button class="rt-btn" id="rt-ln-next" type="button" hidden></button></div>' +
+        '<div class="vn-controls"><button class="vn-btn" id="rt-ln-next" type="button" hidden></button></div>' +
         "</div>";
       stage.innerHTML = h;
       stage.querySelector("#rt-ln-safe").addEventListener("click", function () { rule(true); });
@@ -111,11 +111,11 @@ window.RtLine = (function () {
     }
 
     function wrap() {
-      var h = '<div class="rt-verdict ' + (right >= 8 ? "is-good" : "is-bad") + '">You matched her on ' + right + " of " + DECK.length +
-        ". The line, stated once: translate the work you actually did into words the reader recognises — titles sideways, outcomes claimed, noise cut. " +
+      var h = '<div class="vn-verdict ' + (right >= 8 ? "is-good" : "is-bad") + '">You matched her on ' + right + " of " + DECK.length +
+        ". The line, stated once: translate the work you actually did into words the reader recognises (titles sideways, outcomes claimed, noise cut). " +
         "Never invent credentials, employers, dates, people, or fluency that a background check or a five-minute conversation can contradict. " +
         "And whatever the resume omits, LinkedIn omits too.</div>" +
-        '<div class="rt-controls"><button class="rt-btn rt-btn-ghost" id="rt-ln-again" type="button">Run the deck again</button></div>';
+        '<div class="vn-controls"><button class="vn-btn vn-btn-ghost" id="rt-ln-again" type="button">Run the deck again</button></div>';
       stage.innerHTML = h;
       stage.querySelector("#rt-ln-again").addEventListener("click", function () { i = 0; right = 0; card(); });
     }

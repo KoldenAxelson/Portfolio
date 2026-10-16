@@ -1,0 +1,11 @@
+{{- /* claude/mods: mod cards, from data/claude/mods.yaml. Static, no JS. */ -}}
+{{- $mods := site.Data.claude.mods -}}
+{{- if not $mods }}{{ errorf "claude/mods: data/claude/mods.yaml is missing (page: %s)" .Page.RelPermalink }}{{ end -}}
+<div class="not-prose cl-mods">
+{{- range $mods }}
+<article class="cl-mod"><h3>{{ .name }}</h3><p>{{ .what }}</p><div class="cl-mod-tags">
+{{- with .by }}<span class="cl-tag">{{ . }}</span>{{ end -}}
+{{- if eq .tokens "yes" }}<span class="cl-tag is-cost">Uses tokens</span>{{ else if eq .tokens "no" }}<span class="cl-tag">No tokens</span>{{ end -}}
+</div></article>
+{{- end }}
+</div>

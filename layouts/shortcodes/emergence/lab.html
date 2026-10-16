@@ -1,0 +1,28 @@
+{{- /*
+  emergence/lab — the simulation stage, its toolbar, and an empty panel.
+
+    {{< emergence/lab >}}
+
+  Every control in the panel is built by assets/scripts/pages/emergence/ from
+  the behaviours' parameter specs, so adding a behaviour never touches this
+  file. The data-em-* hooks are read by scripts/pages/emergence/lab.ts.
+  Assets ship from layouts/misc/single.html via partials/emergence/assets.html.
+*/ -}}
+<div class="em-lab not-prose" data-emergence-lab>
+  <div class="em-stage" data-em-stage>
+    <canvas class="em-canvas" data-em-canvas role="img" aria-label="Particle simulation"></canvas>
+    <span class="em-fps" data-em-fps aria-hidden="true"></span>
+  </div>
+  <div class="em-toolbar">
+    <button type="button" class="em-chip" data-em-action="toggle" aria-pressed="false">Pause</button>
+    <button type="button" class="em-chip" data-em-action="step">Step</button>
+    <button type="button" class="em-chip" data-em-action="restart">Restart</button>
+    <button type="button" class="em-chip" data-em-action="shuffle" title="Re-roll anything random, like the Particle Life matrix">Shuffle</button>
+    <label class="em-preset">
+      <span class="sr-only">Preset</span>
+      <select class="em-select" data-em-preset></select>
+    </label>
+  </div>
+  <div class="em-panel" data-em-panel aria-label="Simulation controls"></div>
+  <noscript><p class="em-noscript">This page is a JavaScript simulation.</p></noscript>
+</div>

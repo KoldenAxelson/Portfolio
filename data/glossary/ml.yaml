@@ -1415,3 +1415,127 @@ time-horizon:
       METR's measure, introduced in March 2025. It's about how hard a task is,
       not how long the agent runs: agents are usually faster than people at the
       tasks they do finish.
+
+# ── Optimization, memory and emergence ───────────────────────────────
+
+optimizer:
+  term: Optimizer
+  aliases: ['optimizers']
+  definition: >-
+    The rule that turns a [[loss|loss]]'s slope into an actual change to the
+    [[weights|weights]] at each step of [[training|training]].
+  notes:
+    - >-
+      Plain [[stochastic-gradient-descent|SGD]] is the simplest optimizer;
+      [[momentum|momentum]] and [[adam|Adam]] add memory of earlier steps.
+
+momentum:
+  term: Momentum
+  definition: >-
+    An [[optimizer|optimizer]] trick that keeps a running average of recent
+    steps, so training keeps rolling in a consistent direction instead of
+    jittering.
+
+adam:
+  term: Adam
+  aliases: ['AdamW', 'Adams']
+  definition: >-
+    The most widely used [[optimizer|optimizer]]: it keeps a fast average of the
+    gradient and a slow average of its square, and steps by their ratio.
+  notes:
+    - >-
+      Introduced by Kingma and Ba in 2014 with default decay rates of 0.9 and
+      0.999. AdamW is a common variant that handles weight decay separately.
+
+exponential-moving-average:
+  term: Exponential Moving Average
+  aliases: ['moving average', 'moving averages']
+  definition: >-
+    A running average where each new value counts a fixed fraction and older
+    values fade away gradually.
+  notes:
+    - >-
+      The fraction sets the memory's speed: a decay of 0.9 forgets in about ten
+      steps, 0.999 in about a thousand.
+
+loss-landscape:
+  term: Loss Landscape
+  definition: >-
+    The [[loss|loss]] pictured as terrain over every possible setting of the
+    [[weights|weights]], with training trying to walk downhill.
+
+local-minimum:
+  term: Local Minimum
+  aliases: ['local minima']
+  definition: >-
+    A valley in the [[loss-landscape|loss landscape]] that's lower than its
+    surroundings but not the lowest point overall.
+
+emergence:
+  term: Emergence
+  aliases: ['emergent', 'emergent behavior']
+  definition: >-
+    Complex group behavior that arises from simple rules followed by many
+    individuals, with no one in charge of the pattern.
+  notes:
+    - >-
+      Flocking birds, ant trails and slime-mould networks are the classic
+      examples; none of the individuals knows the shape of the whole.
+
+stigmergy:
+  term: Stigmergy
+  definition: >-
+    Coordination through marks left in a shared environment, like ants laying
+    pheromone, instead of through direct messages.
+  notes:
+    - >-
+      The memory lives in the environment rather than in any individual, and it
+      fades unless it's renewed.
+
+particle-swarm-optimization:
+  term: Particle Swarm Optimization
+  aliases: ['PSO']
+  definition: >-
+    A search method where a flock of candidate solutions moves through the
+    problem, each pulled toward the best spots it and the others have found.
+  notes:
+    - >-
+      Introduced by Kennedy and Eberhart in 1995, inspired by bird flocking.
+
+population-based-training:
+  term: Population-Based Training
+  definition: >-
+    Training many copies of a [[model|model]] at once and periodically letting
+    the weaker ones copy the stronger ones' [[weights|weights]] and settings.
+
+continual-learning:
+  term: Continual Learning
+  definition: >-
+    Training a [[model|model]] on a stream of new tasks or data over time
+    without starting over, and without losing what it already knew.
+
+catastrophic-forgetting:
+  term: Catastrophic Forgetting
+  definition: >-
+    When training a [[model|model]] on something new wipes out what it had
+    learned before.
+
+biofilm:
+  term: Biofilm
+  aliases: ['biofilms']
+  definition: >-
+    A dense, protective mat that bacteria build when they settle down on a
+    surface instead of moving.
+
+gene-regulatory-network:
+  term: Gene Regulatory Network
+  definition: >-
+    The web of genes switching each other on and off inside a cell, which
+    decides what the cell is doing at any moment.
+
+ribosome:
+  term: Ribosome
+  aliases: ['ribosomes']
+  definition: >-
+    The machine inside every cell that builds proteins; how many a cell keeps
+    ready controls how fast it can grow.

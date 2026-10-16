@@ -24,7 +24,7 @@ window.RtSkim = (function () {
         "Assisted with vendor relationships and contract renewals",
         "Handled recurring reporting for senior leadership"
       ],
-      q: "Five seconds are up. One of these was on the page — which?",
+      q: "Five seconds are up. Which of these was on the page?",
       opts: [
         "Responsible for coordinating daily operational tasks",
         "Responsible for overseeing daily operational duties",
@@ -32,8 +32,8 @@ window.RtSkim = (function () {
         "Responsible for supervising routine operations work"
       ],
       right: 1,
-      won: "You picked it — a one-in-four shot between four phrasings that all mean nothing. Be honest about whether that was memory or luck.",
-      lost: "It was the second one. You had it in front of you five seconds ago and there was no way to keep it — nothing was claimed, so nothing stuck.",
+      won: "You picked it, a one-in-four shot between four phrasings that all mean nothing. Be honest about whether that was memory or luck.",
+      lost: "It was the second one. You had it in front of you five seconds ago and no way to keep it: nothing was claimed, so nothing stuck.",
       next: "Show me candidate two"
     },
     {
@@ -54,8 +54,8 @@ window.RtSkim = (function () {
         "Reduced churn 15% by consolidating support tooling"
       ],
       right: 2,
-      won: "That's the mechanism. A number bound to an outcome gives memory something to grab — same person, same job, same five seconds, different resume.",
-      lost: "Missed — but notice you were choosing between real, distinct claims this time, not four spellings of fog. That difference is the whole page.",
+      won: "That's the mechanism. A number bound to an outcome gives memory something to grab. Same person, same job, same five seconds, different resume.",
+      lost: "Missed, but notice you were choosing between real, distinct claims this time instead of four spellings of fog. That difference is the whole page.",
       next: "So what did I just do?"
     }
   ];
@@ -97,8 +97,8 @@ window.RtSkim = (function () {
       for (var i = 0; i < c.opts.length; i++) {
         h += '<button class="rt-sk-opt" type="button" data-rt-opt="' + i + '">' + esc(c.opts[i]) + "</button>";
       }
-      stage.innerHTML = h + "</div>" + '<div class="rt-verdict" id="rt-sk-verdict" hidden></div>' +
-        '<div class="rt-controls"><button class="rt-btn" id="rt-sk-next" type="button" hidden></button></div>';
+      stage.innerHTML = h + "</div>" + '<div class="vn-verdict" id="rt-sk-verdict" hidden></div>' +
+        '<div class="vn-controls"><button class="vn-btn" id="rt-sk-next" type="button" hidden></button></div>';
 
       var opts = [].slice.call(stage.querySelectorAll("[data-rt-opt]"));
       for (var j = 0; j < opts.length; j++) {
@@ -113,7 +113,7 @@ window.RtSkim = (function () {
           }
           var v = stage.querySelector("#rt-sk-verdict");
           v.hidden = false;
-          v.className = "rt-verdict " + (wonIt ? "is-good" : "is-bad");
+          v.className = "vn-verdict " + (wonIt ? "is-good" : "is-bad");
           v.textContent = wonIt ? c.won : c.lost;
           var next = stage.querySelector("#rt-sk-next");
           next.hidden = false;
@@ -127,10 +127,10 @@ window.RtSkim = (function () {
 
     function wrap() {
       var h = '<div class="rt-sk-pair">' + page(CANDS[0]) + page(CANDS[1]) + "</div>";
-      h += '<div class="rt-verdict is-good">You went ' + tally(score[0]) + " on duties and " + tally(score[1]) +
-        " on evidence. Same person, same work — but in a pile of two hundred, only one of these pages still exists after the skim, " +
+      h += '<div class="vn-verdict is-good">You went ' + tally(score[0]) + " on duties and " + tally(score[1]) +
+        " on evidence. Same person, same work, but in a pile of two hundred only one of these pages still exists after the skim, " +
         "because only one of them answered the reader's question before it was asked. That is what a safe pair of hands looks like on paper.</div>";
-      h += '<div class="rt-controls"><button class="rt-btn rt-btn-ghost" id="rt-sk-again" type="button">Run it again</button></div>';
+      h += '<div class="vn-controls"><button class="vn-btn vn-btn-ghost" id="rt-sk-again" type="button">Run it again</button></div>';
       stage.innerHTML = h;
       stage.querySelector("#rt-sk-again").addEventListener("click", function () { score = [false, false]; flash(0); });
     }

@@ -1,0 +1,56 @@
+/* /misc/emergence/: the lab shell (layouts/shortcodes/emergence/lab.html) and
+   the panel built at run time by scripts/pages/emergence/ui/. The stage is dark
+   in both themes; everything around it follows the --c-* tokens. */
+
+.em-lab{--em-stage-h:clamp(18rem,68vh,46rem);display:grid;gap:.75rem;}
+@media (min-width:1024px){
+  .em-lab{grid-template-columns:minmax(0,1fr) 19rem;grid-template-areas:"stage panel" "bar panel";align-items:start;}
+  .em-stage{grid-area:stage;}
+  .em-toolbar{grid-area:bar;}
+  .em-panel{grid-area:panel;max-height:calc(var(--em-stage-h) + 3.25rem);overflow-y:auto;overscroll-behavior:contain;padding-right:.25rem;}
+}
+
+/* ── stage ──────────────────────────────────────────────────────────────── */
+.em-stage{position:relative;height:var(--em-stage-h);border-radius:.75rem;overflow:hidden;background:#050509;border:1px solid rgb(var(--c-border));}
+.em-canvas{position:absolute;inset:0;display:block;width:100%;height:100%;}
+.em-fps{position:absolute;left:.7rem;top:.55rem;font-family:var(--font-mono, ui-monospace, monospace);font-size:.65rem;letter-spacing:.06em;color:rgba(255,255,255,.5);font-variant-numeric:tabular-nums;pointer-events:none;}
+.em-noscript{margin:0;font-size:.85rem;color:rgb(var(--c-muted));}
+
+/* ── toolbar ────────────────────────────────────────────────────────────── */
+.em-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;}
+.em-preset{margin-left:auto;}
+.em-chip{font-family:var(--font-mono, ui-monospace, monospace);font-size:.72rem;line-height:1;padding:.45rem .75rem;border-radius:.45rem;border:1px solid rgb(var(--c-border));background:transparent;color:rgb(var(--c-fg));cursor:pointer;transition:border-color .15s,color .15s;}
+.em-chip:hover{border-color:rgb(var(--c-accent) / .6);color:rgb(var(--c-accent));}
+.em-chip[aria-pressed="true"]{border-color:rgb(var(--c-accent));color:rgb(var(--c-accent));}
+.em-select{font-family:var(--font-mono, ui-monospace, monospace);font-size:.72rem;padding:.35rem .5rem;border-radius:.45rem;border:1px solid rgb(var(--c-border));background:rgb(var(--c-bg));color:rgb(var(--c-fg));max-width:100%;}
+
+/* ── panel ──────────────────────────────────────────────────────────────── */
+.em-panel{display:grid;gap:.5rem;align-content:start;}
+.em-group{border:1px solid rgb(var(--c-border));border-radius:.6rem;}
+.em-group-head{display:flex;align-items:center;gap:.5rem;padding:.55rem .75rem;cursor:pointer;list-style:none;user-select:none;}
+.em-group-head::-webkit-details-marker{display:none;}
+.em-group-head::before{content:"";width:.4rem;height:.4rem;border-right:1.5px solid rgb(var(--c-muted));border-bottom:1.5px solid rgb(var(--c-muted));transform:rotate(-45deg);transition:transform .15s;}
+.em-group[open]>.em-group-head::before{transform:rotate(45deg);}
+.em-group-title{flex:1;font-family:var(--font-mono, ui-monospace, monospace);font-size:.68rem;letter-spacing:.09em;text-transform:uppercase;color:rgb(var(--c-fg));}
+.em-group-body{display:grid;gap:.55rem;padding:.1rem .75rem .75rem;transition:opacity .15s;}
+.em-behavior.is-off .em-group-body{opacity:.4;}
+
+.em-row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:.1rem .5rem;font-size:.78rem;color:rgb(var(--c-muted));}
+.em-row-value{font-family:var(--font-mono, ui-monospace, monospace);font-size:.7rem;color:rgb(var(--c-fg));font-variant-numeric:tabular-nums;}
+.em-range{grid-column:1 / -1;width:100%;margin:0;accent-color:rgb(var(--c-accent));}
+.em-row-mix{padding-bottom:.5rem;border-bottom:1px dashed rgb(var(--c-border));}
+.em-row-mix .em-row-label{color:rgb(var(--c-fg));}
+
+.em-switch{appearance:none;position:relative;width:1.9rem;height:1.05rem;margin:0;border-radius:999px;background:rgb(var(--c-border));cursor:pointer;transition:background .15s;flex:none;}
+.em-switch::after{content:"";position:absolute;top:.15rem;left:.15rem;width:.75rem;height:.75rem;border-radius:999px;background:rgb(var(--c-bg));transition:transform .15s;}
+.em-switch:checked{background:rgb(var(--c-accent));}
+.em-switch:checked::after{transform:translateX(.85rem);}
+
+/* ── particle life matrix ──────────────────────────────────────────────── */
+.em-matrix{display:grid;gap:.5rem;}
+.em-matrix-grid{--em-cell-size:1.75rem;display:grid;gap:2px;}
+.em-matrix-swatch{justify-self:center;align-self:center;width:.55rem;height:.55rem;border-radius:999px;}
+.em-matrix-cell{aspect-ratio:1;min-width:0;padding:0;border:0;border-radius:3px;cursor:pointer;font-family:var(--font-mono, ui-monospace, monospace);font-size:.5rem;color:rgb(var(--c-fg));background:linear-gradient(var(--em-cell),var(--em-cell)),rgb(var(--c-border) / .45);}
+.em-matrix-cell:hover{outline:1px solid rgb(var(--c-accent));}
+.em-matrix-seeds{display:flex;flex-wrap:wrap;gap:.3rem;}
+.em-matrix-seeds .em-chip{padding:.35rem .55rem;font-size:.65rem;}

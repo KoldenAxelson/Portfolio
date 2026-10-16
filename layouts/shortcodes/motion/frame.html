@@ -1,0 +1,15 @@
+{{- /* motion/frame: live widget; behaviour in static/js/motion/mo-frame.js. */ -}}
+<div class="not-prose vn-demo" id="mo-frame" data-vn-src="/js/motion/mo-frame.js" data-vn-init="MoFrame">
+<div class="vn-demo-label">Live · a video is a function of time</div>
+<canvas class="mo-canvas" id="mo-fr-canvas" width="640" height="360" role="img" aria-label="One frame of a short animation, drawn from the time on the slider"></canvas>
+<p class="mo-fr-read" id="mo-fr-read">Turn on JavaScript to draw frames.</p>
+<div id="mo-fr-controls" hidden>
+  <label class="mo-slide"><span class="mo-lab">t, in seconds</span><input id="mo-fr-t" type="range" min="0" max="180" step="1" value="45" /></label>
+  <div class="vn-controls">
+    <button class="vn-btn" id="mo-fr-play" type="button">Play</button>
+    <button class="vn-btn vn-btn-ghost" id="mo-fr-sheet" type="button">Contact sheet</button>
+  </div>
+</div>
+<div class="mo-sheet" id="mo-fr-sheet-out"></div>
+<div class="vn-caption">Everything on the canvas is computed from t alone, so frame 75 is always frame 75, and any frame can be redrawn or checked on its own. The contact sheet is the check the videos describe: eight frames side by side, which is how a model that can't watch video still looks at one.</div>
+</div>

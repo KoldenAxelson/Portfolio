@@ -1,0 +1,33 @@
+# The skill-writing rules on /misc/claude/, rendered by shortcodes/claude/skill-rules.html.
+# Living list: when the guidance changes, edit or add an entry here, never the markup.
+# source: "docs" = stated in Anthropic's skill best-practices page; "video" = the video's own.
+- rule: "Keep SKILL.md under 500 lines"
+  detail: "Split the rest into files linked from it, so Claude loads each one only at the step that needs it."
+  source: docs
+- rule: "Link reference files one level deep"
+  detail: "A file reached through another file may only be previewed, roughly its first 100 lines."
+  source: docs
+- rule: "Give long reference files a contents list"
+  detail: "Anything over 100 lines opens with a table of contents, so even a preview knows where to jump."
+  source: docs
+- rule: "Match freedom to fragility"
+  detail: "Plain instructions where many approaches work, a template where the shape matters, an exact script where a mistake is costly. One skill can mix all three."
+  source: docs
+- rule: "Test on every model you'll run it with"
+  detail: "Enough guidance for Haiku, clear and efficient for Sonnet, not over-explained for Opus. Skills written for older models can be too prescriptive for new ones."
+  source: docs
+- rule: "Cut what Claude already knows"
+  detail: "Keep your prices, terms and internal rules; drop the paragraph explaining what an invoice is. Write the description in the third person."
+  source: docs
+- rule: "Hand long jobs a checklist"
+  detail: "Steps Claude copies into its reply and ticks off, with a go-back line: if a total doesn't match, return to step 2."
+  source: docs
+- rule: "Close the loop"
+  detail: "Run it, check it against a validator or a style guide, fix, repeat, and only proceed when it passes."
+  source: docs
+- rule: "Use a template, examples or a fork"
+  detail: "When the output must be defined: a template (strict or a sensible default), input and output pairs, or a conditional workflow."
+  source: docs
+- rule: "Rules that can never break go in a hook"
+  detail: "A hook is code Claude Code runs at a set moment whether or not the model follows the skill. Capital letters work most of the time; a hook works every time."
+  source: video

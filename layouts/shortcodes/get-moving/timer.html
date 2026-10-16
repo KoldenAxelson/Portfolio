@@ -1,0 +1,16 @@
+{{- /* get-moving/timer: live widget; behaviour in static/js/get-moving/gm-timer.js. */ -}}
+<div class="not-prose vn-demo" id="gm-timer" data-vn-src="/js/get-moving/gm-timer.js" data-vn-init="GmTimer">
+<div class="vn-demo-label">Live · just ten minutes</div>
+<div class="gm-clock" id="gm-clock">10:00</div>
+<div class="gm-track" aria-hidden="true"><span class="gm-bar" id="gm-bar"></span></div>
+<div class="vn-controls" id="gm-timer-controls" hidden>
+  <button class="vn-btn" id="gm-go" type="button">Start</button>
+  <button class="vn-btn vn-btn-ghost" id="gm-stop" type="button">Reset</button>
+  <span class="gm-lab gm-inline">Minutes</span>
+  <button class="vn-btn vn-btn-ghost gm-len" type="button" data-gm-min="10" aria-pressed="true">10</button>
+  <button class="vn-btn vn-btn-ghost gm-len" type="button" data-gm-min="20" aria-pressed="false">20</button>
+  <button class="vn-btn vn-btn-ghost gm-len" type="button" data-gm-min="60" aria-pressed="false">60</button>
+</div>
+<p class="gm-done" id="gm-done" aria-live="polite"></p>
+<div class="vn-caption">The deal from the passion video: when the timer ends you're allowed to stop. Most days you won't want to.</div>
+</div>

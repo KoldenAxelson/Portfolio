@@ -4,7 +4,7 @@ import { initNav } from './nav/nav';
 import { initScrollTop } from './nav/scrolltop';
 import { initSidebar } from './nav/sidebar';
 import { initConstellation } from './widgets/constellation';
-import { initProjectFilter } from './filters/project-filter';
+import { initTypeFilter } from './filters/type-filter';
 import { initMiscFilter } from './filters/misc-filter';
 import { initGameModal } from './games/impossible-modal';
 import { initPerfMeters } from './widgets/perf-meters';
@@ -37,7 +37,7 @@ function initPage(): void {
   initScrollTop();
   initSidebar();
   initConstellation();
-  initProjectFilter();
+  initTypeFilter();
   initMiscFilter();
   initGameModal();
   initPerfMeters();

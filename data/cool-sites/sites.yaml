@@ -1,0 +1,132 @@
+# The cards on /misc/cool-sites/, in display order, rendered by
+# shortcodes/cool-sites/grid.html. Adding a site is adding an entry.
+#
+# types   : filter keys, from the category list in that shortcode. A site can
+#           carry several; every key used here gets a filter bubble.
+# desc    : HTML is allowed (<em>, <code>, a link); it is rendered as-is.
+# preview : optional. Names layouts/partials/cool-sites/previews/<preview>.html
+#           AND static/js/cool-sites/<preview>.js; partials/cool-sites/assets.html
+#           ships the script for each preview listed here.
+# feature : spans the full grid width. cover: false drops the whole-card link
+#           (for a card whose preview is itself interactive under the cursor).
+- name: "Emil Kowalski — Agents with Taste"
+  url: "https://emilkowal.ski/ui/agents-with-taste"
+  domain: "emilkowal.ski"
+  types: [web-dev]
+  preview: emil
+  feature: true
+  cover: false
+  desc: "Design engineer behind Sonner and Vaul, on encoding your taste into skill files so agents animate better. His post has an interactive Linear logo; this is that effect wearing <em>my</em> logo. Move your cursor through it — the dots flee, then settle."
+- name: "The Blog of Maxime Heckel"
+  url: "https://blog.maximeheckel.com"
+  domain: "blog.maximeheckel.com"
+  types: [web-dev]
+  preview: heckel
+  desc: "Deep, interactive essays on shaders and real-time 3D, each with a playground. Two of them at once here: volumetric raymarched clouds, then his retro-shading pass — tiny buffer, six levels a channel, 4×4 Bayer dither, scanlines. The octahedron is an SDF, lit in four steps."
+- name: "Anthony Fu"
+  url: "https://antfu.me"
+  domain: "antfu.me"
+  types: [web-dev]
+  preview: plum
+  desc: "Personal site of one of open source's most prolific design engineers — Vitest, Slidev, VueUse, UnoCSS, core team on Vue, Nuxt and Vite. The branches recreate the generative \"plum\" from his background: vines seeded at the edges, creeping inward and forking."
+- name: "Interactive Smoke/Fluid Motion"
+  url: "https://www.cssscript.com/demo/smoke-fluid-motion/"
+  domain: "cssscript.com"
+  types: [web-dev]
+  preview: smoke
+  desc: "A WebGL fluid sim dressed as smoke — the demo that sent me off to build a Navier–Stokes solver for my <a href=\"/quotes/\">quotes page</a>. Faking it never convinces: smoke reads through advection, not texture. That solver, shrunk to a card. Move your cursor through it."
+- name: "Canvas UI"
+  url: "https://canvasui.dev"
+  domain: "canvasui.dev"
+  types: [web-dev]
+  preview: ascii
+  desc: "Thirty-odd creative components — real HTML drawn inside a canvas, WebGL running over it. The html-in-canvas half needs a Chrome flag; elsewhere, Safari included, it degrades to plain HTML plus the effects. Shown: <em>ASCII Object</em>. Mine is the cheap version, no library."
+- name: "Impeccable"
+  url: "https://impeccable.style"
+  domain: "impeccable.style"
+  types: [web-dev, tools]
+  preview: impeccable
+  desc: "Paul Bakaus's design skill for coding agents — 23 commands, 58 anti-pattern checks, pointed at AI slop. The mock runs <code>/polish</code> both ways on a loop. Gradient fill, bloom shadow, over-rounding, centred copy, emoji, a shouting CTA: all on the list."
+- name: "Taste Skill"
+  url: "https://www.tasteskill.dev"
+  domain: "tasteskill.dev"
+  types: [web-dev, tools]
+  preview: taste
+  desc: "Leon Lin's answer from the other end: <code>SKILL.md</code> files that hand an agent a design direction — brutalist, minimal, soft — before it writes a line, instead of auditing the mess after. The card cycles three. Words never change; type and colour do."
+
+# From here down: the Hyperlink video's list (source noted on the page).
+- name: "The Pudding"
+  url: "https://pudding.cool/"
+  domain: "pudding.cool"
+  types: [web-dev, ideas]
+  desc: "Visual essays on culture and society, built from data, graphics and small experiments. Worth reading for the ideas and worth studying for how each one is built."
+- name: "Information Is Beautiful"
+  url: "https://informationisbeautiful.net/"
+  domain: "informationisbeautiful.net"
+  types: [ideas]
+  desc: "Big, careful infographics that turn a messy subject into one picture. The <a href=\"https://informationisbeautiful.net/visualizations/the-problem-with-plastics-and-recycling-bioplastics-microplastics-ocean-waste/\">plastics and recycling</a> one is a good place to start."
+- name: "Aeon"
+  url: "https://aeon.co/"
+  domain: "aeon.co"
+  types: [ideas]
+  desc: "A free magazine of long essays and short films on philosophy, science, history and culture. The kind of reading that doesn't fit in a feed."
+- name: "Your Logical Fallacy Is"
+  url: "https://yourlogicalfallacyis.com/"
+  domain: "yourlogicalfallacyis.com"
+  types: [ideas]
+  desc: "An illustrated deck of common logical fallacies, each with a plain explanation and an example. Quick to read, and hard to unsee afterward."
+- name: "Logic Made Accessible"
+  url: "https://aristotelianlogic.com/"
+  domain: "aristotelianlogic.com"
+  types: [learning, ideas]
+  desc: "A free beginner's course in classical, Aristotelian logic: how arguments are built and how to tell a good one from a bad one. A natural companion to my <a href=\"/misc/basic-logic/\">Basic Logic</a> chapters."
+- name: "Seeing Theory"
+  url: "https://seeing-theory.brown.edu/basic-probability/index.html"
+  domain: "seeing-theory.brown.edu"
+  types: [learning]
+  desc: "Brown University's visual introduction to probability and statistics, where every idea is a simulation you can poke."
+- name: "VizLearn"
+  url: "https://vizlearn.in/index.html"
+  domain: "vizlearn.in"
+  types: [learning]
+  desc: "Free, in-browser visual explainers for machine learning, algorithms and the math under them, organized into tracks. No sign-up."
+- name: "Polymath Open Library"
+  url: "https://pol.polaimath.com/"
+  domain: "pol.polaimath.com"
+  types: [learning]
+  desc: "A free, hand-gathered library of books, courses, papers and documentaries across science, history, philosophy and the arts, for learning sideways."
+- name: "Dudely"
+  url: "https://dudely.co/"
+  domain: "dudely.co"
+  types: [learning]
+  desc: "An AI tutor that works a problem on a live whiteboard, writing and drawing the explanation step by step. Math, physics, chemistry and engineering."
+- name: "Stemio"
+  url: "https://stemio.ai/"
+  domain: "stemio.ai"
+  types: [learning]
+  desc: "A Socratic AI tutor for STEM: it asks guiding questions and gives hints instead of handing over the answer."
+- name: "Open Historia"
+  url: "https://historia.aliveville.com/play"
+  domain: "historia.aliveville.com"
+  types: [learning]
+  desc: "A grand strategy game where you give a civilization orders in plain language and an AI game master decides what happens. History as a sandbox."
+- name: "ResearchRabbit"
+  url: "https://www.researchrabbit.ai/"
+  domain: "researchrabbit.ai"
+  types: [research, tools]
+  desc: "Maps academic papers as a web of citations, authors and related work, so a literature review starts from a picture instead of a search box."
+- name: "Consensus"
+  url: "https://consensus.app/"
+  domain: "consensus.app"
+  types: [research, tools]
+  desc: "A search engine over academic papers that answers with what the evidence says, with citations."
+- name: "Explainpaper"
+  url: "https://www.explainpaper.com/"
+  domain: "explainpaper.com"
+  types: [research, tools]
+  desc: "Upload a paper, highlight the part that lost you, and get it explained in plainer words."
+- name: "Gemini Notebook"
+  url: "https://notebook.google.com/"
+  domain: "notebook.google.com"
+  types: [research, tools]
+  desc: "Google's AI workspace for your own sources: drop in documents and ask it to summarize, compare and pull out what matters."

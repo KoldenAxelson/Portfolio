@@ -1,0 +1,21 @@
+{{- /*
+  video-notes/assets — the shared widget box, the page's own widget stylesheet,
+  and the lazy loader, on any misc page built from YouTube transcripts.
+
+    {{ partial "video-notes/assets.html" . }}      call before {{ .Content }}
+
+  Keyed on the `youtube:` front-matter flag, not a shortcode list, so a new
+  page or widget needs no edit here. The page stylesheet is found by slug
+  (css/pages/<slug>/<slug>.css) and is optional. See private/skills/VideoNotesPageMake.md.
+*/ -}}
+{{- with .Params.youtube -}}
+  {{- $shell := resources.Get "css/pages/video-notes/shell.css" | minify | fingerprint -}}
+  <link rel="stylesheet" href="{{ $shell.RelPermalink }}" integrity="{{ $shell.Data.Integrity }}" />
+  {{- $slug := $.File.ContentBaseName -}}
+  {{- with resources.Get (printf "css/pages/%s/%s.css" $slug $slug) -}}
+    {{- $css := . | minify | fingerprint -}}
+    <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" />
+  {{- end -}}
+  {{- $js := resources.Get "scripts/pages/video-notes/main.js" | js.Build (dict "minify" true) | fingerprint -}}
+  <script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
+{{- end -}}

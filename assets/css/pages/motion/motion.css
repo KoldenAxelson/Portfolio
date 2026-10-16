@@ -1,0 +1,31 @@
+/* Widgets on /misc/motion/. The shared box is css/pages/video-notes/shell.css. */
+.mo-lab{display:block;font-family:var(--font-mono);font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:rgb(var(--c-muted));margin-bottom:.3rem;}
+.mo-slide{display:block;margin-top:.8rem;}
+.mo-slide input{width:100%;accent-color:rgb(var(--c-accent));}
+
+/* ── a video is a function of time ──────────────────────────────────────── */
+.mo-canvas{display:block;width:100%;height:auto;aspect-ratio:16 / 9;border-radius:.5rem;border:1px solid rgb(var(--c-border));background:rgb(var(--c-bg));}
+.mo-fr-read{margin:.6rem 0 0;font-family:var(--font-mono);font-size:.74rem;color:rgb(var(--c-muted));font-variant-numeric:tabular-nums;}
+.mo-sheet{display:grid;grid-template-columns:repeat(2,1fr);gap:.4rem;margin-top:.8rem;}
+.mo-sheet:empty{display:none;}
+@media (min-width:640px){.mo-sheet{grid-template-columns:repeat(4,1fr);}}
+.mo-sheet figure{margin:0;}
+.mo-sheet canvas{display:block;width:100%;height:auto;border-radius:.3rem;border:1px solid rgb(var(--c-border));}
+.mo-sheet figcaption{font-family:var(--font-mono);font-size:.6rem;color:rgb(var(--c-muted));margin-top:.2rem;}
+
+/* ── easing ─────────────────────────────────────────────────────────────── */
+.mo-ease-picks{display:flex;flex-wrap:wrap;gap:.35rem;}
+.mo-pick{font-size:.76rem;padding:.3rem .6rem;}
+.mo-ease-stage{display:grid;gap:.9rem;margin-top:.9rem;align-items:center;}
+@media (min-width:640px){.mo-ease-stage{grid-template-columns:11rem 1fr;}}
+.mo-ease-plot{width:100%;max-width:11rem;border:1px solid rgb(var(--c-border));border-radius:.5rem;background:rgb(var(--c-bg));}
+.mo-grid{stroke:rgb(var(--c-border));stroke-width:1;stroke-dasharray:3 3;}
+.mo-curve{fill:none;stroke:rgb(var(--c-accent));stroke-width:3;stroke-linejoin:round;}
+.mo-ease-tracks{display:grid;gap:.6rem;}
+.mo-track{position:relative;height:1.6rem;margin:0 .8rem;border-bottom:2px solid rgb(var(--c-border));}
+.mo-dot{position:absolute;bottom:.15rem;left:100%;width:1.1rem;height:1.1rem;margin-left:-.55rem;border-radius:999px;background:rgb(var(--c-accent));}
+.mo-strobe{height:1rem;}
+.mo-mark{position:absolute;bottom:.1rem;width:2px;height:.75rem;margin-left:-1px;background:rgb(var(--c-fg) / .55);}
+.mo-ease-note{margin:0;font-size:.86rem;line-height:1.5;color:rgb(var(--c-fg));}
+.mo-target{position:absolute;bottom:-.35rem;width:2px;height:2rem;margin-left:-1px;background:rgba(217,83,79,.7);}
+.mo-dot{z-index:1;}

@@ -7,7 +7,7 @@ layout: "drafts"
 blurb: "Articles in review. Passcode required."
 # Listed on /misc but sealed: the list and every draft open with the drafts PIN
 # (`make seal` → Drafts). Out of the sitemap and noindexed. The drafts carry
-# `review: true` and `build.list: never` (see WRITER-HANDOFF).
+# `review: true` and `build.list: never` (see ArticlePageMake.md).
 vault: "drafts"
 noindex: true
 sitemap:

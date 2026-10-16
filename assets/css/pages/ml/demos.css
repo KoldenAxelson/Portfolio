@@ -474,3 +474,21 @@
 .mli-hz-table th,.mli-hz-table td{padding:.25rem .45rem;border-bottom:1px solid rgb(var(--c-border));text-align:left;font-weight:400;color:rgb(var(--c-fg));}
 .mli-hz-table thead th{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;color:rgb(var(--c-muted));}
 .mli-hz-table td{font-family:var(--font-mono);font-size:.74rem;font-variant-numeric:tabular-nums;white-space:nowrap;}
+
+/* ── swarm: optimizers sharing a trail ───────────────────────────────── */
+.mli-swarm-canvas{display:block;width:100%;height:auto;aspect-ratio:320 / 200;border-radius:.5rem;border:1px solid rgb(var(--c-border));margin-bottom:.8rem;}
+.mli-swarm-slide{display:block;margin-top:.8rem;}
+.mli-swarm-slide input{width:100%;accent-color:rgb(var(--c-accent));}
+.mli-swarm-out,.mli-clk-out{color:rgb(var(--c-fg));font-variant-numeric:tabular-nums;}
+
+/* ── clocks: two memories, two speeds ────────────────────────────────── */
+.mli-clk-plot{display:block;width:100%;height:auto;border-radius:.5rem;border:1px solid rgb(var(--c-border));background:rgb(var(--c-bg));}
+.mli-clk-axis{stroke:rgb(var(--c-border));stroke-width:1;stroke-dasharray:3 3;}
+.mli-clk-dot{fill:rgb(var(--c-muted) / .55);}
+.mli-clk-fast{fill:none;stroke:rgb(var(--c-accent));stroke-width:2;}
+.mli-clk-slow{fill:none;stroke:rgb(217 83 79);stroke-width:2.5;}
+.mli-clk-key{display:flex;flex-wrap:wrap;gap:.9rem;margin:.6rem 0 .8rem;font-family:var(--font-mono);font-size:.66rem;color:rgb(var(--c-muted));}
+.mli-clk-k::before{content:"";display:inline-block;width:.9rem;height:2px;margin-right:.35rem;vertical-align:middle;}
+.mli-clk-k-fast::before{background:rgb(var(--c-accent));}
+.mli-clk-k-slow::before{background:rgb(217 83 79);height:3px;}
+.mli-clk-k-dot::before{width:.3rem;height:.3rem;border-radius:999px;background:rgb(var(--c-muted));}

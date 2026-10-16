@@ -1,0 +1,15 @@
+{{- /* getting-known/waterfall: live widget; behaviour in static/js/getting-known/gk-waterfall.js. */ -}}
+<div class="not-prose vn-demo" id="gk-waterfall" data-vn-src="/js/getting-known/gk-waterfall.js" data-vn-init="GkWaterfall">
+<div class="vn-demo-label">Live · one pillar piece, poured</div>
+<label><span class="gk-lab">Your pillar piece (an article, a long thread, a talk)</span>
+<input class="vn-input" id="gk-wf-in" type="text" maxlength="80" autocomplete="off" value="What Happens When You Hit Enter?" /></label>
+<div class="vn-controls" id="gk-wf-controls" hidden>
+  <button class="vn-btn" id="gk-wf-go" type="button">Pour it</button>
+  <span class="gk-lab gk-inline">Posts a day</span>
+  <button class="vn-btn vn-btn-ghost gk-rate" type="button" data-gk-rate="1" aria-pressed="true">1</button>
+  <button class="vn-btn vn-btn-ghost gk-rate" type="button" data-gk-rate="2" aria-pressed="false">2</button>
+</div>
+<ol class="gk-wf-list" id="gk-wf-list"></ol>
+<div class="gk-wf-total" id="gk-wf-total" aria-live="polite"></div>
+<div class="vn-caption">The stages and counts follow the steps in the personal-brand video. Its narrator's running tally wanders between 25 and 30; the steps as listed add up to 32. The titles are placeholders built from yours.</div>
+</div>

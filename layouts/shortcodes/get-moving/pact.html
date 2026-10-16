@@ -1,0 +1,20 @@
+{{- /* get-moving/pact: live widget; behaviour in static/js/get-moving/gm-pact.js. */ -}}
+<div class="not-prose vn-demo" id="gm-pact" data-vn-src="/js/get-moving/gm-pact.js" data-vn-init="GmPact">
+<div class="vn-demo-label">Live · write the pact, then keep the log</div>
+<div class="gm-build" id="gm-build">
+  <p class="gm-formula">I will <span class="gm-blank">action</span> for <span class="gm-blank">duration</span>.</p>
+  <div class="gm-fields" id="gm-fields" hidden>
+    <label><span class="gm-lab">I will</span><input class="vn-input" id="gm-action" type="text" maxlength="80" autocomplete="off" placeholder="write one paragraph of the next article" /></label>
+    <label><span class="gm-lab">How often</span><select class="vn-input" id="gm-cadence"><option value="day">every day</option><option value="week">every week</option></select></label>
+    <label><span class="gm-lab">For how many</span><input class="vn-input" id="gm-count" type="number" min="1" max="60" value="14" /></label>
+  </div>
+  <div class="vn-controls" id="gm-build-controls" hidden><button class="vn-btn" id="gm-start" type="button" disabled>Start the experiment</button></div>
+</div>
+<div class="gm-run" id="gm-run" hidden>
+  <p class="gm-pact-line" id="gm-pact-line"></p>
+  <div class="gm-grid" id="gm-grid" role="group" aria-label="Check-ins"></div>
+  <p class="gm-tally" id="gm-tally" aria-live="polite"></p>
+  <div class="vn-controls"><button class="vn-btn vn-btn-ghost" id="gm-reset" type="button">New experiment</button></div>
+</div>
+<div class="vn-caption">Click a square once for done, twice for skipped, three times to clear. A skip is data, and the useful question is why. The log is saved in this browser only, so it's here when you come back.</div>
+</div>

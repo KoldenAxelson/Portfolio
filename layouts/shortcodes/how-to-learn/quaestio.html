@@ -1,0 +1,45 @@
+{{- /* how-to-learn/quaestio: live widget; behaviour in static/js/how-to-learn/gc-quaestio.js. */ -}}
+<div class="not-prose vn-demo" id="gc-q" data-vn-src="/js/how-to-learn/gc-quaestio.js" data-vn-init="GcQuaestio">
+<div class="vn-demo-label">Live · write one, in Aquinas's order, with no skipping</div>
+
+<div class="gc-q-stage" data-gc-stage data-gc-hint="Start here. State it as a strict yes or no — “should I…”, “is it true that…” — not as a topic.">
+  <div class="gc-q-head"><span class="gc-q-num">i</span><span class="gc-q-title">The question</span><span class="gc-q-lock">locked</span></div>
+  <div class="gc-q-fields"><input class="vn-input" id="gc-q-question" type="text" placeholder="Whether …?" autocomplete="off" /></div>
+</div>
+
+<div class="gc-q-stage" data-gc-stage data-gc-hint="Three objections to your own position, strongest first. Not strawmen — the ones that worry you. Everything below stays locked until they exist.">
+  <div class="gc-q-head"><span class="gc-q-num">ii</span><span class="gc-q-title">Objections to your own position</span><span class="gc-q-lock">locked</span></div>
+  <div class="gc-q-fields">
+    <textarea class="vn-input" id="gc-q-o1" placeholder="Objection 1 — the strongest one against you"></textarea>
+    <textarea class="vn-input" id="gc-q-o2" placeholder="Objection 2"></textarea>
+    <textarea class="vn-input" id="gc-q-o3" placeholder="Objection 3"></textarea>
+  </div>
+</div>
+
+<div class="gc-q-stage" data-gc-stage data-gc-hint="One consideration on the other side. One. Aquinas gets a sentence here, not a case.">
+  <div class="gc-q-head"><span class="gc-q-num">iii</span><span class="gc-q-title">Sed contra</span><span class="gc-q-lock">locked</span></div>
+  <div class="gc-q-fields"><textarea class="vn-input" id="gc-q-sc" placeholder="On the contrary, …"></textarea></div>
+</div>
+
+<div class="gc-q-stage" data-gc-stage data-gc-hint="Now your answer, in one paragraph — written by someone who has just spent ten minutes arguing against it.">
+  <div class="gc-q-head"><span class="gc-q-num">iv</span><span class="gc-q-title">Your answer</span><span class="gc-q-lock">locked</span></div>
+  <div class="gc-q-fields"><textarea class="vn-input" id="gc-q-resp" placeholder="I answer that, …"></textarea></div>
+</div>
+
+<div class="gc-q-stage" data-gc-stage data-gc-optional data-gc-hint="Reply to each objection individually, by number. Leave one blank if you cannot answer it — the article will assemble either way, and say what that means.">
+  <div class="gc-q-head"><span class="gc-q-num">v</span><span class="gc-q-title">Replies, one per objection</span><span class="gc-q-lock">locked</span></div>
+  <div class="gc-q-fields">
+    <textarea class="vn-input" id="gc-q-r1" placeholder="Reply to Objection 1"></textarea>
+    <textarea class="vn-input" id="gc-q-r2" placeholder="Reply to Objection 2"></textarea>
+    <textarea class="vn-input" id="gc-q-r3" placeholder="Reply to Objection 3"></textarea>
+  </div>
+</div>
+
+<div class="gc-q-status" id="gc-q-status"></div>
+<div class="vn-controls">
+  <button class="vn-btn" id="gc-q-build" type="button" disabled>Assemble the article</button>
+  <button class="vn-btn vn-btn-ghost" id="gc-q-copy" type="button" hidden>Copy as text</button>
+</div>
+<div id="gc-q-out" hidden></div>
+<div class="vn-caption">Nothing here leaves your browser, and nothing is saved — close the tab and it's gone. The lock is the method: a version of this form with every field open would teach nothing, because everyone fills in the answer first and then back-fills objections built to lose to it. The replies are the one stage that is <i>not</i> required, deliberately — you are allowed to finish with an objection you could not answer, and told what that means.</div>
+</div>

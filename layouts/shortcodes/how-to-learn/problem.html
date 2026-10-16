@@ -1,0 +1,19 @@
+{{- /* how-to-learn/problem: live widget; behaviour in static/js/how-to-learn/gc-problem.js. */ -}}
+<div class="not-prose vn-demo" id="gc-pr" data-vn-src="/js/how-to-learn/gc-problem.js" data-vn-init="GcProblem">
+<div class="vn-demo-label">Live · problem first, method second</div>
+<p class="gc-pr-stmt">Six people are at a party. Any two of them either know each other or don't. <b>Show that there must be either three people who all know each other, or three people who are all mutual strangers.</b></p>
+<label><span class="vn-sr">Scratch space for your attempt</span>
+<textarea class="gc-pr-scratch" placeholder="Think here. Nothing is saved, and nobody sees it."></textarea></label>
+<div class="vn-controls">
+  <button class="vn-btn" id="gc-pr-show" type="button" disabled>Approach unlocks in 1:30</button>
+  <button class="gc-pr-skip" id="gc-pr-skip" type="button">skip the wait</button>
+</div>
+<div class="gc-pr-note" id="gc-pr-note">You have not been told what technique this needs, and that is deliberate — being handed the name of the method first is what turns a problem into an exercise.</div>
+<div class="gc-pr-body" id="gc-pr-body" hidden>
+<p><b>One way in.</b> Pick any one person; call her A. A has five relationships in the room, each of them one of two kinds. Five things in two boxes means one box holds at least three — so either A knows at least three people, or A is a stranger to at least three. Say she knows three of them: B, C and D.</p>
+<p>Now look only at B, C, D. If any two of them know each other, that pair plus A is a trio who all know each other, and you're done. If none of them know each other, then B, C and D are three mutual strangers, and you're done. There is no third case.</p>
+<p>(If A was instead a stranger to three people, run the identical argument with the two words swapped.)</p>
+<p><b>What you just used</b> is the pigeonhole principle, and the answer is that six is the smallest number for which this is forced — with five people you can arrange the room so that neither trio exists. Nobody told you the name beforehand, which is the point: the technique was reachable from the problem, and reaching it yourself is what makes it yours the next time.</p>
+</div>
+<div class="vn-caption">Ninety seconds is not enough to solve it. It is enough to stop reading and start thinking, which is the transition the Budapest system was built to force and the one a worked example destroys.</div>
+</div>

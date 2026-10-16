@@ -1,0 +1,18 @@
+{{- /* pixel-art/wind: live widget; behaviour in static/js/pixel-art/pa-wind.js. */ -}}
+<div class="not-prose vn-demo" id="pa-wind" data-vn-src="/js/pixel-art/pa-wind.js" data-vn-init="PaWind">
+<div class="vn-demo-label">Live · wind from a scrolling noise texture</div>
+<canvas class="pa-canvas pa-wind-canvas" id="pa-wind-canvas" width="160" height="72" role="img" aria-label="A field of pixel grass bending in the wind"></canvas>
+<div class="pa-controls pa-wind-controls" id="pa-wind-controls" hidden>
+  <div class="vn-controls">
+    <button class="vn-btn" id="pa-wind-play" type="button">Play</button>
+    <label class="pa-toggle"><input type="checkbox" id="pa-wind-world" checked /> <span>Sample noise by world position</span></label>
+    <label class="pa-toggle"><input type="checkbox" id="pa-wind-mask" checked /> <span>Mask by height</span></label>
+  </div>
+  <div class="pa-sliders">
+    <label class="pa-slide"><span class="pa-lab">Strength</span><input id="pa-wind-strength" type="range" min="0" max="6" step="0.5" value="3" /></label>
+    <label class="pa-slide"><span class="pa-lab">Speed</span><input id="pa-wind-speed" type="range" min="0.1" max="2" step="0.1" value="0.6" /></label>
+  </div>
+  <p class="pa-note" id="pa-wind-note" aria-live="polite"></p>
+</div>
+<div class="vn-caption">The video's recipe: one shared noise texture, sampled at each blade's position in the world and scrolled over time, remapped to −1…1 so blades bend both ways, and masked so only the top moves. Untick the first box and every blade reads the same noise value; untick the second and whole blades slide instead of bending. Speed and strength stand in for the video's shader globals.</div>
+</div>

@@ -1,0 +1,22 @@
+{{- /* claude/lint: live widget; behaviour in static/js/claude/cl-lint.js. */ -}}
+<div class="not-prose vn-demo" id="cl-lint" data-vn-src="/js/claude/cl-lint.js" data-vn-init="ClLint">
+<div class="vn-demo-label">Live · paste a SKILL.md, get the rules applied</div>
+<label><span class="vn-sr">SKILL.md contents</span>
+<textarea class="vn-input cl-lint-in" id="cl-lint-in" spellcheck="false">---
+name: invoice-maker
+description: I can help you with invoices and payment reminders.
+---
+
+# Invoices
+
+An invoice is a document a business sends to a client asking for payment.
+
+1. Read the job list.
+2. Work out the totals from pricing.md.
+3. NEVER send an invoice above $10,000 without sign-off.
+4. Draft the email.
+5. Send it.
+6. Log it in clients.md.</textarea></label>
+<ul class="cl-lint-out" id="cl-lint-out" aria-live="polite"><li class="cl-check">Turn on JavaScript to run the checks.</li></ul>
+<div class="vn-caption">The checks are the ones a script can make from the text alone: the frontmatter limits, the 500-line ceiling, first- or second-person descriptions, missing contents lists, capital-letter rules that want to be hooks, and step lists with no checklist. It can't test your skill on three models for you. Nothing you paste leaves this page.</div>
+</div>
