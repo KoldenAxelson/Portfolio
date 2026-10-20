@@ -58,6 +58,9 @@
 {{- /* Emergence lab: stylesheet and simulation bundle. */ -}}
 {{- if .HasShortcode "emergence/lab" }}{{ partial "emergence/assets.html" . }}{{ end }}
 
+{{- /* Black hole: stylesheet and renderer bundle. */ -}}
+{{- if .HasShortcode "black-hole/sim" }}{{ partial "black-hole/assets.html" . }}{{ end }}
+
 {{- /* Video-notes pages (front matter `youtube:`): shared widget box, the page's
        widget stylesheet, and the lazy loader. See partials/video-notes/assets.html. */ -}}
 {{ partial "video-notes/assets.html" . }}

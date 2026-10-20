@@ -31,6 +31,9 @@
 .wds-chip{position:absolute;left:.6rem;bottom:.5rem;z-index:1;font-family:var(--font-mono);font-size:.6rem;letter-spacing:.08em;color:#fff;background:rgba(0,0,0,.38);padding:.28rem .55rem;border-radius:999px;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);}
 .wds-plum{background:rgb(var(--c-border) / .12);}
 .wds-plumcanvas{position:absolute;inset:0;width:100%;height:100%;display:block;}
+.wds-dwarfstar{background:#020203;}
+.wds-dwarfstarposter,.wds-dwarfstarcanvas{position:absolute;inset:0;width:100%;height:100%;display:block;}
+.wds-dwarfstarposter{object-fit:cover;}
 /* The gradient is the fallback: it's what shows if WebGL2 or float render
    targets aren't there, and the canvas paints over it otherwise. */
 .wds-smoke{background:linear-gradient(#10131a,#252b38);}

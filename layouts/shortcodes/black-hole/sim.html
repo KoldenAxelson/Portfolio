@@ -1,0 +1,29 @@
+{{- /*
+  black-hole/sim — the renderer stage and its controls, for /misc/black-hole/.
+
+    {{< black-hole/sim >}}
+
+  Chips, the readout and the frame counter are filled by
+  assets/scripts/pages/black-hole/sim.ts from presets.ts, through the
+  data-bh-* hooks below. Assets ship from layouts/misc/single.html via
+  partials/black-hole/assets.html. The poster is the Cool Sites card's frame:
+  it shows until WebGPU paints, and stays where it never does.
+*/ -}}
+<div class="bh-sim not-prose" data-black-hole>
+  <div class="bh-stage" data-bh-stage>
+    <img class="bh-poster" src="{{ "cool-sites/dwarfstar.webp" | relURL }}" alt="" width="960" height="440" decoding="async">
+    <canvas class="bh-canvas" data-bh-canvas role="img" aria-label="Ray-traced black hole with its accretion disk"></canvas>
+    <span class="bh-fps" data-bh-fps aria-hidden="true"></span>
+    <span class="bh-hint" aria-hidden="true">drag to tilt · scroll to zoom · double-click to reset</span>
+    <p class="bh-message" data-bh-message hidden></p>
+  </div>
+  <div class="bh-toolbar">
+    <div class="bh-group" role="group" aria-label="Black hole" data-bh-presets></div>
+    <div class="bh-group" role="group" aria-label="Band" data-bh-bands></div>
+    <div class="bh-group" role="group" aria-label="Disk clock" data-bh-rates></div>
+    <div class="bh-group" role="group" aria-label="Lens" data-bh-lens></div>
+    <label class="bh-tilt"><span>Tilt</span><input type="range" min="2" max="89" step="1" data-bh-tilt></label>
+  </div>
+  <dl class="bh-readout" data-bh-readout></dl>
+  <noscript><p class="bh-noscript">This page is a WebGPU simulation and needs JavaScript.</p></noscript>
+</div>
