@@ -84,5 +84,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy public --project-name=portfolio
+          # The plain-git checkout leaves a detached HEAD, so wrangler can't tell which branch it's deploying and
+          # files every deploy as a preview of a branch called "HEAD"; production only updates for "main".
+          command: pages deploy public --project-name=portfolio --branch=${{ github.head_ref || github.ref_name }}
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
