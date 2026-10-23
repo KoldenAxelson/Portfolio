@@ -10,7 +10,9 @@
   // This card's camera never moves, so the lens is traced once (trace) into per-pixel textures: where each
   // ray crosses the disk, how much slab it passes through there, and the lensed sky. A frame then only
   // re-renders the gas (gas) and reads it at those crossings (shade): a handful of taps a pixel.
-  // The full simulation is for the black-hole misc page (content/misc/black-hole.md).
+  // The full simulation is for the black-hole misc page (content/misc/black-hole.md). The gas, blackbody and photon
+  // orbit WGSL below is copied from assets/scripts/pages/black-hole/shaders.ts with this preset's numbers inlined;
+  // keep the two in step when either changes.
   var common = `
 const PI = 3.14159265; const TAU = 6.2831853;
 const MPER = 11.547005; const INC = 1.5009832; const DM = 60.0; const ROUT = 40.0;
@@ -20,7 +22,16 @@ struct Frame { res: vec2f, center: vec2f, radius: f32, kTime: f32, expo: f32, sk
 @group(0) @binding(0) var<uniform> F: Frame;
 fn sstep(a: f32, b: f32, x: f32) -> f32 { let t = clamp((x - a) / (b - a), 0.0, 1.0); return t * t * (3.0 - 2.0 * t); }
 fn kappa(rc: f32) -> f32 { return 14.0 * pow(RISCO / rc, 1.5); }   // vertical optical depth per unit Sigma: 14 at the ISCO
-fn tempAt(rc: f32, sig: f32) -> f32 { return T0 * pow(rc, -SLOPE) * pow(RISCO, SLOPE - 0.75) * pow(max(1.0 - sqrt(RISCO / rc), 0.0), 0.25) * pow(sig, 0.25); }
+// the Page & Thorne (1974) zero-torque factor (shaders.ts pageThorneQ, at this preset's spin)
+fn pageThorneQ(r: f32) -> f32 {
+  let x = sqrt(r); let x0 = sqrt(RISCO); if (x <= x0) { return 0.0; }
+  let th = acos(SPIN) / 3.0; let xr = vec3f(2.0 * cos(th - PI / 3.0), 2.0 * cos(th + PI / 3.0), -2.0 * cos(th));
+  var br = x - x0 - 1.5 * SPIN * log(x / x0);
+  for (var i = 0; i < 3; i++) { let xi = xr[i]; let xj = xr[(i + 1) % 3]; let xk = xr[(i + 2) % 3];
+    br -= 3.0 * (xi - SPIN) * (xi - SPIN) / (xi * (xi - xj) * (xi - xk)) * log((x - xi) / (x0 - xi)); }
+  return max(0.0, x * x / (x * x * x - 3.0 * x + 2.0 * SPIN) * br);
+}
+fn tempAt(rc: f32, sig: f32) -> f32 { return T0 * pow(rc, -SLOPE) * pow(RISCO, SLOPE - 0.75) * pow(pageThorneQ(rc), 0.25) * pow(sig, 0.25); }
 fn wav3(p0: vec3f) -> f32 {
   let p = p0 + 0.9 * sin(p0.zxy * 0.47 + vec3f(1.3, 2.1, 0.7));
   let a = sin(dot(p, vec3f(0.913, 0.271, 0.305))) + sin(dot(p, vec3f(-0.402, 0.871, 0.282)) + 1.7) + sin(dot(p, vec3f(0.188, -0.517, 0.835)) + 4.1) + sin(dot(p, vec3f(-0.731, -0.373, -0.571)) + 2.3);
@@ -105,13 +116,13 @@ fn sky(uv: vec2f) -> vec3f {   // starfield, a faint Milky Way band with a dust 
   return c + starLayer(uv, 150.0, 7.0, 0.12 + 0.45 * band);
 }
 // The exact Schwarzschild photon orbit, closed form: u(phi) = u1 + (u2 - u1) sn^2(s phi + c, k); K by AGM, F by Carlson's R_F,
-// sn by its nome series (four sines).
+// sn by its nome series (six sines).
 fn agmK(k: f32) -> f32 { var a = 1.0; var g = sqrt(max(1.0 - k * k, 1e-12)); for (var i = 0; i < 6; i++) { let an = 0.5 * (a + g); g = sqrt(a * g); a = an; } return 1.5707963 / a; }
 fn carlsonRF(x0: f32, y0: f32, z0: f32) -> f32 { var x = x0; var y = y0; var z = z0;
   for (var i = 0; i < 6; i++) { let l = sqrt(x * y) + sqrt(y * z) + sqrt(z * x); x = 0.25 * (x + l); y = 0.25 * (y + l); z = 0.25 * (z + l); }
   let mu = (x + y + z) / 3.0; let X = 1.0 - x / mu; let Y = 1.0 - y / mu; let Z = 1.0 - z / mu; let E2 = X * Y - Z * Z; let E3 = X * Y * Z;
   return (1.0 - E2 / 10.0 + E3 / 14.0 + E2 * E2 / 24.0 - 3.0 * E2 * E3 / 44.0) * inverseSqrt(mu); }
-struct Orbit { u1: f32, u2: f32, s: f32, c: f32, K: f32, zExit: f32, alpha: f32, cq: vec4f }
+struct Orbit { u1: f32, u2: f32, s: f32, c: f32, K: f32, zExit: f32, alpha: f32, cq: vec4f, cq2: vec2f }
 fn orbitOf(b: f32) -> Orbit { var o: Orbit;
   let qc = 1.0 / (2.0 * b * b) - 1.0 / 108.0; let th = acos(clamp(-108.0 * qc, -1.0, 1.0)) / 3.0;
   let t1 = cos(th - 2.0943951) / 3.0; let t2 = cos(th - 4.1887902) / 3.0; let u3 = cos(th) / 3.0 + 1.0 / 6.0;
@@ -122,12 +133,13 @@ fn orbitOf(b: f32) -> Orbit { var o: Orbit;
   let sp = sqrt(clamp(-o.u1 / (o.u2 - o.u1), 0.0, 1.0)); let cp = sqrt(1.0 - sp * sp);
   o.c = sp * carlsonRF(cp * cp, 1.0 - k2 * sp * sp, 1.0);
   o.zExit = 2.0 * o.K - o.c; o.alpha = (2.0 * o.K - 2.0 * o.c) / o.s - PI;
-  let q1 = sqrt(q); let q3 = q1 * q; let q5 = q3 * q; let q7 = q5 * q;
+  let q1 = sqrt(q); let q3 = q1 * q; let q5 = q3 * q; let q7 = q5 * q; let q9 = q7 * q; let q11 = q9 * q;
   o.cq = vec4f(q1 / (1.0 - q1 * q1), q3 / (1.0 - q3 * q3), q5 / (1.0 - q5 * q5), q7 / (1.0 - q7 * q7)) * (TAU / (k * o.K));
+  o.cq2 = vec2f(q9 / (1.0 - q9 * q9), q11 / (1.0 - q11 * q11)) * (TAU / (k * o.K));
   return o; }
 fn orbitU(o: Orbit, ph: f32) -> f32 { let z = o.s * ph + o.c; if (z > o.zExit) { return -1.0; }
   let w = 1.5707963 * z / o.K;
-  let sn = o.cq.x * sin(w) + o.cq.y * sin(3.0 * w) + o.cq.z * sin(5.0 * w) + o.cq.w * sin(7.0 * w);
+  let sn = o.cq.x * sin(w) + o.cq.y * sin(3.0 * w) + o.cq.z * sin(5.0 * w) + o.cq.w * sin(7.0 * w) + o.cq2.x * sin(9.0 * w) + o.cq2.y * sin(11.0 * w);
   return o.u1 + (o.u2 - o.u1) * sn * sn; }
 // The Kerr shadow edge (Bardeen 1973): the spherical photon orbit whose screen angle matches theta, bisected between the
 // two equatorial photon orbits.
@@ -152,6 +164,14 @@ fn kerrG(r: f32, lam: f32) -> f32 { let om = 1.0 / (pow(r, 1.5) + SPIN);   // re
 fn gaussCDF(x: f32) -> f32 { let z = abs(x) * 0.70710678; let t = 1.0 / (1.0 + 0.3275911 * z);
   let e = 1.0 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * exp(-z * z);
   return 0.5 * (1.0 + select(-e, e, x >= 0.0)); }
+var<private> RING_R: array<f32, 7> = array<f32, 7>(3.0, 3.2, 4.0, 6.0, 10.0, 20.0, 40.0);
+var<private> RING_C: array<f32, 7> = array<f32, 7>(0.0, 3.0, 14.0, 30.0, 47.0, 63.0, 72.0);
+fn ringC(r: f32) -> f32 { if (r <= RING_R[0]) { return 0.0; }
+  for (var i = 1; i < 7; i++) { if (r <= RING_R[i]) { return mix(RING_C[i - 1], RING_C[i], (r - RING_R[i - 1]) / (RING_R[i] - RING_R[i - 1])); } }
+  return RING_C[6]; }
+fn ringR(c: f32) -> f32 {
+  for (var i = 1; i < 7; i++) { if (c <= RING_C[i]) { return mix(RING_R[i - 1], RING_R[i], (c - RING_C[i - 1]) / (RING_C[i] - RING_C[i - 1])); } }
+  return RING_R[6]; }
 struct Image { tau: f32, w: f32, wr: f32, wc: f32, ws: f32, wt: f32 }
 fn packImage(m: Image) -> vec4f {
   if (m.tau <= 0.0) { return vec4f(0.0); }
@@ -174,9 +194,9 @@ fn packImage(m: Image) -> vec4f {
   let rhoC = select(5.0, rhoCrit(atan2(kb.y, kb.x)), b > 2.5 && b < 7.2);
   let cv = 1.0 - sstep(-0.6 * pxM, 0.6 * pxM, b - rhoC);
   let xb = vec3f(0.0, -cos(INC), sin(INC)); let yb = vec3f(1.0, 0.0, 0.0);
-  // Beyond 24 M the weak-field series is within 0.3 %; inside 3 sqrt 3 the Schwarzschild ray is captured.
+  // Beyond 24 M the weak-field series to b^-5 (1e-4); inside 3 sqrt 3 the Schwarzschild ray is captured.
   let escaping = b > 5.2116; let farRay = b > 24.0;
-  var orb: Orbit; var alpha = 4.0 / b + 11.78 / (b * b);
+  let ub = 1.0 / b; var orb: Orbit; var alpha = ub * (4.0 + ub * (11.780972 + ub * (42.666667 + ub * (170.09180 + ub * 716.8))));
   if (escaping && !farRay) { orb = orbitOf(b); alpha = orb.alpha; }
   if (!escaping) { alpha = orbitOf(5.22).alpha; }
   var img: array<Image, 2>;
@@ -241,27 +261,30 @@ fn packImage(m: Image) -> vec4f {
   }
   textureStore(geo1, px, packImage(img[0]));
   textureStore(geo2, px, packImage(img[1]));
-  // photon ring: orders 2-3 as rings converging on rho_c, lit by the disk they image (Gaussian profile, e^-pi per order)
+  // photon ring, orders 2 and 3 (shaders.ts has the sources): order n sits C(r_e) exp(-gamma (phi0 + n pi) / pi)
+  // outside the critical curve; a pixel takes the share of its width the bands cover, with grey limb darkening at
+  // mu = sqrt(Q) / r (no Kerr shift on this preset, as in the film)
   var ringOut = vec4f(0.0);
   let dM = b - rhoC;
-  if (inFoot && dM > -2.0 * pxM && dM < 1.2) {
-    let ph = phi0 + PI;
-    for (var kk = 1; kk <= 6; kk++) {
-      let b2 = rhoC + 0.15 * f32(kk);
-      if (b2 <= 5.2116) { continue; }
-      let u2 = orbitU(orbitOf(b2), ph);
-      if (u2 <= 0.0 || u2 >= 0.4995) { continue; }
-      let r2 = 1.0 / u2; if (r2 < RISCO || r2 > ROUT) { continue; }
-      let X2 = r2 * (cos(ph) * vec3f(0.0, 0.0, 1.0) + sin(ph) * eh);
-      let mue = clamp(abs(n.z) * kerrG(r2, -kb.x * KEXT * sin(INC)), 0.03, 1.0);
-      var prof = 0.0;
-      for (var nn = 2; nn <= 3; nn++) {
-        let wn = 1.5 * exp(-PI * f32(nn - 1)); let sg = max(wn, 0.8 * pxM);
-        prof += exp(-pow((dM - wn * 1.2) / sg, 2.0)) * (wn / sg);
+  // (escaping rays only: this card's lens captures at 3 sqrt 3 whatever the spin, so on the flattened side the Kerr
+  // curve lies inside its shadow)
+  if (inFoot && escaping && dM > -pxM && dM < 1.2) {
+    let gam = PI - 0.6 * SPIN * SPIN; let qM = kb * KEXT;
+    let carter = qM.y * qM.y + (qM.x * qM.x - SPIN * SPIN) * cos(INC) * cos(INC);
+    var cover = 0.0;
+    for (var nn = 2; nn <= 3; nn++) {
+      let ph = phi0 + f32(nn) * PI; let k = exp(-gam * ph / PI);
+      let lo = max(dM - 0.5 * pxM, ringC(RISCO) * k); let hi = min(dM + 0.5 * pxM, ringC(ROUT) * k);
+      if (hi <= lo) { continue; }
+      let re = ringR(0.5 * (lo + hi) / k);
+      if (cover == 0.0) {
+        let X2 = re * (cos(ph) * vec3f(0.0, 0.0, 1.0) + sin(ph) * eh);
+        let mue = clamp(sqrt(max(carter, 0.0)) / re, 0.0, 1.0);
+        ringOut = vec4f(re, atan2(dot(X2, yb), dot(X2, xb)), 0.0, pow(0.75 * (mue + 0.6667), 0.25));
       }
-      ringOut = vec4f(r2, atan2(dot(X2, yb), dot(X2, xb)), prof * (1.0 + 2.06 * mue) / 3.06 * sstep(RISCO, RISCO + 0.5, r2) * sstep(ROUT, ROUT * 0.96, r2), 0.0);
-      break;
+      cover += (hi - lo) / pxM * sstep(RISCO, RISCO + 0.5, re) * sstep(ROUT, ROUT * 0.96, re);
     }
+    ringOut.z = min(cover, 1.0);
   }
   textureStore(ring, px, ringOut);
   // sky through the lens equation (beta = theta - alpha), masked by the shadow
@@ -302,7 +325,7 @@ fn hash12(p: vec2f) -> f32 { var p3 = fract(vec3f(p.xyx) * 0.1031); p3 += dot(p3
   }
   if (trans >= 0.5) {   // the page's 'struck' test: an opaque disk hides the ring and the sky
     let rg = textureLoad(ring, px, 0);
-    if (rg.z > 0.0) { col += bbBand(tempAt(rg.x, max(gasAt(rg.x, rg.y), 0.2))) * rg.z * trans; }
+    if (rg.z > 0.0) { col += bbBand(tempAt(rg.x, max(gasAt(rg.x, rg.y), 0.2)) * rg.w) * rg.z * trans; }
     col += textureLoad(skyTex, px, 0).rgb * trans;
   }
   // filmic shoulder on the brightest channel (not luminance, so a blue disk would not clip first)
@@ -339,6 +362,11 @@ fn blur(uv: vec2f, d: vec2f) -> vec4f {
   // Disk clock in M per second. The page runs this preset at its cap, ~7 ISCO orbits a second, which on a card
   // reads as flicker; at this rate the inner disk turns about once a second and the outer arms visibly trail.
   var DISK_RATE = 26;
+  // The shader turns kTime into orbital phase in f32, which loses precision as it grows (the page does the phase
+  // per radius in f64 on the CPU instead). Wrapping it keeps that error under 0.004 rad at the ISCO; the period is
+  // a whole number of arm lifetimes (240 M) so the arms carry on across the wrap, and at 26 M/s it comes round once
+  // every ~2.7 hours, when the disk's rotation phase jumps once.
+  var DISK_WRAP_M = 240 * 1050;
 
   async function start() {
     var adapter = await navigator.gpu.requestAdapter({ powerPreference: "low-power" });
@@ -412,7 +440,7 @@ fn blur(uv: vec2f, d: vec2f) -> vec4f {
 
     var kTime = 0, last = performance.now(), tablesDone = false;
     function frame(now) {
-      if (!reduce) kTime += Math.min(0.1, (now - last) / 1000) * DISK_RATE;
+      if (!reduce) kTime = (kTime + Math.min(0.1, (now - last) / 1000) * DISK_RATE) % DISK_WRAP_M;
       last = now;
       resize();
       var w = canvas.width, h = canvas.height;
@@ -436,6 +464,7 @@ fn blur(uv: vec2f, d: vec2f) -> vec4f {
     var visible = true;
     if ("IntersectionObserver" in window) new IntersectionObserver(function (es) { visible = es[0].isIntersecting; }).observe(canvas);
     function loop(now) {
+      if (!canvas.isConnected) { device.destroy(); return; }   // hx-boost swapped the page out
       if (visible && !document.hidden) frame(now);
       else last = now;
       requestAnimationFrame(loop);

@@ -61,6 +61,9 @@
 {{- /* Black hole: stylesheet and renderer bundle. */ -}}
 {{- if .HasShortcode "black-hole/sim" }}{{ partial "black-hole/assets.html" . }}{{ end }}
 
+{{- /* Sun: stylesheet and renderer bundle. */ -}}
+{{- if .HasShortcode "sun/sim" }}{{ partial "sun/assets.html" . }}{{ end }}
+
 {{- /* Video-notes pages (front matter `youtube:`): shared widget box, the page's
        widget stylesheet, and the lazy loader. See partials/video-notes/assets.html. */ -}}
 {{ partial "video-notes/assets.html" . }}

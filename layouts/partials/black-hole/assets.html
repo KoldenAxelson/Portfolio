@@ -1,6 +1,15 @@
-{{- /* The black-hole stylesheet and bundle, for /misc/black-hole/. Called once from
-       layouts/misc/single.html when the page uses the black-hole/sim shortcode. */ -}}
+{{- /* The black-hole stylesheet and bundles, for /misc/black-hole/. Called once from
+       layouts/misc/single.html when the page uses the black-hole/sim shortcode. The
+       WebGL2 fallback is its own bundle: the main one loads it (with this
+       integrity hash) only when WebGPU won't start (fallback/load.ts). */ -}}
 {{- $css := resources.Get "css/pages/black-hole/black-hole.css" | minify | fingerprint -}}
 <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" />
-{{- $js := resources.Get "scripts/pages/black-hole/main.ts" | js.Build (dict "minify" true "target" "es2018" "format" "iife") | fingerprint -}}
-<script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
+{{- $panel := resources.Get "css/pages/sim/panel.css" | minify | fingerprint -}}
+<link rel="stylesheet" href="{{ $panel.RelPermalink }}" integrity="{{ $panel.Data.Integrity }}" />
+{{- $faq := resources.Get "css/pages/sim/faq.css" | minify | fingerprint -}}
+<link rel="stylesheet" href="{{ $faq.RelPermalink }}" integrity="{{ $faq.Data.Integrity }}" />
+{{- $build := dict "minify" true "target" "es2018" "format" "iife" -}}
+{{- $fallback := resources.Get "scripts/pages/black-hole/fallback/entry.ts" | js.Build (merge $build (dict "targetPath" "scripts/pages/black-hole/fallback.js")) | fingerprint -}}
+{{- $js := resources.Get "scripts/pages/black-hole/main.ts" | js.Build $build | fingerprint -}}
+<script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"
+  data-bh-fallback="{{ $fallback.RelPermalink }}" data-bh-fallback-integrity="{{ $fallback.Data.Integrity }}"></script>

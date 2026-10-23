@@ -1,0 +1,19 @@
+{{- /* vps-protection/order: live widget; behaviour in static/js/vps-protection/vp-order.js. */ -}}
+<div class="not-prose vn-demo" id="vp-order" data-vn-src="/js/vps-protection/vp-order.js" data-vn-init="VpOrder">
+<div class="vn-demo-label">Live · harden a fresh server without locking yourself out</div>
+<div class="vp-grid" id="vp-grid" hidden>
+<div>
+<span class="vp-lab" id="vp-pool-lab">The steps, scrambled</span>
+<div class="vp-pool" id="vp-pool" role="group" aria-labelledby="vp-pool-lab"></div>
+</div>
+<div>
+<span class="vp-lab">What the internet can reach</span>
+<ul class="vp-surface" id="vp-surface"></ul>
+<span class="vp-lab">Done, in order <b id="vp-count"></b></span>
+<ol class="vp-log" id="vp-log" aria-live="polite"></ol>
+</div>
+</div>
+<div class="vn-verdict" id="vp-verdict" aria-live="polite">Turn on JavaScript to play. An order that works is in the checklist at the end of the page.</div>
+<div class="vn-controls" id="vp-controls" hidden><button type="button" class="vn-btn vn-btn-ghost" id="vp-restart">Start from scratch</button></div>
+<div class="vn-caption">The server is pretend. The lockouts are the real ones, the mistakes that cost people a rebuild. More than one order works. The quotes are the skit's.</div>
+</div>

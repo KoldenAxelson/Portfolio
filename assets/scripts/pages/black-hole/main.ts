@@ -1,5 +1,10 @@
 /* Entry for /misc/black-hole/. Mounts every [data-black-hole] on the page
- * (layouts/shortcodes/black-hole/sim.html). */
+ * (layouts/shortcodes/black-hole/sim.html, shipped by partials/black-hole/assets.html).
+ *
+ * presets.ts holds the four holes; shaders.ts the WGSL (gas, tables, lens trace, shade, composite); blackbody.ts
+ * the band intensities the exposure is seeded from; sim.ts the pipeline, controls and clocks, on the shared kit in
+ * assets/scripts/site/gpu/. The Cool Sites card (static/js/cool-sites/dwarfstar.js) is a one-preset cut of the
+ * same lens. */
 
 import { BlackHoleSim } from './sim';
 

@@ -1,0 +1,86 @@
+# Servers glossary: the drill-down behind the {{< term >}} windows on pages about
+# running your own machines (first used by /misc/vps-protection/). One file per
+# subject, so a term is defined once for the whole site.
+#
+# Same contract as data/glossary/basic-logic.yaml; see that file's header for
+# the full syntax. `aliases` are real other names or word forms, read only by
+# scripts/writing/check-terms.py. Never a paraphrase.
+
+vps:
+  term: VPS (virtual private server)
+  definition: >-
+    A slice of someone else's physical server, rented by the month, that behaves
+    like a whole computer of your own with a public IP address.
+  notes: >-
+    Cheap and always on, which is why every self-hosting tutorial starts with
+    one. Also always reachable, which is why this page exists.
+
+ssh:
+  term: SSH
+  definition: >-
+    The encrypted remote login almost every Linux server is run through: a
+    terminal on your laptop, a shell on the server.
+  notes: >-
+    It listens on port 22 by default, so port 22 is the first door a bot tries.
+    See [[ssh-key|SSH key]].
+
+ssh-key:
+  term: SSH key
+  definition: >-
+    A pair of files that stands in for a password: the public half goes on the
+    server, the private half stays on your laptop and proves who you are.
+  notes: >-
+    Unlike a password it can't be guessed, which is why switching
+    [[ssh|SSH]] to keys only ends most brute-force attacks. Lose the private
+    half and the server has no way left to let you in.
+
+port:
+  term: Port
+  definition: >-
+    A numbered door on a machine's network address; each program that accepts
+    connections listens behind one.
+  aliases: ["ports"]
+
+ufw:
+  term: UFW (Uncomplicated Firewall)
+  definition: >-
+    Ubuntu's front end to the Linux firewall: plain commands like "allow
+    2222/tcp" instead of raw packet-filter rules.
+
+fail2ban:
+  term: fail2ban
+  definition: >-
+    A service that watches login logs and bans, at the firewall, any IP address
+    that fails to log in too many times.
+  notes: >-
+    Its rules are grouped into jails, one per service, and the [[ssh|SSH]] jail
+    has to be told if SSH moved off port 22.
+
+unattended-upgrades:
+  term: unattended-upgrades
+  definition: >-
+    The Debian and Ubuntu package that installs security updates on its own,
+    and can reboot the machine afterwards at a time you choose.
+
+tailscale:
+  term: Tailscale
+  definition: >-
+    A private network (a VPN mesh) that joins your own devices to each other
+    wherever they are, so a server can be reached from your laptop without
+    being reachable from the internet.
+
+systemd:
+  term: systemd
+  definition: >-
+    The program most Linux distributions start first at boot; it starts,
+    restarts and logs every other service, including yours.
+  notes: >-
+    You describe a service in a short unit file and systemd keeps it running.
+    It has also grown into a scheduler, login manager and device manager,
+    which is the source of a long argument.
+
+openclaw:
+  term: OpenClaw
+  definition: >-
+    An open-source personal AI assistant you host yourself and talk to through
+    chat apps, with access to whatever accounts and tools you connect to it.

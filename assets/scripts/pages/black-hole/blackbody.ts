@@ -1,4 +1,4 @@
-/* Blackbody band intensity as rules, the same model the shaders tabulate (shaders/field.ts), so the exposure
+/* Blackbody band intensity as rules, the same model shaders.ts tabulates (fieldShader's tables), so the exposure
  * seeded here and the image agree. The original seeded its exposure from a different visible-band integral
  * (a CIE curve fit) than the one its shader drew with, then leaned on a GPU readback meter to hide the gap.
  *

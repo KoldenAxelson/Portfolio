@@ -3,15 +3,27 @@
  *   trace  — compute, only when the view changes: each pixel's bent ray, reduced to what a frame needs.
  *   shade  — render, every frame: re-light the traced crossings with this frame's gas, draw the drifting sky, tone-map.
  *   meter  — compute, every few frames: auto exposure on the GPU (no readback).
- *   post   — render: bloom from shade's linear glow, at quarter and eighth resolution; composite.
- * The Params struct is written by sim.ts (writeParams); keep the two layouts in step. */
+ *   post   — render: the composite of the scene and its bloom (site/gpu/bloom.ts blurs shade's linear glow).
+ * The Params struct is written by sim.ts (writeParams); keep the two layouts in step.
+ *
+ * Physics checked against the literature (10-22 review): the Kerr ISCO, Omega, the redshift g and its sign, the
+ * beaming (shifting T by g is exact for a blackbody: I_nu / nu^3 is invariant), Bardeen's shadow and the closed-form
+ * orbits all hold. What is approximate, on purpose, for a real-time page:
+ * - rays follow Schwarzschild orbits, rescaled so capture sits on the Kerr shadow. So no frame dragging (the lensed
+ *   arc and sky lack their azimuthal twist), and the lensed images and the ring miss the 2.3-3 M annulus a = 0.9
+ *   lets the disk reach (escaping Schwarzschild rays never get inside 3 M); its direct image survives.
+ * - light is instantaneous: the direct and lensed images show the gas at the same moment, though their light left
+ *   ~16 M apart (a few radians of orbit at the ISCO).
+ * - the outer disk is translucent (kappa), the original's look; a real thin disk is opaque. */
 
 import { BB_CHEBYSHEV, BAND_EDGES } from './blackbody';
 
-/** Lifetime of one spiral arm in M; sim.ts ages the arms on this clock. */
-export const ARM_LIFE_M = 240;
-/** Gas texture rows (log r); rows 252-253 hold the blackbody table. */
-export const GAS_ROWS = 252;
+import { ARM_LIFE_M, FIELD_HEIGHT, FIELD_WIDTH, GAS_ROWS } from './layout';
+export { ARM_LIFE_M, FIELD_HEIGHT, FIELD_WIDTH, GAS_ROWS };
+/** Workgroup sizes of the gas and table passes (sim.ts dispatches the field from them). */
+export const GAS_WORKGROUP = [8, 4] as const;
+export const TABLE_WORKGROUP = 64;
+const CHROMA_ROW = GAS_ROWS, LOG_Y_ROW = GAS_ROWS + 1;
 
 const params = /* wgsl */ `
 struct Params {
@@ -25,8 +37,34 @@ struct Params {
 @group(0) @binding(0) var<uniform> P: Params;
 const PI = 3.14159265; const TAU = 6.2831853; const SHADOW_SCHW = 5.1961524;
 fn sstep(a: f32, b: f32, x: f32) -> f32 { let t = clamp((x - a) / (b - a), 0.0, 1.0); return t * t * (3.0 - 2.0 * t); }
-fn kappa(rc: f32) -> f32 { return 14.0 * pow(P.risco / rc, 1.5); }   // vertical optical depth per unit Sigma: 14 at the ISCO
-fn tempAt(rc: f32, sig: f32) -> f32 { return P.t0 * pow(rc, -P.slope) * pow(P.risco, P.slope - 0.75) * pow(max(1.0 - sqrt(P.risco / rc), 0.0), 0.25) * pow(sig, 0.25); }
+// Vertical optical depth per unit Sigma: 14 at the ISCO, thinning outward, so the outer disk is translucent and the
+// stars and the lensed far side show through. A real Shakura-Sunyaev disk is opaque throughout (tau ~ 1e2-1e4):
+// this is the original's look, kept on purpose; an opaque disk here also shows the trace's 64-step banding.
+fn kappa(rc: f32) -> f32 { return 14.0 * pow(P.risco / rc, 1.5); }
+// The Page & Thorne (1974) factor Q(r) of the thin disk's flux, F = 3 Mdot Q / (8 pi r^3): zero at the ISCO,
+// toward 1 far out (presets.ts pageThorneQ, which the exposure and readout use; keep the two in step).
+fn pageThorneQ(r: f32) -> f32 {
+  let a = max(P.spin, 1e-4); let x = sqrt(r); let x0 = sqrt(P.risco);
+  if (x <= x0) { return 0.0; }
+  let th = acos(a) / 3.0;
+  let xr = vec3f(2.0 * cos(th - PI / 3.0), 2.0 * cos(th + PI / 3.0), -2.0 * cos(th));
+  var br = x - x0 - 1.5 * a * log(x / x0);
+  for (var i = 0; i < 3; i++) {
+    let xi = xr[i]; let xj = xr[(i + 1) % 3]; let xk = xr[(i + 2) % 3];
+    br -= 3.0 * (xi - a) * (xi - a) / (xi * (xi - xj) * (xi - xk)) * log((x - xi) / (x0 - xi));
+  }
+  return max(0.0, x * x / (x * x * x - 3.0 * x + 2.0 * a) * br);
+}
+// The disk's effective temperature: the preset's power law (0.75 is Novikov-Thorne) with the relativistic
+// zero-torque inner edge, times the local surface density's share.
+fn tempAt(rc: f32, sig: f32) -> f32 { return P.t0 * pow(rc, -P.slope) * pow(P.risco, P.slope - 0.75) * pow(pageThorneQ(rc), 0.25) * pow(sig, 0.25); }
+// Electron scattering in a hot disk's atmosphere hardens its spectrum to f^-4 B(f T_eff) (Done et al. 2012,
+// arXiv:1107.5429, eqs. 1-2; presets.ts colourCorrection). f = 1 below 3e4 K, so only the X-ray binary changes.
+fn colourCorrection(T: f32) -> f32 {
+  if (T > 1e5) { return pow(72.0 / (8.617333e-8 * T), 1.0 / 9.0); }
+  if (T > 3e4) { return pow(T / 3e4, 0.82); }
+  return 1.0;
+}
 fn hash12(p: vec2f) -> f32 { var p3 = fract(vec3f(p.xyx) * 0.1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y) * p3.z); }
 fn wav3(p0: vec3f) -> f32 {   // quasi-periodic sine sum: a seam-free stand-in for 3D noise
   let p = p0 + 0.9 * sin(p0.zxy * 0.47 + vec3f(1.3, 2.1, 0.7));
@@ -44,7 +82,16 @@ const skyLib = /* wgsl */ `
 fn hash22(p: vec2f) -> vec2f { var p3 = fract(vec3f(p.xyx) * vec3f(0.1031, 0.1030, 0.0973)); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.xx + p3.yz) * p3.zy); }
 fn vnoise(p: vec2f) -> f32 { let i = floor(p); var g = fract(p); g = g * g * (3.0 - 2.0 * g);
   return mix(mix(hash12(i), hash12(i + vec2f(1.0, 0.0)), g.x), mix(hash12(i + vec2f(0.0, 1.0)), hash12(i + vec2f(1.0, 1.0)), g.x), g.y); }
-fn starLayer(uv: vec2f, density: f32, seed: f32, brightness: f32) -> vec3f {
+// foot: the sky's extent under one pixel (uv units). Near the shadow the lens squeezes a wide patch of sky into
+// each pixel; a layer whose stars pack several to a pixel would twinkle from frame to frame as the sky drifts, so
+// it fades into its own mean brightness as its cells drop below a pixel (the star page's octave LOD). The lens
+// conserves surface brightness, so the unresolved stars still glow at that mean.
+fn starLayer(uv: vec2f, density: f32, seed: f32, brightness: f32, foot: f32) -> vec3f {
+  let resolved = 1.0 - sstep(1.0, 2.5, foot * density);   // gone at 2.5 cells across a pixel, about one star in every pixel
+  // the layer's mean: 16 % of cells hold a star, each a Gaussian of area pi w^2 / 2 (w = 0.0035 for all but the
+  // brightest), mean brightness 0.22 + E[u^3] = 0.47, 18 % of them warm
+  let mean = 0.16 * density * density * 1.924e-5 * 0.47 * brightness * vec3f(0.908, 0.893, 0.874);
+  if (resolved <= 0.0) { return mean; }
   let g = uv * density; let cell = floor(g); var col = vec3f(0.0);
   for (var y = -1; y <= 1; y++) { for (var x = -1; x <= 1; x++) {
     let c = cell + vec2f(f32(x), f32(y));
@@ -54,19 +101,19 @@ fn starLayer(uv: vec2f, density: f32, seed: f32, brightness: f32) -> vec3f {
     let warm = step(0.82, hash12(c + seed + 7.7));
     col += mix(vec3f(0.90, 0.93, 1.0), vec3f(0.95, 0.72, 0.30), warm) * exp(-pow(d / max(0.0007 + mag * 0.0022, 0.0035), 2.0) * 2.0) * (0.22 + mag) * brightness;
   } }
-  return col;
+  return col * resolved + mean * (1.0 - resolved);
 }
 // Starfield, a faint Milky Way band with a dust lane, dense faint stars along it. par shifts the layers by
 // depth (the original's parallax: near stars 0.35, far 0.7, the band 0.5).
-fn sky(uv: vec2f, par: vec2f) -> vec3f {
-  var c = starLayer(uv + par * 0.35, 30.0, 1.0, 0.70) + starLayer(uv + par * 0.70, 70.0, 2.0, 0.40);
+fn sky(uv: vec2f, par: vec2f, foot: f32) -> vec3f {
+  var c = starLayer(uv + par * 0.35, 30.0, 1.0, 0.70, foot) + starLayer(uv + par * 0.70, 70.0, 2.0, 0.40, foot);
   c += vec3f(0.08, 0.09, 0.13) * vnoise(uv * 3.0 + par + vec2f(1.7, 0.3)) * vnoise(uv * 7.0 - par * 0.5) * 0.25;
   let bu = uv + par * 0.5;
   let across = dot(bu, vec2f(-0.42, 0.91)) - 0.05; let along = dot(bu, vec2f(0.91, 0.42));
   let band = exp(-across * across / 0.045);
   let mott = wav3(vec3f(bu * 7.0, 1.3)) * 0.6 + wav3(vec3f(bu * 19.0, 4.1)) * 0.4;
   c += vec3f(0.55, 0.50, 0.46) * band * (0.035 + 0.09 * mott) * (1.0 - sstep(0.02, 0.0, abs(across + 0.03 * sin(along * 5.0))) * 0.75);
-  return c + starLayer(bu, 150.0, 7.0, 0.12 + 0.45 * band);
+  return c + starLayer(bu, 150.0, 7.0, 0.12 + 0.45 * band, foot);
 }
 
 `;
@@ -81,11 +128,11 @@ const ARM_AMP = 1.2; const ARM_PITCH = -1.8; const ARM_WIDTH = 0.35;
 // The clock comes in reduced form from sim.ts (gasClock): each row's orbital phase Omega(r) t mod 2 pi and each
 // arm's cycle and age, worked out in double precision. The original kept t itself in f32, which grows without
 // bound, so after an hour the inner disk's phase was quantised and the gas started to judder.
-@group(0) @binding(2) var<storage, read> gasClock: array<f32>;   // [0, 252): row phase; then (cycle, age) x 6
+@group(0) @binding(2) var<storage, read> gasClock: array<f32>;   // [0, GAS_ROWS): row phase; then (cycle, age) x 6
 fn spiralSigma(row: u32, rc: f32, phi: f32) -> f32 {
   let om = 1.0 / (pow(rc, 1.5) + P.spin); let psi = phi - gasClock[row]; var sig = 1.0;
   for (var i = 0u; i < 6u; i++) {
-    let fi = f32(i); let cyc = gasClock[252u + 2u * i]; let age = gasClock[253u + 2u * i];
+    let fi = f32(i); let cyc = gasClock[${GAS_ROWS}u + 2u * i]; let age = gasClock[${GAS_ROWS + 1}u + 2u * i];
     var env = sin(PI * age / ARM_LIFE); env *= env;
     let pitch = ARM_PITCH * (0.8 + 0.4 * fract(fi * 0.618 + cyc * 0.37));
     let ph0 = fi * 2.3999 + 1.7 * cyc + 4.1 * fract(cyc * 0.713);
@@ -97,10 +144,10 @@ fn spiralSigma(row: u32, rc: f32, phi: f32) -> f32 {
   sig += 0.12 * sin(2.0 * (psi - 0.5 * ARM_PITCH * log(rc)) + 1.0) + 0.08 * sin(3.0 * (psi - 0.8 * ARM_PITCH * log(rc)) + 2.0);
   return max(sig, 0.05);
 }
-@compute @workgroup_size(8, 4) fn gas(@builtin(global_invocation_id) id: vec3u) {
-  if (id.x >= 512u || id.y >= 252u) { return; }
-  let lr = P.gasL0 + (f32(id.y) + 0.5) / 252.0 * (P.gasL1 - P.gasL0);
-  textureStore(field, vec2i(id.xy), vec4f(spiralSigma(id.y, exp(lr), ((f32(id.x) + 0.5) / 512.0 - 0.5) * TAU), 0.0, 0.0, 1.0));
+@compute @workgroup_size(${GAS_WORKGROUP[0]}, ${GAS_WORKGROUP[1]}) fn gas(@builtin(global_invocation_id) id: vec3u) {
+  if (id.x >= ${FIELD_WIDTH}u || id.y >= ${GAS_ROWS}u) { return; }
+  let lr = P.gasL0 + (f32(id.y) + 0.5) / ${GAS_ROWS}.0 * (P.gasL1 - P.gasL0);
+  textureStore(field, vec2i(id.xy), vec4f(spiralSigma(id.y, exp(lr), ((f32(id.x) + 0.5) / ${FIELD_WIDTH}.0 - 0.5) * TAU), 0.0, 0.0, 1.0));
 }
 
 var<private> BBC: array<f32, 42> = array<f32, 42>(${BB_CHEBYSHEV.map(f).join(', ')});
@@ -120,9 +167,9 @@ fn hardnessRamp(h: f32) -> vec3f {
   let k = min(floor(h), 4.0); let t = h - k;
   var c = array<vec3f, 6>(vec3f(0.55, 0.05, 0.0), vec3f(1.0, 0.45, 0.05), vec3f(0.9, 0.85, 0.3), vec3f(0.3, 0.9, 0.7), vec3f(0.3, 0.6, 1.0), vec3f(0.85, 0.9, 1.0));
   return mix(c[i32(k)], c[i32(k) + 1], t); }
-@compute @workgroup_size(64) fn tables(@builtin(global_invocation_id) id: vec3u) {
-  if (id.x >= 512u) { return; }
-  let x = (f32(id.x) + 0.5) / 512.0; let lt = 3.0 + 6.5 * x; let T = pow(10.0, lt); let t = x * 2.0 - 1.0;
+@compute @workgroup_size(${TABLE_WORKGROUP}) fn tables(@builtin(global_invocation_id) id: vec3u) {
+  if (id.x >= ${FIELD_WIDTH}u) { return; }
+  let x = (f32(id.x) + 0.5) / ${FIELD_WIDTH}.0; let lt = 3.0 + 6.5 * x; let T = pow(10.0, lt); let t = x * 2.0 - 1.0;
   var chroma: vec3f; var logY: f32;
   if (P.band < 0.5) {
     let xx = 1.438432e-2 / (555e-9 * T);
@@ -138,8 +185,8 @@ fn hardnessRamp(h: f32) -> vec3f {
     logY = -8.555613 + 4.0 * lt + sm + log(tot) * 0.4342945;
     chroma = hardnessRamp(clamp((e0 / tot) / 0.6, 0.0, 1.0) * 5.0);
   }
-  textureStore(field, vec2i(i32(id.x), 252), vec4f(chroma, 1.0));
-  textureStore(field, vec2i(i32(id.x), 253), vec4f(logY, 0.0, 0.0, 1.0));
+  textureStore(field, vec2i(i32(id.x), ${CHROMA_ROW}), vec4f(chroma, 1.0));
+  textureStore(field, vec2i(i32(id.x), ${LOG_Y_ROW}), vec4f(logY, 0.0, 0.0, 1.0));
 }
 `;
 
@@ -150,13 +197,13 @@ export const traceShader = params + /* wgsl */ `
 @group(0) @binding(3) var ring: texture_storage_2d<rgba32float, write>;
 @group(0) @binding(4) var skyOut: texture_storage_2d<rgba32float, write>;
 // The exact Schwarzschild photon orbit, closed form: u(phi) = u1 + (u2 - u1) sn^2(s phi + c, k); K by AGM,
-// F by Carlson's R_F, sn by its nome series (four sines).
+// F by Carlson's R_F, sn by its nome series (six sines).
 fn agmK(k: f32) -> f32 { var a = 1.0; var g = sqrt(max(1.0 - k * k, 1e-12)); for (var i = 0; i < 6; i++) { let an = 0.5 * (a + g); g = sqrt(a * g); a = an; } return 1.5707963 / a; }
 fn carlsonRF(x0: f32, y0: f32, z0: f32) -> f32 { var x = x0; var y = y0; var z = z0;
   for (var i = 0; i < 6; i++) { let l = sqrt(x * y) + sqrt(y * z) + sqrt(z * x); x = 0.25 * (x + l); y = 0.25 * (y + l); z = 0.25 * (z + l); }
   let mu = (x + y + z) / 3.0; let X = 1.0 - x / mu; let Y = 1.0 - y / mu; let Z = 1.0 - z / mu; let E2 = X * Y - Z * Z; let E3 = X * Y * Z;
   return (1.0 - E2 / 10.0 + E3 / 14.0 + E2 * E2 / 24.0 - 3.0 * E2 * E3 / 44.0) * inverseSqrt(mu); }
-struct Orbit { u1: f32, u2: f32, s: f32, c: f32, K: f32, zExit: f32, alpha: f32, cq: vec4f }
+struct Orbit { u1: f32, u2: f32, s: f32, c: f32, K: f32, zExit: f32, alpha: f32, cq: vec4f, cq2: vec2f }
 fn orbitOf(b: f32) -> Orbit { var o: Orbit;
   let qc = 1.0 / (2.0 * b * b) - 1.0 / 108.0; let th = acos(clamp(-108.0 * qc, -1.0, 1.0)) / 3.0;
   let t1 = cos(th - 2.0943951) / 3.0; let t2 = cos(th - 4.1887902) / 3.0; let u3 = cos(th) / 3.0 + 1.0 / 6.0;
@@ -167,15 +214,19 @@ fn orbitOf(b: f32) -> Orbit { var o: Orbit;
   let sp = sqrt(clamp(-o.u1 / (o.u2 - o.u1), 0.0, 1.0)); let cp = sqrt(1.0 - sp * sp);
   o.c = sp * carlsonRF(cp * cp, 1.0 - k2 * sp * sp, 1.0);
   o.zExit = 2.0 * o.K - o.c; o.alpha = (2.0 * o.K - 2.0 * o.c) / o.s - PI;
-  let q1 = sqrt(q); let q3 = q1 * q; let q5 = q3 * q; let q7 = q5 * q;
+  // six terms: four left r(phi) 0.7 % out at b = 5.22, just outside the critical impact parameter
+  let q1 = sqrt(q); let q3 = q1 * q; let q5 = q3 * q; let q7 = q5 * q; let q9 = q7 * q; let q11 = q9 * q;
   o.cq = vec4f(q1 / (1.0 - q1 * q1), q3 / (1.0 - q3 * q3), q5 / (1.0 - q5 * q5), q7 / (1.0 - q7 * q7)) * (TAU / (k * o.K));
+  o.cq2 = vec2f(q9 / (1.0 - q9 * q9), q11 / (1.0 - q11 * q11)) * (TAU / (k * o.K));
   return o; }
 fn orbitU(o: Orbit, ph: f32) -> f32 { let z = o.s * ph + o.c; if (z > o.zExit) { return -1.0; }
   let w = 1.5707963 * z / o.K;
-  let sn = o.cq.x * sin(w) + o.cq.y * sin(3.0 * w) + o.cq.z * sin(5.0 * w) + o.cq.w * sin(7.0 * w);
+  let sn = o.cq.x * sin(w) + o.cq.y * sin(3.0 * w) + o.cq.z * sin(5.0 * w) + o.cq.w * sin(7.0 * w) + o.cq2.x * sin(9.0 * w) + o.cq2.y * sin(11.0 * w);
   return o.u1 + (o.u2 - o.u1) * sn * sn; }
-fn deflection(b: f32) -> f32 {   // total bend of an escaping ray: 4/b + 15 pi/4b^2 + 128/3b^3 beyond 24 M (0.1 %)
-  if (b > 24.0) { return 4.0 / b + 11.780972 / (b * b) + 42.666667 / (b * b * b); }   // the original stopped at b^-2: 1.9 % short at 24 M, a seam in the stars
+// total bend of an escaping ray beyond 24 M: the weak-field series to b^-5 (Keeton & Petters 2005, gr-qc/0511019),
+// 1e-4 of the closed form at the switch. The original stopped at b^-2, 1.9 % short at 24 M: a seam in the stars.
+fn deflection(b: f32) -> f32 {
+  if (b > 24.0) { let u = 1.0 / b; return u * (4.0 + u * (11.780972 + u * (42.666667 + u * (170.09180 + u * 716.8)))); }
   return orbitOf(max(b, 5.22)).alpha; }
 // The Kerr shadow edge (Bardeen 1973): spherical photon orbits at r between the two equatorial ones project to
 // (alpha, beta) = (-xi/sin i, +-sqrt(beta^2)); rho_c(theta) is the distance of the one whose screen angle is theta.
@@ -221,6 +272,19 @@ fn kerrG(r: f32, lam: f32) -> f32 {   // redshift of a prograde circular emitter
 fn gaussCDF(x: f32) -> f32 { let z = abs(x) * 0.70710678; let t = 1.0 / (1.0 + 0.3275911 * z);
   let e = 1.0 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * exp(-z * z);
   return 0.5 * (1.0 + select(-e, e, x >= 0.0)); }
+// C(r): a ring image's distance from the critical curve, before the exp(-gamma dphi / pi) per half orbit, for an
+// emitter at r (M); exact Schwarzschild crossings, independent of phi0 to 3 %. ringR is its inverse.
+var<private> RING_R: array<f32, 7> = array<f32, 7>(3.0, 3.2, 4.0, 6.0, 10.0, 20.0, 40.0);
+var<private> RING_C: array<f32, 7> = array<f32, 7>(0.0, 3.0, 14.0, 30.0, 47.0, 63.0, 72.0);
+fn ringC(r: f32) -> f32 {
+  if (r <= RING_R[0]) { return 0.0; }
+  for (var i = 1; i < 7; i++) { if (r <= RING_R[i]) { return mix(RING_C[i - 1], RING_C[i], (r - RING_R[i - 1]) / (RING_R[i] - RING_R[i - 1])); } }
+  return RING_C[6];
+}
+fn ringR(c: f32) -> f32 {
+  for (var i = 1; i < 7; i++) { if (c <= RING_C[i]) { return mix(RING_R[i - 1], RING_R[i], (c - RING_C[i - 1]) / (RING_C[i] - RING_C[i - 1])); } }
+  return RING_R[6];
+}
 struct Image { tau: f32, w: f32, wr: f32, wc: f32, ws: f32, wt: f32 }
 fn packImage(m: Image) -> vec4f {
   if (m.tau <= 0.0) { return vec4f(0.0); }
@@ -318,26 +382,34 @@ fn packImage(m: Image) -> vec4f {
   }
   textureStore(geo1, px, packImage(img[0]));
   textureStore(geo2, px, packImage(img[1]));
-  // photon ring: orders 2-3 converging on the shadow edge, lit by the disk they image (Gaussian, e^-pi per order)
+  // Photon ring, orders 2 and 3: the disk imaged by rays that circle the hole once and twice more. Order n leaves
+  // the critical curve by delta = C(r_e) exp(-gamma (phi0 + n pi) / pi) for an emitter at r_e (Bozza 2002; Gralla,
+  // Holz & Wald 2019, arXiv:1906.00873). C is from exact Schwarzschild crossings; gamma, the Lyapunov exponent, is
+  // pi without spin and lower with it (Johnson et al. 2020, arXiv:1907.04329: 2.5-3.1 around the curve at
+  // a = 0.9), so Kerr subrings are wider. A pixel takes the share of its width the bands cover, lit by the gas at
+  // the r_e its middle sees, with grey limb darkening at the emission angle mu = g sqrt(Q) / r (Cunningham 1975;
+  // Q, Carter's constant, from the screen position), the same atmosphere the direct images have.
   var ringOut = vec4f(0.0);
   let dM = b - rhoC;
-  if (inFoot && dM > -2.0 * pxM && dM < 1.2) {
-    let ph = phi0 + PI;
-    for (var kk = 1; kk <= 6; kk++) {
-      let u2 = orbitU(orbitOf(SHADOW_SCHW + 0.15 * f32(kk)), ph);   // in bEff space the capture radius is 3 sqrt 3
-      if (u2 <= 0.0 || u2 >= 0.4995) { continue; }
-      let r2 = 1.0 / u2; if (r2 < P.risco || r2 > P.rout) { continue; }
-      let X2 = r2 * (cos(ph) * vec3f(0.0, 0.0, 1.0) + sin(ph) * eh);
-      let g2 = kerrG(r2, lamPh);
-      let mue = clamp(abs(n.z) * g2, 0.03, 1.0);
-      var prof = 0.0;
-      for (var nn = 2; nn <= 3; nn++) {
-        let wn = 1.5 * exp(-PI * f32(nn - 1)); let sg = max(wn, 0.8 * pxM);
-        prof += exp(-pow((dM - wn * 1.2) / sg, 2.0)) * (wn / sg);
+  if (inFoot && dM > -pxM && dM < 1.2) {
+    let gam = PI - 0.6 * P.spin * P.spin;
+    let carter = q.y * q.y + (q.x * q.x - P.spin * P.spin) * cos(P.inc) * cos(P.inc);
+    var cover = 0.0;
+    for (var nn = 2; nn <= 3; nn++) {
+      let ph = phi0 + f32(nn) * PI; let k = exp(-gam * ph / PI);
+      let lo = max(dM - 0.5 * pxM, ringC(P.risco) * k); let hi = min(dM + 0.5 * pxM, ringC(P.rout) * k);
+      if (hi <= lo) { continue; }
+      let re = ringR(0.5 * (lo + hi) / k);
+      let edge = sstep(P.risco, P.risco + 0.5, re) * sstep(P.rout, P.rout * 0.96, re);
+      if (cover == 0.0) {   // the lower order is the wider, brighter band: it sets the gas and the shift
+        let X2 = re * (cos(ph) * vec3f(0.0, 0.0, 1.0) + sin(ph) * eh);
+        let g2 = kerrG(re, lamPh);
+        let mue = clamp(g2 * sqrt(max(carter, 0.0)) / re, 0.0, 1.0);
+        ringOut = vec4f(re, atan2(dot(X2, yb), dot(X2, xb)), 0.0, pow(0.75 * (mue + 0.6667), 0.25) * pow(g2, P.beam));
       }
-      ringOut = vec4f(r2, atan2(dot(X2, yb), dot(X2, xb)), prof * (1.0 + 2.06 * mue) / 3.06 * sstep(P.risco, P.risco + 0.5, r2) * sstep(P.rout, P.rout * 0.96, r2), pow(g2, P.beam));
-      break;
+      cover += (hi - lo) / pxM * edge;
     }
+    ringOut.z = min(cover, 1.0);
   }
   textureStore(ring, px, ringOut);
   // the sky through the lens equation (beta = theta - alpha, source at infinity), masked by the shadow
@@ -366,27 +438,32 @@ export const shadeShader = params + /* wgsl */ `
 @vertex fn vs(@builtin(vertex_index) i: u32) -> @builtin(position) vec4f {
   let p = vec2f(f32((i << 1u) & 2u), f32(i & 2u)) * 2.0 - 1.0; return vec4f(p, 0.0, 1.0); }
 ${skyLib}
-fn field(u: f32, row: f32) -> vec4f { return textureSampleLevel(fieldTex, wrapLinear, vec2f(u, row / 256.0), 0.0); }
-fn gasAt(rc: f32, phi: f32) -> f32 { return field(phi / TAU + 0.5, clamp((log(rc) - P.gasL0) / (P.gasL1 - P.gasL0) * 252.0, 0.5, 251.5)).r; }
-fn bbBand(T: f32) -> vec3f { let x = clamp((log(T) * 0.4342945 - 3.0) / 6.5, 0.5 / 512.0, 1.0 - 0.5 / 512.0);
-  return field(x, 252.5).rgb * pow(10.0, field(x, 253.5).r - P.expo - meter[0]); }
+fn field(u: f32, row: f32) -> vec4f { return textureSampleLevel(fieldTex, wrapLinear, vec2f(u, row / ${FIELD_HEIGHT}.0), 0.0); }
+fn gasAt(rc: f32, phi: f32) -> f32 { return field(phi / TAU + 0.5, clamp((log(rc) - P.gasL0) / (P.gasL1 - P.gasL0) * ${GAS_ROWS}.0, 0.5, ${GAS_ROWS - 0.5})).r; }
+// The light of disk gas at effective temperature te, its observed colour temperature f te times factor (the
+// atmosphere's depth and the Kerr shift), diluted by f^-4.
+fn diskLight(te: f32, factor: f32) -> vec3f { let fc = colourCorrection(te); return bbBand(fc * te * factor) / (fc * fc * fc * fc); }
+fn bbBand(T: f32) -> vec3f { let x = clamp((log(T) * 0.4342945 - 3.0) / 6.5, 0.5 / ${FIELD_WIDTH}.0, 1.0 - 0.5 / ${FIELD_WIDTH}.0);
+  return field(x, ${CHROMA_ROW + 0.5}).rgb * pow(10.0, field(x, ${LOG_Y_ROW + 0.5}).r - P.expo - meter[0]); }
 struct Shaded { @location(0) display: vec4f, @location(1) glow: vec4f }
 @fragment fn fs(@builtin(position) pos: vec4f) -> Shaded {
   let px = vec2i(pos.xy);
+  // derivatives need uniform control flow, so the sky's footprint is taken here, before any branch
+  let skyAt = textureLoad(skyTex, px, 0);
+  let skyFoot = max(length(dpdx(skyAt.xy)), length(dpdy(skyAt.xy)));
   var col = vec3f(0.0); var trans = 1.0;
   for (var i = 0; i < 2; i++) {
     let g = select(textureLoad(geo2, px, 0), textureLoad(geo1, px, 0), i == 0);
     if (g.z <= 0.0) { continue; }
     let sig = gasAt(g.x, g.y);
     let a = 1.0 - exp(-sig * g.z);
-    col += trans * a * bbBand(tempAt(g.x, sig) * g.w);
+    col += trans * a * diskLight(tempAt(g.x, sig), g.w);
     trans *= 1.0 - a;
   }
   if (trans >= 0.5) {   // an opaque disk hides the ring and the sky behind it
     let rg = textureLoad(ring, px, 0);
-    if (rg.z > 0.0) { col += bbBand(tempAt(rg.x, max(gasAt(rg.x, rg.y), 0.2)) * rg.w) * rg.z * trans; }
-    let at = textureLoad(skyTex, px, 0);
-    if (at.z > 0.0) { col += sky(at.xy + P.skyDrift, P.skyParallax) * at.z * trans; }
+    if (rg.z > 0.0) { col += diskLight(tempAt(rg.x, max(gasAt(rg.x, rg.y), 0.2)), rg.w) * rg.z * trans; }
+    if (skyAt.z > 0.0) { col += sky(skyAt.xy + P.skyDrift, P.skyParallax, skyFoot) * skyAt.z * trans; }
   }
   // filmic shoulder on the brightest channel, not luminance, so a Rayleigh-Jeans blue does not clip first
   let V = max(col.r, max(col.g, col.b)); let Vm = V / (1.0 + V * 0.55); let disp = 1.0 - exp(-1.6 * Vm);
@@ -432,25 +509,15 @@ var<workgroup> lit: array<f32, 256>;
 `;
 
 // ---- post ------------------------------------------------------------------------------------------------
-export const postShader = /* wgsl */ `
-@group(0) @binding(0) var src: texture_2d<f32>;
-@group(0) @binding(1) var clampLinear: sampler;
-@group(0) @binding(2) var glowA: texture_2d<f32>;
-@group(0) @binding(3) var glowB: texture_2d<f32>;
-@group(0) @binding(4) var<uniform> strength: vec4f;
+export const postShader = params + /* wgsl */ `
+@group(0) @binding(1) var scene: texture_2d<f32>;
+@group(0) @binding(2) var clampLinear: sampler;
+@group(0) @binding(3) var bloom: texture_2d<f32>;
 struct V { @builtin(position) pos: vec4f, @location(0) uv: vec2f }
 @vertex fn vs(@builtin(vertex_index) i: u32) -> V {
   let p = vec2f(f32((i << 1u) & 2u), f32(i & 2u)); var o: V;
   o.pos = vec4f(p * 2.0 - 1.0, 0.0, 1.0); o.uv = vec2f(p.x, 1.0 - p.y); return o; }
-fn tap(uv: vec2f) -> vec3f { return textureSampleLevel(src, clampLinear, uv, 0.0).rgb; }
-@fragment fn down(v: V) -> @location(0) vec4f { return vec4f(tap(v.uv), 1.0); }
-fn blur(uv: vec2f, d: vec2f) -> vec4f {
-  var w = array<f32, 5>(0.227, 0.194, 0.121, 0.054, 0.016); var acc = tap(uv) * w[0];
-  for (var i = 1; i < 5; i++) { let o = d * f32(i) * 1.5; acc += (tap(uv + o) + tap(uv - o)) * w[i]; }
-  return vec4f(acc, 1.0); }
-@fragment fn blurH(v: V) -> @location(0) vec4f { return blur(v.uv, vec2f(1.0 / f32(textureDimensions(src).x), 0.0)); }
-@fragment fn blurV(v: V) -> @location(0) vec4f { return blur(v.uv, vec2f(0.0, 1.0 / f32(textureDimensions(src).y))); }
 @fragment fn composite(v: V) -> @location(0) vec4f {
-  let glow = textureSampleLevel(glowA, clampLinear, v.uv, 0.0).rgb + textureSampleLevel(glowB, clampLinear, v.uv, 0.0).rgb;
-  return vec4f(tap(v.uv) + glow / (1.0 + glow) * strength.x, 1.0); }
+  let glow = textureSampleLevel(bloom, clampLinear, v.uv, 0.0).rgb;
+  return vec4f(textureSampleLevel(scene, clampLinear, v.uv, 0.0).rgb + glow / (1.0 + glow) * P.bloom, 1.0); }
 `;

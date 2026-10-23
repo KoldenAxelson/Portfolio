@@ -1,0 +1,15 @@
+{{- /* The sun stylesheet and bundles, for /misc/sun/. Called once from
+       layouts/misc/single.html when the page uses the sun/sim shortcode. The
+       WebGL2 fallback is its own bundle: the main one loads it (with this
+       integrity hash) only when WebGPU won't start (fallback/load.ts). */ -}}
+{{- $css := resources.Get "css/pages/sun/sun.css" | minify | fingerprint -}}
+<link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" />
+{{- $panel := resources.Get "css/pages/sim/panel.css" | minify | fingerprint -}}
+<link rel="stylesheet" href="{{ $panel.RelPermalink }}" integrity="{{ $panel.Data.Integrity }}" />
+{{- $faq := resources.Get "css/pages/sim/faq.css" | minify | fingerprint -}}
+<link rel="stylesheet" href="{{ $faq.RelPermalink }}" integrity="{{ $faq.Data.Integrity }}" />
+{{- $build := dict "minify" true "target" "es2020" "format" "iife" -}}
+{{- $fallback := resources.Get "scripts/pages/sun/fallback/entry.ts" | js.Build (merge $build (dict "targetPath" "scripts/pages/sun/fallback.js")) | fingerprint -}}
+{{- $js := resources.Get "scripts/pages/sun/main.ts" | js.Build $build | fingerprint -}}
+<script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"
+  data-sun-fallback="{{ $fallback.RelPermalink }}" data-sun-fallback-integrity="{{ $fallback.Data.Integrity }}"></script>

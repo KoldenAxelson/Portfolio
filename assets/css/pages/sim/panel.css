@@ -1,0 +1,43 @@
+/* The control panel and stats under the simulators (shortcodes/sun/sim.html, shortcodes/black-hole/sim.html),
+   shared by both pages; their own sheets keep only the stage. On the site's --c-* tokens, so both themes follow.
+   Layout after settings panels like Attio's and Rows' (labels above full-width controls, one bordered panel) and
+   Vercel's stat strip (hairline-divided cells in one frame). */
+
+/* ── controls ───────────────────────────────────────────────────────────── */
+/* two to a row on a phone, all in one row on a desktop */
+.sim-controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,8.5rem),1fr));gap:.85rem .75rem;padding:.9rem 1rem 1rem;border:1px solid rgb(var(--c-border));border-radius:.9rem;}
+.sim-field{display:flex;flex-direction:column;gap:.4rem;min-width:0;}
+.sim-label{display:flex;align-items:baseline;justify-content:space-between;gap:.5rem;height:1rem;font-family:var(--font-mono, ui-monospace, monospace);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:rgb(var(--c-muted));}
+.sim-label output{font-size:.72rem;letter-spacing:normal;color:rgb(var(--c-fg));font-variant-numeric:tabular-nums;}
+
+/* a select drawn by us (the platform arrow differs per browser and sat at odd sizes), with a CSS chevron */
+.sim-select{position:relative;display:block;}
+.sim-select::after{content:"";position:absolute;right:.8rem;top:50%;width:.4rem;height:.4rem;margin-top:-.3rem;border-right:1.5px solid rgb(var(--c-muted));border-bottom:1.5px solid rgb(var(--c-muted));transform:rotate(45deg);pointer-events:none;}
+.sim-select select{--chip:rgb(var(--c-accent));appearance:none;-webkit-appearance:none;width:100%;height:2.4rem;padding:0 2.1rem 0 .75rem;border:1px solid rgb(var(--c-border));border-radius:.55rem;background:rgb(var(--c-bg));color:rgb(var(--c-fg));font:inherit;font-size:.85rem;text-overflow:ellipsis;cursor:pointer;transition:border-color .15s;}
+.sim-select select:hover:not(:disabled){border-color:var(--chip);}
+.sim-select select:focus-visible{outline:2px solid rgb(var(--c-accent));outline-offset:2px;border-color:var(--chip);}
+.sim-select select:disabled{opacity:.45;cursor:default;}
+
+/* an on/off button (aria-pressed) drawn as a switch, the same height as the selects */
+.sim-switch{white-space:nowrap;display:flex;align-items:center;justify-content:space-between;gap:.75rem;width:100%;height:2.4rem;padding:0 .75rem;border:1px solid rgb(var(--c-border));border-radius:.55rem;background:rgb(var(--c-bg));color:rgb(var(--c-fg));font:inherit;font-size:.85rem;cursor:pointer;transition:border-color .15s;}
+.sim-switch::after{content:"";flex:none;width:2rem;height:1.15rem;border-radius:999px;background:rgb(var(--c-border)) radial-gradient(circle at .58rem 50%,#fff .42rem,transparent .45rem);transition:background-color .2s,background-position .2s;}
+.sim-switch[aria-pressed="true"]::after{background:rgb(var(--c-accent)) radial-gradient(circle at 1.42rem 50%,#fff .42rem,transparent .45rem);}
+.sim-switch:hover:not(:disabled){border-color:rgb(var(--c-accent));}
+.sim-switch:focus-visible{outline:2px solid rgb(var(--c-accent));outline-offset:2px;}
+.sim-switch:disabled{opacity:.45;cursor:default;}
+
+.sim-range{width:100%;height:2.4rem;margin:0;accent-color:rgb(var(--c-accent));cursor:pointer;}
+.sim-range:disabled{opacity:.45;cursor:default;}
+
+/* ── stats ──────────────────────────────────────────────────────────────── */
+/* cells wrap and grow to fill each row (a grid left a blank track at the end of a short row); hairlines are each
+   cell's right and bottom edge, and the list overhangs its frame by 1px so the outer ones are clipped */
+.sim-stats{margin:0;border:1px solid rgb(var(--c-border));border-radius:.9rem;overflow:hidden;}
+.sim-stats-grid{display:flex;flex-wrap:wrap;margin:0 -1px -1px 0;}
+.sim-stats-grid > div{flex:1 1 9.5rem;padding:.7rem .9rem .75rem;box-shadow:1px 0 0 rgb(var(--c-border)),0 1px 0 rgb(var(--c-border));min-width:0;}
+.sim-stats-grid > .is-wide{flex-basis:19rem;}
+.sim-stats dt{font-family:var(--font-mono, ui-monospace, monospace);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:rgb(var(--c-muted));}
+.sim-stats dd{margin:.3rem 0 0;font-size:.92rem;font-weight:500;line-height:1.35;color:rgb(var(--c-fg));font-variant-numeric:tabular-nums;overflow-wrap:anywhere;}
+
+.sim-noscript{margin:0;font-size:.85rem;color:rgb(var(--c-muted));}
+@media (prefers-reduced-motion: reduce){.sim-select select,.sim-switch,.sim-switch::after{transition:none;}}

@@ -1,0 +1,56 @@
+{{- /*
+  sim/faq — the Q&A under a simulator: a topic picker (left on wide screens,
+  a row of chips on a phone) and that topic's collapsible answers. From
+  data/<key>/faq.yaml (title; topics of key, label, blurb, note, items of q,
+  a, snippet, note).
+
+    {{< sim/faq "sun" >}}        data/sun/faq.yaml
+    {{< sim/faq "black-hole" >}} data/black-hole/faq.yaml
+
+  No script: the picker is a radio group (arrow keys move within it, as a
+  radio group's should) and CSS :has() shows the checked topic's panel. A
+  browser without :has() shows every topic, each under its own heading.
+  Styles: assets/css/pages/sim/faq.css, linked by each page's assets partial.
+*/ -}}
+{{- $key := .Get 0 -}}
+{{- with index site.Data $key "faq" -}}
+<section class="sim-faq not-prose" aria-labelledby="sim-faq-{{ $key }}">
+  <div class="sim-faq-side">
+    <h2 class="sim-faq-title" id="sim-faq-{{ $key }}">{{ .title }}</h2>
+    <fieldset class="sim-faq-topics">
+      <legend class="sim-faq-legend">Topic</legend>
+      {{- range $i, $t := .topics }}
+      <label class="sim-faq-topic">
+        <input type="radio" name="sim-faq-{{ $key }}" value="{{ $t.key }}" aria-controls="sim-faq-{{ $key }}-{{ $t.key }}"{{ if eq $i 0 }} checked{{ end }}>
+        <span class="sim-faq-topic-name">{{ $t.label }}</span>
+        <span class="sim-faq-topic-blurb">{{ $t.blurb }}</span>
+      </label>
+      {{- end }}
+    </fieldset>
+  </div>
+  <div class="sim-faq-panels">
+    {{- range $t := .topics }}
+    <div class="sim-faq-panel" id="sim-faq-{{ $key }}-{{ $t.key }}" role="region" aria-label="{{ $t.label }}">
+      <h3 class="sim-faq-panel-title">{{ $t.label }}</h3>
+      {{- range $t.items }}
+      <details class="sim-faq-item">
+        <summary>{{ .q }}</summary>
+        <div class="sim-faq-body">
+          <p>{{ .a }}</p>
+          {{- with .snippet }}
+          {{/* three spaces separate the snippet's parts: each stays whole, and a narrow screen wraps between them */}}
+          <code class="sim-faq-snippet">{{ range split . "   " }}<span>{{ . }}</span>{{ end }}</code>
+          {{- end }}
+          {{- with .note }}
+          <p class="sim-faq-note"><span class="sim-faq-label">{{ $t.note }}</span> {{ . }}</p>
+          {{- end }}
+        </div>
+      </details>
+      {{- end }}
+    </div>
+    {{- end }}
+  </div>
+</section>
+{{- else -}}
+{{- errorf "sim/faq: no data/%s/faq.yaml (%s)" $key .Position -}}
+{{- end -}}

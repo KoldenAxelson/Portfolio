@@ -1,0 +1,60 @@
+/* The Q&A under the simulators (shortcodes/sim/faq.html), on the site's --c-* tokens so it follows both themes.
+   Linked from partials/sun/assets.html and partials/black-hole/assets.html.
+   After FAQ sections like Origin's: on wide screens the title and topic picker take a column of their own and the
+   answers are one hairline-divided list beside it; on a phone the topics become a row of chips above the list. */
+.sim-faq{display:grid;gap:1.25rem 3rem;margin-top:3rem;}
+@media (min-width:60rem){.sim-faq{grid-template-columns:minmax(15rem,1fr) 2fr;align-items:start;}
+  .sim-faq-side{position:sticky;top:6rem;}}
+.sim-faq-title{margin:0;font-size:1.35rem;font-weight:600;letter-spacing:-.01em;color:rgb(var(--c-fg));}
+
+/* ── topic picker ───────────────────────────────────────────────────────── */
+/* the padding keeps a focused chip's outline inside the scrolling row, which would clip it */
+.sim-faq-topics{display:flex;gap:.4rem;margin:.9rem -4px 0;padding:4px;border:0;min-width:0;overflow-x:auto;scrollbar-width:none;}
+.sim-faq-legend{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;}
+.sim-faq-topic{position:relative;display:flex;flex-direction:column;flex:none;gap:.2rem;padding:.5rem .85rem;border:1px solid rgb(var(--c-border));border-radius:999px;cursor:pointer;transition:border-color .15s,background-color .15s;}
+/* the radio itself is hidden but stays focusable and in the tab order; the chip shows its state and focus */
+.sim-faq-topic input{position:absolute;inset:0;margin:0;opacity:0;cursor:pointer;}
+.sim-faq-topic-name{font-size:.88rem;font-weight:500;white-space:nowrap;color:rgb(var(--c-fg));}
+.sim-faq-topic-blurb{display:none;font-size:.82rem;line-height:1.45;color:rgb(var(--c-muted));}
+.sim-faq-topic:hover{border-color:rgb(var(--c-accent) / .55);}
+.sim-faq-topic:has(input:checked){border-color:rgb(var(--c-accent));background:rgb(var(--c-accent) / .1);}
+.sim-faq-topic:has(input:checked) .sim-faq-topic-name{color:rgb(var(--c-accent));}
+.sim-faq-topic:has(input:focus-visible){outline:2px solid rgb(var(--c-accent));outline-offset:2px;}
+@media (min-width:60rem){
+  .sim-faq-topics{flex-direction:column;gap:.15rem;overflow:visible;}
+  .sim-faq-topic{padding:.7rem .9rem .75rem;border:0;border-left:2px solid rgb(var(--c-border));border-radius:0 .5rem .5rem 0;}
+  .sim-faq-topic-blurb{display:block;}
+  .sim-faq-topic:has(input:checked){border-left-color:rgb(var(--c-accent));}
+}
+
+/* ── panels ─────────────────────────────────────────────────────────────── */
+.sim-faq-panel-title{margin:1.5rem 0 .5rem;font-size:1rem;font-weight:600;color:rgb(var(--c-fg));}
+.sim-faq-panel:first-child .sim-faq-panel-title{margin-top:0;}
+/* with :has(), only the checked topic's panel shows, and its heading is the picker itself */
+@supports selector(:has(*)){
+  .sim-faq-panel{display:none;}
+  .sim-faq-panel-title{display:none;}
+  .sim-faq:has(.sim-faq-topic:nth-of-type(1) input:checked) .sim-faq-panel:nth-child(1),
+  .sim-faq:has(.sim-faq-topic:nth-of-type(2) input:checked) .sim-faq-panel:nth-child(2),
+  .sim-faq:has(.sim-faq-topic:nth-of-type(3) input:checked) .sim-faq-panel:nth-child(3),
+  .sim-faq:has(.sim-faq-topic:nth-of-type(4) input:checked) .sim-faq-panel:nth-child(4){display:block;}
+}
+.sim-faq-panel{border-top:1px solid rgb(var(--c-border));}
+.sim-faq-item{border-bottom:1px solid rgb(var(--c-border));}
+.sim-faq-item > summary{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem .25rem;cursor:pointer;list-style:none;font-size:.98rem;font-weight:500;color:rgb(var(--c-fg));transition:color .15s;}
+.sim-faq-item > summary::-webkit-details-marker{display:none;}
+.sim-faq-item > summary:hover{color:rgb(var(--c-accent));}
+/* a chevron that turns up when open */
+.sim-faq-item > summary::after{content:"";flex:none;width:.45rem;height:.45rem;margin:-.25rem .2rem 0 0;border-right:1.5px solid rgb(var(--c-muted));border-bottom:1.5px solid rgb(var(--c-muted));transform:rotate(45deg);transition:transform .2s;}
+.sim-faq-item[open] > summary::after{transform:translateY(.3rem) rotate(-135deg);border-color:rgb(var(--c-accent));}
+.sim-faq-item > summary:focus-visible{outline:2px solid rgb(var(--c-accent));outline-offset:2px;border-radius:.4rem;}
+.sim-faq-body{padding:0 .25rem 1.15rem;font-size:.9rem;line-height:1.6;color:rgb(var(--c-fg) / .88);}
+.sim-faq-body p{margin:0;max-width:44rem;}
+/* a snippet wraps only between its parts (the shortcode splits it at triple spaces), never mid-expression; a part
+   too wide for a phone scrolls */
+.sim-faq-snippet{display:flex;flex-wrap:wrap;column-gap:1.6em;row-gap:.2rem;margin:.75rem 0;padding:.6rem .8rem;overflow-x:auto;border-radius:.5rem;border:1px solid rgb(var(--c-border));background:rgb(var(--c-border) / .18);font-family:var(--font-mono, ui-monospace, monospace);font-size:.84rem;color:rgb(var(--c-fg));}
+.sim-faq-snippet > span{white-space:pre;}
+.sim-faq-note{margin-top:.1rem;color:rgb(var(--c-muted));}
+.sim-faq-snippet + .sim-faq-note,.sim-faq-body > p + .sim-faq-note{margin-top:.75rem;}
+.sim-faq-label{margin-right:.4rem;font-family:var(--font-mono, ui-monospace, monospace);font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;color:rgb(var(--c-accent));}
+@media (prefers-reduced-motion: reduce){.sim-faq-topic,.sim-faq-item > summary,.sim-faq-item > summary::after{transition:none;}}

@@ -1,0 +1,25 @@
+{{- /*
+  sun/sim — the star simulator stage, its pickers and readout, for /misc/sun/.
+
+    {{< sun/sim >}}
+
+  The star, view and speed pickers, the readout and the frame counter are
+  filled by assets/scripts/pages/sun/ (stars.ts, views.ts and clock.ts are the
+  single source for the three lists) through the data-sun-* hooks below. Assets ship from
+  layouts/misc/single.html via partials/sun/assets.html.
+*/ -}}
+<div class="sun-sim not-prose" data-sun>
+  <div class="sun-stage" data-sun-stage>
+    <canvas class="sun-canvas" data-sun-canvas role="img" aria-label="Simulated star"></canvas>
+    <span class="sun-fps" data-sun-fps aria-hidden="true"></span>
+    <span class="sun-tier" data-sun-tier aria-hidden="true"></span>
+    <p class="sun-message" data-sun-message role="status" hidden></p>
+  </div>
+  <div class="sim-controls">
+    <label class="sim-field"><span class="sim-label">Star</span><span class="sim-select"><select data-sun-stars></select></span></label>
+    <label class="sim-field"><span class="sim-label">View</span><span class="sim-select"><select data-sun-views></select></span></label>
+    <label class="sim-field"><span class="sim-label">Speed</span><span class="sim-select"><select data-sun-rates></select></span></label>
+  </div>
+  <div class="sim-stats"><dl class="sim-stats-grid" data-sun-readout></dl></div>
+  <noscript><p class="sim-noscript">This page is a WebGPU simulation and needs JavaScript.</p></noscript>
+</div>

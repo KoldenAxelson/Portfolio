@@ -1,0 +1,24 @@
+/* The hardening-order puzzle on /misc/vps-protection/. The shared box is css/pages/video-notes/shell.css. */
+#vp-order [hidden]{display:none;}
+.vp-grid{display:grid;gap:1.1rem;}
+@media (min-width:640px){.vp-grid{grid-template-columns:1fr 1fr;}}
+.vp-lab{display:block;font-family:var(--font-mono);font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:rgb(var(--c-muted));margin:0 0 .4rem;}
+.vp-lab b{color:rgb(var(--c-fg));font-variant-numeric:tabular-nums;}
+
+.vp-pool{display:grid;gap:.4rem;}
+.vp-step{text-align:left;font-size:.82rem;line-height:1.35;}
+.vp-step.is-done{text-decoration:line-through;}
+#vp-order .vn-btn:focus-visible{outline:2px solid rgb(var(--c-accent));outline-offset:2px;}
+
+/* JS sets is-good / is-mid / is-bad on each row (static/js/vps-protection/vp-order.js). */
+.vp-surface{list-style:none;margin:0 0 1rem;padding:0;display:grid;gap:.3rem;}
+.vp-row{display:flex;justify-content:space-between;gap:.75rem;padding:.35rem .6rem;border-left:3px solid rgb(var(--c-border));border-radius:.3rem;background:rgb(var(--c-bg));font-size:.8rem;line-height:1.4;color:rgb(var(--c-muted));}
+.vp-row b{font-weight:600;color:rgb(var(--c-fg));text-align:right;}
+.vp-row.is-good{border-left-color:rgb(var(--c-accent));}
+.vp-row.is-mid{border-left-color:rgb(212 160 23);}
+.vp-row.is-bad{border-left-color:rgba(217,83,79,.85);}
+@media (prefers-reduced-motion:no-preference){.vp-row{transition:border-color .2s ease;}}
+
+.vp-log{list-style:decimal;margin:0;padding-left:1.3rem;font-size:.8rem;line-height:1.5;color:rgb(var(--c-fg));}
+.vp-log:empty{padding-left:0;}
+.vp-log:empty::before{content:"Nothing yet.";color:rgb(var(--c-muted));}
