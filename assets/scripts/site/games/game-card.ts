@@ -47,30 +47,25 @@ function showText(blurb: HTMLElement, toggle: HTMLElement | null, mode: TextMode
 // pitch, with a toggle when a book has both), image carousel (+dots),
 // star rating OR status line (rating wins when both exist), series checklist,
 // and the matching console icon.
-export function populateGameCard(d: DOMStringMap, els: GameCardEls): void {
-  if (els.title) els.title.textContent = d.title || '';
+export function populateGameCard(data: DOMStringMap, els: GameCardEls): void {
+  if (els.title) els.title.textContent = data.title || '';
   if (els.blurb) {
-    const review = d.blurb || '';
-    const pitch = d.pitch || '';
+    const review = data.blurb || '';
+    const pitch = data.pitch || '';
     els.blurb.dataset.review = review;
     els.blurb.dataset.pitch = pitch;
     // A series' per-slide pitches ride along for showSlide (below).
     els.blurb.dataset.entryPitch = pitch;
-    els.blurb.dataset.slidePitches = d.slidePitches || '';
-    els.blurb.dataset.slideSeries = d.slideSeries || '';
+    els.blurb.dataset.slidePitches = data.slidePitches || '';
+    els.blurb.dataset.slideSeries = data.slideSeries || '';
     els.blurb.dataset.slide = '';
     if (els.textToggle) els.textToggle.hidden = !(review && pitch);
     showText(els.blurb, els.textToggle, review ? 'review' : 'pitch');
   }
   if (els.media) {
-    let imgs: MediaImage[] = [];
-    try {
-      imgs = JSON.parse(d.images || '[]');
-    } catch {
-      imgs = [];
-    }
+    const imgs = parseList<MediaImage>(data.images);
     els.media.innerHTML = buildCarousel(imgs);
-    els.media.setAttribute('data-kind', d.kind || 'game');
+    els.media.setAttribute('data-kind', data.kind || 'game');
     els.media.scrollLeft = 0;
     // The drawer is often still hidden at this point, and a hidden scroller
     // ignores scrollLeft, so it would reopen on the last card's slide. Reset
@@ -90,8 +85,8 @@ export function populateGameCard(d: DOMStringMap, els: GameCardEls): void {
       }
     }
   }
-  const rating = parseFloat(d.rating || '0');
-  const hasRating = Boolean(d.rating) && rating > 0;
+  const rating = parseFloat(data.rating || '0');
+  const hasRating = Boolean(data.rating) && rating > 0;
   if (els.stars) {
     if (hasRating) {
       els.stars.innerHTML = buildStars(rating);
@@ -104,27 +99,20 @@ export function populateGameCard(d: DOMStringMap, els: GameCardEls): void {
     }
   }
   if (els.status) {
-    if (d.status && !hasRating) {
-      els.status.textContent = d.status;
+    if (data.status && !hasRating) {
+      els.status.textContent = data.status;
       els.status.hidden = false;
     } else {
       els.status.hidden = true;
     }
   }
   if (els.series) {
-    let entries: SeriesEntry[] = [];
-    if (d.series) {
-      try {
-        entries = JSON.parse(d.series);
-      } catch {
-        entries = [];
-      }
-    }
+    const entries = parseList<SeriesEntry>(data.series);
     els.series.innerHTML = entries.length ? buildSeries(entries) : '';
     els.series.hidden = entries.length === 0;
   }
   for (const el of els.consoleIcons) {
-    el.hidden = el.getAttribute('data-console-icon-for') !== d.console;
+    el.hidden = el.getAttribute('data-console-icon-for') !== data.console;
   }
   // Start on the first slide's book (after the series list exists to mark).
   if (els.blurb) showSlide(0, els.blurb, els.textToggle, els.series);

@@ -1,0 +1,30 @@
+{{- /*
+  misc/live/getting-known — the online pillar from the page: one substantial
+  piece, poured into many small ones. An article becomes threads, the threads
+  become posts, the posts become clips, each tier landing in turn.
+  Pure SVG + CSS (assets/css/pages/misc/motifs.css); no script.
+*/ -}}
+{{- $tiers := slice
+  (dict "label" "1 article" "n" 1 "w" 70 "h" 16)
+  (dict "label" "4 threads" "n" 4 "w" 36 "h" 12)
+  (dict "label" "12 posts" "n" 12 "w" 14 "h" 10)
+  (dict "label" "32 clips" "n" 32 "w" 5 "h" 8)
+-}}
+<span class="mf mf-gk" aria-hidden="true" data-poster="0.75">
+<svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid meet">
+  <text class="kicker" x="14" y="18">ONE PILLAR PIECE, POURED</text>
+  <path class="flow" d="M140 52 V176" stroke="rgb(var(--c-accent))" stroke-opacity=".35" fill="none" />
+  {{- range $i, $t := $tiers }}
+  {{- $y := add 38 (mul $i 38) }}
+  {{- $gap := cond (eq $t.n 32) 2.2 4 }}
+  {{- $total := add (mul $t.n $t.w) (mul (sub $t.n 1) $gap) }}
+  {{- $x0 := sub 140 (div $total 2) }}
+  <g class="tier" style="--i: {{ $i }}">
+    {{- range $k := seq 0 (sub $t.n 1) }}
+    <rect x="{{ add $x0 (mul $k (add $t.w $gap)) }}" y="{{ $y }}" width="{{ $t.w }}" height="{{ $t.h }}" rx="2" fill="rgb(var(--c-accent) / {{ cond (eq $i 0) 0.9 0.55 }})" />
+    {{- end }}
+    <text class="mono fg" x="262" y="{{ add $y (div $t.h 2) 3 }}" font-size="8">{{ $t.label }}</text>
+  </g>
+  {{- end }}
+</svg>
+</span>

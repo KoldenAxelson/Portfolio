@@ -1,0 +1,8 @@
+{{- /*
+  listed-projects — the projects /projects/ lists: not drafts, not tier 3.
+  Takes the projects section page. Shared by projects/list.html (the cards)
+  and projects/cats.html (the focus areas offered as filters), so a project
+  can't be filterable without being listed, or the reverse.
+*/ -}}
+{{- $projects := where .Pages "Params.draft" "!=" true -}}
+{{- return where $projects "Params.tier" "!=" 3 -}}

@@ -1,0 +1,50 @@
+{{- /*
+  misc/live/ba-gil — the Ba-Gil card's band on /misc: one word built up a piece
+  at a time. Mon (person) takes the suffix Ab (past), then the prefix Ba
+  (future) for Ba-Mon-Ab, immortal, then the ends swap for its inversion,
+  Ab-Mon-Ba, mortal. Pieces are coloured by shape (root, prefix, suffix) as on
+  the page, so an inverted piece keeps its colour in the wrong slot.
+
+  Glosses for Ba and Ab come from data/ba-gil/affixes.yaml and the two meanings
+  from data/ba-gil/examples.yaml, so the card can't disagree with the page.
+  scripts/pages/misc-cards/ba-gil-card.ts animates it (it adds .is-live and
+  positions the pieces); without JS the band reads Ba-Mon-Ab = immortal.
+*/ -}}
+{{- $data := index site.Data "ba-gil" -}}
+{{- $gloss := dict "mon" "person" -}}
+{{- range $data.affixes.singles }}{{ $gloss = merge $gloss (dict (.prefix | default .suffix) .gloss) }}{{ end -}}
+{{- $meaning := dict -}}
+{{- range $data.examples }}{{ $meaning = merge $meaning (dict .text .meaning) }}{{ end -}}
+{{- $steps := slice
+  (dict "order" (slice "mon") "gloss" (index $gloss "mon"))
+  (dict "order" (slice "mon" "ab") "gloss" (printf "%s %s" (index $gloss "ab") (index $gloss "mon")))
+  (dict "order" (slice "ba" "mon" "ab") "gloss" (index $meaning "Ba-Mon-Ab"))
+  (dict "order" (slice "ab" "mon" "ba") "gloss" (index $meaning "Ab-Mon-Ba"))
+-}}
+<style>
+  .bagil-card { --root: 3 119 55; --prefix: 37 99 235; --suffix: 219 39 119; }
+  @media (prefers-color-scheme: dark) { .bagil-card { --root: 252 211 77; --prefix: 96 165 250; --suffix: 244 114 182; } }
+  .bagil-card .is-root { color: rgb(var(--root)); }
+  .bagil-card .is-prefix { color: rgb(var(--prefix)); }
+  .bagil-card .is-suffix { color: rgb(var(--suffix)); }
+  .bagil-card.is-live [data-word] { display: block; position: relative; height: 4.25rem; width: 100%; }
+  .bagil-card.is-live [data-piece], .bagil-card.is-live [data-dash] { position: absolute; left: 0; top: 0; }
+  .bagil-card.is-live [data-piece], .bagil-card.is-live [data-dash], .bagil-card.is-live [data-gloss] {
+    transition: transform .6s cubic-bezier(.2,.8,.2,1), opacity .45s ease;
+  }
+  @media (prefers-reduced-motion: reduce) { .bagil-card.is-live * { transition: none !important; } }
+</style>
+<span data-live-ba-gil data-steps="{{ $steps | jsonify }}" aria-hidden="true"
+  class="bagil-card absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[radial-gradient(120%_120%_at_50%_40%,rgb(var(--c-border)/.35),rgb(var(--c-bg)))]">
+  <span data-word class="flex items-start font-mono">
+    {{- range $i, $piece := slice "ba" "mon" "ab" }}
+    {{- if $i }}<span data-dash class="text-4xl font-semibold leading-none text-muted">-</span>{{ end }}
+    <span data-piece="{{ $piece }}" class="{{ cond (eq $piece "mon") "is-root" (cond (eq $piece "ba") "is-prefix" "is-suffix") }} flex flex-col items-center">
+      <span class="text-4xl font-semibold leading-none">{{ title $piece }}</span>
+      <span class="mt-1.5 text-[0.65rem] uppercase tracking-widest text-muted">{{ index $gloss $piece }}</span>
+    </span>
+    {{- end }}
+  </span>
+  <span class="text-sm text-muted">= <strong data-gloss class="inline-block font-semibold text-fg">{{ index $meaning "Ba-Mon-Ab" }}</strong></span>
+</span>
+{{ partial "misc/live-script.html" "pages/misc-cards/ba-gil-card.ts" }}

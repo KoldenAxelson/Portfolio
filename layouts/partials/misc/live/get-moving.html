@@ -1,0 +1,18 @@
+{{- /*
+  misc/live/get-moving — the page's deal: set a timer for ten minutes and do
+  the thing; when it rings you're allowed to stop. The ring counts 10:00 down
+  to 0:00, then the card says the rest of the deal.
+  Pure SVG + CSS (assets/css/pages/misc/motifs.css); no script. The clock text
+  is a CSS counter driven by a registered integer property.
+*/ -}}
+{{- $r := 52 }}{{ $len := mul 2 math.Pi $r -}}
+<span class="mf mf-gm" aria-hidden="true" data-poster="0.02">
+<svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid meet">
+  <text class="kicker" x="14" y="18">JUST TEN MINUTES</text>
+  <circle cx="160" cy="106" r="{{ $r }}" class="line" stroke-width="6" />
+  <circle class="arc stroke-accent" cx="160" cy="106" r="{{ $r }}" stroke-width="6" stroke-linecap="round"
+    transform="rotate(-90 160 106)" style="stroke-dasharray: {{ $len }}; --len: {{ $len }}" />
+  <text class="after sans fg" x="160" y="186" text-anchor="middle" font-size="9">You're allowed to stop. Most days you won't.</text>
+</svg>
+<span class="clock absolute left-1/2 top-[53%] -translate-x-1/2 -translate-y-1/2 font-mono text-3xl font-bold text-fg tabular-nums"></span>
+</span>

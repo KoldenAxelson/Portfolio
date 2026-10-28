@@ -56,9 +56,9 @@
 {{- /* _default/baseof.html */ -}}
 {{- $known = $known | append "container" "alpine" -}}
 
-{{- /* misc/list.html and misc/single.html. `youtube` is the source-video URL on
-       a misc page that is notes taken from one; list.html reads it as the flag
-       for the red corner mark on that page's card. */ -}}
+{{- /* misc/collect.html and misc/single.html. `youtube` is the source-video URL
+       on a misc page that is notes taken from one; misc/card.html reads it as
+       the flag for the red corner mark on that page's card. */ -}}
 {{- $known = $known | append "blurb" "icon" "prose" "hidden" "youtube" -}}
 {{- /* misc/collect.html: which /misc shelf a page sits on. A key from the
        `groups:` list in content/misc/_index.md (which reuses the `groups` key
@@ -74,13 +74,14 @@
        resolves against. A string or a list of set names. */ -}}
 {{- $known = $known | append "glossary" -}}
 
-{{- /* about.html and misc/list.html — the link cards */ -}}
+{{- /* misc/collect.html — cards for pages that live outside content/misc/ */ -}}
 {{- $known = $known | append "elsewhere" -}}
 
 {{- /* The pages that render a structure straight out of front matter */ -}}
 {{- $known = $known | append "blocks" -}}          {{/* now.html          */}}
 {{- $known = $known | append "stack" -}}           {{/* uses + colophon   */}}
 {{- $known = $known | append "groups" "games" "books" "wip" -}}  {{/* impossible-list */}}
+{{- $known = $known | append "photos" "building" "principles" "opento" -}}  {{/* about.html */}}
 {{- $known = $known | append "shelf" -}}           {{/* writing/list.html: which shelf a story collection sits on */}}
 {{- $known = $known | append "decisions" "lighthouse" -}}        {{/* colophon; lighthouse also shortcodes/lighthouse.html */}}
 {{- /* Page-local shortcode data, keyed so one page can hold several:

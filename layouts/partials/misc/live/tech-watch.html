@@ -1,0 +1,43 @@
+{{- /*
+  misc/live/tech-watch — a radar sweeping the things I'm keeping an eye on.
+  Every blip is an entry in data/tech-watch/items.yaml, named and coloured by
+  its status (available, pre-order, beta, out of stock, in development), and
+  lights as the sweep passes it, so adding to the list adds to the radar.
+  Pure SVG + CSS (assets/css/pages/misc/motifs.css); no script.
+*/ -}}
+{{- $items := (index site.Data "tech-watch").items -}}
+{{- $colors := dict "shipping" "#22c55e" "preorder" "#f59e0b" "beta" "#38bdf8" "out-of-stock" "rgb(var(--c-muted))" "in-development" "rgb(var(--c-accent))" -}}
+{{- $n := len $items -}}
+{{- $cx := 160.0 }}{{ $cy := 108.0 -}}
+<span class="mf mf-tw" aria-hidden="true">
+<svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    <linearGradient id="mf-tw-sweep" x1="1" y1="0" x2="0" y2="0.6">
+      <stop offset="0" stop-color="rgb(var(--c-accent))" stop-opacity=".45" />
+      <stop offset="1" stop-color="rgb(var(--c-accent))" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+  <text class="kicker" x="14" y="18">ON THE RADAR · {{ $n }}</text>
+  {{- range slice 30 58 86 }}
+  <circle cx="{{ $cx }}" cy="{{ $cy }}" r="{{ . }}" class="line" />
+  {{- end }}
+  <path d="M{{ sub $cx 86 }} {{ $cy }} H{{ add $cx 86 }} M{{ $cx }} {{ sub $cy 86 }} V{{ add $cy 86 }}" class="line" stroke-opacity=".6" />
+  {{- /* The wedge trails the leading edge, which starts pointing right (0°)
+         and turns clockwise; a blip at angle θ is hit θ/360 of the way round. */}}
+  <g class="sweep">
+    <path d="M{{ $cx }} {{ $cy }} L{{ add $cx 86 }} {{ $cy }} A86 86 0 0 0 {{ add $cx (mul 86 (math.Cos (math.Div (mul -40 math.Pi) 180))) }} {{ add $cy (mul 86 (math.Sin (math.Div (mul -40 math.Pi) 180))) }} Z" fill="url(#mf-tw-sweep)" />
+    <line x1="{{ $cx }}" y1="{{ $cy }}" x2="{{ add $cx 86 }}" y2="{{ $cy }}" class="stroke-accent" stroke-width="1.2" />
+  </g>
+  {{- range $i, $item := $items }}
+  {{- $deg := add 20 (mul (div 360.0 $n) $i) }}
+  {{- $rad := math.Div (mul $deg math.Pi) 180 }}
+  {{- $r := index (slice 44.0 70.0 58.0) (mod $i 3) }}
+  {{- $x := add $cx (mul $r (math.Cos $rad)) }}{{ $y := add $cy (mul $r (math.Sin $rad)) }}
+  {{- $left := lt (math.Cos $rad) 0 }}
+  <g class="blip" style="--delay: {{ printf "%.2f" (mul (div $deg 360.0) 4) }}s">
+    <circle cx="{{ printf "%.1f" $x }}" cy="{{ printf "%.1f" $y }}" r="3" fill="{{ index $colors $item.status }}" />
+    <text x="{{ printf "%.1f" (cond $left (sub $x 6) (add $x 6)) }}" y="{{ printf "%.1f" (add $y 2.5) }}" text-anchor="{{ cond $left "end" "start" }}" class="mono fg" font-size="7">{{ $item.name }}</text>
+  </g>
+  {{- end }}
+</svg>
+</span>

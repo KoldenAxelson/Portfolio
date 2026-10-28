@@ -1,0 +1,14 @@
+{{- /*
+  misc/live/claude — the Claude card's band on /misc, in Claude's own branding:
+  the signature orange, the name, and the official logo mark beside it when
+  assets/img/misc/brand/claude.svg (or .png) is present. The mark is the
+  official file from Anthropic's brand assets, dropped in as-is; nothing here
+  draws it. Plain HTML, no script.
+*/ -}}
+{{- $mark := (resources.Match "misc/brand/claude.*") | first 1 -}}
+<span aria-hidden="true" class="absolute inset-0 flex items-center justify-center gap-4 bg-[#D97757] text-[#FAF9F5]">
+  {{- range $mark }}
+  <img src="{{ .RelPermalink }}" alt="" class="h-14 w-14 shrink-0" />
+  {{- end }}
+  <span class="text-5xl font-semibold tracking-tight" style="font-family: Georgia, 'Times New Roman', serif">Claude</span>
+</span>

@@ -9,8 +9,9 @@
 #     update is "edit an entry", and the "As of" line in the intro moves.
 #   - Every revision adds one dated line to the Changelog, newest last.
 #
-# youtube : the mods video (the one video still cited), as the flag. Its presence marks the card at /misc/
-#           (layouts/misc/list.html) and ships the widget assets
+# youtube : the mods video (the one video still cited), as the flag. Its
+#           presence marks the card at /misc/ (partials/misc/card.html) and
+#           ships the widget assets
 #           (partials/video-notes/assets.html). Every link out is under Source.
 # prose   : Tailwind Typography. Every widget root carries `not-prose`.
 #

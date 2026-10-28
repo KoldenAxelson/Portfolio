@@ -78,6 +78,7 @@
 {{- if and (eq .Kind "page") (eq .Section "projects") }}{{ partial "schema/project.html" . }}{{ end -}}
 {{- if eq .Layout "cv" }}{{ partial "schema/cv.html" . }}{{ end -}}
 {{- if eq .Layout "certificates" }}{{ partial "schema/certificates.html" . }}{{ end -}}
+{{- if eq .Layout "about" }}{{ partial "schema/about.html" . }}{{ end -}}
 {{- if eq .Layout "now" }}{{ partial "schema/now.html" . }}{{ end -}}
 {{- if eq .Layout "network" }}{{ partial "schema/network.html" . }}{{ end -}}
-{{- if and (eq .Kind "section") .File (eq .File.Path "misc/_index.md") }}{{ partial "schema/misc.html" . }}{{ end -}}
+{{- if partial "func/is-misc-hub.html" . }}{{ partial "schema/misc.html" . }}{{ end -}}

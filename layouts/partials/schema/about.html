@@ -1,0 +1,20 @@
+{{- /* ProfilePage for /about: the page is about #person (emitted site-wide by
+       head/seo.html), and lists the work Konrad is open to as `seeks`. */ -}}
+{{- $siteUrl := partial "func/site-url.html" . -}}
+{{- $url := strings.TrimSuffix "/" .Permalink -}}
+{{- $page := dict
+  "@context" "https://schema.org"
+  "@type" "ProfilePage"
+  "@id" (printf "%s#profile" $url)
+  "url" $url
+  "name" .Title
+  "description" .Description
+  "mainEntity" (dict "@id" (printf "%s#person" $siteUrl))
+  "isPartOf" (dict "@id" (printf "%s#website" $siteUrl))
+-}}
+{{- with .Params.openTo.items }}
+  {{- $seeks := slice -}}
+  {{- range . }}{{ $seeks = $seeks | append (dict "@type" "Demand" "description" .) }}{{ end -}}
+  {{- $page = merge $page (dict "mainEntity" (dict "@id" (printf "%s#person" $siteUrl) "seeks" $seeks)) -}}
+{{- end -}}
+<script type="application/ld+json">{{ $page | jsonify | safeJS }}</script>

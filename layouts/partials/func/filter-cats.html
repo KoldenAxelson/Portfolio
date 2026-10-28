@@ -1,7 +1,7 @@
 {{- /*
   filter-cats — the filter choices a page offers through the filter launcher,
-  as {key, label, icon} with "All" (key "") first; an empty slice on any page
-  without one. One answer for both surfaces: components/filter-fab.html (the
+  as {key, label, icon} with "All" (key "") first, added here and nowhere else;
+  an empty slice on any page without one. One answer for both surfaces: components/filter-fab.html (the
   desktop aux button) and site/topnav.html (the mobile navbar tools panel), so
   the two can't list different filters.
 
@@ -14,17 +14,21 @@
     /misc/cool-sites/ — the kinds in cool-sites/cats.html
     /projects/        — the focus areas in projects/cats.html
 */ -}}
-{{- $out := slice -}}
-{{- if and (eq .Kind "section") .File (eq .File.Path "misc/_index.md") -}}
-  {{- $out = slice (dict "key" "" "label" "All" "icon" "squares-2x2") -}}
+{{- $kinds := slice -}}
+{{- if partial "func/is-misc-hub.html" . -}}
   {{- range partial "misc/collect.html" . -}}
-    {{- if .cards }}{{ $out = $out | append (dict "key" .key "label" .label "icon" .icon) }}{{ end -}}
+    {{- if .cards }}{{ $kinds = $kinds | append (dict "key" .key "label" .label "icon" .icon) }}{{ end -}}
   {{- end -}}
 {{- else if and (eq .Kind "section") .File (eq .File.Path "projects/_index.md") -}}
-  {{- $out = partial "projects/cats.html" . -}}
+  {{- $kinds = partial "projects/cats.html" . -}}
 {{- else if .HasShortcode "tech-watch/grid" -}}
-  {{- $out = partial "tech-watch/cats.html" . -}}
+  {{- $kinds = partial "tech-watch/cats.html" . -}}
 {{- else if .HasShortcode "cool-sites/grid" -}}
-  {{- $out = partial "cool-sites/cats.html" . -}}
+  {{- $kinds = partial "cool-sites/cats.html" . -}}
+{{- end -}}
+{{- $out := slice -}}
+{{- with $kinds -}}
+  {{- $out = slice (dict "key" "" "label" "All" "icon" "squares-2x2") -}}
+  {{- range . }}{{ $out = $out | append . }}{{ end -}}
 {{- end -}}
 {{- return $out -}}

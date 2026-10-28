@@ -1,5 +1,5 @@
-// Impossible-list game detail — DESKTOP drawer. Completed game line items
-// ([data-game-open]) carry their title / rating / blurb / image on data
+// Impossible-list detail — DESKTOP drawer. Every game and book card
+// ([data-game-open]) carries its title / rating / blurb / images on data
 // attributes; on desktop (>=1024px) clicking one slides the shared drawer in from
 // the right. On mobile the same buttons feed the top-nav panel instead
 // (sub-nav.ts), so the drawer's desktop gate lets those taps through.

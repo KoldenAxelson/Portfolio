@@ -3,6 +3,8 @@
   data/cool-sites/sites.yaml. Cards with a `preview` include
   partials/cool-sites/previews/<preview>.html; their scripts ship from
   partials/cool-sites/assets.html (called by layouts/misc/single.html).
+  Any other card shows a screenshot of the site when
+  assets/img/cool-sites/shots/<urlized name>.webp exists (components/shot.html).
   The kind filter is the filter aux button (components/filter-fab.html, from
   layouts/misc/single.html) and its mobile twin in the navbar; the kinds are
   partials/cool-sites/cats.html. Cards carry [data-types] for it.
@@ -13,9 +15,11 @@
 <div class="wds-grid">
 {{- range $sites }}
 {{- $isCover := ne .cover false }}
-<article class="wds-card{{ if .feature }} wds-feature{{ end }}{{ if not .preview }} wds-plain{{ end }}" data-types="{{ delimit .types "," }}">
+{{- $shot := cond (not .preview) (resources.Get (printf "cool-sites/shots/%s.webp" (urlize .name))) nil }}
+<article class="wds-card{{ if .feature }} wds-feature{{ end }}{{ if not (or .preview $shot) }} wds-plain{{ end }}" data-types="{{ delimit .types "," }}">
 {{- if $isCover }}<a class="wds-cover" href="{{ .url }}" rel="noopener" aria-label="{{ .name }}"></a>{{ end }}
 {{- with .preview }}{{ partial (printf "cool-sites/previews/%s.html" .) dict }}{{ end }}
+{{- with $shot }}<div class="wds-preview wds-shot">{{ partial "components/shot.html" . }}</div>{{ end }}
 <div class="wds-body">
 <a class="wds-title" href="{{ .url }}" rel="noopener">{{ .name }} <span class="wds-arrow" aria-hidden="true">↗</span></a>
 <p class="wds-desc">{{ .desc | safeHTML }}</p>

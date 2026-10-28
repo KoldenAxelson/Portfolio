@@ -190,7 +190,7 @@ function wireNavElements(): void {
     },
   };
 
-  // Completed-game line items on /impossible-list.
+  // Game and book cards on /impossible-list.
   wirePanelMode(
     {
       mode: 'game',

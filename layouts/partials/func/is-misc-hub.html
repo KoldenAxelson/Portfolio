@@ -1,0 +1,6 @@
+{{- /*
+  is-misc-hub — true on /misc/ itself (content/misc/_index.md), the shelf page,
+  and false on every misc subpage. Read by head/seo.html (its JSON-LD) and
+  func/filter-cats.html (its shelf filter).
+*/ -}}
+{{- return and (eq .Kind "section") .File (eq .File.Path "misc/_index.md") -}}

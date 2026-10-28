@@ -90,3 +90,13 @@
   status: shipping
   price: "$15 once"
   desc: "Reads along with you in a language you’re learning: it marks the words you don’t know yet on any web page, in books, under videos and in chats, and keeps one known-word list across all of them. A browser extension for Chrome, Brave and Edge, plus an Android app; iPhone is still to come. The first 1,000 words in each language are free, and your word list stays on your own devices."
+
+- name: "Star Garden"
+  kind: "Pet-raising racing game"
+  maker: "Game Garage"
+  url: "https://www.stargardengame.com"
+  domain: "stargardengame.com"
+  types: [software]
+  status: in-development
+  when: "Free demo out now"
+  desc: "A racing game where you raise your ride: cosmic creatures called Lumi evolve into the vehicles you race on. There’s a single-player story mode and CosmiClash multiplayer. Coming to Switch, Steam, PlayStation and Xbox, with no release date yet; the demo is free and it’s wishlistable on Steam."

@@ -54,9 +54,18 @@
     }
   }
 
+  // The loop only runs while the dots are moving and the canvas is on screen:
+  // once every dot is back home it stops, and the pointer wakes it again.
+  // Left running, it redrew a still picture every frame on /misc and here.
+  var raf = 0, onScreen = true;
+  function wake() {
+    if (!raf && onScreen) raf = requestAnimationFrame(frame);
+  }
   function frame() {
+    raf = 0;
     var rect = canvas.getBoundingClientRect();
     ctx.clearRect(0, 0, rect.width, rect.height);
+    var moving = mouse.x > -9999;
     for (var k = 0; k < dots.length; k++) {
       var d = dots[k];
       var dx = d.x - mouse.x, dy = d.y - mouse.y;
@@ -68,12 +77,13 @@
       d.vx += (d.hx - d.x) * SPRING; d.vy += (d.hy - d.y) * SPRING;
       d.vx *= FRICTION; d.vy *= FRICTION;
       d.x += d.vx; d.y += d.vy;
+      if (Math.abs(d.vx) > 0.01 || Math.abs(d.vy) > 0.01 || Math.abs(d.hx - d.x) > 0.1 || Math.abs(d.hy - d.y) > 0.1) moving = true;
       ctx.beginPath();
       ctx.arc(d.x, d.y, DOTR, 0, 6.2832);
       ctx.fillStyle = d.c;
       ctx.fill();
     }
-    requestAnimationFrame(frame);
+    if (moving) wake();
   }
 
   function staticDraw() {
@@ -93,8 +103,9 @@
     var p = e.touches ? e.touches[0] : e;
     mouse.x = p.clientX - rect.left;
     mouse.y = p.clientY - rect.top;
+    wake();
   }
-  function onLeave() { mouse.x = -9999; mouse.y = -9999; }
+  function onLeave() { mouse.x = -9999; mouse.y = -9999; wake(); }
 
   buildDots(function (pts) {
     dots = pts;
@@ -102,7 +113,10 @@
     if (reduce || !dots.length) { staticDraw(); return; }
     canvas.addEventListener("pointermove", onMove);
     canvas.addEventListener("pointerleave", onLeave);
-    requestAnimationFrame(frame);
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(function (es) { onScreen = es[0].isIntersecting; wake(); }).observe(canvas);
+    }
+    wake();
   });
-  window.addEventListener("resize", layout);
+  window.addEventListener("resize", function () { layout(); if (reduce) staticDraw(); else wake(); });
 })();

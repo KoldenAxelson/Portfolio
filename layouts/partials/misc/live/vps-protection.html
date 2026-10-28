@@ -1,0 +1,32 @@
+{{- /*
+  misc/live/vps-protection — a fresh server under a closed firewall: probes stream in from every side and
+  break on the ring, while the one way in, SSH on 2222 over Tailscale, runs
+  straight through. The page's point in one frame: order is the whole job.
+  Pure SVG + CSS (assets/css/pages/misc/motifs.css); no script.
+*/ -}}
+<span class="mf mf-vps" aria-hidden="true">
+<svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid meet">
+  <text class="kicker" x="14" y="18">UFW · DENY INCOMING</text>
+  <circle class="ring stroke-accent" cx="160" cy="104" r="58" stroke-width="1.5" />
+  <circle class="ring-flash stroke-accent" cx="160" cy="104" r="58" stroke-width="5" />
+  <circle class="probe" r="2.6" fill="#ef4444" style="--x0:-28px;--y0:56px;--x1:105px;--y1:84px;--d:2.4s;--delay:0s" />
+  <circle class="probe" r="2.6" fill="#ef4444" style="--x0:-28px;--y0:152px;--x1:105px;--y1:124px;--d:2.1s;--delay:0.5s" />
+  <circle class="probe" r="2.6" fill="#ef4444" style="--x0:92px;--y0:-28px;--x1:140px;--y1:49px;--d:2.6s;--delay:1.1s" />
+  <circle class="probe" r="2.6" fill="#ef4444" style="--x0:228px;--y0:-28px;--x1:180px;--y1:49px;--d:2.3s;--delay:0.2s" />
+  <circle class="probe" r="2.6" fill="#ef4444" style="--x0:348px;--y0:152px;--x1:215px;--y1:124px;--d:2.5s;--delay:0.8s" />
+  <circle class="probe" r="2.6" fill="#ef4444" style="--x0:341px;--y0:45px;--x1:213px;--y1:79px;--d:2.2s;--delay:1.5s" />
+  <circle class="probe" r="2.6" fill="#ef4444" style="--x0:92px;--y0:236px;--x1:140px;--y1:159px;--d:2.7s;--delay:1.9s" />
+  <circle class="probe" r="2.6" fill="#ef4444" style="--x0:228px;--y0:236px;--x1:180px;--y1:159px;--d:2.0s;--delay:1.2s" />
+  <path class="tunnel" d="M34 176 C 80 176, 110 140, 146 118" stroke="#22c55e" stroke-width="1.6" fill="none" />
+  <rect x="20" y="170" width="20" height="13" rx="2" class="panel" />
+  <text class="mono" x="46" y="190" font-size="6.5" fill="#22c55e">2222 · tailscale</text>
+  <rect x="142" y="82" width="36" height="44" rx="4" class="panel" />
+  <rect x="148" y="90" width="24" height="6" rx="1.5" class="line" />
+  <rect x="148" y="100" width="24" height="6" rx="1.5" class="line" />
+  <rect x="148" y="110" width="24" height="6" rx="1.5" class="line" />
+  <circle class="led" cx="168" cy="93" r="1.3" fill="#22c55e" />
+  <circle class="led" cx="168" cy="103" r="1.3" fill="#22c55e" />
+  <circle class="led" cx="168" cy="113" r="1.3" fill="#22c55e" />
+  <text class="mono muted" x="306" y="190" font-size="6.5" text-anchor="end">ssh :22 closed</text>
+</svg>
+</span>

@@ -1,0 +1,26 @@
+{{- /*
+  misc/live/uses — the Uses card as a terminal session: a command types itself
+  out, then the stack prints line by line, the first pick from each group on
+  /uses (read from its `stack`, so the card follows the page), and the cursor
+  blinks at the next prompt.
+  Pure HTML + CSS (assets/css/pages/misc/motifs.css); no script.
+*/ -}}
+{{- with site.GetPage "/uses" }}
+<span class="mf mf-uses" aria-hidden="true" data-poster="0.6">
+  <span class="absolute inset-x-4 inset-y-3 block overflow-hidden rounded-lg border border-border/70 bg-bg/90 shadow-lg">
+    <span class="flex items-center gap-1.5 border-b border-border/70 px-3 py-1.5">
+      <span class="h-2 w-2 rounded-full bg-[#ff5f57]"></span><span class="h-2 w-2 rounded-full bg-[#febc2e]"></span><span class="h-2 w-2 rounded-full bg-[#28c840]"></span>
+      <span class="ml-auto font-mono text-[0.5rem] text-muted">~/uses</span>
+    </span>
+    <span class="block px-3 py-2 font-mono text-[0.66rem] leading-[1.45]">
+      <span class="relative block w-max"><span class="text-accent">$</span> <span class="text-fg">uses --stack</span><span class="type absolute inset-y-0 right-0 bg-bg" style="--n: 12"></span></span>
+      <span class="rows block">
+      {{- range $i, $group := first 6 .Params.stack }}{{ with index $group.items 0 }}
+      <span class="flex gap-2"><span class="w-[4.6rem] shrink-0 text-muted">{{ lower $group.label }}</span><span class="truncate text-fg">{{ .name }}</span></span>
+      {{- end }}{{ end }}
+      <span class="block"><span class="text-accent">$</span> <span class="cursor inline-block h-[0.8em] w-[0.45em] translate-y-[0.1em] bg-fg"></span></span>
+      </span>
+    </span>
+  </span>
+</span>
+{{- end }}

@@ -1,0 +1,43 @@
+{{- /*
+  misc/live/dnd — the Warlord's Superiority Die as the fighter levels: d6 at 2,
+  d8 at 5, d10 at 11, d12 at 17 (data/dnd/fighter.yaml), each rolled and spent
+  on a maneuver from data/dnd/maneuvers.yaml. The die, the level and the
+  maneuver all come from the data, so the card follows the house rules.
+  Pure SVG + CSS (assets/css/pages/misc/motifs.css); no script.
+*/ -}}
+{{- $dnd := site.Data.dnd -}}
+{{- $dice := $dnd.fighter.superiority_die -}}
+{{- $moves := where $dnd.maneuvers.maneuvers "status" "!=" "discontinued" -}}
+{{- /* One outline per die, centred on 0,0 at radius ~34, and the face it lands on. */ -}}
+{{- $shapes := dict
+  "d6"  (dict "outline" "M-26 -26 H26 V26 H-26 Z" "inner" "" "roll" "5")
+  "d8"  (dict "outline" "M0 -36 L32 0 L0 36 L-32 0 Z" "inner" "M-32 0 H32" "roll" "6")
+  "d10" (dict "outline" "M0 -36 L31 -6 L0 36 L-31 -6 Z" "inner" "M-31 -6 L0 6 L31 -6 M0 6 V36" "roll" "8")
+  "d12" (dict "outline" "M0 -35 L33 -11 L21 29 L-21 29 L-33 -11 Z" "inner" "M0 -20 L19 -6 L12 16 L-12 16 L-19 -6 Z" "roll" "11")
+-}}
+<span class="mf mf-dnd" aria-hidden="true">
+<svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid meet">
+  <text class="kicker" x="14" y="18">SUPERIORITY DIE</text>
+  <g>
+  {{- range $i, $step := first 4 $dice }}
+  {{- with index $shapes $step.die }}
+  {{- $move := index $moves (mod $i (len $moves)) }}
+  <g class="stage" style="--i: {{ $i }}">
+    <g transform="translate(92 106)">
+      <g class="die">
+        <path d="{{ .outline }}" class="stroke-accent" stroke-width="2" stroke-linejoin="round" fill="rgb(var(--c-accent) / .1)" />
+        {{- with .inner }}<path d="{{ . }}" class="stroke-accent" stroke-width="1" stroke-opacity=".45" />{{ end }}
+      </g>
+      <text class="roll mono fg" y="7" text-anchor="middle" font-size="20" font-weight="700" style="--i: {{ $i }}">{{ .roll }}</text>
+    </g>
+    <text class="mono muted" x="150" y="78" font-size="8" letter-spacing=".12em">LEVEL {{ $step.level }} · {{ upper $step.die }}</text>
+    <g class="move" style="--i: {{ $i }}">
+      <text class="sans fg" x="150" y="106" font-size="15" font-weight="600">{{ $move.name }}</text>
+      <text class="mono accent" x="150" y="124" font-size="8" letter-spacing=".12em">{{ upper $move.family }} · +{{ $step.die }}</text>
+    </g>
+  </g>
+  {{- end }}
+  {{- end }}
+  </g>
+</svg>
+</span>

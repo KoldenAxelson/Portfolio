@@ -1,0 +1,230 @@
+/* Motion-graphic bands for the /misc cards (layouts/partials/misc/live/*.html
+   that start with <span class="mf …">). Each card is one SVG on a 320×200
+   viewBox, the band's exact 16:10, animated with CSS only: no script, crisp at
+   any size, and coloured from the theme tokens so dark mode is free.
+
+   The un-animated state of every element is a sensible still, so reduced
+   motion simply switches the animations off. Loaded by layouts/misc/list.html. */
+
+.mf {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+  background: radial-gradient(120% 120% at 50% 35%, rgb(var(--c-border) / 0.35), rgb(var(--c-bg)));
+  color: rgb(var(--c-fg));
+}
+.mf > svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+
+/* Shared marks. */
+.mf .kicker { font: 600 7px var(--font-mono); letter-spacing: 0.16em; fill: rgb(var(--c-muted)); }
+.mf .mono { font-family: var(--font-mono); }
+.mf .sans { font-family: var(--font-sans); }
+.mf .fg { fill: rgb(var(--c-fg)); }
+.mf .muted { fill: rgb(var(--c-muted)); }
+.mf .accent { fill: rgb(var(--c-accent)); }
+.mf .line { fill: none; stroke: rgb(var(--c-border)); stroke-width: 1; }
+.mf .stroke-fg { fill: none; stroke: rgb(var(--c-fg)); }
+.mf .stroke-accent { fill: none; stroke: rgb(var(--c-accent)); }
+.mf .panel { fill: rgb(var(--c-bg) / 0.85); stroke: rgb(var(--c-border)); stroke-width: 1; }
+
+/* ---- VPS Protection: probes break on a closed firewall ------------------- */
+.mf-vps .probe { animation: mf-vps-probe var(--d, 2.4s) cubic-bezier(.4, 0, .9, .6) var(--delay, 0s) infinite; opacity: 0; }
+@keyframes mf-vps-probe {
+  0% { transform: translate(var(--x0), var(--y0)); opacity: 0; }
+  10% { opacity: 1; }
+  70% { transform: translate(var(--x1), var(--y1)); opacity: 1; }
+  78%, 100% { transform: translate(var(--x1), var(--y1)) scale(2.4); opacity: 0; }
+}
+.mf-vps .ring { stroke-dasharray: 6 5; animation: mf-spin 18s linear infinite; transform-origin: 160px 104px; }
+.mf-vps .ring-flash { opacity: 0; animation: mf-vps-flash 2.4s ease-out infinite; transform-origin: 160px 104px; }
+@keyframes mf-vps-flash { 0%, 66% { opacity: 0; } 72% { opacity: .55; } 100% { opacity: 0; } }
+.mf-vps .tunnel { stroke-dasharray: 3 4; animation: mf-dash 1.2s linear infinite; }
+.mf-vps .led { animation: mf-blink 1.6s steps(1) infinite; }
+.mf-vps .led:nth-of-type(2) { animation-delay: .4s; }
+.mf-vps .led:nth-of-type(3) { animation-delay: .9s; }
+@keyframes mf-spin { to { transform: rotate(360deg); } }
+@keyframes mf-dash { to { stroke-dashoffset: -14; } }
+@keyframes mf-blink { 0% { opacity: 1; } 50% { opacity: .25; } }
+
+/* ---- D&D: the superiority die grows with the fighter -------------------- */
+.mf-dnd .stage { opacity: 0; animation: mf-dnd-stage 12s infinite; animation-delay: calc(var(--i) * 3s); }
+.mf-dnd .stage:first-of-type { opacity: 1; }
+@keyframes mf-dnd-stage { 0% { opacity: 0; } 3%, 22% { opacity: 1; } 25%, 100% { opacity: 0; } }
+.mf-dnd .die { transform-box: fill-box; transform-origin: center; animation: mf-dnd-roll 12s cubic-bezier(.2, .9, .3, 1) infinite; animation-delay: calc(var(--i) * 3s); }
+@keyframes mf-dnd-roll { 0% { transform: rotate(-200deg) scale(.6); } 8%, 100% { transform: rotate(0) scale(1); } }
+.mf-dnd .roll { opacity: 0; animation: mf-dnd-num 12s infinite; animation-delay: calc(var(--i) * 3s); }
+@keyframes mf-dnd-num { 0%, 7% { opacity: 0; } 9%, 22% { opacity: 1; } 25%, 100% { opacity: 0; } }
+.mf-dnd .move { opacity: 0; animation: mf-dnd-move 12s infinite; animation-delay: calc(var(--i) * 3s); }
+@keyframes mf-dnd-move { 0%, 9% { opacity: 0; transform: translateX(-6px); } 12%, 22% { opacity: 1; transform: none; } 25%, 100% { opacity: 0; } }
+
+/* ---- Drafts: the PIN goes in, the lock lifts, a draft peeks out ---------- */
+/* The dots fill one by one, then all four clear together when it relocks:
+   one keyframe set per dot, since a delay would stagger the clearing too. */
+.mf-drafts .pin { animation: 6s infinite; }
+.mf-drafts .pin:nth-of-type(1) { animation-name: mf-drafts-pin-1; }
+.mf-drafts .pin:nth-of-type(2) { animation-name: mf-drafts-pin-2; }
+.mf-drafts .pin:nth-of-type(3) { animation-name: mf-drafts-pin-3; }
+.mf-drafts .pin:nth-of-type(4) { animation-name: mf-drafts-pin-4; }
+@keyframes mf-drafts-pin-1 { 0%, 4% { fill-opacity: 0; } 5%, 76% { fill-opacity: 1; } 77%, 100% { fill-opacity: 0; } }
+@keyframes mf-drafts-pin-2 { 0%, 10% { fill-opacity: 0; } 11%, 76% { fill-opacity: 1; } 77%, 100% { fill-opacity: 0; } }
+@keyframes mf-drafts-pin-3 { 0%, 16% { fill-opacity: 0; } 17%, 76% { fill-opacity: 1; } 77%, 100% { fill-opacity: 0; } }
+@keyframes mf-drafts-pin-4 { 0%, 22% { fill-opacity: 0; } 23%, 76% { fill-opacity: 1; } 77%, 100% { fill-opacity: 0; } }
+.mf-drafts .shackle { animation: mf-drafts-open 6s infinite; }
+@keyframes mf-drafts-open { 0%, 26% { transform: none; } 32%, 70% { transform: translateY(-9px); } 76%, 100% { transform: none; } }
+.mf-drafts .doc { animation: mf-drafts-doc 6s infinite; opacity: 0; }
+@keyframes mf-drafts-doc { 0%, 30% { opacity: 0; transform: translateY(16px); } 40%, 66% { opacity: 1; transform: none; } 74%, 100% { opacity: 0; transform: translateY(16px); } }
+
+/* ---- Tech Watch: a radar picks up what I'm watching -------------------- */
+.mf-tw .sweep { transform-origin: 160px 108px; animation: mf-spin 4s linear infinite; }
+.mf-tw .blip { animation: mf-tw-blip 4s linear infinite; animation-delay: var(--delay); opacity: .25; }
+@keyframes mf-tw-blip { 0% { opacity: 1; } 55% { opacity: .25; } 100% { opacity: .25; } }
+
+/* ---- Father's Puzzle: swapped by scripts/pages/misc-cards/puzzle-card.ts. */
+
+/* ---- Basic Logic: a syllogism, drawn as circles ------------------------- */
+.mf-logic .line-1 { animation: mf-fade-in 8s infinite; }
+.mf-logic .line-2 { animation: mf-fade-in 8s infinite; animation-delay: 0s; animation-name: mf-logic-2; }
+.mf-logic .line-3 { animation: mf-logic-3 8s infinite; }
+@keyframes mf-fade-in { 0% { opacity: 0; } 6%, 92% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes mf-logic-2 { 0%, 25% { opacity: 0; } 31%, 92% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes mf-logic-3 { 0%, 55% { opacity: 0; } 61%, 92% { opacity: 1; } 100% { opacity: 0; } }
+.mf-logic .who { animation: mf-logic-drop 8s cubic-bezier(.5, 0, .3, 1.3) infinite; }
+@keyframes mf-logic-drop { 0%, 25% { transform: translate(-62px, -86px); } 40%, 100% { transform: none; } }
+.mf-logic .outer { animation: mf-logic-lit 8s infinite; }
+@keyframes mf-logic-lit { 0%, 55% { stroke: rgb(var(--c-border)); } 62%, 92% { stroke: rgb(var(--c-accent)); } 100% { stroke: rgb(var(--c-border)); } }
+
+/* ---- How to Learn: the jaṭā braid, recited ---------------------------- */
+.mf-braid .thread { animation: mf-braid-draw 9s linear infinite; }
+@keyframes mf-braid-draw { 0% { stroke-dashoffset: var(--len); } 80%, 92% { stroke-dashoffset: 0; opacity: 1; } 100% { stroke-dashoffset: 0; opacity: 0; } }
+
+/* ---- Python for ML: fit a model, watch the loss fall ------------------- */
+.mf-py .cover { transform-box: fill-box; transform-origin: right center; transform: scaleX(0); animation: mf-py-type 8s steps(var(--n)) infinite backwards; animation-delay: var(--delay); }
+@keyframes mf-py-type { 0% { transform: scaleX(1); } 14%, 92% { transform: scaleX(0); } 100% { transform: scaleX(1); } }
+.mf-py .loss { animation: mf-py-loss 8s ease-out infinite; }
+@keyframes mf-py-loss { 0%, 30% { stroke-dashoffset: 300; } 80%, 100% { stroke-dashoffset: 0; } }
+.mf-py .loss-end { opacity: 0; animation: mf-py-end 8s infinite; }
+@keyframes mf-py-end { 0%, 78% { opacity: 0; } 82%, 96% { opacity: 1; } 100% { opacity: 0; } }
+
+/* ---- Get Moving: ten minutes, then you're allowed to stop -------------- */
+@property --mf-sec { syntax: '<integer>'; inherits: true; initial-value: 600; }
+@property --mf-min { syntax: '<integer>'; inherits: true; initial-value: 10; }
+.mf-gm .clock {
+  --mf-min: calc((var(--mf-sec) - 30) / 60);
+  counter-reset: m var(--mf-min) s calc(var(--mf-sec) - var(--mf-min) * 60);
+  animation: mf-gm-count 9s linear infinite;
+}
+.mf-gm .clock::before { content: counter(m) ":" counter(s, decimal-leading-zero); }
+@keyframes mf-gm-count { 0% { --mf-sec: 600; } 72%, 100% { --mf-sec: 0; } }
+.mf-gm .arc { animation: mf-gm-arc 9s linear infinite; }
+@keyframes mf-gm-arc { 0% { stroke-dashoffset: 0; } 72%, 100% { stroke-dashoffset: var(--len); } }
+.mf-gm .after { opacity: 0; animation: mf-gm-after 9s infinite; }
+@keyframes mf-gm-after { 0%, 72% { opacity: 0; } 76%, 96% { opacity: 1; } 100% { opacity: 0; } }
+
+/* ---- Getting Known: one pillar piece, poured into many ---------------- */
+.mf-gk .tier { opacity: 0; animation: mf-gk-tier 7s infinite; animation-delay: calc(var(--i) * .7s); }
+@keyframes mf-gk-tier { 0% { opacity: 0; transform: translateY(-6px); } 6%, 80% { opacity: 1; transform: none; } 90%, 100% { opacity: 0; } }
+.mf-gk .flow { stroke-dasharray: 2 4; animation: mf-dash 1s linear infinite; }
+
+/* ---- Resume Tips: the five-second pass --------------------------------- */
+.mf-rt .scan { animation: mf-rt-scan 6s cubic-bezier(.5, 0, .3, 1) infinite; }
+@keyframes mf-rt-scan {
+  0%, 18% { transform: translateY(0); }
+  32% { transform: translateY(28px); }
+  48% { transform: translateY(56px); }
+  64%, 100% { transform: translateY(84px); }
+}
+@property --mf-five { syntax: '<integer>'; inherits: true; initial-value: 5; }
+.mf-rt .count { counter-reset: n var(--mf-five); animation: mf-rt-count 6s linear infinite; }
+.mf-rt .count::before { content: counter(n) "s"; }
+@keyframes mf-rt-count { 0% { --mf-five: 5; } 80%, 100% { --mf-five: 0; } }
+.mf-rt .stamp { opacity: 0; transform-box: fill-box; transform-origin: center; animation: mf-rt-stamp 6s infinite; }
+@keyframes mf-rt-stamp { 0%, 80% { opacity: 0; transform: rotate(-8deg) scale(1.6); } 84%, 96% { opacity: 1; transform: rotate(-8deg) scale(1); } 100% { opacity: 0; } }
+
+/* ---- Working for Yourself: price the floor, find break-even ------------- */
+.mf-wy .rev { animation: mf-wy-rev 8s ease-out infinite; }
+@keyframes mf-wy-rev { 0%, 10% { stroke-dashoffset: 292; } 60%, 100% { stroke-dashoffset: 0; } }
+.mf-wy .even { opacity: 0; transform-box: fill-box; transform-origin: center; animation: mf-wy-even 8s infinite; }
+@keyframes mf-wy-even { 0%, 40% { opacity: 0; transform: scale(.2); } 46% { opacity: 1; transform: scale(1.6); } 52%, 94% { opacity: 1; transform: scale(1); } 100% { opacity: 0; } }
+.mf-wy .term { opacity: 0; animation: mf-wy-term 8s infinite; animation-delay: calc(var(--i) * .45s); }
+@keyframes mf-wy-term { 0% { opacity: 0; } 5%, 92% { opacity: 1; } 100% { opacity: 0; } }
+.mf-braid .head { offset-rotate: 0deg; offset-distance: 100%; animation: mf-braid-head 9s linear infinite; filter: drop-shadow(0 0 3px rgb(var(--c-accent))); }
+@keyframes mf-braid-head { 0% { offset-distance: 0%; opacity: 1; } 80% { offset-distance: 100%; opacity: 1; } 95%, 100% { offset-distance: 100%; opacity: 0; } }
+
+
+
+/* ---- Ikigai: four circles meet in the middle ---------------------------- */
+.mf-ik .circle { transform: translate(var(--x), var(--y)); animation: mf-ik-in 10s cubic-bezier(.3, .8, .3, 1) infinite; animation-delay: calc(var(--i) * .25s); }
+@keyframes mf-ik-in {
+  0% { transform: translate(calc(var(--x) * 2.6), calc(var(--y) * 2.6)); opacity: 0; }
+  14%, 88% { transform: translate(var(--x), var(--y)); opacity: 1; }
+  100% { transform: translate(var(--x), var(--y)); opacity: 0; }
+}
+.mf-ik .cl { animation: mf-ik-label 10s infinite; animation-delay: calc(var(--i) * .25s); }
+@keyframes mf-ik-label { 0%, 8% { opacity: 0; } 16%, 88% { opacity: 1; } 100% { opacity: 0; } }
+.mf-ik .ov { opacity: 0; animation: mf-ik-ov 10s infinite; animation-delay: calc(1.8s + var(--i) * .6s); }
+@keyframes mf-ik-ov { 0% { opacity: 0; } 5%, 60% { opacity: 1; } 68%, 100% { opacity: 0; } }
+.mf-ik .core { opacity: 0; transform-box: fill-box; transform-origin: center; animation: mf-ik-core 10s infinite; }
+@keyframes mf-ik-core {
+  0%, 52% { opacity: 0; transform: scale(.6); filter: none; }
+  58% { opacity: 1; transform: scale(1.25); filter: drop-shadow(0 0 6px rgb(var(--c-accent))); }
+  64%, 88% { opacity: 1; transform: scale(1); filter: drop-shadow(0 0 3px rgb(var(--c-accent))); }
+  100% { opacity: 0; }
+}
+
+/* ---- Genes: the composition rings sweep in ------------------------------ */
+.mf-genes .seg { animation: mf-genes-seg 10s cubic-bezier(.3, .7, .3, 1) infinite; animation-delay: calc(var(--i) * .35s); }
+@keyframes mf-genes-seg { 0% { stroke-dasharray: 0 100; } 12%, 90% { stroke-dasharray: var(--p) 100; } 100% { stroke-dasharray: 0 100; } }
+.mf-genes .leg { animation: mf-genes-leg 10s infinite; animation-delay: calc(var(--i) * .35s); }
+@keyframes mf-genes-leg { 0% { opacity: 0; transform: translateX(-4px); } 6%, 90% { opacity: 1; transform: none; } 100% { opacity: 0; } }
+
+/* ---- Impossible List: the list, scrolling up forever -------------------- */
+.mf-il .il-window { -webkit-mask-image: linear-gradient(transparent, #000 22%, #000 78%, transparent); mask-image: linear-gradient(transparent, #000 22%, #000 78%, transparent); }
+.mf-il .il-track { animation: mf-il-scroll calc(var(--rows) * 2.2s) linear infinite; }
+@keyframes mf-il-scroll { to { transform: translateY(-50%); } }
+
+/* ---- Uses: a terminal prints the stack ---------------------------------- */
+.mf-uses .type { left: 0.9rem; transform-origin: right center; transform: scaleX(0); animation: mf-uses-type 9s steps(var(--n)) infinite; }
+@keyframes mf-uses-type { 0% { transform: scaleX(1); } 14%, 100% { transform: scaleX(0); } }
+.mf-uses .rows { animation: mf-uses-rows 9s infinite; }
+/* The output prints a line at a time (7 lines, 7 steps), then clears with the screen. */
+@keyframes mf-uses-rows {
+  0%, 16% { clip-path: inset(0 0 100% 0); animation-timing-function: steps(7, end); }
+  40%, 88% { clip-path: inset(0 0 0 0); }
+  89%, 100% { clip-path: inset(0 0 100% 0); }
+}
+.mf-uses .cursor { animation: mf-blink 1s steps(1) infinite; }
+
+/* ---- Dagea: the chart inks itself, then fills in ------------------------ */
+/* Base states are the finished map, so reduced motion shows the whole chart;
+   `backwards` holds each delayed piece at its first keyframe until its turn.
+   Each piece's window is cut so that, delay included, it has cleared by ~13s:
+   the 14s loop restarts on a blank chart. */
+.mf-dagea .chart { transform-origin: 500px 386px; animation: mf-dagea-drift 14s ease-in-out infinite; }
+@keyframes mf-dagea-drift { 0% { transform: scale(1); } 90% { transform: scale(1.05); } 100% { transform: scale(1.05); } }
+.mf-dagea .coast { fill: none; stroke: rgb(var(--c-fg)); stroke-width: 3.2; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 0;
+  animation: mf-dagea-ink 14s ease-in-out infinite backwards; animation-delay: calc(var(--i) * .45s); }
+@keyframes mf-dagea-ink { 0% { stroke-dashoffset: 1; opacity: 1; } 14% { stroke-dashoffset: 0; } 70% { opacity: 1; } 76%, 100% { stroke-dashoffset: 0; opacity: 0; } }
+.mf-dagea .land { fill: rgb(var(--c-accent) / .16); animation: mf-dagea-wash 14s ease-out infinite backwards; animation-delay: calc(1.4s + var(--i) * .45s); }
+@keyframes mf-dagea-wash { 0% { opacity: 0; } 8%, 60% { opacity: 1; } 66%, 100% { opacity: 0; } }
+.mf-dagea .border { fill: none; stroke: rgb(var(--c-muted)); stroke-width: 1.6; stroke-dasharray: 5 7; animation: mf-dagea-late 14s infinite backwards; animation-delay: 3.6s; }
+.mf-dagea .lake { fill: #3b9ad9; fill-opacity: .55; animation: mf-dagea-late 14s infinite backwards; animation-delay: 3.6s; }
+@keyframes mf-dagea-late { 0% { opacity: 0; } 6%, 58% { opacity: 1; } 64%, 100% { opacity: 0; } }
+.mf-dagea .river { fill: none; stroke: #3b9ad9; stroke-width: 2.6; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 0;
+  animation: mf-dagea-river 14s ease-in-out infinite backwards; animation-delay: 3.8s; }
+@keyframes mf-dagea-river { 0% { stroke-dashoffset: 1; opacity: 1; } 14% { stroke-dashoffset: 0; } 58% { opacity: 1; } 64%, 100% { stroke-dashoffset: 0; opacity: 0; } }
+.mf-dagea .name { font: italic 600 30px Georgia, 'Times New Roman', serif; letter-spacing: .04em; fill: rgb(var(--c-fg));
+  paint-order: stroke; stroke: rgb(var(--c-bg) / .8); stroke-width: 6px;
+  animation: mf-dagea-name 14s infinite backwards; animation-delay: calc(5s + var(--i) * .35s); }
+@keyframes mf-dagea-name { 0% { opacity: 0; transform: translateY(8px); } 4%, 38% { opacity: 1; transform: none; } 44%, 100% { opacity: 0; } }
+.mf-dagea .rose { animation: mf-dagea-rose 14s cubic-bezier(.3, .8, .3, 1) infinite; }
+@keyframes mf-dagea-rose { 0% { opacity: 0; transform: translate(292px, 44px) rotate(-120deg) scale(.5); } 10%, 88% { opacity: 1; transform: translate(292px, 44px); } 96%, 100% { opacity: 0; transform: translate(292px, 44px); } }
+
+/* Every animation in this file, off for reduced motion. Last, so it wins. */
+@media (prefers-reduced-motion: reduce) {
+  .mf *, .mf *::before, .mf *::after { animation: none !important; transition: none !important; }
+  /* Elements that only exist mid-animation get their resting state back. */
+  .mf-dnd .stage:first-of-type .roll, .mf-dnd .stage:first-of-type .move,
+  .mf-gk .tier, .mf-wy .term, .mf-wy .even, .mf-py .loss-end,
+  .mf-ik .ov, .mf-ik .core { opacity: 1; }
+}

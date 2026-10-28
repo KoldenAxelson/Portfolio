@@ -8,7 +8,7 @@ container: "wide"
 
 # The shelves /misc is sorted onto, in the order they render. Every visible
 # page under content/misc/ (and every `elsewhere:` entry below) names one of
-# these keys in its own `group:` — misc/list.html fails the build on a page
+# these keys in its own `group:` — misc/collect.html fails the build on a page
 # with no group or an unknown one, so a new page can't quietly fall off the
 # grid. The same list feeds the filter aux button and the page's JSON-LD.
 groups:
@@ -39,6 +39,11 @@ groups:
 # under those paths). Rendered as ordinary cards and searched the same way;
 # only the href differs. See layouts/misc/list.html.
 elsewhere:
+  - label: "Inspirational Quotes"
+    href: "/quotes"
+    icon: "quote"
+    group: "play"
+    blurb: "The lines I keep coming back to, shuffled fresh on every visit."
   - label: "Now"
     href: "/now"
     icon: "clock"

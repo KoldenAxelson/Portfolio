@@ -7,7 +7,7 @@
 @media (min-width:768px){.tw-grid{grid-template-columns:1fr 1fr;}}
 
 .tw-card{position:relative;display:flex;flex-direction:column;overflow:hidden;border:1px solid rgb(var(--c-border));border-radius:.9rem;background:rgb(var(--c-bg));transition:border-color .2s ease,transform .12s ease;}
-.tw-card:not(.tw-feature){border-top:3px solid rgb(var(--c-accent) / .35);}
+.tw-card:not(.tw-feature):not(.tw-pictured){border-top:3px solid rgb(var(--c-accent) / .35);}
 .tw-card:hover{border-color:rgb(var(--c-accent) / .5);}
 .tw-card:active{transform:scale(.985);}
 /* The filter hides a card with [hidden], which display:flex would override. */
@@ -44,3 +44,8 @@
 
 @keyframes twIn{from{opacity:0;transform:translateY(10px) scale(.98);}to{opacity:1;transform:none;}}
 @media (prefers-reduced-motion:no-preference){.tw-card{animation:twIn .3s cubic-bezier(.16,1,.3,1) backwards;}}
+/* Screenshot slot (components/shot.html): 16:10, image anchored to the top. */
+.tw-shot{min-height:0;aspect-ratio:16 / 10;}
+.tw-shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top;transition:transform .3s ease-out;}
+.tw-card:hover .tw-shot img{transform:scale(1.03);}
+@media (prefers-reduced-motion:reduce){.tw-shot img{transition:none;}.tw-card:hover .tw-shot img{transform:none;}}

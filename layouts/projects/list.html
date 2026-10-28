@@ -5,8 +5,7 @@
 {{ end }}
 
 {{ define "main" }}
-{{- $projects := where .Pages "Params.draft" "!=" true -}}
-{{- $projects = where $projects "Params.tier" "!=" 3 -}}
+{{- $projects := partial "func/listed-projects.html" . -}}
 {{- $tier1 := sort (where $projects "Params.tier" 1) "Params.year" "desc" -}}
 {{- $tier2 := sort (where $projects "Params.tier" 2) "Params.year" "desc" -}}
 {{- $archive := sort site.Data.archive "year" "desc" -}}

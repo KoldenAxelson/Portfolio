@@ -1,24 +1,23 @@
 # What Claude can make, on /misc/claude/ "Expanded Capabilities", rendered by
 # shortcodes/claude/capabilities.html. Living list: when a type launches, leaves
 # beta or opens to more plans, edit it here. featured: true = the big card (one).
-# status: shown as a pill ("" for none). plans: who can use it, checked against
-# Anthropic's own pages, not a video.
+# status: optional pill. plans: who can use it, checked against Anthropic's own
+# pages, not a video. limited: true when most plans can't use it yet (the
+# plans line is then set in full colour).
 - name: "Motion"
   featured: true
   status: "New · Beta"
   plans: "Team & Enterprise only, not Pro or Max yet"
+  limited: true
   what: "Short animated explainers built from code, not a video model, so every word, number and timing stays editable. Export as MP4."
   how: "Ask for an animation, or pick Output › Motion in the message box."
 - name: "Docs"
-  status: ""
   plans: "Every plan"
   what: "Writing you and Claude edit together. Download as Word or PDF."
 - name: "Slides"
-  status: ""
   plans: "Every plan"
   what: "Decks you present from Claude or download as PowerPoint."
 - name: "Design"
-  status: ""
   plans: "Every plan"
   what: "Posters, social posts, pages and app screens. Replaces claude.ai/design, which closes December 14."
 - name: "Dashboards"
@@ -26,6 +25,5 @@
   plans: "Paid plans"
   what: "Charts on live data from your connected sources; the numbers refresh every time it opens."
 - name: "AI inside artifacts"
-  status: ""
   plans: "Settings › Capabilities"
   what: "An artifact can call Claude itself, like a question box on a shared dashboard."

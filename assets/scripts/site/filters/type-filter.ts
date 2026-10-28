@@ -15,6 +15,16 @@ function closeLaunchers(): void {
     .forEach((d) => d.removeAttribute('open'));
 }
 
+// Bring the first item the filter left showing into view, unless it already is.
+function scrollToFirstShown(items: HTMLElement[]): void {
+  const first = items.find((el) => !el.hidden);
+  if (!first) return;
+  const top = first.getBoundingClientRect().top;
+  if (top >= 0 && top <= window.innerHeight * 0.6) return;
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  window.scrollTo({ top: top + window.scrollY - 96, behavior: reduce ? 'auto' : 'smooth' });
+}
+
 export function initTypeFilter(): void {
   const buttons = Array.from(document.querySelectorAll<HTMLElement>('[data-filter-type]'));
   if (!buttons.length) return;
@@ -50,17 +60,9 @@ export function initTypeFilter(): void {
       // A launcher can be clicked from far down the page; filtering then
       // shrinks the page under the reader. Close it and bring the first
       // surviving item into view, unless it is already on screen.
-      if (btn.closest('[data-aux-fab], [data-mobile-panel-tools]')) {
-        closeLaunchers();
-        const first = items.find((el) => !el.hidden);
-        if (first) {
-          const top = first.getBoundingClientRect().top;
-          if (top < 0 || top > window.innerHeight * 0.6) {
-            const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-            window.scrollTo({ top: top + window.scrollY - 96, behavior: reduce ? 'auto' : 'smooth' });
-          }
-        }
-      }
+      if (!btn.closest('[data-aux-fab], [data-mobile-panel-tools]')) return;
+      closeLaunchers();
+      scrollToFirstShown(items);
     });
   }
 

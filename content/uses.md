@@ -2,7 +2,7 @@
 title: "Uses"
 description: "The stack, tools, and hardware I actually use, with notes on why."
 layout: "uses"
-updated: 2026-06-29
+updated: 2026-10-28
 stack:
   - id: "editor"
     label: "Editor"
@@ -18,6 +18,9 @@ stack:
       - name: "VS Code"
         note: "when the work needs the heavier IDE"
         link: "https://code.visualstudio.com"
+      - name: "Xcode"
+        note: "for the Swift and watchOS work on Harmony Pulse"
+        link: "https://developer.apple.com/xcode/"
       - name: "Vim"
         note: "plain vim — not neovim"
         link: "https://www.vim.org"
@@ -33,10 +36,12 @@ stack:
         link: "https://ohmyz.sh"
   - id: "languages"
     label: "Languages"
-    caption: "Six I reach for, and how I feel about each."
+    caption: "Seven I reach for, and how I feel about each."
     items:
       - name: "Go"
         note: "what I think in"
+      - name: "Swift"
+        note: "my day-to-day for Harmony Pulse"
       - name: "Rust"
         note: "in an ongoing debate with the compiler"
       - name: "Python"
@@ -109,6 +114,10 @@ stack:
         note: '27"'
       - name: "Apple Magic Keyboard"
       - name: "Apple Magic Trackpad"
+      - name: "iPhone and Apple Watch"
+        note: "test rigs for Harmony Pulse"
+      - name: "Polar H10 straps"
+        note: "two heart-rate monitors: one for the rider, one for the horse"
       - name: "Analogue notebook"
         note: "runs my life"
 ---

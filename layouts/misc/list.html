@@ -5,29 +5,27 @@
 {{ end }}
 
 {{ define "main" }}
+{{- /* The motion-graphic card bands (partials/misc/live/*.html with class "mf"). */ -}}
+{{- with resources.Get "css/pages/misc/motifs.css" | minify | fingerprint }}
+<link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" />
+{{- end }}
 {{- with .Content }}
 <section class="mb-12 max-w-prose space-y-4 text-base leading-relaxed text-muted [&_a]:text-fg [&_a]:underline [&_a]:decoration-border hover:[&_a]:!text-accent">
   {{ . }}
 </section>
 {{- end }}
 
-{{- /* Shelves come from misc/collect.html — the same list the JSON-LD in
-       schema/misc.html is built from, so the grid and the metadata can't
-       disagree. Each shelf is a <section data-types="key"> the shared type
-       filter (driven from the filter aux button) shows or hides whole; inside it, [data-misc-group] is what the
-       search hides when none of its cards match. Two elements, two scripts,
-       neither undoing the other's `hidden`.
-
-       Each shelf is a components/shelf.html row — the same sideways,
-       wheel-pannable row as the impossible list — of poster cards
-       (misc/card.html). Without JS every shelf renders, in order, as plain
-       HTML. */ -}}
+{{- /* Shelves and their cards, in order, come from misc/collect.html, the
+       same list the JSON-LD (schema/misc.html) is built from. Each shelf is a
+       <section data-types> the filter aux button shows or hides whole; inside
+       it, [data-misc-group] is what the search hides when nothing matches, so
+       the two scripts never undo each other's `hidden`. */ -}}
 {{- $shelves := partial "misc/collect.html" . -}}
 
-{{- /* Search field. Shipped `hidden` and revealed by scripts/site/filters/misc-filter.ts: an input
-       that filters nothing is worse than no input at all, so with JS off the
-       reader just gets the full grid. */ -}}
-<div data-misc-search-wrap hidden class="mx-auto mb-12 max-w-xl">
+{{- /* Search field (scripts/site/filters/misc-filter.ts). Hidden by CSS when
+       scripting is off, since an input that filters nothing is worse than none.
+       It is never shown by JS: revealing it late pushed every shelf down. */ -}}
+<div data-misc-search-wrap class="mx-auto mb-12 max-w-xl [@media(scripting:none)]:hidden">
   {{/* The field, not the bare <input>, is the focus surface. base.css puts a 2px
        accent ring on :focus-visible; left alone it lands tight around the text and
        reads as a second box inside the border, so it's suppressed on the input and
@@ -48,22 +46,6 @@
 <div class="space-y-12">
 {{- range $shelves }}
 {{- if .cards }}
-{{- /* Visual cards lead the row — a live canvas, then a screenshot — and the
-       icon-poster cards follow; alphabetical within each kind. */ -}}
-{{- $live := slice -}}{{- $shot := slice -}}{{- $plain := slice -}}
-{{- range .cards -}}
-  {{- if templates.Exists (printf "partials/misc/live/%s.html" .slug) -}}
-    {{- $live = $live | append . -}}
-  {{- else if resources.Get (printf "misc/previews/%s.webp" .slug) -}}
-    {{- $shot = $shot | append . -}}
-  {{- else -}}
-    {{- $plain = $plain | append . -}}
-  {{- end -}}
-{{- end -}}
-{{- $row := slice -}}
-{{- range $live }}{{ $row = $row | append . }}{{ end -}}
-{{- range $shot }}{{ $row = $row | append . }}{{ end -}}
-{{- range $plain }}{{ $row = $row | append . }}{{ end }}
 <section data-types="{{ .key }}" aria-labelledby="shelf-{{ .key }}">
   <div data-misc-group>
     <header>
@@ -72,7 +54,7 @@
         {{ .label }}
       </h2>
     </header>
-    {{ partial "components/shelf.html" (dict "label" .label "showLabel" false "width" "w-64 sm:w-[17rem]" "items" $row "card" "misc/card.html") }}
+    {{ partial "components/shelf.html" (dict "label" .label "showLabel" false "width" "w-64 sm:w-[17rem]" "items" .cards "card" "misc/card.html") }}
   </div>
 </section>
 {{- end }}

@@ -1,0 +1,9 @@
+{{- /*
+  misc/live-script — the <script> for one live card on /misc, built from
+  assets/scripts/<path> as its own small bundle. Each partial under misc/live/
+  calls this, so a card's code only ships with the card.
+
+    {{ partial "misc/live-script.html" "pages/misc-cards/ba-gil-card.ts" }}
+*/ -}}
+{{- $js := resources.Get (printf "scripts/%s" .) | js.Build (dict "minify" true "target" "es2018" "format" "iife") | fingerprint -}}
+<script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>

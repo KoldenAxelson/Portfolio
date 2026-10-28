@@ -1,26 +1,18 @@
 {{- /*
-  misc/collect — every card on /misc, normalised, grouped and checked.
+  misc/collect — every card on /misc, normalised, grouped, ordered and checked.
 
     {{ $shelves := partial "misc/collect.html" $section }}
 
-  Returns the `groups:` list from content/misc/_index.md, in order, each entry
-  carrying its own `cards` slice. One source for both readers: the visible grid
-  (misc/list.html) and the JSON-LD (schema/misc.html). Because both are built
-  from this, the page and its metadata can't drift apart — adding or removing a
-  page under content/misc/ updates both on the next build, nothing to keep in
-  sync by hand.
+  Returns content/misc/_index.md `groups:` in order, each with its `cards`.
+  The grid (misc/list.html), the JSON-LD (schema/misc.html) and the filter
+  (func/filter-cats.html) all read this, so they can't drift apart.
 
-  Two sources of cards. The section's own pages (`hidden: true` skipped), then
-  `elsewhere:` entries — pages that belong on the shelf but live outside
-  content/misc/ (/now, /uses) and keep their URLs.
-
-  Fails the build on a visible page with no `group:` or an unknown one. That is
-  the point: a new misc page has to say where it goes, or it doesn't ship.
-
-  A card's preview is assets/img/misc/previews/<slug>.webp, by convention —
-  drop a 16:10 image there and the card grows one. No front matter involved.
-  (assets/img is mounted at the assets root, so resources.Get sees it as
-  misc/previews/<slug>.webp.)
+  Cards are the section's pages (minus `hidden: true`) plus `elsewhere:`
+  entries (/now, /uses), and the build fails on a page with no or an unknown
+  `group:`. Each card gets its `band` here — "live" (partials/misc/live/<slug>.html),
+  "shot" (assets/img/misc/previews/<slug>.webp) or "icon" — and shelves sort
+  by title, with icon-only cards last. The first shelf's first visual cards are
+  `eager`: they are the page's largest paint.
 */ -}}
 {{- $groups := .Params.groups -}}
 {{- $keys := slice -}}
@@ -61,11 +53,27 @@
       "youtube"   (.youtube | default "")) -}}
 {{- end -}}
 
+{{- /* Live and screenshot bands rank together, so a shelf reads alphabetically
+       whatever each card draws; only an icon-only card sinks to the end. */ -}}
+{{- $bandOrder := dict "live" 0 "shot" 0 "icon" 1 -}}
+{{- $banded := slice -}}
+{{- range $cards -}}
+  {{- $band := "icon" -}}
+  {{- if templates.Exists (printf "partials/misc/live/%s.html" .slug) }}{{ $band = "live" }}
+  {{- else if resources.Get (printf "misc/previews/%s.webp" .slug) }}{{ $band = "shot" }}{{ end -}}
+  {{- $banded = $banded | append (merge . (dict "band" $band "rank" (printf "%d %s" (index $bandOrder $band) .label))) -}}
+{{- end -}}
+
+{{- $isFirstShelf := true -}}
 {{- $out := slice -}}
 {{- range $groups -}}
   {{- $key := .key -}}
   {{- $mine := slice -}}
-  {{- range $cards }}{{ if eq .group $key }}{{ $mine = $mine | append . }}{{ end }}{{ end -}}
-  {{- $out = $out | append (merge . (dict "cards" (sort $mine "label"))) -}}
+  {{- range $i, $card := sort (where $banded "group" $key) "rank" -}}
+    {{- $isEager := and $isFirstShelf (lt $i 4) (ne $card.band "icon") -}}
+    {{- $mine = $mine | append (merge $card (dict "eager" $isEager)) -}}
+  {{- end -}}
+  {{- if $mine }}{{ $isFirstShelf = false }}{{ end -}}
+  {{- $out = $out | append (merge . (dict "cards" $mine)) -}}
 {{- end -}}
 {{- return $out -}}

@@ -1,15 +1,13 @@
+import { syncShelfRow } from '../widgets/shelf-row';
+
 // /misc search. Cards carry [data-misc-card] plus a lowercased [data-misc-terms]
 // haystack built by the template, so this never has to walk card markup to know
 // what a card says. Substring match, not fuzzy — the shelf is small enough that
 // anything cleverer would only be harder to predict.
 //
-// Works alongside the shelf bubbles (type-filter.ts), which hide whole
-// <section data-types>. This script only ever touches each card's shelf slot
-// and the [data-misc-group] wrapper inside each section, so neither undoes the other's
-// `hidden`. The empty-state line counts only cards on a shelf that is showing.
-//
-// The field ships hidden and is revealed here: without JS it would be an input
-// that silently does nothing, which is worse than not offering one.
+// Works alongside the shelf filter (type-filter.ts), which hides whole
+// <section data-types>. This script only touches each card's shelf slot and the
+// [data-misc-group] inside each section, so neither undoes the other's `hidden`.
 
 const slotOf = (card: HTMLElement): HTMLElement => card.closest<HTMLElement>('li') ?? card;
 
@@ -21,9 +19,8 @@ export function initMiscFilter(): void {
   if (!cards.length) return;
 
   const groups = Array.from(document.querySelectorAll<HTMLElement>('[data-misc-group]'));
-  const wrap = document.querySelector<HTMLElement>('[data-misc-search-wrap]');
+  const rows = Array.from(document.querySelectorAll<HTMLElement>('[data-shelf-row]'));
   const empty = document.querySelector<HTMLElement>('[data-misc-empty]');
-  if (wrap) wrap.hidden = false;
 
   const apply = (): void => {
     const query = input.value.trim().toLowerCase();
@@ -38,6 +35,9 @@ export function initMiscFilter(): void {
     for (const group of groups) {
       group.hidden = !cards.some((card) => group.contains(card) && !slotOf(card).hidden);
     }
+
+    // A hidden card can't be a row's Tab stop, or Tab would skip the row.
+    for (const row of rows) syncShelfRow(row);
 
     if (empty) {
       const shown = cards.some((card) => !slotOf(card).hidden && !card.closest('[data-types][hidden]'));
@@ -56,7 +56,7 @@ export function initMiscFilter(): void {
     apply();
   });
 
-  // A shelf bubble can leave the search with nothing visible (or rescue it);
+  // Picking a shelf can leave the search with nothing visible (or rescue it);
   // re-run after type-filter.ts, whose click handler was bound first.
   for (const btn of Array.from(document.querySelectorAll<HTMLElement>('[data-filter-type]'))) {
     btn.addEventListener('click', apply);

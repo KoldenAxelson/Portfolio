@@ -11,6 +11,11 @@ enableInlineShortcodes = true
 disableKinds = ["taxonomy", "term"]
 
 # Home emits the JSON Feed + llms.txt; sections/pages stay HTML-only.
+# A cold build (CI never has resources/) resizes ~600 cover and preview images
+# inside the shelf partials, which can outrun Hugo's default 30s per-partial
+# limit and fail the deploy with a misleading "infinite recursion" error.
+timeout = "180s"
+
 [outputs]
   home = ["HTML", "llms", "feedjson"]
   section = ["HTML"]

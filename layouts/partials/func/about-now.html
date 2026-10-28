@@ -1,0 +1,15 @@
+{{- /*
+  about-now — what /about shows under "Off the clock", read from the Impossible
+  List so it never goes stale: the game and the book marked `current: true`.
+  Returns (dict "game" <item or nil> "book" <item or nil>).
+*/ -}}
+{{- $out := dict "game" nil "book" nil -}}
+{{- with site.GetPage "/impossible-list" -}}
+  {{- with .Params.games }}{{ with where .items "current" true }}{{ $out = merge $out (dict "game" (index . 0)) }}{{ end }}{{ end -}}
+  {{- with .Params.books -}}
+    {{- range .shelves -}}
+      {{- with where .items "current" true }}{{ $out = merge $out (dict "book" (index . 0)) }}{{ end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $out -}}

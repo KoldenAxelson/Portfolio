@@ -1,0 +1,51 @@
+{{- /*
+  misc/live/writing — the Writing card as a storybook: each story's own
+  illustration, one after another with a slow push in, captioned with the
+  story's title and its collection. Stories are found in the collections under
+  content/misc/writing/: every "## Title" followed by a writing/illustration
+  shortcode is one slide, so a new story with a picture joins the card.
+  Pure HTML + CSS; the crossfade timing is generated for however many slides
+  there are. Without animation (reduced motion) the first slide stays.
+*/ -}}
+{{- $slides := slice -}}
+{{- with site.GetPage "/misc/writing" -}}
+  {{- range .RegularPages.ByWeight -}}
+    {{- $collection := .Title -}}
+    {{- range findRESubmatch `(?m)^## (.+)\n+\{\{< writing/illustration "([^"]+)"` .RawContent -1 -}}
+      {{- $title := index . 1 -}}
+      {{- with resources.Get (printf "writing/%s.webp" (index . 2)) -}}
+        {{- $slides = $slides | append (dict "title" $title "collection" $collection "img" .) -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- with $slides }}
+{{- $n := len . -}}
+{{- $hold := 4 -}}{{- /* seconds per slide */ -}}
+{{- $cycle := mul $n $hold -}}
+{{- $show := div 100.0 $n -}}
+{{- $fade := div (mul 100.0 0.8) $cycle -}}{{- /* a 0.8s crossfade, as a share of the cycle */ -}}
+<style>
+  .mf-wr .slide { opacity: 0; animation: mf-wr-slide {{ $cycle }}s linear infinite; animation-delay: calc(var(--i) * {{ $hold }}s - {{ $hold }}s * 0.2); }
+  .mf-wr .slide:first-child { opacity: 1; }
+  @keyframes mf-wr-slide {
+    0% { opacity: 0; transform: scale(1); }
+    {{ printf "%.2f" $fade }}% { opacity: 1; }
+    {{ printf "%.2f" $show }}% { opacity: 1; }
+    {{ printf "%.2f" (add $show $fade) }}% { opacity: 0; transform: scale(1.09); }
+    100% { opacity: 0; transform: scale(1.09); }
+  }
+</style>
+<span class="mf mf-wr" aria-hidden="true">
+  {{- range $i, $s := . }}
+  {{- $one := $s.img.Fill "480x300 webp q78" }}{{ $two := $s.img.Fill "960x600 webp q72" }}
+  <span class="slide absolute inset-0 block" style="--i: {{ $i }}">
+    <img src="{{ $one.RelPermalink }}" srcset="{{ $one.RelPermalink }} 1x, {{ $two.RelPermalink }} 2x" width="480" height="300" alt="" loading="lazy" decoding="async" class="absolute inset-0 h-full w-full object-cover" />
+    <span class="absolute inset-x-0 bottom-0 block bg-gradient-to-t from-black/75 via-black/35 to-transparent px-4 pb-3 pt-10">
+      <span class="block font-serif text-base italic leading-tight text-white" style="font-family: Georgia, 'Times New Roman', serif">{{ $s.title }}</span>
+      <span class="mt-0.5 block font-mono text-[0.6rem] uppercase tracking-widest text-white/70">{{ $s.collection }}</span>
+    </span>
+  </span>
+  {{- end }}
+</span>
+{{- end }}

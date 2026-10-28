@@ -1,7 +1,7 @@
 {{- /*
   projects/cats — the focus areas /projects/ can be filtered by, as
-  {key, label, icon}, "All" first, keeping only areas at least one listed
-  project (not a draft, not tier 3) names in its `types:`. Takes the projects
+  {key, label, icon}, keeping only areas at least one listed project
+  (func/listed-projects.html) names in its `types:`. Takes the projects
   section page. Read by func/filter-cats.html, which feeds the filter launcher
   (components/filter-fab.html on desktop, the navbar tools panel on mobile).
 */ -}}
@@ -12,13 +12,8 @@
   (dict "key" "game"     "label" "Game"     "icon" "puzzle-piece")
   (dict "key" "tooling"  "label" "Tooling"  "icon" "wrench-screwdriver")
 -}}
-{{- $projects := where .Pages "Params.draft" "!=" true -}}
-{{- $projects = where $projects "Params.tier" "!=" 3 -}}
 {{- $types := slice -}}
-{{- range $projects }}{{ with .Params.types }}{{ $types = $types | append . }}{{ end }}{{ end -}}
+{{- range partial "func/listed-projects.html" . }}{{ with .Params.types }}{{ $types = $types | append . }}{{ end }}{{ end -}}
 {{- $out := slice -}}
-{{- with $types -}}
-  {{- $out = slice (dict "key" "" "label" "All" "icon" "squares-2x2") -}}
-  {{- range $all }}{{ if in $types .key }}{{ $out = $out | append . }}{{ end }}{{ end -}}
-{{- end -}}
+{{- range $all }}{{ if in $types .key }}{{ $out = $out | append . }}{{ end }}{{ end -}}
 {{- return $out -}}

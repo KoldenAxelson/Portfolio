@@ -1,6 +1,6 @@
 {{- /*
   cool-sites/cats — the kinds /misc/cool-sites/ can be filtered by, as
-  {key, label, icon}, "All" first, keeping only kinds at least one site in
+  {key, label, icon}, keeping only kinds at least one site in
   data/cool-sites/sites.yaml carries. Read by func/filter-cats.html, which
   feeds the filter launcher (components/filter-fab.html on desktop, the navbar
   tools panel on mobile).
@@ -14,6 +14,6 @@
 -}}
 {{- $types := slice -}}
 {{- range (index site.Data "cool-sites").sites }}{{ $types = $types | append .types }}{{ end -}}
-{{- $out := slice (dict "key" "" "label" "All" "icon" "squares-2x2") -}}
+{{- $out := slice -}}
 {{- range $all }}{{ if in $types .key }}{{ $out = $out | append . }}{{ end }}{{ end -}}
 {{- return $out -}}

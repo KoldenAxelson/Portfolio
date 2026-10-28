@@ -1,18 +1,17 @@
 {{- /*
-  components/shelf — one labelled, sideways-scrolling row of book covers, the
-  Netflix-style shelf used by /impossible-list/ and /misc/writing/. The order is
-  the caller's; each item is drawn by the card partial the caller names, which
-  gets (dict "item" <item>) and should render the cover with
-  components/shelf-cover.html inside an element carrying `group/book`.
+  components/shelf — one labelled, sideways-scrolling row of cards, the
+  Netflix-style shelf used by /impossible-list/, /misc/ and /misc/writing/. The
+  order is the caller's; each item is drawn by the card partial the caller
+  names, which gets (dict "item" <item>). Cover cards render
+  components/shelf-cover.html inside an element carrying `group/cover`.
 
     {{ partial "components/shelf.html" (dict "label" "For Study" "items" $books "card" "impossible-list/book-card.html") }}
 
-  Row behaviour is scripts/site/widgets/shelf-row.ts ([data-shelf-row], shared
-  with the /misc/dnd/ rail): a notched mouse wheel pans the row smoothly (a
-  trackpad or Magic Mouse is left native), and the arrow keys move the
-  highlight card to card, gliding the row to keep it in view.
+  Wheel and keyboard behaviour: scripts/site/widgets/shelf-row.ts ([data-shelf-row]).
 
   Optional: `width` — the card width class (default "w-36", a book cover);
+  `eagerCount` — how many leading cards skip lazy loading (default 0); the card
+  partial gets it as `eager`;
   `showLabel` false — drop the h3 when the caller draws its own heading (/misc),
   `label` then only names the row for screen readers.
 */ -}}
@@ -27,8 +26,8 @@
        position:absolute, and without a positioned scroller they escape its
        clipping and stretch the whole page thousands of pixels to the right. */}}
   <ul data-shelf-row aria-label="{{ .label }}" class="relative -mx-1 flex gap-3 overflow-x-auto px-1 pb-2 pt-3 [scrollbar-width:thin]">
-    {{- range .items }}
-    <li class="{{ $width }} shrink-0">{{ partial $.card (dict "item" .) }}</li>
+    {{- range $i, $item := .items }}
+    <li class="{{ $width }} shrink-0">{{ partial $.card (dict "item" $item "eager" (lt $i ($.eagerCount | default 0))) }}</li>
     {{- end }}
   </ul>
 </div>

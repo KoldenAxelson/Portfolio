@@ -17,7 +17,7 @@
     <h3>{{ .name }}{{ with .status }} <span class="cl-pill">{{ . }}</span>{{ end }}</h3>
     <p>{{ .what }}</p>
     {{- with .how }}<p class="cl-cap-how">{{ . }}</p>{{ end }}
-    <span class="cl-cap-plans{{ if .featured }} is-limited{{ end }}">{{ .plans }}</span>
+    <span class="cl-cap-plans{{ if .limited }} is-limited{{ end }}">{{ .plans }}</span>
   </div>
 </article>
 {{- end }}

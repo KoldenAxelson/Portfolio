@@ -1,36 +1,131 @@
+{{- /*
+  /about — the person, not the résumé (the homepage and /cv cover the work).
+  Top to bottom: photo and facts, a short signed note (the page body), how I
+  work (`principles`), off the clock (what I'm playing and reading, read from
+  the Impossible List so it stays current), and the work I'm open to (`openTo`).
+  Everything is server-rendered HTML; schema/about.html adds the JSON-LD.
+*/ -}}
 {{ define "banner" }}
 {{ partial "site/page-banner.html" (dict
   "title" "About"
-  "subtitle" (.Params.lead | default "")) }}
+  "subtitle" (.Params.lead | default site.Data.site.author.bio)) }}
 {{ end }}
 
 {{ define "main" }}
+{{- $site := site.Data.site -}}
+{{- $author := $site.author -}}
+{{- $firstName := index (split $author.name " ") 0 -}}
+{{- $heading := "mb-4 font-mono text-xs uppercase tracking-widest text-fg" -}}
+{{- $now := partial "func/about-now.html" . -}}
+
+{{- /* Photo and facts */}}
+<section aria-label="At a glance" class="flex flex-col items-center gap-6 text-center sm:flex-row sm:items-start sm:text-left">
+  {{- with .Params.photos }}
+  <span data-photo-cycle class="relative block h-36 w-36 shrink-0 overflow-hidden rounded-2xl border border-border/60 bg-border/15">
+    {{- range $i, $photo := . }}{{ with resources.Get $photo.src }}
+    {{- $square := . -}}
+    {{- with $photo.crop }}{{ $square = $square.Crop . }}{{ end -}}
+    {{- $one := $square.Fill "144x144 Center webp q80" -}}
+    {{- $two := $square.Fill "288x288 Center webp q80" -}}
+    <img src="{{ $one.RelPermalink }}" srcset="{{ $one.RelPermalink }} 1x, {{ $two.RelPermalink }} 2x" alt="{{ if eq $i 0 }}Portrait of {{ $author.name }}{{ end }}"{{ if gt $i 0 }} aria-hidden="true" loading="lazy"{{ end }} width="144" height="144" decoding="async" class="absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ease-in-out motion-reduce:transition-none {{ cond (eq $i 0) "opacity-100" "opacity-0" }}" />
+    {{- end }}{{ end }}
+  </span>
+  {{- end }}
+  <div class="min-w-0 flex-1">
+    <p class="text-2xl font-semibold tracking-tight text-fg">{{ $author.name }}</p>
+    <p class="mt-1 text-muted">{{ $author.role }}</p>
+    {{- with .Params.openTo }}
+    <p class="mt-3 inline-flex items-center gap-2 rounded-full border border-accent/50 bg-accent/10 px-3 py-1 text-sm font-medium text-fg">
+      <span aria-hidden="true" class="h-2 w-2 rounded-full bg-accent"></span>Available for work
+    </p>
+    {{- end }}
+    <dl class="mt-5 grid grid-cols-1 gap-x-8 gap-y-3 text-sm sm:grid-cols-2">
+      {{- with $author.location }}
+      <div>
+        <dt class="font-mono text-xs uppercase tracking-widest text-muted">Based in</dt>
+        <dd class="mt-1 text-fg">{{ . }}</dd>
+      </div>
+      {{- end }}
+      {{- with .Params.building }}{{ with site.GetPage . }}
+      <div>
+        <dt class="font-mono text-xs uppercase tracking-widest text-muted">Building</dt>
+        <dd class="mt-1"><a href="{{ .RelPermalink }}" class="text-fg underline decoration-border underline-offset-2 hover:!text-accent">{{ .Title }}</a></dd>
+      </div>
+      {{- end }}{{ end }}
+    </dl>
+    {{ partial "site/social-icons.html" (dict "class" "mt-5 justify-center sm:justify-start") }}
+  </div>
+</section>
+
+{{- /* The note */}}
 {{- with .Content }}
-<section class="max-w-prose space-y-4 text-base leading-relaxed text-muted [&_a]:text-fg [&_a]:underline [&_a]:decoration-border hover:[&_a]:!text-accent">
-  {{ . }}
+<section aria-labelledby="note-heading" class="mt-16">
+  <h2 id="note-heading" class="{{ $heading }}">A note</h2>
+  <div class="max-w-prose space-y-4 text-base leading-relaxed text-muted [&_a]:text-fg [&_a]:underline [&_a]:decoration-border hover:[&_a]:!text-accent">
+    {{ . }}
+  </div>
+  <p class="mt-6 text-lg italic text-fg">— {{ $firstName }}</p>
 </section>
 {{- end }}
 
-{{- with .Params.elsewhere }}
-<section class="mt-16 border-t border-border/60 pt-10" aria-labelledby="elsewhere-heading">
-  <h2 id="elsewhere-heading" class="font-mono text-xs uppercase tracking-widest text-fg">Elsewhere on the site</h2>
-  {{/* Index rows: one full-width row per corner, hairline divider between.
-       Scales to any count without the orphaned-cell problem a fixed-column
-       grid hits on odd totals. */}}
-  <ul class="-mx-2 mt-4 divide-y divide-border/60">
+{{- /* How I work */}}
+{{- with .Params.principles }}
+<section aria-labelledby="principles-heading" class="mt-16">
+  <h2 id="principles-heading" class="{{ $heading }}">How I work</h2>
+  <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2">
     {{- range . }}
-    <li>
-      <a href="{{ partial "func/url.html" .href }}"{{ if eq .boost false }} hx-boost="false"{{ end }} class="group flex items-start gap-4 rounded-lg px-3 py-5 no-underline transition-colors hover:bg-border/20">
-        {{ partial "func/svg-icon.html" (dict "name" .icon "class" "mt-1 h-5 w-5 shrink-0 text-muted transition-colors group-hover:!text-accent") }}
-        <span class="min-w-0 flex-1">
-          <span class="block font-medium text-fg group-hover:!text-accent">{{ .label }}</span>
-          {{- with .blurb }}<span class="mt-2 block text-sm leading-relaxed text-muted">{{ . }}</span>{{ end }}
-        </span>
-        <span aria-hidden="true" class="mt-1 inline-block text-muted transition-transform duration-200 ease-out group-hover:translate-x-0.5 group-hover:!text-accent">&rarr;</span>
-      </a>
+    <li class="rounded-xl border border-border/60 bg-border/10 p-5">
+      <p class="font-medium text-fg">{{ .title }}</p>
+      <p class="mt-2 text-sm leading-relaxed text-muted">{{ .text }}</p>
     </li>
     {{- end }}
   </ul>
+</section>
+{{- end }}
+
+{{- /* Off the clock */}}
+{{- if or $now.game $now.book }}
+<section aria-labelledby="offclock-heading" class="mt-16">
+  <h2 id="offclock-heading" class="{{ $heading }}">Off the clock</h2>
+  <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    {{- range $row := slice (dict "item" $now.game "label" "Playing" "dir" "games/covers") (dict "item" $now.book "label" "Reading" "dir" "achievements") }}
+    {{- with $row.item }}
+    <li>
+      <a href="{{ partial "func/url.html" "/impossible-list" }}" class="group/cover flex h-full gap-4 rounded-xl border border-border/60 p-4 no-underline transition-colors hover:bg-border/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
+        <span class="w-16 shrink-0">{{ partial "components/shelf-cover.html" (dict "dir" $row.dir "slug" .cover "title" .title) }}</span>
+        <span class="min-w-0 pt-1.5">
+          <span class="block font-mono text-xs uppercase tracking-widest text-muted">{{ $row.label }}</span>
+          <span class="mt-1 block font-medium leading-snug text-fg transition-colors group-hover/cover:text-accent">{{ .title }}</span>
+          {{- with .year }}<span class="mt-1 block text-sm text-muted">{{ . }}</span>{{ end }}
+        </span>
+      </a>
+    </li>
+    {{- end }}
+    {{- end }}
+  </ul>
+</section>
+{{- end }}
+
+{{- /* Open to */}}
+{{- with .Params.openTo }}
+<section aria-labelledby="open-heading" class="mt-16 rounded-2xl border border-accent/40 bg-accent/5 p-6 sm:p-8">
+  <h2 id="open-heading" class="{{ $heading }}">Open to</h2>
+  <p class="max-w-prose text-base leading-relaxed text-fg">{{ .text }}</p>
+  {{- with .items }}
+  <ul class="mt-4 space-y-2 text-muted">
+    {{- range . }}
+    <li class="flex items-start gap-3"><span aria-hidden="true" class="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent"></span><span>{{ . }}</span></li>
+    {{- end }}
+  </ul>
+  {{- end }}
+  <p class="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3">
+    {{- with $author.email }}
+    <a href="mailto:{{ . }}" class="inline-flex items-center gap-2 rounded-full bg-accent px-4 py-2 text-sm font-medium !text-bg no-underline transition hover:opacity-90">
+      {{- partial "func/svg-icon.html" (dict "name" "envelope" "class" "h-4 w-4") }}Email me
+    </a>
+    {{- end }}
+    <a href="{{ partial "func/url.html" "/cv" }}" class="group/cta text-sm text-fg no-underline"><span class="underline decoration-1 underline-offset-2 group-hover/cta:decoration-2">Full CV</span><span aria-hidden="true" class="ml-0.5 inline-block transition-transform duration-200 ease-out group-hover/cta:translate-x-0.5 motion-reduce:transition-none">→</span></a>
+  </p>
 </section>
 {{- end }}
 {{ end }}

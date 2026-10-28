@@ -1,0 +1,72 @@
+{{- /*
+  misc/live/quotes — the Inspirational Quotes card's band on /misc: the /quotes
+  deck itself, with one quote, "Quotes". This is the page's own markup
+  (layouts/_default/quotes.html) cut down to what the engine reads, so
+  scripts/site/quotes/ (initQuotes, run on every page by scripts/site/main.ts)
+  mounts it exactly as it mounts /quotes: same lattice, same smoke solver, same
+  knobs and defaults, and a visitor's saved tune applies here too.
+
+  The stage is laid out at the page's own 720x416 and scaled down to the band
+  with a transform, the way fullscreen scales it up. The engine sizes from the
+  untransformed box (offsetWidth), so the type, the dot count and the smoke grid
+  all match /quotes; at the band's own size the same emission floods it.
+
+  What the card leaves out, the engine already treats as optional: no tuning
+  panel, no fullscreen button, and no cursor (the cursor switch is off and the
+  stage takes no pointer events), so it is just the smoking word. The switches are hidden inputs carrying the
+  page's default states (type=hidden, so nothing interactive sits inside the
+  card's link), and the stage is a span for the same reason. The goo filter id
+  is the page's own; /quotes and /misc are never on screen together.
+
+  Without JS the band shows the word as plain text.
+*/ -}}
+{{- $fluid := resources.Get "scripts/site/quotes/fluid.ts" | js.Build (dict "minify" true "target" "es2018" "format" "iife") | fingerprint -}}
+<style>
+  .quotes-card .quotes__viewport { display: none; }
+  .quotes-card.is-live .quotes__viewport {
+    display: block; position: absolute; left: 50%; top: 50%; width: 720px; height: 416px;
+    transform: translate(-50%, -50%) scale(var(--quotes-card-scale, 0.4)); pointer-events: none;
+  }
+  .quotes-card.is-live .quotes__fallback { display: none; }
+  .quotes-card .quotes__canvas,
+  .quotes-card .quotes__fluid { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+  /* Read back by the engine with getComputedStyle, as on /quotes. */
+  .quotes-card .quotes__canvas { font-family: inherit; font-weight: 700; color: rgb(var(--c-fg)); }
+  .quotes-card .quotes__fluid { transition: opacity 0.4s ease; }
+  .quotes-card .quotes__stage { position: absolute; inset: 0; display: block; }
+  .quotes-card .quotes__defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+</style>
+<span class="quotes quotes-card absolute inset-0 block" data-quotes
+  data-quotes-solver="{{ $fluid.RelPermalink }}"
+  data-quotes-solver-integrity="{{ $fluid.Data.Integrity }}"
+  aria-hidden="true">
+  <svg class="quotes__defs" aria-hidden="true" focusable="false">
+    <filter id="quotes-goo">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
+      <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -8.1" />
+    </filter>
+  </svg>
+  <span class="quotes__viewport">
+    <canvas class="quotes__fluid" data-quotes-fluid></canvas>
+    <canvas class="quotes__canvas" data-quotes-canvas></canvas>
+    <span class="quotes__stage" data-quotes-advance></span>
+  </span>
+  {{- /* The page's switch defaults (layouts/_default/quotes.html), cursor off. */}}
+  {{- range slice "smoke" "dots" "merge" "auto" }}
+  <input type="hidden" data-quotes-toggle="{{ . }}" checked>
+  {{- end }}
+  <input type="hidden" data-quotes-toggle="cursor">
+  <span class="quotes__fallback absolute inset-0 flex items-center justify-center text-4xl font-bold text-accent" style="font-family: Papyrus, 'Papyrus MT', fantasy">Quotes</span>
+  <ul hidden data-quotes-source><li>Quotes</li></ul>
+</span>
+<script>
+  /* Scale the 720x416 stage to fit the band (see the note at the top). */
+  (() => {
+    for (const card of document.querySelectorAll('.quotes-card:not([data-scaled])')) {
+      card.dataset.scaled = 'true';
+      new ResizeObserver(() => {
+        card.style.setProperty('--quotes-card-scale', String(Math.min(card.clientWidth / 720, card.clientHeight / 416)));
+      }).observe(card);
+    }
+  })();
+</script>

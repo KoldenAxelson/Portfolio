@@ -116,3 +116,8 @@
 .wds-plain{border-top:3px solid rgb(var(--c-accent) / .35);}
 .wds-desc a{position:relative;z-index:4;text-decoration:underline !important;text-decoration-color:rgb(var(--c-border)) !important;text-underline-offset:2px;}
 .wds-desc a:hover{color:rgb(var(--c-accent));}
+/* Screenshot slot (components/shot.html): 16:10, image anchored to the top. */
+.wds-shot{min-height:0;aspect-ratio:16 / 10;}
+.wds-shot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top;transition:transform .3s ease-out;}
+.wds-card:hover .wds-shot img{transform:scale(1.03);}
+@media (prefers-reduced-motion:reduce){.wds-shot img{transition:none;}.wds-card:hover .wds-shot img{transform:none;}}

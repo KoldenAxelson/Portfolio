@@ -1,21 +1,10 @@
-// Shelf rows: any [data-shelf-row] track, a sideways row of cards. Today that
-// is every components/shelf.html row (/impossible-list/, /misc/,
-// /misc/writing/) and the Fighting Style rail on /misc/dnd/. Opting a row in is
-// the attribute alone; this module is everything such a row does.
+// Shelf rows: any [data-shelf-row] track (every components/shelf.html row,
+// and the Fighting Style rail on /misc/dnd/). The attribute is the whole opt-in.
 //
-// Mouse wheel. A vertical wheel over the row scrolls it left/right until it
-// reaches an end, then hands the wheel back to the page so the visitor is never
-// trapped in the row. Only for a notched mouse wheel: a trackpad or Magic Mouse
-// can already swipe sideways natively, so a vertical swipe over a row on one of
-// those scrolls the page as normal. Browsers don't say which device sent a
-// wheel event, so isNotchedWheel() infers it (see there). The pan is eased over
-// a few frames, since a raw wheel tick jumps the row ~100px at once.
-//
-// A row with CSS scroll-snap works too: each tick glides to the next snap
-// point in that direction (snapping is paused mid-glide, then restored on a
-// point, so nothing jumps). Snap points are read as `start` alignment.
-//
-// Keyboard. See "Arrow keys" below.
+// A notched mouse wheel pans the row, eased, and hands the wheel back to the
+// page at either end; a trackpad or Magic Mouse is left native (see
+// isNotchedWheel). On a scroll-snap row each tick lands on the next snap point.
+// The arrow keys move a roving Tab stop card to card (see "Arrow keys").
 
 const LINE_HEIGHT_PX = 16;
 // Events closer together than this belong to one gesture, which keeps the
@@ -57,8 +46,7 @@ const wheelDeltaPx = (e: WheelEvent, track: HTMLElement): number => {
 //     a stray fraction, like 4.000244. Any other fraction means a wheel.
 //   - Otherwise, whole steps of 50px or more are wheel ticks (Windows/Linux
 //     pixel-mode wheels); small whole-pixel values are a trackpad.
-// Each gesture is judged by its first event (see onWheel). If a device is
-// misjudged, the Wheel Probe page logs what it really sends.
+// Each gesture is judged by its first event (see onWheel).
 const isMultipleOf120 = (v: number): boolean => {
   const notches = Math.abs(v) / 120;
   return notches >= 1 && Math.abs(notches - Math.round(notches)) < 0.01;
@@ -79,13 +67,13 @@ function isNotchedWheel(e: WheelEvent): boolean {
 }
 
 function stateFor(track: HTMLElement): TrackState {
-  let s = states.get(track);
-  if (!s) {
+  let state = states.get(track);
+  if (!state) {
     const snap = getComputedStyle(track).scrollSnapType;
-    s = { target: track.scrollLeft, frame: 0, lastEvent: 0, isWheel: false, snaps: Boolean(snap) && snap !== 'none' };
-    states.set(track, s);
+    state = { target: track.scrollLeft, frame: 0, lastEvent: 0, isWheel: false, snaps: Boolean(snap) && snap !== 'none' };
+    states.set(track, state);
   }
-  return s;
+  return state;
 }
 
 // Where each child's start edge sits in scrollLeft terms, plus the far end.
@@ -104,55 +92,62 @@ function snapTarget(track: HTMLElement, from: number, raw: number, maxScroll: nu
   return ahead.reduce((best, p) => (Math.abs(p - raw) < Math.abs(best - raw) ? p : best));
 }
 
-function pauseSnap(track: HTMLElement, s: TrackState): void {
-  if (s.snaps) track.style.scrollSnapType = 'none';
+function pauseSnap(track: HTMLElement, state: TrackState): void {
+  if (state.snaps) track.style.scrollSnapType = 'none';
 }
 
-function resumeSnap(track: HTMLElement, s: TrackState): void {
-  if (s.snaps) track.style.scrollSnapType = '';
+function resumeSnap(track: HTMLElement, state: TrackState): void {
+  if (state.snaps) track.style.scrollSnapType = '';
 }
 
-function stopPan(track: HTMLElement, s: TrackState): void {
-  if (s.frame) cancelAnimationFrame(s.frame);
-  s.frame = 0;
-  s.target = track.scrollLeft;
-  resumeSnap(track, s);
+function stopPan(track: HTMLElement, state: TrackState): void {
+  if (state.frame) cancelAnimationFrame(state.frame);
+  state.target = track.scrollLeft;
+  finishPan(track, state);
 }
 
-function step(track: HTMLElement, s: TrackState): void {
+function finishPan(track: HTMLElement, state: TrackState): void {
+  track.scrollLeft = state.target;
+  state.frame = 0;
+  resumeSnap(track, state);
+}
+
+function step(track: HTMLElement, state: TrackState): void {
   const before = track.scrollLeft;
-  const gap = s.target - before;
+  const gap = state.target - before;
   // Browsers round scrollLeft, so the last sub-pixel steps of an ease never
   // land; finish the glide once it's within a couple of pixels, or stalls.
-  if (Math.abs(gap) < 2) {
-    track.scrollLeft = s.target;
-    s.frame = 0;
-    resumeSnap(track, s);
-    return;
-  }
+  if (Math.abs(gap) < 2) return finishPan(track, state);
   track.scrollLeft = before + gap * EASE;
-  if (track.scrollLeft === before) {
-    track.scrollLeft = s.target;
-    s.frame = 0;
-    resumeSnap(track, s);
+  if (track.scrollLeft === before) return finishPan(track, state);
+  state.frame = requestAnimationFrame(() => step(track, state));
+}
+
+// Glide to `target` (the wheel and the arrow keys both pan this way), or jump
+// there under reduced motion. A glide already running just retargets.
+function panTo(track: HTMLElement, state: TrackState, target: number): void {
+  state.target = target;
+  if (prefersReducedMotion()) {
+    track.scrollLeft = target;
     return;
   }
-  s.frame = requestAnimationFrame(() => step(track, s));
+  pauseSnap(track, state);
+  if (!state.frame) state.frame = requestAnimationFrame(() => step(track, state));
 }
 
 function onWheel(e: WheelEvent): void {
   const track = e.currentTarget as HTMLElement;
-  const s = stateFor(track);
+  const state = stateFor(track);
 
   // One verdict per gesture, taken from its first event.
-  if (e.timeStamp - s.lastEvent > GESTURE_GAP_MS) s.isWheel = isNotchedWheel(e);
-  else if (e.deltaX !== 0) s.isWheel = false;
-  s.lastEvent = e.timeStamp;
+  if (e.timeStamp - state.lastEvent > GESTURE_GAP_MS) state.isWheel = isNotchedWheel(e);
+  else if (e.deltaX !== 0) state.isWheel = false;
+  state.lastEvent = e.timeStamp;
 
   // Trackpad / Magic Mouse: leave it native, and drop any pan in flight so
   // the two don't fight over scrollLeft.
-  if (!s.isWheel) {
-    if (s.frame) stopPan(track, s);
+  if (!state.isWheel) {
+    if (state.frame) stopPan(track, state);
     return;
   }
 
@@ -160,7 +155,7 @@ function onWheel(e: WheelEvent): void {
   if (maxScroll <= 0) return;
   // Measure from where the pan is heading, not where it is mid-glide, so a
   // quick run of ticks adds up instead of restarting from the current frame.
-  const from = s.frame ? s.target : track.scrollLeft;
+  const from = state.frame ? state.target : track.scrollLeft;
   // 1px tolerance: scrollLeft can land on a fractional pixel at the far end.
   const isAtStart = from <= 0 && e.deltaY < 0;
   const isAtEnd = from >= maxScroll - 1 && e.deltaY > 0;
@@ -168,13 +163,7 @@ function onWheel(e: WheelEvent): void {
 
   e.preventDefault();
   const raw = Math.min(maxScroll, Math.max(0, from + wheelDeltaPx(e, track)));
-  s.target = s.snaps ? snapTarget(track, from, raw, maxScroll) : raw;
-  if (prefersReducedMotion()) {
-    track.scrollLeft = s.target;
-    return;
-  }
-  pauseSnap(track, s);
-  if (!s.frame) s.frame = requestAnimationFrame(() => step(track, s));
+  panTo(track, state, state.snaps ? snapTarget(track, from, raw, maxScroll) : raw);
 }
 
 // ── Arrow keys: step the highlight, not the scroll ──────────────────────────
@@ -184,13 +173,26 @@ function onWheel(e: WheelEvent): void {
 // every card is its own Tab stop, so nothing is lost with JS off.
 
 // The one focusable thing in each slot: the card's link or button.
-const cardsOf = (track: HTMLElement): HTMLElement[] =>
+const allCardsOf = (track: HTMLElement): HTMLElement[] =>
   Array.from(track.children)
     .map((slot) => slot.querySelector<HTMLElement>('a[href], button:not([disabled]), [tabindex]'))
-    .filter((el): el is HTMLElement => Boolean(el) && !(el as HTMLElement).closest('[hidden]'));
+    .filter((el): el is HTMLElement => Boolean(el));
 
-function setRoving(cards: HTMLElement[], active: HTMLElement): void {
-  for (const card of cards) card.tabIndex = card === active ? 0 : -1;
+// The cards a visitor can reach right now: a filter may have hidden some slots.
+const cardsOf = (track: HTMLElement): HTMLElement[] =>
+  allCardsOf(track).filter((card) => !card.closest('[hidden]'));
+
+// Hidden cards are set too, so a slot that reappears can't bring a second stop.
+function setRoving(track: HTMLElement, active: HTMLElement): void {
+  for (const card of allCardsOf(track)) card.tabIndex = card === active ? 0 : -1;
+}
+
+// Keep the row's one Tab stop on a card that is showing. Call after hiding or
+// showing slots (scripts/site/filters/misc-filter.ts does, after a search).
+export function syncShelfRow(track: HTMLElement): void {
+  const cards = cardsOf(track);
+  if (!cards.length) return;
+  setRoving(track, cards.find((card) => card.tabIndex === 0) ?? cards[0]);
 }
 
 function onKeydown(e: KeyboardEvent): void {
@@ -208,7 +210,7 @@ function onKeydown(e: KeyboardEvent): void {
   e.preventDefault();
   if (next === at) return;
   const card = cards[next];
-  setRoving(cards, card);
+  setRoving(track, card);
   card.focus({ preventScroll: true });
   revealCard(track, card);
 }
@@ -217,7 +219,7 @@ function onKeydown(e: KeyboardEvent): void {
 // eased pan the wheel uses. On a snapping row it lands on a snap point, as the
 // wheel does; scrollIntoView() fights mandatory snapping and lags a card behind.
 function revealCard(track: HTMLElement, card: HTMLElement): void {
-  const s = stateFor(track);
+  const state = stateFor(track);
   const maxScroll = track.scrollWidth - track.clientWidth;
   if (maxScroll <= 0) return;
   const origin = track.getBoundingClientRect().left - track.scrollLeft;
@@ -225,25 +227,19 @@ function revealCard(track: HTMLElement, card: HTMLElement): void {
   const box = slot.getBoundingClientRect();
   const left = box.left - origin;
   const right = box.right - origin;
-  const from = s.frame ? s.target : track.scrollLeft;
+  const from = state.frame ? state.target : track.scrollLeft;
   const pad = 4;
   let to = from;
   if (left < from + pad) to = left - pad;
   else if (right > from + track.clientWidth - pad) to = right - track.clientWidth + pad;
   else return;
-  if (s.snaps) {
+  if (state.snaps) {
     const points = snapPoints(track, maxScroll);
     to = to < from
       ? Math.max(0, ...points.filter((p) => p <= left))
       : Math.min(maxScroll, ...points.filter((p) => p >= to));
   }
-  s.target = Math.min(maxScroll, Math.max(0, Math.round(to)));
-  if (prefersReducedMotion()) {
-    track.scrollLeft = s.target;
-    return;
-  }
-  pauseSnap(track, s);
-  if (!s.frame) s.frame = requestAnimationFrame(() => step(track, s));
+  panTo(track, state, Math.min(maxScroll, Math.max(0, Math.round(to))));
 }
 
 // A card focused any other way (a click, the Tab key) becomes the row's stop.
@@ -251,7 +247,7 @@ function onFocusin(e: FocusEvent): void {
   const track = e.currentTarget as HTMLElement;
   const cards = cardsOf(track);
   const card = e.target as HTMLElement;
-  if (cards.includes(card)) setRoving(cards, card);
+  if (cards.includes(card)) setRoving(track, card);
 }
 
 export function initShelfRows(): void {
@@ -262,8 +258,7 @@ export function initShelfRows(): void {
     track.addEventListener('wheel', onWheel, { passive: false });
     track.addEventListener('keydown', onKeydown);
     track.addEventListener('focusin', onFocusin);
-    const cards = cardsOf(track);
-    if (cards.length) setRoving(cards, cards[0]);
+    syncShelfRow(track);
     teardown.push(() => {
       track.removeEventListener('wheel', onWheel);
       track.removeEventListener('keydown', onKeydown);

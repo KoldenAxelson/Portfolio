@@ -34,29 +34,18 @@
   <section>
     <h2 class="font-mono text-xs uppercase tracking-widest text-muted">{{ .label }}</h2>
     {{/* Two shelves, split by console: handhelds (and, one day, phones) on one,
-         home consoles and PC on the other. A console code not listed here lands
-         on Console/PC. Each shelf orders itself like the books: played first,
-         best-rated first, ties to the entry lower in the file (Hugo's sort is
-         stable, so the order-desc pass underneath survives); then unplayed in
-         the file's order, which is a recommendation ranking, best first. */}}
+         home consoles and PC on the other; a console code not listed here
+         lands on Console/PC. Order within a shelf is func/shelf-order.html. */}}
     {{- $handheld := slice "GB" "GBC" "GBA" "DS" "3DS" "PSP" "VITA" "MOBILE" -}}
-    {{- $entries := slice -}}
-    {{- range $i, $game := .items }}{{ $entries = $entries | append (merge (dict "rating" 0.0 "year" 0) $game (dict "order" $i)) }}{{ end -}}
-    {{- range $shelf := slice (dict "label" "Handhelds/Mobile" "handheld" true) (dict "label" "Console/PC" "handheld" false) -}}
+    {{- $games := slice -}}
+    {{- range .items }}{{ $games = $games | append (merge . (dict "consoleName" (index $consoleNames .console))) }}{{ end -}}
+    {{- /* The first game shelf sits nearest the top of the page, so its first
+           few covers skip lazy loading. */ -}}
+    {{- range $n, $shelf := slice (dict "label" "Handhelds/Mobile" "handheld" true) (dict "label" "Console/PC" "handheld" false) -}}
     {{- $mine := slice -}}
-    {{- range $entries }}{{ if eq (in $handheld .console) $shelf.handheld }}{{ $mine = $mine | append . }}{{ end }}{{ end -}}
-    {{- with $mine -}}
-    {{- /* `current: true` (what I'm playing now) leads the shelf, ahead of the sort. */ -}}
-    {{- $current := where . "current" true -}}
-    {{- $rest := where . "current" "!=" true -}}
-    {{- $played := sort (sort (where $rest "done" true) "order" "desc") "rating" "desc" -}}
-    {{- $unplayed := where $rest "done" "!=" true -}}
-    {{- $unplayed = sort $unplayed "order" -}}
-    {{- $row := slice -}}
-    {{- range $current }}{{ $row = $row | append (merge . (dict "consoleName" (index $consoleNames .console))) }}{{ end -}}
-    {{- range $played }}{{ $row = $row | append (merge . (dict "consoleName" (index $consoleNames .console))) }}{{ end -}}
-    {{- range $unplayed }}{{ $row = $row | append (merge . (dict "consoleName" (index $consoleNames .console))) }}{{ end }}
-    {{ partial "components/shelf.html" (dict "label" $shelf.label "items" $row "card" "impossible-list/game-card.html") }}
+    {{- range $games }}{{ if eq (in $handheld .console) $shelf.handheld }}{{ $mine = $mine | append . }}{{ end }}{{ end -}}
+    {{- with $mine }}
+    {{ partial "components/shelf.html" (dict "label" $shelf.label "items" (partial "func/shelf-order.html" .) "card" "impossible-list/game-card.html" "eagerCount" (cond (eq $n 0) 3 0)) }}
     {{- end -}}
     {{- end }}
   </section>
@@ -66,24 +55,7 @@
   <section>
     <h2 class="font-mono text-xs uppercase tracking-widest text-muted">{{ .label }}</h2>
     {{- range .shelves }}
-    {{/* Read first, best-rated first (ties go to the newest entry, which is
-         list position: a book appended lower in its shelf counts as newer);
-         then unread in the file's order, which is a recommendation ranking,
-         best first. The second sort only
-         preserves the order-desc pass underneath because Hugo's sort is stable. */}}
-    {{- $entries := slice -}}
-    {{- range $i, $book := .items }}{{ $entries = $entries | append (merge (dict "rating" 0.0 "year" 0) $book (dict "order" $i)) }}{{ end -}}
-    {{- /* `current: true` (what I'm reading now) leads the shelf, ahead of the sort. */ -}}
-    {{- $current := where $entries "current" true -}}
-    {{- $entries = where $entries "current" "!=" true -}}
-    {{- $read := sort (sort (where $entries "done" true) "order" "desc") "rating" "desc" -}}
-    {{- $unread := where $entries "done" "!=" true -}}
-    {{- $unread = sort $unread "order" -}}
-    {{- $row := slice -}}
-    {{- range $current }}{{ $row = $row | append . }}{{ end -}}
-    {{- range $read }}{{ $row = $row | append . }}{{ end -}}
-    {{- range $unread }}{{ $row = $row | append . }}{{ end }}
-    {{ partial "components/shelf.html" (dict "label" .label "items" $row "card" "impossible-list/book-card.html") }}
+    {{ partial "components/shelf.html" (dict "label" .label "items" (partial "func/shelf-order.html" .items) "card" "impossible-list/book-card.html") }}
     {{- end }}
   </section>
   {{- end }}
@@ -109,8 +81,8 @@
         <div class="p-5">
           <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-1.5">
             <span class="flex items-center gap-2">
-              {{- range (slice "N64" "GCN" "GBC" "GBA" "XBOX" "XSX" "PC") }}
-              <span data-console-icon-for="{{ . }}" hidden role="img" aria-label="{{ index $consoleNames . }}" title="{{ index $consoleNames . }}" class="shrink-0 text-accent [&_svg]:h-5 [&_svg]:w-auto">{{ partial "func/console-icon.html" (dict "code" .) }}</span>
+              {{- range $code, $name := $consoleNames }}
+              <span data-console-icon-for="{{ $code }}" hidden role="img" aria-label="{{ $name }}" title="{{ $name }}" class="shrink-0 text-accent [&_svg]:h-5 [&_svg]:w-auto">{{ partial "func/console-icon.html" (dict "code" $code) }}</span>
               {{- end }}
               {{ partial "components/review-pitch-toggle.html" . }}
               <h3 id="game-modal-title" data-game-title class="m-0 text-lg font-medium text-fg"></h3>

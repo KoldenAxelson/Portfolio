@@ -1,0 +1,54 @@
+{{- /*
+  misc/live/now — the Now card as a departure board. One flap at a time
+  turns over to the next thing on /now: each project I'm building, then each
+  book I'm reading, read from the page's `blocks` (the name before " — " for
+  a project, the quoted title for a book), so the card is current whenever the
+  page is. A live dot and the page's date sit above it.
+  Pure HTML + CSS; the flip timing is generated for however many entries.
+*/ -}}
+{{- with site.GetPage "/now" }}
+{{- $entries := slice -}}
+{{- range .Params.blocks -}}
+  {{- $label := .label -}}
+  {{- range .items -}}
+    {{- if eq $label "Building" -}}
+      {{- $entries = $entries | append (dict "label" $label "value" (index (split . " — ") 0)) -}}
+    {{- else if eq $label "Reading" -}}
+      {{- with findRESubmatch `"([^"]+)"` . 1 }}{{ $entries = $entries | append (dict "label" $label "value" (index (index . 0) 1)) }}{{ end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $n := len $entries -}}
+{{- $hold := 3 -}}
+{{- $cycle := mul $n $hold -}}
+{{- $show := div 100.0 $n -}}
+{{- $flip := div (mul 100.0 0.45) $cycle -}}
+<style>
+  .mf-now .flap { opacity: 0; transform-origin: 50% 50%; backface-visibility: hidden; animation: mf-now-flap {{ $cycle }}s cubic-bezier(.4, 0, .2, 1) infinite; animation-delay: calc(var(--i) * {{ $hold }}s - {{ $hold }}s * .15); }
+  .mf-now .flap:first-child { opacity: 1; }
+  @keyframes mf-now-flap {
+    0% { opacity: 0; transform: perspective(300px) rotateX(-90deg); }
+    {{ printf "%.2f" $flip }}% { opacity: 1; transform: perspective(300px) rotateX(0); }
+    {{ printf "%.2f" $show }}% { opacity: 1; transform: perspective(300px) rotateX(0); }
+    {{ printf "%.2f" (add $show $flip) }}% { opacity: 0; transform: perspective(300px) rotateX(90deg); }
+    100% { opacity: 0; transform: perspective(300px) rotateX(90deg); }
+  }
+  .mf-now .live { animation: mf-now-live 1.6s ease-in-out infinite; }
+  @keyframes mf-now-live { 50% { opacity: .3; } }
+  @media (prefers-reduced-motion: reduce) { .mf-now .flap, .mf-now .live { animation: none; } }
+</style>
+<span class="mf mf-now" aria-hidden="true">
+  <span class="absolute left-3.5 top-2.5 flex items-center gap-1.5 font-mono text-[0.44rem] font-semibold uppercase tracking-[0.16em] text-muted">
+    <span class="live h-1.5 w-1.5 rounded-full bg-accent"></span>Now{{ with .Params.updated }} · {{ (time.AsTime .).Format "Jan 2006" }}{{ end }}
+  </span>
+  <span class="absolute inset-x-5 top-1/2 block h-[4.5rem] -translate-y-1/2">
+    {{- range $i, $e := $entries }}
+    <span class="flap absolute inset-0 flex flex-col justify-center rounded-lg border border-border/70 bg-bg/80 px-4 shadow-lg" style="--i: {{ $i }}">
+      <span class="absolute inset-x-0 top-1/2 h-px bg-border/70"></span>
+      <span class="font-mono text-[0.55rem] uppercase tracking-widest text-accent">{{ $e.label }}</span>
+      <span class="mt-1 truncate text-lg font-semibold leading-tight text-fg">{{ $e.value }}</span>
+    </span>
+    {{- end }}
+  </span>
+</span>
+{{- end }}

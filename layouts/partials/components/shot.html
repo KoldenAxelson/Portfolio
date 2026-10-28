@@ -1,0 +1,9 @@
+{{- /*
+  components/shot — a site screenshot filling a card's picture slot (Cool Sites
+  and Tech Watch). Takes the image resource; serves a 480px WebP with a 960px
+  one for 2x screens, lazy-loaded. The card's own CSS (.wds-shot, .tw-shot)
+  sizes the slot to 16:10; the image covers it from the top.
+*/ -}}
+{{- $one := .Resize "480x webp q80" -}}
+{{- $two := .Resize "960x webp q78" -}}
+<img src="{{ $one.RelPermalink }}" srcset="{{ $one.RelPermalink }} 1x, {{ $two.RelPermalink }} 2x" alt="" width="{{ $one.Width }}" height="{{ $one.Height }}" loading="lazy" decoding="async" />

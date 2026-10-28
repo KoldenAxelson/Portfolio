@@ -1,0 +1,29 @@
+{{- /*
+  misc/live/drafts — the Drafts card: a padlock and a four-digit PIN. The dots
+  fill, the shackle lifts and a draft slides up behind it, every line of it
+  redacted, then it locks again. Says "sealed articles, passcode required"
+  without showing a word of any of them.
+  Pure SVG + CSS (assets/css/pages/misc/motifs.css); no script.
+*/ -}}
+<span class="mf mf-drafts" aria-hidden="true">
+<svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid meet">
+  <text class="kicker" x="14" y="18">PASSCODE REQUIRED</text>
+  <g class="doc">
+    <rect x="112" y="40" width="96" height="78" rx="5" class="panel" />
+    <rect x="124" y="52" width="58" height="6" rx="3" class="accent" fill-opacity=".8" />
+    <rect x="124" y="66" width="72" height="4" rx="2" class="muted" fill-opacity=".45" />
+    <rect x="124" y="75" width="66" height="4" rx="2" class="muted" fill-opacity=".45" />
+    <rect x="124" y="84" width="70" height="4" rx="2" class="muted" fill-opacity=".45" />
+    <rect x="124" y="93" width="44" height="4" rx="2" class="muted" fill-opacity=".45" />
+  </g>
+  <g transform="translate(160 112)">
+    <path class="shackle stroke-fg" d="M-15 0 V-14 a15 15 0 0 1 30 0 V0" stroke-width="5" stroke-linecap="round" />
+    <rect x="-24" y="-2" width="48" height="38" rx="6" class="accent" />
+    <circle cx="0" cy="13" r="4" fill="rgb(var(--c-bg))" />
+    <rect x="-1.6" y="14" width="3.2" height="10" rx="1.6" fill="rgb(var(--c-bg))" />
+  </g>
+  {{- range $i := seq 0 3 }}
+  <circle class="pin" stroke="rgb(var(--c-fg))" cx="{{ add 133 (mul $i 18) }}" cy="172" r="4.5" stroke-width="1.4" fill="rgb(var(--c-fg))" fill-opacity="0" style="--i: {{ $i }}" />
+  {{- end }}
+</svg>
+</span>

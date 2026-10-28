@@ -22,9 +22,9 @@
   {{- $imgs = partial "func/media-images.html" (dict "dir" "games/covers" "slug" .cover "width" 600) -}}
   {{- $kind = "book" -}}
 {{- end -}}
-<button type="button" data-game-open aria-haspopup="dialog" data-title="{{ .title }}" data-kind="{{ $kind }}" data-rating="{{ .rating }}"{{ if $isCurrent }} data-status="Playing now"{{ end }} data-blurb="{{ .blurb }}" data-pitch="{{ .pitch }}" data-images="{{ $imgs | jsonify }}" data-console="{{ .console }}" class="group/book block w-full rounded-lg pt-1.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
-  {{ partial "components/shelf-cover.html" (dict "dir" "games/covers" "slug" .cover "title" .title "isDimmed" (not $isPlayed) "badge" (cond $isCurrent (dict "icon" "play" "label" "Playing") false)) }}
-  <span class="mt-2 line-clamp-2 block text-sm leading-snug transition-colors group-hover/book:text-accent {{ cond (or $isPlayed $isCurrent) "text-fg" "text-muted" }}">{{ .title }}{{ if $isCurrent }}<span class="sr-only"> (playing now)</span>{{ else if not $isPlayed }}<span class="sr-only"> (not played yet)</span>{{ end }}</span>
+<button type="button" data-game-open aria-haspopup="dialog" data-title="{{ .title }}" data-kind="{{ $kind }}" data-rating="{{ .rating }}"{{ if $isCurrent }} data-status="Playing now"{{ end }} data-blurb="{{ .blurb }}" data-pitch="{{ .pitch }}" data-images="{{ $imgs | jsonify }}" data-console="{{ .console }}" class="group/cover block w-full rounded-lg pt-1.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
+  {{ partial "components/shelf-cover.html" (dict "dir" "games/covers" "slug" .cover "eager" $.eager "title" .title "isDimmed" (not $isPlayed) "badge" (cond $isCurrent (dict "icon" "play" "label" "Playing") false)) }}
+  <span class="mt-2 line-clamp-2 block text-sm leading-snug transition-colors group-hover/cover:text-accent {{ cond (or $isPlayed $isCurrent) "text-fg" "text-muted" }}">{{ .title }}{{ if $isCurrent }}<span class="sr-only"> (playing now)</span>{{ else if not $isPlayed }}<span class="sr-only"> (not played yet)</span>{{ end }}</span>
   <span class="mt-0.5 block font-mono text-xs text-muted">
     {{- if $isCurrent }}<span class="text-accent">Playing now</span>
     {{- else if and $isPlayed .rating }}<span class="text-accent">★</span> {{ .rating | lang.FormatNumber 1 }}

@@ -1,0 +1,55 @@
+{{- /*
+  misc/live/dagea — Dagea being charted. The six regions' coastlines ink
+  themselves in one after another, the land washes in under them, the duchy
+  borders and rivers follow, the lakes fill, and the region names settle onto
+  the map beside a compass rose, then the chart fades and is drawn again.
+
+  Every shape is the globe's own: data/dagea/map.json is the drawing traced
+  into SVG paths (scripts/maps/build-dagea-globe.py), with each region's label
+  point. Pure SVG + CSS (assets/css/pages/misc/motifs.css); no script.
+  pathLength="1" lets one dash animation ink a coastline of any length.
+*/ -}}
+{{- $map := site.Data.dagea.map -}}
+{{- $order := slice "FEL" "KRT" "ERK" "JRK" "BGA" "BGI" -}}
+<span class="mf mf-dagea" aria-hidden="true">
+<svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid meet">
+  <text class="kicker" x="14" y="18">DAGEA · THE KNOWN WORLD</text>
+  {{- /* The chart, 1000×773 in its own units, fitted into the band. */}}
+  <svg x="38" y="8" width="244" height="188" viewBox="{{ $map.viewBox }}">
+    <g class="chart">
+    <g class="lands">
+      {{- range $i, $code := $order }}{{ with index $map.units $code }}
+      <path class="land" d="{{ .d }}" style="--i: {{ $i }}" />
+      {{- end }}{{ end }}
+    </g>
+    <g class="borders">
+      {{- range $map.subunits }}
+      <path class="border" d="{{ .d }}" />
+      {{- end }}
+    </g>
+    <g class="coasts">
+      {{- range $i, $code := $order }}{{ with index $map.units $code }}
+      <path class="coast" d="{{ .d }}" pathLength="1" style="--i: {{ $i }}" />
+      {{- end }}{{ end }}
+    </g>
+    {{- range $map.lines.rivers }}
+    <path class="river" d="{{ .d }}" pathLength="1" />
+    {{- end }}
+    {{- range $map.lakes }}
+    <path class="lake" d="{{ .d }}" />
+    {{- end }}
+    {{- range $i, $code := $order }}{{ with index $map.units $code }}
+    <text class="name" x="{{ .cx }}" y="{{ .cy }}" text-anchor="middle" style="--i: {{ $i }}">{{ .name }}</text>
+    {{- end }}{{ end }}
+    </g>
+  </svg>
+  {{- /* Compass rose, top right. */}}
+  <g class="rose" transform="translate(292 44)">
+    <circle r="14" class="line" />
+    <path d="M0 -17 L3 -3 L0 0 L-3 -3 Z" class="accent" />
+    <path d="M0 17 L3 3 L0 0 L-3 3 Z" class="muted" />
+    <path d="M-17 0 L-3 -3 L0 0 L-3 3 Z M17 0 L3 -3 L0 0 L3 3 Z" class="muted" fill-opacity=".6" />
+    <text y="-20" text-anchor="middle" class="mono accent" font-size="6" font-weight="700">N</text>
+  </g>
+</svg>
+</span>

@@ -1,0 +1,15 @@
+{{- /*
+  misc/live/motion — the Motion card's band on /misc: an orange ball wearing
+  the site's {w} mark (static/logo-mark.svg) bouncing around the band, with
+  squash, stretch, roll and a contact shadow (scripts/pages/misc-cards/
+  motion-card.ts). The script fetches the mark and draws it; without
+  JS the band shows the still in assets/img/misc/previews/motion.webp.
+*/ -}}
+<span data-live-motion data-mark="{{ "logo-mark.svg" | relURL }}" aria-hidden="true" class="absolute inset-0 block bg-[radial-gradient(120%_120%_at_50%_30%,rgb(var(--c-border)/.35),rgb(var(--c-bg)))] text-muted">
+  <canvas class="absolute inset-0 block h-full w-full"></canvas>
+</span>
+{{- with resources.Get "misc/previews/motion.webp" }}
+{{- $img := .Fill "480x300 webp q82" }}
+<noscript><img src="{{ $img.RelPermalink }}" width="480" height="300" alt="" class="absolute inset-0 h-full w-full object-cover" /></noscript>
+{{- end }}
+{{ partial "misc/live-script.html" "pages/misc-cards/motion-card.ts" }}

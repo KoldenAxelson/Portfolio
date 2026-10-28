@@ -1,0 +1,16 @@
+{{- /*
+  misc/live/emergence — the Emergence card's band on /misc: the lab's own
+  engine running the Flocks preset with a few hundred particles
+  (scripts/pages/emergence/card.ts). It shows a still until the pointer is over
+  the card, then runs; it stops when the pointer leaves. The screenshot in
+  assets/img/misc/previews/emergence.webp shows until the canvas has a frame,
+  and is all there is without JS or with reduced motion.
+*/ -}}
+<span data-live-emergence aria-hidden="true" class="group/em absolute inset-0 block bg-[#050509]">
+  {{- with resources.Get "misc/previews/emergence.webp" }}
+  {{- $one := .Fill "480x300 webp q82" }}{{ $two := .Fill "960x600 webp q80" }}
+  <img src="{{ $one.RelPermalink }}" srcset="{{ $one.RelPermalink }} 1x, {{ $two.RelPermalink }} 2x" width="480" height="300" alt="" loading="lazy" decoding="async" class="absolute inset-0 h-full w-full object-cover transition-opacity duration-500 group-[.is-live]/em:opacity-0" />
+  {{- end }}
+  <canvas class="absolute inset-0 block h-full w-full opacity-0 transition-opacity duration-500 group-[.is-live]/em:opacity-100"></canvas>
+</span>
+{{ partial "misc/live-script.html" "pages/emergence/card.ts" }}

@@ -1,0 +1,23 @@
+{{- /*
+  misc/live/basic-logic — the syllogism the page opens with, said twice: as
+  standard form on the right and as an Euler diagram on the left. Socrates
+  drops into "men", which sits inside "mortal", and the conclusion lights the
+  outer circle: the form, not the facts, carries it.
+  Pure SVG + CSS (assets/css/pages/misc/motifs.css); no script.
+*/ -}}
+<span class="mf mf-logic" aria-hidden="true" data-poster="0.7">
+<svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid meet">
+  <text class="kicker" x="14" y="18">ARGUMENT · STANDARD FORM</text>
+  <circle class="outer" cx="86" cy="112" r="60" fill="rgb(var(--c-accent) / .06)" stroke="rgb(var(--c-border))" stroke-width="1.5" />
+  <text class="mono muted" x="86" y="66" text-anchor="middle" font-size="7" letter-spacing=".14em">MORTAL</text>
+  <circle cx="86" cy="122" r="32" fill="rgb(var(--c-accent) / .1)" class="stroke-accent" stroke-width="1.2" />
+  <text class="mono accent" x="86" y="104" text-anchor="middle" font-size="7" letter-spacing=".14em">MEN</text>
+  <g class="who"><circle cx="86" cy="128" r="4" class="fg" /><text class="sans fg" x="86" y="144" text-anchor="middle" font-size="7.5">Socrates</text></g>
+  <g class="sans" font-size="9.5">
+    <text class="line-1 fg" x="168" y="86"><tspan class="mono muted" font-size="7">P1 </tspan>All men are mortal.</text>
+    <text class="line-2 fg" x="168" y="106"><tspan class="mono muted" font-size="7">P2 </tspan>Socrates is a man.</text>
+    <line class="line-3" x1="168" y1="115" x2="300" y2="115" stroke="rgb(var(--c-border))" />
+    <text class="line-3 fg" x="168" y="130" font-weight="600"><tspan class="accent">∴ </tspan>Socrates is mortal.</text>
+  </g>
+</svg>
+</span>

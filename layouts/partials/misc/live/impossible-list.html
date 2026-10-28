@@ -1,0 +1,33 @@
+{{- /*
+  misc/live/impossible-list — the list itself, scrolling up forever, because
+  it's a list built to keep growing rather than to be finished. Done items are
+  ticked and struck through, the rest are open circles. Items come from content/impossible-list.md, dealt round-robin
+  across Life, Skills and Quests so the sections mix. No totals, on purpose.
+  Pure HTML + CSS (assets/css/pages/misc/motifs.css); the list is printed
+  twice so the loop is seamless.
+*/ -}}
+{{- $page := site.GetPage "/impossible-list" -}}
+{{- $groups := $page.Params.groups -}}
+{{- $longest := 0 }}{{ range $groups }}{{ $longest = math.Max $longest (len .items) }}{{ end -}}
+{{- $rows := slice -}}
+{{- range $k := seq 0 (sub (int $longest) 1) }}{{ range $groups }}{{ if lt $k (len .items) }}{{ with index .items $k }}{{ $rows = $rows | append (dict "text" .text "done" .done) }}{{ end }}{{ end }}{{ end }}{{ end -}}
+<span class="mf mf-il" aria-hidden="true">
+  <span class="absolute left-3.5 top-2.5 z-10 font-mono text-[0.44rem] font-semibold uppercase tracking-[0.16em] text-muted">The list keeps growing</span>
+  <span class="il-window absolute inset-x-0 bottom-0 top-6 block overflow-hidden">
+    <span class="il-track block" style="--rows: {{ len $rows }}">
+      {{- range seq 2 }}
+      {{- range $rows }}
+      <span class="flex h-[1.4rem] items-center gap-2 px-4 text-[0.72rem]">
+        {{- if .done }}
+        <svg viewBox="0 0 24 24" class="h-3.5 w-3.5 shrink-0 text-accent" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+        <span class="min-w-0 flex-1 truncate text-muted line-through decoration-border">{{ .text }}</span>
+        {{- else }}
+        <svg viewBox="0 0 24 24" class="h-3.5 w-3.5 shrink-0 text-border" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9" /></svg>
+        <span class="min-w-0 flex-1 truncate text-fg">{{ .text }}</span>
+        {{- end }}
+      </span>
+      {{- end }}
+      {{- end }}
+    </span>
+  </span>
+</span>

@@ -17,6 +17,8 @@ import { initAncestryGlobe } from './globe/ancestry-globe';
 import { initDageaGlobe } from './globe/dagea-globe';
 import { initPlateMap } from './widgets/plate-map';
 import { initCarousels } from './widgets/carousel';
+import { initPhotoCycle } from './widgets/photo-cycle';
+import { initCardWake } from './widgets/card-wake';
 import { initShelfRows } from './widgets/shelf-row';
 import { initVault } from './widgets/vault';
 import { initGameEmbed } from './games/game-embed';
@@ -51,6 +53,8 @@ function initPage(): void {
   initDageaGlobe();
   initPlateMap();
   initCarousels();
+  initPhotoCycle();
+  initCardWake();
   initShelfRows();
   initVault();
   initGameEmbed();

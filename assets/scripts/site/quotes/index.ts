@@ -59,6 +59,15 @@ export function initQuotes(): void {
   if (reduceMotion) openOnStillFrame(toggles);
 
   const deck = createDeck(quotes.length);
+  // On /misc the deck runs inside a card band, which sleeps when nobody is
+  // looking at it (scripts/site/widgets/card-wake.ts). On /quotes there is no
+  // band and this is always false. The first few seconds run regardless, so a
+  // sleeping card rests on an assembled, smoking word rather than a blank.
+  const band = root.closest<HTMLElement>('[data-asleep]');
+  const FIRST_PICTURE_MS = 3000;
+  const mountedAt = performance.now();
+  const asleep = (): boolean =>
+    band?.dataset.asleep === 'true' && performance.now() - mountedAt > FIRST_PICTURE_MS;
   const cursor = { x: 0, y: 0, present: false };
   let onScreen = true;
   let lastFrame = -1;
@@ -141,7 +150,7 @@ export function initQuotes(): void {
     raf = requestAnimationFrame(frame);
     // Scrolled past, or a hidden fullscreen backdrop over the top of it: there
     // is nothing to see, so there's nothing worth spending a frame on.
-    if (!onScreen) return;
+    if (!onScreen || asleep()) return;
 
     lattice.startOfFrame();
     const now = performance.now();
@@ -329,7 +338,7 @@ export function initQuotes(): void {
     color: lattice.fill,
     accent: lattice.accent,
     smokeOn: () => isOn('smoke'),
-    visible: () => onScreen,
+    visible: () => onScreen && !asleep(),
     quality: getQuality,
     onFail: () => fallBackToDots(toggles),
     onRecover: () => restoreSmoke(toggles),

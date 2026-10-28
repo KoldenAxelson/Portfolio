@@ -1,0 +1,18 @@
+{{- /*
+  shelf-order — the order of one /impossible-list/ shelf, for games and books
+  alike. Takes the shelf's entries as written in content/impossible-list.md and
+  returns them with `rating` (0.0) and `year` (0) defaults filled in:
+
+    1. `current: true` (what I'm on now), as written;
+    2. finished entries, best-rated first, ties to the entry lower in the file
+       (the newer one: Hugo's sort is stable, so the order-desc pass survives);
+    3. the rest in the file's order, which is a recommendation ranking.
+*/ -}}
+{{- $entries := slice -}}
+{{- range $i, $entry := . }}{{ $entries = $entries | append (merge (dict "rating" 0.0 "year" 0) $entry (dict "order" $i)) }}{{ end -}}
+{{- $rest := where $entries "current" "!=" true -}}
+{{- $ordered := slice -}}
+{{- range where $entries "current" true }}{{ $ordered = $ordered | append . }}{{ end -}}
+{{- range sort (sort (where $rest "done" true) "order" "desc") "rating" "desc" }}{{ $ordered = $ordered | append . }}{{ end -}}
+{{- range sort (where $rest "done" "!=" true) "order" }}{{ $ordered = $ordered | append . }}{{ end -}}
+{{- return $ordered -}}

@@ -1,8 +1,8 @@
 {{- /*
   components/shelf-cover — a shelf card's 2:3 cover, for components/shelf.html.
-  Lifts on hover and keyboard focus through the card's `group/book` class;
-  the card carries pt-1.5 so the lifted cover stays inside its focus ring. Without an image it shows
-  the title instead.
+  Lifts on hover and keyboard focus through the card's `group/cover` class (the
+  card carries pt-1.5 so the lifted cover stays inside its focus ring). Without
+  an image it shows the title instead. `eager` skips lazy loading.
 
     {{ partial "components/shelf-cover.html" (dict "dir" "achievements" "slug" .cover "title" .title "isDimmed" true) }}
 
@@ -11,6 +11,9 @@
   right now — an accent outline and a small pill in the top-left corner. A
   badged cover is never dimmed.
 */ -}}
+{{/* q68 rather than the pipeline's 80: at 144px, and 288px for 2x screens,
+     the difference doesn't show, and it trims the Impossible List's ~100
+     covers by about a fifth. */}}
 {{/* Every cover gets the same 2:3 box. Real covers run from about 1.2 to 1.8
      tall-per-wide, so they are stretched to it; anything further off (a
      box-set strip, a landscape photo) would distort badly, so those are
@@ -19,16 +22,16 @@
 {{- with .slug }}{{ with index (resources.Match (printf "%s/%s.*" $.dir .)) 0 }}
   {{- $heightPerWidth := div (float .Height) .Width -}}
   {{- $isNearTwoByThree := and (ge $heightPerWidth 1.2) (le $heightPerWidth 1.8) -}}
-  {{- $thumb = partial "func/cover.html" (dict "path" (printf "/%s" .Name) "width" 144 "height" 216 "stretch" $isNearTwoByThree) -}}
+  {{- $thumb = partial "func/cover.html" (dict "path" (printf "/%s" .Name) "width" 144 "height" 216 "stretch" $isNearTwoByThree "q" 68) -}}
 {{- end }}{{ end -}}
-<span class="relative block aspect-[2/3] overflow-hidden rounded-lg border transition duration-200 group-hover/book:-translate-y-1 group-focus-visible/book:-translate-y-1 group-hover/book:opacity-100 group-focus-visible/book:opacity-100 motion-reduce:transition-none {{ if .badge }}border-accent bg-border/15 ring-2 ring-accent/60{{ else }}border-border/60 bg-border/15{{ if .isDimmed }} opacity-50{{ end }}{{ end }}">
+<span class="relative block aspect-[2/3] overflow-hidden rounded-lg border transition duration-200 group-hover/cover:-translate-y-1 group-focus-visible/cover:-translate-y-1 group-hover/cover:opacity-100 group-focus-visible/cover:opacity-100 motion-reduce:transition-none {{ if .badge }}border-accent bg-border/15 ring-2 ring-accent/60{{ else }}border-border/60 bg-border/15{{ if .isDimmed }} opacity-50{{ end }}{{ end }}">
   {{- with .badge }}
   <span class="absolute left-1.5 top-1.5 z-10 inline-flex items-center gap-1 rounded-full bg-accent px-2 py-0.5 font-mono text-[0.65rem] font-semibold uppercase tracking-wide text-bg shadow">
     {{- partial "func/svg-icon.html" (dict "name" .icon "class" "h-3 w-3" "width" "2.2") }}{{ .label -}}
   </span>
   {{- end }}
   {{- with $thumb.src }}
-  <img src="{{ . }}"{{ with $thumb.srcset }} srcset="{{ . }}"{{ end }} alt="" width="144" height="216" loading="lazy" decoding="async" class="h-full w-full" />
+  <img src="{{ . }}"{{ with $thumb.srcset }} srcset="{{ . }}"{{ end }} alt="" width="144" height="216"{{ if not $.eager }} loading="lazy"{{ end }} decoding="async" class="h-full w-full" />
   {{- else }}
   <span class="flex h-full items-center justify-center p-3 text-center text-sm text-muted">{{ .title }}</span>
   {{- end }}

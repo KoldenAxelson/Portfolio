@@ -1,6 +1,4 @@
 /* Widgets and data blocks on /misc/claude/. The shared box is css/pages/video-notes/shell.css. */
-.cl-lab{display:block;font-family:var(--font-mono);font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:rgb(var(--c-muted));margin-bottom:.3rem;}
-.cl-lab b{color:rgb(var(--c-fg));font-variant-numeric:tabular-nums;}
 
 /* ── the rules list ─────────────────────────────────────────────────────── */
 .cl-rules{list-style:none;margin:1.4rem 0;padding:0;display:grid;gap:.5rem;}
@@ -42,7 +40,7 @@
 .cl-cap h3{margin:0;font-size:.98rem;font-weight:700;color:rgb(var(--c-fg));}
 .cl-cap.is-featured h3{font-size:1.2rem;}
 .cl-cap p{margin:0;font-size:.85rem;line-height:1.5;color:rgb(var(--c-muted));}
-.cl-cap-how{color:rgb(var(--c-fg)) !important;}
+.cl-cap .cl-cap-how{color:rgb(var(--c-fg));}
 .cl-cap-plans{margin-top:auto;padding-top:.35rem;font-family:var(--font-mono);font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;color:rgb(var(--c-muted));}
 .cl-cap-plans.is-limited{color:rgb(var(--c-fg));}
 /* Motion's card: a tiny looping "explainer" — a title, bars that grow, a dot

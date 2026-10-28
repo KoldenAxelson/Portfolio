@@ -133,26 +133,53 @@
     gl.viewport(0, 0, canvas.width, canvas.height);
   }
 
-  var visible = true;
-  if ("IntersectionObserver" in window) {
-    new IntersectionObserver(function (es) { visible = es[0].isIntersecting; }).observe(canvas);
-  }
+  // Live once hovered. The raymarch is the heaviest thing on the page, so it
+  // paints one still frame, goes live on the first hover, tap or focus of its
+  // card, and stays live while on screen. If live frames come slower than
+  // SLOW_MS on this device, it falls back to the still 5s after the pointer
+  // leaves and wakes again on the next hover.
+  var SLOW_MS = 25, IDLE_MS = 5000;
+  var card = canvas.closest(".wds-card") || canvas;
   var start = performance.now();
-  function draw(now) {
-    resize();
-    if (visible) {
-      gl.uniform2f(uRes, canvas.width, canvas.height);
-      gl.uniform1f(uTime, (now - start) / 1000);
-      gl.drawArrays(gl.TRIANGLES, 0, 3);
-    }
-    requestAnimationFrame(draw);
-  }
-  if (reduce) {
+  var onScreen = true, live = false, raf = 0, idleTimer = 0;
+  var lastFrame = 0, slowFrames = 0, frames = 0;
+
+  function paint(t) {
     resize();
     gl.uniform2f(uRes, canvas.width, canvas.height);
-    gl.uniform1f(uTime, 2.0);
+    gl.uniform1f(uTime, t);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
-  } else {
-    requestAnimationFrame(draw);
+  }
+  function draw(now) {
+    raf = 0;
+    if (!live || !onScreen) return;
+    if (lastFrame) { frames++; if (now - lastFrame > SLOW_MS) slowFrames++; }
+    lastFrame = now;
+    paint((now - start) / 1000);
+    raf = requestAnimationFrame(draw);
+  }
+  function isSlow() { return frames >= 30 && slowFrames / frames > 0.5; }
+  function goLive() {
+    clearTimeout(idleTimer);
+    live = true;
+    if (!raf && onScreen) { lastFrame = 0; raf = requestAnimationFrame(draw); }
+  }
+  function maybeRest() {
+    if (!isSlow()) return;
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(function () { live = false; }, IDLE_MS);
+  }
+
+  paint(2.0);
+  if (reduce) return;
+  card.addEventListener("pointerenter", goLive);
+  card.addEventListener("pointerdown", goLive);
+  card.addEventListener("focusin", goLive);
+  card.addEventListener("pointerleave", maybeRest);
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(function (es) {
+      onScreen = es[0].isIntersecting;
+      if (onScreen && live && !raf) { lastFrame = 0; raf = requestAnimationFrame(draw); }
+    }).observe(canvas);
   }
 })();
