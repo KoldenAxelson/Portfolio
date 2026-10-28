@@ -1,0 +1,12 @@
+{{- /*
+  ikigai/advice — the three pieces of quick advice, as numbered cards.
+
+    {{< ikigai/advice >}}
+
+  Data: data/ikigai/guide.yaml `advice`.
+*/ -}}
+<ol class="not-prose ikigai-advice">
+  {{- range $i, $line := site.Data.ikigai.guide.advice }}
+  <li><span class="ikigai-advice-number" aria-hidden="true">{{ add $i 1 }}</span><span>{{ $line }}</span></li>
+  {{- end }}
+</ol>

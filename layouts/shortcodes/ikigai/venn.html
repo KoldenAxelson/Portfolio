@@ -1,0 +1,60 @@
+{{- /*
+  ikigai/venn — the four ikigai circles, where they overlap, and a box under each
+  question for the visitor's own answer (saved in their browser by
+  assets/scripts/pages/ikigai/main.ts; nothing leaves the page).
+
+    {{< ikigai/venn >}}
+
+  Data: data/ikigai/guide.yaml `ikigai`. The overlap names are also written out
+  as a list under the diagram, so the page says them in text, not only in SVG.
+*/ -}}
+{{- $ikigai := site.Data.ikigai.guide.ikigai -}}
+{{- $centres := dict "top" (slice 200 140) "left" (slice 140 200) "right" (slice 260 200) "bottom" (slice 200 260) -}}
+{{- $labelSpots := dict "top" (slice 200 78) "left" (slice 82 204) "right" (slice 318 204) "bottom" (slice 200 330) -}}
+{{- $questions := slice -}}
+{{- range $ikigai.circles }}{{ $questions = $questions | append .question }}{{ end -}}
+{{- $circlesById := dict -}}
+{{- range $ikigai.circles }}{{ $circlesById = merge $circlesById (dict .id .) }}{{ end -}}
+<div class="not-prose ikigai-whole">
+  <svg class="ikigai-venn" viewBox="0 0 400 400" role="img" aria-label="Four overlapping circles: {{ delimit $questions " " }} Where all four meet is ikigai.">
+    {{- range $ikigai.circles }}
+    {{- $centre := index $centres .position }}
+    <circle cx="{{ index $centre 0 }}" cy="{{ index $centre 1 }}" r="95" fill="{{ .colour }}" fill-opacity="0.22" stroke="{{ .colour }}" stroke-width="2" />
+    {{- end }}
+    {{- range $ikigai.circles }}
+    {{- $spot := index $labelSpots .position }}
+    <text x="{{ index $spot 0 }}" y="{{ index $spot 1 }}" class="ikigai-venn-label">{{ .label }}</text>
+    {{- end }}
+    {{/* An overlap's label sits at the midpoint of its two circles' centres,
+         pushed out from the diagram's centre into the two-circle region. */}}
+    {{- range $ikigai.overlaps }}
+    {{- $a := index $centres (index $circlesById (index .between 0)).position -}}
+    {{- $b := index $centres (index $circlesById (index .between 1)).position -}}
+    {{- $midX := div (add (index $a 0) (index $b 0)) 2.0 -}}
+    {{- $midY := div (add (index $a 1) (index $b 1)) 2.0 -}}
+    <text x="{{ add $midX (mul (sub $midX 200) 0.7) }}" y="{{ add $midY (mul (sub $midY 200) 0.7) }}" class="ikigai-venn-overlap">{{ .name }}</text>
+    {{- end }}
+    <text x="200" y="200" class="ikigai-venn-centre">Ikigai</text>
+  </svg>
+  <ul class="ikigai-overlaps">
+    {{- range $ikigai.overlaps }}
+    {{- $first := index $circlesById (index .between 0) -}}
+    {{- $second := index $circlesById (index .between 1) -}}
+    <li><strong>{{ .name }}</strong>: {{ $first.phrase }} and {{ $second.phrase }}</li>
+    {{- end }}
+    <li><strong>Ikigai</strong>: all four at once</li>
+  </ul>
+  <div class="ikigai-answers">
+    {{- range $ikigai.circles }}
+    <label class="ikigai-answer" style="--ikigai-colour: {{ .colour | safeCSS }}">
+      <span class="ikigai-answer-question">{{ .question }}</span>
+      <textarea rows="4" data-ikigai-answer="{{ .id }}" placeholder="Write a few words…"></textarea>
+      <span class="ikigai-saved" data-ikigai-saved aria-live="polite"></span>
+    </label>
+    {{- end }}
+  </div>
+  <div class="ikigai-footer">
+    <p class="ikigai-note">Your ticks and answers are saved in this browser only. Nothing is sent anywhere.</p>
+    <button type="button" class="ikigai-clear" data-ikigai-clear hidden>Clear my ticks and answers</button>
+  </div>
+</div>

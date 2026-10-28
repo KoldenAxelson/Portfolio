@@ -1,0 +1,33 @@
+{{- /*
+  ba-gil-lexicon — every Ba-Gil word and affix, keyed by its lowercase form:
+  { form, gloss, shape, frame, note, respell }.
+
+  Merges the frame words (data/ba-gil/frames.yaml) with the free-standing
+  morphemes (data/ba-gil/morphemes.yaml). A frame's words take the frame's shape;
+  a morpheme's shape (CVC root, CV prefix, VC suffix) is read off its letters.
+  The decoder (assets/scripts/pages/ba-gil/decoder.ts) gets this same dict as
+  JSON, so the page's static glosses and its live ones can't disagree.
+*/ -}}
+{{- $data := index site.Data "ba-gil" -}}
+{{- $vowels := $data.alphabet.vowels -}}
+{{- $entries := slice -}}
+{{- range $frame := $data.frames -}}
+  {{- range $vowel, $slot := $frame.slots -}}
+    {{- $entries = $entries | append (dict "form" $slot.word "gloss" $slot.gloss "shape" $frame.shape "frame" $frame.id) -}}
+  {{- end -}}
+  {{- range $rung := $frame.rungs -}}
+    {{- $entries = $entries | append (dict "form" $rung.word "gloss" $rung.gloss "shape" $frame.shape "frame" $frame.id) -}}
+  {{- end -}}
+{{- end -}}
+{{- range $data.morphemes -}}
+  {{- $pattern := "" -}}
+  {{- range split (lower .form) "" -}}{{- $pattern = printf "%s%s" $pattern (cond (in $vowels .) "V" "C") -}}{{- end -}}
+  {{- $entries = $entries | append (dict "form" .form "gloss" .gloss "shape" $pattern "note" (.note | default "") "respell" (.respell | default false)) -}}
+{{- end -}}
+{{- $lexicon := dict -}}
+{{- range $entries -}}
+  {{- $key := lower .form -}}
+  {{- with index $lexicon $key }}{{ warnf "ba-gil: %q is defined twice (frames.yaml and morphemes.yaml must not overlap)" $key }}{{ end -}}
+  {{- $lexicon = merge $lexicon (dict $key .) -}}
+{{- end -}}
+{{- return $lexicon -}}

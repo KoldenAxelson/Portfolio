@@ -1,0 +1,20 @@
+{{- /*
+  impossible-list/details — a game's or book's details as plain page text,
+  visually hidden. The drawer reads the same fields from the button's data-*
+  attributes (scripts/site/games/game-card.ts), but attributes aren't page text:
+  scrapers, readers modes and screen readers skip them. This block is what they
+  get instead, so everything the drawer shows is also in the static HTML.
+
+  Called with one games or books entry from content/impossible-list.md, plus the
+  console's full name for games: (dict "item" . "consoleName" "Nintendo 64").
+*/ -}}
+{{- with .item -}}
+<div class="sr-only">
+  {{- with $.consoleName }}<p>Played on {{ . }}.</p>{{ end }}
+  {{- with .rating }}<p>Rated {{ . | lang.FormatNumber 1 }} out of 5.</p>{{ end }}
+  {{- with .status }}<p>{{ . }}.</p>{{ end }}
+  {{- with .blurb }}<p>My review: {{ . }}</p>{{ end }}
+  {{- with .pitch }}<p>Why read it: {{ . }}</p>{{ end }}
+  {{- with .series }}<p>The series: {{ range $i, $book := . }}{{ if $i }}; {{ end }}{{ $book.title }} ({{ cond $book.done "read" "not read yet" }}){{ end }}.</p>{{ end }}
+</div>
+{{- end -}}

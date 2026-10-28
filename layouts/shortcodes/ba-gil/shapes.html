@@ -1,0 +1,24 @@
+{{- /*
+  ba-gil/shapes — the three word shapes and how many of each the alphabet allows.
+  The counts are computed from data/ba-gil/alphabet.yaml, so they follow the
+  alphabet if it ever changes.
+
+    {{< ba-gil/shapes >}}
+*/ -}}
+{{- $letters := partial "func/ba-gil-letters.html" . -}}
+{{- $vowels := len (where $letters "isVowel" true) -}}
+{{- $consonants := sub (len $letters) $vowels -}}
+{{- $shapes := slice
+  (dict "shape" "CVC" "role" "root" "label" "Root words" "count" (mul $consonants $vowels $consonants) "example" "Mon" "gloss" "person")
+  (dict "shape" "CV" "role" "prefix" "label" "Prefixes" "count" (mul $consonants $vowels) "example" "Ba" "gloss" "future")
+  (dict "shape" "VC" "role" "suffix" "label" "Suffixes" "count" (mul $vowels $consonants) "example" "Ab" "gloss" "past") -}}
+<div class="not-prose bagil-shapes">
+  {{- range $shapes }}
+  <div class="bagil-shape is-{{ .role }}">
+    <span class="bagil-shape-pattern">{{ .shape }}</span>
+    <span class="bagil-shape-label">{{ .label }}</span>
+    <span class="bagil-shape-count">{{ .count }} possible</span>
+    <span class="bagil-shape-example"><span class="bagil-morph is-{{ .role }}">{{ .example }}</span> {{ .gloss }}</span>
+  </div>
+  {{- end }}
+</div>

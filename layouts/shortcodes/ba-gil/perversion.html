@@ -1,0 +1,25 @@
+{{- /*
+  ba-gil/perversion — Ba-Mon-Ab next to its inversion, Ab-Mon-Ba. Static, the
+  pair reads as two glossed lines. With script
+  (assets/scripts/pages/ba-gil/flip.ts) it becomes one line and a button that
+  swaps the ends in place.
+
+    {{< ba-gil/perversion >}}
+
+  Both meanings come from data/ba-gil/examples.yaml.
+*/ -}}
+{{- $data := index site.Data "ba-gil" -}}
+{{- $lexicon := partial "func/ba-gil-lexicon.html" . -}}
+{{- $letters := partial "func/ba-gil-letters.html" . -}}
+{{- $pair := slice "Ba-Mon-Ab" "Ab-Mon-Ba" -}}
+<figure class="not-prose bagil-panel bagil-flip" data-ba-gil-flip>
+  {{- range $i, $text := $pair }}
+  {{- with index (where $data.examples "text" $text) 0 }}
+  <div class="bagil-flip-line" data-flip-line="{{ $i }}" data-meaning="{{ .meaning }}">
+    {{ partial "ba-gil/gloss.html" (dict "text" .text "lexicon" $lexicon "letters" $letters) }}
+    <span class="bagil-flip-meaning">= <strong>{{ .meaning }}</strong></span>
+  </div>
+  {{- end }}
+  {{- end }}
+  <button type="button" class="bagil-button" data-flip-button hidden>Invert it</button>
+</figure>

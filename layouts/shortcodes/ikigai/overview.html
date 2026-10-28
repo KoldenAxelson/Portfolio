@@ -1,0 +1,32 @@
+{{- /*
+  ikigai/overview — the four goals as tiles at the top of the page: each links to
+  its section and shows how much of it the visitor has in place. Static, a tile
+  says how many habits (or questions) it holds; assets/scripts/pages/ikigai/main.ts
+  swaps that for live progress and fills the bar.
+
+    {{< ikigai/overview >}}
+
+  Data: data/ikigai/guide.yaml. Tile ids match the pillar ids and "whole", which
+  are also the section anchors in content/misc/ikigai.md.
+*/ -}}
+{{- $guide := site.Data.ikigai.guide -}}
+<nav class="not-prose ikigai-overview" aria-label="The four goals">
+  {{- range $guide.pillars }}
+  {{- $habitCount := 0 -}}
+  {{- range .groups }}{{ $habitCount = add $habitCount (len (.habits | default slice)) }}{{ end }}
+  <a class="ikigai-tile" href="#{{ .id }}" hx-boost="false" data-ikigai-overview="{{ .id }}">
+    <span class="ikigai-tile-emoji" aria-hidden="true">{{ .emoji }}</span>
+    <span class="ikigai-tile-title">{{ .title }}</span>
+    <span class="ikigai-tile-metaphor">{{ .metaphor }}</span>
+    <span class="ikigai-bar" aria-hidden="true"><span></span></span>
+    <span class="ikigai-tile-count" data-ikigai-count>{{ $habitCount }} habits</span>
+  </a>
+  {{- end }}
+  <a class="ikigai-tile" href="#whole" hx-boost="false" data-ikigai-overview="whole">
+    <span class="ikigai-tile-emoji" aria-hidden="true">{{ range $guide.ikigai.circles }}{{ .emoji }}{{ end }}</span>
+    <span class="ikigai-tile-title">{{ $guide.ikigai.title }}</span>
+    <span class="ikigai-tile-metaphor">{{ $guide.ikigai.metaphor }}</span>
+    <span class="ikigai-bar" aria-hidden="true"><span></span></span>
+    <span class="ikigai-tile-count" data-ikigai-count>{{ len $guide.ikigai.circles }} questions</span>
+  </a>
+</nav>

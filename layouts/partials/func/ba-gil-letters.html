@@ -1,0 +1,16 @@
+{{- /*
+  ba-gil-letters — Ba-Gil's 16 letters in alphabet order, read off the alphabet's
+  name (data/ba-gil/alphabet.yaml `groups`). Returns a slice of
+  { letter, value, isVowel, group }, where value is the letter's base-16 digit:
+  its position in the alphabet, b = 0 … t = 15.
+*/ -}}
+{{- $alphabet := index site.Data "ba-gil" "alphabet" -}}
+{{- $letters := slice -}}
+{{- $value := 0 -}}
+{{- range $group := $alphabet.groups -}}
+  {{- range $letter := split $group "" -}}
+    {{- $letters = $letters | append (dict "letter" $letter "value" $value "isVowel" (in $alphabet.vowels $letter) "group" $group) -}}
+    {{- $value = add $value 1 -}}
+  {{- end -}}
+{{- end -}}
+{{- return $letters -}}

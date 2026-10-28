@@ -1,0 +1,21 @@
+{{- /*
+  ba-gil/assets — the stylesheet, the page bundle, and the data the bundle reads,
+  for /misc/ba-gil/. Called once from layouts/misc/single.html when the page uses
+  any ba-gil shortcode.
+
+  The JSON block is the script's only source of letters and words: the same
+  lexicon the static glosses were rendered from (func/ba-gil-lexicon.html), so
+  the decoder can't drift from the page. assets/scripts/pages/ba-gil/data.ts
+  reads it by [data-ba-gil-data].
+*/ -}}
+{{- $data := index site.Data "ba-gil" -}}
+{{- $letters := slice -}}
+{{- range partial "func/ba-gil-letters.html" . }}{{ $letters = $letters | append .letter }}{{ end -}}
+{{- $meanings := dict -}}
+{{- range $data.examples }}{{ $meanings = merge $meanings (dict (lower .text) .meaning) }}{{ end -}}
+{{- $payload := dict "letters" $letters "vowels" $data.alphabet.vowels "lexicon" (partial "func/ba-gil-lexicon.html" .) "meanings" $meanings -}}
+{{- $css := resources.Get "css/pages/ba-gil/ba-gil.css" | minify | fingerprint -}}
+<link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" />
+<script type="application/json" data-ba-gil-data>{{ $payload | jsonify | safeJS }}</script>
+{{- $js := resources.Get "scripts/pages/ba-gil/main.ts" | js.Build (dict "minify" true "target" "es2018" "format" "iife") | fingerprint -}}
+<script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>

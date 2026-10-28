@@ -1,0 +1,201 @@
+/* /misc/ba-gil/ — the conlang page. Shipped by layouts/partials/ba-gil/assets.html.
+   Colours come from the site's --c-* tokens; the three morpheme roles add a hue
+   for borders and tints only, so text always sits on the token colours and keeps
+   their measured contrast in both themes. */
+
+.bagil-panel {
+  --bagil-root: 3 119 55;
+  --bagil-prefix: 37 99 235;
+  --bagil-suffix: 219 39 119;
+  --bagil-number: 124 58 237;
+  margin: 1.5rem 0 2rem;
+  padding: 1.25rem;
+  border: 1px solid rgb(var(--c-border));
+  border-radius: 1rem;
+  background: rgb(var(--c-fg) / 0.02);
+}
+.bagil-shapes,
+.bagil-status {
+  --bagil-root: 3 119 55;
+  --bagil-prefix: 37 99 235;
+  --bagil-suffix: 219 39 119;
+  --bagil-number: 124 58 237;
+}
+@media (prefers-color-scheme: dark) {
+  .bagil-panel,
+  .bagil-shapes,
+  .bagil-status {
+    --bagil-root: 252 211 77;
+    --bagil-prefix: 96 165 250;
+    --bagil-suffix: 244 114 182;
+    --bagil-number: 167 139 250;
+  }
+}
+
+/* ── Shared bits ─────────────────────────────────────────────── */
+.bagil-morph {
+  display: inline-block;
+  padding: 0.05rem 0.45rem;
+  border: 1px solid rgb(var(--c-border));
+  border-radius: 0.4rem;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.9em;
+  color: rgb(var(--c-fg));
+  white-space: nowrap;
+}
+.bagil-morph.is-root { border-color: rgb(var(--bagil-root) / 0.6); background: rgb(var(--bagil-root) / 0.1); }
+.bagil-morph.is-prefix { border-color: rgb(var(--bagil-prefix) / 0.6); background: rgb(var(--bagil-prefix) / 0.1); }
+.bagil-morph.is-suffix { border-color: rgb(var(--bagil-suffix) / 0.6); background: rgb(var(--bagil-suffix) / 0.1); }
+.bagil-morph.is-number { border-color: rgb(var(--bagil-number) / 0.6); background: rgb(var(--bagil-number) / 0.1); }
+.bagil-morph.is-unknown { border-style: dashed; }
+.bagil-morph.is-respell { border-style: dashed; text-decoration: underline wavy rgb(var(--c-muted)); text-underline-offset: 3px; }
+.bagil-gloss { display: block; font-size: 0.8rem; line-height: 1.3; color: rgb(var(--c-muted)); }
+.bagil-label { margin: 0 0 0.4rem; font-size: 0.8rem; color: rgb(var(--c-muted)); }
+.bagil-legend { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; margin: 1rem 0 0; font-size: 0.8rem; color: rgb(var(--c-muted)); }
+.bagil-key { display: inline-flex; align-items: center; gap: 0.4rem; }
+.bagil-key strong { font-family: 'JetBrains Mono', ui-monospace, monospace; color: rgb(var(--c-fg)); }
+.bagil-swatch { width: 0.8rem; height: 0.8rem; border-radius: 0.2rem; border: 1px solid rgb(var(--c-border)); background: rgb(var(--c-fg) / 0.04); }
+.bagil-swatch.is-vowel { background: rgb(var(--c-accent) / 0.25); border-color: rgb(var(--c-accent) / 0.6); }
+.bagil-aside { margin: 0.75rem 0 0; font-size: 0.85rem; color: rgb(var(--c-muted)); }
+.bagil-input {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid rgb(var(--c-border));
+  border-radius: 0.6rem;
+  background: rgb(var(--c-bg));
+  color: rgb(var(--c-fg));
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 1rem;
+}
+.bagil-input:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.6); outline-offset: 1px; }
+.bagil-button,
+.bagil-chip {
+  border: 1px solid rgb(var(--c-border));
+  border-radius: 9999px;
+  background: rgb(var(--c-bg));
+  color: rgb(var(--c-fg));
+  cursor: pointer;
+  transition: border-color 150ms ease, color 150ms ease;
+}
+.bagil-button { margin-top: 1rem; padding: 0.4rem 1rem; font-size: 0.9rem; }
+.bagil-chip { padding: 0.25rem 0.7rem; font-size: 0.8rem; }
+.bagil-button:hover,
+.bagil-chip:hover { border-color: rgb(var(--c-accent)); color: rgb(var(--c-accent)); }
+.bagil-button:focus-visible,
+.bagil-chip:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.6); outline-offset: 2px; }
+.bagil-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+
+/* ── Alphabet ────────────────────────────────────────────────── */
+.bagil-alphabet { display: flex; flex-wrap: wrap; gap: 0.75rem 1rem; margin: 0; padding: 0; list-style: none; }
+.bagil-group { display: flex; flex-direction: column; align-items: center; gap: 0.35rem; }
+.bagil-group-letters { display: flex; gap: 0.3rem; margin: 0; padding: 0; list-style: none; }
+.bagil-group-name { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.75rem; letter-spacing: 0.08em; color: rgb(var(--c-muted)); }
+.bagil-letter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 3.1rem;
+  padding: 0.4rem 0.3rem 0.3rem;
+  border: 1px solid rgb(var(--c-border));
+  border-radius: 0.6rem;
+  background: rgb(var(--c-bg));
+}
+.bagil-letter.is-vowel { background: rgb(var(--c-accent) / 0.12); border-color: rgb(var(--c-accent) / 0.5); }
+.bagil-letter-glyph { font-size: 1.5rem; line-height: 1.1; font-weight: 500; color: rgb(var(--c-fg)); }
+.bagil-letter-value { margin-top: 0.2rem; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.65rem; color: rgb(var(--c-muted)); white-space: nowrap; }
+
+/* ── Shapes ──────────────────────────────────────────────────── */
+.bagil-shapes { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 0.75rem; margin: 1.5rem 0 2rem; }
+.bagil-shape { display: flex; flex-direction: column; gap: 0.25rem; padding: 1rem; border: 1px solid rgb(var(--c-border)); border-radius: 0.9rem; border-top-width: 3px; }
+.bagil-shape.is-root { border-top-color: rgb(var(--bagil-root)); }
+.bagil-shape.is-prefix { border-top-color: rgb(var(--bagil-prefix)); }
+.bagil-shape.is-suffix { border-top-color: rgb(var(--bagil-suffix)); }
+.bagil-shape-pattern { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 1.4rem; font-weight: 600; color: rgb(var(--c-fg)); }
+.bagil-shape-label { font-weight: 500; color: rgb(var(--c-fg)); }
+.bagil-shape-count { font-size: 0.85rem; color: rgb(var(--c-muted)); }
+.bagil-shape-example { margin-top: 0.4rem; font-size: 0.85rem; color: rgb(var(--c-muted)); }
+
+/* ── Families + frame table ──────────────────────────────────── */
+.bagil-progress { margin: 0 0 0.75rem; color: rgb(var(--c-muted)); }
+.bagil-progress strong { color: rgb(var(--c-fg)); }
+.bagil-families { display: grid; grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr)); gap: 0.4rem; margin: 0 0 1.25rem; padding: 0; list-style: none; }
+.bagil-family { display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 0.6rem; align-items: center; padding: 0.45rem 0.6rem; border: 1px solid rgb(var(--c-border)); border-radius: 0.6rem; }
+.bagil-family-letter { grid-row: span 2; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 1.2rem; font-weight: 600; color: rgb(var(--c-fg)); }
+.bagil-family-name { font-size: 0.85rem; color: rgb(var(--c-fg)); }
+.bagil-family-status { font-size: 0.7rem; color: rgb(var(--c-muted)); }
+.bagil-family.is-done { border-color: rgb(var(--c-accent) / 0.6); background: rgb(var(--c-accent) / 0.08); }
+.bagil-family.is-partial { border-color: rgb(var(--c-accent) / 0.35); }
+.bagil-family.is-open,
+.bagil-family.is-started { border-style: dashed; }
+.bagil-family.is-open .bagil-family-name { color: rgb(var(--c-muted)); }
+
+/* `relative` contains positioned descendants (the sr-only labels) inside the
+   scroller; without it they escape the clip and widen the whole page. */
+.bagil-scroll { position: relative; overflow-x: auto; border: 1px solid rgb(var(--c-border)); border-radius: 0.75rem; }
+.bagil-scroll:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.6); outline-offset: 2px; }
+.bagil-frames { width: 100%; min-width: 40rem; border-collapse: collapse; font-size: 0.9rem; }
+.bagil-frames th,
+.bagil-frames td { padding: 0.55rem 0.5rem; border-bottom: 1px solid rgb(var(--c-border)); text-align: left; vertical-align: top; }
+.bagil-frames tbody tr:last-child > * { border-bottom: 0; }
+.bagil-frames thead th { font-weight: 500; color: rgb(var(--c-muted)); background: rgb(var(--c-fg) / 0.03); }
+.bagil-vowel-head { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 1rem; text-align: center !important; color: rgb(var(--c-fg)) !important; }
+.bagil-frames tbody th { position: sticky; left: 0; z-index: 1; width: 11rem; min-width: 11rem; background: rgb(var(--c-bg)); font-weight: 400; }
+@media (max-width: 40rem) {
+  .bagil-frames tbody th { width: 7.5rem; min-width: 7.5rem; }
+}
+.bagil-frame-id { display: block; font-family: 'JetBrains Mono', ui-monospace, monospace; font-weight: 600; color: rgb(var(--c-fg)); }
+.bagil-frame-name { display: block; font-size: 0.8rem; color: rgb(var(--c-fg)); }
+.bagil-frame-note { display: block; margin-top: 0.2rem; font-size: 0.72rem; line-height: 1.35; color: rgb(var(--c-muted)); }
+.bagil-cell { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; text-align: center; }
+.bagil-frames td.is-empty { background-image: repeating-linear-gradient(135deg, transparent 0 6px, rgb(var(--c-border) / 0.6) 6px 7px); }
+.bagil-frames tr.is-open td { background-image: repeating-linear-gradient(135deg, transparent 0 6px, rgb(var(--c-border)) 6px 7px); }
+.bagil-color { width: 1.6rem; height: 0.7rem; border-radius: 9999px; border: 1px solid rgb(var(--c-fg) / 0.25); }
+.bagil-diagram { width: 1.6rem; height: 1.6rem; color: rgb(var(--c-fg)); }
+.bagil-ladder { margin: 1.25rem 0 0; }
+.bagil-ladder figcaption { font-size: 0.85rem; color: rgb(var(--c-fg)); }
+.bagil-ladder ol { position: relative; margin: 0.75rem 0 0; padding: 0 0 0 1.25rem; list-style: none; }
+.bagil-ladder ol::before { content: ''; position: absolute; left: 0.35rem; top: 0.6rem; bottom: 0.6rem; width: 2px; border-radius: 2px; background: linear-gradient(rgb(var(--c-accent)), rgb(var(--c-accent) / 0.2)); }
+.bagil-ladder li { position: relative; display: flex; align-items: baseline; gap: 0.6rem; padding: 0.25rem 0; }
+.bagil-ladder li::before { content: ''; position: absolute; left: -1.1rem; top: 0.75rem; width: 0.55rem; height: 0.55rem; border-radius: 9999px; background: rgb(var(--c-accent)); }
+.bagil-ladder .bagil-gloss { display: inline; font-size: 0.9rem; }
+
+/* ── Glosses, decoder, flip ──────────────────────────────────── */
+.bagil-gloss-line { display: inline-flex; flex-wrap: wrap; gap: 0.4rem 1.1rem; }
+.bagil-gloss-word { display: inline-flex; gap: 0.75rem; }
+.bagil-gloss-part { display: inline-flex; flex-direction: column; align-items: center; text-align: center; }
+.bagil-gloss-part.is-inverted .bagil-morph { box-shadow: 0 0 0 2px rgb(var(--c-bg)), 0 0 0 3px rgb(var(--c-fg) / 0.5); }
+.bagil-flag { display: block; font-size: 0.7rem; color: rgb(var(--c-fg)); }
+.bagil-examples { display: grid; gap: 0.9rem; margin: 1.25rem 0 0; padding: 0; list-style: none; }
+.bagil-examples li { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 0.4rem 1rem; padding-bottom: 0.9rem; border-bottom: 1px solid rgb(var(--c-border)); }
+.bagil-examples li:last-child { border-bottom: 0; padding-bottom: 0; }
+.bagil-example-meaning { flex: 1 1 14rem; font-size: 0.9rem; color: rgb(var(--c-muted)); }
+.bagil-example-meaning strong { color: rgb(var(--c-fg)); font-weight: 500; }
+.bagil-decoder { display: grid; gap: 0.5rem; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid rgb(var(--c-border)); }
+.bagil-decoder-out { min-height: 3.5rem; padding: 0.75rem 0; }
+.bagil-decoder-out p { margin: 0.6rem 0 0; font-size: 0.9rem; color: rgb(var(--c-muted)); }
+.bagil-decoder-out p strong { color: rgb(var(--c-fg)); font-weight: 500; }
+.bagil-flip-line { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem; padding: 0.4rem 0; font-size: 1.15rem; }
+.bagil-flip-meaning { font-size: 1rem; color: rgb(var(--c-muted)); }
+.bagil-flip-meaning strong { color: rgb(var(--c-fg)); font-weight: 600; }
+.bagil-flip .bagil-gloss-part { transition: transform 450ms cubic-bezier(0.65, 0, 0.35, 1); }
+@media (prefers-reduced-motion: reduce) {
+  .bagil-flip .bagil-gloss-part { transition: none; }
+}
+
+/* ── Numbers ─────────────────────────────────────────────────── */
+.bagil-number-table { border-collapse: collapse; font-size: 0.9rem; }
+.bagil-number-table th,
+.bagil-number-table td { padding: 0.35rem 1.25rem 0.35rem 0; border-bottom: 1px solid rgb(var(--c-border)); text-align: left; }
+.bagil-number-table th { font-weight: 500; color: rgb(var(--c-muted)); }
+.bagil-number-table td { color: rgb(var(--c-fg)); font-variant-numeric: tabular-nums; }
+.bagil-converter { display: grid; gap: 0.5rem; margin-top: 1.25rem; max-width: 22rem; }
+.bagil-number-out { min-height: 1.5rem; margin: 0; color: rgb(var(--c-fg)); }
+
+/* ── Status ──────────────────────────────────────────────────── */
+.bagil-status { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 0.75rem; margin: 1.5rem 0 2rem; }
+.bagil-status-col { padding: 1rem; border: 1px solid rgb(var(--c-border)); border-radius: 0.9rem; }
+.bagil-status-col.is-done { border-color: rgb(var(--c-accent) / 0.5); }
+.bagil-status-col.is-next { border-style: dashed; }
+.bagil-status-col h3 { margin: 0 0 0.5rem; font-size: 0.8rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: rgb(var(--c-muted)); }
+.bagil-status-col ul { margin: 0; padding-left: 1.1rem; font-size: 0.9rem; color: rgb(var(--c-fg)); }
+.bagil-status-col li + li { margin-top: 0.3rem; }

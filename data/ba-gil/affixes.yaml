@@ -1,0 +1,52 @@
+# Affixes. Every prefix is CV and every suffix is VC — the mirror image of the
+# same two letters. Put one in the other's slot and the meaning inverts (the
+# perversion rule), which is how the decoder reads Tu-Meb-Mu.
+#
+# A scale is one consonant run through the vowels a → u, minor to most; ü is the
+# general form. The word for each step is BUILT from `consonant` + vowel (prefix)
+# or vowel + `consonant` (suffix), never written out, so the two slots can't drift.
+#
+#   slot  prefix | suffix | both (both = the scale has a form in each slot)
+
+singles:
+  - { prefix: "ba", gloss: "future", note: "Also the word for hope." }
+  - { suffix: "ab", gloss: "past" }
+  - { prefix: "la", gloss: "belonging to", note: "La-Man = my, La-Min = your." }
+
+scales:
+  - consonant: t
+    name: "Tool size"
+    slot: both
+    prefixGloss: "tool"
+    suffixGloss: "with a tool"
+    steps:
+      a: "tiny"
+      e: "small"
+      o: "large"
+      u: "huge"
+      ü: "general"
+    note: "Tü- is the everyday tool prefix, -üt the everyday 'with a tool'. The i step isn't assigned yet."
+
+  - consonant: m
+    name: "Correction"
+    slot: prefix
+    prefixGloss: "bad"
+    steps:
+      a: "minor"
+      e: "mild"
+      i: "moderate"
+      o: "severe"
+      u: "worst"
+    note: "How badly something needs fixing."
+
+  - consonant: m
+    name: "Enhancement"
+    slot: suffix
+    suffixGloss: "enhanced"
+    steps:
+      a: "minor"
+      e: "mild"
+      i: "moderate"
+      o: "major"
+      u: "maximum"
+    note: "The mirror of correction: the same letters, flipped into the suffix slot."

@@ -1,0 +1,32 @@
+{{- /*
+  ba-gil/numbers — base-16 numbers spelled with the alphabet (b = 0 … t = 15),
+  a few worked values, and a converter (assets/scripts/pages/ba-gil/numbers.ts).
+  Every value shown is computed from the letter order, never typed in.
+
+    {{< ba-gil/numbers >}}
+*/ -}}
+{{- $letters := partial "func/ba-gil-letters.html" . -}}
+{{- $values := dict -}}
+{{- range $letters }}{{ $values = merge $values (dict .letter .value) }}{{ end -}}
+{{- $first := index $letters 0 -}}
+{{- $second := index $letters 1 -}}
+{{- $last := index $letters (sub (len $letters) 1) -}}
+{{- $samples := slice $first.letter $second.letter "l" $last.letter (printf "%s%s" $second.letter $first.letter) (printf "%s%s" $last.letter $last.letter) -}}
+<div class="not-prose bagil-panel" data-ba-gil-numbers>
+  <table class="bagil-number-table">
+    <thead><tr><th scope="col">Written</th><th scope="col">Said</th><th scope="col">Value</th></tr></thead>
+    <tbody>
+      {{- range $samples }}
+      {{- $number := 0 -}}
+      {{- $said := slice -}}
+      {{- range split . "" }}{{ $number = add (mul $number (len $letters)) (index $values .) }}{{ $said = $said | append (printf "chi%s" .) }}{{ end }}
+      <tr><td><span class="bagil-morph is-number">#{{ . }}</span></td><td>{{ delimit $said " " }}</td><td>{{ $number }}</td></tr>
+      {{- end }}
+    </tbody>
+  </table>
+  <div class="bagil-converter" hidden data-numbers-ui>
+    <label class="bagil-label" for="bagil-number">Convert a number either way</label>
+    <input id="bagil-number" class="bagil-input" type="text" inputmode="text" autocomplete="off" spellcheck="false" placeholder="255 or #tt" data-numbers-input />
+    <p class="bagil-number-out" aria-live="polite" data-numbers-output></p>
+  </div>
+</div>

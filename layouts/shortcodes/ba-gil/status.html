@@ -1,0 +1,16 @@
+{{- /*
+  ba-gil/status — what's built, what's half-built, what's next. Printed straight
+  from data/ba-gil/status.yaml.
+
+    {{< ba-gil/status >}}
+*/ -}}
+{{- $status := index site.Data "ba-gil" "status" -}}
+{{- $columns := slice (dict "key" "done" "label" "Built") (dict "key" "partial" "label" "In progress") (dict "key" "next" "label" "Next") -}}
+<div class="not-prose bagil-status">
+  {{- range $columns }}
+  <section class="bagil-status-col is-{{ .key }}">
+    <h3>{{ .label }}</h3>
+    <ul>{{ range index $status .key }}<li>{{ . }}</li>{{ end }}</ul>
+  </section>
+  {{- end }}
+</div>

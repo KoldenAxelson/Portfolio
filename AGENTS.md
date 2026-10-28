@@ -28,6 +28,10 @@ Read the matching skill in `private/skills/` before starting these tasks:
 | [`private/skills/AuditCode.md`](private/skills/AuditCode.md) | Auditing, re-auditing or grading the codebase or a feature. |
 | [`private/skills/AuditArticle.md`](private/skills/AuditArticle.md) | Fact-checking and reviewing an article or chapter before it publishes. Never in the session that wrote it. |
 
+**"Last updated" lines:** when you change a page whose front matter has an
+`updated:` date (it renders as "Last updated …"), set it to today's date in the
+same change.
+
 **Linux sandboxes:** `bin/` holds macOS binaries. Fetch Linux ones with
 `make BIN=<dir> setup` and pass `BIN=<dir>` to make; never overwrite `bin/`.
 Don't run git from a sandboxed shell (it can leave `.git/index.lock` behind).

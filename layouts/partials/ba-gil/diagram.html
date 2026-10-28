@@ -1,0 +1,12 @@
+{{- /*
+  ba-gil/diagram — a tiny picture for a spatial word (the P_K frame): a box, and a
+  dot where the word puts something. Called with the slot's `diagram` value from
+  data/ba-gil/frames.yaml: in, above, below, on, near.
+*/ -}}
+{{- $dots := dict "in" (slice 12 14) "above" (slice 12 4) "below" (slice 12 22) "on" (slice 12 8.5) "near" (slice 21.5 15) -}}
+{{- with index $dots . -}}
+<svg class="bagil-diagram" viewBox="0 0 26 26" aria-hidden="true">
+  <rect x="5" y="10" width="14" height="10" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.4" />
+  <circle cx="{{ index . 0 }}" cy="{{ index . 1 }}" r="2" fill="currentColor" />
+</svg>
+{{- end -}}

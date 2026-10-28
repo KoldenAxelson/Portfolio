@@ -50,6 +50,7 @@
           <span>{{ $title }}</span>
           {{ $expandSvg | safeHTML }}
         </button>
+        {{ partial "impossible-list/details.html" (dict "item" . "consoleName" (index $consoleNames .console)) }}
         {{- else }}
         {{ $circleSvg | safeHTML }}
         <span class="text-fg">{{ $title }}</span>
@@ -115,6 +116,7 @@
               {{- end }}
             </span>
           </button>
+          {{ partial "impossible-list/details.html" (dict "item" .) }}
         </li>
         {{- end }}
       </ul>

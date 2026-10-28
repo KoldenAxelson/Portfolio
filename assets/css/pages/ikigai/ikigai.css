@@ -1,0 +1,99 @@
+/* /misc/ikigai/ — shipped by layouts/partials/ikigai/assets.html. Built on the
+   site's --c-* tokens, so both themes come for free; the four ikigai colours
+   only fill shapes and borders, never text.
+
+   Layout rule: one column on phones, a full row of equals on wider screens, never
+   a 2 + 1 grid with an orphan card. */
+
+.ikigai-overview,
+.ikigai-advice,
+.ikigai-groups,
+.ikigai-answers { display: grid; gap: 0.75rem; }
+@media (min-width: 44rem) {
+  .ikigai-overview { grid-template-columns: repeat(4, 1fr); }
+  .ikigai-advice,
+  .ikigai-groups { grid-template-columns: repeat(3, 1fr); }
+  .ikigai-answers { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ── Progress bar, shared by tiles and pillars ──────────────── */
+/* main.ts sets --ikigai-progress (0–100%) on the bar's parent. */
+.ikigai-bar { display: block; height: 0.4rem; border-radius: 9999px; background: rgb(var(--c-border)); overflow: hidden; }
+.ikigai-bar > span { display: block; height: 100%; width: var(--ikigai-progress, 0%); border-radius: inherit; background: rgb(var(--c-accent)); transition: width 300ms ease; }
+@media (prefers-reduced-motion: reduce) { .ikigai-bar > span { transition: none; } }
+
+/* ── Overview tiles ─────────────────────────────────────────── */
+.ikigai-overview { margin: 1.5rem 0 2.5rem; }
+@media (max-width: 43.99rem) { .ikigai-overview { grid-template-columns: repeat(2, 1fr); } }
+.ikigai-tile { display: flex; flex-direction: column; gap: 0.3rem; padding: 0.9rem; border: 1px solid rgb(var(--c-border)); border-radius: 0.9rem; background: rgb(var(--c-fg) / 0.02); color: rgb(var(--c-fg)); text-decoration: none; transition: border-color 150ms ease, transform 150ms ease; }
+.ikigai-tile:hover { border-color: rgb(var(--c-accent) / 0.7); transform: translateY(-2px); }
+.ikigai-tile:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.6); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .ikigai-tile:hover { transform: none; } }
+.ikigai-tile-emoji { font-size: 1.4rem; line-height: 1; letter-spacing: -0.15em; }
+.ikigai-tile-title { margin-top: 0.3rem; font-weight: 600; }
+.ikigai-tile-metaphor { font-size: 0.8rem; line-height: 1.3; color: rgb(var(--c-muted)); flex: 1; }
+.ikigai-tile .ikigai-bar { margin-top: 0.4rem; }
+.ikigai-tile-count { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.72rem; color: rgb(var(--c-muted)); }
+
+/* ── Quick advice ───────────────────────────────────────────── */
+.ikigai-advice { margin: 1.5rem 0 2rem; padding: 0; list-style: none; }
+.ikigai-advice li { display: flex; gap: 0.75rem; align-items: flex-start; padding: 1rem; border: 1px solid rgb(var(--c-border)); border-radius: 0.9rem; color: rgb(var(--c-fg)); line-height: 1.45; }
+.ikigai-advice-number { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 1.6rem; height: 1.6rem; border-radius: 9999px; background: rgb(var(--c-accent) / 0.15); font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.85rem; }
+
+/* ── Pillar head + progress ─────────────────────────────────── */
+.ikigai-pillar { margin: 1rem 0 2.5rem; }
+.ikigai-pillar-head { display: flex; align-items: center; gap: 0.9rem; }
+.ikigai-pillar-emoji { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 3rem; height: 3rem; border-radius: 0.9rem; background: rgb(var(--c-accent) / 0.12); font-size: 1.6rem; }
+.ikigai-pillar-metaphor { margin: 0; font-size: 1.15rem; font-weight: 600; color: rgb(var(--c-fg)); }
+.ikigai-pillar-lead { margin: 0.1rem 0 0; color: rgb(var(--c-muted)); }
+.ikigai-progress { display: flex; align-items: center; gap: 0.75rem; margin-top: 1rem; }
+.ikigai-progress .ikigai-bar { flex: 1; }
+.ikigai-progress-text { flex: none; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.78rem; color: rgb(var(--c-muted)); }
+
+/* ── Groups and habit rows ──────────────────────────────────── */
+.ikigai-groups { margin-top: 1rem; }
+.ikigai-group { display: flex; flex-direction: column; padding: 0.4rem; border: 1px solid rgb(var(--c-border)); border-radius: 0.9rem; background: rgb(var(--c-fg) / 0.02); }
+.ikigai-group-head { display: flex; align-items: flex-start; gap: 0.5rem; margin: 0; padding: 0.55rem 0.5rem 0.6rem; font-size: 1rem; font-weight: 600; color: rgb(var(--c-fg)); }
+.ikigai-group-emoji { flex: none; }
+.ikigai-group-name { flex: 1; display: flex; flex-direction: column; }
+.ikigai-about { font-size: 0.78rem; font-weight: 400; color: rgb(var(--c-muted)); }
+.ikigai-group-count { flex: none; padding: 0.1rem 0.45rem; border-radius: 9999px; background: rgb(var(--c-fg) / 0.06); font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.72rem; font-weight: 400; color: rgb(var(--c-muted)); }
+.ikigai-group-count.is-complete { background: rgb(var(--c-accent) / 0.18); color: rgb(var(--c-fg)); }
+.ikigai-habits { display: grid; gap: 0.3rem; margin: 0; padding: 0; list-style: none; }
+.ikigai-habit { position: relative; display: flex; align-items: center; gap: 0.6rem; min-height: 3rem; padding: 0.45rem 0.55rem; border-radius: 0.65rem; background: rgb(var(--c-bg)); border: 1px solid rgb(var(--c-border) / 0.8); cursor: pointer; color: rgb(var(--c-fg)); font-size: 0.9rem; line-height: 1.35; transition: border-color 150ms ease, background 150ms ease; }
+.ikigai-habit:hover { border-color: rgb(var(--c-accent) / 0.5); }
+.ikigai-habit-emoji { flex: none; display: inline-flex; align-items: center; justify-content: center; min-width: 2rem; height: 2rem; padding: 0 0.25rem; white-space: nowrap; border-radius: 0.55rem; background: rgb(var(--c-fg) / 0.05); font-size: 1rem; letter-spacing: -0.2em; }
+.ikigai-habit-text { flex: 1; }
+/* The real checkbox stays in the page for keyboards, screen readers and no-JS, but
+   visually hidden; .ikigai-check draws the round target the reference apps use. */
+.ikigai-habit-box { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.ikigai-check { flex: none; position: relative; width: 1.5rem; height: 1.5rem; border: 2px solid rgb(var(--c-muted) / 0.6); border-radius: 9999px; transition: background 150ms ease, border-color 150ms ease; }
+.ikigai-check::after { content: ''; position: absolute; left: 0.42rem; top: 0.18rem; width: 0.35rem; height: 0.7rem; border: solid rgb(var(--c-bg)); border-width: 0 2px 2px 0; transform: rotate(45deg); opacity: 0; transition: opacity 150ms ease; }
+.ikigai-habit-box:checked ~ .ikigai-check { background: rgb(var(--c-accent)); border-color: rgb(var(--c-accent)); }
+.ikigai-habit-box:checked ~ .ikigai-check::after { opacity: 1; }
+.ikigai-habit:has(.ikigai-habit-box:checked) { background: rgb(var(--c-accent) / 0.08); border-color: rgb(var(--c-accent) / 0.35); }
+.ikigai-habit:has(.ikigai-habit-box:checked) .ikigai-habit-text { color: rgb(var(--c-muted)); }
+.ikigai-habit-box:focus-visible ~ .ikigai-check { outline: 2px solid rgb(var(--c-accent) / 0.7); outline-offset: 2px; }
+.ikigai-motto { margin: 0; padding: 0.5rem 0.55rem 0.9rem; font-size: 1.6rem; font-weight: 800; letter-spacing: -0.01em; color: rgb(var(--c-fg)); }
+
+/* ── Wholeness ──────────────────────────────────────────────── */
+.ikigai-whole { margin: 1rem 0 2rem; }
+.ikigai-venn { display: block; width: 100%; max-width: 26rem; margin: 0 auto; color: rgb(var(--c-fg)); }
+.ikigai-venn text { fill: currentColor; text-anchor: middle; dominant-baseline: middle; font-family: Inter, system-ui, sans-serif; }
+.ikigai-venn-label { font-size: 15px; font-weight: 600; }
+.ikigai-venn-overlap { font-size: 11.5px; opacity: 0.85; }
+.ikigai-venn-centre { font-size: 15px; font-weight: 700; }
+.ikigai-overlaps { display: grid; gap: 0.3rem; width: fit-content; margin: 0.75rem auto 1.75rem; padding: 0; list-style: none; font-size: 0.85rem; color: rgb(var(--c-muted)); }
+.ikigai-overlaps strong { color: rgb(var(--c-fg)); font-weight: 600; }
+/* Reflection prompts: the question is the headline, with room to write under it. */
+.ikigai-answer { display: flex; flex-direction: column; gap: 0.6rem; padding: 1rem; border: 1px solid rgb(var(--c-border)); border-top: 4px solid var(--ikigai-colour); border-radius: 0.9rem; background: rgb(var(--c-fg) / 0.02); }
+.ikigai-answer-question { font-size: 1.05rem; font-weight: 600; line-height: 1.3; color: rgb(var(--c-fg)); }
+.ikigai-answer textarea { width: 100%; min-height: 6rem; resize: vertical; padding: 0.6rem 0.7rem; border: 1px solid rgb(var(--c-border)); border-radius: 0.6rem; background: rgb(var(--c-bg)); color: rgb(var(--c-fg)); font: inherit; font-size: 0.95rem; line-height: 1.45; }
+.ikigai-answer textarea:focus-visible { outline: 2px solid var(--ikigai-colour); outline-offset: 1px; }
+.ikigai-saved { min-height: 1rem; font-size: 0.75rem; color: rgb(var(--c-muted)); }
+.ikigai-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 1rem; margin-top: 1rem; }
+.ikigai-note { margin: 0; font-size: 0.8rem; color: rgb(var(--c-muted)); }
+.ikigai-clear { padding: 0.35rem 0.85rem; border: 1px solid rgb(var(--c-border)); border-radius: 9999px; background: transparent; color: rgb(var(--c-muted)); font-size: 0.8rem; cursor: pointer; }
+.ikigai-clear:hover,
+.ikigai-clear.is-armed { border-color: rgb(var(--c-fg) / 0.5); color: rgb(var(--c-fg)); }
+.ikigai-clear:focus-visible { outline: 2px solid rgb(var(--c-accent) / 0.6); outline-offset: 2px; }

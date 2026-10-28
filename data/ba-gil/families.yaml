@@ -1,0 +1,14 @@
+# The ten semantic families: one per consonant. A word's first consonant names
+# its family; the frames inside it are in frames.yaml. `status` drives the
+# progress count on the page (established = done or partial; started = a few
+# words exist but the family's meaning isn't settled).
+- { letter: "m", name: "Human and person",  status: done }
+- { letter: "k", name: "Sense and perception", status: done }
+- { letter: "p", name: "Space",             status: partial }
+- { letter: "s", name: "Relationships",     status: partial }
+- { letter: "b", name: "Not yet assigned",  status: open }
+- { letter: "d", name: "Determiners, so far", status: started }
+- { letter: "g", name: "Not yet assigned",  status: open }
+- { letter: "l", name: "Not yet assigned",  status: open }
+- { letter: "n", name: "Not yet assigned",  status: open }
+- { letter: "t", name: "Tools, so far",      status: started }

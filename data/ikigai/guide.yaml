@@ -1,0 +1,107 @@
+# The /misc/ikigai/ guide: everything the page says, in order. Shortcodes in
+# layouts/shortcodes/ikigai/ arrange it; nothing on the page is typed anywhere else.
+#
+# Each habit's tick is saved in the visitor's browser under an id built from the
+# pillar id and the habit's text (assets/scripts/pages/ikigai/main.ts), so
+# rewording a habit resets its tick, while reordering keeps it.
+
+advice:
+  - "The most optimal plan is the one you can stick with."
+  - "Start with some workbooks before you free-style journal."
+  - "If it seems daunting, you’re probably on the right path."
+
+pillars:
+  - id: "positive"
+    title: "Positive"
+    metaphor: "Treat yourself like a plant"
+    emoji: "🪴"
+    lead: "Plants need soil, fertilizer and sunlight."
+    groups:
+      - name: "Soil"
+        about: "Your surroundings"
+        emoji: "🌎"
+        habits:
+          - { text: "Clean your house", emoji: "🏠" }
+          - { text: "Join a community", emoji: "🫂" }
+          - { text: "Phone hygiene", emoji: "📱" }
+      - name: "Fertilizer"
+        about: "Your inputs"
+        emoji: "⬇️"
+        habits:
+          - { text: "Eat clean", emoji: "🥗" }
+          - { text: "Self-reflection", emoji: "📔🧘‍♂️" }
+          - { text: "Decorate and dress like your ideal self", emoji: "🦋" }
+      - name: "Sunlight"
+        about: "Circadian rhythm"
+        emoji: "🌅"
+        habits:
+          - { text: "Coffee in the sun every morning", emoji: "☕" }
+          - { text: "A consistent bedtime", emoji: "🛌" }
+          - { text: "A one-hour night-time ritual with no phone", emoji: "📵" }
+
+  - id: "healthy"
+    title: "Healthy"
+    metaphor: "You’re no Olympian"
+    emoji: "👟"
+    lead: "Eat, exercise and challenge yourself accordingly."
+    groups:
+      - name: "Eat"
+        emoji: "🥔"
+        habits:
+          - { text: "Food-prep your meals", emoji: "👨‍🍳" }
+          - { text: "Slight adjustments each week", emoji: "📅" }
+          - { text: "Keep a menu for variety", emoji: "🗒️" }
+      - name: "Exercise"
+        emoji: "🏃‍♂️"
+        habits:
+          - { text: "Start where you’re at", emoji: "⏲️" }
+          - { text: "Shame your work ethic, not your ability", emoji: "🙇‍♂️" }
+          - { text: "Bonus: get a gym bro", emoji: "😎" }
+      - name: "Challenge"
+        emoji: "🏅"
+        habits:
+          - { text: "Set reasonable challenges", emoji: "🏋️‍♂️" }
+          - { text: "Have an accountability partner", emoji: "👨" }
+          - { text: "Have consequences", emoji: "😢" }
+
+  - id: "purpose"
+    title: "Purpose"
+    metaphor: "Find your North Star"
+    emoji: "⭐"
+    lead: "You’ll need a compass and a map. Then walk the path."
+    groups:
+      - name: "Compass"
+        about: "A value system"
+        emoji: "🧭"
+        habits:
+          - { text: "Choose a pre-existing value system", emoji: "📖" }
+          - { text: "Join a community that holds those values", emoji: "⛪" }
+          - { text: "Simplify right and wrong within that value frame", emoji: "🖼️" }
+      - name: "Map"
+        about: "Direction"
+        emoji: "🗺️"
+        habits:
+          - { text: "What do you want?", emoji: "🤷‍♂️" }
+          - { text: "Where can you get it?", emoji: "🇺🇸" }
+          - { text: "How can you get it once you’re there?", emoji: "👊" }
+      - name: "Action"
+        about: "Purpose"
+        emoji: "❤️‍🔥"
+        motto: "Just do it!"
+
+# Wholeness. The four questions are the guide's; where two circles overlap,
+# the names are the standard ikigai ones. `position` places each circle in the
+# diagram (layouts/shortcodes/ikigai/venn.html).
+ikigai:
+  title: "Whole"
+  metaphor: "Ikigai"
+  circles:
+    - { id: "love",  label: "Love", phrase: "what you love", question: "What do you love to do?",   colour: "#e5484d", emoji: "🔴", position: "top" }
+    - { id: "good",  label: "Good at", phrase: "what you’re good at", question: "What are you good at?",     colour: "#3e63dd", emoji: "🔵", position: "left" }
+    - { id: "need",  label: "World needs", phrase: "what the world needs", question: "What does the world need?", colour: "#f5c400", emoji: "🟡", position: "right" }
+    - { id: "paid",  label: "Pays", phrase: "what you can be paid for", question: "What can pay you?",         colour: "#30a46c", emoji: "🟢", position: "bottom" }
+  overlaps:
+    - { name: "Passion",    between: ["love", "good"] }
+    - { name: "Mission",    between: ["love", "need"] }
+    - { name: "Vocation",   between: ["need", "paid"] }
+    - { name: "Profession", between: ["good", "paid"] }

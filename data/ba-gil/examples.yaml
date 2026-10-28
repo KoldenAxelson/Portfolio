@@ -1,0 +1,22 @@
+# Worked compounds: the static glossed list on the page and the decoder's preset
+# chips. Write `text` the way it's spoken, parts joined by hyphens and words by
+# spaces; each part's gloss is looked up from the lexicon, so only the overall
+# meaning lives here. `note` explains anything the glosses alone won't.
+- { text: "Ba-Gil", meaning: "this language", note: "Future-speak." }
+- { text: "Ba-Mon-Ab", meaning: "immortal", note: "Future, person, past: someone spanning all of time." }
+- { text: "Ab-Mon-Ba", meaning: "mortal", note: "The same three pieces inverted: someone moving through time." }
+- { text: "La-Man", meaning: "my" }
+- { text: "Tü-Ma-Meb", meaning: "glasses", note: "A tool for slightly wrong eyes." }
+- { text: "Tü-Mu-Meb", meaning: "eyepatch", note: "A tool for eyes as wrong as it gets." }
+- { text: "Tu-Meb-Um", meaning: "space telescope", note: "A huge tool that makes eyes as good as they get." }
+- { text: "Tu-Meb-Mu", meaning: "grand optical illusion", note: "Mu belongs at the front. Moved to the back it's an inversion: a huge tool that does the worst thing to your eyes." }
+- { text: "Bos-Pot", meaning: "flower", note: "Beautiful plant." }
+- { text: "Bos-Pot-Meb", meaning: "the centre of a flower", note: "The flower's eye." }
+- { text: "Pot-Son", meaning: "seed", note: "The plant's child." }
+- { text: "Bos-Pot-Son", meaning: "flower seed" }
+- { text: "Ab-Pek-San", meaning: "ancestor", note: "Past, above, grandparent." }
+- { text: "#l-Pek-San", meaning: "seven generations above a grandparent", note: "#l is 7." }
+- { text: "Gud-Mak", meaning: "a name earned by achievement", note: "Good-maker." }
+- { text: "Hom-Meb", meaning: "window", note: "The house's eye." }
+- { text: "Muv-Üt Lan", meaning: "drive", note: "Move with a tool, on land." }
+- { text: "Lan Muv-Ut", meaning: "bulldoze", note: "Move land with a huge tool." }

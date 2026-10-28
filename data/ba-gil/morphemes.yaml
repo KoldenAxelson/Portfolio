@@ -1,0 +1,27 @@
+# Words and affixes that don't sit in a frame (frames.yaml holds those). Both
+# files are merged into one lexicon by partials/func/ba-gil-lexicon.html; a form
+# must appear in only one of them.
+#
+# respell: true  — the word uses a letter outside the 16 (w, h, v). Kept, and shown
+# flagged, until it gets a legal spelling; the page and the decoder both mark it.
+
+# Grammar
+- { form: "Ba",  gloss: "future", note: "Also means hope." }
+- { form: "Ab",  gloss: "past", note: "Ba, reversed." }
+- { form: "La",  gloss: "belonging to", note: "La-Man is my; La-Min is your." }
+
+# Vocabulary
+- { form: "Gil", gloss: "speak" }
+- { form: "Mak", gloss: "make" }
+- { form: "Pus", gloss: "list, set" }
+- { form: "Pot", gloss: "plant" }
+- { form: "Bos", gloss: "beautiful" }
+- { form: "Tal", gloss: "tall" }
+- { form: "Lan", gloss: "land" }
+- { form: "Gud", gloss: "good" }
+
+# Awaiting a spelling inside the alphabet
+- { form: "Wat", gloss: "water", respell: true }
+- { form: "Hom", gloss: "house", respell: true }
+- { form: "Muv", gloss: "move", respell: true }
+- { form: "Wis", gloss: "wise", respell: true }

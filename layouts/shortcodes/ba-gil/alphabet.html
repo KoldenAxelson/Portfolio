@@ -1,0 +1,36 @@
+{{- /*
+  ba-gil/alphabet — the 16 letters, grouped the way the alphabet's own name
+  groups them (ba · ked · gil · mon · pus · üt), each with its base-16 value.
+
+    {{< ba-gil/alphabet >}}
+
+  Data: data/ba-gil/alphabet.yaml. Styles: assets/css/pages/ba-gil/ba-gil.css.
+*/ -}}
+{{- $alphabet := index site.Data "ba-gil" "alphabet" -}}
+{{- $letters := partial "func/ba-gil-letters.html" . -}}
+{{- $vowelCount := len (where $letters "isVowel" true) -}}
+<div class="not-prose bagil-panel">
+  <ol class="bagil-alphabet" aria-label="The {{ len $letters }} letters, in order">
+    {{- range $group := $alphabet.groups }}
+    <li class="bagil-group">
+      <ol class="bagil-group-letters">
+        {{- range where $letters "group" $group }}
+        <li class="bagil-letter{{ if .isVowel }} is-vowel{{ end }}">
+          <span class="bagil-letter-glyph">{{ .letter }}</span>
+          <span class="bagil-letter-value" title="Number value">#{{ .letter }} = {{ .value }}</span>
+        </li>
+        {{- end }}
+      </ol>
+      <span class="bagil-group-name">{{ $group }}</span>
+    </li>
+    {{- end }}
+  </ol>
+  <p class="bagil-legend">
+    <span class="bagil-key"><span class="bagil-swatch"></span>{{ sub (len $letters) $vowelCount }} consonants</span>
+    <span class="bagil-key"><span class="bagil-swatch is-vowel"></span>{{ $vowelCount }} vowels</span>
+    {{- range $letter, $sound := $alphabet.sounds }}
+    <span class="bagil-key"><strong>{{ $letter }}</strong> sounds like {{ $sound }}</span>
+    {{- end }}
+  </p>
+  <p class="bagil-aside">Ba-Gil has its own script: geometric, all straight lines and dots, made to be carved in stone. It’s still in development, so Latin letters stand in for now.</p>
+</div>

@@ -1,0 +1,8 @@
+{{- /*
+  ikigai/assets — stylesheet and bundle for /misc/ikigai/. Called once from
+  layouts/misc/single.html when the page uses any ikigai shortcode.
+*/ -}}
+{{- $css := resources.Get "css/pages/ikigai/ikigai.css" | minify | fingerprint -}}
+<link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" />
+{{- $js := resources.Get "scripts/pages/ikigai/main.ts" | js.Build (dict "minify" true "target" "es2018" "format" "iife") | fingerprint -}}
+<script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>

@@ -1,0 +1,30 @@
+{{- /*
+  ba-gil/gloss — a compound written out as an interlinear gloss: each piece on
+  top, colour-coded by shape, with its meaning underneath. The static twin of the
+  live decoder (assets/scripts/pages/ba-gil/decoder.ts renders the same markup and
+  class names; change one, change the other).
+
+  Dict params: text (e.g. "Tü-Ma-Meb"), lexicon (func/ba-gil-lexicon.html),
+  letters (func/ba-gil-letters.html).
+*/ -}}
+{{- $lexicon := .lexicon -}}
+{{- $values := dict -}}
+{{- range .letters }}{{ $values = merge $values (dict .letter .value) }}{{ end -}}
+<span class="bagil-gloss-line">
+  {{- range $word := split .text " " }}
+  <span class="bagil-gloss-word">
+    {{- range $part := split $word "-" }}
+    {{- $key := lower $part -}}
+    {{- if hasPrefix $key "#" }}
+      {{- $number := 0 -}}
+      {{- range split (strings.TrimPrefix "#" $key) "" }}{{ $number = add (mul $number (len $.letters)) (index $values .) }}{{ end }}
+      <span class="bagil-gloss-part"><span class="bagil-morph is-number">{{ $part }}</span><span class="bagil-gloss">{{ $number }}</span></span>
+    {{- else }}
+      {{- $entry := index $lexicon $key -}}
+      {{- $role := index (dict "CVC" "root" "CV" "prefix" "VC" "suffix") ($entry.shape | default "") | default "unknown" -}}
+      <span class="bagil-gloss-part"><span class="bagil-morph is-{{ $role }}{{ if $entry.respell }} is-respell{{ end }}">{{ $part }}</span><span class="bagil-gloss">{{ with $entry }}{{ .gloss }}{{ else }}?{{ end }}</span></span>
+    {{- end }}
+    {{- end }}
+  </span>
+  {{- end }}
+</span>

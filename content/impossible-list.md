@@ -2,7 +2,7 @@
 title: "Impossible List"
 description: "A living list of things Konrad Wright wants to build, learn, and do — designed to keep growing rather than get finished."
 layout: "impossible-list"
-updated: 2026-06-30
+updated: 2026-10-27
 # Blank by default — uncomment to put a line under the H1 in the banner.
 #lead: "Not a bucket list you complete — one you keep adding to. The idea (borrowed from Joel Runyon) is that the list should always outrun you."
 groups:

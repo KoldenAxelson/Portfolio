@@ -1,0 +1,10 @@
+# M_X — the body map. The alphabet runs head to toe, and a body word's key
+# letter sits where that part of the body does. Consonants are the general
+# area, vowels the detail: b is "the top", a is the detail at the top (hair).
+# Position comes from language.yaml's alphabet; only the key letter lives here.
+
+- { word: mab, key: a, gloss: "hair" }
+- { word: mob, key: b, gloss: "head" }
+- { word: meb, key: e, gloss: "eyes" }
+- { word: müt, key: ü, gloss: "toes" }
+- { word: mot, key: t, gloss: "legs" }

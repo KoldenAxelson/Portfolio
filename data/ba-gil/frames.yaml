@@ -1,0 +1,174 @@
+# Frames: a fixed shape where only the vowel moves, and the vowel picks the
+# meaning in the alphabet's own order (a e i o u ü). `slots` is keyed by that
+# vowel; a missing vowel is an empty cell on the page, which is the point —
+# the gaps are where the language grows next.
+#
+# kind: grid   one row of the frame table (shortcodes/ba-gil/frames.html)
+#       ladder the body frame, where the alphabet position is the body
+#              position; drawn top to bottom instead of as a row
+# shape: the morpheme shape the frame produces (CVC root, CV prefix, VC suffix)
+# swatch: an optional colour the cell draws (the colour and brightness frames)
+#
+# Every word here is also in the decoder's lexicon (partials/func/ba-gil-lexicon.html
+# merges this file with morphemes.yaml), so don't repeat a frame word there.
+
+- id: "M_N"
+  name: "Who"
+  family: "m"
+  shape: CVC
+  kind: grid
+  slots:
+    a: { word: "Man", gloss: "I, me" }
+    e: { word: "Men", gloss: "we, the tribe" }
+    i: { word: "Min", gloss: "you" }
+    o: { word: "Mon", gloss: "they, a person" }
+
+- id: "M_X"
+  name: "The body, top to bottom"
+  family: "m"
+  shape: CVC
+  kind: ladder
+  note: "Alphabet position is body position: letters early in the alphabet sit high on the body, letters late in it sit low."
+  rungs:
+    - { word: "Mab", gloss: "hair" }
+    - { word: "Mob", gloss: "head" }
+    - { word: "Meb", gloss: "eyes" }
+    - { word: "Mot", gloss: "legs" }
+    - { word: "Müt", gloss: "toes" }
+
+- id: "K_L"
+  name: "Colour, in wavelength order"
+  family: "k"
+  shape: CVC
+  kind: grid
+  slots:
+    a: { word: "Kal", gloss: "red",    swatch: "#d83a34" }
+    e: { word: "Kel", gloss: "orange", swatch: "#e8822a" }
+    i: { word: "Kil", gloss: "yellow", swatch: "#e9c62e" }
+    o: { word: "Kol", gloss: "green",  swatch: "#3f9b4b" }
+    u: { word: "Kul", gloss: "blue",   swatch: "#2f6fd1" }
+    ü: { word: "Kül", gloss: "violet", swatch: "#7b4bc4" }
+
+- id: "K_G"
+  name: "Brightness"
+  family: "k"
+  shape: CVC
+  kind: grid
+  slots:
+    a: { word: "Kag", gloss: "dark",      swatch: "#141414" }
+    e: { word: "Keg", gloss: "dim dark",  swatch: "#4a4a4a" }
+    i: { word: "Kig", gloss: "grey",      swatch: "#8a8a8a" }
+    o: { word: "Kog", gloss: "dim bright", swatch: "#c4c4c4" }
+    u: { word: "Kug", gloss: "bright",    swatch: "#f7f7f7" }
+    ü: { word: "Küg", gloss: "brightness, the idea" }
+
+- id: "K_D"
+  name: "Units of language, small to large"
+  family: "k"
+  shape: CVC
+  kind: grid
+  slots:
+    a: { word: "Kad", gloss: "letter" }
+    e: { word: "Ked", gloss: "word" }
+    i: { word: "Kid", gloss: "phrase" }
+    o: { word: "Kod", gloss: "paragraph" }
+    u: { word: "Kud", gloss: "document" }
+    ü: { word: "Küd", gloss: "book" }
+
+- id: "K_S"
+  name: "Smell"
+  family: "k"
+  shape: CVC
+  kind: grid
+  slots: {}
+
+- id: "K_T"
+  name: "Taste"
+  family: "k"
+  shape: CVC
+  kind: grid
+  slots: {}
+
+- id: "P_K"
+  name: "Where"
+  family: "p"
+  shape: CVC
+  kind: grid
+  slots:
+    a: { word: "Pak", gloss: "in",    diagram: "in" }
+    e: { word: "Pek", gloss: "above", diagram: "above" }
+    i: { word: "Pik", gloss: "below", diagram: "below" }
+    o: { word: "Pok", gloss: "on",    diagram: "on" }
+    u: { word: "Puk", gloss: "near",  diagram: "near" }
+    ü: { word: "Pük", gloss: "position, the idea" }
+
+- id: "S_N"
+  name: "Family"
+  family: "s"
+  shape: CVC
+  kind: grid
+  note: "Works on anything, not just people: a plant's child is its seed."
+  slots:
+    a: { word: "San", gloss: "grandparent" }
+    e: { word: "Sen", gloss: "parent" }
+    i: { word: "Sin", gloss: "aunt, uncle" }
+    o: { word: "Son", gloss: "child" }
+    u: { word: "Sun", gloss: "sibling" }
+    ü: { word: "Sün", gloss: "grandchild" }
+
+- id: "D_T"
+  name: "Determiners"
+  family: "d"
+  shape: CVC
+  kind: grid
+  slots:
+    a: { word: "Dat", gloss: "the" }
+    o: { word: "Dot", gloss: "a, one" }
+    u: { word: "Dut", gloss: "many" }
+
+- id: "T_"
+  name: "Tool size (prefix)"
+  family: "t"
+  shape: CV
+  kind: grid
+  slots:
+    a: { word: "Ta", gloss: "tiny tool" }
+    e: { word: "Te", gloss: "small tool" }
+    o: { word: "To", gloss: "large tool" }
+    u: { word: "Tu", gloss: "huge tool" }
+    ü: { word: "Tü", gloss: "tool, in general" }
+
+- id: "_T"
+  name: "With a tool (suffix)"
+  family: "t"
+  shape: VC
+  kind: grid
+  slots:
+    u: { word: "Ut", gloss: "with a huge tool" }
+    ü: { word: "Üt", gloss: "with a tool" }
+
+- id: "M_"
+  name: "Correction: what's wrong (prefix)"
+  family: "m"
+  shape: CV
+  kind: grid
+  note: "Minor to worst. The enhancement row below is its mirror image."
+  slots:
+    a: { word: "Ma", gloss: "slightly wrong" }
+    e: { word: "Me", gloss: "moderately wrong" }
+    i: { word: "Mi", gloss: "badly wrong" }
+    o: { word: "Mo", gloss: "very badly wrong" }
+    u: { word: "Mu", gloss: "as wrong as it gets" }
+
+- id: "_M"
+  name: "Enhancement: what's better (suffix)"
+  family: "m"
+  shape: VC
+  kind: grid
+  note: "Minor to maximum: the correction prefixes flipped around, so better is literally the mirror of wrong."
+  slots:
+    a: { word: "Am", gloss: "slightly better" }
+    e: { word: "Em", gloss: "moderately better" }
+    i: { word: "Im", gloss: "much better" }
+    o: { word: "Om", gloss: "far better" }
+    u: { word: "Um", gloss: "as good as it gets" }

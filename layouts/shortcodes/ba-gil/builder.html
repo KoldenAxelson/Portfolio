@@ -1,0 +1,38 @@
+{{- /*
+  ba-gil/builder — a decoder you can type a compound into, plus every worked
+  example from data/ba-gil/examples.yaml as a static glossed list (which is also
+  what the preset chips load). The decoder is assets/scripts/pages/ba-gil/decoder.ts;
+  it reads the lexicon from the JSON partials/ba-gil/assets.html emits.
+
+    {{< ba-gil/builder >}}
+*/ -}}
+{{- $data := index site.Data "ba-gil" -}}
+{{- $lexicon := partial "func/ba-gil-lexicon.html" . -}}
+{{- $letters := partial "func/ba-gil-letters.html" . -}}
+<div class="not-prose bagil-panel" data-ba-gil-decoder>
+  <div class="bagil-decoder" hidden data-decoder-ui>
+    <label class="bagil-label" for="bagil-input">Type a word, pieces joined with hyphens</label>
+    <input id="bagil-input" class="bagil-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Tü-Ma-Meb" data-decoder-input />
+    <div class="bagil-decoder-out" aria-live="polite" data-decoder-output></div>
+    <p class="bagil-label">Or try one</p>
+    <div class="bagil-chips">
+      {{- range $data.examples }}
+      <button type="button" class="bagil-chip" data-decoder-preset="{{ .text }}">{{ .meaning }}</button>
+      {{- end }}
+    </div>
+  </div>
+  <ul class="bagil-examples">
+    {{- range $data.examples }}
+    <li>
+      {{ partial "ba-gil/gloss.html" (dict "text" .text "lexicon" $lexicon "letters" $letters) }}
+      <span class="bagil-example-meaning"><strong>{{ .meaning }}</strong>{{ with .note }} · {{ . }}{{ end }}</span>
+    </li>
+    {{- end }}
+  </ul>
+  <p class="bagil-legend">
+    <span class="bagil-key"><span class="bagil-morph is-root">CVC</span> root</span>
+    <span class="bagil-key"><span class="bagil-morph is-prefix">CV</span> prefix</span>
+    <span class="bagil-key"><span class="bagil-morph is-suffix">VC</span> suffix</span>
+    <span class="bagil-key"><span class="bagil-morph is-root is-respell">Hom</span> spelling pending: uses a letter outside the 16</span>
+  </p>
+</div>

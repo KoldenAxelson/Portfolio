@@ -1,0 +1,16 @@
+# Ba-Gil's alphabet — the single source for /misc/ba-gil/.
+#
+# The alphabet's order IS its name: ba-ked-gil-mon-pus-üt. `groups` is that name,
+# and the letter order (and so every letter's base-16 value, b = 0 … t = 15) is
+# read off it by splitting each group into letters. Reorder nothing here without
+# meaning to renumber the whole language.
+#
+# Read by layouts/shortcodes/ba-gil/*.html (via partials/func/ba-gil-letters.html)
+# and, through the JSON the decoder shortcode emits, by
+# assets/scripts/pages/ba-gil/main.ts.
+groups: ["ba", "ked", "gil", "mon", "pus", "üt"]
+vowels: ["a", "e", "i", "o", "u", "ü"]
+# Only the letters that don't sound the way an English reader would guess.
+sounds:
+  u: "“oo”, as in goo"
+  ü: "“uh”, as in but"

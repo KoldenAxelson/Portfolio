@@ -1,0 +1,77 @@
+{{- /*
+  ba-gil/frames — the semantic families and the frame table: one row per frame,
+  one column per vowel in alphabet order, so a reader can see that the vowel is
+  what picks the meaning. Empty cells and empty rows are left visible on purpose:
+  they're the parts of the language not built yet. The body frame (kind: ladder)
+  is drawn after the table, top to bottom.
+
+    {{< ba-gil/frames >}}
+
+  Data: data/ba-gil/families.yaml, data/ba-gil/frames.yaml.
+*/ -}}
+{{- $data := index site.Data "ba-gil" -}}
+{{- $vowels := $data.alphabet.vowels -}}
+{{- $established := len (where $data.families "status" "in" (slice "done" "partial")) -}}
+{{- $statusLabels := dict "done" "established" "partial" "partly built" "started" "a few words" "open" "not started" -}}
+<div class="not-prose bagil-panel">
+  <p class="bagil-progress"><strong>{{ $established }} of {{ len $data.families }}</strong> families established. Each consonant owns one.</p>
+  <ul class="bagil-families">
+    {{- range $data.families }}
+    <li class="bagil-family is-{{ .status }}">
+      <span class="bagil-family-letter">{{ upper .letter }}</span>
+      <span class="bagil-family-name">{{ .name }}</span>
+      <span class="bagil-family-status">{{ index $statusLabels .status }}</span>
+    </li>
+    {{- end }}
+  </ul>
+
+  {{/* `relative` keeps any absolutely positioned descendant inside the scroller;
+       without it, one would escape the clipping and widen the whole page. */}}
+  <div class="bagil-scroll" tabindex="0" role="region" aria-label="Frame table">
+    <table class="bagil-frames">
+      <thead>
+        <tr>
+          <th scope="col">Frame</th>
+          {{- range $vowels }}<th scope="col" class="bagil-vowel-head">{{ . }}</th>{{ end }}
+        </tr>
+      </thead>
+      <tbody>
+        {{- range $frame := where $data.frames "kind" "grid" }}
+        {{- $role := index (dict "CVC" "root" "CV" "prefix" "VC" "suffix") $frame.shape }}
+        <tr class="{{ if not $frame.slots }}is-open{{ end }}">
+          <th scope="row">
+            <span class="bagil-frame-id">{{ $frame.id }}</span>
+            <span class="bagil-frame-name">{{ $frame.name }}</span>
+            {{- with $frame.note }}<span class="bagil-frame-note">{{ . }}</span>{{ end }}
+          </th>
+          {{- range $vowel := $vowels }}
+          {{- with index $frame.slots $vowel }}
+          <td>
+            <span class="bagil-cell">
+              {{- with .swatch }}<span class="bagil-color" style="background: {{ . | safeCSS }}"></span>{{ end }}
+              {{- with .diagram }}{{ partial "ba-gil/diagram.html" . }}{{ end }}
+              <span class="bagil-morph is-{{ $role }}">{{ .word }}</span>
+              <span class="bagil-gloss">{{ .gloss }}</span>
+            </span>
+          </td>
+          {{- else }}
+          <td class="is-empty"><span class="sr-only">not yet assigned</span></td>
+          {{- end }}
+          {{- end }}
+        </tr>
+        {{- end }}
+      </tbody>
+    </table>
+  </div>
+
+  {{- range where $data.frames "kind" "ladder" }}
+  <figure class="bagil-ladder">
+    <figcaption><span class="bagil-frame-id">{{ .id }}</span> {{ .name }}{{ with .note }}<span class="bagil-frame-note">{{ . }}</span>{{ end }}</figcaption>
+    <ol>
+      {{- range .rungs }}
+      <li><span class="bagil-morph is-root">{{ .word }}</span><span class="bagil-gloss">{{ .gloss }}</span></li>
+      {{- end }}
+    </ol>
+  </figure>
+  {{- end }}
+</div>

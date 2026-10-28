@@ -1,0 +1,58 @@
+{{- /*
+  ikigai/pillar — one pillar of the guide (Positive, Healthy, Purpose): its
+  metaphor, a progress bar, and three groups of habits. Each habit is a row the
+  whole width of its card, ticked with a round check on the right; the real
+  checkbox is kept (visually hidden, still focusable) so it works with a
+  keyboard, a screen reader and no script. Ticks are saved in the visitor's
+  browser by assets/scripts/pages/ikigai/main.ts, which also fills in the counts.
+
+    {{< ikigai/pillar "positive" >}}
+
+  Data: data/ikigai/guide.yaml `pillars`, matched by id.
+*/ -}}
+{{- $id := .Get 0 -}}
+{{- with index (where site.Data.ikigai.guide.pillars "id" $id) 0 -}}
+{{- $pillar := . -}}
+<div class="not-prose ikigai-pillar" data-ikigai-pillar="{{ $pillar.id }}">
+  <div class="ikigai-pillar-head">
+    <span class="ikigai-pillar-emoji" aria-hidden="true">{{ $pillar.emoji }}</span>
+    <div>
+      <p class="ikigai-pillar-metaphor">{{ $pillar.metaphor }}</p>
+      <p class="ikigai-pillar-lead">{{ $pillar.lead }}</p>
+    </div>
+  </div>
+  <div class="ikigai-progress" data-ikigai-progress hidden>
+    <span class="ikigai-bar" aria-hidden="true"><span></span></span>
+    <span class="ikigai-progress-text" data-ikigai-count></span>
+  </div>
+  <div class="ikigai-groups">
+    {{- range $pillar.groups }}
+    <section class="ikigai-group" data-ikigai-group>
+      <h3 class="ikigai-group-head">
+        <span class="ikigai-group-emoji" aria-hidden="true">{{ .emoji }}</span>
+        <span class="ikigai-group-name">{{ .name }}{{ with .about }}<span class="ikigai-about">{{ . }}</span>{{ end }}</span>
+        {{- with .habits }}<span class="ikigai-group-count" data-ikigai-count hidden></span>{{ end }}
+      </h3>
+      {{- with .habits }}
+      <ul class="ikigai-habits">
+        {{- range . }}
+        {{- $habitId := printf "%s-%s" $pillar.id (urlize .text) }}
+        <li>
+          <label class="ikigai-habit">
+            <span class="ikigai-habit-emoji" aria-hidden="true">{{ .emoji }}</span>
+            <span class="ikigai-habit-text">{{ .text }}</span>
+            <input class="ikigai-habit-box" type="checkbox" data-ikigai-habit="{{ $habitId }}" />
+            <span class="ikigai-check" aria-hidden="true"></span>
+          </label>
+        </li>
+        {{- end }}
+      </ul>
+      {{- end }}
+      {{- with .motto }}<p class="ikigai-motto">{{ . }}</p>{{ end }}
+    </section>
+    {{- end }}
+  </div>
+</div>
+{{- else -}}
+{{- errorf "ikigai/pillar: no pillar %q in data/ikigai/guide.yaml (page: %s)" $id .Page.RelPermalink -}}
+{{- end -}}

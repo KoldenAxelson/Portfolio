@@ -1,0 +1,20 @@
+# Ba-Gil — the language's fixed facts. Read by layouts/shortcodes/ba-gil/*.html
+# and, as JSON, by assets/scripts/pages/ba-gil/ (partials/ba-gil/lexicon.html).
+#
+# `alphabet` is the source of truth for letter ORDER, and order is meaning: a
+# letter's index is its base-16 digit (b = 0 … t = 15), and frames run their
+# vowels in this order (a e i o u ü). Everything that needs a position derives
+# it from this string; nothing restates it.
+
+alphabet: "ba-ked-gil-mon-pus-üt"
+vowels: [a, e, i, o, u, ü]
+
+# Only the two vowels that don't sound like English spelling suggests.
+sounds:
+  u: 'oo, as in "goo"'
+  ü: 'uh, as in "but"'
+
+script: "A geometric script of straight lines and dots, made for carving in stone, one glyph per letter. It's still in development, so this page writes Ba-Gil in Latin letters for now."
+
+# Spoken form of a number: "chi" plus each digit's letter (#tt → chit chit).
+numberWord: "chi"

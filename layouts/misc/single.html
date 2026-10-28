@@ -64,6 +64,21 @@
 {{- /* Sun: stylesheet and renderer bundle. */ -}}
 {{- if .HasShortcode "sun/sim" }}{{ partial "sun/assets.html" . }}{{ end }}
 
+{{- /* Ba-Gil: stylesheet, page bundle and the lexicon it reads. Every ba-gil
+       shortcode needs the stylesheet, so any one of them ships the lot. */ -}}
+{{- $baGil := false -}}
+{{- range slice "ba-gil/alphabet" "ba-gil/shapes" "ba-gil/frames" "ba-gil/perversion" "ba-gil/builder" "ba-gil/numbers" "ba-gil/status" -}}
+  {{- if $.HasShortcode . }}{{ $baGil = true }}{{ end -}}
+{{- end -}}
+{{- if $baGil }}{{ partial "ba-gil/assets.html" . }}{{ end }}
+
+{{- /* Ikigai: stylesheet and the bundle that remembers ticks and answers. */ -}}
+{{- $ikigai := false -}}
+{{- range slice "ikigai/overview" "ikigai/advice" "ikigai/pillar" "ikigai/venn" -}}
+  {{- if $.HasShortcode . }}{{ $ikigai = true }}{{ end -}}
+{{- end -}}
+{{- if $ikigai }}{{ partial "ikigai/assets.html" . }}{{ end }}
+
 {{- /* Video-notes pages (front matter `youtube:`): shared widget box, the page's
        widget stylesheet, and the lazy loader. See partials/video-notes/assets.html. */ -}}
 {{ partial "video-notes/assets.html" . }}
