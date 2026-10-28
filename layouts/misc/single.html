@@ -58,6 +58,9 @@
 {{- /* Tech watch: page stylesheet and one script per card preview. */ -}}
 {{- if .HasShortcode "tech-watch/grid" }}{{ partial "tech-watch/assets.html" . }}{{ end }}
 
+{{- /* Rule Zero: stylesheet and the table script. */ -}}
+{{- if .HasShortcode "rule-zero/table" }}{{ partial "rule-zero/assets.html" . }}{{ end }}
+
 {{- /* Emergence lab: stylesheet and simulation bundle. */ -}}
 {{- if .HasShortcode "emergence/lab" }}{{ partial "emergence/assets.html" . }}{{ end }}
 

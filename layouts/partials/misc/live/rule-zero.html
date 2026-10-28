@@ -1,0 +1,21 @@
+{{- /*
+  misc/live/rule-zero — four Rule Zero cards dealt off the deck into the four
+  seats, one per player, then swept up and dealt again with a different four.
+  The cards are the real scans from data/rule-zero.yaml; each round
+  takes the next four. Pure HTML + CSS (assets/css/pages/misc/motifs.css).
+*/ -}}
+{{- $cards := (index site.Data "rule-zero").cards -}}
+{{- $rounds := 2 -}}
+<span class="mf mf-rz" aria-hidden="true" data-poster="0.2">
+  <span class="rz-felt"></span>
+  <span class="rz-deck"></span>
+  {{- range $r := seq 0 (sub $rounds 1) }}
+  {{- range $s := seq 0 3 }}
+  {{- with index $cards (mod (add (mul $r 4) $s) (len $cards)) }}
+  {{- with resources.Get (printf "rule-zero/%s.jpg" .id) }}
+  {{- $t := .Resize "160x webp q72" }}
+  <img src="{{ $t.RelPermalink }}" alt="" width="160" height="{{ $t.Height }}" loading="lazy" decoding="async" class="rz-dealt" style="--seat: {{ $s }}; --round: {{ $r }}" />
+  {{- end }}{{ end }}
+  {{- end }}
+  {{- end }}
+</span>

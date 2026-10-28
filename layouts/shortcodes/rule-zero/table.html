@@ -1,0 +1,76 @@
+{{- /*
+  rule-zero/table — the Rule Zero picker for /misc/rule-zero/. Four seats at
+  the top, every card below, from data/rule-zero.yaml.
+
+    {{< rule-zero/table >}}
+
+  The cards sit on a sideways shelf ([data-shelf-row], so the wheel and arrow
+  keys behave as on every other shelf; scripts/site/widgets/shelf-row.ts),
+  which keeps the four seats in view while you browse. Without JS each card
+  also shows its name and rules text (in the markup either way, so the page
+  reads and indexes without the images).
+  scripts/pages/rule-zero/main.ts adds the table: tap a card to see it large,
+  put it in play or take it out, at most four and no duplicates; the four
+  picks are remembered in this browser until the table is cleared.
+*/ -}}
+{{- $cards := (index site.Data "rule-zero").cards -}}
+{{- if not $cards }}{{ errorf "rule-zero/table: data/rule-zero.yaml is missing (page: %s)" .Page.RelPermalink }}{{ end -}}
+<div class="not-prose rz" data-rule-zero>
+
+  <section class="rz-table" aria-labelledby="rz-table-heading" data-rz-live hidden>
+    <div class="rz-bar">
+      <h2 id="rz-table-heading" class="rz-heading">In play <span class="rz-count" data-rz-count>0 / 4</span></h2>
+      <button type="button" class="rz-clear" data-rz-clear aria-label="Clear table" title="Clear table" disabled>{{ partial "func/svg-icon.html" (dict "name" "trash" "class" "h-5 w-5") }}</button>
+    </div>
+    <ol class="rz-seats">
+      {{- range seq 4 }}
+      <li>
+        <button type="button" class="rz-seat" data-rz-seat="{{ sub . 1 }}" aria-label="Empty slot: pick a card below">
+          <span class="rz-seat-empty" aria-hidden="true"><span class="rz-seat-plus">+</span></span>
+        </button>
+      </li>
+      {{- end }}
+    </ol>
+  </section>
+
+  <section aria-labelledby="rz-pool-heading">
+    <h2 id="rz-pool-heading" class="rz-heading">Cards <span class="rz-count">{{ len $cards }}</span></h2>
+    <ul class="rz-pool" data-rz-pool data-shelf-row aria-label="Rule Zero cards">
+      {{- range $cards }}
+      {{- $img := resources.Get (printf "rule-zero/%s.jpg" .id) }}
+      {{- if not $img }}{{ errorf "rule-zero/table: no image for %s (assets/img/rule-zero/%s.jpg)" .name .id }}{{ end }}
+      {{- $thumb := $img.Resize "300x webp q78" }}{{ $thumb2 := $img.Resize "600x webp q74" }}
+      {{- $large := $img.Resize "900x webp q82" }}
+      <li>
+        <figure class="rz-card" data-rz-card="{{ .id }}" data-name="{{ .name }}" data-large="{{ $large.RelPermalink }}"
+          data-thumb="{{ $thumb.RelPermalink }}" data-thumb2="{{ $thumb2.RelPermalink }}"{{ with .note }} data-note="{{ . }}"{{ end }}>
+          <button type="button" class="rz-pick" aria-haspopup="dialog">
+            <img src="{{ $thumb.RelPermalink }}" srcset="{{ $thumb.RelPermalink }} 1x, {{ $thumb2.RelPermalink }} 2x" width="300" height="{{ $thumb.Height }}" alt="{{ .name }}" loading="lazy" decoding="async" />
+            <span class="rz-badge" aria-hidden="true">In play</span>
+          </button>
+          <figcaption>
+            <span class="rz-name">{{ .name }}</span>
+            <span class="rz-text">{{ .text }}</span>
+            {{- with .note }}<span class="rz-note">{{ . }}</span>{{ end }}
+            {{- with .flavor }}<span class="rz-flavor">{{ . }}</span>{{ end }}
+          </figcaption>
+        </figure>
+      </li>
+      {{- end }}
+    </ul>
+  </section>
+
+  <dialog class="rz-dialog" data-rz-dialog aria-labelledby="rz-dialog-name">
+    <form method="dialog" class="rz-dialog-inner">
+      <button class="rz-close" value="close" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" /></svg>
+      </button>
+      <img class="rz-dialog-img" data-rz-dialog-img alt="" width="900" height="1255" />
+      <h3 id="rz-dialog-name" class="sr-only" data-rz-dialog-name></h3>
+      <p class="rz-dialog-note" data-rz-dialog-note hidden></p>
+      <div class="rz-actions">
+        <button type="button" class="rz-action" data-rz-action></button>
+      </div>
+    </form>
+  </dialog>
+</div>

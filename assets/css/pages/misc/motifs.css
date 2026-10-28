@@ -220,6 +220,22 @@
 .mf-dagea .rose { animation: mf-dagea-rose 14s cubic-bezier(.3, .8, .3, 1) infinite; }
 @keyframes mf-dagea-rose { 0% { opacity: 0; transform: translate(292px, 44px) rotate(-120deg) scale(.5); } 10%, 88% { opacity: 1; transform: translate(292px, 44px); } 96%, 100% { opacity: 0; transform: translate(292px, 44px); } }
 
+/* ---- Rule Zero: four cards dealt into four seats, two rounds ----------- */
+.mf-rz .rz-felt { position: absolute; inset: 12% 8%; border-radius: 50%; background: radial-gradient(closest-side, rgb(var(--c-accent) / .14), transparent); }
+.mf-rz .rz-deck { position: absolute; left: 50%; top: 50%; width: 13%; aspect-ratio: 63 / 88; translate: -50% -50%; border-radius: 6%;
+  background: repeating-linear-gradient(135deg, rgb(var(--c-accent) / .55) 0 4px, rgb(var(--c-accent) / .3) 4px 8px); box-shadow: 0 0 0 1px rgb(var(--c-border)), 2px 2px 0 rgb(var(--c-border)), 4px 4px 0 rgb(var(--c-border) / .6); }
+/* Seats at the four sides; each round is half of the 12s loop. */
+.mf-rz .rz-dealt { position: absolute; left: 50%; top: 50%; width: 17%; height: auto; border-radius: 5%; box-shadow: 0 6px 14px -6px rgb(0 0 0 / .7);
+  --x: calc((var(--seat) - 1.5) * 108%); --tilt: calc((var(--seat) - 1.5) * 5deg);
+  opacity: 0; translate: -50% -50%; animation: mf-rz-deal 12s cubic-bezier(.2, .8, .2, 1) infinite backwards;
+  animation-delay: calc(var(--round) * 6s + var(--seat) * .35s); }
+@keyframes mf-rz-deal {
+  0% { opacity: 1; transform: translate(0, 0) rotate(0) scale(.7); }
+  5% { opacity: 1; transform: translate(var(--x), 0) rotate(var(--tilt)) scale(1); }
+  40% { opacity: 1; transform: translate(var(--x), 0) rotate(var(--tilt)) scale(1); }
+  46%, 100% { opacity: 0; transform: translate(0, 0) rotate(0) scale(.7); }
+}
+
 /* Every animation in this file, off for reduced motion. Last, so it wins. */
 @media (prefers-reduced-motion: reduce) {
   .mf *, .mf *::before, .mf *::after { animation: none !important; transition: none !important; }
@@ -227,4 +243,6 @@
   .mf-dnd .stage:first-of-type .roll, .mf-dnd .stage:first-of-type .move,
   .mf-gk .tier, .mf-wy .term, .mf-wy .even, .mf-py .loss-end,
   .mf-ik .ov, .mf-ik .core { opacity: 1; }
+  .mf-rz .rz-dealt { opacity: 0; }
+  .mf-rz .rz-dealt:nth-of-type(-n+4) { opacity: 1; transform: translate(var(--x), 0) rotate(var(--tilt)); }
 }

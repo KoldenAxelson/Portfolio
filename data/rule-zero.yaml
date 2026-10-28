@@ -1,0 +1,88 @@
+# Rule Zero cards — the custom Conspiracy cards our Commander pod plays with.
+# Each player picks one before the game; the four picks start face up in the
+# command zone. Read by layouts/shortcodes/rule-zero/table.html.
+#
+#   id     the image: assets/img/rule-zero/<id>.jpg (1050×1464, card scans)
+#   text   the rules text, transcribed from the card. {N} is a generic mana
+#          cost, {X} an X cost. The reminder line every card shares ("Start
+#          the game with this card face up in the command zone.") is left off.
+#   flavor optional flavour line
+#   art    the artist credit printed on the card
+#   note   optional: something the table needs to know (Planechase needs a deck)
+#
+# Adding a card: drop its scan in assets/img/rule-zero/ and add an entry here.
+cards:
+  - id: mrz-001
+    name: King of the Hill
+    text: "The first player to deal combat damage this game becomes the monarch."
+    flavor: "“For King and Country!” —The Soldiers Rallied"
+    art: Felix Ortiz
+  - id: mrz-002
+    name: Aura Farming
+    text: "At the beginning of each player's end step, if that player was the most recent player to cast their commander and that player controls their commander, that player may scry 2."
+    art: Akira Toriyama
+  - id: mrz-003
+    name: Free Real Estate
+    text: "At the beginning of each player's end step, if that player has not played a land this turn, they may reveal their hand. If they revealed no lands this way, they may search their library for a basic land card and put it onto the battlefield tapped, then shuffle their library."
+    art: Ken Dahl
+  - id: mrz-004
+    name: Table Snacks
+    text: "{4}: Gain 3 life. Any player may play this ability as if they control this card."
+    flavor: "“But where is the pizza?” —Greg who brought nothing"
+    art: Samantha Maxwell
+  - id: mrz-005
+    name: Manifest Destiny
+    text: "{3}: Manifest a card from your hand. Any player may activate this ability as if they control this card. (To manifest a card, put it onto the battlefield face down as a 2/2 creature. Turn it face up any time for its mana cost if it's a creature card.)"
+    art: John Gast
+  - id: mrz-006
+    name: Drinking Game
+    text: "Cards in players' hands have cycling {2}. Whenever a player cycles a card, that player rolls a d6 and flips a coin. On heads, that player gains poison counters equal to the result. Otherwise, that player may remove poison counters from themselves up to the result."
+    flavor: "“We're here for a good time, not a long time.” —The Dealer"
+    art: Surya Prasetya
+  - id: mrz-007
+    name: Rising Tensions
+    text: "Attacking creatures get +1/+0."
+    art: Daydreamingprints
+  - id: mrz-008
+    name: The Crescent Moon
+    text: "At the beginning of each player's draw step, that player draws an additional card."
+    flavor: "“The Kami may not be present, but the gifts they left behind still stand.” —Shrine Keeper"
+    art: Adobe Stock
+  - id: mrz-009
+    name: Planechase
+    text: "Add Planechase to the game."
+    note: "Whoever picks this card brings the planechase deck."
+    art: Wizards of the Coast
+  - id: mrz-010
+    name: Beauty Sleep
+    text: "At the beginning of each player's end step, if that player cast no spells and activated no abilities, that player draws a card."
+    art: Cehenot
+  - id: mrz-011
+    name: M.A.D. World
+    text: "At the beginning of each player's upkeep, that player rolls a d20. On a result of 1, destroy all nonland permanents."
+    art: Ruslan Melenco
+  - id: mrz-012
+    name: Midgame Mulligan
+    text: "{3}: Shuffle your hand into your library and draw that many cards. Any player may activate this ability as if they control this card, and only once per game."
+    art: Cassius Marcellus
+  - id: mrz-013
+    name: Jackpot
+    text: "At the beginning of each player's upkeep, that player may pay {X} and roll a d20. On a result of 20, that player creates X plus 1, times three, Treasure tokens."
+    art: Diamond Painting
+  - id: mrz-014
+    name: The Chosen One
+    text: "At the beginning of each player's upkeep, that player chooses a creature they control and puts a +1/+1 counter on it."
+    art: Quondam et Futurus
+  - id: mrz-015
+    name: Monkey See, Monkey Be
+    text: "Each player begins the game with a 2/2 green Ape Shapeshifter creature token with “At the beginning of your upkeep, you may have this text box become a copy of another creature's text box until end of turn.”"
+    art: Artesty
+  - id: mrz-016
+    name: Good Clean Christian Magic
+    text: "At the beginning of each player's upkeep, if that player cast no spells and activated no abilities since their last end step, that player draws a card."
+    art: Jello Kitty
+  - id: mrz-017
+    name: Yawning Portal
+    text: "The first player to deal combat damage this game gains the initiative."
+    flavor: "“The hole is for customers only.” —Durnan"
+    art: Forgotten Realms

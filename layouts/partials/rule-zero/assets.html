@@ -1,0 +1,6 @@
+{{- /* The Rule Zero stylesheet and table script, for /misc/rule-zero/. Called once
+       from layouts/misc/single.html when the page uses rule-zero/table. */ -}}
+{{- $css := resources.Get "css/pages/rule-zero/rule-zero.css" | minify | fingerprint -}}
+<link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" />
+{{- $js := resources.Get "scripts/pages/rule-zero/main.ts" | js.Build (dict "minify" true "target" "es2018" "format" "iife") | fingerprint -}}
+<script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
