@@ -40,6 +40,9 @@
     fit    — when true with width+height set, scales to fit INSIDE the box
              without cropping (Hugo Fit) — use for badges, which shouldn't be
              cropped. Ignored unless height is also set.
+    stretch — when true with width+height set, scales to exactly the box,
+             distorting the aspect ratio (Hugo Resize WxH) — use for a row of
+             near-uniform covers that must line up. Ignored unless height is set.
     q      — WebP quality 0–100 (optional, default 80)
 
   Returns a dict: { src, srcset, width, height }. For the raster path all four
@@ -53,6 +56,7 @@
 {{- $width := int .width -}}
 {{- $height := .height -}}
 {{- $fit := .fit | default false -}}
+{{- $stretch := .stretch | default false -}}
 {{- $q := .q | default 80 -}}
 {{- $out := dict -}}
 {{- with $path -}}
@@ -69,7 +73,10 @@
     {{- $2x := "" -}}
     {{- if $height -}}
       {{- $h := int $height -}}
-      {{- if $fit -}}
+      {{- if $stretch -}}
+        {{- $1x = $res.Resize (printf "%dx%d webp q%d" $width $h $q) -}}
+        {{- $2x = $res.Resize (printf "%dx%d webp q%d" (mul $width 2) (mul $h 2) $q) -}}
+      {{- else if $fit -}}
         {{- $1x = $res.Fit (printf "%dx%d webp q%d" $width $h $q) -}}
         {{- $2x = $res.Fit (printf "%dx%d webp q%d" (mul $width 2) (mul $h 2) $q) -}}
       {{- else -}}

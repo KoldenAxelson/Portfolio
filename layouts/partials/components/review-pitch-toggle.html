@@ -1,0 +1,13 @@
+{{- /*
+  review-pitch-toggle — one icon button left of a book card's title, in the spot
+  games use for their console icon: a star while my review shows, a book while
+  the pitch shows; clicking flips the text. Rendered in both card surfaces
+  (_default/impossible-list.html drawer, site/topnav.html mobile panel);
+  scripts/site/games/game-card.ts unhides it when a book has both texts, swaps
+  the icon and label, and swaps the blurb on click.
+*/ -}}
+<button type="button" data-game-text-toggle hidden class="inline-flex shrink-0 items-center justify-center rounded text-accent transition-opacity hover:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
+  {{- range slice (dict "mode" "review" "icon" "star") (dict "mode" "pitch" "icon" "book-open") }}
+  <span data-text-icon="{{ .mode }}"{{ if eq .mode "pitch" }} hidden{{ end }}>{{ partial "func/svg-icon.html" (dict "name" .icon "class" "h-5 w-5") }}</span>
+  {{- end }}
+</button>

@@ -44,15 +44,17 @@ export const buildStars = (rating: number): string => {
 // Each image carries data-full (the largest variant) for the desktop lightbox.
 export const buildCarousel = (images: MediaImage[]): string =>
   images
-    .map((im) => {
+    .map((im, i) => {
       let full = im.src;
       if (im.srcset) {
         const last = im.srcset.split(',').pop();
         if (last) full = last.trim().split(' ')[0];
       }
+      // Only the first slide loads on open; the rest wait until scrolled toward,
+      // since the slides sit side by side in an overflow row.
       // Escaped defensively even though today's callers only pass Hugo-generated
       // permalinks — keeps the sink safe no matter who calls it next.
-      return `<div style="flex:0 0 100%;scroll-snap-align:center;display:flex;align-items:center;justify-content:center;height:100%;"><img src="${escapeHtml(im.src)}"${im.srcset ? ` srcset="${escapeHtml(im.srcset)}"` : ''} data-full="${escapeHtml(full)}" alt="" decoding="async" style="width:100%;height:100%;object-fit:contain;display:block;cursor:zoom-in;" /></div>`;
+      return `<div style="flex:0 0 100%;scroll-snap-align:center;display:flex;align-items:center;justify-content:center;height:100%;"><img src="${escapeHtml(im.src)}"${im.srcset ? ` srcset="${escapeHtml(im.srcset)}"` : ''} data-full="${escapeHtml(full)}" alt=""${i > 0 ? ' loading="lazy"' : ''} decoding="async" style="width:100%;height:100%;object-fit:contain;display:block;cursor:zoom-in;" /></div>`;
     })
     .join('');
 

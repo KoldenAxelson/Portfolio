@@ -1,7 +1,7 @@
 // TopNav interactivity. Global listeners wired once and live-query elements so
 // they survive hx-boost swaps; element handlers re-bound per page via initNav().
 import { sleep, pickRandom, readMessages, charDelay } from './bio';
-import { populateGameCard, wireCarouselDots } from '../games/game-card';
+import { populateGameCard, wireCarouselDots, wireTextToggle } from '../games/game-card';
 import { populateNoteCard } from '../widgets/skyrim-notes';
 import { wirePanelMode } from './sub-nav';
 import type { PanelHost } from './sub-nav';
@@ -196,11 +196,16 @@ function wireNavElements(): void {
       mode: 'game',
       trigger: '[data-game-open]',
       content: '[data-mobile-panel-game]',
-      setup: (content) =>
+      setup: (content) => {
         wireCarouselDots(
           content.querySelector<HTMLElement>('[data-game-mobile-media]'),
           content.querySelector<HTMLElement>('[data-game-dots]'),
-        ),
+        );
+        wireTextToggle(
+          content.querySelector<HTMLElement>('[data-game-text-toggle]'),
+          content.querySelector<HTMLElement>('[data-game-mobile-blurb]'),
+        );
+      },
       populate: (trigger, content) =>
         populateGameCard(trigger.dataset, {
           title: content.querySelector<HTMLElement>('[data-game-mobile-title]'),
@@ -211,6 +216,7 @@ function wireNavElements(): void {
           status: content.querySelector<HTMLElement>('[data-game-mobile-status]'),
           series: content.querySelector<HTMLElement>('[data-game-mobile-series]'),
           consoleIcons: Array.from(content.querySelectorAll<HTMLElement>('[data-console-icon-for]')),
+          textToggle: content.querySelector<HTMLElement>('[data-game-text-toggle]'),
         }),
     },
     host,

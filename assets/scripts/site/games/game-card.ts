@@ -18,14 +18,45 @@ export interface GameCardEls {
   status: HTMLElement | null;
   series: HTMLElement | null;
   consoleIcons: HTMLElement[];
+  textToggle: HTMLElement | null;
 }
 
-// Fill a card from a trigger's dataset: title, blurb, image carousel (+dots),
+type TextMode = 'review' | 'pitch';
+
+// The review and pitch ride on the blurb element's dataset so the toggle's click
+// handler (wireTextToggle) can swap them without knowing which book is open. The
+// toggle shows the icon for what's on screen (star = review, book = pitch) and
+// labels itself with what a click switches to.
+const TOGGLE_LABELS: Record<TextMode, string> = {
+  review: 'Showing my review. Switch to the pitch',
+  pitch: 'Showing the pitch. Switch to my review',
+};
+
+function showText(blurb: HTMLElement, toggle: HTMLElement | null, mode: TextMode): void {
+  blurb.textContent = (mode === 'pitch' ? blurb.dataset.pitch : blurb.dataset.review) || '';
+  if (!toggle) return;
+  toggle.dataset.mode = mode;
+  toggle.setAttribute('aria-label', TOGGLE_LABELS[mode]);
+  toggle.title = TOGGLE_LABELS[mode];
+  for (const icon of Array.from(toggle.querySelectorAll<HTMLElement>('[data-text-icon]'))) {
+    icon.hidden = icon.dataset.textIcon !== mode;
+  }
+}
+
+// Fill a card from a trigger's dataset: title, blurb (your review, else the
+// pitch, with a toggle when a book has both), image carousel (+dots),
 // star rating OR status line (rating wins when both exist), series checklist,
 // and the matching console icon.
 export function populateGameCard(d: DOMStringMap, els: GameCardEls): void {
   if (els.title) els.title.textContent = d.title || '';
-  if (els.blurb) els.blurb.textContent = d.blurb || '';
+  if (els.blurb) {
+    const review = d.blurb || '';
+    const pitch = d.pitch || '';
+    els.blurb.dataset.review = review;
+    els.blurb.dataset.pitch = pitch;
+    if (els.textToggle) els.textToggle.hidden = !(review && pitch);
+    showText(els.blurb, els.textToggle, review ? 'review' : 'pitch');
+  }
   if (els.media) {
     let imgs: MediaImage[] = [];
     try {
@@ -83,6 +114,15 @@ export function populateGameCard(d: DOMStringMap, els: GameCardEls): void {
   for (const el of els.consoleIcons) {
     el.hidden = el.getAttribute('data-console-icon-for') !== d.console;
   }
+}
+
+// Swap between review and pitch. Wired once per surface; the texts themselves
+// are refreshed by populateGameCard on every open.
+export function wireTextToggle(toggle: HTMLElement | null, blurb: HTMLElement | null): void {
+  if (!toggle || !blurb) return;
+  toggle.addEventListener('click', () => {
+    showText(blurb, toggle, toggle.dataset.mode === 'pitch' ? 'review' : 'pitch');
+  });
 }
 
 // Keep the active dot in sync while the carousel scroll-snaps. Passive: the

@@ -7,7 +7,7 @@
 // The slide / swap / dismiss lifecycle lives in drawer.ts; this file keeps only
 // what's specific to the game card: filling it (game-card.ts), paging its image
 // carousel with the arrow keys, and the full-screen lightbox layered over it.
-import { populateGameCard, wireCarouselDots } from './game-card';
+import { populateGameCard, wireCarouselDots, wireTextToggle } from './game-card';
 import { createDrawer } from '../nav/drawer';
 
 let docKeyHandler: ((e: KeyboardEvent) => void) | null = null;
@@ -37,6 +37,7 @@ export function initGameModal(): void {
     status: modal.querySelector<HTMLElement>('[data-game-status]'),
     series: modal.querySelector<HTMLElement>('[data-game-series]'),
     consoleIcons: Array.from(modal.querySelectorAll<HTMLElement>('[data-console-icon-for]')),
+    textToggle: modal.querySelector<HTMLElement>('[data-game-text-toggle]'),
   };
 
   let lbImgs: string[] = [];
@@ -103,6 +104,7 @@ export function initGameModal(): void {
   };
 
   wireCarouselDots(mediaEl, dotsEl);
+  wireTextToggle(cardEls.textToggle, cardEls.blurb);
   // Click a carousel image to enlarge it in the lightbox; click the lightbox to close.
   if (mediaEl && lightbox && lightboxImg) {
     mediaEl.addEventListener('click', (e) => {

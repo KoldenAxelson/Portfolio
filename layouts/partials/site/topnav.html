@@ -201,6 +201,7 @@
               {{- range (slice "N64" "GCN" "GBC" "GBA" "XBOX" "XSX" "PC") }}
               <span data-console-icon-for="{{ . }}" hidden role="img" aria-label="{{ index $consoleNames . }}" title="{{ index $consoleNames . }}" class="shrink-0 text-accent [&_svg]:h-5 [&_svg]:w-auto">{{ partial "func/console-icon.html" (dict "code" .) }}</span>
               {{- end }}
+              {{ partial "components/review-pitch-toggle.html" . }}
               <h2 data-game-mobile-title class="m-0 text-lg font-medium text-fg"></h2>
             </span>
             <span class="flex items-center">
