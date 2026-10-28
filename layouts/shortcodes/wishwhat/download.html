@@ -1,0 +1,20 @@
+{{- /*
+  wishwhat/download — a download link for a file in assets/wishwhat/.
+
+    {{< wishwhat/download file="agent-plan.md" label="…" note="…" >}}
+
+  Like wishwhat/shot, the file is inlined as a data: URI so it ships only
+  inside the sealed page (static/vault/wishwhat.json), never at a public URL.
+  The link works without JavaScript.
+*/ -}}
+{{- $file := .Get "file" -}}
+{{- $resource := resources.Get (printf "wishwhat/%s" $file) -}}
+{{- if not $resource -}}
+  {{- errorf "wishwhat/download: %s names %q, but assets/wishwhat/%s does not exist." .Position $file $file -}}
+{{- end -}}
+<p class="not-prose ww-download">
+  <a href="data:{{ $resource.MediaType.Type }};charset=utf-8;base64,{{ $resource.Content | base64Encode }}" download="wishwhat-{{ $file }}">
+    <span aria-hidden="true">↓</span> {{ .Get "label" }}
+  </a>
+  {{- with .Get "note" }}<span>{{ . }}</span>{{ end }}
+</p>

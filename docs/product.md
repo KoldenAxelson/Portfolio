@@ -88,8 +88,6 @@ tools that are actually used, not portfolio props.
   There is no portability obligation: this site is free to become bespoke, and
   future work should reference Neofolio less or not at all. Neofolio remains a
   real shipped project in the project list — it is no longer the site's identity.
-  *(Note: [README.md](../README.md) and [context.md](../services/ai-proxy/context.md) still lead with the
-  Neofolio framing and have not been updated to match this decision.)*
 - **Known quality gap, stated by Konrad:** the `/misc` widgets do not meet the
   bar of the rest of the site. The Skyrim page's widgets are the worst offender
   and the agreed starting point.
@@ -112,8 +110,8 @@ tools that are actually used, not portfolio props.
 
 Real, verifiable, and safe to use:
 
-- **Shipped products:** VisorPlate (visorplate-us.com, live and selling),
-  BigHammerGarage (bighammergarage.com, delivered contract), Neofolio (MIT,
+- **Shipped products:** VisorPlate (visorplate-us.com; shipped, never closed a
+  dealership, on hiatus since August 2026), BigHammerGarage (bighammergarage.com, delivered contract), Neofolio (MIT,
   public repo), Crunchy (public repo).
 - **In progress:** Widda (widda.club), private development, pre-launch. GrowGo
   (hyperlocal food marketplace), resurrected August 2026 — working Flutter
@@ -123,10 +121,16 @@ Real, verifiable, and safe to use:
   built for one client, Konrad's mother Kirstin Wright; in testing with her
   two horses, not released (do not quote a version number, it changes weekly). Its public showcase is `/misc/harmony-pulse`
   (copy in `data/harmony-pulse/showcase.yaml`).
-- **Employment history:** 2010–2025 across Neurotopia/SenseLabs, Cumulus,
-  Draftboard (acquired by DraftKings 2019), UNCOMN LLC. Concrete claim on record:
+- **On hiatus:** WishWhat (gift wish list app, 2024–2025), co-founded with
+  designer Phil Honeycutt. Figma designs and an early iOS build; never launched,
+  no users. Its project pitch is passcode-gated at `/misc/wishwhat`; never
+  surface or guess the code.
+- **Employment history:** 2010–2024 across Neurotopia/SenseLabs, Cumulus,
+  Draftboard (acquired by DraftKings 2019), UNCOMN LLC; independent (Founder &
+  Independent Software Engineer) since 2025. Concrete claim on record:
   1,000+ Fortify-flagged vulnerabilities resolved on the CPA project.
-- **Certification:** CompTIA Security+, issued July 2023, expires July 2026.
+- **Certification:** CompTIA Security+, held July 2023 – July 2026. It has
+  lapsed; Konrad is prepared to recertify on hire. Never present it as current.
 - **Writing:** "Community as Infrastructure" (May 2026), also on dev.to. Fifteen
   ML explainers: "What Is ML Infrastructure?" (July 2026), then, all September
   2026, "How Does a Model Actually Learn?", "How Do You Know a Model Got

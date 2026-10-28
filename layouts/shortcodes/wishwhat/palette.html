@@ -1,0 +1,20 @@
+{{- /*
+  wishwhat/palette — the colors Phil pinned, with the hex on each swatch.
+  The label flips to light or dark ink by the swatch's brightness (the
+  YIQ weighting), so a new color needs no extra field.
+  Data: data/wishwhat.yaml `palette`.
+*/ -}}
+{{- with site.Data.wishwhat.palette }}
+<figure class="not-prose ww-palette">
+  <ol class="ww-swatches">
+    {{- range .colors }}
+    {{- $red := int (printf "0x%s" (substr . 1 2)) -}}
+    {{- $green := int (printf "0x%s" (substr . 3 2)) -}}
+    {{- $blue := int (printf "0x%s" (substr . 5 2)) -}}
+    {{- $brightness := div (add (mul $red 299) (mul $green 587) (mul $blue 114)) 1000 }}
+    <li style="background: {{ . | safeCSS }}" class="{{ if lt $brightness 128 }}is-dark{{ end }}"><code>{{ . }}</code></li>
+    {{- end }}
+  </ol>
+  <figcaption>{{ .note }}</figcaption>
+</figure>
+{{- end }}

@@ -1,0 +1,17 @@
+{{- /*
+  wishwhat/steps — an ordered list of when / title / body, used for both the
+  roadmap and the history.
+
+    {{< wishwhat/steps "roadmap" >}}    data/wishwhat.yaml `roadmap`
+    {{< wishwhat/steps "timeline" >}}   data/wishwhat.yaml `timeline`
+*/ -}}
+{{- $set := .Get 0 -}}
+{{- $steps := index site.Data.wishwhat $set -}}
+{{- if not $steps -}}
+  {{- errorf "wishwhat/steps: %s asks for %q, which data/wishwhat.yaml doesn't have." .Position $set -}}
+{{- end -}}
+<ol class="not-prose ww-steps ww-steps-{{ $set }}">
+  {{- range $steps }}
+  <li><span class="ww-when">{{ .when }}</span><strong>{{ .title }}</strong><span>{{ .body }}</span></li>
+  {{- end }}
+</ol>

@@ -173,15 +173,48 @@
 }
 
 /* ---- Genes: the composition rings sweep in ------------------------------ */
-.mf-genes .seg { animation: mf-genes-seg 10s cubic-bezier(.3, .7, .3, 1) infinite; animation-delay: calc(var(--i) * .35s); }
-@keyframes mf-genes-seg { 0% { stroke-dasharray: 0 100; } 12%, 90% { stroke-dasharray: var(--p) 100; } 100% { stroke-dasharray: 0 100; } }
-.mf-genes .leg { animation: mf-genes-leg 10s infinite; animation-delay: calc(var(--i) * .35s); }
-@keyframes mf-genes-leg { 0% { opacity: 0; transform: translateX(-4px); } 6%, 90% { opacity: 1; transform: none; } 100% { opacity: 0; } }
+/* --T is one full turn; the delays in partials/misc/live/genes.html are computed
+   from the same 6s, so change both together. Each animation runs half a turn and
+   alternates, and the sine easing makes the beads trace a sine wave. */
+.mf-dna { --T: 6s; --swing: cubic-bezier(.37, 0, .63, 1); }
+.mf-dna .strand { animation: mf-dna-y calc(var(--T) / 2) var(--swing) var(--d) infinite alternate; }
+@keyframes mf-dna-y { from { transform: translateY(-38px); } to { transform: translateY(38px); } }
+.mf-dna .rung { transform-box: view-box; animation: mf-dna-rung calc(var(--T) / 2) var(--swing) var(--d) infinite alternate; }
+@keyframes mf-dna-rung { from { transform: scaleY(1); } to { transform: scaleY(-1); } }
+.mf-dna .bead { fill: rgb(var(--c-accent)); transform-box: fill-box; transform-origin: center;
+  animation: mf-dna-depth calc(var(--T) / 2) var(--swing) var(--d) infinite alternate; }
+.mf-dna .bead-b { fill: rgb(var(--c-fg)); }
+@keyframes mf-dna-depth { from { transform: scale(.55); opacity: .35; } to { transform: scale(1); opacity: 1; } }
+.mf-dna .backbones { animation: mf-dna-slide var(--T) linear infinite; }
+@keyframes mf-dna-slide { to { transform: translateX(calc(-1 * var(--wavelength))); } }
+.mf-dna .backbone { fill: none; stroke: rgb(var(--c-accent) / .55); stroke-width: 1.6; stroke-linecap: round; }
+.mf-dna .backbone-b { stroke: rgb(var(--c-fg) / .3); }
+.mf-dna .base { stroke-width: 1.6; stroke-linecap: round; }
+.mf-dna .base-A { stroke: rgb(var(--c-accent) / .6); }
+.mf-dna .base-T { stroke: rgb(var(--c-accent) / .3); }
+.mf-dna .base-G { stroke: rgb(var(--c-fg) / .35); }
+.mf-dna .base-C { stroke: rgb(var(--c-fg) / .15); }
+.mf-dna .seq { letter-spacing: .12em; }
 
 /* ---- Impossible List: the list, scrolling up forever -------------------- */
-.mf-il .il-window { -webkit-mask-image: linear-gradient(transparent, #000 22%, #000 78%, transparent); mask-image: linear-gradient(transparent, #000 22%, #000 78%, transparent); }
-.mf-il .il-track { animation: mf-il-scroll calc(var(--rows) * 2.2s) linear infinite; }
-@keyframes mf-il-scroll { to { transform: translateY(-50%); } }
+/* The keyframes are in partials/misc/live/impossible-list.html (they're sized
+   to the number of done items); everything else is here. The pill opens by
+   clip-path from a circle around the badge to the full width. */
+.mf-il { --il-h: 2.6rem; --il-closed: inset(0 calc(100% - var(--il-h)) 0 0 round 999px); --il-open: inset(0 0 0 0 round 999px); }
+/* A fixed 100% track: an auto one sizes to the toast and leaves its 86% nothing to measure. */
+.mf-il .il-stage { position: absolute; inset: 0; display: grid; grid-template: 100% / 100%; place-items: center; }
+.mf-il .il-toast { grid-area: 1 / 1; display: flex; align-items: center; gap: .55rem; width: min(86%, 17rem); height: var(--il-h);
+  padding-right: 1.1rem; border-radius: 999px; background: rgb(var(--c-fg)); color: rgb(var(--c-bg));
+  box-shadow: 0 10px 24px -12px rgb(0 0 0 / .55); transform-origin: calc(var(--il-h) / 2) 50%;
+  opacity: 0; animation: mf-il-toast var(--loop) cubic-bezier(.2, .8, .2, 1) infinite; }
+.mf-il .il-badge { position: relative; display: grid; place-items: center; flex: none; width: var(--il-h); height: var(--il-h); border-radius: 50%;
+  background: rgb(var(--c-accent)); color: rgb(var(--c-bg)); }
+.mf-il .il-ring { position: absolute; inset: 0; border-radius: 50%; border: 2px solid rgb(var(--c-accent)); opacity: 0;
+  animation: mf-il-ring var(--loop) ease-out infinite; animation-delay: inherit; }
+.mf-il .il-text { display: flex; flex-direction: column; min-width: 0; flex: 1; line-height: 1.2;
+  animation: mf-il-text var(--loop) ease-out infinite; animation-delay: inherit; }
+.mf-il .il-head { font: 600 .5rem var(--font-mono); letter-spacing: .1em; text-transform: uppercase; opacity: .7; }
+.mf-il .il-name { overflow: hidden; font-size: .74rem; font-weight: 600; white-space: nowrap; text-overflow: ellipsis; }
 
 /* ---- Uses: a terminal prints the stack ---------------------------------- */
 .mf-uses .type { left: 0.9rem; transform-origin: right center; transform: scaleX(0); animation: mf-uses-type 9s steps(var(--n)) infinite; }
@@ -243,6 +276,7 @@
   .mf-dnd .stage:first-of-type .roll, .mf-dnd .stage:first-of-type .move,
   .mf-gk .tier, .mf-wy .term, .mf-wy .even, .mf-py .loss-end,
   .mf-ik .ov, .mf-ik .core { opacity: 1; }
+  .mf-il .il-toast:first-child { opacity: 1; }
   .mf-rz .rz-dealt { opacity: 0; }
   .mf-rz .rz-dealt:nth-of-type(-n+4) { opacity: 1; transform: translate(var(--x), 0) rotate(var(--tilt)); }
 }

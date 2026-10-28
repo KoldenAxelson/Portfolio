@@ -1,29 +1,35 @@
 ---
 title: "Now"
-description: "What I'm currently focused on — building, learning, reading, and life."
+description: "What Konrad Wright is focused on right now: what he's building, playing, reading and learning."
 layout: "now"
 updated: 2026-10-28
-# `blocks`, not `sections`: `sections:` is reserved site-wide for the
-# jump-to-section convention ({id, label}) that topnav.html and
-# partials/components/section-nav.html read. This page uses a different shape
-# (label + items), so it gets its own key.
-blocks:
-  - label: "Building"
-    items:
-      - "Harmony Pulse — my day-to-day. An iPhone and Apple Watch app that coaches horse riders from two heart-rate straps, one on the rider and one on the horse. Everything runs on the phone, because barns don't have wifi."
-      - "Widda.club — a monetization tool for YouTubers. Built and submitted; now going back and forth with Google on Chrome Web Store approval."
-      - "GrowGo — my farmers-market app, back from the archive. The 2025 pitch got universal love and zero checks, so the 2026 version leads with a working thing instead: Flutter app on a Cloudflare Workers + D1 backend, Stripe and production hookups next. This time the demo does the talking."
-      - "VisorPlate — on hiatus. The storefront's idle while the other projects get those hours; the product and the domain aren't going anywhere. (Pics of god-awful front-plate setups still make me laugh, though.)"
-  - label: "Learning"
-    items:
-      - "How to get more eyes on the work I'm shipping. Eyeing a suite of tools for YouTube video production, but I'm holding off until I hit a good stopping point with current projects. Ship first, then promote."
-  - label: "Reading"
-    items:
-      - '"The Da Vinci Code" — short chapters, cliffhangers, codes through art history. A pure page-turner.'
-      - '"Call of the Bone Ships" up next. I love a good journey story.'
-      - "Done with my self-help phase. Lesson: narratives stick in long-term memory better than frameworks do."
-  - label: "Life"
-    items:
-      - "Working on more than ever for less than ever. I know where the ship is heading; it'll pay off soon."
-      - "Open to pretty much any work right now: full-time, contract, consulting or collaborations."
+# Only what's happening now. Anything "up next" belongs on the Impossible
+# List, not here.
+#
+# Rendered by layouts/_default/now.html, top to bottom:
+#   working   the one project getting most of my hours, with its app icon
+#   building  the other live projects, as small cards
+#   (Playing / Reading come from the Impossible List's `current: true` items,
+#    via components/off-the-clock.html, so this file never repeats them)
+#   learning  one line
+#   life      a line or two, plus the "available for work" pill
+working:
+  page: "/projects/harmony-pulse"
+  showcase: "/misc/harmony-pulse"
+  icon: "/harmony-pulse/app-icon.png"
+  line: "An iPhone and Apple Watch app that coaches horse riders from two heart-rate straps, one on the rider and one on the horse."
+  status: "In testing with my mom and her two horses"
+  aside: "Everything runs on the phone, because barns don't have wifi."
+building:
+  - page: "/projects/widda"
+    status: "In Chrome Web Store review"
+    line: "A monetization tool for YouTubers. Built, submitted, and now going back and forth with Google."
+  - page: "/projects/growgo"
+    status: "Back from the archive"
+    line: "My farmers-market app. The pitch got love and no checks, so this time the working app does the talking. Wiring up Stripe and production."
+learning: "How to get more eyes on what I ship. Ship first, then promote."
+readingNote: "Done with my self-help phase. Turns out stories stick better than frameworks do."
+life:
+  - "Working on more than ever for less than ever. I know where the ship is heading."
+  - "Open to pretty much any work: full-time, contract, consulting or collaborations."
 ---

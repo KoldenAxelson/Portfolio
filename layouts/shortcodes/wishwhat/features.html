@@ -1,0 +1,18 @@
+{{- /*
+  wishwhat/features — what the app does, grouped by when it ships.
+  Data: data/wishwhat.yaml `phases` (order and labels) and `features`.
+*/ -}}
+{{- $data := site.Data.wishwhat -}}
+<div class="not-prose ww-features">
+  {{- range $data.phases }}
+  {{- $group := where $data.features "phase" .key }}
+  <section class="ww-phase" aria-labelledby="ww-phase-{{ .key }}">
+    <h3 class="ww-kicker" id="ww-phase-{{ .key }}">{{ .label }} · {{ len $group }}</h3>
+    <ul class="ww-cards">
+      {{- range $group }}
+      <li class="ww-card"><strong>{{ .name }}</strong><span>{{ .body }}</span></li>
+      {{- end }}
+    </ul>
+  </section>
+  {{- end }}
+</div>

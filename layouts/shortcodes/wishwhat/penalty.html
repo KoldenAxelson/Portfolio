@@ -1,0 +1,25 @@
+{{- /*
+  wishwhat/penalty — the push-up table. The first late day costs `base`; each
+  day after, the debt grows by `growth` and another `base` on top, rounded
+  down. Computed here, so the rule and the table can't disagree.
+  Data: data/wishwhat.yaml `penalty`.
+*/ -}}
+{{- with site.Data.wishwhat.penalty }}
+{{- $base := .base -}}
+{{- $multiplier := add 1 .growth -}}
+{{- $owed := slice -}}
+{{- $debt := 0 -}}
+{{- range seq .days -}}
+  {{- $debt = int (math.Floor (add (mul $debt $multiplier) $base)) -}}
+  {{- $owed = $owed | append $debt -}}
+{{- end }}
+<div class="not-prose ww-penalty">
+  <table>
+    <caption class="ww-kicker">Push-ups owed</caption>
+    <tbody>
+      <tr><th scope="row">Days late</th>{{ range seq .days }}<td>{{ . }}</td>{{ end }}</tr>
+      <tr><th scope="row">Push-ups</th>{{ range $owed }}<td>{{ . }}</td>{{ end }}</tr>
+    </tbody>
+  </table>
+</div>
+{{- end }}

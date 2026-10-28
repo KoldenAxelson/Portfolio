@@ -1,3 +1,6 @@
+{{- /* /now — what I'm on right now, as cards rather than a list of paragraphs.
+       Copy is front matter in content/now.md; Playing and Reading come from
+       the Impossible List (components/off-the-clock.html). */ -}}
 {{ define "banner" }}
 {{ partial "site/page-banner.html" (dict
   "title" "What I'm doing now"
@@ -5,27 +8,86 @@
 {{ end }}
 
 {{ define "main" }}
+{{- $heading := "mb-4 font-mono text-xs uppercase tracking-widest text-fg" -}}
+{{- $link := "group/cta text-sm text-fg no-underline" -}}
 {{- with .Params.updated }}
 <p class="mb-10 font-mono text-xs text-muted">
   Last updated {{ partial "components/formatted-date.html" (dict "date" .) }}.
 </p>
 {{- end }}
 
-<div class="space-y-12">
-  {{- range .Params.blocks }}
-  {{- $id := printf "%s-heading" (lower .label) }}
-  <section aria-labelledby="{{ $id }}">
-    <h2 id="{{ $id }}" class="mb-3 font-mono text-xs uppercase tracking-widest text-fg">{{ .label }}</h2>
-    <ul class="space-y-3">
-      {{- range .items }}
-      <li class="text-muted">{{ . }}</li>
-      {{- end }}
+<div class="space-y-14">
+  {{- with .Params.working }}{{ $working := . }}{{ with site.GetPage .page }}
+  {{- $icon := partial "func/cover.html" (dict "path" $working.icon "width" 80 "height" 80) }}
+  <section aria-labelledby="working-heading">
+    <h2 id="working-heading" class="{{ $heading }}">Currently working on</h2>
+    <div class="flex flex-col gap-5 rounded-2xl border border-accent/40 bg-accent/5 p-6 sm:flex-row sm:items-start sm:p-8">
+      <img src="{{ $icon.src }}"{{ with $icon.srcset }} srcset="{{ . }}"{{ end }} width="80" height="80" alt="{{ .Title }} app icon" class="h-20 w-20 shrink-0 rounded-[22%] shadow-sm" />
+      <div class="min-w-0">
+        <p class="text-2xl font-semibold tracking-tight text-fg">{{ .Title }}</p>
+        <p class="mt-2 text-fg">{{ $working.line }}</p>
+        <p class="mt-3 inline-flex items-center gap-2 rounded-full border border-accent/50 bg-accent/10 px-3 py-1 text-sm font-medium text-fg">
+          <span aria-hidden="true" class="h-2 w-2 rounded-full bg-accent"></span>{{ $working.status }}
+        </p>
+        {{- with $working.aside }}<p class="mt-3 text-sm italic text-muted">{{ . }}</p>{{ end }}
+        <p class="mt-4 flex flex-wrap gap-x-5 gap-y-2">
+          <a href="{{ .RelPermalink }}" class="{{ $link }}"><span class="underline decoration-1 underline-offset-2 group-hover/cta:decoration-2">The project</span><span aria-hidden="true" class="ml-0.5 inline-block transition-transform duration-200 ease-out group-hover/cta:translate-x-0.5 motion-reduce:transition-none">→</span></a>
+          {{- /* The showcase is a standalone document (layouts/misc/harmony-pulse.html), so no hx-boost. */}}
+          {{- with $working.showcase }}
+          <a href="{{ partial "func/url.html" . }}" hx-boost="false" class="{{ $link }}"><span class="underline decoration-1 underline-offset-2 group-hover/cta:decoration-2">See the showcase</span><span aria-hidden="true" class="ml-0.5 inline-block transition-transform duration-200 ease-out group-hover/cta:translate-x-0.5 motion-reduce:transition-none">→</span></a>
+          {{- end }}
+        </p>
+      </div>
+    </div>
+  </section>
+  {{- end }}{{ end }}
+
+  {{- with .Params.building }}
+  <section aria-labelledby="building-heading">
+    <h2 id="building-heading" class="{{ $heading }}">Also building</h2>
+    <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      {{- range . }}{{ $card := . }}{{ with site.GetPage .page }}
+      <li>
+        <a href="{{ .RelPermalink }}" class="group/card flex h-full flex-col gap-2 rounded-xl border border-border/60 p-4 no-underline transition-colors hover:bg-border/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
+          <span class="font-medium text-fg transition-colors group-hover/card:text-accent">{{ .Title }}</span>
+          <span class="inline-flex w-fit items-center gap-1.5 font-mono text-[0.7rem] uppercase tracking-wide text-muted"><span aria-hidden="true" class="h-1.5 w-1.5 rounded-full bg-accent"></span>{{ $card.status }}</span>
+          <span class="text-sm text-muted">{{ $card.line }}</span>
+        </a>
+      </li>
+      {{- end }}{{ end }}
     </ul>
   </section>
   {{- end }}
+
+  {{- $offTheClock := partial "components/off-the-clock.html" . | strings.TrimSpace }}
+  {{- with $offTheClock }}
+  <section aria-labelledby="offclock-heading">
+    <h2 id="offclock-heading" class="{{ $heading }}">Off the clock</h2>
+    {{ . | safeHTML }}
+    {{- with $.Params.readingNote }}<p class="mt-3 text-sm text-muted">{{ . }}</p>{{ end }}
+  </section>
+  {{- end }}
+
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    {{- with .Params.learning }}
+    <section aria-labelledby="learning-heading" class="rounded-xl border border-border/60 p-5">
+      <h2 id="learning-heading" class="mb-2 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-fg">{{ partial "func/svg-icon.html" (dict "name" "academic-cap" "class" "h-4 w-4 text-accent") }}Learning</h2>
+      <p class="text-muted">{{ . }}</p>
+    </section>
+    {{- end }}
+    {{- with .Params.life }}
+    <section aria-labelledby="life-heading" class="rounded-xl border border-border/60 p-5">
+      <h2 id="life-heading" class="mb-2 flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-fg">{{ partial "func/svg-icon.html" (dict "name" "sun" "class" "h-4 w-4 text-accent") }}Life</h2>
+      <ul class="space-y-2">{{ range . }}<li class="text-muted">{{ . }}</li>{{ end }}</ul>
+      <a href="mailto:{{ site.Data.site.author.email }}" class="mt-4 inline-flex items-center gap-2 rounded-full border border-accent/50 bg-accent/10 px-3 py-1 text-sm font-medium text-fg no-underline hover:bg-accent/20">
+        <span aria-hidden="true" class="h-2 w-2 rounded-full bg-accent"></span>Available for work · email me
+      </a>
+    </section>
+    {{- end }}
+  </div>
 </div>
 
 <p class="mt-16 text-sm text-muted">
-  Other "now" pages in the directory at <a href="https://nownownow.com" rel="noopener">nownownow.com</a>.
+  This is a /now page. Find others in the directory at <a href="https://nownownow.com" rel="noopener">nownownow.com</a>.
 </p>
 {{ end }}

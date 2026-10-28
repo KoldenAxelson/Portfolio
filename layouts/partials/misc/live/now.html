@@ -1,23 +1,19 @@
 {{- /*
   misc/live/now — the Now card as a departure board. One flap at a time
-  turns over to the next thing on /now: each project I'm building, then each
-  book I'm reading, read from the page's `blocks` (the name before " — " for
-  a project, the quoted title for a book), so the card is current whenever the
-  page is. A live dot and the page's date sit above it.
+  turns over to the next thing on /now: the project I'm working on, the others
+  I'm building (content/now.md `working` and `building`), then the game and
+  book the Impossible List marks current (func/about-now.html, the same source
+  as the page's "Off the clock"), so the card is current whenever the page is.
+  A live dot and the page's date sit above it.
   Pure HTML + CSS; the flip timing is generated for however many entries.
 */ -}}
 {{- with site.GetPage "/now" }}
 {{- $entries := slice -}}
-{{- range .Params.blocks -}}
-  {{- $label := .label -}}
-  {{- range .items -}}
-    {{- if eq $label "Building" -}}
-      {{- $entries = $entries | append (dict "label" $label "value" (index (split . " — ") 0)) -}}
-    {{- else if eq $label "Reading" -}}
-      {{- with findRESubmatch `"([^"]+)"` . 1 }}{{ $entries = $entries | append (dict "label" $label "value" (index (index . 0) 1)) }}{{ end -}}
-    {{- end -}}
-  {{- end -}}
-{{- end -}}
+{{- with .Params.working }}{{ with site.GetPage .page }}{{ $entries = $entries | append (dict "label" "Working on" "value" .Title) }}{{ end }}{{ end -}}
+{{- range .Params.building }}{{ with site.GetPage .page }}{{ $entries = $entries | append (dict "label" "Building" "value" .Title) }}{{ end }}{{ end -}}
+{{- $current := partial "func/about-now.html" . -}}
+{{- with $current.game }}{{ $entries = $entries | append (dict "label" "Playing" "value" .title) }}{{ end -}}
+{{- with $current.book }}{{ $entries = $entries | append (dict "label" "Reading" "value" .title) }}{{ end -}}
 {{- $n := len $entries -}}
 {{- $hold := 3 -}}
 {{- $cycle := mul $n $hold -}}

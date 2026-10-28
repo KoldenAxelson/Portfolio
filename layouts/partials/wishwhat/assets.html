@@ -1,0 +1,6 @@
+{{- /* The WishWhat pitch's stylesheet, for /misc/wishwhat/. Called from
+       layouts/misc/single.html when the page uses wishwhat/glance, and from
+       partials/vault/sealed-page.html on the locked stub so the fingerprinted
+       file the sealed HTML links is actually published. */ -}}
+{{- $css := resources.Get "css/pages/wishwhat/wishwhat.css" | minify | fingerprint -}}
+<link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" />

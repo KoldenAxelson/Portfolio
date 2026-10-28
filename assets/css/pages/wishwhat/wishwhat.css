@@ -1,0 +1,121 @@
+/* /misc/wishwhat/ — the WishWhat project pitch. Shortcodes in
+   layouts/shortcodes/wishwhat/, data in data/wishwhat.yaml (private/wishwhat/).
+   Widgets lay out by the width of the prose column (container `ww`), like the
+   brine pitch, so a wide window still gives them an article-sized box. */
+
+.prose:has(.ww-glance) { container: ww / inline-size; }
+.ww-glance, .ww-features, .ww-demo, .ww-shot, .ww-palette, .ww-money, .ww-growth, .ww-steps, .ww-penalty, .ww-download {
+  /* Phil's forest green (#235347) on light, his pale mint (#8EB69B) on dark: both AA on --c-bg. */
+  --ww-green: 35 83 71; --ww-r: .9rem; margin: 1.5rem 0 2rem; font-size: 1rem; line-height: 1.45; }
+@media (prefers-color-scheme: dark) {
+  .ww-glance, .ww-features, .ww-demo, .ww-shot, .ww-palette, .ww-money, .ww-growth, .ww-steps, .ww-penalty, .ww-download { --ww-green: 142 182 155; }
+}
+.ww-kicker { display: block; margin: 0 0 .75rem; font: 600 .66rem var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: rgb(var(--c-muted)); }
+.ww-star { color: rgb(var(--c-accent)); }
+.ww-source, .ww-note { margin: .6rem 0 0; font-size: .72rem; color: rgb(var(--c-muted)); }
+.ww-source a { color: inherit; text-decoration: underline; text-decoration-color: rgb(var(--c-border)); text-underline-offset: 2px; }
+.ww-card { display: flex; flex-direction: column; gap: .3rem; padding: .85rem .95rem; border: 1px solid rgb(var(--c-border)); border-radius: .7rem; background: rgb(var(--c-bg)); }
+.ww-card strong { font-size: .95rem; color: rgb(var(--c-fg)); }
+.ww-card span { font-size: .85rem; color: rgb(var(--c-fg) / .85); }
+
+/* ---- At a glance ------------------------------------------------------- */
+.ww-glance { margin-top: 0; padding: 1.25rem; border: 1px solid rgb(var(--c-border)); border-radius: var(--ww-r);
+  background: linear-gradient(160deg, rgb(var(--ww-green) / .1), transparent 60%); }
+.ww-line { margin: 0 0 1.1rem; font-size: 1.15rem; font-weight: 500; color: rgb(var(--c-fg)); text-wrap: pretty; }
+.ww-next { display: grid; gap: .15rem; padding: .9rem 1rem; border-radius: .7rem; background: rgb(var(--c-fg)); color: rgb(var(--c-bg)); }
+.ww-next-label { font: 600 .66rem var(--font-mono); letter-spacing: .1em; text-transform: uppercase; opacity: .75; }
+.ww-next-value { font-weight: 600; }
+/* One hairline grid: the 1px gap shows the border colour behind the cells. */
+.ww-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; margin: .75rem 0 0; overflow: hidden;
+  border: 1px solid rgb(var(--c-border)); border-radius: .7rem; background: rgb(var(--c-border)); }
+.ww-stats > div { display: flex; flex-direction: column-reverse; justify-content: flex-end; padding: .75rem .9rem; background: rgb(var(--c-bg)); }
+.ww-stats dd { margin: 0; font-weight: 700; color: rgb(var(--c-fg)); }
+.ww-stats dt { margin-top: .15rem; font-size: .76rem; color: rgb(var(--c-muted)); }
+@container ww (min-width: 38rem) {
+  .ww-glance { padding: 1.5rem; }
+  .ww-line { font-size: 1.25rem; }
+  .ww-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+/* ---- Features ---------------------------------------------------------- */
+.ww-phase + .ww-phase { margin-top: 1.5rem; }
+.ww-cards { display: grid; gap: .6rem; margin: 0; padding: 0; list-style: none; }
+.ww-phase:last-child .ww-card { border-style: dashed; }
+@container ww (min-width: 34rem) { .ww-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* ---- Hidden-claims demo ------------------------------------------------ */
+.ww-demo-toggle { display: inline-flex; flex-wrap: wrap; align-items: center; gap: .25rem; margin: 0 0 1rem; padding: 0; border: 0; }
+.ww-demo-toggle legend { float: left; margin: 0 .5rem 0 0; }
+.ww-demo-toggle input { position: absolute; opacity: 0; pointer-events: none; }
+.ww-demo-toggle label { padding: .35rem .8rem; border: 1px solid rgb(var(--c-border)); border-radius: 999px; font-size: .85rem; cursor: pointer; color: rgb(var(--c-fg)); }
+.ww-demo-toggle input:checked + label { border-color: rgb(var(--ww-green)); background: rgb(var(--ww-green)); color: rgb(var(--c-bg)); }
+.ww-demo-toggle input:focus-visible + label { outline: 2px solid rgb(var(--c-accent)); outline-offset: 2px; }
+.ww-phone { max-width: 22rem; padding: 1.1rem 1rem 1rem; border: 1px solid rgb(var(--c-border)); border-radius: 1.6rem; background: rgb(var(--c-bg)); box-shadow: 0 8px 24px -16px rgb(var(--c-fg) / .35); }
+.ww-phone-title { margin: 0; font-size: 1.15rem; font-weight: 700; color: rgb(var(--c-fg)); }
+.ww-chip { display: inline-block; margin-top: .3rem; padding: .1rem .55rem; border-radius: 999px; font-size: .7rem; font-weight: 600; background: rgb(var(--ww-green) / .15); color: rgb(var(--c-fg)); }
+.ww-items { margin: .9rem 0 0; padding: 0; list-style: none; }
+.ww-item { display: grid; grid-template-columns: 2.4rem minmax(0, 1fr); gap: .15rem .7rem; align-items: center; padding: .6rem 0; border-top: 1px solid rgb(var(--c-border)); }
+.ww-thumb { grid-row: span 2; display: grid; place-items: center; width: 2.4rem; height: 2.4rem; border-radius: .6rem; font-weight: 700; background: rgb(var(--ww-green) / .14); color: rgb(var(--c-fg)); }
+.ww-item-text { display: flex; flex-direction: column; min-width: 0; }
+.ww-item-text strong { font-size: .88rem; color: rgb(var(--c-fg)); }
+.ww-item-text small { font-size: .74rem; color: rgb(var(--c-muted)); }
+.ww-claim { justify-self: start; padding: .05rem .5rem; border-radius: 999px; font-size: .7rem; font-weight: 600; background: rgb(var(--ww-green)); color: rgb(var(--c-bg)); }
+.ww-claim.is-open { background: transparent; color: rgb(var(--c-muted)); border: 1px solid rgb(var(--c-border)); }
+.ww-owner-note { display: none; margin: .8rem 0 0; font-size: .8rem; color: rgb(var(--c-muted)); }
+.ww-demo:has(#ww-view-owner:checked) .ww-claim { display: none; }
+.ww-demo:has(#ww-view-owner:checked) .ww-owner-note { display: block; }
+.ww-demo figcaption { margin-top: .6rem; font-size: .72rem; color: rgb(var(--c-muted)); }
+
+/* ---- Screenshots and palette ------------------------------------------- */
+.ww-shot img { display: block; width: 100%; height: auto; border-radius: .7rem; background: #1e1e1e; }
+.ww-shot-first-build img { width: auto; max-width: min(100%, 14rem); background: none; }
+.ww-shot figcaption, .ww-palette figcaption { margin-top: .5rem; font-size: .78rem; color: rgb(var(--c-muted)); }
+.ww-swatches { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; padding: 0; list-style: none; overflow: hidden; border-radius: .7rem; }
+.ww-swatches li { display: flex; align-items: flex-end; min-height: 4.5rem; padding: .5rem; color: #051f20; }
+.ww-swatches li.is-dark { color: #f4f4f5; }
+.ww-swatches code { font-size: .72rem; background: none; }
+@container ww (min-width: 34rem) { .ww-swatches { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+
+/* ---- Money ------------------------------------------------------------- */
+.ww-rates { width: 100%; border-collapse: collapse; font-size: .88rem; }
+/* .ww-kicker makes them display:block, which would drop a caption below the thead. */
+.ww-rates caption, .ww-penalty caption { display: table-caption; caption-side: top; text-align: left; white-space: nowrap; }
+.ww-rates th { padding: .4rem 0; text-align: left; font-size: .74rem; font-weight: 600; color: rgb(var(--c-muted)); border-bottom: 1px solid rgb(var(--c-border)); }
+.ww-rates td { padding: .45rem 0; border-bottom: 1px solid rgb(var(--c-border)); color: rgb(var(--c-fg)); }
+.ww-rates td:last-child, .ww-rates th:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+.ww-sum { display: grid; gap: 1px; margin: 1.25rem 0 0; overflow: hidden; border: 1px solid rgb(var(--c-border)); border-radius: .7rem; background: rgb(var(--c-border)); }
+.ww-sum > div { display: flex; justify-content: space-between; gap: 1rem; padding: .6rem .9rem; background: rgb(var(--c-bg)); }
+.ww-sum dt { font-size: .85rem; color: rgb(var(--c-muted)); }
+.ww-sum dd { margin: 0; font-weight: 700; color: rgb(var(--c-fg)); font-variant-numeric: tabular-nums; }
+.ww-sum .is-key { background: rgb(var(--ww-green) / .12); }
+
+/* ---- Growth ------------------------------------------------------------ */
+.ww-growth { display: grid; gap: .6rem; }
+.ww-big { margin: .4rem 0 0; font-size: 1.6rem; font-weight: 700; line-height: 1.1; color: rgb(var(--c-fg)); font-variant-numeric: tabular-nums; }
+.ww-big small { display: block; font-size: .74rem; font-weight: 400; color: rgb(var(--c-muted)); }
+@container ww (min-width: 34rem) { .ww-growth { grid-template-columns: repeat(2, minmax(0, 1fr)); } .ww-growth .ww-source { grid-column: 1 / -1; } }
+
+/* ---- Steps (roadmap and history) --------------------------------------- */
+.ww-steps { margin-left: 0; padding: 0; list-style: none; border-left: 2px solid rgb(var(--c-border)); }
+.ww-steps li { position: relative; display: flex; flex-direction: column; gap: .15rem; padding: 0 0 1.1rem 1.1rem; }
+.ww-steps li::before { content: ""; position: absolute; left: -.4rem; top: .3rem; width: .7rem; height: .7rem; border-radius: 50%; background: rgb(var(--c-bg)); border: 2px solid rgb(var(--ww-green)); }
+.ww-steps li:last-child { padding-bottom: 0; }
+.ww-when { font: 600 .7rem var(--font-mono); letter-spacing: .05em; color: rgb(var(--c-muted)); }
+.ww-steps strong { color: rgb(var(--c-fg)); }
+.ww-steps li > span:last-child { font-size: .88rem; color: rgb(var(--c-fg) / .85); }
+
+/* ---- Agent brief download -------------------------------------------- */
+.ww-download { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem .9rem; margin: 1.25rem 0 0; }
+.ww-download a { display: inline-flex; align-items: center; gap: .4rem; padding: .55rem 1rem; border-radius: 999px; font-weight: 600; text-decoration: none;
+  background: rgb(var(--ww-green)); color: rgb(var(--c-bg)); }
+.ww-download a:hover { opacity: .9; }
+.ww-download a:focus-visible { outline: 2px solid rgb(var(--c-accent)); outline-offset: 2px; }
+.ww-download span { font-size: .78rem; color: rgb(var(--c-muted)); }
+.ww-download a span { font-size: inherit; color: inherit; }
+
+/* ---- Push-up table ----------------------------------------------------- */
+.ww-penalty { overflow-x: auto; }
+.ww-penalty table { width: 100%; border-collapse: collapse; font-size: .85rem; font-variant-numeric: tabular-nums; }
+.ww-penalty th { padding: .4rem .6rem .4rem 0; text-align: left; font-size: .74rem; font-weight: 600; color: rgb(var(--c-muted)); white-space: nowrap; }
+.ww-penalty td { padding: .4rem .2rem; text-align: center; border-left: 1px solid rgb(var(--c-border)); color: rgb(var(--c-fg)); }
+.ww-penalty tr + tr td { font-weight: 700; }

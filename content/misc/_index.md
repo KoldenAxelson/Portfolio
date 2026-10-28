@@ -44,7 +44,7 @@ groups:
   - key: "about"
     label: "About me"
     icon: "user"
-    order: ["now", "impossible-list", "uses", "genes"]
+    order: ["impossible-list", "genes", "now", "uses"]
 
 # Pages that belong on this shelf but live outside content/misc/, so their URLs
 # stay where they are (/now, /uses — both are linked from elsewhere and indexed
@@ -60,6 +60,7 @@ elsewhere:
     href: "/now"
     icon: "clock"
     group: "about"
+    blurb: "What I'm focused on right now. A /now page, the idea Derek Sivers collects at nownownow.com."
   - label: "Impossible List"
     href: "/impossible-list"
     icon: "flag"
@@ -69,4 +70,5 @@ elsewhere:
     href: "/uses"
     icon: "desktop"
     group: "about"
+    blurb: "The gear, software and setup I work with. A /uses page, like the ones Wes Bos collects at uses.tech."
 ---

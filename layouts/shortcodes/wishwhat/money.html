@@ -1,0 +1,33 @@
+{{- /*
+  wishwhat/money — Amazon's commission by category, then the 2024
+  back-of-envelope worked through. The results (per user, users needed) are
+  computed here from the inputs, so changing an assumption changes the sums.
+  Data: data/wishwhat.yaml `money` and `asof`.
+*/ -}}
+{{- $data := site.Data.wishwhat -}}
+{{- with $data.money }}
+<div class="not-prose ww-money">
+  <table class="ww-rates">
+    <caption class="ww-kicker">What Amazon pays per sale, US</caption>
+    <thead><tr><th scope="col">Category</th><th scope="col">Commission</th></tr></thead>
+    <tbody>
+      {{- range .rates }}
+      <tr><td>{{ .category }}</td><td>{{ lang.FormatNumber 1 .rate }}%</td></tr>
+      {{- end }}
+    </tbody>
+  </table>
+  <p class="ww-source">From the <a href="{{ .sourceUrl }}">{{ .sourceTitle }}</a>, read {{ time.Format "Jan 2, 2006" $data.asof }}.</p>
+
+  {{- with .model }}
+  {{- $perUser := mul .giftSpendPerUserYear .commissionRate }}
+  {{- $usersNeeded := math.Ceil (div (mul .founders .salary) $perUser) }}
+  <dl class="ww-sum">
+    <div><dt>Spent on gifts per user per year</dt><dd>${{ lang.FormatNumber 0 .giftSpendPerUserYear }}</dd></div>
+    <div><dt>Commission</dt><dd>{{ mul .commissionRate 100 }}%</dd></div>
+    <div><dt>Earned per user per year</dt><dd>${{ lang.FormatNumber 0 $perUser }}</dd></div>
+    <div class="is-key"><dt>Users to pay us both ${{ lang.FormatNumber 0 .salary }} a year</dt><dd>{{ lang.FormatNumber 0 $usersNeeded }}</dd></div>
+  </dl>
+  <p class="ww-source">Konrad's back-of-envelope from November 14, 2024. Every input is an assumption; none of it was measured.</p>
+  {{- end }}
+</div>
+{{- end }}

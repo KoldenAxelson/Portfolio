@@ -14,23 +14,29 @@
 #            changing a draft *or* the site's code. Seals of drafts that have
 #            been published are deleted.
 #   GrowGo — the investor pitch, from $GROWGO_SOURCE.
-#   Brine  — the brine mining pitch (/misc/brine-mining/). Its source lives in
-#            private/brine-mining/ (gitignored), laid out like the site:
-#            content/misc/brine-mining.md, data/brine-mining.yaml,
-#            data/ml/references/brine-mining.yaml. Copies the site to a temp
-#            folder, lays those files over it, builds it unsealed and seals
-#            the page. The repo itself is never touched, and the plaintext
-#            never leaves the temp folder. Re-seal after editing the pitch
-#            *or* the site's code (the sealed page links the site's scripts).
+#   Brine  — the brine mining pitch (/misc/brine-mining/), from
+#            private/brine-mining/.
+#   WishWhat — the WishWhat project pitch (/misc/wishwhat/), from
+#            private/wishwhat/.
+#   Both are private overlays (seal_overlay): the source lives in
+#   private/<name>/ (gitignored), laid out like the site (content/misc/<name>.md,
+#   data/…, assets/img/<name>/…). The site is copied to a temp folder, the
+#   overlay laid over it, built unsealed, and the page sealed. The repo itself
+#   is never touched and the plaintext never leaves the temp folder. Re-seal
+#   after editing the pitch *or* the site's code (the sealed page links the
+#   site's scripts and styles).
 #
 # Adding a target: a seal_<name> function below plus an entry in TARGETS.
+# A new overlay pitch with its own styles also needs partials/<name>/assets.html
+# (partials/vault/sealed-page.html publishes them from the stub).
 set -euo pipefail
 
 HUGO=${HUGO:-bin/hugo}
 TAILWIND=${TAILWIND:-bin/tailwindcss}
 GROWGO_SOURCE=${GROWGO_SOURCE:-../GrowGo/pitch/web/index.html}
-TARGETS=(Drafts GrowGo Brine)
+TARGETS=(Drafts GrowGo Brine WishWhat)
 BRINE_SOURCE=${BRINE_SOURCE:-private/brine-mining}
+WISHWHAT_SOURCE=${WISHWHAT_SOURCE:-private/wishwhat}
 
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
@@ -109,8 +115,9 @@ seal_drafts() {
   summary+=$'\n'"Re-seal after changing a draft or the site's scripts."
 }
 
-seal_brine() {
-  [ -f "$BRINE_SOURCE/content/misc/brine-mining.md" ] || fail "brine pitch source not found: $BRINE_SOURCE/content/misc/brine-mining.md"
+seal_overlay() { # <overlay dir> <vault name>; the page is content/misc/<vault name>.md
+  local source=$1 name=$2
+  [ -f "$source/content/misc/$name.md" ] || fail "pitch source not found: $source/content/misc/$name.md"
   local root tree hugo tailwind
   root=$(pwd)
   tree="$work/tree"
@@ -123,12 +130,12 @@ seal_brine() {
   # The site minus build output, toolchain and private notes; then the pitch on top.
   tar -cf - --exclude=./public --exclude=./resources --exclude=./bin --exclude=./private \
     --exclude=./.git --exclude=./static/downloads . | tar -xf - -C "$tree"
-  cp -R "$BRINE_SOURCE"/. "$tree"/
+  cp -R "$source"/. "$tree"/
   (cd "$tree" && "$tailwind" -i assets/css/main.css -o assets/css/app.css --minify >/dev/null 2>&1)
   HUGO_PARAMS_SEALSOURCE=true "$hugo" -s "$tree" --minify --quiet -d "$work/site" >/dev/null
 
-  seal_file "$work/site/misc/brine-mining/index.html" brine-mining
-  summary="static/vault/brine-mining.json"$'\n'"Re-seal after editing the pitch or the site's scripts."
+  seal_file "$work/site/misc/$name/index.html" "$name"
+  summary="static/vault/$name.json"$'\n'"Re-seal after editing the pitch or the site's code."
 }
 
 command -v go >/dev/null 2>&1 || fail "Go not found on PATH — install from https://go.dev/dl/"
@@ -140,7 +147,8 @@ summary=""
 case $target in
   Drafts) seal_drafts ;;
   GrowGo) seal_growgo ;;
-  Brine) seal_brine ;;
+  Brine) seal_overlay "$BRINE_SOURCE" brine-mining ;;
+  WishWhat) seal_overlay "$WISHWHAT_SOURCE" wishwhat ;;
 esac
 
 echo "$target has been sealed with code: $pin"

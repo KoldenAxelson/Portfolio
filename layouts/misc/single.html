@@ -64,6 +64,9 @@
 {{- /* Brine mining pitch: stylesheet and the payback slider. */ -}}
 {{- if .HasShortcode "brine-mining/glance" }}{{ partial "brine-mining/assets.html" . }}{{ end }}
 
+{{- /* WishWhat project pitch: stylesheet. */ -}}
+{{- if .HasShortcode "wishwhat/glance" }}{{ partial "wishwhat/assets.html" . }}{{ end }}
+
 {{- /* The article demo kit, for a misc page that borrows an ml/* shortcode (the
        brine mining pitch uses ml/references, the articles' sources carousel).
        It ships nothing unless one is on the page; it also brings the articles'

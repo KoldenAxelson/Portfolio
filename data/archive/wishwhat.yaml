@@ -1,0 +1,6 @@
+title: 'WishWhat'
+year: '2024–2025'
+reason: 'on hiatus'
+href: '/projects/wishwhat'
+stack: ['Swift', 'Flutter', 'Figma']
+postmortem: "A gift wish list app I started with my friend Phil Honeycutt: friends see what's been bought, the list's owner doesn't. Phil designed most of it in Figma and I had an iOS shell running, then life got busy and GrowGo took my attention. On hold, with the whole plan saved for when we pick it back up."

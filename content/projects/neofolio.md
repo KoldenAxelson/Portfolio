@@ -1,7 +1,7 @@
 ---
 title: 'Neofolio'
 tier: 1
-summary: 'An opinionated, AI-readable portfolio template for developers in the AI age. MIT-licensed. The template this site runs on.'
+summary: 'An opinionated, AI-readable portfolio template for developers in the AI age. MIT-licensed. The template this site started from.'
 tags: ['template', 'open-source', 'hugo', 'ai-readable']
 types: ['web', 'tooling']
 stack: ['Hugo', 'Tailwind', 'HTMX', 'Alpine.js', 'TypeScript']

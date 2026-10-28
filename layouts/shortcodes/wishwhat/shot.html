@@ -1,0 +1,18 @@
+{{- /*
+  wishwhat/shot — a design screenshot from assets/img/wishwhat/<name>.webp.
+
+    {{< wishwhat/shot name="onboarding" alt="…" caption="…" >}}
+
+  The image is inlined as a data: URI on purpose. The pitch is sealed, and a
+  normal <img> would publish the file at a public URL beside the ciphertext.
+  Inlined, it exists only inside static/vault/wishwhat.json.
+*/ -}}
+{{- $name := .Get "name" -}}
+{{- $image := resources.Get (printf "wishwhat/%s.webp" $name) -}}
+{{- if not $image -}}
+  {{- errorf "wishwhat/shot: %s names %q, but assets/img/wishwhat/%s.webp does not exist." .Position $name $name -}}
+{{- end -}}
+<figure class="not-prose ww-shot ww-shot-{{ $name }}">
+  <img src="data:image/webp;base64,{{ $image.Content | base64Encode }}" width="{{ $image.Width }}" height="{{ $image.Height }}" alt="{{ .Get "alt" }}" loading="lazy" decoding="async">
+  {{- with .Get "caption" }}<figcaption>{{ . }}</figcaption>{{ end }}
+</figure>

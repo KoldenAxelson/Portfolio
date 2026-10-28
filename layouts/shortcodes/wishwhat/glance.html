@@ -1,0 +1,21 @@
+{{- /*
+  wishwhat/glance — the project on one screen: the line, the next step, the
+  dates and where it stands. Top of /misc/wishwhat/. Data: data/wishwhat.yaml
+  `glance` (private/wishwhat/, so this renders only inside the sealed build).
+*/ -}}
+{{- with site.Data.wishwhat.glance }}
+<section class="not-prose ww-glance" aria-label="WishWhat at a glance">
+  <p class="ww-kicker"><span class="ww-star" aria-hidden="true">✦</span> WishWhat · project pitch</p>
+  <p class="ww-line">{{ .line }}</p>
+  <div class="ww-next">
+    <span class="ww-next-label">{{ .next.label }}</span>
+    <span class="ww-next-value">{{ .next.value }}</span>
+  </div>
+  <dl class="ww-stats">
+    {{- range .stats }}
+    <div><dt>{{ .label }}</dt><dd>{{ .value }}</dd></div>
+    {{- end }}
+  </dl>
+  <p class="ww-note">{{ .status }}</p>
+</section>
+{{- end }}

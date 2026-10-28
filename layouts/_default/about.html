@@ -87,22 +87,7 @@
 {{- if or $now.game $now.book }}
 <section aria-labelledby="offclock-heading" class="mt-16">
   <h2 id="offclock-heading" class="{{ $heading }}">Off the clock</h2>
-  <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-    {{- range $row := slice (dict "item" $now.game "label" "Playing" "dir" "games/covers") (dict "item" $now.book "label" "Reading" "dir" "achievements") }}
-    {{- with $row.item }}
-    <li>
-      <a href="{{ partial "func/url.html" "/impossible-list" }}" class="group/cover flex h-full gap-4 rounded-xl border border-border/60 p-4 no-underline transition-colors hover:bg-border/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
-        <span class="w-16 shrink-0">{{ partial "components/shelf-cover.html" (dict "dir" $row.dir "slug" .cover "title" .title) }}</span>
-        <span class="min-w-0 pt-1.5">
-          <span class="block font-mono text-xs uppercase tracking-widest text-muted">{{ $row.label }}</span>
-          <span class="mt-1 block font-medium leading-snug text-fg transition-colors group-hover/cover:text-accent">{{ .title }}</span>
-          {{- with .year }}<span class="mt-1 block text-sm text-muted">{{ . }}</span>{{ end }}
-        </span>
-      </a>
-    </li>
-    {{- end }}
-    {{- end }}
-  </ul>
+  {{ partial "components/off-the-clock.html" . }}
 </section>
 {{- end }}
 

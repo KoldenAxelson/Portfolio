@@ -1,38 +1,73 @@
 {{- /*
-  misc/live/genes — the ancestry composition as the page draws it: accent
-  rings, one segment per population, sweeping in around a donut in order of
-  size while the legend fills in beside it. Every number is read from
-  data/genes/ancestry.yaml (each `pct` is a share of the whole report), so a
-  new report redraws the card.
-  Pure SVG + CSS (assets/css/pages/misc/motifs.css); no script.
+  misc/live/genes — a DNA double helix turning slowly across the card, ten
+  base pairs to a turn like the real thing. Each base pair is a column: two
+  beads riding opposite sides of a sine wave, and a rung between them that
+  stretches, shrinks and flips as the strands cross. Beads swell and brighten
+  on the near side of the turn, which is what reads as depth.
+  Pure SVG + CSS (assets/css/pages/misc/motifs.css, .mf-dna); no script.
+
+  Behind the beads, the two backbones are sine curves one wavelength (ten
+  pairs) longer than the helix, sliding left by a wavelength per turn and
+  clipped to the helix. That slide is the same wave the beads ride, so the
+  strands and the beads stay together.
+
+  Every moving part also carries its position at the poster moment as an
+  inline transform, so with reduced motion the card is the same helix, frozen
+  mid-turn. The CSS animation overrides it while running. The delays below
+  must stay in step with --T in motifs.css.
 */ -}}
-{{- $groups := slice -}}
-{{- range site.Data.genes.ancestry.tiers }}{{ range .groups }}{{ $groups = $groups | append . }}{{ end }}{{ end -}}
-{{- $groups = sort $groups "pct" "desc" -}}
-{{- $top := index site.Data.genes.ancestry.tiers 0 -}}
-<span class="mf mf-genes" aria-hidden="true" data-poster="0.5">
+{{- $sequence := "ATGCGTACCTGATTGCAGGCTAAC" -}}
+{{- $complement := dict "A" "T" "T" "A" "G" "C" "C" "G" -}}
+{{- $turnSeconds := 6.0 -}}
+{{- $pairsPerTurn := 10.0 -}}
+{{- $amplitude := 38.0 -}}
+{{- $centerY := 100.0 -}}
+{{- $firstX := 26.0 -}}
+{{- $spacing := 11.6 -}}
+<span class="mf mf-dna" aria-hidden="true" data-poster="0">
 <svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid meet">
-  <text class="kicker" x="14" y="18">ANCESTRY COMPOSITION</text>
-  <g transform="translate(92 108) rotate(-90)">
-    <circle r="52" pathLength="100" fill="none" stroke="rgb(var(--c-border))" stroke-width="13" />
-    {{- $start := 0.0 }}
-    {{- range $i, $g := $groups }}
-    {{- $len := math.Max 0.25 (sub $g.pct 0.5) }}
-    <circle class="seg" r="52" pathLength="100" fill="none" stroke="rgb(var(--c-accent))"
-      stroke-opacity="{{ math.Max 0.25 (sub 1 (mul $i 0.13)) }}" stroke-width="13"
-      style="--p: {{ printf "%.2f" $len }}; --i: {{ $i }}; stroke-dasharray: {{ printf "%.2f" $len }} 100; stroke-dashoffset: {{ printf "%.2f" (mul -1 $start) }}" />
-    {{- $start = add $start $g.pct }}
-    {{- end }}
+  <text class="kicker" x="14" y="18">DNA · DOUBLE HELIX</text>
+  {{- $wavelength := mul $pairsPerTurn $spacing }}
+  {{- $lastX := add $firstX (mul (sub (len $sequence) 1) $spacing) }}
+  {{- $front := slice }}{{ $back := slice }}
+  {{- range $step := seq 0 (int (div (add (sub $lastX $firstX) $wavelength) 2)) }}
+  {{- $x := add $firstX (mul $step 2) }}
+  {{- $wave := mul $amplitude (math.Cos (mul 2 math.Pi (div (sub $x $firstX) $wavelength))) }}
+  {{- $front = $front | append (printf "%.1f %.2f" $x (sub $centerY $wave)) }}
+  {{- $back = $back | append (printf "%.1f %.2f" $x (add $centerY $wave)) }}
+  {{- end }}
+  <defs><clipPath id="mf-dna-clip"><rect x="{{ sub $firstX 5 }}" y="40" width="{{ add (sub $lastX $firstX) 10 }}" height="120" /></clipPath></defs>
+  <g clip-path="url(#mf-dna-clip)">
+    <g class="backbones" style="--wavelength: {{ $wavelength }}px">
+      <path class="backbone backbone-b" d="M{{ delimit $back " L" }}" />
+      <path class="backbone" d="M{{ delimit $front " L" }}" />
+    </g>
   </g>
-  <text class="mono accent" x="92" y="107" text-anchor="middle" font-size="15" font-weight="700">{{ $top.pct }}%</text>
-  <text class="sans muted" x="92" y="120" text-anchor="middle" font-size="7.5">{{ $top.name }}</text>
-  {{- range $i, $g := $groups }}
-  {{- $y := add 56 (mul $i 15) }}
-  <g class="leg" style="--i: {{ $i }}">
-    <rect x="175" y="{{ sub $y 6 }}" width="7" height="7" rx="1.5" fill="rgb(var(--c-accent))" fill-opacity="{{ math.Max 0.25 (sub 1 (mul $i 0.13)) }}" />
-    <text class="sans fg" x="187" y="{{ $y }}" font-size="7.2">{{ $g.name }}</text>
-    <text class="mono muted" x="310" y="{{ $y }}" font-size="7" text-anchor="end">{{ $g.pct }}</text>
+  {{- range $i, $base := split $sequence "" }}
+  {{- $x := add $firstX (mul $i $spacing) }}
+  {{- $phase := div (float $i) $pairsPerTurn }}
+  {{- $angle := mul $phase 2 math.Pi }}
+  {{- $cos := math.Cos $angle }}
+  {{- $sin := math.Sin $angle }}
+  {{- $pair := index $complement $base }}
+  {{- /* Negative delays start each column part-way through its turn. */}}
+  {{- $delay := printf "%.3fs" (mul -1 $phase $turnSeconds) }}
+  {{- $delayOpposite := printf "%.3fs" (mul -1 (add $phase 0.5) $turnSeconds) }}
+  {{- $depthDelay := printf "%.3fs" (mul -1 (add $phase 0.25) $turnSeconds) }}
+  {{- $depthDelayOpposite := printf "%.3fs" (mul -1 (add $phase 0.75) $turnSeconds) }}
+  <g class="pair">
+    <g class="rung" style="--d: {{ $delay }}; transform-origin: {{ $x }}px {{ $centerY }}px; transform: scaleY({{ printf "%.3f" $cos }})">
+      <line class="base base-{{ $base }}" x1="{{ $x }}" y1="{{ $centerY }}" x2="{{ $x }}" y2="{{ sub $centerY $amplitude }}" />
+      <line class="base base-{{ $pair }}" x1="{{ $x }}" y1="{{ $centerY }}" x2="{{ $x }}" y2="{{ add $centerY $amplitude }}" />
+    </g>
+    <g class="strand" style="--d: {{ $delay }}; transform: translateY({{ printf "%.2f" (mul -1 $amplitude $cos) }}px)">
+      <circle class="bead" cx="{{ $x }}" cy="{{ $centerY }}" r="3.6" style="--d: {{ $depthDelay }}; transform: scale({{ printf "%.3f" (add 0.775 (mul 0.225 $sin)) }})" />
+    </g>
+    <g class="strand" style="--d: {{ $delayOpposite }}; transform: translateY({{ printf "%.2f" (mul $amplitude $cos) }}px)">
+      <circle class="bead bead-b" cx="{{ $x }}" cy="{{ $centerY }}" r="3.6" style="--d: {{ $depthDelayOpposite }}; transform: scale({{ printf "%.3f" (sub 0.775 (mul 0.225 $sin)) }})" />
+    </g>
   </g>
   {{- end }}
+  <text class="mono muted seq" x="160" y="182" text-anchor="middle" font-size="7.5">5′ {{ $sequence }} 3′</text>
 </svg>
 </span>

@@ -1,0 +1,36 @@
+{{- /*
+  wishwhat/demo — hidden claims, shown from both sides of one list. CSS only:
+  the radios switch views through :has() in css/pages/wishwhat/wishwhat.css.
+  Without CSS both views' text is simply there, claims and the owner's note.
+  Data: data/wishwhat.yaml `demo`.
+*/ -}}
+{{- with site.Data.wishwhat.demo }}
+<figure class="not-prose ww-demo">
+  <fieldset class="ww-demo-toggle">
+    <legend class="ww-kicker">See the list as</legend>
+    <input type="radio" name="ww-view" id="ww-view-friend" checked>
+    <label for="ww-view-friend">A friend</label>
+    <input type="radio" name="ww-view" id="ww-view-owner">
+    <label for="ww-view-owner">{{ .owner }}</label>
+  </fieldset>
+  <div class="ww-phone">
+    <p class="ww-phone-title">{{ .title }}</p>
+    <span class="ww-chip">{{ .occasion }}</span>
+    <ul class="ww-items">
+      {{- range .items }}
+      <li class="ww-item">
+        <span class="ww-thumb" aria-hidden="true">{{ substr .name 0 1 }}</span>
+        <span class="ww-item-text"><strong>{{ .name }}</strong><small>{{ .source }}</small></span>
+        {{- with .claimedBy }}
+        <span class="ww-claim">Bought by {{ . }}</span>
+        {{- else }}
+        <span class="ww-claim is-open">Still open</span>
+        {{- end }}
+      </li>
+      {{- end }}
+    </ul>
+    <p class="ww-owner-note">{{ .owner }} sees his own list without the claims, so the presents stay a surprise.</p>
+  </div>
+  <figcaption>A sample list, made up for this page.</figcaption>
+</figure>
+{{- end }}

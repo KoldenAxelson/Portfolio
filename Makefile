@@ -251,7 +251,7 @@ ai-proxy-stop: ## Stop all running ai-proxy instances (started by ai-proxy-run)
 # Pages sealed whole (every draft in review, /misc/drafts) work the same way;
 # see layouts/partials/func/page-vault.html.
 #
-#   make seal                                        # menu (Drafts | GrowGo), then a PIN
+#   make seal                                        # menu (Drafts | GrowGo | Brine | WishWhat), then a PIN
 #   SEAL_TARGET=drafts VAULT_CODE=4769 make seal     # non-interactive
 #   make seal VAULT_IN=path/to/pitch.html            # GrowGo from another source
 VAULT_IN   ?= ../GrowGo/pitch/web/index.html
@@ -259,7 +259,7 @@ VAULT_IN   ?= ../GrowGo/pitch/web/index.html
 # the drive isn't mounted). Override per run: make backup BACKUP_DIR=/path
 BACKUP_DIR ?= /Volumes/Extreme SSD/Development/Backups/Portfolio
 
-seal: $(HUGO) $(TAILWIND) ## Seal a vault: pick Drafts, GrowGo or Brine, then set its PIN; backs up to the external drive (scripts/vault/seal.sh)
+seal: $(HUGO) $(TAILWIND) ## Seal a vault: pick Drafts, GrowGo, Brine or WishWhat, then set its PIN; backs up to the external drive (scripts/vault/seal.sh)
 	@HUGO="$(HUGO)" TAILWIND="$(TAILWIND)" GROWGO_SOURCE="$(VAULT_IN)" bash scripts/vault/seal.sh
 	@bash scripts/vault/backup.sh "$(BACKUP_DIR)"
 

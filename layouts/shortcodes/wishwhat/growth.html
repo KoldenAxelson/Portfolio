@@ -1,0 +1,30 @@
+{{- /*
+  wishwhat/growth — the ways we planned to get the first users. The raffle
+  and wedding numbers are computed from their inputs here.
+  Data: data/wishwhat.yaml `growth`.
+*/ -}}
+{{- with site.Data.wishwhat.growth }}
+<div class="not-prose ww-growth">
+  {{- with .raffle }}
+  {{- $users := add (mul .seeds (add 1 .invitesEach)) .founders }}
+  <article class="ww-card">
+    <strong>The raffle</strong>
+    <span>Put up a {{ .prize }} prize for the {{ .seeds }} friends and family we'd ask first. To enter, you get {{ .invitesEach }} people onto the app.</span>
+    <p class="ww-big">{{ $users }} <small>users to start</small></p>
+  </article>
+  {{- end }}
+  {{- with .weddings }}
+  {{- $buyers := mul .guestsPerWedding .registryShare }}
+  {{- $users := mul .weddingsPerCoordinator $buyers .stayShare }}
+  <article class="ww-card">
+    <strong>Wedding coordinators</strong>
+    <span>A coordinator runs about {{ .weddingsPerCoordinator }} weddings a year. At {{ .guestsPerWedding }} guests, {{ mul .registryShare 100 }}% buying off the registry and {{ mul .stayShare 100 }}% keeping the app afterwards:</span>
+    <p class="ww-big">{{ lang.FormatNumber 0 $users }} <small>users per coordinator, per year</small></p>
+  </article>
+  {{- end }}
+  {{- range .more }}
+  <article class="ww-card"><strong>{{ .name }}</strong><span>{{ .body }}</span></article>
+  {{- end }}
+  <p class="ww-source">Konrad's estimates from November 14, 2024, never tested.</p>
+</div>
+{{- end }}

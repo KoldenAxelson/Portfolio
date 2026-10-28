@@ -1,33 +1,66 @@
 {{- /*
-  misc/live/impossible-list — the list itself, scrolling up forever, because
-  it's a list built to keep growing rather than to be finished. Done items are
-  ticked and struck through, the rest are open circles. Items come from content/impossible-list.md, dealt round-robin
-  across Life, Skills and Quests so the sections mix. No totals, on purpose.
-  Pure HTML + CSS (assets/css/pages/misc/motifs.css); the list is printed
-  twice so the loop is seamless.
+  misc/live/impossible-list — "Achievement unlocked" toasts, one per item
+  ticked off the list, in the style of a console achievement pop-up: the badge
+  pops in, the pill slides open to show the item and its section, then it
+  folds away and the next one unlocks. Items come from content/impossible-list.md
+  (done ones only), dealt round-robin across Life, Skills and Quests so the
+  sections mix; ticking a new item adds it to the loop. No points or totals:
+  the list has none, so the card doesn't invent any.
+
+  HTML + CSS (assets/css/pages/misc/motifs.css, .mf-il). The keyframes live in
+  the <style> below because their percentages depend on how many items are
+  done: each toast owns 1/n of the loop. With reduced motion the first toast
+  shows open and the rest are hidden (motifs.css).
 */ -}}
 {{- $page := site.GetPage "/impossible-list" -}}
 {{- $groups := $page.Params.groups -}}
 {{- $longest := 0 }}{{ range $groups }}{{ $longest = math.Max $longest (len .items) }}{{ end -}}
-{{- $rows := slice -}}
-{{- range $k := seq 0 (sub (int $longest) 1) }}{{ range $groups }}{{ if lt $k (len .items) }}{{ with index .items $k }}{{ $rows = $rows | append (dict "text" .text "done" .done) }}{{ end }}{{ end }}{{ end }}{{ end -}}
-<span class="mf mf-il" aria-hidden="true">
-  <span class="absolute left-3.5 top-2.5 z-10 font-mono text-[0.44rem] font-semibold uppercase tracking-[0.16em] text-muted">The list keeps growing</span>
-  <span class="il-window absolute inset-x-0 bottom-0 top-6 block overflow-hidden">
-    <span class="il-track block" style="--rows: {{ len $rows }}">
-      {{- range seq 2 }}
-      {{- range $rows }}
-      <span class="flex h-[1.4rem] items-center gap-2 px-4 text-[0.72rem]">
-        {{- if .done }}
-        <svg viewBox="0 0 24 24" class="h-3.5 w-3.5 shrink-0 text-accent" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
-        <span class="min-w-0 flex-1 truncate text-muted line-through decoration-border">{{ .text }}</span>
-        {{- else }}
-        <svg viewBox="0 0 24 24" class="h-3.5 w-3.5 shrink-0 text-border" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9" /></svg>
-        <span class="min-w-0 flex-1 truncate text-fg">{{ .text }}</span>
-        {{- end }}
+{{- $unlocked := slice -}}
+{{- range $k := seq 0 (sub (int $longest) 1) }}{{ range $group := $groups }}{{ if lt $k (len .items) }}{{ with index .items $k }}{{ if .done }}{{ $unlocked = $unlocked | append (dict "text" .text "group" $group.label) }}{{ end }}{{ end }}{{ end }}{{ end }}{{ end -}}
+{{- $count := len $unlocked -}}
+{{- $slotSeconds := 3.2 -}}
+{{- $loopSeconds := mul $count $slotSeconds -}}
+{{- $slot := div 100.0 $count -}}
+{{- /* % of the whole loop at a given fraction of one toast's slot. */ -}}
+{{- $at := dict -}}
+{{- range $name, $fraction := dict "pop" 0.05 "settle" 0.1 "open" 0.22 "textIn" 0.3 "textOut" 0.8 "close" 0.9 "gone" 1.0 -}}
+  {{- $at = merge $at (dict $name (printf "%.3f%%" (mul $slot $fraction))) -}}
+{{- end -}}
+<span class="mf mf-il" aria-hidden="true" data-poster="{{ printf "%.4f" (div 0.5 $count) }}" style="--loop: {{ $loopSeconds }}s">
+  <style>
+    @keyframes mf-il-toast {
+      0% { opacity: 0; transform: scale(.4); clip-path: var(--il-closed); }
+      {{ $at.pop | safeCSS }} { opacity: 1; transform: scale(1.1); clip-path: var(--il-closed); }
+      {{ $at.settle | safeCSS }} { transform: scale(1); clip-path: var(--il-closed); }
+      {{ $at.open | safeCSS }}, {{ $at.textOut | safeCSS }} { opacity: 1; transform: scale(1); clip-path: var(--il-open); }
+      {{ $at.close | safeCSS }} { opacity: 1; transform: scale(1); clip-path: var(--il-closed); }
+      {{ $at.gone | safeCSS }}, 100% { opacity: 0; transform: scale(.4); clip-path: var(--il-closed); }
+    }
+    @keyframes mf-il-text {
+      0%, {{ $at.open | safeCSS }} { opacity: 0; transform: translateX(-6px); }
+      {{ $at.textIn | safeCSS }}, {{ $at.textOut | safeCSS }} { opacity: 1; transform: none; }
+      {{ $at.close | safeCSS }}, 100% { opacity: 0; transform: none; }
+    }
+    @keyframes mf-il-ring {
+      0%, {{ $at.pop | safeCSS }} { opacity: .7; transform: scale(1); }
+      {{ $at.open | safeCSS }}, 100% { opacity: 0; transform: scale(2.2); }
+    }
+  </style>
+  <span class="absolute left-3.5 top-2.5 z-10 font-mono text-[0.44rem] font-semibold uppercase tracking-[0.16em] text-muted">Achievements unlocked</span>
+  <span class="il-stage">
+    {{- range $i, $item := $unlocked }}
+    {{- /* Negative delays: every toast is already running, sitting in the
+           hidden part of its loop until its own slot comes round. */}}
+    <span class="il-toast" style="animation-delay: -{{ printf "%.2f" (sub $loopSeconds (mul $i $slotSeconds)) }}s">
+      <span class="il-badge">
+        <span class="il-ring"></span>
+        {{- partial "func/svg-icon.html" (dict "name" "trophy" "class" "h-[1.05rem] w-[1.05rem]" "width" "1.8") }}
       </span>
-      {{- end }}
-      {{- end }}
+      <span class="il-text">
+        <span class="il-head">Achievement unlocked · {{ $item.group }}</span>
+        <span class="il-name">{{ $item.text }}</span>
+      </span>
     </span>
+    {{- end }}
   </span>
 </span>
