@@ -1,0 +1,29 @@
+{{- /*
+  brine-mining/table — one of the reference tables in data/brine-mining.yaml
+  `tables`, by name. Cells are Markdown (bold, source links).
+
+    {{< brine-mining/table "sites" >}}
+
+  A real <table> on a wide screen. On a phone each row becomes a small card,
+  every cell labelled with its column from data-label (the CSS reads it), since
+  a five-column table at 375px is unreadable and a sideways scroll hides the
+  columns that matter. The first column is the card's title.
+*/ -}}
+{{- $name := .Get 0 -}}
+{{- $t := index (index site.Data "brine-mining").tables $name -}}
+{{- if not $t }}{{ errorf "brine-mining/table: no table %q in data/brine-mining.yaml (page: %s)" $name .Page.RelPermalink }}{{ end -}}
+<div class="not-prose bm-table-wrap">
+  <table class="bm-table bm-table-{{ $name }}">
+    <thead><tr>{{ range $t.cols }}<th scope="col">{{ . }}</th>{{ end }}</tr></thead>
+    <tbody>
+      {{- range $t.rows }}
+      <tr>
+        {{- range $i, $cell := . }}
+        {{- if eq $i 0 }}<th scope="row">{{ $cell | markdownify }}</th>
+        {{- else }}<td data-label="{{ index $t.cols $i }}"{{ if not $cell }} class="is-empty"{{ end }}>{{ $cell | markdownify }}</td>{{ end }}
+        {{- end }}
+      </tr>
+      {{- end }}
+    </tbody>
+  </table>
+</div>

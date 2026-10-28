@@ -1,0 +1,25 @@
+{{- /*
+  brine-mining/waterfall — the mid case as a waterfall: each revenue line
+  stacks on the last, operating cost comes off the top, and what's left is
+  operating profit. Bars rise in order when it scrolls into view; each one
+  carries its value, so the chart reads without colour. Data: `waterfall`.
+*/ -}}
+{{- $rows := (index site.Data "brine-mining").waterfall -}}
+{{- $top := 0.0 }}{{ range $rows }}{{ if eq .kind "in" }}{{ $top = add $top .value }}{{ end }}{{ end -}}
+{{- $scale := mul $top 1.12 -}}
+{{- $run := 0.0 -}}
+<figure class="not-prose bm-fall" data-bm-anim>
+  <figcaption class="bm-kicker">Mid case at $3,100/t magnesium · $M a year, before depreciation, interest and tax</figcaption>
+  <ol>
+    {{- range $i, $r := $rows }}
+    {{- $from := $run }}{{ $to := add $run $r.value }}
+    {{- if eq $r.kind "total" }}{{ $from = 0.0 }}{{ $to = $r.value }}{{ end }}
+    {{- $lo := cond (lt $from $to) $from $to }}{{ $hi := cond (lt $from $to) $to $from }}
+    <li class="is-{{ $r.kind }}" style="--i: {{ $i }}; --lo: {{ div $lo $scale }}; --hi: {{ div $hi $scale }}">
+      <span class="bm-fall-col"><span class="bm-fall-bar"><span class="bm-fall-value">{{ if lt $r.value 0 }}−{{ end }}${{ math.Abs $r.value }}M</span></span></span>
+      <span class="bm-fall-label">{{ $r.label }}</span>
+    </li>
+    {{- if ne $r.kind "total" }}{{ $run = $to }}{{ end }}
+    {{- end }}
+  </ol>
+</figure>

@@ -1,0 +1,20 @@
+{{- /*
+  brine-mining/flow — the process, top to bottom: each step on the left, what
+  it produces on the right, the brine running down the pipe between them.
+  Plain HTML, so it reads (and indexes) without the picture. The pipe's flow is
+  CSS (css/pages/brine-mining/brine-mining.css). Data: `flow`.
+*/ -}}
+{{- $flow := (index site.Data "brine-mining").flow -}}
+<figure class="not-prose bm-flow" data-bm-anim>
+  <p class="bm-intake"><span aria-hidden="true">↓</span> {{ $flow.intake }}</p>
+  <ol class="bm-steps">
+    {{- range $i, $_ := $flow.steps }}
+    <li class="bm-row{{ if .key }} is-key{{ end }}{{ if .spent }} is-spent{{ end }}" style="--i: {{ $i }}">
+      <div class="bm-step"><strong>{{ .step }}</strong><span>{{ .note }}</span>{{ with .link }}<em class="bm-link">{{ . }}</em>{{ end }}</div>
+      <span class="bm-arrow" aria-hidden="true"></span>
+      <div class="bm-out"><strong>{{ .out }}</strong><span>{{ .outnote }}</span></div>
+    </li>
+    {{- end }}
+  </ol>
+  <figcaption>Phase 2 module beside a 30 MGD plant. Brine becomes four products before a smaller stream returns to sea.</figcaption>
+</figure>

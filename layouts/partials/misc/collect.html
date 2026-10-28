@@ -10,8 +10,9 @@
   Cards are the section's pages (minus `hidden: true`) plus `elsewhere:`
   entries (/now, /uses), and the build fails on a page with no or an unknown
   `group:`. Each card gets its `band` here — "live" (partials/misc/live/<slug>.html),
-  "shot" (assets/img/misc/previews/<slug>.webp) or "icon" — and shelves sort
-  by title, with icon-only cards last. The first shelf's first visual cards are
+  "shot" (assets/img/misc/previews/<slug>.webp) or "icon" — and each shelf
+  sorts by its group's `order:` list in _index.md (unlisted cards last, by
+  title). The first shelf's first visual cards are
   `eager`: they are the page's largest paint.
 */ -}}
 {{- $groups := .Params.groups -}}
@@ -53,17 +54,21 @@
       "youtube"   (.youtube | default "")) -}}
 {{- end -}}
 
-{{- /* Live and screenshot bands rank together, so a shelf reads alphabetically
-       whatever each card draws; only an icon-only card sinks to the end. */ -}}
-{{- $bandOrder := dict "live" 0 "shot" 0 "icon" 1 -}}
+{{- /* Each shelf's `order:` (content/misc/_index.md) ranks its cards, most
+       likely to be clicked first. A card missing from the list sorts after
+       the listed ones, alphabetically, and the build warns. */ -}}
+{{- $orders := dict -}}
+{{- range $groups }}{{ $orders = merge $orders (dict .key (.order | default slice)) }}{{ end -}}
 {{- $banded := slice -}}
-{{- range $cards -}}
+{{- range $card := $cards -}}
   {{- $band := "icon" -}}
-  {{- if templates.Exists (printf "partials/misc/live/%s.html" .slug) }}{{ $band = "live" }}
-  {{- else if resources.Get (printf "misc/previews/%s.webp" .slug) }}{{ $band = "shot" }}{{ end -}}
-  {{- $banded = $banded | append (merge . (dict "band" $band "rank" (printf "%d %s" (index $bandOrder $band) .label))) -}}
+  {{- if templates.Exists (printf "partials/misc/live/%s.html" $card.slug) }}{{ $band = "live" }}
+  {{- else if resources.Get (printf "misc/previews/%s.webp" $card.slug) }}{{ $band = "shot" }}{{ end -}}
+  {{- $rank := printf "1 %s" $card.label -}}
+  {{- range $i, $slug := index $orders $card.group }}{{ if eq $slug $card.slug }}{{ $rank = printf "0 %03d" $i }}{{ end }}{{ end -}}
+  {{- if hasPrefix $rank "1 " }}{{ warnf "misc: %q isn't in the %q shelf's `order:` list in content/misc/_index.md; it sorts last." $card.slug $card.group }}{{ end -}}
+  {{- $banded = $banded | append (merge $card (dict "band" $band "rank" $rank)) -}}
 {{- end -}}
-
 {{- $isFirstShelf := true -}}
 {{- $out := slice -}}
 {{- range $groups -}}

@@ -5,9 +5,17 @@
 
   Vaults named "<group>/<page>" share their group's code (every draft opens
   with the drafts PIN, entered once per tab).
+
+  A sealed page's HTML links the fingerprinted styles and scripts its own
+  build produced. Hugo only publishes a fingerprinted file when a rendered
+  page asks for it, and a page whose source isn't in the public repo (the
+  brine mining pitch: private/brine-mining/) never asks. So its assets are
+  requested here, from the locked page. Same files, same pipeline, so the
+  same fingerprints the sealed HTML expects.
 */ -}}
 {{- $name := .name -}}
 {{- $group := index (split $name "/") 0 -}}
+{{- if eq $name "brine-mining" }}{{ partial "brine-mining/assets.html" .page }}{{ end -}}
 <section class="py-8 text-center">
   <h1 class="text-2xl font-medium text-fg">Locked</h1>
   {{- if fileExists (printf "static/vault/%s.json" $name) }}

@@ -1,0 +1,19 @@
+{{- /*
+  brine-mining/at-risk — how much an investor has in at each gate, as squares
+  with area in proportion to the money. The first gate's square is a speck
+  next to the last: the point of gating. Data: `at_risk`.
+*/ -}}
+{{- $rows := (index site.Data "brine-mining").at_risk -}}
+{{- $max := 0 }}{{ range $rows }}{{ if gt .m $max }}{{ $max = .m }}{{ end }}{{ end -}}
+<figure class="not-prose bm-risk" data-bm-anim>
+  <figcaption class="bm-kicker">Total committed at each gate · area to scale</figcaption>
+  <ol>
+    {{- range $i, $r := $rows }}
+    <li style="--i: {{ $i }}; --s: {{ math.Sqrt (div (float $r.m) $max) }}">
+      <span class="bm-risk-box"><span class="bm-risk-sq"></span></span>
+      <strong>~${{ $r.m }}M</strong>
+      <span>{{ $r.label }} · {{ $r.sub }}</span>
+    </li>
+    {{- end }}
+  </ol>
+</figure>

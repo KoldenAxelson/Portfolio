@@ -1,0 +1,26 @@
+{{- /*
+  brine-mining/glance — the pitch on one screen: the line, the ask, the four
+  numbers, and why now. Top of /misc/brine-mining/, so it is what an investor
+  sees first on a phone. Data: data/brine-mining.yaml `glance`.
+*/ -}}
+{{- $d := index site.Data "brine-mining" -}}
+{{- with $d.glance }}
+<section class="not-prose bm-glance" aria-label="The pitch at a glance">
+  <p class="bm-line">{{ .line }}</p>
+  {{- with .new }}<p class="bm-new"><a href="#different">{{ . | markdownify }} <span aria-hidden="true">↓</span></a></p>{{ end }}
+  <div class="bm-ask">
+    <span class="bm-ask-value">{{ .ask.value }}</span>
+    <span class="bm-ask-label">{{ .ask.label }}</span>
+    <span class="bm-ask-then">{{ .ask.then }}</span>
+  </div>
+  <dl class="bm-stats">
+    {{- range .stats }}
+    <div><dt>{{ .label }}</dt><dd>{{ .value }}</dd></div>
+    {{- end }}
+  </dl>
+  <ul class="bm-why" aria-label="Why now">
+    {{- range .why }}<li>{{ . }}</li>{{ end }}
+  </ul>
+  <p class="bm-asof">Figures as of {{ time.Format "Jan 2, 2006" $d.asof }} · planning estimates, not a feasibility study</p>
+</section>
+{{- end }}

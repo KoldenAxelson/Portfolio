@@ -1,0 +1,31 @@
+{{- /*
+  brine-mining/concentrate — why start from desal brine: the same litre of
+  water, before and after the plant, one dot per 0.1 g of magnesium. The
+  brine's dots pile in when it scrolls into view; all of them drift gently.
+  Dot positions are a fixed scatter worked out here (an R2 sequence), so the picture is the
+  same on every build. Data: `concentrate`.
+*/ -}}
+{{- $c := (index site.Data "brine-mining").concentrate -}}
+<figure class="not-prose bm-conc" data-bm-anim>
+  {{- range $k, $p := slice $c.seawater $c.brine }}
+  <div class="bm-conc-cell{{ if $k }} is-brine{{ end }}">
+    <svg viewBox="0 0 100 100" class="bm-conc-tank" aria-hidden="true">
+      <rect x="1" y="1" width="98" height="98" rx="10" class="bm-conc-water" />
+      {{- range $i := seq 0 (sub $p.dots 1) }}
+      {{- /* An R2 low-discrepancy sequence: evenly spread but not a grid. */}}
+      {{- $u := add (mul 0.7548776662 (add $i 1)) (mul $k 0.31) }}{{ $v := add (mul 0.5698402910 (add $i 1)) (mul $k 0.17) }}
+      {{- $x := add 12 (mul 76 (sub $u (math.Floor $u))) }}
+      {{- $y := add 12 (mul 76 (sub $v (math.Floor $v))) }}
+      <circle cx="{{ printf "%.1f" $x }}" cy="{{ printf "%.1f" $y }}" r="4.2" class="bm-conc-dot" style="--i: {{ $i }}" />
+      {{- end }}
+    </svg>
+    <div class="bm-conc-text">
+      <strong>{{ $p.label }}</strong>
+      <span class="bm-conc-value">{{ $p.gl }} g of magnesium per litre</span>
+      {{- with $p.note }}<span>{{ . }}</span>{{ end }}
+    </div>
+  </div>
+  {{- if not $k }}<span class="bm-conc-arrow" aria-hidden="true">→</span>{{ end }}
+  {{- end }}
+  <figcaption>Reverse osmosis takes out fresh water and leaves the minerals behind, so the brine holds about 1.8× the magnesium of the sea it came from.</figcaption>
+</figure>

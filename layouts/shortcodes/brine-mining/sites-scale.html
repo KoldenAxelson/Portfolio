@@ -1,0 +1,21 @@
+{{- /*
+  brine-mining/sites-scale — the candidate plants as circles, area in
+  proportion to output (MGD), growing in when they scroll into view. More
+  water means more brine means more magnesium. Data: `sites_scale`.
+*/ -}}
+{{- $rows := (index site.Data "brine-mining").sites_scale -}}
+{{- $max := 0 }}{{ range $rows }}{{ if gt .mgd $max }}{{ $max = .mgd }}{{ end }}{{ end -}}
+<figure class="not-prose bm-sites" data-bm-anim>
+  <figcaption class="bm-kicker">Candidate plants, sized by output</figcaption>
+  <ol>
+    {{- range $i, $r := $rows }}
+    <li class="{{ if $r.key }}is-key{{ end }}" style="--i: {{ $i }}; --d: {{ math.Sqrt (div (float $r.mgd) $max) }}">
+      <span class="bm-sites-disc"><span class="bm-sites-ripple"></span></span>
+      <span class="bm-sites-mgd">{{ $r.mgd }} <small>MGD</small></span>
+      <strong>{{ $r.name }}</strong>
+      <span>{{ $r.where }}</span>
+      <em>{{ $r.role }}</em>
+    </li>
+    {{- end }}
+  </ol>
+</figure>

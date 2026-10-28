@@ -1,0 +1,17 @@
+{{- /*
+  brine-mining/capture — "capture what sells": for each product, the share of
+  what the brine holds that we plan to sell, as a bar that fills when it
+  scrolls into view. Data: `capture`.
+*/ -}}
+<figure class="not-prose bm-cap" data-bm-anim>
+  <figcaption class="bm-kicker">Share of each product we plan to sell, of what the brine holds</figcaption>
+  <ol>
+    {{- range $i, $r := (index site.Data "brine-mining").capture }}
+    <li class="{{ if $r.key }}is-key{{ end }}" style="--i: {{ $i }}; --w: {{ div (float $r.pct) 100 }}">
+      <div class="bm-cap-head"><strong>{{ $r.product }}</strong><span>{{ $r.pct }}%</span></div>
+      <span class="bm-cap-track"><span class="bm-cap-bar"></span></span>
+      <span class="bm-cap-note">{{ $r.sold }} of {{ $r.contained }} a year</span>
+    </li>
+    {{- end }}
+  </ol>
+</figure>

@@ -1,0 +1,24 @@
+{{- /*
+  brine-mining/investor — who this round is for, and who it isn't. A short,
+  picky list on purpose: someone who ticks most of the boxes should feel the
+  page was written for them. The ticks draw in one after another when it
+  scrolls into view. Data: data/brine-mining.yaml `investor`.
+*/ -}}
+{{- with (index site.Data "brine-mining").investor }}
+<section class="not-prose bm-inv" aria-label="{{ .title }}" data-bm-anim>
+  <p class="bm-inv-lead">{{ .lead }}</p>
+  <ul class="bm-inv-fit">
+    {{- range $i, $f := .fit }}
+    <li style="--i: {{ $i }}">
+      <svg class="bm-inv-tick" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" /><path d="M7 12.5l3.2 3.2L17 9" pathLength="1" /></svg>
+      <div><strong>{{ $f.head }}</strong><span>{{ $f.body }}</span></div>
+    </li>
+    {{- end }}
+  </ul>
+  <div class="bm-inv-not">
+    <span class="bm-kicker">Probably not a fit if you</span>
+    <ul>{{ range .not }}<li>{{ . }}</li>{{ end }}</ul>
+  </div>
+  <p class="bm-inv-note">{{ .note }}</p>
+</section>
+{{- end }}

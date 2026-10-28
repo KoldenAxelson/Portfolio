@@ -1,0 +1,21 @@
+{{- /*
+  brine-mining/counter — the scale of the waste stream, live: gallons of brine
+  the world's desal plants have made since this page opened, and the
+  magnesium in it. Without JS it states the daily figures instead.
+  Data and the arithmetic: data/brine-mining.yaml `counter`.
+*/ -}}
+{{- $c := (index site.Data "brine-mining").counter -}}
+{{- $mgDay := mul $c.gal_per_day $c.mg_t_per_gal -}}
+<figure class="not-prose bm-count" data-bm-counter data-gal-per-day="{{ $c.gal_per_day }}" data-mg-per-gal="{{ $c.mg_t_per_gal }}">
+  <div class="bm-count-cells">
+    <div>
+      <span class="bm-count-num" data-bm-gal>37 billion</span>
+      <span class="bm-count-label" data-bm-gal-label>gallons of brine a day, worldwide</span>
+    </div>
+    <div>
+      <span class="bm-count-num" data-bm-mg>~{{ lang.FormatNumber 0 (math.Round (div $mgDay 1000)) }},000 t</span>
+      <span class="bm-count-label" data-bm-mg-label>of magnesium in it, every day</span>
+    </div>
+  </div>
+  <figcaption>Every week or so, the world's desal plants pour out about as much magnesium as all the world's smelters make in a year (~{{ printf "%.1f" (div $c.world_mg_t 1000000.0) }}M t). Estimate: half the brine from seawater plants, at ~2.35 g/L.</figcaption>
+</figure>

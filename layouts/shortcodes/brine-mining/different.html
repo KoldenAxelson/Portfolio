@@ -1,0 +1,31 @@
+{{- /*
+  brine-mining/different — "isn't this already done?" Three ways magnesium has
+  come out of water before, each with where it stands, then this plan.
+  Data: data/brine-mining.yaml `different`. Rows slide in one after another
+  when it scrolls into view (data-bm-anim; scripts/pages/brine-mining/main.ts).
+*/ -}}
+{{- with (index site.Data "brine-mining").different }}
+<section class="not-prose bm-diff" aria-label="Isn't this already done?" data-bm-anim>
+  <ol class="bm-diff-before">
+    {{- range $i, $r := .before }}
+    <li style="--i: {{ $i }}">
+      <div class="bm-diff-head">
+        <strong>{{ $r.label }}</strong>
+        <span class="bm-diff-status">{{ $r.status }}</span>
+      </div>
+      <span class="bm-diff-who">{{ $r.who }} · {{ $r.when }}</span>
+      <p>{{ $r.note }}</p>
+    </li>
+    {{- end }}
+  </ol>
+  <div class="bm-diff-ours" style="--i: {{ len .before }}">
+    <div class="bm-diff-head">
+      <strong>{{ .ours.label }}</strong>
+      <span class="bm-diff-status">{{ .ours.status }}</span>
+    </div>
+    <ul>
+      {{- range .ours.points }}<li>{{ . | markdownify }}</li>{{ end }}
+    </ul>
+  </div>
+</section>
+{{- end }}

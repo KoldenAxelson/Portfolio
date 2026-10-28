@@ -246,3 +246,30 @@
   .mf-rz .rz-dealt { opacity: 0; }
   .mf-rz .rz-dealt:nth-of-type(-n+4) { opacity: 1; transform: translate(var(--x), 0) rotate(var(--tilt)); }
 }
+
+/* ---- Brine Mining: seawater in, fresh water out, magnesium stacking ------ */
+.mf-bm .wave { fill: none; stroke: #38bdf8; stroke-width: 1.6; stroke-linecap: round; animation: mf-bm-wave 1.6s linear infinite; }
+@keyframes mf-bm-wave { to { transform: translateX(16px); } }
+.mf-bm .water { fill: #38bdf8; }
+.mf-bm .fresh { fill: #38bdf8; opacity: 0; animation: mf-bm-fresh 1.8s linear var(--delay) infinite; }
+@keyframes mf-bm-fresh { 0% { transform: translateX(148px); opacity: 0; } 10%, 85% { opacity: 1; } 100% { transform: translateX(244px); opacity: 0; } }
+.mf-bm .pipe { fill: none; stroke: rgb(var(--c-border)); stroke-width: 3; stroke-linecap: round; }
+.mf-bm .drop { fill: rgb(var(--c-muted)); opacity: 0; animation: mf-bm-drop 1.8s ease-in var(--delay) infinite; }
+@keyframes mf-bm-drop { 0% { transform: translateY(66px); opacity: 0; } 10%, 85% { opacity: .9; } 100% { transform: translateY(170px); opacity: 0; } }
+.mf-bm .emit { fill: rgb(var(--c-muted)); opacity: 0; animation: mf-bm-emit 1.8s ease-out infinite; animation-delay: calc(var(--i) * .6s + .3s); }
+@keyframes mf-bm-emit { 0% { transform: translateX(122px); opacity: 0; } 15%, 70% { opacity: .9; } 100% { transform: translateX(172px); opacity: 0; } }
+.mf-bm .ingot { fill: rgb(var(--c-accent) / .85); stroke: rgb(var(--c-accent)); stroke-width: 1; stroke-linejoin: round;
+  opacity: 0; animation: 6s cubic-bezier(.2, .9, .3, 1.2) infinite; }
+/* Each ingot drops in at its own moment; the stack clears together at the end of the cycle. */
+.mf-bm .ingot:nth-child(1) { animation-name: mf-bm-ingot-1; }
+.mf-bm .ingot:nth-child(2) { animation-name: mf-bm-ingot-2; }
+.mf-bm .ingot:nth-child(3) { animation-name: mf-bm-ingot-3; }
+@keyframes mf-bm-ingot-1 { 0%, 10% { opacity: 0; transform: translateY(-14px); } 16%, 92% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
+@keyframes mf-bm-ingot-2 { 0%, 35% { opacity: 0; transform: translateY(-14px); } 41%, 92% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
+@keyframes mf-bm-ingot-3 { 0%, 60% { opacity: 0; transform: translateY(-14px); } 66%, 92% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
+.mf-bm .glint { fill: rgb(255 255 255 / .55); opacity: 0; transform-box: fill-box; transform-origin: center; transform: skewX(-20deg); animation: mf-bm-glint 6s ease-in-out infinite; }
+@keyframes mf-bm-glint { 0%, 70% { opacity: 0; transform: skewX(-20deg) translateX(0); } 72% { opacity: 1; } 84% { opacity: 1; transform: skewX(-20deg) translateX(96px); } 86%, 100% { opacity: 0; transform: skewX(-20deg) translateX(96px); } }
+@media (prefers-reduced-motion: reduce) {
+  .mf-bm .ingot { opacity: 1; }
+  .mf-bm .fresh, .mf-bm .drop, .mf-bm .emit, .mf-bm .glint { display: none; }
+}

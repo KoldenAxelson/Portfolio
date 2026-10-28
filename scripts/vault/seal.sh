@@ -14,6 +14,14 @@
 #            changing a draft *or* the site's code. Seals of drafts that have
 #            been published are deleted.
 #   GrowGo — the investor pitch, from $GROWGO_SOURCE.
+#   Brine  — the brine mining pitch (/misc/brine-mining/). Its source lives in
+#            private/brine-mining/ (gitignored), laid out like the site:
+#            content/misc/brine-mining.md, data/brine-mining.yaml,
+#            data/ml/references/brine-mining.yaml. Copies the site to a temp
+#            folder, lays those files over it, builds it unsealed and seals
+#            the page. The repo itself is never touched, and the plaintext
+#            never leaves the temp folder. Re-seal after editing the pitch
+#            *or* the site's code (the sealed page links the site's scripts).
 #
 # Adding a target: a seal_<name> function below plus an entry in TARGETS.
 set -euo pipefail
@@ -21,7 +29,8 @@ set -euo pipefail
 HUGO=${HUGO:-bin/hugo}
 TAILWIND=${TAILWIND:-bin/tailwindcss}
 GROWGO_SOURCE=${GROWGO_SOURCE:-../GrowGo/pitch/web/index.html}
-TARGETS=(Drafts GrowGo)
+TARGETS=(Drafts GrowGo Brine)
+BRINE_SOURCE=${BRINE_SOURCE:-private/brine-mining}
 
 work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
@@ -100,6 +109,28 @@ seal_drafts() {
   summary+=$'\n'"Re-seal after changing a draft or the site's scripts."
 }
 
+seal_brine() {
+  [ -f "$BRINE_SOURCE/content/misc/brine-mining.md" ] || fail "brine pitch source not found: $BRINE_SOURCE/content/misc/brine-mining.md"
+  local root tree hugo tailwind
+  root=$(pwd)
+  tree="$work/tree"
+  # Absolute paths: the build below runs from the temp copy.
+  case $HUGO in /*) hugo=$HUGO ;; *) hugo="$root/$HUGO" ;; esac
+  case $TAILWIND in /*) tailwind=$TAILWIND ;; *) tailwind="$root/$TAILWIND" ;; esac
+
+  echo "Building the pitch privately…"
+  mkdir -p "$tree"
+  # The site minus build output, toolchain and private notes; then the pitch on top.
+  tar -cf - --exclude=./public --exclude=./resources --exclude=./bin --exclude=./private \
+    --exclude=./.git --exclude=./static/downloads . | tar -xf - -C "$tree"
+  cp -R "$BRINE_SOURCE"/. "$tree"/
+  (cd "$tree" && "$tailwind" -i assets/css/main.css -o assets/css/app.css --minify >/dev/null 2>&1)
+  HUGO_PARAMS_SEALSOURCE=true "$hugo" -s "$tree" --minify --quiet -d "$work/site" >/dev/null
+
+  seal_file "$work/site/misc/brine-mining/index.html" brine-mining
+  summary="static/vault/brine-mining.json"$'\n'"Re-seal after editing the pitch or the site's scripts."
+}
+
 command -v go >/dev/null 2>&1 || fail "Go not found on PATH — install from https://go.dev/dl/"
 pick_target
 read_pin
@@ -109,6 +140,7 @@ summary=""
 case $target in
   Drafts) seal_drafts ;;
   GrowGo) seal_growgo ;;
+  Brine) seal_brine ;;
 esac
 
 echo "$target has been sealed with code: $pin"

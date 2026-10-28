@@ -1,0 +1,20 @@
+{{- /*
+  brine-mining/roadmap — four phases, each funded only once the one before
+  passes its gate. A row on desktop, a column on a phone. Data: `roadmap`.
+*/ -}}
+<ol class="not-prose bm-road" aria-label="Phased roadmap" data-bm-anim>
+  {{- range $i, $_ := (index site.Data "brine-mining").roadmap }}
+  <li class="bm-phase{{ if .ask }} is-ask{{ end }}{{ if .optional }} is-optional{{ end }}" style="--i: {{ $i }}">
+    <div class="bm-phase-card">
+      <span class="bm-phase-kicker">{{ .phase }}</span>
+      <strong class="bm-phase-name">{{ .name }}</strong>
+      <span class="bm-phase-when">{{ .when }}</span>
+      <span class="bm-phase-amount">{{ .amount }}</span>
+      <span class="bm-phase-what">{{ .what }}</span>
+    </div>
+    {{- with .gate }}
+    <p class="bm-gate"><span class="bm-gate-mark" aria-hidden="true"></span><span><strong>Gate:</strong> {{ . }}</span></p>
+    {{- end }}
+  </li>
+  {{- end }}
+</ol>

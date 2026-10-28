@@ -1,0 +1,55 @@
+{{- /*
+  brine-mining/swing — the magnesium price is the swing factor, shown two ways.
+
+  Always: a grid of payback years, three magnesium prices against the three
+  cost cases, worked out here from data/brine-mining.yaml `model`, so the page
+  says it without JS. scripts/pages/brine-mining/main.ts adds the panel above
+  it: a price slider and a cost-case switch, recomputing revenue, operating
+  profit and payback live with the same arithmetic.
+
+    revenue  = tonnes × price + other lines        ($M a year)
+    profit   = revenue − operating cost            (before depreciation, interest and tax)
+    payback  = capital ÷ profit                    (years, rounded half up to
+                                                    match the script; none if profit ≤ 0)
+*/ -}}
+{{- $m := (index site.Data "brine-mining").model -}}
+<div class="not-prose bm-swing" data-bm-swing data-tonnes="{{ $m.tonnes }}" data-other="{{ $m.other }}">
+  <div class="bm-panel" data-bm-live hidden>
+    <div class="bm-panel-head">
+      <label for="bm-price" class="bm-panel-label">Magnesium price</label>
+      <output for="bm-price" class="bm-price" data-bm-price>${{ lang.FormatNumber 0 $m.price.start }}/t</output>
+    </div>
+    <input id="bm-price" type="range" class="bm-range" min="{{ $m.price.min }}" max="{{ $m.price.max }}" step="{{ $m.price.step }}" value="{{ $m.price.start }}" data-bm-range />
+    <div class="bm-ticks" aria-hidden="true">
+      {{- range where $m.prices "tick" "!=" nil }}<span style="--at: {{ div (sub (float .at) $m.price.min) (sub $m.price.max $m.price.min) }}">{{ .tick }}</span>{{ end }}
+    </div>
+    <div class="bm-cases" role="radiogroup" aria-label="Cost case">
+      {{- range $m.cases }}
+      <button type="button" role="radio" aria-checked="{{ if eq .key "mid" }}true{{ else }}false{{ end }}" data-bm-case="{{ .key }}" data-opex="{{ .opex }}" data-capex="{{ .capex }}">{{ .label }}</button>
+      {{- end }}
+    </div>
+    <dl class="bm-out-stats" aria-live="polite">
+      <div><dt>Revenue</dt><dd data-bm-rev></dd></div>
+      <div><dt>Operating profit</dt><dd data-bm-profit></dd></div>
+      <div><dt>Payback</dt><dd data-bm-payback></dd></div>
+    </dl>
+  </div>
+
+  <table class="bm-grid">
+    <caption>Payback in years, Phase 2 module</caption>
+    <thead>
+      <tr><th scope="col">Magnesium price</th>{{ range $m.cases }}<th scope="col">{{ .label }}<span>${{ .opex }}M/yr · ${{ .capex }}M</span></th>{{ end }}</tr>
+    </thead>
+    <tbody>
+      {{- range $p := $m.prices }}
+      <tr>
+        <th scope="row">${{ lang.FormatNumber 0 $p.at }}/t<span>{{ $p.label }}</span></th>
+        {{- range $c := $m.cases }}
+        {{- $profit := sub (add (div (mul (float $m.tonnes) $p.at) 1000000) $m.other) $c.opex }}
+        <td{{ if eq $c.key "mid" }} class="is-mid"{{ end }}>{{ if gt $profit 0 }}{{ printf "%.1f" (div (math.Round (mul 10 (div (float $c.capex) $profit))) 10) }}{{ else }}never{{ end }}</td>
+        {{- end }}
+      </tr>
+      {{- end }}
+    </tbody>
+  </table>
+</div>
