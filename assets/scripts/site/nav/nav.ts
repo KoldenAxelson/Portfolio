@@ -1,7 +1,7 @@
 // TopNav interactivity. Global listeners wired once and live-query elements so
 // they survive hx-boost swaps; element handlers re-bound per page via initNav().
 import { sleep, pickRandom, readMessages, charDelay } from './bio';
-import { populateGameCard, wireCarouselDots, wireTextToggle } from '../games/game-card';
+import { populateGameCard, wireCarouselDots, wireCarouselText, wireTextToggle } from '../games/game-card';
 import { populateNoteCard } from '../widgets/skyrim-notes';
 import { wirePanelMode } from './sub-nav';
 import type { PanelHost } from './sub-nav';
@@ -204,6 +204,12 @@ function wireNavElements(): void {
         wireTextToggle(
           content.querySelector<HTMLElement>('[data-game-text-toggle]'),
           content.querySelector<HTMLElement>('[data-game-mobile-blurb]'),
+        );
+        wireCarouselText(
+          content.querySelector<HTMLElement>('[data-game-mobile-media]'),
+          content.querySelector<HTMLElement>('[data-game-mobile-blurb]'),
+          content.querySelector<HTMLElement>('[data-game-text-toggle]'),
+          content.querySelector<HTMLElement>('[data-game-mobile-series]'),
         );
       },
       populate: (trigger, content) =>

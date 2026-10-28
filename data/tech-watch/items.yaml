@@ -1,0 +1,92 @@
+# The cards on /misc/tech-watch/, in display order, rendered by
+# shortcodes/tech-watch/grid.html. Watching something new is adding an entry.
+#
+# types   : filter keys, from the category list in that shortcode. Every key used
+#           here gets a filter bubble.
+# kind    : what it is, in a few words, shown above the name.
+# status  : one of the keys in the grid's status list (shipping, preorder, beta,
+#           out-of-stock, in-development). Status and price are as of the page's
+#           `updated:` date, which the page prints; bump it when you recheck them.
+# when    : optional, a short note on timing ("Ships December, expected").
+# desc    : HTML allowed; rendered as-is.
+# preview : optional. Names layouts/partials/tech-watch/previews/<preview>.html AND
+#           static/js/tech-watch/<preview>.js; partials/tech-watch/assets.html ships
+#           the script for each preview listed here.
+# feature : spans the full grid width.
+- name: "Dwarfstar"
+  kind: "Small-AI research"
+  url: "https://dwarfstar.online/"
+  domain: "dwarfstar.online"
+  types: [software, ai]
+  status: in-development
+  preview: dwarfstar
+  feature: true
+  desc: "A small-AI research project, still under construction, whose landing page is a physically modelled star you can swap for a black hole. This is its Gargantua-like preset: a spinning 10⁸ M☉ hole, thin disk nearly edge-on, the far side lensed up over the shadow. Theirs re-solves every light ray each frame in WebGL; the camera here never moves, so my WebGPU port traces the lens once and only moves the gas."
+
+- name: "Clicks Communicator"
+  kind: "Keyboard phone"
+  maker: "Clicks Technology"
+  url: "https://clicks.tech/communicator"
+  domain: "clicks.tech"
+  types: [hardware]
+  status: preorder
+  price: "From $649"
+  when: "Ships December, expected"
+  desc: "A small Android phone built around a physical keyboard, pitched as “designed for doing, not doomscrolling.” The keys are touch-sensitive, so they double as a scroll pad, and a message hub pulls chats from several apps into one place. There’s a programmable signal LED, a physical kill switch, a 4.03-inch AMOLED, 5G, a headphone jack and Qi2 charging."
+
+- name: "reTerminal Sticky"
+  kind: "Magnetic e-paper display"
+  maker: "Seeed Studio"
+  url: "https://www.seeedstudio.com/reTerminal-Sticky-p-6861.html"
+  domain: "seeedstudio.com"
+  types: [hardware]
+  status: shipping
+  price: "$49.90"
+  desc: "A 3.97-inch touch e-paper screen the size of a sticky note, with a magnet on the back for the fridge or a monitor bezel. ESP32-S3, Wi-Fi and Bluetooth, a microphone, and about a week of standby on a 750 mAh battery. Besides Seeed’s own app it runs open firmware: CrossPoint as an e-reader, TRMNL dashboards, or ESPHome for Home Assistant."
+
+- name: "M5PaperMono"
+  kind: "E-paper dev board, LoRa and NFC"
+  maker: "M5Stack"
+  url: "https://shop.m5stack.com/products/m5papermono-with-lora-nfc-800x480-3-97-eink-display"
+  domain: "m5stack.com"
+  types: [hardware]
+  status: out-of-stock
+  price: "$65"
+  desc: "The same 3.97-inch, 800×480 e-paper size as the reTerminal Sticky, as a dev board with the radio extras: touch and a frontlight, an ESP32-S3, LoRa (SX1262) for long-range, low-power messaging, and NFC. 1,150 mAh battery. Made for e-readers, signage and off-grid IoT projects."
+
+- name: "Pulsetto"
+  kind: "Vagus nerve stimulator"
+  url: "https://pulsetto.tech/pages/StayCurious"
+  domain: "pulsetto.tech"
+  types: [hardware]
+  status: shipping
+  price: "From $269"
+  desc: "A neck-worn stimulator for the vagus nerve: about four minutes a session, hands-free, with sleep, stress and focus programs run from an app. It’s sold as a general wellness product, not a medical device, and the evidence on its own page is a user survey and a 40-person pilot with no placebo group, so the claims are early."
+
+- name: "Vorssaint"
+  kind: "macOS utility app"
+  url: "https://vorssaint.com/"
+  domain: "vorssaint.com"
+  types: [software]
+  status: shipping
+  price: "Free, open source"
+  desc: "A menu bar app that bundles the Mac utilities people usually buy one by one: window snapping, an app switcher, clipboard history, a per-app volume mixer, screenshots and recording, a system monitor, even a Dynamic Island. It’s modular, so you install only the tools you want. macOS 14 or later on Apple silicon, and it installs with <code>brew install --cask vorssaint</code>."
+
+- name: "Desert Ant Labs"
+  kind: "On-device AI models"
+  url: "https://desertant.com"
+  domain: "desertant.com"
+  types: [software, ai]
+  status: shipping
+  price: "Free to 100k devices a month"
+  when: "Some models in beta"
+  desc: "Small AI models that run on the device, with a native SDK for Swift, Kotlin and JavaScript: speech recognition and enhancement, PII redaction, filler-word detection, moderation, language detection, and a few vision models. No tokens or logins. They say their speech model transcribes ten minutes of audio in about two seconds on an iPhone."
+
+- name: "Sluka"
+  kind: "Language-learning reader"
+  url: "https://sluka.app/"
+  domain: "sluka.app"
+  types: [software]
+  status: shipping
+  price: "$15 once"
+  desc: "Reads along with you in a language you’re learning: it marks the words you don’t know yet on any web page, in books, under videos and in chats, and keeps one known-word list across all of them. A browser extension for Chrome, Brave and Edge, plus an Android app; iPhone is still to come. The first 1,000 words in each language are free, and your word list stays on your own devices."

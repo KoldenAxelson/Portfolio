@@ -1,23 +1,15 @@
 {{- /*
-  cool-sites/grid: the filter bar and every card on /misc/cool-sites/, from
+  cool-sites/grid: every card on /misc/cool-sites/, from
   data/cool-sites/sites.yaml. Cards with a `preview` include
   partials/cool-sites/previews/<preview>.html; their scripts ship from
   partials/cool-sites/assets.html (called by layouts/misc/single.html).
+  The kind filter is the filter aux button (components/filter-fab.html, from
+  layouts/misc/single.html) and its mobile twin in the navbar; the kinds are
+  partials/cool-sites/cats.html. Cards carry [data-types] for it.
 */ -}}
 {{- $sites := (index site.Data "cool-sites").sites -}}
 {{- if not $sites }}{{ errorf "cool-sites/grid: data/cool-sites/sites.yaml is missing (page: %s)" .Page.RelPermalink }}{{ end -}}
-{{- $cats := slice
-  (dict "key" ""         "label" "All"      "icon" "squares-2x2")
-  (dict "key" "web-dev"  "label" "Web dev"  "icon" "globe")
-  (dict "key" "tools"    "label" "Tools"    "icon" "wrench-screwdriver")
-  (dict "key" "learning" "label" "Learning" "icon" "academic-cap")
-  (dict "key" "research" "label" "Research" "icon" "magnifying-glass")
-  (dict "key" "ideas"    "label" "Ideas"    "icon" "brain")
--}}
-{{- $types := slice -}}
-{{- range $sites }}{{ $types = $types | append .types }}{{ end -}}
 <div class="not-prose wds-root">
-<div class="wds-filter">{{ partial "components/type-filter.html" (dict "cats" $cats "present" (uniq $types) "label" "Filter sites by kind") }}</div>
 <div class="wds-grid">
 {{- range $sites }}
 {{- $isCover := ne .cover false }}

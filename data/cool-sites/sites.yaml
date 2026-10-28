@@ -23,12 +23,6 @@
   types: [web-dev]
   preview: heckel
   desc: "Deep, interactive essays on shaders and real-time 3D, each with a playground. Two of them at once here: volumetric raymarched clouds, then his retro-shading pass — tiny buffer, six levels a channel, 4×4 Bayer dither, scanlines. The octahedron is an SDF, lit in four steps."
-- name: "Dwarfstar"
-  url: "https://dwarfstar.online/"
-  domain: "dwarfstar.online"
-  types: [web-dev]
-  preview: dwarfstar
-  desc: "A small-AI research site whose landing page is a physically modelled star you can swap for a black hole. This is its Gargantua-like preset — a spinning 10⁸ M☉ hole, thin disk nearly edge-on, the far side lensed up over the shadow. Theirs re-solves every light ray each frame in WebGL; the camera here never moves, so my WebGPU port traces the lens once and only moves the gas."
 - name: "Anthony Fu"
   url: "https://antfu.me"
   domain: "antfu.me"

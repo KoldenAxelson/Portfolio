@@ -1,0 +1,30 @@
+/* A writing collection's reading page (layouts/writing/single.html). Built on
+   the --c-* tokens; the stories themselves are Tailwind Typography. */
+
+.writing-toc{margin:0 0 2.5rem;padding:1rem 1.25rem;border:1px solid rgb(var(--c-border));border-radius:.9rem;}
+.writing-toc ul{margin:0;padding:0;list-style:none;counter-reset:story;display:grid;gap:.35rem;}
+.writing-toc ul ul{display:none;}
+.writing-toc li{counter-increment:story;}
+.writing-toc a{display:flex;gap:.75rem;align-items:baseline;color:rgb(var(--c-fg));text-decoration:none;}
+.writing-toc a::before{content:counter(story);flex:0 0 1.2rem;font-family:var(--font-mono);font-size:.8rem;color:rgb(var(--c-muted));}
+.writing-toc a:hover{color:rgb(var(--c-accent));}
+
+/* "Story 1" above each title, only on a page that holds more than one. */
+.writing-story.is-collection{counter-reset:story;}
+.writing-story.is-collection h2{counter-increment:story;margin-top:3.5rem;}
+.writing-story.is-collection h2:first-child{margin-top:0;}
+.writing-story.is-collection h2::before{content:'Story ' counter(story);display:block;margin-bottom:.35rem;font-family:var(--font-mono);font-size:.75rem;font-weight:400;letter-spacing:.08em;text-transform:uppercase;color:rgb(var(--c-muted));}
+
+.writing-illustration{margin:1.25rem 0 1.75rem;}
+.writing-illustration img{display:block;width:100%;max-height:26rem;object-fit:cover;border-radius:.9rem;border:1px solid rgb(var(--c-border) / .6);}
+
+.writing-moral{margin:2rem 0 0;padding:1rem 1.25rem;border-left:3px solid rgb(var(--c-accent));border-radius:0 .75rem .75rem 0;background:rgb(var(--c-accent) / .08);}
+.writing-moral-label{display:block;margin-bottom:.25rem;font-family:var(--font-mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:rgb(var(--c-muted));}
+.writing-moral p{margin:0;font-size:1.05rem;font-style:italic;line-height:1.5;color:rgb(var(--c-fg));}
+
+.writing-pager{display:grid;gap:.75rem;margin-top:3.5rem;}
+@media (min-width:640px){.writing-pager{grid-template-columns:repeat(auto-fit,minmax(12rem,1fr));}}
+.writing-pager-link{display:flex;flex-direction:column;gap:.15rem;padding:.9rem 1rem;border:1px solid rgb(var(--c-border));border-radius:.75rem;color:rgb(var(--c-fg));font-weight:500;text-decoration:none;transition:border-color .15s ease;}
+.writing-pager-link span{font-family:var(--font-mono);font-size:.7rem;font-weight:400;letter-spacing:.06em;text-transform:uppercase;color:rgb(var(--c-muted));}
+.writing-pager-link:hover{border-color:rgb(var(--c-accent) / .6);}
+.writing-pager-link:focus-visible{outline:2px solid rgb(var(--c-accent) / .6);outline-offset:2px;}

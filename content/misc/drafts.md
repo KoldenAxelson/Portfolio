@@ -3,6 +3,7 @@ title: "Drafts"
 description: "Articles in review, before they're listed on the site."
 lead: "Articles in review. Not listed anywhere else yet."
 icon: "lock-closed"
+group: "tools"
 layout: "drafts"
 blurb: "Articles in review. Passcode required."
 # Listed on /misc but sealed: the list and every draft open with the drafts PIN

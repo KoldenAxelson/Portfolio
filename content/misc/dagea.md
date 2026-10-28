@@ -16,6 +16,7 @@ description: "A world I drew by hand, traced off the paper and wrapped around a 
 lead: "A world I drew by hand, and then put on a sphere"
 blurb: "A hand-drawn fantasy world as a globe you can spin — six regions, forty landmasses."
 icon: "map-pin"
+group: "make"
 prose: true
 ---
 

@@ -1,0 +1,17 @@
+# The two ways to run several jobs at once, on /misc/claude/ "Parallel Work",
+# rendered by shortcodes/claude/parallel.html. Same rows in both, same order.
+- name: "Nested sessions"
+  when: "Work that needs your computer"
+  rows:
+    - "Each job is its own chat under the one that started it; open any to steer it"
+    - "Runs on your computer, with your files, skills and tools"
+    - "Stops if the computer sleeps"
+    - "Every plan"
+- name: "Projects"
+  status: "Beta"
+  when: "Long jobs that run while you're away"
+  rows:
+    - "A coordinator chat runs worker threads with one shared memory and instructions"
+    - "Runs in Anthropic's cloud; anything you add is stored there"
+    - "Keeps going with your computer off"
+    - "Pro and Max, with a waitlist"

@@ -1,0 +1,37 @@
+{{- /*
+  impossible-list/game-card — one game on the /impossible-list/ shelves
+  (components/shelf.html): a button that opens the drawer
+  (scripts/site/games/game-card.ts reads its data-* attributes), plus the same
+  details as plain page text (impossible-list/details.html).
+  Called with (dict "item" <a games entry, merged with rating/year defaults
+  and `consoleName`, the console's full name>).
+
+  The shelf shows the box art (assets/img/games/covers/<cover>.webp). The
+  drawer shows the screenshots (assets/img/games/<shot> and its -1, -2 …
+  extras) in a 16:9 frame; a game with no screenshots yet shows its box art
+  there instead, framed portrait like a book cover (data-kind "book").
+*/ -}}
+{{- with .item -}}
+{{- $consoleName := .consoleName -}}
+{{- $isPlayed := eq .done true -}}
+{{- $isCurrent := eq .current true -}}
+{{- $imgs := slice -}}
+{{- with .shot }}{{ $imgs = partial "func/media-images.html" (dict "dir" "games" "slug" (replaceRE `\.[^.]*$` "" .) "width" 800) }}{{ end -}}
+{{- $kind := "game" -}}
+{{- if and (not $imgs) .cover -}}
+  {{- $imgs = partial "func/media-images.html" (dict "dir" "games/covers" "slug" .cover "width" 600) -}}
+  {{- $kind = "book" -}}
+{{- end -}}
+<button type="button" data-game-open aria-haspopup="dialog" data-title="{{ .title }}" data-kind="{{ $kind }}" data-rating="{{ .rating }}"{{ if $isCurrent }} data-status="Playing now"{{ end }} data-blurb="{{ .blurb }}" data-pitch="{{ .pitch }}" data-images="{{ $imgs | jsonify }}" data-console="{{ .console }}" class="group/book block w-full rounded-lg pt-1.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
+  {{ partial "components/shelf-cover.html" (dict "dir" "games/covers" "slug" .cover "title" .title "isDimmed" (not $isPlayed) "badge" (cond $isCurrent (dict "icon" "play" "label" "Playing") false)) }}
+  <span class="mt-2 line-clamp-2 block text-sm leading-snug transition-colors group-hover/book:text-accent {{ cond (or $isPlayed $isCurrent) "text-fg" "text-muted" }}">{{ .title }}{{ if $isCurrent }}<span class="sr-only"> (playing now)</span>{{ else if not $isPlayed }}<span class="sr-only"> (not played yet)</span>{{ end }}</span>
+  <span class="mt-0.5 block font-mono text-xs text-muted">
+    {{- if $isCurrent }}<span class="text-accent">Playing now</span>
+    {{- else if and $isPlayed .rating }}<span class="text-accent">★</span> {{ .rating | lang.FormatNumber 1 }}
+    {{- else if .year }}{{ .year }}
+    {{- end }}
+    {{- with .console }} · <abbr title="{{ $consoleName }}" class="no-underline">{{ . }}</abbr>{{ end }}
+  </span>
+</button>
+{{ partial "impossible-list/details.html" (dict "item" . "consoleName" $consoleName) }}
+{{- end -}}

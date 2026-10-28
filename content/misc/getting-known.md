@@ -14,11 +14,12 @@
 # box, with behaviour lazy-loaded from static/js/getting-known/.
 # ─────────────────────────────────────────────────────────────────────────────
 title: "Getting Known"
-description: "Notes on four videos about being known as well as good: building a personal brand, Keith Ferrazzi's dinner method for networking from zero, Simon Squibb's ten steps of honest selling, and staying visible and protected at work."
+description: "Notes on four videos about being known as well as good: building a personal brand, Keith Ferrazzi's dinner method for networking from zero, Simon Squibb's ten steps of honest selling, and staying visible and protected at work, plus my own ten-step persuasion system."
 # Blank by default — uncomment to put a line under the H1 in the banner.
 #lead: "Being good at the work is step three."
 blurb: "Four videos on being known as well as good: a personal brand, networking from zero, selling honestly, and getting ahead at a heads-down job."
 icon: "user-group"
+group: "better"
 prose: true
 youtube: "https://youtu.be/iHNNQFYkwCo"
 ---
@@ -138,6 +139,14 @@ over the steak, and only sell what you believe in. The "emotional sale," asking
 people to back a mission, works only if the mission is real; otherwise people
 see through it and the brand is gone.
 
+Squibb's steps get you to the conversation. For the conversation itself I keep
+my own notes, which aren't from any of these videos: ten steps for getting to
+yes without tricking anyone, and one rule that overrides all of them. A few of
+the moves, like inviting a no and waiting for "that's right," will be familiar
+to anyone who has read Chris Voss.
+
+{{< getting-known/persuasion >}}
+
 ## 4 · The office: be seen, get it in writing
 
 Every office I've worked in has been engineers with their heads down, no drama
@@ -191,7 +200,8 @@ their arguments, and the figures (followers, revenue, years, the PwC sale, the
 nine years of monthly contact) are the speakers' own claims. Three of the four
 end in a pitch for a paid program or book; I've kept their advice and left the
 pitches. The brand and office videos don't give their narrators' names, so I
-haven't guessed them.
+haven't guessed them. The persuasion system in section 3 is my own notes, not
+something from these videos.
 
 - [A founder on building a personal brand](https://youtu.be/dn7x0Sr2IhY): the definition, content categories and IP, two platforms, the content waterfall, batching.
 - [Keith Ferrazzi on rebuilding a network from zero](https://youtu.be/iHNNQFYkwCo): the list of 25, the anchor tenant, the dinner format, priority pings.

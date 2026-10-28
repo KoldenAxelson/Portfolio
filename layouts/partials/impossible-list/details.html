@@ -10,11 +10,13 @@
 */ -}}
 {{- with .item -}}
 <div class="sr-only">
+  {{- if .current }}<p>{{ if $.consoleName }}Playing it now{{ else }}Reading it now{{ end }}.</p>{{ end }}
   {{- with $.consoleName }}<p>Played on {{ . }}.</p>{{ end }}
   {{- with .rating }}<p>Rated {{ . | lang.FormatNumber 1 }} out of 5.</p>{{ end }}
   {{- with .status }}<p>{{ . }}.</p>{{ end }}
   {{- with .blurb }}<p>My review: {{ . }}</p>{{ end }}
-  {{- with .pitch }}<p>Why read it: {{ . }}</p>{{ end }}
+  {{- with .pitch }}<p>{{ if $.consoleName }}Why play it{{ else }}Why read it{{ end }}: {{ . }}</p>{{ end }}
   {{- with .series }}<p>The series: {{ range $i, $book := . }}{{ if $i }}; {{ end }}{{ $book.title }} ({{ cond $book.done "read" "not read yet" }}){{ end }}.</p>{{ end }}
+  {{- range .series }}{{ if .pitch }}<p>{{ .title }}: {{ .pitch }}</p>{{ end }}{{ end }}
 </div>
 {{- end -}}

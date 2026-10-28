@@ -1,0 +1,21 @@
+{{- /*
+  misc/live/cool-sites — the Cool Sites card's band on /misc: the same live
+  dot-logo as the Emil Kowalski card on /misc/cool-sites/ (the dots scatter
+  from the cursor and spring back). Reuses that card's markup and script
+  unchanged — partials/cool-sites/previews/emil.html and
+  static/js/cool-sites/emil.js, which finds #wdsCanvas / #wdsSrc by id, so it
+  must stay the only copy on the page.
+
+  cool-sites.css isn't loaded here, so the few rules the preview needs are
+  restated as arbitrary variants on the wrapper: fill the band, hide the source
+  SVG (the script rasterises it into dots), and the radial wash behind it.
+  Without JS the canvas stays blank, so the screenshot sits in <noscript>.
+*/ -}}
+<span class="absolute inset-0 block [&_.wds-preview]:absolute [&_.wds-preview]:inset-0 [&_.wds-preview]:bg-[radial-gradient(120%_120%_at_50%_28%,rgb(var(--c-border)/.35),rgb(var(--c-bg)))] [&_.wds-src]:hidden [&_canvas]:absolute [&_canvas]:inset-0 [&_canvas]:block [&_canvas]:h-full [&_canvas]:w-full">
+  {{ partial "cool-sites/previews/emil.html" . }}
+</span>
+{{- with resources.Get "misc/previews/cool-sites.webp" }}
+{{- $img := .Fill "480x300 webp q82" }}
+<noscript><img src="{{ $img.RelPermalink }}" width="480" height="300" alt="" class="absolute inset-0 h-full w-full object-cover" /></noscript>
+{{- end }}
+<script defer src="{{ "/js/cool-sites/emil.js" | relURL }}"></script>

@@ -3,7 +3,8 @@ title: "Python for ML"
 lead: "The working 90% of the ML stack, for people who already code."
 description: "An accelerated course in the Python an ML or infra engineer uses daily: NumPy, pandas, Matplotlib, scikit-learn and PyTorch, one text-lite chapter each, with a workbook packet to practise on your own machine."
 blurb: "NumPy, pandas, Matplotlib, scikit-learn and PyTorch for people who already code, one short chapter each, with downloadable workbooks."
-icon: "academic-cap"
+icon: "code-bracket"
+group: "learn"
 # Route the landing and every chapter to layouts/python-for-ml/*. `chapters`
 # turns on the jump-to-chapter menu; `glossary` is the set every term reads.
 cascade:

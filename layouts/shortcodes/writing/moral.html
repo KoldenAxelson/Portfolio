@@ -1,0 +1,6 @@
+{{- /*
+  writing/moral — the moral that closes a story.
+
+    {{< writing/moral >}}Learning from past mistakes, we can build something better.{{< /writing/moral >}}
+*/ -}}
+<aside class="writing-moral not-prose"><span class="writing-moral-label">Moral</span><p>{{ .Inner | strings.TrimSpace }}</p></aside>

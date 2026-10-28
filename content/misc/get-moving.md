@@ -16,19 +16,21 @@
 # its log in localStorage, guarded; it works without it.
 # ─────────────────────────────────────────────────────────────────────────────
 title: "Get Moving"
-description: "Short, practical encouragement for when you know what to do and still aren't doing it: act before you feel like it, swap goals for tiny experiments, ten-minute starts, and why passion usually comes after skill."
+description: "Short, practical encouragement for when you know what to do and still aren't doing it: act before you feel like it, swap goals for tiny experiments, ten-minute starts, why passion usually comes after skill, and how quick pleasures can work as anaesthesia."
 # Blank by default — uncomment to put a line under the H1 in the banner.
 #lead: "Action first. The feeling catches up."
 blurb: "A pocket of encouragement for stuck days: act before you feel ready, run tiny experiments instead of goals, and give it ten minutes."
 icon: "fire"
+group: "better"
 prose: true
 youtube: "https://youtu.be/OV4ZuQQO2v4"
 ---
 
 This page is for the days when I know exactly what I should be doing and I'm
 doing something else. Two videos, from two very different people, arrive at
-the same instruction: move first, and let the feeling catch up. These are my
-notes, kept short on purpose, so the page is quick to reread when I need it.
+the same instruction: move first, and let the feeling catch up. A third is
+about what I reach for instead. These are my notes, kept short on purpose, so
+the page is quick to reread when I need it.
 
 ## You already know enough
 
@@ -93,6 +95,25 @@ Kids learn the world through play, and adults lose it by turning every new
 hobby into a syllabus. Make the first goals easy to hit. If it's piano, just
 mess around on the piano for a few days before touching theory.
 
+## Notice what the scroll is for
+
+The third video is an essay about pleasure, and one idea from it landed closer
+to home than I'd like: a lot of what feels like a treat is really anaesthesia.
+You eat when you aren't hungry and scroll when you aren't curious, and what
+you're buying is a break from noticing how you feel. The narrator calls it
+sedation.
+
+The tell is the guilt afterward. The video reads it as part of you knowing you
+weren't actually fed, and argues that every hit makes stillness a little harder
+to sit in, until silence starts to feel like punishment.
+
+The fix is a question. When the reach for the phone or the snack shows up,
+pause and ask what you actually need right now, or what you're avoiding. Then
+pick the slower pleasure when you can: a real conversation, finishing the thing
+you were dreading, a meal after a day of real work. The video counts every
+craving you sit out as self-trust, and that's what lets pleasure go back to
+being a choice.
+
 ## Clear the deck and look back
 
 Take the phone out of the room. Infinite scrolling raises the bar for what
@@ -116,16 +137,22 @@ talk to someone qualified.
 - Ten minutes. Then you're allowed to stop.
 - Passion follows skill. Being bad at first is the entry fee.
 - Lower the stakes until it's play again.
+- Before the scroll or the snack, ask what you actually need.
+- Pick the slow pleasure. The quick one is usually anaesthesia.
 - Phone out of the room.
 - Comparison is the thief of joy.
 
 ## Source
 
-Two videos, watched in October 2026. Everything above is my synthesis, and the
-personal details are the speakers' own. Neither video gives its narrator's name
-in the transcript, so I haven't guessed them. The passion video also goes into
+Three videos, written up in October 2026. Everything above is my synthesis,
+and the personal details are the speakers' own. None of the videos gives its
+narrator's name in the transcript, so I haven't guessed them. The pleasure
+video quotes Carl Jung throughout, but at least one of those quotes is a known
+misattribution and another doesn't appear in his work, so I kept its ideas and
+left the quotes, along with its closing pitch to subscribe. The passion video also goes into
 how cannabis and ADHD medication affect dopamine; that's medical territory I
 can't check, so I left it out.
 
 - [Why smart people stay stuck](https://youtu.be/OV4ZuQQO2v4): the knowing-doing gap, learning by doing, and the tiny-experiment pact.
 - [How to force passion](https://youtu.be/IznpzDrjaGo): behavioral activation, introspection, ten-minute timers, Cal Newport, and play.
+- [Pleasure as a disguise](https://youtu.be/PXbf0jpS2g4): pleasure as anaesthesia, the guilt afterward, the question to ask before the scroll, and slower, earned pleasures.

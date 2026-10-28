@@ -1,0 +1,6 @@
+{{- /*
+  writing/story-count — how many stories a writing page holds: one per `## `
+  heading in its source (content/misc/writing/*.md writes each story under one).
+  Returns an int.
+*/ -}}
+{{- return len (findRE `(?m)^## ` .RawContent) -}}

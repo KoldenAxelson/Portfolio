@@ -31,9 +31,6 @@
 .wds-chip{position:absolute;left:.6rem;bottom:.5rem;z-index:1;font-family:var(--font-mono);font-size:.6rem;letter-spacing:.08em;color:#fff;background:rgba(0,0,0,.38);padding:.28rem .55rem;border-radius:999px;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);}
 .wds-plum{background:rgb(var(--c-border) / .12);}
 .wds-plumcanvas{position:absolute;inset:0;width:100%;height:100%;display:block;}
-.wds-dwarfstar{background:#020203;}
-.wds-dwarfstarposter,.wds-dwarfstarcanvas{position:absolute;inset:0;width:100%;height:100%;display:block;}
-.wds-dwarfstarposter{object-fit:cover;}
 /* The gradient is the fallback: it's what shows if WebGL2 or float render
    targets aren't there, and the canvas paints over it otherwise. */
 .wds-smoke{background:linear-gradient(#10131a,#252b38);}
@@ -98,7 +95,6 @@
 [data-dir="minimal"] .taste-dir{color:#9a998f;}
 [data-dir="soft"] .taste-dir{color:#b09277;}
 
-.wds-intro{max-width:58ch;}
 .wds-cover:focus-visible{outline:2px solid rgb(var(--c-accent));outline-offset:2px;border-radius:.9rem;}
 .wds-title:focus-visible{outline:2px solid rgb(var(--c-accent));outline-offset:2px;border-radius:.3rem;}
 @keyframes wdsIn{from{opacity:0;transform:translateY(10px) scale(.98);}to{opacity:1;transform:none;}}
@@ -116,10 +112,7 @@
 /* Filter and plain cards: the filter hides a card with [hidden], which
    .wds-card's display:flex would otherwise override. */
 .wds-card[hidden]{display:none;}
-.wds-filter{margin:0 0 2rem;}
 .wds-plain .wds-body{padding-top:1.2rem;}
 .wds-plain{border-top:3px solid rgb(var(--c-accent) / .35);}
 .wds-desc a{position:relative;z-index:4;text-decoration:underline !important;text-decoration-color:rgb(var(--c-border)) !important;text-underline-offset:2px;}
 .wds-desc a:hover{color:rgb(var(--c-accent));}
-.wds-source{margin-top:2.5rem;font-size:.86rem;color:rgb(var(--c-muted));}
-.wds-source a{text-decoration:underline;text-underline-offset:2px;}

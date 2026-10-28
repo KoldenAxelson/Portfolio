@@ -18,7 +18,8 @@ description: "Notes on three videos about motion: making explainer videos from J
 # Blank by default — uncomment to put a line under the H1 in the banner.
 #lead: "Frames, folders and easing curves."
 blurb: "Three videos on motion: video as a function of time, a Disney-style pipeline for code-made videos, and the animation techniques that make apps feel alive."
-icon: "sparkles"
+icon: "film"
+group: "make"
 prose: true
 youtube: "https://youtu.be/rscb1DgJtNg"
 ---

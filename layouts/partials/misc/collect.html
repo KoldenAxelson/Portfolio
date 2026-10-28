@@ -1,0 +1,71 @@
+{{- /*
+  misc/collect — every card on /misc, normalised, grouped and checked.
+
+    {{ $shelves := partial "misc/collect.html" $section }}
+
+  Returns the `groups:` list from content/misc/_index.md, in order, each entry
+  carrying its own `cards` slice. One source for both readers: the visible grid
+  (misc/list.html) and the JSON-LD (schema/misc.html). Because both are built
+  from this, the page and its metadata can't drift apart — adding or removing a
+  page under content/misc/ updates both on the next build, nothing to keep in
+  sync by hand.
+
+  Two sources of cards. The section's own pages (`hidden: true` skipped), then
+  `elsewhere:` entries — pages that belong on the shelf but live outside
+  content/misc/ (/now, /uses) and keep their URLs.
+
+  Fails the build on a visible page with no `group:` or an unknown one. That is
+  the point: a new misc page has to say where it goes, or it doesn't ship.
+
+  A card's preview is assets/img/misc/previews/<slug>.webp, by convention —
+  drop a 16:10 image there and the card grows one. No front matter involved.
+  (assets/img is mounted at the assets root, so resources.Get sees it as
+  misc/previews/<slug>.webp.)
+*/ -}}
+{{- $groups := .Params.groups -}}
+{{- $keys := slice -}}
+{{- range $groups }}{{ $keys = $keys | append .key }}{{ end -}}
+
+{{- $cards := slice -}}
+{{- range where .Pages "Params.hidden" "!=" true -}}
+  {{- $where := .RelPermalink -}}
+  {{- with .File }}{{ $where = .Path }}{{ end -}}
+  {{- if not .Params.group -}}
+    {{- errorf "misc: %s has no `group:`. Give it one of %v (content/misc/_index.md) so /misc knows which shelf it sits on, or set `hidden: true`." $where $keys -}}
+  {{- else if not (in $keys .Params.group) -}}
+    {{- errorf "misc: %s sets group %q, which isn't one of %v in content/misc/_index.md." $where .Params.group $keys -}}
+  {{- end -}}
+  {{- $slug := path.Base (strings.TrimSuffix "/" .RelPermalink) -}}
+  {{- $cards = $cards | append (dict
+      "label"     .Title
+      "href"      .RelPermalink
+      "permalink" .Permalink
+      "slug"      $slug
+      "group"     .Params.group
+      "icon"      (.Params.icon | default "")
+      "blurb"     (.Params.blurb | default .Description | default "")
+      "youtube"   (.Params.youtube | default "")) -}}
+{{- end -}}
+{{- range .Params.elsewhere -}}
+  {{- if not (in $keys .group) -}}
+    {{- errorf "misc: elsewhere entry %q needs a `group:` from %v." .label $keys -}}
+  {{- end -}}
+  {{- $cards = $cards | append (dict
+      "label"     .label
+      "href"      (partial "func/url.html" .href)
+      "permalink" (absURL .href)
+      "slug"      (path.Base (strings.TrimSuffix "/" .href))
+      "group"     .group
+      "icon"      (.icon | default "")
+      "blurb"     (.blurb | default "")
+      "youtube"   (.youtube | default "")) -}}
+{{- end -}}
+
+{{- $out := slice -}}
+{{- range $groups -}}
+  {{- $key := .key -}}
+  {{- $mine := slice -}}
+  {{- range $cards }}{{ if eq .group $key }}{{ $mine = $mine | append . }}{{ end }}{{ end -}}
+  {{- $out = $out | append (merge . (dict "cards" (sort $mine "label"))) -}}
+{{- end -}}
+{{- return $out -}}

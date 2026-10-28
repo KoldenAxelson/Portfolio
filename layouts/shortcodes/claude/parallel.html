@@ -1,0 +1,13 @@
+{{- /* claude/parallel: nested sessions vs projects, from data/claude/parallel.yaml.
+       Two cards with matching rows. Static, no JS. */ -}}
+{{- $ways := site.Data.claude.parallel -}}
+{{- if not $ways }}{{ errorf "claude/parallel: data/claude/parallel.yaml is missing (page: %s)" .Page.RelPermalink }}{{ end -}}
+<div class="not-prose cl-par">
+{{- range $ways }}
+<article class="cl-par-card">
+  <h3>{{ .name }}{{ with .status }} <span class="cl-pill">{{ . }}</span>{{ end }}</h3>
+  <p class="cl-par-when">{{ .when }}</p>
+  <ul>{{ range .rows }}<li>{{ . }}</li>{{ end }}</ul>
+</article>
+{{- end }}
+</div>

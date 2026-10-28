@@ -7,7 +7,8 @@ description: "A chapter-by-chapter revival of a formative, out-of-print logic wo
 blurb: "Reviving a formative, out-of-print logic workbook — chapter summaries, with interactive widgets to come."
 # Any key from data/icons.yaml. academic-cap suits a workbook; puzzle-piece,
 # squares-2x2, sparkles, and newspaper are other good fits.
-icon: "academic-cap"
+icon: "light-bulb"
+group: "learn"
 # Route this section's landing + every chapter to layouts/basic-logic/*, so
 # their styling (headers, etc.) is isolated from the rest of the site. Remove
 # this block to fall back to the shared layouts/misc/* templates.

@@ -30,3 +30,18 @@
 @media (min-width:640px){.gk-rc-fields{grid-template-columns:1fr 1fr;}.gk-rc-fields label:nth-child(3),.gk-rc-fields label:nth-child(4){grid-column:1 / -1;}}
 .gk-rc-area{min-height:4.2rem;resize:vertical;}
 .gk-rc-out{margin:.9rem 0 0;padding:.8rem .9rem;border-radius:.55rem;border:1px solid rgb(var(--c-accent) / .45);background:rgb(var(--c-accent) / .05);font-family:var(--font-mono);font-size:.74rem;line-height:1.6;color:rgb(var(--c-fg));white-space:pre-wrap;overflow-wrap:anywhere;}
+
+/* ── 3 · the persuasion system (reference module, no behaviour) ─────────── */
+.gk-ps-title{margin:0;font-size:.95rem;font-weight:600;line-height:1.35;color:rgb(var(--c-fg));}
+.gk-ps-text{margin:.3rem 0 0;font-size:.88rem;line-height:1.55;color:rgb(var(--c-muted));}
+.gk-ps-line{display:inline-block;margin:.1rem 0;padding:.05rem .45rem;border-radius:.4rem;border:1px solid rgb(var(--c-border));background:rgb(var(--c-bg));color:rgb(var(--c-fg));font-size:.84rem;}
+.gk-ps-before{padding:.8rem .9rem;border-radius:.6rem;border:1px dashed rgb(var(--c-border));}
+.gk-ps-steps{position:relative;list-style:none;margin:1rem 0;padding:0;display:grid;gap:.9rem;}
+.gk-ps-steps::before{content:'';position:absolute;left:.95rem;top:.6rem;bottom:.6rem;width:2px;background:rgb(var(--c-border));}
+.gk-ps-step{position:relative;display:flex;gap:.8rem;align-items:flex-start;}
+.gk-ps-n{position:relative;z-index:1;flex:0 0 1.9rem;height:1.9rem;display:inline-flex;align-items:center;justify-content:center;border-radius:9999px;border:2px solid rgb(var(--c-border));background:rgb(var(--c-bg));font-family:var(--font-mono);font-size:.78rem;font-weight:700;color:rgb(var(--c-fg));}
+.gk-ps-body{flex:1;padding-top:.2rem;}
+.gk-ps-step.is-turning .gk-ps-n{border-color:rgb(var(--c-accent));background:rgb(var(--c-accent));color:rgb(var(--c-bg));}
+.gk-ps-step.is-turning .gk-ps-body{padding:.55rem .75rem;margin-top:-.35rem;border-radius:.6rem;background:rgb(var(--c-accent) / .1);}
+.gk-ps-tag{display:inline-block;margin-left:.5rem;padding:.05rem .45rem;border-radius:9999px;background:rgb(var(--c-accent) / .2);font-family:var(--font-mono);font-size:.65rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:rgb(var(--c-fg));vertical-align:middle;}
+.gk-ps-override{padding:.8rem .9rem;border-radius:.6rem;border:1px solid rgb(var(--c-accent) / .7);background:rgb(var(--c-accent) / .08);}

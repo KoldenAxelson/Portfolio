@@ -9,7 +9,8 @@ title: "Ikigai"
 description: "A short, practical guide to being more positive, healthy, purposeful and whole: treat yourself like a plant, train like you're no Olympian, find your North Star, then find your ikigai."
 lead: "Be more positive, healthy, purposeful and whole"
 blurb: "Treat yourself like a plant, train like you're no Olympian, find your North Star, then find your ikigai. Tick off what's already in place."
-icon: "sparkles"
+icon: "heart"
+group: "better"
 prose: true
 sections:
   - { id: "advice",  label: "Quick advice", icon: "information-circle" }

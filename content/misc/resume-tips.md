@@ -19,7 +19,8 @@ description: "Notes on eight videos from two former recruiters: who reads a resu
 # Blank by default — uncomment to put a line under the H1 in the banner.
 #lead: "Eight videos from two recruiters, distilled."
 blurb: "Eight videos from two ex-recruiters, distilled: the five-second skim, what the ATS really is, bullets that survive, the line you can't cross, and the first ninety seconds of the interview."
-icon: "clipboard-document"
+icon: "cv"
+group: "better"
 prose: true
 youtube: "https://www.youtube.com/@Farah_Sharghi"
 ---

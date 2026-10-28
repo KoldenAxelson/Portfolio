@@ -11,7 +11,8 @@ title: "Ba-Gil"
 description: "Ba-Gil, a constructed language I'm building in the open: 16 letters, three word shapes, vowels that pick the meaning, and opposites made by flipping a word around."
 lead: "Future-speak: a language with no exceptions"
 blurb: "My constructed language: 16 letters, three word shapes, and opposites made by flipping a word around."
-icon: "quote"
+icon: "language"
+group: "make"
 prose: true
 sections:
   - { id: "letters",   label: "Letters",   icon: "book-open" }

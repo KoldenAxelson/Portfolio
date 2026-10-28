@@ -7,7 +7,8 @@
 title: "Sun"
 description: "A simulated star in the browser, seen the way SDO and SOHO see the Sun: five EUV channels, the photosphere, the magnetogram and two coronagraph fields, for the Sun and five other stars from an orange dwarf to TRAPPIST-1."
 blurb: "The Sun and five other stars, simulated live and seen through SDO's and SOHO's instruments."
-icon: "fire"
+icon: "sun"
+group: "play"
 container: "wide"
 ---
 

@@ -1,5 +1,5 @@
 (function () {
-  var canvas = document.getElementById("wdsDwarfstar");
+  var canvas = document.getElementById("twDwarfstar");
   if (!canvas || !navigator.gpu) return;
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 

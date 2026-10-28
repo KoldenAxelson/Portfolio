@@ -1,0 +1,63 @@
+{{- /*
+  misc/card — one /misc poster card, drawn by components/shelf.html with
+  (dict "item" <card>), where <card> is a dict from misc/collect.html.
+
+  Every card is a poster: a 16:10 band on top, title row and blurb under it.
+  The band is the first of these that exists for the card's slug:
+    1. partials/misc/live/<slug>.html — a live canvas (Cool Sites' dot logo);
+    2. assets/img/misc/previews/<slug>.webp — a screenshot, 480px + 960px 2x;
+    3. the card's icon, large, on a faint wash — so a row reads as one shelf
+       of posters rather than pictures with gaps between them.
+
+  One <a> per card. [data-misc-card] and the lowercased [data-misc-terms]
+  haystack are the search hooks, so the filter never parses card markup.
+
+  `youtube` is the source-video URL on a page that is notes taken from one.
+  The card only asks whether it's set — the corner mark labels what kind of
+  page this is; it is not a second link (the video link lives on the page).
+*/ -}}
+{{- $c := .item -}}
+{{- $terms := printf "%s %s" $c.label $c.blurb -}}
+{{- /* "youtube video" joins the haystack so typing either word filters down to
+       the video notes — the corner mark is visible, so it should be searchable
+       by the thing it depicts. */ -}}
+{{- if $c.youtube }}{{ $terms = printf "%s youtube video" $terms }}{{ end -}}
+{{- $livePartial := printf "misc/live/%s.html" $c.slug -}}
+{{- $isLive := templates.Exists (printf "partials/%s" $livePartial) -}}
+{{- $shot := resources.Get (printf "misc/previews/%s.webp" $c.slug) -}}
+<a href="{{ $c.href }}" data-misc-card data-misc-terms="{{ lower $terms }}"
+  class="group relative flex h-full flex-col overflow-hidden rounded-xl border border-border/70 no-underline transition-colors hover:border-accent/50 hover:bg-border/20 focus-visible:border-accent/60 focus-visible:bg-border/20">
+  <span class="relative block aspect-[16/10] shrink-0 overflow-hidden border-b border-border/70 bg-border/20">
+    {{- if $isLive }}
+    {{ partial $livePartial (dict "card" $c) }}
+    {{- else if $shot }}
+    {{- $img := partial "func/cover.html" (dict "path" (printf "/misc/previews/%s.webp" $c.slug) "width" 480 "height" 300 "q" 82) }}
+    <img src="{{ $img.src }}"{{ with $img.srcset }} srcset="{{ . }}"{{ end }}{{ with $img.width }} width="{{ . }}"{{ end }}{{ with $img.height }} height="{{ . }}"{{ end }}
+      alt="" loading="lazy" decoding="async"
+      class="h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100" />
+    {{- else }}
+    <span aria-hidden="true" class="flex h-full w-full items-center justify-center bg-gradient-to-br from-border/40 to-transparent text-muted transition-colors group-hover:!text-accent">
+      {{- partial "func/svg-icon.html" (dict "name" ($c.icon | default "squares-2x2") "class" "h-12 w-12" "width" "1.2") -}}
+    </span>
+    {{- end }}
+  </span>
+  {{- /* pb-11 on a marked card: the mark is absolutely positioned, so without a
+         reserved band the last line of a long blurb runs underneath it. */}}
+  <span class="block flex-1 p-4{{ if $c.youtube }} pb-11{{ end }}">
+    <span class="flex items-center gap-2 text-fg">
+      {{- if or $isLive $shot }}{{ with $c.icon }}{{ partial "func/svg-icon.html" (dict "name" . "class" "h-5 w-5 shrink-0 text-muted transition-colors group-hover:!text-accent") }}{{ end }}{{ end }}
+      <span class="font-medium group-hover:!text-accent">{{ $c.label }}</span>
+      <span aria-hidden="true" class="ml-auto inline-block text-muted transition-transform duration-200 ease-out group-hover:translate-x-0.5 group-hover:!text-accent">&rarr;</span>
+    </span>
+    {{- with $c.blurb }}<span class="mt-2 block text-sm leading-snug text-muted">{{ . }}</span>{{ end }}
+  </span>
+  {{- /* Brand red, not the accent token — the one place on the site where the
+         colour IS the information; an accent-tinted YouTube logo reads as a
+         generic play button. 70% at rest, full on hover. */ -}}
+  {{- if $c.youtube }}
+  <span class="pointer-events-none absolute bottom-4 right-5 text-[#FF0000] opacity-70 transition-opacity group-hover:opacity-100">
+    <span class="sr-only">Notes from a YouTube video</span>
+    {{ partial "func/svg-icon.html" (dict "name" "youtube" "class" "h-5 w-5") }}
+  </span>
+  {{- end }}
+</a>

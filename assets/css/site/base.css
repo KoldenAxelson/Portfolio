@@ -658,6 +658,9 @@ html:not([data-ai-ok]) [data-ai-mobile-trigger] { display: none !important; }
 [data-game-mobile-media][data-kind='game'] {
   aspect-ratio: 16 / 9;
 }
+/* The series book whose cover the carousel is showing (game-card.ts showSlide). */
+[data-series-row][aria-current='true'] > span { color: rgb(var(--c-accent)) !important; font-weight: 600; }
+
 [data-game-media][data-kind='book'],
 [data-game-mobile-media][data-kind='book'] {
   height: 20rem;

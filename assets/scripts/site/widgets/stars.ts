@@ -87,8 +87,8 @@ export const buildSeries = (items: SeriesEntry[]): string => {
   const read = items.filter((i) => i.done).length;
   const rows = items
     .map(
-      (i) =>
-        `<li style="display:flex;align-items:center;gap:8px;padding:3px 0;">${i.done ? SERIES_CHECK : SERIES_CIRCLE}<span style="${i.done ? 'text-decoration:line-through;color:var(--color-muted);' : 'color:var(--color-fg);'}">${escapeHtml(i.title)}</span></li>`,
+      (i, idx) =>
+        `<li data-series-row="${idx}" style="display:flex;align-items:center;gap:8px;padding:3px 0;">${i.done ? SERIES_CHECK : SERIES_CIRCLE}<span style="${i.done ? 'text-decoration:line-through;color:var(--color-muted);' : 'color:var(--color-fg);'}">${escapeHtml(i.title)}</span></li>`,
     )
     .join('');
   return `<p style="margin:0 0 6px;font-family:var(--font-mono);font-size:12px;color:var(--color-muted);">${read} of ${items.length} read</p><ul style="list-style:none;margin:0;padding:0;font-size:14px;">${rows}</ul>`;

@@ -1,0 +1,29 @@
+{{- /* /misc as a CollectionPage: one ItemList per shelf, every card a ListItem.
+       Built from misc/collect.html — the same list the visible grid renders —
+       so a scraper reading only <head> gets the whole directory, grouped, and
+       it can't fall out of step with the page. References #person by @id. */ -}}
+{{- $siteUrl := partial "func/site-url.html" . -}}
+{{- $parts := slice -}}
+{{- range $g := partial "misc/collect.html" . -}}
+  {{- $items := slice -}}
+  {{- range $i, $c := $g.cards -}}
+    {{- $li := dict "@type" "ListItem" "position" (add $i 1) "name" $c.label "url" $c.permalink -}}
+    {{- with $c.blurb }}{{ $li = merge $li (dict "description" .) }}{{ end -}}
+    {{- $items = $items | append $li -}}
+  {{- end -}}
+  {{- with $items -}}
+    {{- $list := dict "@type" "ItemList" "name" $g.label "numberOfItems" (len .) "itemListElement" . -}}
+    {{- $parts = $parts | append $list -}}
+  {{- end -}}
+{{- end -}}
+{{- $obj := dict
+  "@context" "https://schema.org"
+  "@type" "CollectionPage"
+  "@id" (printf "%s#page" .Permalink)
+  "url" .Permalink
+  "name" .Title
+  "description" .Description
+  "author" (dict "@id" (printf "%s#person" $siteUrl))
+  "hasPart" $parts
+-}}
+<script type="application/ld+json">{{ $obj | jsonify | safeJS }}</script>

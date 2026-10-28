@@ -1,0 +1,27 @@
+{{/* Writing — one collection's reading page: a list of its stories, then the
+     stories themselves (each a `## ` heading in the source, with an illustration
+     and a moral from shortcodes/writing/), then links to the other
+     collections. Styles: assets/css/pages/writing/writing.css. */}}
+{{ define "banner" }}
+{{ partial "site/page-banner.html" (dict
+  "title" .Title
+  "subtitle" (.Params.lead | default "")) }}
+{{ end }}
+
+{{ define "main" }}
+{{- $css := resources.Get "css/pages/writing/writing.css" | minify | fingerprint -}}
+<link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" />
+{{- $stories := partial "func/writing-story-count.html" . -}}
+{{- if gt $stories 1 }}
+<nav class="writing-toc not-prose" aria-label="Stories in this collection">{{ .TableOfContents }}</nav>
+{{- end }}
+<article class="prose prose-lg max-w-none writing-story{{ if gt $stories 1 }} is-collection{{ end }}">
+  {{ .Content }}
+</article>
+<nav class="writing-pager not-prose" aria-label="More writing">
+  {{- range where (where .CurrentSection.RegularPages "Params.hidden" "!=" true).ByWeight "Permalink" "!=" .Permalink }}
+  <a href="{{ .RelPermalink }}" class="writing-pager-link"><span>Also on the shelf</span>{{ .Title }}</a>
+  {{- end }}
+  <a href="{{ .CurrentSection.RelPermalink }}" class="writing-pager-link"><span>Back to</span>All writing</a>
+</nav>
+{{ end }}

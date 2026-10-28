@@ -1,0 +1,15 @@
+{{- /*
+  writing/illustration — a story's picture, from assets/img/writing/<slug>.<ext>,
+  resized to WebP by func/cover.html.
+
+    {{< writing/illustration "fox-den" "A fox cub looking out of its den" >}}
+*/ -}}
+{{- $slug := .Get 0 -}}
+{{- with index (resources.Match (printf "writing/%s.*" $slug)) 0 -}}
+{{- $img := partial "func/cover.html" (dict "path" (printf "/%s" .Name) "width" 720) -}}
+<figure class="writing-illustration not-prose">
+  <img src="{{ $img.src }}"{{ with $img.srcset }} srcset="{{ . }}"{{ end }} alt="{{ $.Get 1 }}" width="{{ $img.width }}" height="{{ $img.height }}" loading="lazy" decoding="async" />
+</figure>
+{{- else -}}
+{{- errorf "writing/illustration: no image assets/img/writing/%s.* (page: %s)" $slug .Page.RelPermalink -}}
+{{- end -}}

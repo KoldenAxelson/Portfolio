@@ -55,6 +55,9 @@
 {{- /* Cool sites: page stylesheet and one script per card preview. */ -}}
 {{- if .HasShortcode "cool-sites/grid" }}{{ partial "cool-sites/assets.html" . }}{{ end }}
 
+{{- /* Tech watch: page stylesheet and one script per card preview. */ -}}
+{{- if .HasShortcode "tech-watch/grid" }}{{ partial "tech-watch/assets.html" . }}{{ end }}
+
 {{- /* Emergence lab: stylesheet and simulation bundle. */ -}}
 {{- if .HasShortcode "emergence/lab" }}{{ partial "emergence/assets.html" . }}{{ end }}
 
@@ -106,6 +109,7 @@
 {{/* Floating "jump to section" FAB, for long single pages that declare
      `sections:` in front matter. Renders nothing on every other misc page. */}}
 {{ partial "components/section-nav.html" . }}
+{{ partial "components/filter-fab.html" . }}
 
 {{/* And the Dagea navigation FAB, for the one misc page that draws the globe. It
      renders nothing anywhere else, and no misc page has both — the globe declares

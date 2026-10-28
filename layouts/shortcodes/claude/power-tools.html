@@ -1,0 +1,20 @@
+{{- /* claude/power-tools: the cheat sheet, from data/claude/power-tools.yaml.
+       Key chips, then one line. Static, no JS. */ -}}
+{{- $groups := index site.Data.claude "power-tools" -}}
+{{- if not $groups }}{{ errorf "claude/power-tools: data/claude/power-tools.yaml is missing (page: %s)" .Page.RelPermalink }}{{ end -}}
+<div class="not-prose cl-tools">
+{{- range $groups }}
+<section class="cl-tools-group">
+  <h3>{{ .group }}</h3>
+  <dl>
+  {{- range .items }}
+    <div class="cl-tool">
+      <dt>{{ range $i, $k := .keys }}{{ if $i }}<span class="cl-plus">+</span>{{ end }}<kbd>{{ $k }}</kbd>{{ end }}{{ with .also }}<span class="cl-or">or</span><kbd>{{ . }}</kbd>{{ end }}</dt>
+      <dd>{{ .what }}</dd>
+    </div>
+  {{- end }}
+  </dl>
+</section>
+{{- end }}
+</div>
+<p class="not-prose cl-note">Mac keys shown. On Windows, Cmd is Ctrl and Option is Alt.</p>

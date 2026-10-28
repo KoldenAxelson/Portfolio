@@ -1,0 +1,17 @@
+{{- /*
+  tech-watch/cats — the kinds /misc/tech-watch/ can be filtered by, as
+  {key, label, icon}, "All" first, keeping only kinds at least one item in
+  data/tech-watch/items.yaml carries. Read by func/filter-cats.html, which
+  feeds the filter launcher (components/filter-fab.html on desktop, the navbar
+  tools panel on mobile).
+*/ -}}
+{{- $all := slice
+  (dict "key" "hardware" "label" "Hardware" "icon" "device-phone-mobile")
+  (dict "key" "software" "label" "Software" "icon" "desktop")
+  (dict "key" "ai"       "label" "AI"       "icon" "robot")
+-}}
+{{- $types := slice -}}
+{{- range (index site.Data "tech-watch").items }}{{ $types = $types | append .types }}{{ end -}}
+{{- $out := slice (dict "key" "" "label" "All" "icon" "squares-2x2") -}}
+{{- range $all }}{{ if in $types .key }}{{ $out = $out | append . }}{{ end }}{{ end -}}
+{{- return $out -}}

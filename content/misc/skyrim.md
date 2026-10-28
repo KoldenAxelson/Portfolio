@@ -19,7 +19,8 @@ description: "Potion recipes, a mixture builder, and planners for the Restoratio
 # Blank by default — uncomment to put a line under the H1 in the banner.
 #lead: "My personal Skyrim toolkit"
 blurb: "My working Skyrim reference — go-to potion recipes, their real effects, and where to farm the ingredients."
-icon: "wrench-screwdriver"
+icon: "chest"
+group: "tools"
 container: "wide"
 prose: true
 desktopFab: true

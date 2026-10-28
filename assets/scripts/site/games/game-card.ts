@@ -54,6 +54,11 @@ export function populateGameCard(d: DOMStringMap, els: GameCardEls): void {
     const pitch = d.pitch || '';
     els.blurb.dataset.review = review;
     els.blurb.dataset.pitch = pitch;
+    // A series' per-slide pitches ride along for showSlide (below).
+    els.blurb.dataset.entryPitch = pitch;
+    els.blurb.dataset.slidePitches = d.slidePitches || '';
+    els.blurb.dataset.slideSeries = d.slideSeries || '';
+    els.blurb.dataset.slide = '';
     if (els.textToggle) els.textToggle.hidden = !(review && pitch);
     showText(els.blurb, els.textToggle, review ? 'review' : 'pitch');
   }
@@ -67,6 +72,13 @@ export function populateGameCard(d: DOMStringMap, els: GameCardEls): void {
     els.media.innerHTML = buildCarousel(imgs);
     els.media.setAttribute('data-kind', d.kind || 'game');
     els.media.scrollLeft = 0;
+    // The drawer is often still hidden at this point, and a hidden scroller
+    // ignores scrollLeft, so it would reopen on the last card's slide. Reset
+    // again once it is laid out; the scroll event re-syncs dots and text.
+    const media = els.media;
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      media.scrollLeft = 0;
+    }));
     if (els.dots) {
       if (imgs.length > 1) {
         els.dots.innerHTML = buildDots(imgs.length);
@@ -114,6 +126,58 @@ export function populateGameCard(d: DOMStringMap, els: GameCardEls): void {
   for (const el of els.consoleIcons) {
     el.hidden = el.getAttribute('data-console-icon-for') !== d.console;
   }
+  // Start on the first slide's book (after the series list exists to mark).
+  if (els.blurb) showSlide(0, els.blurb, els.textToggle, els.series);
+}
+
+const parseList = <T>(raw: string | undefined): T[] => {
+  if (!raw) return [];
+  try {
+    const v = JSON.parse(raw);
+    return Array.isArray(v) ? v : [];
+  } catch {
+    return [];
+  }
+};
+
+// A series card pairs each carousel image with one of its books
+// (impossible-list/book-card.html builds the pairing). Landing on an image
+// swaps the pitch to that book's, falling back to the entry's own pitch, and
+// marks the book in the series checklist. Only the pitch follows the slide:
+// the review is about the whole entry, so it stays put until the toggle flips
+// to the pitch. A card without a pairing is left alone.
+function showSlide(idx: number, blurb: HTMLElement, toggle: HTMLElement | null, series: HTMLElement | null): void {
+  const pitches = parseList<string>(blurb.dataset.slidePitches);
+  if (!pitches.length || blurb.dataset.slide === String(idx)) return;
+  blurb.dataset.slide = String(idx);
+  blurb.dataset.pitch = pitches[idx] || blurb.dataset.entryPitch || '';
+  const mode: TextMode = toggle && !toggle.hidden && toggle.dataset.mode === 'review' ? 'review' : 'pitch';
+  if (mode === 'pitch' || !blurb.dataset.review) showText(blurb, toggle, 'pitch');
+  if (!series) return;
+  const row = parseList<number>(blurb.dataset.slideSeries)[idx];
+  for (const li of Array.from(series.querySelectorAll<HTMLElement>('[data-series-row]'))) {
+    if (Number(li.dataset.seriesRow) === row) li.setAttribute('aria-current', 'true');
+    else li.removeAttribute('aria-current');
+  }
+}
+
+// Follow the carousel with the pitch and checklist (showSlide). Passive, like
+// the dots: it only reads the scroll position.
+export function wireCarouselText(
+  media: HTMLElement | null,
+  blurb: HTMLElement | null,
+  toggle: HTMLElement | null,
+  series: HTMLElement | null,
+): void {
+  if (!media || !blurb) return;
+  media.addEventListener(
+    'scroll',
+    () => {
+      if (!media.clientWidth) return;
+      showSlide(Math.round(media.scrollLeft / media.clientWidth), blurb, toggle, series);
+    },
+    { passive: true },
+  );
 }
 
 // Swap between review and pitch. Wired once per surface; the texts themselves

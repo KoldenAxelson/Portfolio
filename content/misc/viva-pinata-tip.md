@@ -4,6 +4,7 @@ description: "Every Viva Piñata species and the items that unlock its colour va
 # Blank by default — uncomment to put a line under the H1 in the banner.
 #lead: "The feed item that triggers each species' colour variants — feed a Bluebell Flower to an Arocknid and it turns blue. All 88, searchable, with a checklist you can save and reload."
 icon: "trophy"
+group: "tools"
 blurb: "Colour-variant feeds for every species in Viva Piñata — searchable, with a save/load collection checklist."
 container: "wide"
 # Desktop shows the floating FAB (below); mobile routes these same actions into

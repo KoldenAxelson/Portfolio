@@ -5,6 +5,7 @@ description: "A 6x6 block puzzle. It has 36 numbered, colored blocks. Every row 
 #lead: "Thirty-six blocks, six colors, six numbers, and 105,753,600 correct answers."
 blurb: "A block puzzle, the 200-year-old problem it almost is, and eight attempts to solve it more quickly."
 icon: "puzzle-piece"
+group: "reference"
 prose: true
 ---
 

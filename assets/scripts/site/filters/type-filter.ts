@@ -1,21 +1,33 @@
-// Type filter for any page that renders partials/components/type-filter.html:
-// /projects/ and /misc/cool-sites/. Items carry [data-types]; buttons
-// [data-filter-type] ("" = all). Active state is driven purely by aria-pressed
-// on the button (Tailwind aria-[pressed=true] variants style the bubble), so
-// this only flips attributes and toggles visibility.
+// Type filter for /projects/, /misc/, /misc/cool-sites/ and /misc/tech-watch/.
+// Items carry [data-types="a,b"]; any [data-filter-type] button ("" = all)
+// switches the filter. The buttons live in two places, both built from
+// partials/func/filter-cats.html:
+//   - the desktop filter aux button, partials/components/filter-fab.html;
+//   - the same choices in the mobile navbar tools panel (site/topnav.html).
+// Every button for the active type gets aria-pressed="true" (a Tailwind
+// aria-[pressed=true] variant styles the panel rows; aux-fab rows also get
+// .aux-fab__row--current), so this only flips attributes and toggles visibility.
+
+/** Close the desktop aux button and the mobile nav panel, whichever is open. */
+function closeLaunchers(): void {
+  document
+    .querySelectorAll<HTMLDetailsElement>('[data-aux-fab][open], [data-mobile-nav][open]')
+    .forEach((d) => d.removeAttribute('open'));
+}
 
 export function initTypeFilter(): void {
-  const group = document.querySelector<HTMLElement>('[data-type-filter]');
-  if (!group) return;
+  const buttons = Array.from(document.querySelectorAll<HTMLElement>('[data-filter-type]'));
+  if (!buttons.length) return;
 
-  const buttons = Array.from(group.querySelectorAll<HTMLButtonElement>('[data-filter-type]'));
   const items = Array.from(document.querySelectorAll<HTMLElement>('[data-types]'));
   const sections = Array.from(document.querySelectorAll<HTMLElement>('[data-type-section]'));
   const unfilteredOnly = Array.from(document.querySelectorAll<HTMLElement>('[data-filter-all-only]'));
 
   const apply = (type: string): void => {
     for (const btn of buttons) {
-      btn.setAttribute('aria-pressed', String((btn.dataset.filterType || '') === type));
+      const on = (btn.dataset.filterType || '') === type;
+      btn.setAttribute('aria-pressed', String(on));
+      if (btn.classList.contains('aux-fab__row')) btn.classList.toggle('aux-fab__row--current', on);
     }
 
     for (const el of items) {
@@ -33,6 +45,26 @@ export function initTypeFilter(): void {
   };
 
   for (const btn of buttons) {
-    btn.addEventListener('click', () => apply(btn.dataset.filterType || ''));
+    btn.addEventListener('click', () => {
+      apply(btn.dataset.filterType || '');
+      // A launcher can be clicked from far down the page; filtering then
+      // shrinks the page under the reader. Close it and bring the first
+      // surviving item into view, unless it is already on screen.
+      if (btn.closest('[data-aux-fab], [data-mobile-panel-tools]')) {
+        closeLaunchers();
+        const first = items.find((el) => !el.hidden);
+        if (first) {
+          const top = first.getBoundingClientRect().top;
+          if (top < 0 || top > window.innerHeight * 0.6) {
+            const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            window.scrollTo({ top: top + window.scrollY - 96, behavior: reduce ? 'auto' : 'smooth' });
+          }
+        }
+      }
+    });
   }
+
+  // Sync every surface to "All" on load — the mobile panel's buttons are
+  // rendered without aria-pressed.
+  apply('');
 }

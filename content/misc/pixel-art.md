@@ -19,7 +19,8 @@ description: "Notes on stylized 3D pixel art: billboarded grass and trees, flat 
 # Blank by default — uncomment to put a line under the H1 in the banner.
 #lead: "Low resolution, high intent."
 blurb: "Stylized 3D pixel-art foliage: billboarded grass and trees, cel shading, rim light, and wind from a scrolling noise texture, with live demos."
-icon: "puzzle-piece"
+icon: "photo"
+group: "make"
 prose: true
 youtube: "https://youtu.be/iPbYzFWECz4"
 ---

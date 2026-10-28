@@ -23,11 +23,10 @@
    the click. That made the aux FAB unreachable on /cv, every Basic Logic chapter,
    /misc/skyrim, /misc/dnd and every Dagea page, whenever the chat backend was up.
 
-   A GUARD, NOT A FIX, as of the chat's allow-list: data/site.yaml now offers the
-   chat on five pages and none of them has an aux FAB, so today the two never meet.
-   The rule stays because that is a fact about a list somebody will edit, and the
-   failure it prevents is silent — a button that is visible, looks fine, and does
-   nothing when clicked.
+   They do meet: /projects/ offers the chat (data/site.yaml `ai.pages`) and has
+   the filter aux button (components/filter-fab.html), so this rule lifts the aux
+   FAB above the chat button there. Keep it — the failure it prevents is silent,
+   a button that is visible, looks fine, and does nothing when clicked.
 
    Both conditions are required. `data-ai-ok` is set on <html> by scripts/site/widgets/ai-widget.ts
    once its health check passes — the same signal base.css uses to reveal the chat

@@ -36,7 +36,8 @@ description: "House rules for my Dagean campaign: a character builder, the Revis
 # Blank by default — uncomment to put a line under the H1 in the banner.
 #lead: "The rules I run"
 blurb: "House rules for the campaign I run in Dagea — a character builder, a maneuver picker, and a short feat list."
-icon: "shield-check"
+icon: "wizard"
+group: "tools"
 container: "wide"
 prose: true
 desktopFab: true

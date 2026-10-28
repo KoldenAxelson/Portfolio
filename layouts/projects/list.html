@@ -11,24 +11,11 @@
 {{- $tier2 := sort (where $projects "Params.tier" 2) "Params.year" "desc" -}}
 {{- $archive := sort site.Data.archive "year" "desc" -}}
 
-{{/* Focus-area filter: ordered, icon-led categories sharing the site icon set
-     (data/icons.yaml); "web" reuses the existing globe. The bubbles and their
-     behaviour are partials/components/type-filter.html. */}}
-{{- $cats := slice
-  (dict "key" ""         "label" "All"      "icon" "squares-2x2")
-  (dict "key" "web"      "label" "Web"      "icon" "globe")
-  (dict "key" "cloud"    "label" "Cloud"    "icon" "cloud")
-  (dict "key" "security" "label" "Security" "icon" "shield-check")
-  (dict "key" "game"     "label" "Game"     "icon" "puzzle-piece")
-  (dict "key" "tooling"  "label" "Tooling"  "icon" "wrench-screwdriver")
--}}
-{{- $types := slice -}}
-{{- range $projects }}{{ with .Params.types }}{{ $types = $types | append . }}{{ end }}{{ end -}}
-{{- with uniq $types }}
-<section class="mb-12 scroll-mt-24">
-  {{ partial "components/type-filter.html" (dict "cats" $cats "present" . "label" "Filter projects by focus area") }}
-</section>
-{{- end }}
+{{/* Focus-area filter: the filter aux button on desktop and the navbar tools
+     panel on mobile, both from func/filter-cats.html (areas in
+     partials/projects/cats.html). Sections below carry data-type-section /
+     data-filter-all-only and cards data-types for scripts/site/filters/type-filter.ts. */}}
+{{ partial "components/filter-fab.html" . }}
 
 {{- with $tier1 }}
 <section id="featured" class="mb-16 scroll-mt-24" data-type-section aria-labelledby="featured-heading">

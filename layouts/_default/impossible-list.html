@@ -30,34 +30,35 @@
   </section>
   {{- end }}
 
-  {{/* icons for the game checklist line items */}}
-  {{- $expandSvg := `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-3.5 w-3.5 shrink-0 opacity-50 transition-opacity group-hover/game:opacity-100"><path d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" /></svg>` -}}
-  {{- $checkSvg := `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="mt-0.5 h-4 w-4 shrink-0 text-accent"><path d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>` -}}
-  {{- $circleSvg := `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" class="mt-0.5 h-4 w-4 shrink-0 text-border"><circle cx="12" cy="12" r="9" /></svg>` -}}
-
   {{- with .Params.games }}
   <section>
     <h2 class="font-mono text-xs uppercase tracking-widest text-muted">{{ .label }}</h2>
-    <ul class="mt-3 space-y-2">
-      {{- range .items }}
-      {{- $title := .title -}}
-      <li class="flex items-start gap-3">
-        {{- if .done }}
-        {{- $imgs := slice -}}
-        {{- with .shot }}{{ $imgs = partial "func/media-images.html" (dict "dir" "games" "slug" (replaceRE `\.[^.]*$` "" .) "width" 800) }}{{ end -}}
-        {{ $checkSvg | safeHTML }}
-        <button type="button" data-game-open aria-haspopup="dialog" data-title="{{ $title }}" data-kind="game" data-rating="{{ .rating }}" data-blurb="{{ .blurb }}" data-images="{{ $imgs | jsonify }}" data-console="{{ .console }}" class="group/game -my-0.5 inline-flex items-center gap-1.5 rounded text-left text-muted line-through decoration-border transition-colors hover:!text-accent hover:decoration-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
-          <span>{{ $title }}</span>
-          {{ $expandSvg | safeHTML }}
-        </button>
-        {{ partial "impossible-list/details.html" (dict "item" . "consoleName" (index $consoleNames .console)) }}
-        {{- else }}
-        {{ $circleSvg | safeHTML }}
-        <span class="text-fg">{{ $title }}</span>
-        {{- end }}
-      </li>
-      {{- end }}
-    </ul>
+    {{/* Two shelves, split by console: handhelds (and, one day, phones) on one,
+         home consoles and PC on the other. A console code not listed here lands
+         on Console/PC. Each shelf orders itself like the books: played first,
+         best-rated first, ties to the entry lower in the file (Hugo's sort is
+         stable, so the order-desc pass underneath survives); then unplayed in
+         the file's order, which is a recommendation ranking, best first. */}}
+    {{- $handheld := slice "GB" "GBC" "GBA" "DS" "3DS" "PSP" "VITA" "MOBILE" -}}
+    {{- $entries := slice -}}
+    {{- range $i, $game := .items }}{{ $entries = $entries | append (merge (dict "rating" 0.0 "year" 0) $game (dict "order" $i)) }}{{ end -}}
+    {{- range $shelf := slice (dict "label" "Handhelds/Mobile" "handheld" true) (dict "label" "Console/PC" "handheld" false) -}}
+    {{- $mine := slice -}}
+    {{- range $entries }}{{ if eq (in $handheld .console) $shelf.handheld }}{{ $mine = $mine | append . }}{{ end }}{{ end -}}
+    {{- with $mine -}}
+    {{- /* `current: true` (what I'm playing now) leads the shelf, ahead of the sort. */ -}}
+    {{- $current := where . "current" true -}}
+    {{- $rest := where . "current" "!=" true -}}
+    {{- $played := sort (sort (where $rest "done" true) "order" "desc") "rating" "desc" -}}
+    {{- $unplayed := where $rest "done" "!=" true -}}
+    {{- $unplayed = sort $unplayed "order" -}}
+    {{- $row := slice -}}
+    {{- range $current }}{{ $row = $row | append (merge . (dict "consoleName" (index $consoleNames .console))) }}{{ end -}}
+    {{- range $played }}{{ $row = $row | append (merge . (dict "consoleName" (index $consoleNames .console))) }}{{ end -}}
+    {{- range $unplayed }}{{ $row = $row | append (merge . (dict "consoleName" (index $consoleNames .console))) }}{{ end }}
+    {{ partial "components/shelf.html" (dict "label" $shelf.label "items" $row "card" "impossible-list/game-card.html") }}
+    {{- end -}}
+    {{- end }}
   </section>
   {{- end }}
 
@@ -65,62 +66,24 @@
   <section>
     <h2 class="font-mono text-xs uppercase tracking-widest text-muted">{{ .label }}</h2>
     {{- range .shelves }}
-    {{/* Read first, best-rated first; then unread, newest publication first.
-         Ties in either group go to the newest entry, which is list position: a
-         book appended lower in its shelf counts as newer. The second sort only
+    {{/* Read first, best-rated first (ties go to the newest entry, which is
+         list position: a book appended lower in its shelf counts as newer);
+         then unread in the file's order, which is a recommendation ranking,
+         best first. The second sort only
          preserves the order-desc pass underneath because Hugo's sort is stable. */}}
     {{- $entries := slice -}}
     {{- range $i, $book := .items }}{{ $entries = $entries | append (merge (dict "rating" 0.0 "year" 0) $book (dict "order" $i)) }}{{ end -}}
+    {{- /* `current: true` (what I'm reading now) leads the shelf, ahead of the sort. */ -}}
+    {{- $current := where $entries "current" true -}}
+    {{- $entries = where $entries "current" "!=" true -}}
     {{- $read := sort (sort (where $entries "done" true) "order" "desc") "rating" "desc" -}}
     {{- $unread := where $entries "done" "!=" true -}}
-    {{- range $unread }}{{ if not .year }}{{ warnf "impossible-list: unread book %q has no year, so it can't be ordered by publication" .title }}{{ end }}{{ end -}}
-    {{- $unread = sort (sort $unread "order" "desc") "year" "desc" -}}
-    <div class="mt-5">
-      <h3 class="m-0 text-sm font-medium text-fg">{{ .label }}</h3>
-      {{/* pt-3 leaves headroom for the hover lift: an overflow-x row clips
-           vertically too, so without it the top of a raised cover is cut off.
-           `relative` is load-bearing: the sr-only labels are position:absolute,
-           and without a positioned scroller they escape its clipping and
-           stretch the whole page thousands of pixels to the right. */}}
-      <ul data-wheel-scroll tabindex="0" aria-label="{{ .label }}" class="relative -mx-1 flex gap-3 overflow-x-auto px-1 pb-2 pt-3 [scrollbar-width:thin] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg">
-        {{- range $read | append $unread }}
-        {{- $isRead := eq .done true -}}
-        {{- $imgs := slice -}}
-        {{- with .cover }}{{ $imgs = partial "func/media-images.html" (dict "dir" "achievements" "slug" . "width" 600) }}{{ end -}}
-        {{/* Every cover gets the same 2:3 box. Real covers run from about 1.2 to
-             1.8 tall-per-wide, so they are stretched to it; anything further off
-             (a box-set strip, a square photo) would distort badly, so those are
-             cropped instead. */}}
-        {{- $thumb := dict -}}
-        {{- with .cover }}{{ with index (resources.Match (printf "achievements/%s.*" .)) 0 }}
-          {{- $heightPerWidth := div (float .Height) .Width -}}
-          {{- $isNearTwoByThree := and (ge $heightPerWidth 1.2) (le $heightPerWidth 1.8) -}}
-          {{- $thumb = partial "func/cover.html" (dict "path" (printf "/%s" .Name) "width" 144 "height" 216 "stretch" $isNearTwoByThree) -}}
-        {{- end }}{{ end -}}
-        <li class="w-36 shrink-0">
-          <button type="button" data-game-open aria-haspopup="dialog" data-title="{{ .title }}" data-kind="book" data-rating="{{ .rating }}" data-status="{{ .status }}" data-blurb="{{ .blurb }}" data-pitch="{{ .pitch }}" data-images="{{ $imgs | jsonify }}"{{ with .series }} data-series="{{ . | jsonify }}"{{ end }} class="group/book block w-full rounded-lg text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
-            <span class="block aspect-[2/3] overflow-hidden rounded-lg border border-border/60 bg-border/15 transition duration-200 group-hover/book:-translate-y-1 group-hover/book:opacity-100 group-focus-visible/book:opacity-100 motion-reduce:transition-none{{ if not $isRead }} opacity-50{{ end }}">
-              {{- with $thumb.src }}
-              <img src="{{ . }}"{{ with $thumb.srcset }} srcset="{{ . }}"{{ end }} alt="" width="144" height="216" loading="lazy" decoding="async" class="h-full w-full" />
-              {{- else }}
-              <span class="flex h-full items-center justify-center p-3 text-center text-sm text-muted">{{ .title }}</span>
-              {{- end }}
-            </span>
-            <span class="mt-2 line-clamp-2 block text-sm leading-snug transition-colors group-hover/book:text-accent {{ cond $isRead "text-fg" "text-muted" }}">{{ .title }}{{ if not $isRead }}<span class="sr-only"> (not read yet)</span>{{ end }}</span>
-            <span class="mt-0.5 block font-mono text-xs text-muted">
-              {{- if and $isRead .rating }}<span class="text-accent">★</span> {{ .rating | lang.FormatNumber 1 }}
-              {{- else if .status }}{{ .status }}
-              {{- else if .series }}{{ len (where .series "done" true) }} of {{ len .series }} read
-              {{- else if lt .year 0 }}{{ mul .year -1 }} BC
-              {{- else if .year }}{{ .year }}
-              {{- end }}
-            </span>
-          </button>
-          {{ partial "impossible-list/details.html" (dict "item" .) }}
-        </li>
-        {{- end }}
-      </ul>
-    </div>
+    {{- $unread = sort $unread "order" -}}
+    {{- $row := slice -}}
+    {{- range $current }}{{ $row = $row | append . }}{{ end -}}
+    {{- range $read }}{{ $row = $row | append . }}{{ end -}}
+    {{- range $unread }}{{ $row = $row | append . }}{{ end }}
+    {{ partial "components/shelf.html" (dict "label" .label "items" $row "card" "impossible-list/book-card.html") }}
     {{- end }}
   </section>
   {{- end }}

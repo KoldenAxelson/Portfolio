@@ -22,7 +22,8 @@ aliases: ["/misc/genius-curriculum/"]
 # Blank by default — uncomment to put a line under the H1 in the banner.
 #lead: "Systems for learning, collected and tried."
 blurb: "Learning systems worth trying, starting with six historical school systems that mass-produced great thinkers and the study loop built from them."
-icon: "academic-cap"
+icon: "brain"
+group: "learn"
 prose: true
 youtube: "https://youtu.be/NN9Dl3zhYp0"
 ---

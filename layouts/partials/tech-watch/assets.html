@@ -1,0 +1,11 @@
+{{- /*
+  tech-watch/assets: the page stylesheet plus one script per card preview, for
+  /misc/tech-watch/. Called from layouts/misc/single.html when the page uses the
+  tech-watch/grid shortcode. Each preview script is a self-contained IIFE that
+  finds its canvas by id (see partials/tech-watch/previews/) and quits if absent.
+*/ -}}
+{{- $css := resources.Get "css/pages/tech-watch/tech-watch.css" | minify | fingerprint -}}
+<link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" />
+{{- range (index site.Data "tech-watch").items }}{{ with .preview }}
+<script defer src="{{ printf "/js/tech-watch/%s.js" . | relURL }}"></script>
+{{- end }}{{ end -}}

@@ -67,6 +67,16 @@
   {{- end -}}
   {{- if gt (len $t) 0 }}{{ $tools = $t }}{{ end -}}
 {{- end -}}
+{{- /* A page that filters its own content (/misc shelves, /misc/tech-watch
+       kinds) gets its filter choices here, from the same func/filter-cats.html
+       list the desktop aux button (components/filter-fab.html) renders. They're
+       [data-filter-type] buttons; scripts/site/filters/type-filter.ts binds them. */ -}}
+{{- $filterCats := partial "func/filter-cats.html" . -}}
+{{- if and (not $tools) $filterCats -}}
+  {{- $t := slice -}}
+  {{- range $filterCats }}{{ $t = $t | append (dict "icon" .icon "label" .label "data" (dict "filter-type" .key)) }}{{ end -}}
+  {{- $tools = $t -}}
+{{- end -}}
 {{- $hasTools := false -}}
 {{- with $tools }}{{ $hasTools = gt (len .) 0 }}{{ end -}}
 {{- /* Mirror image of `desktopFab`: `mobileTools: false` keeps the toolbar on
@@ -84,9 +94,10 @@
         <img src="{{ partial "func/url.html" "/logo-mark.svg" }}" alt="{{ $site.author.name }}" width="36" height="36" class="h-9 w-9" />
       </a>
 
-      {{- /* desktopFab pages (Viva) render their own floating FAB, so the centered
-             toolbar is suppressed there too, same as CV / chapter sections. */ -}}
-      {{- if and $hasTools (ne .Layout "cv") (not .Params.chapters) (ne .Type "dagea") (not $dageaGlobe) (not .Params.desktopFab) }}
+      {{- /* desktopFab pages (Viva) and filter pages (components/filter-fab.html)
+             render their own floating FAB, so the centered toolbar is suppressed
+             there too, same as CV / chapter sections. */ -}}
+      {{- if and $hasTools (ne .Layout "cv") (not .Params.chapters) (ne .Type "dagea") (not $dageaGlobe) (not .Params.desktopFab) (not $filterCats) }}
       <ul class="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-2 lg:flex">
         {{- range $tools }}
         <li>
@@ -143,7 +154,7 @@
         {{- end }}
         {{- if $mobileTools }}
         <button type="button" data-mobile-tools-trigger aria-label="Open page actions" class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-md text-muted transition-colors hover:bg-border/40 hover:text-fg focus-visible:bg-border/40 focus-visible:text-fg">
-          {{ partial "func/svg-icon.html" (dict "name" (.Params.toolsIcon | default (cond (eq .Params.chapters true) "book-open" (cond (or (eq .Type "dagea") $dageaGlobe) "map-pin" "arrow-down-circle"))) "class" "h-7 w-7") }}
+          {{ partial "func/svg-icon.html" (dict "name" (.Params.toolsIcon | default (cond (eq .Params.chapters true) "book-open" (cond (or (eq .Type "dagea") $dageaGlobe) "map-pin" (cond (gt (len $filterCats) 0) "funnel" "arrow-down-circle")))) "class" "h-7 w-7") }}
         </button>
         {{- end }}
 
@@ -244,7 +255,7 @@
         {{- range $tools }}
         <li>
           {{- if .data }}
-          <button type="button"{{ range $k, $v := .data }} {{ printf "data-%s=%q" $k $v | safeHTMLAttr }}{{ end }} aria-label="{{ .label }}" class="flex w-full items-center gap-4 rounded-md px-3 py-3 text-lg !text-fg no-underline transition-colors hover:bg-border/40 hover:!text-accent border-0 bg-transparent text-left">
+          <button type="button"{{ range $k, $v := .data }} {{ printf "data-%s=%q" $k $v | safeHTMLAttr }}{{ end }} aria-label="{{ .label }}" class="flex w-full items-center gap-4 rounded-md px-3 py-3 text-lg !text-fg no-underline transition-colors hover:bg-border/40 hover:!text-accent border-0 bg-transparent text-left aria-[pressed=true]:bg-accent/10 aria-[pressed=true]:!text-accent">
             {{ partial "func/svg-icon.html" (dict "name" .icon "class" "h-6 w-6 shrink-0") }}
             <span>{{ .label }}</span>
           </button>

@@ -1,0 +1,23 @@
+# The cheat sheet on /misc/claude/ "Power User Tools", rendered by
+# shortcodes/claude/power-tools.html. keys: what you press or type, one chip
+# each. Mac keys; Windows swaps Cmd for Ctrl and Option for Alt (the page says so).
+# Only things a person does: features that run on their own don't belong here.
+- group: "In a chat"
+  items:
+    - { keys: ["/btw"], also: "Cmd ;", what: "Side question about the session without interrupting it. Not kept after you close the app." }
+    - { keys: ["Esc", "Esc"], also: "/rewind", what: "Go back to an earlier message, undoing what came after." }
+    - { keys: ["/recap"], what: "One line on where a session stands." }
+    - { keys: ["/output-style"], what: "Make replies shorter or plainer." }
+    - { keys: ["Cmd", "/"], what: "Every keyboard shortcut." }
+- group: "Across sessions"
+  items:
+    - { keys: ["Option", "click"], what: "Open a session in split view, beside the current one." }
+    - { keys: ["@name"], what: "Message another session, or ask to hear when it finishes." }
+    - { keys: ["Remote Control"], what: "Carry on from your phone. Settings › Claude Code makes it the default." }
+    - { keys: ["Pin"], what: "Pin one session as a hub and ask it what the others are waiting on." }
+- group: "Cost and setup"
+  items:
+    - { keys: ["/advisor"], what: "Run a cheaper model that calls Opus or Fable for the big decisions." }
+    - { keys: ["/skill-doctor"], what: "What each skill costs in context, and how often it's used." }
+    - { keys: ["/doctor"], what: "Check your setup and apply fixes." }
+    - { keys: ["/insights"], what: "A report on how you use Claude Code, with features to try." }

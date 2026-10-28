@@ -80,3 +80,4 @@
 {{- if eq .Layout "certificates" }}{{ partial "schema/certificates.html" . }}{{ end -}}
 {{- if eq .Layout "now" }}{{ partial "schema/now.html" . }}{{ end -}}
 {{- if eq .Layout "network" }}{{ partial "schema/network.html" . }}{{ end -}}
+{{- if and (eq .Kind "section") .File (eq .File.Path "misc/_index.md") }}{{ partial "schema/misc.html" . }}{{ end -}}

@@ -1,0 +1,32 @@
+# Konrad's persuasion system: his own notes, not from any of the videos on
+# /misc/getting-known/. Rendered by layouts/shortcodes/getting-known/persuasion.html.
+# Write lines to try in curly quotes (“…”); the shortcode sets each one as a chip.
+title: "The Persuasion System"
+before:
+  title: "Before you start: know your limits"
+  text: "What’s your walk-away point? If they say no, what’s your backup plan? Know it before you talk. What fair rules apply here: past deals, market rates, expert views? Ground yourself in what’s fair, not just what you want. Are you after truth or just a win? Check your own blind spots first."
+steps:
+  - title: "Build trust"
+    text: "Show you know your stuff, but don’t brag. Care about them as a real person, not a target. If you don’t care, stop now. Match how they talk and move. Smile. Mean it."
+  - title: "Let them say no"
+    text: "Ask questions that invite no: “Is now a bad time?” “Would this idea seem crazy to you?” When they say no, they feel safe and in charge. Then say their doubts out loud before they do: “You probably think this won’t work because…” This shows respect."
+  - title: "Listen hard"
+    text: "Name what they’re feeling: “Seems like you’re worried about…” “Sounds like speed matters most here.” Repeat their last few words as a question. Use silence; let them fill it. Listen for what they truly need, not just what they’re saying. What scares them?"
+  - title: "Get “that’s right”"
+    turning: true
+    text: "Sum up their view so well they say “that’s right,” not “you’re right.” This means they feel heard. Don’t rush past this. It’s the turning point."
+  - title: "Find fair rules together"
+    text: "Before sharing your view, agree on how to judge ideas: “What’s a fair way to weigh this?” Use real examples from people they trust. If using numbers, start high for costs, make gains clear and real."
+  - title: "Ask, don’t tell"
+    text: "Ask questions that make them solve it: “How do we fix your worry about X?” “What would need to be true for this to work?” Let them think. Their answers beat yours. If stuck, name it: “Seems like we’re stuck on Y.”"
+  - title: "Build through small wins"
+    text: "Get agreement on shared ground first: “Can we agree we both want Z?” Each small yes builds momentum. But don’t trick them; make sure you truly share these goals."
+  - title: "Give real choices"
+    text: "Offer two or three paths that respect their freedom while moving toward shared goals: “Would plan A or B fit your timeline better?” Show what they gain, not what they lose. If no good choices exist, say so. Truth beats a win."
+  - title: "Test reality together"
+    text: "Own the doubt: “What could go wrong here?” Ask them to find holes. This builds trust and catches problems early. Face the worst case and plan for it."
+  - title: "Let them decide"
+    text: "Ask: “Where should we go from here?” If they say the answer, they own it. If they waver, name it: “You seem unsure.” Don’t push. Sometimes the best move is giving them space."
+override:
+  title: "The override: truth first"
+  text: "If you realize you’re wrong or they have a better point, say so right away. Owning mistakes builds trust fast. Protect the bond over the outcome. A loss with their respect beats a win with their hate."

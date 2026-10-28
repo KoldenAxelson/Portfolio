@@ -19,6 +19,7 @@ description: "Notes on a comedy skit about installing OpenClaw on a VPS, in whic
 #lead: "Lock the doors before you move in."
 blurb: "A skit about an AI bro installing OpenClaw on a VPS turns out to be the best server-hardening guide I've seen. The steps, the order, the commands."
 icon: "shield-check"
+group: "make"
 prose: true
 youtube: "https://youtu.be/40SnEd1RWUU"
 glossary: "servers"

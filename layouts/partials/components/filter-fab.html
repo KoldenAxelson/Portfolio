@@ -1,0 +1,32 @@
+{{- /*
+  components/filter-fab — floating "filter" aux button for a page that filters
+  its own content (/misc shelves, /misc/tech-watch kinds). DESKTOP ONLY (lg+),
+  the same shell as chapters/chapter-select.html and components/section-nav.html:
+  .aux-fab-* from assets/css/site/auxiliary-button.css, outside-click / Escape
+  dismissal from scripts/site/nav/auxiliary-button.ts. On mobile the same
+  choices drop from the navbar tools button (site/topnav.html); both lists come
+  from func/filter-cats.html.
+
+  Rows are [data-filter-type] buttons driven by scripts/site/filters/type-filter.ts,
+  which marks the chosen row (aria-pressed + .aux-fab__row--current), closes the
+  launcher, and brings the filtered content into view. Renders nothing on a
+  page with no filter.
+*/ -}}
+{{- with partial "func/filter-cats.html" . }}
+<details data-aux-fab class="fixed bottom-6 right-6 z-30 hidden lg:block print:!hidden">
+  <summary class="aux-fab__btn relative flex h-12 w-12 cursor-pointer list-none items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50" aria-label="Filter" title="Filter">
+    <span class="sr-only">Filter</span>
+    {{ partial "func/svg-icon.html" (dict "name" "funnel" "class" "aux-fab__icon aux-fab__icon--main h-6 w-6" "width" "1.75") }}
+    <svg class="aux-fab__icon aux-fab__icon--close h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18 18 6M6 6l12 12" /></svg>
+  </summary>
+  <div class="aux-fab__menu aux-fab__menu--list" role="group" aria-label="Filter">
+    <p class="aux-fab__title">Show</p>
+    {{- range $i, $c := . }}
+    <button type="button" class="aux-fab__row{{ if eq $c.key "" }} aux-fab__row--current{{ end }}" data-filter-type="{{ $c.key }}" aria-pressed="{{ if eq $c.key "" }}true{{ else }}false{{ end }}" style="--i: {{ add $i 1 }}">
+      {{- partial "func/svg-icon.html" (dict "name" $c.icon "class" "aux-fab__ico h-4 w-4") -}}
+      <span class="aux-fab__name">{{ $c.label }}</span>
+    </button>
+    {{- end }}
+  </div>
+</details>
+{{- end }}

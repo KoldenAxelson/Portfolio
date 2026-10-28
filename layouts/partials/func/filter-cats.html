@@ -1,0 +1,30 @@
+{{- /*
+  filter-cats — the filter choices a page offers through the filter launcher,
+  as {key, label, icon} with "All" (key "") first; an empty slice on any page
+  without one. One answer for both surfaces: components/filter-fab.html (the
+  desktop aux button) and site/topnav.html (the mobile navbar tools panel), so
+  the two can't list different filters.
+
+  Each choice is a [data-filter-type] button; scripts/site/filters/type-filter.ts
+  shows or hides the page's [data-types] blocks.
+
+    /misc/            — the shelves in content/misc/_index.md `groups:` that
+                        have at least one card (misc/collect.html)
+    /misc/tech-watch/ — the kinds in tech-watch/cats.html
+    /misc/cool-sites/ — the kinds in cool-sites/cats.html
+    /projects/        — the focus areas in projects/cats.html
+*/ -}}
+{{- $out := slice -}}
+{{- if and (eq .Kind "section") .File (eq .File.Path "misc/_index.md") -}}
+  {{- $out = slice (dict "key" "" "label" "All" "icon" "squares-2x2") -}}
+  {{- range partial "misc/collect.html" . -}}
+    {{- if .cards }}{{ $out = $out | append (dict "key" .key "label" .label "icon" .icon) }}{{ end -}}
+  {{- end -}}
+{{- else if and (eq .Kind "section") .File (eq .File.Path "projects/_index.md") -}}
+  {{- $out = partial "projects/cats.html" . -}}
+{{- else if .HasShortcode "tech-watch/grid" -}}
+  {{- $out = partial "tech-watch/cats.html" . -}}
+{{- else if .HasShortcode "cool-sites/grid" -}}
+  {{- $out = partial "cool-sites/cats.html" . -}}
+{{- end -}}
+{{- return $out -}}

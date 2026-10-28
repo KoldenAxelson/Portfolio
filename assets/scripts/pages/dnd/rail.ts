@@ -1,7 +1,9 @@
 // The Fighting Style rail on /misc/dnd/.
 //
 // The rail is a CSS scroll-snap row and works with a trackpad, a touch screen and
-// the keyboard without any of this. What the script adds is the two arrow buttons —
+// the keyboard without any of this. A notched mouse wheel pans it through the
+// shared [data-shelf-row] behaviour (scripts/site/widgets/shelf-row.ts), which
+// also steps the arrow keys card to card. What the script adds is the two arrow buttons —
 // which matter because the site hides scrollbars, so on a mouse-only desktop there
 // is otherwise nothing on screen saying the row continues.
 //

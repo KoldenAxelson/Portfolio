@@ -19,7 +19,8 @@ description: "Notes on five videos about going independent: a seven-day freelanc
 # Blank by default — uncomment to put a line under the H1 in the banner.
 #lead: "From selling your hours to selling something that sells without you."
 blurb: "Five videos on going independent: launching a freelance business in a week, building a product people love, testing an idea before you build it, and the numbers that decide whether any of it pays."
-icon: "wrench-screwdriver"
+icon: "briefcase"
+group: "better"
 prose: true
 youtube: "https://youtu.be/aymkhtyJfYM"
 ---

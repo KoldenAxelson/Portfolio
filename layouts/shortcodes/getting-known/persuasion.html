@@ -1,0 +1,28 @@
+{{- /* getting-known/persuasion: reference module, no behaviour. Konrad's own
+       persuasion system (data/getting-known/persuasion.yaml), not from a video.
+       Lines to try, written in curly quotes in the data, are set as chips. */ -}}
+{{- $system := index site.Data "getting-known" "persuasion" -}}
+{{- $quoteChip := "<span class=\"gk-ps-line\">“$1”</span>" -}}
+<div class="not-prose vn-demo gk-ps" id="gk-persuasion">
+<div class="vn-demo-label">My notes · {{ $system.title }}</div>
+  <section class="gk-ps-before">
+    <h3 class="gk-ps-title">{{ $system.before.title }}</h3>
+    <p class="gk-ps-text">{{ replaceRE "“([^”]+)”" $quoteChip ($system.before.text | htmlEscape) | safeHTML }}</p>
+  </section>
+  <ol class="gk-ps-steps">
+    {{- range $i, $step := $system.steps }}
+    <li class="gk-ps-step{{ if $step.turning }} is-turning{{ end }}">
+      <span class="gk-ps-n" aria-hidden="true">{{ add $i 1 }}</span>
+      <div class="gk-ps-body">
+        <h3 class="gk-ps-title"><span class="vn-sr">Step {{ add $i 1 }}: </span>{{ $step.title }}{{ if $step.turning }}<span class="gk-ps-tag">The turning point</span>{{ end }}</h3>
+        <p class="gk-ps-text">{{ replaceRE "“([^”]+)”" $quoteChip ($step.text | htmlEscape) | safeHTML }}</p>
+      </div>
+    </li>
+    {{- end }}
+  </ol>
+  <section class="gk-ps-override">
+    <h3 class="gk-ps-title">{{ $system.override.title }}</h3>
+    <p class="gk-ps-text">{{ $system.override.text }}</p>
+  </section>
+<div class="vn-caption">My own system, not from any of the videos on this page. The override applies at every step.</div>
+</div>

@@ -1,0 +1,41 @@
+{{- /*
+  tech-watch/grid: every card on /misc/tech-watch/, from
+  data/tech-watch/items.yaml. Cards with a `preview` include
+  partials/tech-watch/previews/<preview>.html; their scripts ship from
+  partials/tech-watch/assets.html (called by layouts/misc/single.html).
+  The kind filter is the filter aux button (components/filter-fab.html, from
+  layouts/misc/single.html) and its mobile twin in the navbar; the kinds are
+  partials/tech-watch/cats.html. Cards carry [data-types] for it.
+*/ -}}
+{{- $items := (index site.Data "tech-watch").items -}}
+{{- if not $items }}{{ errorf "tech-watch/grid: data/tech-watch/items.yaml is missing (page: %s)" .Page.RelPermalink }}{{ end -}}
+{{- $statuses := dict
+  "shipping"       "Available"
+  "preorder"       "Pre-order"
+  "beta"           "Beta"
+  "out-of-stock"   "Out of stock"
+  "in-development" "In development"
+-}}
+<div class="not-prose tw-root">
+<div class="tw-grid">
+{{- range $items }}
+{{- $statusLabel := index $statuses .status }}
+{{- if not $statusLabel }}{{ errorf "tech-watch/grid: %q has unknown status %q" .name .status }}{{ end }}
+<article class="tw-card{{ if .feature }} tw-feature{{ end }}" data-types="{{ delimit .types "," }}">
+<a class="tw-cover" href="{{ .url }}" rel="noopener" aria-label="{{ .name }}"></a>
+{{- with .preview }}{{ partial (printf "tech-watch/previews/%s.html" .) dict }}{{ end }}
+<div class="tw-body">
+<p class="tw-kind">{{ .kind }}{{ with .maker }} · {{ . }}{{ end }}</p>
+<a class="tw-title" href="{{ .url }}" rel="noopener">{{ .name }} <span class="tw-arrow" aria-hidden="true">↗</span></a>
+<p class="tw-meta">
+<span class="tw-status is-{{ .status }}">{{ $statusLabel }}</span>
+{{- with .price }}<span class="tw-price">{{ . }}</span>{{ end }}
+{{- with .when }}<span class="tw-when">{{ . }}</span>{{ end }}
+</p>
+<p class="tw-desc">{{ .desc | safeHTML }}</p>
+<span class="tw-domain">{{ .domain }}</span>
+</div>
+</article>
+{{- end }}
+</div>
+</div>

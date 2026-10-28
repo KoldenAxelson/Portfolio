@@ -18,6 +18,7 @@ description: "My 23andMe ancestry composition — where it comes from, how rare 
 #lead: "What I am, according to a spit tube"
 blurb: "The answer to \"what's your ethnic background\", mapped and rated for rarity."
 icon: "globe"
+group: "about"
 prose: true
 ---
 

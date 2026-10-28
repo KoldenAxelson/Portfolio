@@ -12,6 +12,7 @@ title: "Emergence"
 description: "A sandbox of emergent-behaviour simulations: boids, Particle Life and slime mold, running on the same particles. Mix them, switch them on and off, and tune every rule with sliders."
 blurb: "Boids, Particle Life and slime mold on the same particles. Mix them and tune every rule."
 icon: "swarm"
+group: "play"
 container: "wide"
 ---
 

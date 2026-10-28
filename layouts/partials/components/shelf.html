@@ -1,0 +1,34 @@
+{{- /*
+  components/shelf — one labelled, sideways-scrolling row of book covers, the
+  Netflix-style shelf used by /impossible-list/ and /misc/writing/. The order is
+  the caller's; each item is drawn by the card partial the caller names, which
+  gets (dict "item" <item>) and should render the cover with
+  components/shelf-cover.html inside an element carrying `group/book`.
+
+    {{ partial "components/shelf.html" (dict "label" "For Study" "items" $books "card" "impossible-list/book-card.html") }}
+
+  Row behaviour is scripts/site/widgets/shelf-row.ts ([data-shelf-row], shared
+  with the /misc/dnd/ rail): a notched mouse wheel pans the row smoothly (a
+  trackpad or Magic Mouse is left native), and the arrow keys move the
+  highlight card to card, gliding the row to keep it in view.
+
+  Optional: `width` — the card width class (default "w-36", a book cover);
+  `showLabel` false — drop the h3 when the caller draws its own heading (/misc),
+  `label` then only names the row for screen readers.
+*/ -}}
+{{- $width := .width | default "w-36" -}}
+<div class="mt-5">
+  {{- if ne .showLabel false }}
+  <h3 class="m-0 text-sm font-medium text-fg">{{ .label }}</h3>
+  {{- end }}
+  {{/* pt-3 leaves headroom for the hover lift: an overflow-x row clips
+       vertically too, so without it the top of a raised cover is cut off.
+       `relative` is load-bearing: sr-only labels inside the cards are
+       position:absolute, and without a positioned scroller they escape its
+       clipping and stretch the whole page thousands of pixels to the right. */}}
+  <ul data-shelf-row aria-label="{{ .label }}" class="relative -mx-1 flex gap-3 overflow-x-auto px-1 pb-2 pt-3 [scrollbar-width:thin]">
+    {{- range .items }}
+    <li class="{{ $width }} shrink-0">{{ partial $.card (dict "item" .) }}</li>
+    {{- end }}
+  </ul>
+</div>

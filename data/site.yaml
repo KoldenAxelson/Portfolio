@@ -68,6 +68,7 @@ nav:
   # boost:false so htmx never tries to AJAX-swap the mailto link.
   - { label: "Email", email: true, icon: "envelope", boost: false }
   - { label: "CV", href: "/cv", icon: "cv" }
+  - { label: "Misc", href: "/misc", icon: "squares-2x2" }
 
 # Locale for <html lang> and date formatting. BCP-47 tag.
 locale: "en-US"

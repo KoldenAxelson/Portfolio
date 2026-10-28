@@ -1,0 +1,24 @@
+{{- /* claude/capabilities: what Claude can make, from data/claude/capabilities.yaml.
+       The `featured` entry is the wide card with a small looping animation
+       (pure CSS, still under reduced motion). Static, no JS. */ -}}
+{{- $items := site.Data.claude.capabilities -}}
+{{- if not $items }}{{ errorf "claude/capabilities: data/claude/capabilities.yaml is missing (page: %s)" .Page.RelPermalink }}{{ end -}}
+<div class="not-prose cl-caps">
+{{- range $items }}
+<article class="cl-cap{{ if .featured }} is-featured{{ end }}">
+  {{- if .featured }}
+  <div class="cl-motion" aria-hidden="true">
+    <span class="cl-motion-title">Explainer</span>
+    <span class="cl-motion-bars"><i></i><i></i><i></i><i></i><i></i></span>
+    <span class="cl-motion-dot"></span>
+  </div>
+  {{- end }}
+  <div class="cl-cap-body">
+    <h3>{{ .name }}{{ with .status }} <span class="cl-pill">{{ . }}</span>{{ end }}</h3>
+    <p>{{ .what }}</p>
+    {{- with .how }}<p class="cl-cap-how">{{ . }}</p>{{ end }}
+    <span class="cl-cap-plans{{ if .featured }} is-limited{{ end }}">{{ .plans }}</span>
+  </div>
+</article>
+{{- end }}
+</div>
