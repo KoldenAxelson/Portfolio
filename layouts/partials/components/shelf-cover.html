@@ -24,7 +24,7 @@
   {{- $isNearTwoByThree := and (ge $heightPerWidth 1.2) (le $heightPerWidth 1.8) -}}
   {{- $thumb = partial "func/cover.html" (dict "path" (printf "/%s" .Name) "width" 144 "height" 216 "stretch" $isNearTwoByThree "q" 68) -}}
 {{- end }}{{ end -}}
-<span class="relative block aspect-[2/3] overflow-hidden rounded-lg border transition duration-200 group-hover/cover:-translate-y-1 group-focus-visible/cover:-translate-y-1 group-hover/cover:opacity-100 group-focus-visible/cover:opacity-100 motion-reduce:transition-none {{ if .badge }}border-accent bg-border/15 ring-2 ring-accent/60{{ else }}border-border/60 bg-border/15{{ if .isDimmed }} opacity-50{{ end }}{{ end }}">
+<span class="relative block aspect-[2/3] overflow-hidden rounded-lg border transition duration-200 group-hover/cover:-translate-y-1 group-focus-visible/cover:-translate-y-1 motion-reduce:transition-none {{ if .badge }}border-accent bg-border/15 ring-2 ring-accent/60{{ else }}border-border/60 bg-border/15{{ end }}">
   {{- with .badge }}
   <span class="absolute left-1.5 top-1.5 z-10 inline-flex items-center gap-1 rounded-full bg-accent px-2 py-0.5 font-mono text-[0.65rem] font-semibold uppercase tracking-wide text-bg shadow">
     {{- partial "func/svg-icon.html" (dict "name" .icon "class" "h-3 w-3" "width" "2.2") }}{{ .label -}}
@@ -34,5 +34,13 @@
   <img src="{{ . }}"{{ with $thumb.srcset }} srcset="{{ . }}"{{ end }} alt="" width="144" height="216"{{ if not $.eager }} loading="lazy"{{ end }} decoding="async" class="h-full w-full" />
   {{- else }}
   <span class="flex h-full items-center justify-center p-3 text-center text-sm text-muted">{{ .title }}</span>
+  {{- end }}
+  {{- /* The light-up. Every cover sits under a black veil that lifts when the
+         card is hovered or focused: 75% → 50% for one not done yet (so it
+         still reads as dimmer than a finished one while highlighted), 10% → 0
+         for one that's done. A real overlay, not opacity, so it reads the same
+         in both themes. A badged (current) item never gets a veil. */}}
+  {{- if not .badge }}
+  <span aria-hidden="true" class="absolute inset-0 transition-colors duration-200 motion-reduce:transition-none {{ if .isDimmed }}bg-black/75 group-hover/cover:bg-black/50 group-focus-visible/cover:bg-black/50{{ else }}bg-black/10 group-hover/cover:bg-black/0 group-focus-visible/cover:bg-black/0{{ end }}"></span>
   {{- end }}
 </span>

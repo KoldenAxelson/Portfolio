@@ -32,7 +32,7 @@
   <span class="mt-2 line-clamp-2 block text-sm leading-snug transition-colors group-hover/cover:text-accent {{ cond (or $isRead $isCurrent) "text-fg" "text-muted" }}">{{ .title }}{{ if $isCurrent }}<span class="sr-only"> (reading now)</span>{{ else if not $isRead }}<span class="sr-only"> (not read yet)</span>{{ end }}</span>
   <span class="mt-0.5 block font-mono text-xs text-muted">
     {{- if $isCurrent }}<span class="text-accent">Reading now</span>
-    {{- else if and $isRead .rating }}<span class="text-accent">★</span> {{ .rating | lang.FormatNumber 1 }}
+    {{- else if and $isRead .rating }}<svg viewBox="0 0 24 24" aria-hidden="true" class="inline-block h-4 w-4 -translate-y-px align-middle text-accent" fill="currentColor"><path d="M11.48 3.5a.56.56 0 0 1 1.04 0l2.13 5.11a.56.56 0 0 0 .47.35l5.52.44c.5.04.7.66.32.99l-4.2 3.6a.56.56 0 0 0-.18.56l1.28 5.38a.56.56 0 0 1-.84.61l-4.73-2.89a.56.56 0 0 0-.59 0l-4.73 2.89a.56.56 0 0 1-.84-.61l1.28-5.38a.56.56 0 0 0-.18-.56l-4.2-3.6a.56.56 0 0 1 .32-.99l5.52-.44a.56.56 0 0 0 .47-.35l2.13-5.11Z" /></svg><span class="sr-only">Rated</span> {{ .rating | lang.FormatNumber 1 }}
     {{- else if .status }}{{ .status }}
     {{- else if .series }}{{ len (where .series "done" true) }} of {{ len .series }} read
     {{- else if lt .year 0 }}{{ mul .year -1 }} BC

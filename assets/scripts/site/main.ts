@@ -25,14 +25,26 @@ import { initGameEmbed } from './games/game-embed';
 
 declare global {
   interface Window {
-    htmx?: { config: { globalViewTransitions?: boolean } };
+    htmx?: { config: { globalViewTransitions?: boolean; historyCacheSize?: number } };
   }
 }
 
 // Crossfade boosted navigations via the View Transitions API. Must be set before
 // htmx processes the document.
+//
+// historyCacheSize = 0: no HTML snapshots for the back button. htmx's cache
+// keeps each page as serialized innerHTML, and that copy carries everything the
+// page's scripts wrote into the DOM, including the "already mounted" flags
+// (data-live-mounted, data-*-ready, …), but none of the running state: canvases
+// come back blank and timers, listeners and observers are gone. Every widget
+// then sees its flag, skips mounting, and stays dead until a reload (most
+// visible on /misc, with thirty live cards). With no cache, back re-fetches the
+// page from the server (the HTTP cache usually answers) and swaps it in like
+// any boosted navigation, so every script mounts fresh. Don't turn it back on
+// without making every widget remount over a restored snapshot.
 if (window.htmx) {
   window.htmx.config.globalViewTransitions = true;
+  window.htmx.config.historyCacheSize = 0;
 }
 
 function initPage(): void {
@@ -97,9 +109,9 @@ document.addEventListener('htmx:afterSettle', () => {
   document.getElementById('main')?.focus({ preventScroll: true });
 });
 
-// Back / forward. htmx owns history for boosted navigation: it restores <body>
-// from its own snapshot cache and fires htmx:historyRestore — afterSettle does
-// NOT fire on that path, for either a cache hit or the server refetch on a miss.
+// Back / forward. htmx owns history for boosted navigation: with the snapshot
+// cache off (above) it re-fetches the page and fires htmx:historyRestore —
+// afterSettle does NOT fire on that path.
 // Without this listener a restored page is inert markup wearing the last frame
 // it painted: the constellation canvas sits frozen, the /misc filter stops
 // filtering, and every init()'s module-level state still points at the page the
