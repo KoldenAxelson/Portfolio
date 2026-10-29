@@ -2,13 +2,13 @@
 title: "The Rabbit and Fox Trilogy"
 description: "Three linked fables: a meadow of rabbits who kept watch for foxes, the newcomers who wouldn't, and the fox who planned it all."
 lead: "Three fables, three sides of the same meadow"
-cover: "meadow-rabbits"
+cover: "rabbit-and-fox-trilogy"
 weight: 1
 ---
 
 ## The Meadow That Forgot to Watch
 
-{{< writing/illustration "meadow-rabbits" "A crowd of white and brown rabbits, one looking straight at the camera" >}}
+{{< writing/illustration "meadow-rabbits" "White rabbits grazing in a flowered meadow while one keeps watch from the hilltop, and a fox hides in the grass at the far edge" >}}
 
 Long ago, there was a peaceful meadow where all the white rabbits lived safely together. Every day, they took turns watching for foxes from the hilltop. When one rabbit spotted danger, they would thump their foot to warn everyone, and all the rabbits would run to safety.
 
@@ -38,7 +38,7 @@ But the old white rabbits remembered the many, many years when no rabbit had bee
 
 ## The Black Rabbits’ Dream
 
-{{< writing/illustration "black-rabbit" "A small black rabbit sitting in bright green grass and dandelions" >}}
+{{< writing/illustration "black-rabbit" "Black rabbits lounging in tall grass and dandelions, with one white rabbit alone on the far hill" >}}
 
 In the rocky hills far away, the black rabbits lived a hard and dangerous life. Every day, some rabbit would disappear when the fox came hunting. No one worked together to watch for danger - each rabbit simply tried to hide and hope the fox would catch someone else instead.
 
@@ -72,7 +72,7 @@ Until the day the foxes returned.
 
 ## The Fox’s Plan
 
-{{< writing/illustration "fox-den" "A young fox peering out of its den in a bank of grass and yellow poppies" >}}
+{{< writing/illustration "fox-den" "A fox resting outside his den in the rocky hills, smiling, while a crow watches from a branch" >}}
 
 Far in the rocky hills, the clever fox had been hunting black rabbits for many years. Life was easy - the black rabbits never worked together, so he could catch one whenever he was hungry.
 

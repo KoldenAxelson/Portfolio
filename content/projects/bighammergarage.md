@@ -8,6 +8,7 @@ stack: ['Astro', 'Cloudflare Pages']
 role: 'Contract engineer'
 year: '2025'
 status: 'shipped'
+cover: '/covers/bighammergarage.webp'
 featured: true
 links:
   live: 'https://bighammergarage.com/'

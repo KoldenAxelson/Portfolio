@@ -83,6 +83,7 @@
 {{- $known = $known | append "groups" "games" "books" "wip" -}}  {{/* impossible-list */}}
 {{- $known = $known | append "photos" "building" "principles" "opento" -}}  {{/* about.html */}}
 {{- $known = $known | append "shelf" -}}           {{/* writing/list.html: which shelf a story collection sits on */}}
+{{- $known = $known | append "label" -}}           {{/* writing/book-card.html + single.html: a non-story page (e.g. "Story bible"); `kind` is Hugo's */}}
 {{- $known = $known | append "decisions" "lighthouse" -}}        {{/* colophon; lighthouse also shortcodes/lighthouse.html */}}
 {{- /* Page-local shortcode data, keyed so one page can hold several:
        shortcodes/carousel.html, photo-steps.html, flow-steps.html. */ -}}

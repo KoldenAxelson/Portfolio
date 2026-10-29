@@ -20,6 +20,7 @@ groups:
       - { text: "Perform theater for a live audience", done: true }
       - { text: "Win an official tournament (Smash Bros. Melee)", done: true }
       - { text: "Get an accolade in my field", done: false }
+      - { text: "Publish a book", done: false }
       - { text: "Learn an Instrument", done: false }
       - { text: "Build a Tiny Home", done: false }
   - label: "Quests"

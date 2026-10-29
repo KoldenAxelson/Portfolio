@@ -1,7 +1,8 @@
 {{- /*
   writing/book-card — one collection on the /misc/writing/ shelves
   (components/shelf.html): a link to its reading page, with its cover and story
-  count. Called with (dict "item" <page>). The page's description rides along as
+  count, or its `label` ("Story bible") for pages that aren't stories.
+  Called with (dict "item" <page>). The page's description rides along as
   plain text for screen readers and scrapers.
 */ -}}
 {{- with .item -}}
@@ -9,7 +10,7 @@
 <a href="{{ .RelPermalink }}" class="group/cover block w-full rounded-lg pt-1.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
   {{ partial "components/shelf-cover.html" (dict "dir" "writing" "slug" .Params.cover "title" .Title) }}
   <span class="mt-2 line-clamp-2 block text-sm leading-snug text-fg transition-colors group-hover/cover:text-accent">{{ .Title }}</span>
-  <span class="mt-0.5 block font-mono text-xs text-muted">{{ $stories }} {{ cond (eq $stories 1) "story" "stories" }}</span>
+  <span class="mt-0.5 block font-mono text-xs text-muted">{{ with .Params.label }}{{ . }}{{ else }}{{ $stories }} {{ cond (eq $stories 1) "story" "stories" }}{{ end }}</span>
 </a>
 {{- with .Description }}<p class="sr-only">{{ . }}</p>{{ end }}
 {{- end -}}

@@ -2,13 +2,13 @@
 title: "The Acorn Trilogy"
 description: "Three linked fables: a squirrel and his acorns, the crow who decided who should have them, and the owl who saw what happened to the forest afterward."
 lead: "Three fables, three sides of the same forest"
-cover: "nutkin"
+cover: "acorn-trilogy"
 weight: 2
 ---
 
 ## The Little Squirrel and His Acorns
 
-{{< writing/illustration "nutkin" "A red squirrel standing over a hollow in a tree stump filled with acorns" >}}
+{{< writing/illustration "nutkin" "A red squirrel holding an acorn beside a tree stump heaped with acorns, in an autumn forest" >}}
 
 Once upon a time, there was a little squirrel named Nutkin who worked all summer collecting acorns. He gathered them one by one and stored them proudly in his tree.
 
@@ -36,7 +36,7 @@ As Nutkin watched the rabbits carry away his acorns, he finally understood the t
 
 ## The Crow’s Tale
 
-{{< writing/illustration "corvus" "A crow perched on a fallen branch in a dark, misty forest" >}}
+{{< writing/illustration "corvus" "A crow perched on a branch against a full moon, above a dark pine forest" >}}
 
 There once was a wise crow named Corvus who watched over all the animals in the forest. Every day, he flew high above the trees, making sure everyone was safe and happy.
 
@@ -64,7 +64,7 @@ As Corvus flew away, he felt proud that he had brought fairness to the forest at
 
 ## The Owl’s Tale
 
-{{< writing/illustration "owl" "A great horned owl on a snow-covered pine branch" >}}
+{{< writing/illustration "owl" "A horned owl on a snow-covered branch above an empty winter forest" >}}
 
 Three young squirrels had traveled far to find a new home. They came upon a beautiful forest filled with oak trees heavy with acorns, clear streams, and plenty of shelter.
 

@@ -8,6 +8,7 @@ stack: ['Flutter', 'Cloudflare Workers', 'D1', 'TypeScript', 'Stripe']
 role: 'Founder · CTO'
 year: '2025–present'
 status: 'in-progress'
+cover: '/covers/growgo.webp'
 featured: true
 thoughts:
   - 'Everyone said they loved it. Nobody funded it. Those turn out to be different sentences.'

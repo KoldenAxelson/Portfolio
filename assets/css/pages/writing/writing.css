@@ -22,9 +22,5 @@
 .writing-moral-label{display:block;margin-bottom:.25rem;font-family:var(--font-mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:rgb(var(--c-muted));}
 .writing-moral p{margin:0;font-size:1.05rem;font-style:italic;line-height:1.5;color:rgb(var(--c-fg));}
 
-.writing-pager{display:grid;gap:.75rem;margin-top:3.5rem;}
-@media (min-width:640px){.writing-pager{grid-template-columns:repeat(auto-fit,minmax(12rem,1fr));}}
-.writing-pager-link{display:flex;flex-direction:column;gap:.15rem;padding:.9rem 1rem;border:1px solid rgb(var(--c-border));border-radius:.75rem;color:rgb(var(--c-fg));font-weight:500;text-decoration:none;transition:border-color .15s ease;}
-.writing-pager-link span{font-family:var(--font-mono);font-size:.7rem;font-weight:400;letter-spacing:.06em;text-transform:uppercase;color:rgb(var(--c-muted));}
-.writing-pager-link:hover{border-color:rgb(var(--c-accent) / .6);}
-.writing-pager-link:focus-visible{outline:2px solid rgb(var(--c-accent) / .6);outline-offset:2px;}
+/* Notes pages carry wide tables (grunt-force.md's chapter plan has six columns); they scroll inside themselves on a phone instead of widening the page. */
+.writing-story table{display:block;max-width:100%;overflow-x:auto;}

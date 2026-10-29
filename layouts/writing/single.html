@@ -1,7 +1,8 @@
 {{/* Writing — one collection's reading page: a list of its stories, then the
      stories themselves (each a `## ` heading in the source, with an illustration
-     and a moral from shortcodes/writing/), then links to the other
-     collections. Styles: assets/css/pages/writing/writing.css. */}}
+     and a moral from shortcodes/writing/). A page with `label` (notes, not stories: content/misc/writing/grunt-force.md)
+     keeps the contents list but doesn't number its parts as stories.
+     Styles: assets/css/pages/writing/writing.css. */}}
 {{ define "banner" }}
 {{ partial "site/page-banner.html" (dict
   "title" .Title
@@ -15,13 +16,7 @@
 {{- if gt $stories 1 }}
 <nav class="writing-toc not-prose" aria-label="Stories in this collection">{{ .TableOfContents }}</nav>
 {{- end }}
-<article class="prose prose-lg max-w-none writing-story{{ if gt $stories 1 }} is-collection{{ end }}">
+<article class="prose prose-lg max-w-none writing-story{{ if and (gt $stories 1) (not .Params.label) }} is-collection{{ end }}">
   {{ .Content }}
 </article>
-<nav class="writing-pager not-prose" aria-label="More writing">
-  {{- range where (where .CurrentSection.RegularPages "Params.hidden" "!=" true).ByWeight "Permalink" "!=" .Permalink }}
-  <a href="{{ .RelPermalink }}" class="writing-pager-link"><span>Also on the shelf</span>{{ .Title }}</a>
-  {{- end }}
-  <a href="{{ .CurrentSection.RelPermalink }}" class="writing-pager-link"><span>Back to</span>All writing</a>
-</nav>
 {{ end }}

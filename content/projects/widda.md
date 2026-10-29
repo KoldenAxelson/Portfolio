@@ -10,6 +10,7 @@ year: '2025–present'
 status: 'in-progress'
 links:
   live: 'https://widda.club/'
+cover: '/covers/widda.svg'
 featured: true
 thoughts:
   - "Reading Amazon's Terms of Service at 3am was a life-changing decision."
