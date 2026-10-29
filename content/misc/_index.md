@@ -24,7 +24,7 @@ groups:
   - key: "make"
     label: "Make things"
     icon: "pencil-square"
-    order: ["writing", "pixel-art", "motion", "vps-protection", "dagea", "ba-gil"]
+    order: ["writing", "npc-voices", "pixel-art", "motion", "vps-protection", "dagea", "ba-gil"]
   - key: "tools"
     label: "Tools"
     icon: "wrench-screwdriver"
@@ -32,7 +32,7 @@ groups:
   - key: "reference"
     label: "Reference"
     icon: "bookmark"
-    order: ["cool-sites", "tech-watch", "claude", "fathers-puzzle", "brine-mining"]
+    order: ["cool-sites", "tech-watch", "claude", "supplements", "fathers-puzzle", "brine-mining"]
   - key: "learn"
     label: "Learn"
     icon: "academic-cap"

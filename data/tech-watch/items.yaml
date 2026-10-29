@@ -82,6 +82,16 @@
   when: "Some models in beta"
   desc: "Small AI models that run on the device, with a native SDK for Swift, Kotlin and JavaScript: speech recognition and enhancement, PII redaction, filler-word detection, moderation, language detection, and a few vision models. No tokens or logins. They say their speech model transcribes ten minutes of audio in about two seconds on an iPhone."
 
+- name: "Needle 3"
+  kind: "Tiny tool-calling model"
+  maker: "Cactus Compute"
+  url: "https://cactuscompute.com/needle"
+  domain: "cactuscompute.com"
+  types: [software, ai]
+  status: shipping
+  price: "Free, Apache 2.0"
+  desc: "A model built to call tools on the device. Cactus puts it at a single 8 to 29 MB file depending on how many of its 2 to 20 layers you keep; the full 20-layer file on Hugging Face is 35 MB. It picks which of an app's functions to run and fills in the arguments, and it also does structured extraction and embeddings. Cactus says it beats models ten times its size at phone tool calls. In <a href=\"https://youtu.be/VTuMTU5DEMQ\">thevoidkernel's video</a> it reads an Android phone's battery in airplane mode, then, driven over Telegram, places a call, searches YouTube and sends back a screenshot. It also drives a simulated robot cat. There's a browser playground."
+
 - name: "Sluka"
   kind: "Language-learning reader"
   url: "https://sluka.app/"

@@ -1,0 +1,12 @@
+{{- /*
+  npc-voices/data — returns the JSON every widget on /misc/npc-voices/ carries
+  as data attributes, so static/js/npc-voices/nv-voice.js reads one source:
+  data/npc-voices/voices.yaml, stages.yaml, and the tuning defaults in lab.yaml.
+
+    {{ $nv := partial "npc-voices/data.html" . }}
+    <div … data-nv-stages="{{ $nv.stages }}" data-nv-voices="{{ $nv.voices }}" data-nv-tuning="{{ $nv.tuning }}">
+*/ -}}
+{{- $data := index site.Data "npc-voices" -}}
+{{- $scratch := newScratch -}}
+{{- range $data.lab.groups }}{{ range .sliders }}{{ if eq .target "tuning" }}{{ $scratch.SetInMap "tuning" .key .default }}{{ end }}{{ end }}{{ end -}}
+{{- return dict "stages" ($data.stages | jsonify) "voices" ($data.voices | jsonify) "tuning" ($scratch.Get "tuning" | jsonify) -}}

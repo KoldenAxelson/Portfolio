@@ -31,10 +31,9 @@ contract work before ([BigHammerGarage](/projects/bighammergarage) was one), but
 never as the plan. These are my notes on five videos about making it the plan.
 
 They run in a rough order. Freelancing sells your time, so it starts fast and
-caps out. A product sells without you, so it starts slow and doesn't. The
-first video is a freelancer's one-week launch; the next three are about
-building something that sells on its own; the last is the MBA arithmetic that
-decides whether either one pays. It's a synthesis of other people's claims,
+caps out. A product sells without you, so it starts slow and doesn't. The page
+follows that order: a one-week freelance launch, then building something that
+sells on its own, then the arithmetic that decides whether either one pays. It's a synthesis of other people's claims,
 and I've marked where I trust them less.
 
 | # | Idea | From |
@@ -89,11 +88,11 @@ the next job.
 
 ## 2 · Test it before you build it
 
-Freelancing caps at the hours you have. The million-dollar video, from a
-founder who says they sold their last company for $110 million, argues for a
-"high-leverage" business instead: recurring revenue, margins around 70%,
-growth through software instead of headcount, and a product you own. I'm
-taking that video with some salt. It quotes statistics I couldn't trace, so
+Freelancing caps at the hours you have. The alternative is a
+"high-leverage" business: recurring revenue, margins around 70%,
+growth through software instead of headcount, and a product you own. That case comes from a founder who says
+they sold their last company for $110 million, and I'm taking it with some
+salt. It quotes statistics I couldn't trace, so
 I've kept only the ideas that stand without its numbers. Its "no agencies, no
 consulting" rule also clashes with section 1, and I read it as where to end
 up.
@@ -107,24 +106,24 @@ didn't buy until the pitch added slides about the team.
 
 The cheapest test is a fake door. A chef with a cooking blog adds a "buy my
 book" page that just collects emails, and checks the clicks two weeks later.
-The video's math turns those clicks into $12,000 a month. All of it rests on one
+The founder's math turns those clicks into $12,000 a month. All of it rests on one
 borrowed guess about how many clickers would actually buy.
 
 {{< working-for-yourself/fakedoor >}}
 
 ## 3 · Make quality the strategy
 
-The Linear video is the one I found most convincing. In 2019 three Finnish founders went after
+Linear's story is the most convincing case here. In 2019 three Finnish founders went after
 issue tracking, a market Atlassian's Jira owned so thoroughly that collaborating
 with another team usually meant using Jira. Their wedge was speed and focus,
 against a tool developers mostly try to avoid.
 
 They scoped the first version by user instead of by feature: small startups
 like their own, with enterprise leads turned away. They let in about ten new
-users a week, took no funding until investors came to them, and the video says
-they were profitable within two years. Early on
+users a week, took no funding until investors came to them, and by the video's
+account were profitable within two years. Early on
 they spent six months on a sync engine that makes every change feel instant.
-The lesson the narrator draws is to invest early in infrastructure a
+The lesson is to invest early in infrastructure a
 competitor can't copy without rewriting everything, not to build a sync engine
 "for your horse Tinder project."
 
@@ -132,15 +131,15 @@ The process is the part I'd steal. No A/B tests; taste and real users decide.
 Prototypes ship in three to five days behind a feature flag, first to the team,
 then to beta users, then to everyone. Bugs beat features, with an internal
 one-day fix target. And no customization that helps a middle manager's reports
-at the expense of the person who lives in the tool. The video is honest about
-survivorship bias: the founders came from Uber, Airbnb and Coinbase, and their
+at the expense of the person who lives in the tool. Survivorship bias applies,
+though: the founders came from Uber, Airbnb and Coinbase, and their
 first waitlist followed them from there.
 
 ## 4 · Find the toll on something free
 
-The shortest video is the most specific. Getty Images charges $400, its lowest
+Getty Images charges $400, its lowest
 license, for a three-second clip of General Patton that comes from a public
-domain film on archive.org. The narrator built a free site that pulls the
+domain film on archive.org. One creator built a free site that pulls the
 public domain FedFlix collection from archive.org, cuts each film into
 individual shots automatically, and makes them searchable by what's in the
 picture. It holds over 40,000 shots, each linked to its source, with no
@@ -153,9 +152,8 @@ rebuild it.
 
 ## 5 · Know your break-even
 
-The MBA video tries to fit a year of business school into 25 minutes, and
-nearly every sentence is a definition worth keeping. It deserves a page of its
-own someday. For working alone, these are the ideas that matter most.
+A year of business school squeezed into 25 minutes is mostly definitions
+worth keeping, and it deserves a page of its own someday. For working alone, these are the ideas that matter most.
 
 Cash is not profit. Accrual accounting books revenue when it's earned, so a
 January sale paid in July makes you profitable in January and broke until
@@ -164,7 +162,7 @@ summer, and a profitable company can still run out of cash. Working capital
 
 Price has four common bases: cost plus markup, the value you create, what
 competitors charge, and how hard buyers flinch when the price rises. The
-video's rule underneath all four is that if price is less than cost, you are a
+rule underneath all four is that if price is less than cost, you are a
 charity. Everything else falls out of contribution margin, the price minus the
 cost of each unit, which pays down your fixed costs:
 
@@ -178,7 +176,7 @@ to anything after the money comes back.
 
 ## The plan
 
-Read in order, the five videos describe a path more than a choice:
+Read in order, it's a path more than a choice:
 
 1. Write the one-sentence offer and set a floor price before the first call.
 2. Freelance in that lane, with a real process, and watch for the problem

@@ -275,6 +275,41 @@
   46%, 100% { opacity: 0; transform: translate(0, 0) rotate(0) scale(.7); }
 }
 
+/* ---- Supplement stacks: capsules drop into the bottle, ticks follow ----- */
+/* --step, --loop and the per-tick keyframes (--tick) come from
+   partials/misc/live/supplements.html, which sizes them to the stack. Pill i
+   starts its drop at i × --step and lands 20% of the loop later (the partial's
+   $landsAt); keep that and the 18–24% below in step. */
+.mf-sp .jar { fill: var(--bottle); }
+.mf-sp .jar-label { fill: #fbf7ef; }
+.mf-sp .rim { stroke: rgb(0 0 0 / .25); stroke-width: 2; }
+.mf-sp .cap { fill: rgb(var(--c-fg) / .8); }
+.mf-sp .box { fill: none; stroke: rgb(var(--c-muted)); stroke-width: 1.4; }
+.mf-sp .tick { fill: none; stroke: rgb(var(--c-accent)); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; }
+.mf-sp .pill { opacity: 0; transform-box: fill-box; transform-origin: center;
+  animation: mf-sp-drop var(--loop) cubic-bezier(.5, 0, .75, .3) infinite; animation-delay: calc(var(--i) * var(--step)); }
+.mf-sp .row .tick { animation: var(--tick) var(--loop) ease-out infinite; }
+@keyframes mf-sp-drop {
+  0% { opacity: 0; transform: translateY(-52px) rotate(-40deg); }
+  5% { opacity: 1; }
+  18% { opacity: 1; transform: translateY(6px) rotate(25deg); }
+  24%, 100% { opacity: 0; transform: translateY(22px) rotate(25deg); }
+}
+
+/* ---- NPC Voices: a text box types a line, blips mark the voiced letters -- */
+/* --loop comes from partials/misc/live/npc-voices.html; each letter, underline
+   and blip is delayed to its own moment, so the line retypes in the same order
+   it was erased. Keep the 1% / 58% marks in step with that partial's timing. */
+.mf-nv .nv-box { fill: #e9e4d8; }
+.mf-nv .nv-inner { fill: #161821; stroke: #e9e4d8; stroke-width: .8; }
+.mf-nv .nv-tag { fill: #2a2d3a; stroke: #e9e4d8; stroke-width: 1.2; }
+.mf-nv .nv-tag-text { fill: #f5c451; letter-spacing: .06em; }
+.mf-nv .nv-ch { fill: #f4f1ea; animation: mf-nv-type var(--loop) steps(1, end) infinite backwards; }
+.mf-nv .nv-under { fill: #f5c451; opacity: 0; animation: mf-nv-type var(--loop) steps(1, end) infinite backwards; }
+.mf-nv .nv-blip { fill: rgb(var(--c-accent)); opacity: 0; transform-box: fill-box; transform-origin: center; animation: mf-nv-blip var(--loop) ease-out infinite backwards; }
+@keyframes mf-nv-type { 0% { opacity: 0; } 1%, 58% { opacity: 1; } 59%, 100% { opacity: 0; } }
+@keyframes mf-nv-blip { 0% { opacity: 1; transform: scale(.3); } 4% { opacity: 1; transform: scale(1.25); } 58% { opacity: .55; transform: scale(1); } 59%, 100% { opacity: 0; transform: scale(.3); } }
+
 /* Every animation in this file, off for reduced motion. Last, so it wins. */
 @media (prefers-reduced-motion: reduce) {
   .mf *, .mf *::before, .mf *::after { animation: none !important; transition: none !important; }
@@ -283,6 +318,7 @@
   .mf-gk .tier, .mf-wy .term, .mf-wy .even, .mf-py .loss-end,
   .mf-ik .ov, .mf-ik .core { opacity: 1; }
   .mf-il .il-toast:first-child { opacity: 1; }
+  .mf-nv .nv-under, .mf-nv .nv-blip { opacity: 1; }
   .mf-rz .rz-dealt { opacity: 0; }
   .mf-rz .rz-dealt:nth-of-type(-n+4) { opacity: 1; transform: translate(var(--x), 0) rotate(var(--tilt)); }
 }

@@ -1,0 +1,54 @@
+# The cast on /misc/npc-voices/, rendered as buttons by
+# shortcodes/npc-voices/cast.html, which hands this list to
+# static/js/npc-voices/nv-voice.js as JSON (data-nv-voices). The script reads
+# every number from here, so a new character is one entry.
+#
+# pitchHz : the buzz, the vocal folds.
+# tube    : vocal-tract length as a multiplier on the vowel bands. Above 1 is a
+#           shorter tube (all three bands move up together); pitch alone can't
+#           do that, which is the page's point about the "pitched-up guard".
+# mouth   : 1 is open. Lower squeezes the vowels toward a mutter.
+# breath  : how much soft noise rides on the buzz.
+# wobble  : semitones of slow, steady wobble at about twice a second (old voices).
+- key: "guard"
+  label: "Guard"
+  pitchHz: 98
+  tube: 1
+  mouth: 1
+  breath: 0.12
+  wobble: 0
+- key: "strain"
+  label: "Guard, pitched up"
+  pitchHz: 205
+  tube: 1
+  mouth: 1
+  breath: 0.12
+  wobble: 0
+- key: "merchant"
+  label: "Merchant"
+  pitchHz: 205
+  tube: 1.18
+  mouth: 1
+  breath: 0.12
+  wobble: 0
+- key: "child"
+  label: "Child"
+  pitchHz: 285
+  tube: 1.34
+  mouth: 1
+  breath: 0.12
+  wobble: 0
+- key: "pirate"
+  label: "Pirate"
+  pitchHz: 112
+  tube: 0.96
+  mouth: 0.45
+  breath: 0.22
+  wobble: 0
+- key: "elder"
+  label: "Elder"
+  pitchHz: 150
+  tube: 1.06
+  mouth: 0.9
+  breath: 0.2
+  wobble: 0.7

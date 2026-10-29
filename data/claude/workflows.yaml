@@ -1,0 +1,20 @@
+# Two ways to set up the work before Claude does it, on /misc/claude/
+# "Planning the Work", rendered by shortcodes/claude/parallel.html
+# ({{< claude/parallel "workflows" >}}). Both are from videos; the rows are the
+# videos' claims except where the EGM README says otherwise.
+- name: "Folders, not agents"
+  when: "Any job you repeat"
+  rows:
+    - "One folder for prompts and instructions, one for tools and when to use them, one for data connections"
+    - "Claude Code or Codex reads them with plain shell commands, so the folders are the architecture"
+    - "Ask a question and it wanders the folders and becomes the agent that question needs"
+    - "A coded agent per workflow is wasted effort about 99% of the time, he says"
+- name: "Elephant-Goldfish"
+  link: "https://github.com/google/elephant-goldfish-model"
+  when: "Big features that are costly to get wrong"
+  rows:
+    - "/egm-bootstrap writes a README for every code folder. Point CLAUDE.md at them, or Claude won't read them"
+    - "/egm-brainstorm questions you until the idea is clear; /egm-draft writes the design doc a section at a time"
+    - "/egm-review hands it to fresh subagents that never saw your chat, so they can't just agree with it"
+    - "/egm-drift-report later checks the code against those docs"
+    - "Free plugin from Google's GitHub, not an official Google product. In Claude Code every command takes an egm: prefix, as in /egm:egm-review. Skip it for small fixes"

@@ -1,0 +1,55 @@
+# References for content/misc/supplements/mr-happy.md, rendered by
+# {{< ml/references set="supplements-mr-happy" >}}. Numbered in this order; the
+# mr-happy `refs` in data/supplements/stacks.yaml point at these numbers, so
+# append new sources at the end rather than reordering.
+
+- tag: Animal study
+  title: Uridine and omega-3s are potentiated by combined treatment in rats
+  url: https://news.harvard.edu/gazette/story/2005/02/food-ingredients-may-be-as-effective-as-antidepressants/
+  meta: Carlezon et al. · Biological Psychiatry · 2005 (Harvard Gazette summary)
+  note: Uridine worked at once and omega-3s slowly against depression-like behavior in stressed rats; together, faster.
+- tag: Animal study
+  title: Synaptic proteins and phospholipids are increased in gerbil brain by uridine plus DHA
+  url: https://augusta.elsevierpure.com/en/publications/synaptic-proteins-and-phospholipids-are-increased-in-gerbil-brain/
+  meta: Wurtman et al. · Brain Research · 2006
+  note: Four weeks of UMP and choline plus DHA raised synapsin-1 by 41% and PSD-95 by 38% in gerbils.
+- tag: Human trial
+  title: "LipiDiDiet: 24 months of a specific multinutrient in prodromal Alzheimer's disease"
+  url: https://www.nutraingredients.com/Article/2017/10/31/Major-EU-funded-Alzheimer-s-trial-reveals-mixed-results-for-daily-nutrition-drink
+  meta: Soininen et al. · The Lancet Neurology · 2017 (NutraIngredients summary)
+  note: 311 people; a drink with uridine, omega-3s and choline missed its primary endpoint, with less decline on secondary measures.
+- tag: Meta-analysis
+  title: Efficacy of omega-3 PUFAs in depression
+  url: https://link.springer.com/10.1038/s41398-019-0515-5
+  meta: Liao et al. · Translational Psychiatry · 2019
+  note: 26 trials, 2,160 people. EPA-major formulas (≥60% EPA) at ≤1 g/day of EPA helped; DHA-major didn't.
+- tag: Human trial
+  title: Citicoline and memory function in healthy older adults
+  url: https://www.nutraingredients.com/Article/2021/08/26/Citicoline-supplementation-shown-to-improve-memory-in-older-adults-Kyowa-Hakko-Bio-funded-12-week-RCT/
+  meta: Nakazaki et al. · The Journal of Nutrition · 2021 (NutraIngredients summary)
+  note: 500 mg/day for 12 weeks improved episodic memory in 99 adults aged 50–85 with memory complaints. Funded by the maker.
+- tag: Human trial
+  title: Oral uridine for treatment of bipolar depression in adolescents
+  url: https://ctv.veeva.com/study/oral-uridine-for-treatment-of-bipolar-depression-in-adolescents
+  meta: University of Utah · NCT00841269 · completed, open label
+  note: Uridine 500 mg twice a day for 6 weeks, with brain scans before and after. No methamphetamine arm.
+- tag: Safety
+  title: Risikovurdering af uridin i kosttilskud (risk assessment of uridine in supplements)
+  url: https://backend.orbit.dtu.dk/ws/files/275679118/Risikovurdering_uridin.pdf
+  meta: DTU National Food Institute, Denmark · July 2020 · in Danish
+  note: A risk at 300 mg/day "cannot be ruled out" because safety data are almost absent; no harmful effects were found in the literature.
+- tag: Safety
+  title: Omega-3 supplements and the risk of atrial fibrillation
+  url: https://www.hcplive.com/view/meta-analysis-raises-questions-around-risk-of-atrial-fibrillation-associated-with-omega-3-supplements
+  meta: Gencer, Albert et al. · Circulation · October 2021 (HCPLive summary)
+  note: 7 trials, 81,210 people. Hazard ratio 1.12 at ≤1 g/day and 1.49 above 1 g/day.
+- tag: Safety
+  title: Omega-3 fatty acids, health professional fact sheet
+  url: https://ods.od.nih.gov/factsheets/Omega3FattyAcids-HealthProfessional/
+  meta: NIH Office of Dietary Supplements · read October 28, 2026
+  note: Warfarin interaction, atrial fibrillation at 4 g/day, and the FDA and EFSA view that up to 5 g/day of EPA plus DHA is safe.
+- tag: Safety
+  title: Association of L-α glycerylphosphorylcholine with subsequent stroke risk after 10 years
+  url: https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2786547
+  meta: Lee et al. · JAMA Network Open · November 2021
+  note: Korean cohort of 12 million adults aged 50+; matched hazard ratio 1.43 for stroke among Alpha-GPC users. Observational.

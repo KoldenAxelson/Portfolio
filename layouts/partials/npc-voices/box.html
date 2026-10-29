@@ -1,0 +1,21 @@
+{{- /*
+  npc-voices/box — the dialogue box all three widgets on /misc/npc-voices/ type
+  into, with the pitch strip under it and the play controls. The ids are
+  #<prefix>-line, -tune, -controls, -play, -skip and -rate; nv-voice.js
+  (initPlayer) finds them by that prefix. With JS off the line just sits there.
+
+    {{ partial "npc-voices/box.html" (dict "prefix" "nv-build" "speaker" "Innkeeper" "line" $line "extra" $html) }}
+
+  extra: optional HTML for more buttons in the controls row.
+*/ -}}
+<div class="nv-box">
+  <span class="nv-speaker" id="{{ .prefix }}-speaker">{{ .speaker }}</span>
+  <p class="nv-line" id="{{ .prefix }}-line">{{ .line }}</p>
+</div>
+<canvas class="nv-tune" id="{{ .prefix }}-tune" width="640" height="72" role="img" aria-label="Pitch of each sound in the line, left to right" hidden></canvas>
+<div class="vn-controls" id="{{ .prefix }}-controls" hidden>
+  <button class="vn-btn" id="{{ .prefix }}-play" type="button">Play</button>
+  <button class="vn-btn vn-btn-ghost" id="{{ .prefix }}-skip" type="button" disabled>Skip</button>
+  {{- with .extra }}{{ . | safeHTML }}{{ end }}
+  <span class="nv-rate" id="{{ .prefix }}-rate" aria-live="polite"></span>
+</div>

@@ -1,11 +1,15 @@
-{{- /* claude/parallel: nested sessions vs projects, from data/claude/parallel.yaml.
-       Two cards with matching rows. Static, no JS. */ -}}
-{{- $ways := site.Data.claude.parallel -}}
-{{- if not $ways }}{{ errorf "claude/parallel: data/claude/parallel.yaml is missing (page: %s)" .Page.RelPermalink }}{{ end -}}
+{{- /* claude/parallel: side-by-side cards with matching rows, from
+       data/claude/<set>.yaml. With no argument the set is "parallel" (nested
+       sessions vs projects); {{< claude/parallel "workflows" >}} renders the
+       planning workflows. A card's optional `link` puts a link on its name.
+       Static, no JS. */ -}}
+{{- $set := .Get 0 | default "parallel" -}}
+{{- $ways := index site.Data.claude $set -}}
+{{- if not $ways }}{{ errorf "claude/parallel: data/claude/%s.yaml is missing (page: %s)" $set .Page.RelPermalink }}{{ end -}}
 <div class="not-prose cl-par">
 {{- range $ways }}
 <article class="cl-par-card">
-  <h3>{{ .name }}{{ with .status }} <span class="cl-pill">{{ . }}</span>{{ end }}</h3>
+  <h3>{{ if .link }}<a href="{{ .link }}">{{ .name }}</a>{{ else }}{{ .name }}{{ end }}{{ with .status }} <span class="cl-pill">{{ . }}</span>{{ end }}</h3>
   <p class="cl-par-when">{{ .when }}</p>
   <ul>{{ range .rows }}<li>{{ . }}</li>{{ end }}</ul>
 </article>

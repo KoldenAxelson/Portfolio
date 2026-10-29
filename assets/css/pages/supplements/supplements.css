@@ -1,0 +1,69 @@
+/* /misc/supplements/ — supplement stacks checked against the research.
+   Shortcodes in layouts/shortcodes/supplements/, data in data/supplements/.
+   Verdict chips differ by fill and border style as well as colour, so they
+   read the same without colour. */
+
+.prose:has(.sp-stack) { container: sp / inline-size; }
+.sp-stack, .sp-claims, .sp-safety { margin: 1.5rem 0 2rem; font-size: 1rem; line-height: 1.45; }
+.sp-kicker { margin: 0 0 .5rem; font: 600 .66rem var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: rgb(var(--c-muted)); }
+.sp-ref { font: .78em var(--font-mono); color: rgb(var(--c-muted)); text-decoration: none; }
+.sp-ref:hover { color: rgb(var(--c-accent)); }
+
+/* ---- The stack --------------------------------------------------------- */
+.sp-stack { margin-top: 0; padding: 1.25rem; border: 1px solid rgb(var(--c-border)); border-radius: .9rem;
+  background: linear-gradient(160deg, rgb(var(--c-accent) / .07), transparent 55%); }
+.sp-from { margin: 0 0 1.1rem; color: rgb(var(--c-fg)); }
+.sp-parts { display: grid; gap: .75rem; margin: 0; padding: 0; list-style: none; }
+.sp-part { display: grid; grid-template-columns: 2rem minmax(0, 1fr); gap: .75rem; padding: .9rem; border: 1px solid rgb(var(--c-border)); border-radius: .7rem; background: rgb(var(--c-bg)); }
+.sp-num { display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: 50%; font: 700 .9rem var(--font-mono); background: rgb(var(--c-accent)); color: rgb(var(--c-bg)); }
+.sp-name { margin: .2rem 0 0; font-weight: 600; color: rgb(var(--c-fg)); }
+.sp-role { margin: .2rem 0 .7rem; font-size: .88rem; color: rgb(var(--c-muted)); }
+.sp-dose { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; margin: 0; overflow: hidden; border: 1px solid rgb(var(--c-border)); border-radius: .55rem; background: rgb(var(--c-border)); }
+.sp-dose > div { display: flex; flex-direction: column-reverse; justify-content: flex-end; padding: .5rem .6rem; background: rgb(var(--c-bg)); }
+.sp-dose dt { margin-top: .1rem; font-size: .7rem; color: rgb(var(--c-muted)); }
+.sp-dose dd { margin: 0; font-weight: 700; color: rgb(var(--c-fg)); font-variant-numeric: tabular-nums; }
+.sp-dose dd small { font-weight: 400; color: rgb(var(--c-muted)); }
+.sp-dose .is-key { background: rgb(var(--c-accent) / .1); }
+.sp-dose.is-fixed { grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); }
+.sp-dose.is-fixed > div:only-child { grid-column: 1 / -1; }
+.sp-notes { display: grid; gap: .4rem; margin: 1rem 0 0; padding: 0; list-style: none; font-size: .9rem; color: rgb(var(--c-fg) / .9); }
+.sp-notes strong { display: inline-block; min-width: 4.2rem; font: 600 .66rem var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: rgb(var(--c-muted)); }
+.sp-fine { margin: .9rem 0 0; font-size: .74rem; color: rgb(var(--c-muted)); }
+@container sp (max-width: 30rem) {
+  .sp-dose, .sp-dose.is-fixed { grid-template-columns: 1fr; }
+  .sp-dose > div { flex-direction: row-reverse; justify-content: space-between; align-items: baseline; }
+}
+
+/* ---- Claims ------------------------------------------------------------ */
+.sp-claims { display: grid; gap: .6rem; padding: 0; list-style: none; }
+.sp-claim { padding: .85rem .95rem; border: 1px solid rgb(var(--c-border)); border-radius: .7rem; }
+.sp-claim-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: .35rem .6rem; margin: 0; }
+.sp-claim-text { font-weight: 600; color: rgb(var(--c-fg)); }
+.sp-finding { margin: .4rem 0 0; font-size: .9rem; color: rgb(var(--c-fg) / .85); }
+.sp-chip { flex: none; padding: .1rem .55rem; border: 1.5px solid transparent; border-radius: 999px; font: 600 .66rem var(--font-mono); letter-spacing: .04em; text-transform: uppercase; color: rgb(var(--c-fg)); }
+.is-supported .sp-chip { background: rgb(var(--c-accent) / .22); border-color: rgb(var(--c-accent)); }
+.is-mixed .sp-chip { background: rgb(var(--c-accent) / .08); border-color: rgb(var(--c-accent) / .5); }
+.is-animal .sp-chip { background: rgb(var(--c-fg) / .06); border-color: rgb(var(--c-border)); }
+.is-none .sp-chip { border-style: dashed; border-color: rgb(var(--c-muted)); color: rgb(var(--c-muted)); }
+.is-none .sp-claim-text { color: rgb(var(--c-fg) / .8); }
+
+/* ---- Safety ------------------------------------------------------------ */
+.sp-safety { display: grid; gap: .6rem; padding: 0; list-style: none; }
+.sp-safe { display: flex; flex-direction: column; gap: .25rem; padding: .85rem .95rem; border-left: 3px solid rgb(var(--c-accent)); border-radius: 0 .6rem .6rem 0; background: rgb(var(--c-fg) / .04); }
+.sp-safe strong { color: rgb(var(--c-fg)); }
+.sp-safe span { font-size: .9rem; color: rgb(var(--c-fg) / .85); }
+@container sp (min-width: 40rem) { .sp-safety { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+/* ---- Shelf bottle (partials/supplements/stack-card.html) --------------- */
+/* Same 2:3 footprint as a book cover on the other shelves. --bottle is the
+   stack's colour from data/supplements/stacks.yaml. */
+.sp-bottle { position: relative; display: flex; flex-direction: column; align-items: center; aspect-ratio: 2 / 3; padding: 8% 10% 6%;
+  border: 1px solid rgb(var(--c-border) / .6); border-radius: .5rem; background: rgb(var(--c-border) / .15); }
+.sp-cap { flex: none; width: 56%; height: 14%; border-radius: .35rem .35rem .15rem .15rem; background: rgb(var(--c-fg) / .85);
+  background-image: repeating-linear-gradient(90deg, transparent 0 5px, rgb(var(--c-bg) / .18) 5px 7px); }
+.sp-jar { position: relative; flex: 1; width: 100%; margin-top: 4%; border-radius: .55rem .55rem .7rem .7rem; overflow: hidden;
+  background: linear-gradient(90deg, rgb(0 0 0 / .12), transparent 30%, rgb(255 255 255 / .18) 45%, transparent 60%, rgb(0 0 0 / .14)), var(--bottle); }
+.sp-label { position: absolute; inset: 22% 0 18%; display: flex; flex-direction: column; justify-content: center; gap: .3rem; padding: 0 10%;
+  text-align: center; background: #fbf7ef; color: #1f1f23; }
+.sp-label-name { font-weight: 700; font-size: .9rem; line-height: 1.1; text-wrap: balance; }
+.sp-label-sub { font: 600 .5rem var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: #5b5b63; line-height: 1.3; }

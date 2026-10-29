@@ -1,0 +1,21 @@
+{{- /*
+  supplements/claims — each claim made for a stack, with what the research
+  says and a verdict chip. [n] links to the nth card in the references below
+  (data/ml/references/supplements.yaml; ml/references gives no per-card ids,
+  so the link goes to the section).
+
+    {{< supplements/claims >}}            the page's `stack:` from front matter
+    {{< supplements/claims "mr-happy" >}} a named stack
+*/ -}}
+{{- $id := .Get 0 | default .Page.Params.stack -}}
+{{- $stack := index (where site.Data.supplements.stacks "id" $id) 0 -}}
+{{- if not $stack -}}{{- errorf "supplements/claims: %s names %q, which data/supplements/stacks.yaml doesn't have." .Position $id -}}{{- end -}}
+{{- $labels := dict "supported" "Some support" "mixed" "Mixed" "animal" "Animals only" "none" "No evidence found" -}}
+<ul class="not-prose sp-claims">
+  {{- range $stack.claims }}
+  <li class="sp-claim is-{{ .verdict }}">
+    <p class="sp-claim-head"><span class="sp-chip">{{ index $labels .verdict }}</span><span class="sp-claim-text">{{ .claim }}</span></p>
+    <p class="sp-finding">{{ .finding }}{{ range .refs }} <a href="#sources" class="sp-ref">[{{ . }}]</a>{{ end }}</p>
+  </li>
+  {{- end }}
+</ul>

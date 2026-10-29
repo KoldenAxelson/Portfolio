@@ -32,8 +32,8 @@ both, plus two widgets for the ideas that only make sense when they move.
 
 ## 1 · A video is a function of time
 
-The first video makes motion-graphics explainers with nothing but Claude Code
-and JavaScript. The idea underneath is one sentence: Claude writes a function
+Motion-graphics explainers can be made with nothing but Claude Code and
+JavaScript. The idea underneath is one sentence: Claude writes a function
 that takes a time *t* and returns one picture. Ask for 60 of them a second,
 play them in order, and that's a video. A headless browser (Playwright) draws
 each frame, FFmpeg stitches them into an MP4, and the soundtrack can be code
@@ -46,7 +46,7 @@ its own. Claude can't watch a video, but it can look at frames. The loop that
 makes the results good is a contact sheet: pull a grid of frames, look for
 anything overlapping or cut off, fix the function, render again.
 
-The narrator ran one prompt at three effort levels: about 20 minutes on low, 30
+One creator ran one prompt at three effort levels: about 20 minutes on low, 30
 on high, and eight hours on the highest. All three were solid. The lesson they
 draw is that bad results are usually a prompt problem. A good prompt states:
 
@@ -61,8 +61,8 @@ the composition with your own content poured in.
 
 ## 2 · A studio in a folder
 
-The second video was made, it says, entirely out of one folder, and walks
-through that folder from inside itself. Its structure comes from how Disney
+One video was made, it says, entirely out of one folder, and walks through
+that folder from inside itself. Its structure comes from how Disney
 made cartoons around 1930: voices recorded first, every syllable charted on an
 exposure sheet, story sketches filmed against the soundtrack as a story reel,
 rough animation screened as pencil tests in a room the animators called the
@@ -88,7 +88,7 @@ the check is what stops one bad take from becoming a bad video.
 
 ## 3 · Motion in apps
 
-The third video comes from John, a staff engineer at Meta who has built
+This section comes from John, a staff engineer at Meta who has built
 animations for Instagram Reels and Threads. His argument is that AI-built apps
 all drift toward the same lifeless middle, because a model has no way to
 validate what *feels* good. Ask for "an animation" and you get something

@@ -14,10 +14,10 @@
 # box, with behaviour lazy-loaded from static/js/getting-known/.
 # ─────────────────────────────────────────────────────────────────────────────
 title: "Getting Known"
-description: "Notes on four videos about being known as well as good: building a personal brand, Keith Ferrazzi's dinner method for networking from zero, Simon Squibb's ten steps of honest selling, and staying visible and protected at work, plus my own ten-step persuasion system."
+description: "Notes on five videos about being known as well as good: building a personal brand and keeping it fun, Keith Ferrazzi's dinner method for networking from zero, Simon Squibb's ten steps of honest selling, and staying visible and protected at work, plus my own ten-step persuasion system."
 # Blank by default — uncomment to put a line under the H1 in the banner.
 #lead: "Being good at the work is step three."
-blurb: "Four videos on being known as well as good: a personal brand, networking from zero, selling honestly, and getting ahead at a heads-down job."
+blurb: "Five videos on being known as well as good: a personal brand you enjoy, networking from zero, selling honestly, and getting ahead at a heads-down job."
 icon: "user-group"
 group: "better"
 prose: true
@@ -29,38 +29,37 @@ be enough. Lately I have a growing suspicion it isn't. The people who get the
 interesting jobs, clients and introductions are often the ones other people
 already know, and I've done very little to be one of them.
 
-These are my notes on four videos that each take a different room: online, a
+These are my notes on five videos, covering four different rooms: online, a
 dinner table, a pitch, and the office. They're a synthesis of other people's
-arguments, three of them from people with a coaching program to sell, so I've
+arguments, four of them from people with a program or a book to sell, so I've
 kept what held up and said where I'd push back. One idea runs through all
-four: people pick who they already know and trust, and being good is what gets
+of them: people pick who they already know and trust, and being good is what gets
 you considered once they do.
 
 | Room | From | The move |
 |------|------|----------|
-| Online | A founder who builds personal brands | Own a few ideas and repeat them everywhere |
+| Online | A brand founder and a speaking coach | Own a few ideas, repeat them, and keep it fun |
 | The table | Keith Ferrazzi, *Never Eat Alone* | Host instead of attending |
 | The pitch | Simon Squibb | Need, then relationship, then product |
 | The office | A former investment-bank employee | Be seen, and get it in writing |
 
 ## 1 · Online: own a few ideas
 
-The brand video opens with a definition I keep coming back to: your brand is
+Start with a definition I keep coming back to: your brand is
 what people say about you when you're not in the room. You have one either
 way, so the only choice is whether you shape it. Shaping starts with clarity:
 who you're for, and what they're struggling with, learned by actually asking
 them.
 
-From there the narrator boils it down to four content categories, the
-"drumbeat" people come back for. On top of those sits what they call content
-IP: the recurring elements and coined words that make work recognisably
+From there it boils down to four content categories, the "drumbeat" people
+come back for. On top of those sits what one brand founder calls content IP: the recurring elements and coined words that make work recognisably
 yours, like Casey Neistat's sunglasses or Peter McKinnon's greeting. Name your
 processes and you own them. I have one by accident already, the
 [OX Stack](/colophon), and I've never once used it on purpose.
 
-The practical advice is to pick two platforms, start with written ones (they
-suggest X and LinkedIn, because there's no gear to buy), and post every day.
-Their target is twice daily, which I'd argue is a lot for anyone with a day
+The practical advice is to pick two platforms, start with written ones (X and
+LinkedIn, say, because there's no gear to buy), and post every day. The brand
+founder's target is twice daily, which I'd argue is a lot for anyone with a day
 job. The trick that makes any cadence possible is the content waterfall: make
 one pillar piece and break it down into everything else.
 
@@ -68,8 +67,21 @@ one pillar piece and break it down into everything else.
 
 The rest is housekeeping. Batch the work (fifteen videos in a day beats one a
 day), look at what's resonating and do more of it, and give each post one
-clear next step for the reader. The video goes on to building a team of
-editors and writers, which is a later problem than mine.
+clear next step for the reader. After that comes a team of editors and
+writers, which is a later problem than mine.
+
+The harder part is keeping going when nobody's watching. Make it fun, because
+audiences can tell when you're grinding. One speaking coach got out of a
+clinical run of tutorials by putting more of himself in: a guitar in the
+background if you play, a hobby as the analogy, a story from your own life.
+
+Swap the scoreboard, too. Views ride the algorithm up and down, and your mood
+rides with them, so track emails and sales instead.
+
+{{< getting-known/scoreboard >}}
+
+The coach's cadence, three to seven videos a week, is gentler than twice a
+day, and it's the one I'd actually try.
 
 ## 2 · The table: host instead of attending
 
@@ -150,14 +162,14 @@ to anyone who has read Chris Voss.
 ## 4 · The office: be seen, get it in writing
 
 Every office I've worked in has been engineers with their heads down, no drama
-to speak of, and no obvious way to get ahead. The office-politics video comes
-from someone who says they spent ten years at Goldman Sachs and Morgan Stanley
-type firms, and its premise is uncomfortable: keeping your head down and hoping
+to speak of, and no obvious way to get ahead. This advice comes from someone
+who says they spent ten years at Goldman Sachs and Morgan Stanley
+type firms, and the premise is uncomfortable: keeping your head down and hoping
 the work gets noticed is a strategy, and usually a losing one.
 
 The most useful advice is also the most boring. Vague instructions get pinned
 down before you start: ask about the tasks, the criteria and the outcome, then
-send a short email saying what you agreed and by when. The narrator tells a
+send a short email saying what you agreed and by when. They tell a
 story where a new manager tried to put them on a performance plan for following
 the old manager's instructions, and the emails ended it.
 
@@ -171,7 +183,7 @@ skills current, and treating company praise as nice but separate from
 security. When onboarding is thin, keep your own map of who knows what; people
 on other teams, who don't see you as competition, tend to be the most helpful.
 
-I'm leaving out about a third of the video. It also recommends pretending to
+I'm leaving out about a third of that advice. It also recommends pretending to
 agree with whoever has power, letting a rival walk into a mistake, and assuming
 coworkers are jealous. That might describe a trading floor, but it doesn't
 describe any team I'd want to be on.
@@ -185,7 +197,7 @@ the ones I've been skipping. Here's my plan:
 1. Write down the goal for this year and the 25 names, and find the anchor
    tenant.
 2. Pick two platforms. Every article I publish becomes a waterfall instead of a
-   single link.
+   single link, and I count emails, not views.
 3. Host one dinner, even if it's a card table and a rotisserie chicken.
 4. Keep the priority list and send the pings.
 5. When I pitch anything, start with need, then the relationship, and split the
@@ -195,15 +207,16 @@ the ones I've been skipping. Here's my plan:
 
 ## Source
 
-Four videos, watched in October 2026. Everything above is my synthesis of
+Five videos, watched in October 2026. Everything above is my synthesis of
 their arguments, and the figures (followers, revenue, years, the PwC sale, the
-nine years of monthly contact) are the speakers' own claims. Three of the four
-end in a pitch for a paid program or book; I've kept their advice and left the
-pitches. The brand and office videos don't give their narrators' names, so I
-haven't guessed them. The persuasion system in section 3 is my own notes, not
+nine years of monthly contact, the $7 offer and the email numbers) are the
+speakers' own claims. Four of the five pitch a paid program or a book along the way; I've kept their advice and left the pitches. The brand and office videos
+don't give their narrators' names, and the speaking coach gives only a first name, once and in
+passing, so I've called all three by what they do. The persuasion system in section 3 is my own notes, not
 something from these videos.
 
 - [A founder on building a personal brand](https://youtu.be/dn7x0Sr2IhY): the definition, content categories and IP, two platforms, the content waterfall, batching.
+- [How to make YouTube so fun you post every day](https://youtu.be/XMkU76jKsQg): self-expression over grinding, emails and sales over views, a low-ticket offer, three to seven videos a week.
 - [Keith Ferrazzi on rebuilding a network from zero](https://youtu.be/iHNNQFYkwCo): the list of 25, the anchor tenant, the dinner format, priority pings.
 - [Simon Squibb's ten steps of selling](https://youtu.be/amdXa3CfzHw): honesty, guarantee versus hope, the three steps in order, leverage, the sizzle.
 - [A former banker on office politics](https://youtu.be/j_bMi4FUyEg): visibility, recap emails, vague promises, knowing your worth.

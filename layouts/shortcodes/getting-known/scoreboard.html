@@ -1,0 +1,17 @@
+{{- /* getting-known/scoreboard: live widget; behaviour in static/js/getting-known/gk-scoreboard.js.
+       The same twelve months of a small channel watched two ways: views, or the
+       email list and the sales it brings. The months are in the script. */ -}}
+<div class="not-prose vn-demo" id="gk-scoreboard" data-vn-src="/js/getting-known/gk-scoreboard.js" data-vn-init="GkScoreboard">
+<div class="vn-demo-label">Live · pick your scoreboard</div>
+<div class="vn-controls gk-sb-tabs" id="gk-sb-tabs" role="group" aria-label="Scoreboard" hidden>
+  <button class="vn-btn vn-btn-ghost" type="button" data-gk-board="views" aria-pressed="true">Views</button>
+  <button class="vn-btn vn-btn-ghost" type="button" data-gk-board="list" aria-pressed="false">Emails and sales</button>
+</div>
+<div class="gk-sb-chart" id="gk-sb-chart" aria-hidden="true"></div>
+<div class="gk-sb-read" id="gk-sb-read" aria-live="polite">
+  <p class="gk-sb-big">300 new emails a month</p>
+  <p class="gk-sb-feel">On his first channel, a mini launch of a $100 to $200 product to each new batch of about 300 emails brought in $500 to $1,000 a month, while his videos got a couple of thousand views each.</p>
+</div>
+<label class="gk-sb-scrub" id="gk-sb-scrub-wrap" hidden><span class="gk-lab">Month</span><input type="range" id="gk-sb-scrub" min="1" max="12" value="12" /></label>
+<div class="vn-caption">Made-up months built on the speaking coach's numbers from his first channel: about 300 new emails a month and about five sales a launch of a $100 to $200 product, priced here at $150. The view counts are invented. Drag through the year and watch which scoreboard you'd want to wake up to.</div>
+</div>

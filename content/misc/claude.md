@@ -5,11 +5,11 @@
 #   - Only what a person does or can make. Background behaviour that's merely
 #     neat stays off the page, and prose stays to a line or two per section.
 #   - Every list lives in data/claude/*.yaml (capabilities, power-tools,
-#     parallel, skill-rules, mods) and renders through shortcodes/claude/; an
+#     parallel, workflows, skill-rules, mods) and renders through shortcodes/claude/; an
 #     update is "edit an entry", and the "As of" line in the intro moves.
 #   - Every revision adds one dated line to the Changelog, newest last.
 #
-# youtube : the mods video (the one video still cited), as the flag. Its
+# youtube : the mods video, as the flag (two more are cited under Sources). Its
 #           presence marks the card at /misc/ (partials/misc/card.html) and
 #           ships the widget assets
 #           (partials/video-notes/assets.html). Every link out is under Source.
@@ -20,7 +20,7 @@
 # behaviour lazy-loaded from static/js/claude/.
 # ─────────────────────────────────────────────────────────────────────────────
 title: "Claude"
-description: "A living cheat sheet for Claude: what it can make (Docs, Slides, Design, Dashboards, Motion) and on which plans, power-user commands and shortcuts, running work in parallel, rules for writing skills with a linter, and Claude Code mods."
+description: "A living cheat sheet for Claude: what it can make (Docs, Slides, Design, Dashboards, Motion) and on which plans, power-user commands and shortcuts, running work in parallel, planning work with folders and the Elephant-Goldfish model, rules for writing skills with a linter, and Claude Code mods."
 # Blank by default — uncomment to put a line under the H1 in the banner.
 #lead: "Keeping up, one revision at a time."
 blurb: "A living cheat sheet for Claude: what it can make, power-user shortcuts, parallel sessions, skill-writing rules and mods."
@@ -48,6 +48,19 @@ Two ways to run several jobs at once.
 
 {{< claude/parallel >}}
 
+## Planning the Work
+
+Two ways to set the work up before Claude starts. They agree on one thing:
+the useful structure is files Claude can read.
+
+{{< claude/parallel "workflows" >}}
+
+{{< claude/egm-flow >}}
+
+If you install EGM, read the CLAUDE.md it writes. In AI LABS' test, Claude
+added a line from memory saying subagents can't start subagents, which is no
+longer true and stops the review from running as designed.
+
 ## Writing Skills
 
 Rules from Anthropic's updated skill guide. Newer models need less
@@ -74,6 +87,8 @@ Start with Blast Radius and Reflect.
 - October 16, 2026: first version.
 - October 27, 2026: rebuilt as a cheat sheet: capabilities, power-user tools
   and parallel work added; background explainers cut.
+- October 28, 2026: Planning the Work added, from two videos and the EGM
+  README.
 
 ## Sources
 
@@ -85,3 +100,10 @@ Checked against Anthropic's
 [projects](https://claude.com/resources/articles/projects-redesigned) and
 [skill best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices).
 Mods are from [a video](https://youtu.be/lDrAZ1wAyVs) and are its claims.
+"Folders, not agents" is Jake Van Clief's argument in
+[Why Building AI Agents Is (Mostly) a Waste of Time](https://youtu.be/JPJ0gbCUSQk).
+The Elephant-Goldfish card is from AI LABS'
+[walkthrough](https://youtu.be/xxf6D9jynFw), with the command names and the
+not-official note checked against
+[the repo's README](https://github.com/google/elephant-goldfish-model), which
+credits Dave Rensin's essay for the idea.

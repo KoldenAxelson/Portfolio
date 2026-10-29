@@ -1,0 +1,70 @@
+{{- /* npc-voices/lab: live widget, the whole system with every knob exposed.
+       Controls are rendered from data/npc-voices/lab.yaml, presets from
+       voices.yaml; behaviour in static/js/npc-voices/nv-voice.js (NvLab), which
+       finds controls by data-nv-key / data-nv-target / data-nv-toggle. */ -}}
+{{- $data := index site.Data "npc-voices" -}}
+{{- $nv := partial "npc-voices/data.html" . -}}
+{{- $start := index $data.voices 0 -}}
+{{- $line := "Psst. Over here! You didn't hear this from me, but the duke... he's a FROG. Want to know more?" -}}
+{{- $vowels := slice "ah" "eh" "ee" "oh" "oo" "uh" -}}
+<div class="not-prose vn-demo" id="nv-lab" data-vn-src="/js/npc-voices/nv-voice.js" data-vn-init="NvLab" data-nv-voices="{{ $nv.voices }}" data-nv-tuning="{{ $nv.tuning }}">
+<div class="vn-demo-label">Live · the voice lab</div>
+<div class="nv-lab-top">
+  <label class="nv-lab-field"><span class="nv-lab-label">Start from</span>
+    <select class="vn-input nv-lab-select" id="nv-lab-preset" disabled>
+      <optgroup label="The cast">
+        {{- range $i, $voice := $data.voices }}
+        <option value="cast:{{ $i }}">{{ .label }}</option>
+        {{- end }}
+      </optgroup>
+      <optgroup label="Your voices" id="nv-lab-saved"></optgroup>
+    </select>
+  </label>
+  <label class="nv-lab-field"><span class="nv-lab-label">Name</span><input class="vn-input" id="nv-lab-name" type="text" maxlength="32" value="{{ $start.label }}" autocomplete="off" disabled /></label>
+</div>
+<label class="nv-lab-field"><span class="nv-lab-label">Their line</span><textarea class="vn-input nv-lab-text" id="nv-lab-text" rows="2" maxlength="400" spellcheck="false" disabled>{{ $line }}</textarea></label>
+{{ partial "npc-voices/box.html" (dict "prefix" "nv-lab" "speaker" $start.label "line" $line "extra" `<button class="vn-btn vn-btn-ghost" id="nv-lab-save" type="button">Save voice</button><button class="vn-btn vn-btn-ghost" id="nv-lab-copy" type="button">Copy as data</button><button class="vn-btn vn-btn-ghost" id="nv-lab-reset" type="button">Reset</button>`) }}
+<div class="nv-lab-scope">
+  <div class="nv-lab-scope-head">
+    <span class="nv-lab-label">The tube's three bands</span>
+    <span class="nv-lab-vowels" role="group" aria-label="Vowel to show and hear">
+      {{- range $i, $v := $vowels }}
+      <button class="nv-lab-vowel" type="button" data-nv-vowel="{{ $v }}" aria-pressed="{{ cond (eq $i 0) "true" "false" }}" disabled>{{ $v }}</button>
+      {{- end }}
+    </span>
+  </div>
+  <canvas class="nv-lab-spectrum" id="nv-lab-spectrum" role="img" aria-label="How loud each pitch comes out of the tube for the chosen vowel, with the buzz's harmonics as lines"></canvas>
+</div>
+<div class="nv-lab-toggles">
+  {{- range $data.lab.toggles }}
+  {{- $toggle := . }}
+  <div class="nv-lab-toggle" role="group" aria-label="{{ .label }}">
+    <span class="nv-lab-label">{{ .label }}</span>
+    <span class="nv-lab-seg">
+      {{- range .options }}
+      <button class="nv-lab-opt" type="button" data-nv-toggle="{{ $toggle.key }}" data-nv-value="{{ .value | jsonify }}" aria-pressed="{{ cond (eq .value $toggle.default) "true" "false" }}" disabled>{{ .label }}</button>
+      {{- end }}
+    </span>
+  </div>
+  {{- end }}
+</div>
+<div class="nv-lab-panel">
+  {{- range $data.lab.groups }}
+  <details class="nv-lab-group" open>
+    <summary class="nv-lab-group-head">{{ .label }}</summary>
+    <div class="nv-lab-group-body">
+      {{- range .sliders }}
+      {{- $value := cond (eq .target "voice") (index $start .key) .default }}
+      <label class="nv-lab-row">
+        <span class="nv-lab-row-label">{{ .label }}</span>
+        <output aria-hidden="true" class="nv-lab-row-value" id="nv-lab-out-{{ .key }}">{{ $value }}{{ with .unit }} {{ . }}{{ end }}</output>
+        <input class="nv-lab-range" type="range" min="{{ .min }}" max="{{ .max }}" step="{{ .step }}" value="{{ $value }}" data-nv-key="{{ .key }}" data-nv-target="{{ .target }}" data-nv-unit="{{ .unit }}" disabled />
+      </label>
+      {{- end }}
+    </div>
+  </details>
+  {{- end }}
+</div>
+<pre class="nv-lab-yaml" id="nv-lab-yaml" hidden></pre>
+<div class="vn-caption">Every control the system has. Let go of a slider to hear one syllable of the chosen vowel; press Play for the whole line. Voice settings belong to one character, the rest is how the game reads text. Saved voices stay in this browser, and Copy as data gives you an entry for a voices file.</div>
+</div>

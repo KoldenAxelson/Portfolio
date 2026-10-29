@@ -1,0 +1,55 @@
+{{- /*
+  misc/live/supplements — the Supplement Stacks card: a stack being built.
+  Each supplement's capsule (a softgel for fish oil) drops into an open bottle
+  in turn, and its name is ticked off the checklist as it lands. Reads the
+  first stack in data/supplements/stacks.yaml (names, softgel flag, bottle
+  colour), so the card follows the data. SVG + CSS
+  (assets/css/pages/misc/motifs.css, .mf-sp). The tick keyframes are in the
+  <style> below: each tick turns on when its own pill lands, and they all
+  clear together at the end of the loop, so their percentages depend on how
+  many supplements there are. Rests (data-poster) with everything ticked.
+*/ -}}
+{{- $stack := index site.Data.supplements.stacks 0 -}}
+{{- $parts := first 4 $stack.components -}}
+{{- $fills := slice "rgb(var(--c-accent))" "#e0a33a" "#6f9fd8" "#c06c84" -}}
+{{- $stepSeconds := 1.3 -}}
+{{- $loopSeconds := add (mul (len $parts) $stepSeconds) 1.8 -}}
+{{- $landsAt := 0.2 -}}{{/* fraction of the loop into a pill's own drop when it lands: mf-sp-drop in motifs.css */}}
+<span class="mf mf-sp" aria-hidden="true" data-poster="0.9" style="--step: {{ $stepSeconds }}s; --loop: {{ $loopSeconds }}s; --bottle: {{ $stack.color | default "#c9772a" | safeCSS }}">
+  <style>
+    {{- range $i, $p := $parts }}
+    {{- $on := mul 100 (div (add (mul $i $stepSeconds) (mul $landsAt $loopSeconds)) $loopSeconds) }}
+    @keyframes mf-sp-tick-{{ $i }} { 0%, {{ printf "%.2f" $on }}% { stroke-dashoffset: 1; } {{ printf "%.2f" (add $on 4) }}%, 93% { stroke-dashoffset: 0; } 98%, 100% { stroke-dashoffset: 1; } }
+    {{- end }}
+  </style>
+<svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid meet">
+  <text class="kicker" x="14" y="18">SUPPLEMENT STACKS</text>
+  {{- /* the bottle, cap off and resting beside it */}}
+  <rect x="122" y="150" width="34" height="14" rx="3" class="cap" transform="rotate(-14 139 157)" />
+  <path d="M52 86 h56 v12 q12 6 12 22 v52 q0 12 -12 12 h-56 q-12 0 -12 -12 v-52 q0 -16 12 -22 z" class="jar" />
+  <rect x="46" y="128" width="68" height="34" rx="3" class="jar-label" />
+  <text class="mono" x="80" y="149" font-size="8" font-weight="700" text-anchor="middle" fill="#2a2a2e">{{ upper (replaceRE `^The ` "" $stack.name | replaceRE ` Stack$` "") }}</text>
+  <path d="M52 86 h56" class="rim" />
+  {{- range $i, $p := $parts }}
+  {{- $fill := index $fills $i }}
+  <g class="pill" style="--i: {{ $i }}">
+    {{- if $p.softgel }}
+    <ellipse cx="80" cy="96" rx="12" ry="7" fill="{{ $fill | safeCSS }}" />
+    <ellipse cx="76" cy="93" rx="4" ry="2" fill="#fff" opacity=".45" />
+    {{- else }}
+    <rect x="66" y="90" width="28" height="12" rx="6" fill="#f4f1ea" />
+    <path d="M80 90 h8 a6 6 0 0 1 0 12 h-8 z" fill="{{ $fill | safeCSS }}" />
+    {{- end }}
+  </g>
+  {{- end }}
+  {{- /* the checklist */}}
+  {{- range $i, $p := $parts }}
+  {{- $y := add 74 (mul $i 28) }}
+  <g class="row" style="--i: {{ $i }}; --tick: mf-sp-tick-{{ $i }}">
+    <rect x="182" y="{{ sub $y 10 }}" width="13" height="13" rx="3" class="box" />
+    <path d="M185 {{ sub $y 4 }} l3.5 3.5 l6 -7" class="tick" pathLength="1" />
+    <text class="sans fg" x="204" y="{{ $y }}" font-size="11">{{ $p.short | default $p.name }}</text>
+  </g>
+  {{- end }}
+</svg>
+</span>

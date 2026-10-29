@@ -121,7 +121,7 @@ Try one. The forge won't let it out without a number.
 
 ## 5 · The line
 
-Her "lying" video draws the line harder than its title suggests. Offers get
+On lying, Farah draws the line harder than you'd expect. Offers get
 pulled over anything a background check or a first week can verify: degree,
 companies and dates, whether you were fired, skills, languages, and any
 invented title or direct reports. One candidate three credit hours short wrote
@@ -149,7 +149,7 @@ that, and close the remaining gaps per application in the posting's own words.
 
 ## 7 · The room
 
-The second recruiter's video picks up at the interview. Their claim that hiring
+The second recruiter picks up at the interview. Their claim that hiring
 is about 80% psychology comes from someone selling coaching, so I hold the
 number loosely, but the biases they name are textbook ones. People favor what
 feels easy, so an answer that wanders loses them. Liking one thing about you

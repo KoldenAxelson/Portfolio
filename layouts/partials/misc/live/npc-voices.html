@@ -1,0 +1,42 @@
+{{- /*
+  misc/live/npc-voices — the NPC Voices card: a game text box typing a line,
+  with a blip over each letter that starts a vowel group, the only letters
+  that make a sound in the page's system. The blips step down through the
+  phrase and the last word lifts, the punctuation tune from the page.
+  Pure SVG + CSS (assets/css/pages/misc/motifs.css, .mf-nv); the vowel-group
+  test here is a template copy of startsVowelGroup in
+  static/js/npc-voices/nv-voice.js, without its y rule. Letters fall back to
+  visible and blips to hidden, so reduced motion shows the finished line.
+*/ -}}
+{{- $line := "Have you seen Sister Agnes?" -}}
+{{- $vowels := "aeiouAEIOU" -}}
+{{- $chars := split $line "" -}}
+{{- $stepSeconds := 0.09 -}}
+{{- $loopSeconds := add (mul (len $chars) $stepSeconds) 5 -}}
+{{- $advance := 6.6 -}}{{/* a monospace character's width at font-size 11 */}}
+{{- $x0 := 44 -}}
+{{- $lastWordAt := sub (len $line) (len (index (last 1 (split $line " ")) 0)) -}}
+<span class="mf mf-nv" aria-hidden="true" data-poster="0.6" style="--loop: {{ $loopSeconds }}s">
+<svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid meet">
+  <text class="kicker" x="14" y="18">NO RECORDINGS</text>
+  <rect x="26" y="96" width="268" height="62" rx="6" class="nv-box" />
+  <rect x="29" y="99" width="262" height="56" rx="4" class="nv-inner" />
+  <rect x="38" y="88" width="70" height="16" rx="3" class="nv-tag" />
+  <text x="73" y="99.5" text-anchor="middle" class="mono nv-tag-text" font-size="7.5" font-weight="700">INNKEEPER</text>
+  {{- $syllable := 0 }}
+  {{- range $i, $c := $chars }}
+  {{- $x := add $x0 (mul $i $advance) }}
+  {{- $delay := mul $i $stepSeconds }}
+  <text class="mono nv-ch" x="{{ $x }}" y="132" font-size="11" style="animation-delay: {{ $delay }}s">{{ $c }}</text>
+  {{- $isVowel := in $vowels $c }}
+  {{- $afterVowel := and (gt $i 0) (in $vowels (index $chars (sub $i 1))) }}
+  {{- if and $isVowel (not $afterVowel) }}
+  {{- $lift := cond (ge $i $lastWordAt) 12 0 }}
+  {{- $y := sub (add 62 (mul $syllable 2.5)) $lift }}
+  <rect class="nv-under" x="{{ sub $x 0.5 }}" y="135" width="{{ $advance }}" height="1.6" style="animation-delay: {{ $delay }}s" />
+  <circle class="nv-blip" cx="{{ add $x 3.3 }}" cy="{{ $y }}" r="3.4" style="animation-delay: {{ $delay }}s" />
+  {{- $syllable = add $syllable 1 }}
+  {{- end }}
+  {{- end }}
+</svg>
+</span>

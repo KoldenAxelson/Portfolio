@@ -1,0 +1,29 @@
+# The build-up on /misc/npc-voices/, one stage per fix the video makes, rendered
+# by shortcodes/npc-voices/build.html and read as JSON by
+# static/js/npc-voices/nv-voice.js (data-nv-stages). Each stage keeps every
+# flag of the ones before it unless it turns one off.
+#
+# tone   : "beep" (a plain sine) or "voice" (buzz through three vowel bands).
+# every  : sound on every letter, instead of only where a vowel group starts.
+# random : random pitch per sound. vowel: "random" or "letter" (the letter picks it).
+# shape  : "hit" (loud then fading, a drum) or "swell" (rise, hold, let go).
+# human  : breath noise and a buzz that's never quite even.
+# tune   : pitch drifts down each phrase, punctuation shapes the end.
+- label: "A beep per letter"
+  what: "One beep every time a letter appears, up to 30 a second. It comes out as a buzz."
+  flags: { tone: "beep", every: true }
+- label: "Random pitch"
+  what: "Every beep at a random pitch. The video's verdict: worse, because random notes sound like chaos."
+  flags: { tone: "beep", every: true, random: true }
+- label: "Real vowels"
+  what: "A buzz shaped into six vowels by boosting three bands of pitch, still one per letter and picked at random. Right vowels, but it rings like a steel drum."
+  flags: { tone: "voice", every: true, vowel: "random", shape: "hit" }
+- label: "Swell, breath, imperfection"
+  what: "Three fixes: each sound swells and lets go instead of being struck, a little breath rides on the buzz, and no two buzz cycles are quite the same. Now it hums."
+  flags: { tone: "voice", every: true, vowel: "random", shape: "swell", human: true }
+- label: "Vowel groups"
+  what: "Sound only where a group of vowels starts, about one per syllable, and the letter picks the vowel. Roughly a third as many sounds, and the same line sounds the same every time."
+  flags: { tone: "voice", vowel: "letter", shape: "swell", human: true }
+- label: "The tune"
+  what: "Pitch drifts down through each phrase and jumps back at a comma. A question mark lifts the last word, an exclamation mark starts high, three dots fade out, and CAPITALS shout."
+  flags: { tone: "voice", vowel: "letter", shape: "swell", human: true, tune: true }

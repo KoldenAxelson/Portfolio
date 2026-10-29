@@ -82,3 +82,32 @@
 .cl-par-card h3{margin:0;font-size:.98rem;font-weight:700;color:rgb(var(--c-fg));}
 .cl-par-when{margin:.2rem 0 .5rem;font-size:.82rem;font-weight:600;color:rgb(var(--c-accent));}
 .cl-par-card ul{margin:0;padding-left:1rem;display:grid;gap:.25rem;font-size:.84rem;line-height:1.45;color:rgb(var(--c-muted));}
+
+/* ── Elephant-Goldfish flow (shortcodes/claude/egm-flow.html) ─────────────── */
+.cl-egm{margin:1.2rem 0;padding:.8rem .6rem .6rem;border:1px solid rgb(var(--c-border));border-radius:.75rem;background:rgb(var(--c-border) / .12);}
+.cl-egm svg{display:block;width:100%;max-width:40rem;height:auto;margin:0 auto;overflow:visible;}
+.cl-egm-kick{font:700 10px var(--font-mono);letter-spacing:.14em;fill:rgb(var(--c-muted));}
+.cl-egm-sub{font:500 11.5px var(--font-sans);fill:rgb(var(--c-muted));}
+.cl-egm-big{font-size:26px;}
+.cl-egm-node{fill:rgb(var(--c-bg));stroke:rgb(var(--c-accent));stroke-width:2;}
+.cl-egm-chat rect{fill:rgb(var(--c-accent) / .15);stroke:rgb(var(--c-accent));}
+.cl-egm-chat text{font:600 10px var(--font-mono);fill:rgb(var(--c-fg));}
+.cl-egm-doc,.cl-egm-report{fill:rgb(var(--c-bg));stroke:rgb(var(--c-fg) / .7);stroke-width:1.5;}
+.cl-egm-report{stroke:rgb(var(--c-accent));stroke-width:2;}
+.cl-egm-docline{fill:none;stroke:rgb(var(--c-muted));stroke-width:2;stroke-linecap:round;}
+.cl-egm-link{fill:none;stroke:rgb(var(--c-border));stroke-width:1.5;}
+.cl-egm-wall{stroke:rgb(217 83 79 / .7);stroke-width:2;stroke-dasharray:5 5;}
+.cl-egm-fish{fill:#f59e0b;stroke:rgb(var(--c-bg));stroke-width:2;}
+.cl-egm-lens{font:600 12.5px var(--font-sans);fill:rgb(var(--c-fg));}
+.cl-egm-packet{fill:rgb(var(--c-fg));opacity:0;}
+@media (prefers-reduced-motion:no-preference){
+  .cl-egm-chat{animation:cl-egm-bump 6s ease-in-out infinite;}
+  .cl-egm-packet{animation:cl-egm-send 6s ease-in-out infinite;animation-delay:calc(var(--i) * .12s);}
+  .cl-egm-fish{transform-box:fill-box;transform-origin:center;animation:cl-egm-ping 6s ease-out infinite;animation-delay:calc(var(--i) * .12s);}
+  .cl-egm-report{animation:cl-egm-glow 6s ease-in-out infinite;}
+}
+/* The chat tries to follow the plan and bounces off the wall at x 172. */
+@keyframes cl-egm-bump{0%,10%{transform:translateX(0);opacity:1;}35%{transform:translateX(50px);opacity:1;}42%{transform:translateX(42px);opacity:.25;}60%,100%{transform:translateX(0);opacity:1;}}
+@keyframes cl-egm-send{0%,20%{offset-distance:0%;opacity:0;}22%{opacity:1;}45%{offset-distance:100%;opacity:1;}48%,100%{offset-distance:100%;opacity:0;}}
+@keyframes cl-egm-ping{0%,44%{transform:scale(1);}50%{transform:scale(1.35);}58%,100%{transform:scale(1);}}
+@keyframes cl-egm-glow{0%,62%{fill:rgb(var(--c-bg));}72%,88%{fill:rgb(var(--c-accent) / .25);}100%{fill:rgb(var(--c-bg));}}

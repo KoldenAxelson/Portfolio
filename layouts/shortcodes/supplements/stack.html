@@ -1,0 +1,50 @@
+{{- /*
+  supplements/stack — one stack: where it came from, what's in it, and the
+  doses as the person who shared it wrote them. A component either has a
+  capsule range (capMg, range, usual: the mg columns are computed from capMg,
+  so only capsule counts live in the data) or a fixed daily `dose` with a
+  `when`, for stacks published as one regimen.
+
+    {{< supplements/stack >}}            the page's `stack:` from front matter
+    {{< supplements/stack "mr-happy" >}} a named stack
+
+  Data: data/supplements/stacks.yaml.
+*/ -}}
+{{- $id := .Get 0 | default .Page.Params.stack -}}
+{{- $stack := index (where site.Data.supplements.stacks "id" $id) 0 -}}
+{{- if not $stack -}}{{- errorf "supplements/stack: %s names %q, which data/supplements/stacks.yaml doesn't have." .Position $id -}}{{- end -}}
+{{- with $stack }}
+<section class="not-prose sp-stack" aria-label="{{ .name }}">
+  <p class="sp-from">{{ .from }}</p>
+  <ol class="sp-parts">
+    {{- range $i, $part := .components }}
+    <li class="sp-part">
+      <span class="sp-num" aria-hidden="true">{{ add $i 1 }}</span>
+      <div class="sp-part-body">
+        <p class="sp-name">{{ .name }}</p>
+        <p class="sp-role">{{ .role }}</p>
+        {{- if .dose }}
+        <dl class="sp-dose is-fixed">
+          {{- with .when }}<div><dt>When</dt><dd>{{ . }}</dd></div>{{ end }}
+          <div class="is-key"><dt>A day</dt><dd>{{ .dose }}</dd></div>
+        </dl>
+        {{- else }}
+        {{- if not .range }}{{ errorf "supplements/stack: %s: %q needs a dose or a range" $.Position .name }}{{ end }}
+        {{- $low := index .range 0 }}{{ $high := index .range 1 }}
+        <dl class="sp-dose">
+          <div><dt>Per {{ .unit }}</dt><dd>{{ lang.FormatNumber 0 .capMg }} mg{{ if .oil }} of oil{{ end }}</dd></div>
+          <div><dt>Range a day</dt><dd>{{ $low }}–{{ $high }} <small>({{ lang.FormatNumber 0 (mul $low .capMg) }}–{{ lang.FormatNumber 0 (mul $high .capMg) }} mg)</small></dd></div>
+          <div class="is-key"><dt>His usual</dt><dd>{{ .usual }} <small>({{ lang.FormatNumber 0 (mul .usual .capMg) }} mg)</small></dd></div>
+        </dl>
+        {{- end }}
+      </div>
+    </li>
+    {{- end }}
+  </ol>
+  <ul class="sp-notes">
+    {{- with .timing }}<li><strong>Timing</strong> {{ . }}</li>{{ end }}
+    {{- with .rule }}<li><strong>{{ $stack.ruleLabel | default "Ratio" }}</strong> {{ . }}</li>{{ end }}
+  </ul>
+  {{- with .fine }}<p class="sp-fine">{{ . }}</p>{{ end }}
+</section>
+{{- end }}

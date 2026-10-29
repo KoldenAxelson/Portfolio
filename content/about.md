@@ -10,10 +10,10 @@ layout: "about"
 # JS. `src` is under assets/img/, any raster format. Optional `crop` (a Hugo
 # Crop spec, e.g. "640x640 TopLeft") picks the square to use before resizing.
 photos:
-  - src: "about/painting.jpg"
+  - src: "about/selfie.jpg"
   - src: "about/outdoors.jpg"
     crop: "640x640 TopLeft"
-  - src: "about/selfie.jpg"
+  - src: "about/painting.jpg"
 
 # The project shown as "Building" next to the photo.
 building: "/projects/harmony-pulse"

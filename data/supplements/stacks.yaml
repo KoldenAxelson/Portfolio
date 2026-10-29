@@ -1,0 +1,185 @@
+# Supplement stacks on /misc/supplements/, one entry per stack, each with its
+# own page there (content/misc/supplements/<id>.md, `stack: "<id>"`). Read by
+# layouts/shortcodes/supplements/ (stack, claims, safety), the shelf card
+# (partials/supplements/stack-card.html) and the /misc card
+# (partials/misc/live/supplements.html). Sources for a stack's claims and
+# safety lines are in data/ml/references/supplements-<id>.yaml; `refs` are
+# 1-based numbers into that list, shown as [n].
+#
+# color: the bottle on the shelf. label: a short line under the stack's name on it.
+# short: a component's name on the /misc card's checklist; softgel: drawn as a softgel there.
+#
+# Doses are what the person who shared the stack wrote, in capsules of the
+# products he named; the mg columns are computed from capMg. Nothing here is a
+# recommendation.
+#
+# verdict: supported · mixed · animal · none (rendered as chips; labels in
+# shortcodes/supplements/claims.html).
+
+- id: "mr-happy"
+  name: "The Mr. Happy Stack"
+  color: "#c9772a"
+  label: "Uridine · Fish oil · Choline"
+  from: "A friend's stack, emailed to me in November 2020. He'd taken it since 2014–15, when he found it on r/nootropics while looking for help with depression."
+  asof: 2026-10-28
+  timing: "All three at once, an hour or two before a workout. He likes it with black coffee, and 75–90% dark chocolate after."
+  rule: "About 1 choline for every 2 uridine, and more fish oil as the uridine goes up."
+  fine: "His numbers, in the capsule sizes he bought. Fish oil is listed by the oil, not the EPA and DHA inside it, which varies by brand: check your label. Not a recommendation."
+  components:
+    - name: "Uridine monophosphate"
+      short: "Uridine"
+      role: "The core of the stack. A building block the body uses for RNA and cell membranes."
+      capMg: 350
+      unit: "capsule"
+      range: [1, 4]
+      usual: 2
+    - name: "High EPA/DHA fish oil"
+      short: "Fish oil"
+      role: "Omega-3 fats used in brain cell membranes. He's picky about quality: buy fresh, high EPA/DHA oil."
+      capMg: 1400
+      unit: "softgel"
+      oil: true
+      softgel: true
+      range: [2, 6]
+      usual: 5
+    - name: "Choline (CDP choline or Alpha-GPC)"
+      short: "Choline"
+      role: "The third membrane ingredient. Citicoline (CDP choline) is what he takes; Alpha-GPC is the other common form."
+      capMg: 300
+      unit: "capsule"
+      range: [1, 4]
+      usual: 1
+  claims:
+    - claim: "It was made to repair the brain damage methamphetamine causes."
+      verdict: "none"
+      finding: "We couldn't find a study doing this. The closest human work is a small, open-label trial of uridine (500 mg twice a day for 6 weeks) in depressed teenagers with bipolar disorder."
+      refs: [6]
+    - claim: "Uridine and fish oil work better together."
+      verdict: "animal"
+      finding: "In rats, uridine worked immediately against depression-like behavior and omega-3s slowly; together the benefit came faster."
+      refs: [1]
+    - claim: "The three together build new brain connections."
+      verdict: "mixed"
+      finding: "In gerbils, uridine plus DHA (with choline) raised synaptic proteins by 38–41% in 4 weeks. In people, a drink built on the same idea missed its main goal in a 2-year trial of 311 people with early Alzheimer's, with some positive secondary results."
+      refs: [2, 3]
+    - claim: "Fish oil lifts mood."
+      verdict: "supported"
+      finding: "Modestly, and it depends on the oil: across 26 trials, formulas that were at least 60% EPA, at 1 g a day of EPA or less, helped depression. DHA-heavy oil didn't."
+      refs: [4]
+    - claim: "Choline sharpens focus and memory."
+      verdict: "mixed"
+      finding: "500 mg a day of citicoline improved episodic memory over 12 weeks in 99 older adults with age-related memory complaints, in one trial funded by the maker."
+      refs: [5]
+    - claim: "The effects build, never wear off and stay after you stop."
+      verdict: "none"
+      finding: "We found no research on tolerance or lasting effects for this combination."
+      refs: []
+    - claim: "It makes coffee and other stimulants hit harder."
+      verdict: "none"
+      finding: "We found no research on this."
+      refs: []
+  safety:
+    - title: "Uridine is thinly studied"
+      text: "Denmark's National Food Institute couldn't rule out a health risk at 300 mg a day, not because of known harm but because there are almost no safety studies. Alzheimer's trials gave 625 mg a day for 24 weeks without obvious toxicity. His usual 2 capsules are 700 mg."
+      refs: [7]
+    - title: "Fish oil and heart rhythm"
+      text: "Across 7 trials and 81,210 people, omega-3 supplements raised the risk of atrial fibrillation by 12% at 1 g a day or less and by 49% above 1 g. The FDA and EFSA consider up to 5 g a day of EPA plus DHA safe."
+      refs: [8, 9]
+    - title: "Fish oil and blood thinners"
+      text: "Fish oil can nudge clotting times up with warfarin. Doses of 3–6 g a day didn't change anticoagulation in studies, but anyone on a blood thinner should have their INR checked."
+      refs: [9]
+    - title: "Alpha-GPC and stroke"
+      text: "In a 10-year Korean cohort of over 12 million adults aged 50+, people prescribed Alpha-GPC had about 43% more strokes. It's an association, not proof, but it's a reason to prefer citicoline."
+      refs: [10]
+    - title: "The brain cancer worry"
+      text: "He mentioned a possible risk for people with a family history of brain cancer. We found no human evidence either way."
+      refs: []
+
+- id: "blueprint"
+  name: "The Blueprint Stack"
+  color: "#3f6fb0"
+  label: "Bryan Johnson's morning supplements"
+  from: "Bryan Johnson's daily supplements, as his public protocol listed them on October 28, 2026 (last changed January 22, 2026). He's the founder behind Blueprint and Don't Die, and his company sells six of these seven items, all but the prebiotic fibers. Three of them come in its $270 \"Medium Stack,\" along with a protein powder and an olive oil."
+  asof: 2026-10-28
+  timing: "All of it in the morning: the drink at about 5:25 before his workout, the capsules with breakfast at 5:35."
+  ruleLabel: "Left out"
+  rule: "His protocol also lists eight prescription drugs taken at noon, among them thyroid hormone, metformin, minoxidil and a cholesterol injection. They're his doctor's business and they're not here."
+  fine: "His numbers, from his protocol page. The blends are listed by what Blueprint's labels say is in one serving. Not a recommendation, and the protocol page itself calls the regimen experimental."
+  components:
+    - name: "Blueprint Longevity Mix"
+      short: "Longevity Mix"
+      role: "A drink powder. One scoop has 2.5 g creatine, 2 g calcium alpha-ketoglutarate, 1.5 g taurine, 1.2 g glycine, 1 g lysine, 750 mg glucosamine and smaller amounts of glutathione, theanine, vitamin C, magnesium and hyaluronic acid."
+      when: "5:25 am"
+      dose: "1 scoop (14.8 g)"
+    - name: "Creatine monohydrate"
+      short: "Creatine"
+      role: "Extra creatine on top of what's in the Mix, sold by Blueprint for muscle and cognitive health."
+      when: "5:25 am"
+      dose: "5 g (7.5 g with the Mix)"
+    - name: "Prebiotic fibers"
+      short: "Prebiotics"
+      role: "Galactooligosaccharides, inulin and arabinogalactan: fibers that feed gut bacteria."
+      when: "5:25 am"
+      dose: "½ tsp GOS, 1 tsp inulin, 1 tsp arabinogalactan"
+    - name: "Blueprint Essential Capsules"
+      short: "Essentials"
+      role: "A multivitamin plus 300 mg nicotinamide riboside (an NAD+ booster), 100 mg each of fisetin and luteolin, 50 mg ubiquinol, 10 mg spermidine, broccoli seed extract and 1 mg lithium."
+      when: "Breakfast"
+      dose: "2 capsules"
+    - name: "Blueprint Advanced Antioxidants"
+      short: "Antioxidants"
+      role: "Carotenoids (lycopene, astaxanthin, lutein, zeaxanthin) with a large dose of vitamin K: 1,500 mcg K1 and 5.6 mg of K2."
+      softgel: true
+      when: "Breakfast"
+      dose: "1 softgel"
+    - name: "Ashwagandha & Rhodiola"
+      short: "Ashwa + Rhodiola"
+      role: "Two herbs sold as adaptogens, for stress and fatigue. Blueprint's capsule has 120 mg ashwagandha and 300 mg rhodiola."
+      when: "Breakfast"
+      dose: "1 capsule"
+    - name: "Omega-3 (EPA/DHA)"
+      short: "Omega-3"
+      role: "Omega-3 fats from algae oil: 400 mg EPA and 400 mg DHA in two capsules."
+      softgel: true
+      when: "Breakfast"
+      dose: "800 mg EPA + DHA"
+  claims:
+    - claim: "The protocol has slowed how fast I age."
+      verdict: "none"
+      finding: "His evidence is his own blood tests: a DunedinPACE score of 0.69 in December 2022, which he presents as aging more slowly than the calendar, and organ \"ages\" compared with population averages. He's one person with no control group, changing dozens of things at once, so no single supplement can take credit. Researchers have pointed out that older epigenetic clocks are weaker predictors, and his protocol page calls its biological-age numbers preliminary and experimental."
+      refs: [1, 11]
+    - claim: "Creatine is good for the brain, not just muscle."
+      verdict: "supported"
+      finding: "Across 16 trials and 492 adults, creatine improved memory, attention time and processing speed, with no effect on overall cognition or executive function. In the one age split the review ran, for attention, the benefit wasn't significant in people over 60, and the trials were small."
+      refs: [3]
+    - claim: "Nicotinamide riboside raises NAD+ and slows aging."
+      verdict: "mixed"
+      finding: "The first half holds: in the trials a 2023 review covers, NMN and NR raised NAD+ in blood, by up to about 2.5 times, but not in muscle. The second doesn't yet. Trials are small and short, the benefits are inconsistent, and the review, which focuses on NMN, says it's \"simply too early\" to say whether NAD+ boosters delay age-related decline."
+      refs: [4]
+    - claim: "Ashwagandha lowers stress."
+      verdict: "supported"
+      finding: "Several small, short trials, mostly from India, found extracts lowered perceived stress, anxiety and cortisol compared with placebo. Benefits looked larger at 500–600 mg a day. Long-term safety is unknown. His capsule has 120 mg."
+      refs: [5, 13]
+    - claim: "Rhodiola fights fatigue."
+      verdict: "mixed"
+      finding: "A systematic review of 11 trials found contradictory results: 2 of 6 physical-fatigue trials and 3 of 5 mental-fatigue trials reported a benefit, and every trial had a high or unclear risk of bias."
+      refs: [6]
+  safety:
+    - title: "Ashwagandha and the liver"
+      text: "A case series from Iceland and the US found five people with jaundice 2–12 weeks after starting ashwagandha. None had liver failure, and in the four who were followed up, tests returned to normal within 1–5 months. In one case rhodiola, the other herb in his capsule, was a possible cause too."
+      refs: [7, 5]
+    - title: "Ashwagandha is restricted in parts of Europe"
+      text: "Denmark banned it in 2023 after its food institute found it could affect thyroid and sex hormones. The Netherlands advised against it in 2024, and France advised against it for pregnant and breastfeeding women and anyone with an endocrine disorder. Anyone on thyroid medication should ask their doctor first."
+      refs: [8, 5]
+    - title: "Vitamin K and blood thinners"
+      text: "The vitamin K1 in Advanced Antioxidants alone is over twelve times the adequate intake for men, before the K2. Vitamin K has no upper limit, but it works against warfarin, so anyone on warfarin needs a steady intake and shouldn't start or stop this without their doctor."
+      refs: [10]
+    - title: "Omega-3 and heart rhythm"
+      text: "His 800 mg sits in the lower band of a meta-analysis of 7 trials of marine omega-3 supplements, where 1 g a day or less raised the risk of atrial fibrillation by 12%."
+      refs: [9]
+    - title: "He sells most of it"
+      text: "Johnson's company sells the Longevity Mix, creatine, Essential Capsules, Advanced Antioxidants, Ashwagandha + Rhodiola and the omega-3. Every claim above is checked against independent research for that reason."
+      refs: [1, 2, 12, 13, 14]
+    - title: "Not for pregnancy, by his own protocol"
+      text: "His protocol says to avoid the Longevity Mix, ashwagandha, nicotinamide riboside, creatine and several of the Mix's ingredients during pregnancy."
+      refs: [1]

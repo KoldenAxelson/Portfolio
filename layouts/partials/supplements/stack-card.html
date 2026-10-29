@@ -1,0 +1,25 @@
+{{- /*
+  supplements/stack-card — one stack on the /misc/supplements/ shelf
+  (components/shelf.html): a supplement bottle in the stack's colour with its
+  name on the label, then the title and how many supplements are in it.
+  Called with (dict "item" <page>); the bottle reads the page's entry in
+  data/supplements/stacks.yaml (`stack:` in its front matter).
+*/ -}}
+{{- with .item -}}
+{{- $stack := index (where site.Data.supplements.stacks "id" .Params.stack) 0 -}}
+{{- $count := len $stack.components -}}
+<a href="{{ .RelPermalink }}" class="group/cover block w-full rounded-lg pt-1.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
+  <span class="sp-bottle transition duration-200 group-hover/cover:-translate-y-1 group-focus-visible/cover:-translate-y-1 motion-reduce:transition-none" style="--bottle: {{ $stack.color | default "#6b7280" | safeCSS }}" aria-hidden="true">
+    <span class="sp-cap"></span>
+    <span class="sp-jar">
+      <span class="sp-label">
+        <span class="sp-label-name">{{ replaceRE `^The ` "" .Title }}</span>
+        {{- with $stack.label }}<span class="sp-label-sub">{{ . }}</span>{{ end }}
+      </span>
+    </span>
+  </span>
+  <span class="mt-2 line-clamp-2 block text-sm leading-snug text-fg transition-colors group-hover/cover:text-accent">{{ .Title }}</span>
+  <span class="mt-0.5 block font-mono text-xs text-muted">{{ $count }} {{ cond (eq $count 1) "supplement" "supplements" }}</span>
+</a>
+{{- with .Description }}<p class="sr-only">{{ . }}</p>{{ end }}
+{{- end -}}

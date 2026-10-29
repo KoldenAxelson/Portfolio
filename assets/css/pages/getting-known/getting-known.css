@@ -45,3 +45,21 @@
 .gk-ps-step.is-turning .gk-ps-body{padding:.55rem .75rem;margin-top:-.35rem;border-radius:.6rem;background:rgb(var(--c-accent) / .1);}
 .gk-ps-tag{display:inline-block;margin-left:.5rem;padding:.05rem .45rem;border-radius:9999px;background:rgb(var(--c-accent) / .2);font-family:var(--font-mono);font-size:.65rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:rgb(var(--c-fg));vertical-align:middle;}
 .gk-ps-override{padding:.8rem .9rem;border-radius:.6rem;border:1px solid rgb(var(--c-accent) / .7);background:rgb(var(--c-accent) / .08);}
+
+/* ── 1 · the scoreboard ─────────────────────────────────────────────────── */
+/* Bars (.gk-sb-bar, is-now, is-future) and .is-list on the root are set by
+   static/js/getting-known/gk-scoreboard.js. */
+.gk-sb-chart{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:.3rem;align-items:end;height:8.5rem;margin-top:.9rem;}
+.gk-sb-chart:empty{display:none;}
+.gk-sb-bar{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;gap:.25rem;}
+.gk-sb-bar i{display:block;width:100%;min-height:2px;border-radius:.3rem .3rem 0 0;background:rgb(217 83 79 / .75);transition:height .35s ease,opacity .2s ease;}
+.is-list .gk-sb-bar i{background:rgb(var(--c-accent));}
+.gk-sb-bar b{font:600 .6rem var(--font-mono);color:rgb(var(--c-muted));}
+.gk-sb-bar.is-future i{opacity:.15;}
+.gk-sb-bar.is-now b{color:rgb(var(--c-fg));}
+.gk-sb-read{margin-top:.9rem;}
+.gk-sb-big{margin:0;font-size:1.15rem;font-weight:700;color:rgb(var(--c-fg));font-variant-numeric:tabular-nums;}
+.gk-sb-feel{margin:.2rem 0 0;font-size:.88rem;line-height:1.5;color:rgb(var(--c-muted));min-height:2.6em;}
+.gk-sb-scrub{display:block;margin-top:.7rem;}
+.gk-sb-scrub input{width:100%;accent-color:rgb(var(--c-accent));}
+@media (prefers-reduced-motion:reduce){.gk-sb-bar i{transition:none;}}

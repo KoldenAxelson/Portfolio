@@ -15,6 +15,7 @@ blurb: "Software and hardware I'm keeping an eye on, with price and status. Filt
 icon: "device-phone-mobile"
 group: "reference"
 container: "wide"
+updated: 2026-10-28
 ---
 
 

@@ -1,0 +1,4 @@
+{{- /* The supplements page stylesheet, for /misc/supplements/. Called from
+       layouts/misc/single.html when the page uses supplements/stack. */ -}}
+{{- $css := resources.Get "css/pages/supplements/supplements.css" | minify | fingerprint -}}
+<link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" />

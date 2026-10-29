@@ -1,0 +1,75 @@
+# References for content/misc/supplements/blueprint.md, rendered by
+# {{< ml/references set="supplements-blueprint" >}}. Numbered in this order; the
+# blueprint `refs` in data/supplements/stacks.yaml point at these numbers, so
+# append new sources at the end rather than reordering.
+
+- tag: Primary source
+  title: Bryan Johnson's protocol
+  url: https://protocol.bryanjohnson.com/
+  meta: Bryan Johnson · last changed January 22, 2026 · read October 28, 2026
+  note: His daily routine, supplements and prescription stack, with his own results and a note that the biological-age tests are experimental.
+- tag: Primary source
+  title: Blueprint Medium Stack
+  url: https://blueprint.bryanjohnson.com/products/medium-stack
+  meta: Blueprint · product page · read October 28, 2026
+  note: Supplement facts for the Longevity Mix, Essential Capsules and Advanced Antioxidants; the stack also includes Metabolic Protein Powder and olive oil. $270 one-time.
+- tag: Meta-analysis
+  title: The effects of creatine supplementation on cognitive function in adults
+  url: https://www.frontiersin.org/journals/nutrition/articles/10.3389/fnut.2024.1424972/full
+  meta: Xu et al. · Frontiers in Nutrition · 2024
+  note: 16 trials, 492 adults. Better memory, attention time and processing speed; no change in overall cognition or executive function.
+- tag: Review
+  title: The safety and antiaging effects of nicotinamide mononucleotide in human clinical trials
+  url: https://pmc.ncbi.nlm.nih.gov/articles/PMC10721522/
+  meta: Song et al. · Advances in Nutrition · 2023
+  note: Reviews NMN, with NR trials alongside. Blood NAD+ up about 1.7–2.5× with NMN and 1–2.7× with NR, not in muscle; clinical benefits preliminary and inconsistent; no clear side effects in short trials.
+- tag: Fact sheet
+  title: Ashwagandha, health professional fact sheet
+  url: https://ods.od.nih.gov/factsheets/Ashwagandha-HealthProfessional/
+  meta: NIH Office of Dietary Supplements · updated May 2, 2025
+  note: Stress, anxiety and sleep trials; liver, thyroid and pregnancy cautions; Denmark's 2023 ban and France's 2024 advice.
+- tag: Systematic review
+  title: Rhodiola rosea for physical and mental fatigue
+  url: https://doi.org/10.1186/1472-6882-12-70
+  meta: Ishaque et al. · BMC Complementary and Alternative Medicine · 2012
+  note: 11 studies; contradictory results, all with high or unclear risk of bias.
+- tag: Safety
+  title: "Ashwagandha-induced liver injury: A case series from Iceland and the US Drug-Induced Liver Injury Network"
+  url: https://pubmed.ncbi.nlm.nih.gov/31991029/
+  meta: Björnsson et al. · Liver International · 2020
+  note: Five patients, cholestatic or mixed injury after 2–12 weeks; no liver failure; tests normal within 1–5 months in the four followed up; rhodiola a possible co-cause in one.
+- tag: Safety
+  title: "Ashwagandha concerns branded pure 'horse s**t': On-trend herb thrives despite authority unease"
+  url: https://www.foodnavigator.com/Article/2024/05/28/ashwagandha-concerns-branded-pure-horse-s-t-on-trend-herb-thrives-despite-authority-unease/
+  meta: Hancocks · FoodNavigator · May 28, 2024
+  note: Denmark's ban after DTU found possible thyroid and sex-hormone effects; the Netherlands' 2024 advice against it; industry pushback.
+- tag: Safety
+  title: "Effect of Long-Term Marine ω-3 Fatty Acids Supplementation on the Risk of Atrial Fibrillation in Randomized Controlled Trials of Cardiovascular Outcomes: A Systematic Review and Meta-Analysis"
+  url: https://doi.org/10.1161/CIRCULATIONAHA.121.055654
+  meta: Gencer et al. · Circulation · 2021
+  note: 7 trials, 81,210 people. Hazard ratio 1.12 at ≤1 g/day and 1.49 above 1 g/day.
+- tag: Fact sheet
+  title: Vitamin K, health professional fact sheet
+  url: https://ods.od.nih.gov/factsheets/VitaminK-HealthProfessional/
+  meta: NIH Office of Dietary Supplements · read October 28, 2026
+  note: No upper limit; people on warfarin need a consistent vitamin K intake.
+- tag: Analysis
+  title: Bryan Johnson and his race against time
+  url: https://www.lifespan.io/news/bryan-johnsons-race-against-time
+  meta: Mazin · Lifespan.io · April 2023
+  note: His DunedinPACE and clock results, with researchers on the limits of n=1, uncontrolled, many-variable measurement.
+- tag: Primary source
+  title: Blueprint Creatine
+  url: https://blueprint.bryanjohnson.com/products/creatine
+  meta: Blueprint · product page · read October 28, 2026
+  note: 5 g creatine monohydrate per scoop; sold for muscle, cognitive health and recovery.
+- tag: Primary source
+  title: Blueprint Ashwagandha + Rhodiola
+  url: https://blueprint.bryanjohnson.com/products/ashwagandha-rhodiola-120mg
+  meta: Blueprint · product page · read October 28, 2026
+  note: One capsule a day with 120 mg ashwagandha root and leaf extract and 300 mg rhodiola root extract.
+- tag: Primary source
+  title: Blueprint Omega-3
+  url: https://blueprint.bryanjohnson.com/products/omega-3
+  meta: Blueprint · product page · read October 28, 2026
+  note: Algae oil (Schizochytrium), 400 mg EPA and 400 mg DHA per two capsules.

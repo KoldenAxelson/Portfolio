@@ -1,0 +1,29 @@
+{{- /* get-moving/trust: live widget; behaviour in static/js/get-moving/gm-trust.js.
+       Two weeks of promises to yourself, a trust score that answers them, and the
+       graduation and never-miss-twice rules the self-improvement video describes, scored my way. */ -}}
+{{- $days := slice "M" "T" "W" "T" "F" "S" "S" -}}
+<div class="not-prose vn-demo" id="gm-trust" data-vn-src="/js/get-moving/gm-trust.js" data-vn-init="GmTrust">
+<div class="vn-demo-label">Live · your brain's trust score</div>
+<div class="gm-tr-head">
+  <div><span class="gm-lab">Trust score</span><span class="gm-tr-score" id="gm-tr-score">50</span>{{/* START in gm-trust.js */}}</div>
+  <div class="gm-tr-meter" aria-hidden="true"><span class="gm-tr-fill" id="gm-tr-fill"></span></div>
+</div>
+{{- range $week := seq 2 }}
+<div class="gm-tr-week" data-gm-week="{{ $week }}">
+  <span class="gm-lab">Week {{ $week }} <span class="gm-tr-grad" id="gm-tr-grad-{{ $week }}" hidden>graduated</span></span>
+  <div class="gm-tr-days" role="group" aria-label="Week {{ $week }}">
+    {{- range $i, $day := $days }}
+    <button class="gm-tr-day" type="button" data-gm-day="{{ add (mul (sub $week 1) 7) $i }}" aria-label="Week {{ $week }}, day {{ add $i 1 }}: not yet" disabled><span>{{ $day }}</span></button>
+    {{- end }}
+  </div>
+</div>
+{{- end }}
+<div class="vn-controls" id="gm-tr-controls" hidden>
+  <span class="gm-lab gm-inline">Play two weeks of</span>
+  <button class="vn-btn vn-btn-ghost" type="button" data-gm-sim="small">small promises</button>
+  <button class="vn-btn vn-btn-ghost" type="button" data-gm-sim="big">big promises</button>
+  <button class="vn-btn vn-btn-ghost" type="button" id="gm-tr-clear">Clear</button>
+</div>
+<p class="gm-tally" id="gm-tr-note" aria-live="polite">Tap a day once for a kept promise, twice for a broken one.</p>
+<div class="vn-caption">An illustration, not a measurement, and the scoring is mine. Kept promises add a little, a broken one costs more, and a second miss in a row costs double. The graduation method is just finishing a week and committing to the next; here a week counts as graduated with five kept days and no double miss. The simulation keeps small promises nine days in ten and big ones half the time, numbers I picked to show the shape.</div>
+</div>

@@ -1,0 +1,14 @@
+{{- /*
+  supplements/safety — the safety notes for a stack, as cards.
+
+    {{< supplements/safety >}}            the page's `stack:` from front matter
+    {{< supplements/safety "mr-happy" >}} a named stack
+*/ -}}
+{{- $id := .Get 0 | default .Page.Params.stack -}}
+{{- $stack := index (where site.Data.supplements.stacks "id" $id) 0 -}}
+{{- if not $stack -}}{{- errorf "supplements/safety: %s names %q, which data/supplements/stacks.yaml doesn't have." .Position $id -}}{{- end -}}
+<ul class="not-prose sp-safety">
+  {{- range $stack.safety }}
+  <li class="sp-safe"><strong>{{ .title }}</strong><span>{{ .text }}{{ range .refs }} <a href="#sources" class="sp-ref">[{{ . }}]</a>{{ end }}</span></li>
+  {{- end }}
+</ul>
