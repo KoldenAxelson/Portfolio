@@ -1,0 +1,12 @@
+/* Widgets on /misc/writing/writing-techniques/. The shared box is css/pages/video-notes/shell.css. */
+.wt-text{display:block;width:100%;min-height:8rem;resize:vertical;font-size:.92rem;line-height:1.55;}
+.wt-bars{display:grid;gap:.3rem;margin:1rem 0 0;padding:0;list-style:none;}
+.wt-bars:empty{display:none;}
+.wt-bar{display:grid;grid-template-columns:2.2rem minmax(0,1fr);align-items:center;gap:.5rem;}
+.wt-n{font-family:var(--font-mono);font-size:.72rem;text-align:right;color:rgb(var(--c-muted));font-variant-numeric:tabular-nums;}
+.wt-fill{display:block;height:.7rem;min-width:.35rem;border-radius:999px;background:rgb(var(--c-border));}
+/* is-short / is-long are set by static/js/writing-techniques/wt-rhythm.js. */
+.wt-bar.is-short .wt-fill,.wt-bar.is-long .wt-fill{background:rgb(var(--c-accent));}
+.wt-bar.is-short .wt-n,.wt-bar.is-long .wt-n{color:rgb(var(--c-fg));font-weight:700;}
+.wt-verdict{margin-top:.8rem;}
+.wt-verdict:empty{display:none;}

@@ -5,7 +5,7 @@
 #   - Only what a person does or can make. Background behaviour that's merely
 #     neat stays off the page, and prose stays to a line or two per section.
 #   - Every list lives in data/claude/*.yaml (capabilities, power-tools,
-#     parallel, workflows, skill-rules, mods) and renders through shortcodes/claude/; an
+#     parallel, workflows, skill-rules, skills, mods) and renders through shortcodes/claude/; an
 #     update is "edit an entry", and the "As of" line in the intro moves.
 #   - Every revision adds one dated line to the Changelog, newest last.
 #
@@ -20,7 +20,7 @@
 # behaviour lazy-loaded from static/js/claude/.
 # ─────────────────────────────────────────────────────────────────────────────
 title: "Claude"
-description: "A living cheat sheet for Claude: what it can make (Docs, Slides, Design, Dashboards, Motion) and on which plans, power-user commands and shortcuts, running work in parallel, planning work with folders and the Elephant-Goldfish model, rules for writing skills with a linter, and Claude Code mods."
+description: "A living cheat sheet for Claude: what it can make (Docs, Slides, Design, Dashboards, Motion) and on which plans, power-user commands and shortcuts, running work in parallel, planning work with folders and the Elephant-Goldfish model, rules for writing skills with a linter, a shelf of favourite skills (a native Mac app builder, a pay-per-use image and video generator), and Claude Code mods."
 # Blank by default — uncomment to put a line under the H1 in the banner.
 #lead: "Keeping up, one revision at a time."
 blurb: "A living cheat sheet for Claude: what it can make, power-user shortcuts, parallel sessions, skill-writing rules and mods."
@@ -72,6 +72,19 @@ Paste a skill to check it against the rules.
 
 {{< claude/lint >}}
 
+## Skill Shelf
+
+Skills I'd reach for again, kept here so I don't have to find them twice.
+The claims on each card are their makers', not my tests.
+
+{{< claude/skills >}}
+
+BAMA's maker says its speed loop cut his video editor's export time tenfold,
+and the /generate video puts GPT Image 2 at 5 cents for a 2K image on Kie.ai,
+against roughly 31 to 34 cents through Higgsfield's plans. Kie.ai is the
+cheapest but sometimes unreliable, so he defaults to fal.ai and uses WaveSpeed
+for models fal doesn't have.
+
 ## Mods
 
 Add-ons that change Claude Code itself. Describe one to Claude to build it;
@@ -89,6 +102,7 @@ Start with Blast Radius and Reflect.
   and parallel work added; background explainers cut.
 - October 28, 2026: Planning the Work added, from two videos and the EGM
   README.
+- October 30, 2026: Skill Shelf added, with BAMA and /generate.
 
 ## Sources {#sources}
 
@@ -96,6 +110,8 @@ Checked against Anthropic's own docs and help pages where they cover it. The
 mods, "folders, not agents" and the Elephant-Goldfish walkthrough come from
 videos and are their claims, with the EGM command names and the
 not-an-official-product note checked against the repo's README, which credits
-Dave Rensin's essay for the idea.
+Dave Rensin's essay for the idea. The skill shelf's speed and price figures
+are the videos' own, from October 2026; I checked BAMA's repo exists and is
+free, and haven't run either skill yet.
 
 {{< ml/references >}}

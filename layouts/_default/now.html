@@ -1,6 +1,7 @@
 {{- /* /now — what I'm on right now, as cards rather than a list of paragraphs.
        Copy is front matter in content/now.md; Playing and Reading come from
-       the Impossible List (components/off-the-clock.html). */ -}}
+       the Impossible List (components/off-the-clock.html). Recent site changes
+       come from data/now/changes.yaml, newest first, cut to $changeLimit. */ -}}
 {{ define "banner" }}
 {{ partial "site/page-banner.html" (dict
   "title" "What I'm doing now"
@@ -21,12 +22,16 @@
   {{- $icon := partial "func/cover.html" (dict "path" $working.icon "width" 80 "height" 80) }}
   <section aria-labelledby="working-heading">
     <h2 id="working-heading" class="{{ $heading }}">Currently working on</h2>
-    <div class="flex flex-col gap-5 rounded-2xl border border-accent/40 bg-accent/5 p-6 sm:flex-row sm:items-start sm:p-8">
-      <img src="{{ $icon.src }}"{{ with $icon.srcset }} srcset="{{ . }}"{{ end }} width="80" height="80" alt="{{ .Title }} app icon" class="h-20 w-20 shrink-0 rounded-[22%] shadow-sm" />
-      <div class="min-w-0">
+    <div class="rounded-2xl border border-accent/40 bg-accent/5 p-6 sm:p-8">
+      {{- /* Icon beside the title and pitch only; the rest spans the card. On a
+             phone the pitch drops under the icon too, so it isn't squeezed. */}}
+      <div class="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-4 sm:items-start sm:gap-x-5">
+        <img src="{{ $icon.src }}"{{ with $icon.srcset }} srcset="{{ . }}"{{ end }} width="80" height="80" alt="{{ .Title }} app icon" class="h-14 w-14 rounded-[22%] shadow-sm sm:row-span-2 sm:h-20 sm:w-20" />
         <p class="text-2xl font-semibold tracking-tight text-fg">{{ .Title }}</p>
-        <p class="mt-2 text-fg">{{ $working.line }}</p>
-        <p class="mt-3 inline-flex items-center gap-2 rounded-full border border-accent/50 bg-accent/10 px-3 py-1 text-sm font-medium text-fg">
+        <p class="col-span-2 mt-3 text-fg sm:col-span-1 sm:col-start-2 sm:mt-2">{{ $working.line }}</p>
+      </div>
+      <div>
+        <p class="mt-4 inline-flex items-center gap-2 rounded-full border border-accent/50 bg-accent/10 px-3 py-1 text-sm font-medium text-fg">
           <span aria-hidden="true" class="h-2 w-2 rounded-full bg-accent"></span>{{ $working.status }}
         </p>
         {{- with $working.aside }}<p class="mt-3 text-sm italic text-muted">{{ . }}</p>{{ end }}
@@ -48,9 +53,18 @@
     <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2">
       {{- range . }}{{ $card := . }}{{ with site.GetPage .page }}
       <li>
-        <a href="{{ .RelPermalink }}" class="group/card flex h-full flex-col gap-2 rounded-xl border border-border/60 p-4 no-underline transition-colors hover:bg-border/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
-          <span class="font-medium text-fg transition-colors group-hover/card:text-accent">{{ .Title }}</span>
-          <span class="inline-flex w-fit items-center gap-1.5 font-mono text-[0.7rem] uppercase tracking-wide text-muted"><span aria-hidden="true" class="h-1.5 w-1.5 rounded-full bg-accent"></span>{{ $card.status }}</span>
+        <a href="{{ .RelPermalink }}" class="group/card flex h-full flex-col gap-3 rounded-xl border border-border/60 p-4 no-underline transition-colors hover:bg-border/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
+          {{- /* Icon beside the name and status only, so the description below
+                 runs the card's full width instead of leaving a gutter under it. */}}
+          <span class="flex items-center gap-3">
+            {{- with $card.icon }}{{ $icon := partial "func/cover.html" (dict "path" . "width" 44 "height" 44 "fit" true) }}
+            <img src="{{ $icon.src }}"{{ with $icon.srcset }} srcset="{{ . }}"{{ end }} width="44" height="44" alt="" loading="lazy" class="h-11 w-11 shrink-0 rounded-[22%] object-contain" />
+            {{- end }}
+            <span class="flex min-w-0 flex-col gap-1">
+              <span class="font-medium text-fg transition-colors group-hover/card:text-accent">{{ .Title }}</span>
+              <span class="inline-flex w-fit items-center gap-1.5 font-mono text-[0.7rem] uppercase tracking-wide text-muted"><span aria-hidden="true" class="h-1.5 w-1.5 rounded-full bg-accent"></span>{{ $card.status }}</span>
+            </span>
+          </span>
           <span class="text-sm text-muted">{{ $card.line }}</span>
         </a>
       </li>
@@ -85,6 +99,27 @@
     </section>
     {{- end }}
   </div>
+
+  {{- /* Ten keeps a busy month from taking over the page; the data file keeps
+         the full history. */ -}}
+  {{- $changeLimit := 10 -}}
+  {{- with site.Data.now.changes }}
+  {{- $changes := first $changeLimit (sort . "date" "desc") }}
+  <section aria-labelledby="changes-heading">
+    <h2 id="changes-heading" class="{{ $heading }}">Recent site changes</h2>
+    <ol class="divide-y divide-border/50 rounded-xl border border-border/60">
+      {{- range $changes }}
+      <li class="flex flex-col gap-1 px-4 py-3 sm:flex-row sm:items-baseline sm:gap-4">
+        <span class="flex shrink-0 items-center gap-2 font-mono text-xs text-muted sm:w-32">
+          <time datetime="{{ .date }}">{{ (time.AsTime .date).Format "Jan 2" }}</time>
+          <span class="rounded-full border px-1.5 py-px text-[0.6rem] uppercase tracking-wide {{ cond (eq .kind "new") "border-accent/50 text-accent" "border-border text-muted" }}">{{ .kind }}</span>
+        </span>
+        <a href="{{ .url | relURL }}" class="text-sm text-fg underline decoration-border underline-offset-2 hover:text-accent hover:decoration-accent">{{ .text }}</a>
+      </li>
+      {{- end }}
+    </ol>
+  </section>
+  {{- end }}
 </div>
 
 <p class="mt-16 text-sm text-muted">

@@ -51,3 +51,18 @@
   url: "https://github.com/google/elephant-goldfish-model"
   meta: "Google · GitHub · Apache 2.0 · checked October 2026"
   note: "Command names, the not-an-official-product note, and the credit to Dave Rensin's essay."
+- tag: Video
+  title: "This Free Repo Lets Claude Code Build Any Mac App"
+  url: "https://youtu.be/gN6wl-OX8-Q"
+  meta: "Dave Ebbelaar · YouTube · watched October 2026"
+  note: "BAMA on the skill shelf: the skill groups, design from screenshots, the speed loop and the agent command line. His claims."
+- tag: Repo
+  title: "daveebbelaar/bama"
+  url: "https://github.com/daveebbelaar/bama"
+  meta: "Dave Ebbelaar · GitHub · checked October 2026"
+  note: "Where BAMA lives, and that it's free to clone."
+- tag: Video
+  title: "This 1 Claude Skill fully replaces your Higgsfield Subscription"
+  url: "https://youtu.be/9C4TRbucmhQ"
+  meta: "Jay E | RoboNuggets · YouTube · watched October 2026"
+  note: "The /generate skill: cheapest-first routing across Kie.ai, fal.ai and WaveSpeed, budgets, prompt logs, and the price comparison. His claims."

@@ -16,7 +16,7 @@
 # its log in localStorage, guarded; it works without it.
 # ─────────────────────────────────────────────────────────────────────────────
 title: "Get Moving"
-description: "Short, practical encouragement for when you know what to do and still aren't doing it, from six videos: act before you feel like it, stop leaning on willpower, keep small promises, swap goals for tiny experiments, ten-minute starts, repeat the boring basics, and notice when a quick pleasure is really anaesthesia."
+description: "Short, practical encouragement for when you know what to do and still aren't doing it, from seven videos: act before you feel like it, stop leaning on willpower, keep small promises, plan the comeback before you miss a day, swap goals for tiny experiments, ten-minute starts, repeat the boring basics, and notice when a quick pleasure is really anaesthesia."
 # Blank by default — uncomment to put a line under the H1 in the banner.
 #lead: "Action first. The feeling catches up."
 blurb: "A pocket of encouragement for stuck days: act before you feel ready, stop relying on willpower, keep small promises, and give it ten minutes."
@@ -27,7 +27,7 @@ youtube: "https://youtu.be/OV4ZuQQO2v4"
 ---
 
 This page is for the days when I know exactly what I should be doing and I'm
-doing something else. It's a bucket: six videos so far, most of them saying
+doing something else. It's a bucket: seven videos so far, most of them saying
 the same few things in different words, boiled down to one set of notes. The
 instruction they share is to move first and let the feeling catch up, and
 most of the rest is about making the first move cheap. I keep it short so it's
@@ -87,6 +87,32 @@ after dinner. Commit one week at a time rather than forever, and when you
 slip, follow Clear's rule: never miss twice.
 
 {{< get-moving/trust >}}
+
+## Plan the comeback
+
+Never missing twice has research behind it. Dr. Sasha Hamdani, a psychiatrist
+who specializes in ADHD and has it herself, points to a University College
+London study of people building a habit over twelve weeks: one missed day
+barely mattered, and a missed week did.
+
+The restart is the hard part, since day one ran on novelty and the comeback
+runs on guilt. In the streak studies she cites, people who blamed themselves
+for a broken streak quit more often. People with ADHD also lean harder on
+cues, she says, so a trip that breaks the cue breaks the habit. So plan the
+miss before it happens:
+
+1. A re-entry step small enough to be silly: missed the walk, put your
+   walking shoes on, and that counts.
+2. A range instead of a target, ten to twenty minutes, so a bad day counts too.
+3. A backup cue: after lunch, or else the 2 p.m. lull you'd spend scrolling.
+4. A weekly check that you did it at all, so two missed days can't become a
+   month.
+5. Something new to bring back with you, like a podcast you've been saving.
+
+Decide now what you'll say after the miss. Hers is roughly: one day off won't
+hurt, shoes on tomorrow. Her husband read her a line of Marcus Aurelius that
+says the same, that you come back to yourself quickly and get better at it
+each time.
 
 ## Swap the goal for an experiment
 
@@ -156,6 +182,7 @@ one main job, and treat each as a fresh start. A bad morning still leaves two.
 - You know enough to start. The next course is a hiding place.
 - Make the right thing cheap and the wrong thing far away.
 - Promise small and keep it. Never miss twice.
+- Plan the comeback before the miss. Shoes on counts.
 - Swap the goal for a pact: "I will *this* for *that long*."
 - Ten minutes, then you're allowed to stop.
 - Repeat the boring basics. The wait is part of the work.
@@ -164,7 +191,7 @@ one main job, and treat each as a fresh start. A bad morning still leaves two.
 
 ## Sources {#sources}
 
-Six videos, written up in October 2026. Everything above is my synthesis, and
+Seven videos, written up in October 2026. Everything above is my synthesis, and
 the personal details are the speakers' own. Whose channel each video is
 from is on its card below.
 
@@ -174,6 +201,8 @@ The pleasure video quotes Carl Jung throughout, but at least one of those
 quotes is a known misattribution and I couldn't trace another to his writing, so I
 kept its ideas and left the quotes. I also left out the passion video's
 section on cannabis, ADHD medication and dopamine, which is medical territory
-I can't check, and the self-improvement video's blocking setup.
+I can't check, and the self-improvement video's blocking setup. The comeback section's
+studies (the UCL habit study, the streak papers and the ADHD cue study) are Dr. Hamdani's summaries, which I haven't checked against the
+papers.
 
 {{< ml/references >}}

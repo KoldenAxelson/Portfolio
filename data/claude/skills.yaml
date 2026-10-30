@@ -1,0 +1,25 @@
+# The skill shelf on /misc/claude/, rendered by shortcodes/claude/skills.html.
+# My favourite skills, kept for the day I need one. Living list: add an entry
+# when a skill earns a place, and its source video or repo to
+# data/ml/references/claude.yaml.
+#   name : what the skill is called
+#   by   : who made it
+#   for  : one line, when I'd reach for it
+#   what : what it does, in a sentence or two
+#   how  : how to get it
+#   url  : where it lives (a repo, or the video when there's no public repo)
+#   cost : "free", or the catch, shown as a tag
+- name: "BAMA (Build Any Mac App)"
+  by: "Dave Ebbelaar"
+  for: "A native Mac app built just for me: a tool, a utility, a clone of an app I pay for."
+  what: "Skills grouped into start, plan, code, design and ship, with a /bama router that picks the next one. Builds Swift apps with local data, can rebuild a design from screenshots of an app you like, has a measure-then-optimise loop for heavy work, and can add a command line so agents can drive the app."
+  how: "Point Claude at the repo and ask it to install the plugin. After that, asking for a Mac app is enough."
+  url: "https://github.com/daveebbelaar/bama"
+  cost: "free"
+- name: "/generate"
+  by: "Jay E · RoboNuggets"
+  for: "Images and video for a project without a Higgsfield-style subscription."
+  what: "Routes each job to the cheapest model aggregator that's up (Kie.ai first, then fal.ai, then WaveSpeed), writes the prompts, works to a budget you set, logs every prompt, and keeps every file on your machine. You pay per generation."
+  how: "There's no public repo. You build your own from his guide, which needs API keys from the aggregators. Give it a hard rule to quote the cost before it submits anything."
+  url: "https://youtu.be/9C4TRbucmhQ"
+  cost: "pay per use"

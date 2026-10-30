@@ -4,6 +4,8 @@
   (scripts/site/games/game-card.ts reads its data-* attributes), plus the same
   details as plain page text (impossible-list/details.html).
   Called with (dict "item" <a books entry, merged with rating/year defaults>).
+  `classic: true` on an entry adds the classic mark (building-library icon) to
+  its cover; layouts/_default/impossible-list.html explains the mark once.
 */ -}}
 {{- with .item -}}
 {{- $isRead := eq .done true -}}
@@ -28,7 +30,7 @@
   {{- end -}}
 {{- end -}}
 <button type="button" data-game-open aria-haspopup="dialog" data-title="{{ .title }}" data-kind="book" data-rating="{{ .rating }}" data-status="{{ if $isCurrent }}Reading now{{ else }}{{ .status }}{{ end }}" data-blurb="{{ .blurb }}" data-pitch="{{ .pitch }}" data-images="{{ $imgs | jsonify }}"{{ with $seriesSlim }} data-series="{{ . | jsonify }}"{{ end }}{{ with $slidePitches }} data-slide-pitches="{{ . | jsonify }}" data-slide-series="{{ $slideSeries | jsonify }}"{{ end }} class="group/cover block w-full rounded-lg pt-1.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
-  {{ partial "components/shelf-cover.html" (dict "dir" "achievements" "slug" .cover "eager" $.eager "title" .title "isDimmed" (not $isRead) "badge" (cond $isCurrent (dict "icon" "book-open" "label" "Reading") false)) }}
+  {{ partial "components/shelf-cover.html" (dict "dir" "achievements" "slug" .cover "eager" $.eager "title" .title "isDimmed" (not $isRead) "badge" (cond $isCurrent (dict "icon" "book-open" "label" "Reading") false) "mark" (cond (eq .classic true) (dict "icon" "building-library" "label" "Classic") false)) }}
   <span class="mt-2 line-clamp-2 block text-sm leading-snug transition-colors group-hover/cover:text-accent {{ cond (or $isRead $isCurrent) "text-fg" "text-muted" }}">{{ .title }}{{ if $isCurrent }}<span class="sr-only"> (reading now)</span>{{ else if not $isRead }}<span class="sr-only"> (not read yet)</span>{{ end }}</span>
   <span class="mt-0.5 block font-mono text-xs text-muted">
     {{- if $isCurrent }}<span class="text-accent">Reading now</span>

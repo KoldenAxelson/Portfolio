@@ -2,7 +2,7 @@
 title: "Impossible List"
 description: "A living list of what Konrad Wright wants to do in life, the skills he wants to earn and the adventures he wants to take, plus the games he plays and the books he reads — designed to keep growing rather than get finished."
 layout: "impossible-list"
-updated: 2026-10-28
+updated: 2026-10-30
 # Blank by default — uncomment to put a line under the H1 in the banner.
 #lead: "Not a bucket list you complete — one you keep adding to. The idea (borrowed from Joel Runyon) is that the list should always outrun you."
 groups:
@@ -249,7 +249,10 @@ games:
 # book they pair up in order; with one extra image first (a box set), that
 # first image keeps the entry's pitch. blurb → your review;
 # pitch → why the book is worth reading. With both, the drawer shows the review
-# and a toggle to the pitch.
+# and a toggle to the pitch. classic: true → the classic mark on the cover, for
+# the foundational Greek, Roman and medieval books in the sense of
+# /misc/writing/classical-inspiration/ (impossible-list/book-card.html).
+# Ancient years are traditional, approximate dates.
 books:
   label: "Books"
   shelves:
@@ -271,6 +274,7 @@ books:
           blurb: "I've re-watched this series probably 10-15 times and have gone on the NZ tour. I can do a mean Smeagol impression."
         - title: "The Republic"
           year: -375
+          classic: true
           done: true
           rating: 3.5
           cover: "plato-republic"
@@ -360,6 +364,7 @@ books:
           pitch: "Shackleton's 1914 expedition: the ship is crushed by Antarctic ice and 28 men spend nearly two years fighting their way home. Every one of them survives. One of the great true adventure stories, built from the crew's own diaries."
         - title: "Meditations"
           year: 180
+          classic: true
           done: false
           cover: "meditations"
           pitch: "Private notes the Roman emperor Marcus Aurelius wrote to himself, never meant to be published. The most powerful man in the world reminding himself to be patient, humble and focused on what he controls. Read a page a day."
@@ -390,10 +395,11 @@ books:
             - title: "The Last Olympian"
               done: false
               pitch: "The war comes to Manhattan: Kronos marches on Mount Olympus, and the great prophecy about Percy's sixteenth birthday finally comes due."
-        - title: "Letters from a Stoic"
+        - title: "Letters on Ethics"
           year: 65
+          classic: true
           done: false
-          cover: "letters-from-a-stoic"
+          cover: "letters-on-ethics"
           pitch: "124 letters from Seneca to a friend on time, fear, wealth, friendship and death. Written by one of the richest men in Rome, so the advice on not being owned by your possessions comes with built-in tension. Read one a night."
         - title: "Horus Rising"
           year: 2006
@@ -449,6 +455,204 @@ books:
           done: false
           cover: "twilight-of-the-idols"
           pitch: "Nietzsche's short, sharp late book, written in about a week: 'how to philosophize with a hammer.' Aphorisms and attacks on Socrates, morality and German culture, and the quickest way into Nietzsche."
+        - title: "The Odyssey"
+          year: -725
+          classic: true
+          done: false
+          cover: "odyssey"
+          pitch: "Odysseus takes ten years to get home from Troy: monsters, gods, shipwrecks and a house full of suitors waiting at the end. Homer's poem is the oldest road-trip story in the West and still one of the best."
+        - title: "The Iliad"
+          year: -750
+          classic: true
+          done: false
+          cover: "iliad"
+          pitch: "A few weeks in the tenth year of the Trojan War, set off by Achilles' rage at his own king. Homer at his most brutal and most human, about what war costs the men who fight it."
+        - title: "The Aeneid"
+          year: -19
+          classic: true
+          done: false
+          cover: "aeneid"
+          pitch: "Virgil's answer to Homer: a Trojan survivor carries his people across the sea to found what becomes Rome, giving up what he wants for what he owes."
+        - title: "Anabasis"
+          year: -370
+          classic: true
+          done: false
+          cover: "anabasis"
+          pitch: "Xenophon's own account of ten thousand Greek soldiers stranded deep in Persia after their employer dies, electing their own leaders and marching home. A war memoir that reads like an adventure."
+        - title: "Aesop's Fables"
+          year: -550
+          classic: true
+          done: false
+          cover: "aesops-fables"
+          pitch: "The tortoise and the hare, the fox and the grapes, the boy who cried wolf: hundreds of tiny animal stories with a moral each, the template for every fable since."
+        - title: "The Divine Comedy"
+          year: 1320
+          classic: true
+          done: false
+          cover: "divine-comedy"
+          pitch: "Dante walks down through Hell, up the mountain of Purgatory and into Heaven, meeting the dead and judging them as he goes. The great poem of the Middle Ages."
+        - title: "Theogony and Works and Days"
+          year: -700
+          classic: true
+          done: false
+          cover: "theogony"
+          pitch: "Hesiod's two short poems: how the gods were born and fought their way to Zeus, then a farmer's hard-won advice to his lazy brother on work, seasons and justice. The Greek myths at their source."
+        - title: "The Oresteia"
+          year: -458
+          classic: true
+          done: false
+          cover: "oresteia"
+          pitch: "Aeschylus' only surviving trilogy: a king murdered by his wife, a son's revenge, and the Furies hunting him until Athens invents the jury trial to end the cycle of blood."
+        - title: "The Oedipus Plays"
+          year: -429
+          classic: true
+          done: false
+          cover: "oedipus"
+          pitch: "Sophocles' three Theban plays: the king who hunts a murderer and finds himself, his last days as a blind wanderer, and his daughter Antigone choosing her conscience over the state."
+        - title: "Medea"
+          year: -431
+          classic: true
+          done: false
+          cover: "medea"
+          pitch: "Euripides' revenge tragedy: an outsider wife abandoned by Jason for a princess takes the most terrible revenge there is. Short, savage, and still argued over."
+        - title: "The Clouds"
+          year: -423
+          classic: true
+          done: false
+          cover: "clouds"
+          pitch: "Aristophanes roasts Socrates as a con man running a think-tank in a basket. The funniest play to survive from Athens, staged while Socrates was still alive to watch it."
+        - title: "The Histories"
+          year: -430
+          classic: true
+          done: false
+          cover: "histories"
+          pitch: "Herodotus, the first historian, on how the Greeks beat the Persian Empire, with every wild story he collected along the way: gold-digging ants, Egyptian kings and the stand at Thermopylae."
+        - title: "History of the Peloponnesian War"
+          year: -400
+          classic: true
+          done: false
+          cover: "peloponnesian-war"
+          pitch: "Thucydides watched Athens and Sparta destroy each other over 27 years and wrote it down with a cold eye: plague, propaganda and a democracy talking itself into ruin."
+        - title: "The Trial and Death of Socrates"
+          year: -399
+          classic: true
+          done: false
+          cover: "apology"
+          pitch: "Plato's four short dialogues on the last days of Socrates: charged, defending himself in court, refusing to escape, and drinking the hemlock. The best way into Plato."
+        - title: "Nicomachean Ethics"
+          year: -340
+          classic: true
+          done: false
+          cover: "nicomachean-ethics"
+          pitch: "Aristotle on what a good life actually is: character built by habit, courage as the middle between cowardice and recklessness, and friendship as part of happiness."
+        - title: "Poetics"
+          year: -335
+          classic: true
+          done: false
+          cover: "poetics"
+          pitch: "Aristotle's short handbook on tragedy and the oldest book on how stories work: plot, reversal, recognition and catharsis. Every writing guide since is a footnote to it."
+        - title: "Argonautica"
+          year: -250
+          classic: true
+          done: false
+          cover: "argonautica"
+          pitch: "Apollonius' epic of Jason and the Argonauts sailing for the Golden Fleece, and of Medea, the princess who falls for him and makes the quest possible."
+        - title: "Parallel Lives"
+          year: 100
+          classic: true
+          done: false
+          cover: "plutarch-lives"
+          pitch: "Plutarch pairs famous Greeks and Romans (Alexander and Caesar, Demosthenes and Cicero) to ask what character does to a life. Shakespeare raided it for his Roman plays."
+        - title: "Enchiridion"
+          year: 125
+          classic: true
+          done: false
+          cover: "enchiridion"
+          pitch: "The Stoic handbook, taken down from the lectures of Epictetus, a former slave: sort what you control from what you don't, and stop suffering over the second kind. Pocket-sized."
+        - title: "On Duties"
+          year: -44
+          classic: true
+          done: false
+          cover: "on-duties"
+          pitch: "Cicero's last book, written to his son as the Republic collapsed: what we owe each other, and why doing the right thing and the useful thing are never really in conflict."
+        - title: "The Gallic War"
+          year: -50
+          classic: true
+          done: false
+          cover: "gallic-war"
+          pitch: "Julius Caesar's own account of conquering Gaul, written in the third person and in plain prose, partly as propaganda for the people back in Rome."
+        - title: "On the Nature of Things"
+          year: -55
+          classic: true
+          done: false
+          cover: "nature-of-things"
+          pitch: "Lucretius' long poem explaining Epicurus: a universe of atoms and empty space, no angry gods, and therefore nothing to fear in death."
+        - title: "Metamorphoses"
+          year: 8
+          classic: true
+          done: false
+          cover: "metamorphoses"
+          pitch: "Ovid's fifteen books of transformations, from the creation of the world to Julius Caesar becoming a star: Narcissus, Daedalus, Pygmalion and the rest. The great storehouse of myth."
+        - title: "The History of Rome"
+          year: -27
+          classic: true
+          done: false
+          cover: "livy-history"
+          pitch: "Livy's history of Rome from its founding: Romulus and Remus, the rape of Lucretia, Horatius at the bridge and Hannibal crossing the Alps. Where Rome's stories about itself come from."
+        - title: "The Annals"
+          year: 116
+          classic: true
+          done: false
+          cover: "annals"
+          pitch: "Tacitus on the emperors after Augustus (Tiberius, Claudius and Nero), and on a Senate that learned to flatter its way through tyranny."
+        - title: "Lives of the Caesars"
+          year: 121
+          classic: true
+          done: false
+          cover: "lives-of-the-caesars"
+          pitch: "Suetonius' gossipy biographies of the first twelve emperors, from Julius Caesar to Domitian: their habits, their vices and the omens before their deaths."
+        - title: "Odes"
+          year: -23
+          classic: true
+          done: false
+          cover: "odes"
+          pitch: "Horace's short lyric poems on wine, friendship, love and getting older, where carpe diem comes from. Written by the son of a freed slave who became Augustus' poet."
+        - title: "Satires"
+          year: 100
+          classic: true
+          done: false
+          cover: "satires"
+          pitch: "Juvenal's furious poems against Rome's corruption, the source of 'bread and circuses' and 'who will guard the guards?' Required reading for Grunt Force."
+        - title: "Confessions"
+          year: 400
+          classic: true
+          done: false
+          cover: "confessions"
+          pitch: "Augustine's account of his restless youth and his conversion, written as a prayer. The first real autobiography, and the bridge from the ancient world to the medieval one."
+        - title: "The Consolation of Philosophy"
+          year: 524
+          classic: true
+          done: false
+          cover: "consolation"
+          pitch: "Written in a cell while Boethius waited to be executed: Lady Philosophy visits and argues him out of despair. One of the most-read books of the Middle Ages."
+        - title: "Beowulf"
+          year: 1000
+          classic: true
+          done: false
+          cover: "beowulf"
+          pitch: "The Old English epic of a hero who kills the monster Grendel, then Grendel's mother, and in old age a dragon. Seamus Heaney's translation reads like it was written yesterday."
+        - title: "The Song of Roland"
+          year: 1100
+          classic: true
+          done: false
+          cover: "song-of-roland"
+          pitch: "The oldest major work of French literature: Charlemagne's rear guard ambushed in the Pyrenees, and Roland too proud to blow his horn for help until it's too late."
+        - title: "The Canterbury Tales"
+          year: 1400
+          classic: true
+          done: false
+          cover: "canterbury-tales"
+          pitch: "Chaucer's pilgrims tell stories on the road to Canterbury: knights, millers, a nun and the Wife of Bath. Bawdy, funny and the start of English literature."
     - label: "For Study"
       items:
         - title: "The 4-Hour Workweek"

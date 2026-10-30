@@ -2,17 +2,19 @@
 title: "Now"
 description: "What Konrad Wright is focused on right now: what he's building, playing, reading and learning."
 layout: "now"
-updated: 2026-10-28
+updated: 2026-10-30
 # Only what's happening now. Anything "up next" belongs on the Impossible
 # List, not here.
 #
 # Rendered by layouts/_default/now.html, top to bottom:
 #   working   the one project getting most of my hours, with its app icon
-#   building  the other live projects, as small cards
+#   building  the other live projects, as small cards (icon: optional, a
+#             square cover path like working's icon)
 #   (Playing / Reading come from the Impossible List's `current: true` items,
 #    via components/off-the-clock.html, so this file never repeats them)
 #   learning  one line
 #   life      a line or two, plus the "available for work" pill
+#   (Recent site changes come from data/now/changes.yaml, not from here)
 working:
   page: "/projects/harmony-pulse"
   showcase: "/misc/harmony-pulse"
@@ -22,9 +24,11 @@ working:
   aside: "Everything runs on the phone, because barns don't have wifi."
 building:
   - page: "/projects/widda"
+    icon: "/covers/widda.svg"
     status: "In Chrome Web Store review"
     line: "A monetization tool for YouTubers. Built, submitted, and now going back and forth with Google."
   - page: "/projects/growgo"
+    icon: "/covers/growgo.webp"
     status: "Back from the archive"
     line: "My farmers-market app. The pitch got love and no checks, so this time the working app does the talking. Wiring up Stripe and production."
 learning: "How to get more eyes on what I ship. Ship first, then promote."

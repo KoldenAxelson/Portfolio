@@ -72,6 +72,16 @@
   price: "Free, open source"
   desc: "A menu bar app that bundles the Mac utilities people usually buy one by one: window snapping, an app switcher, clipboard history, a per-app volume mixer, screenshots and recording, a system monitor, even a Dynamic Island. It’s modular, so you install only the tools you want. macOS 14 or later on Apple silicon, and it installs with <code>brew install --cask vorssaint</code>."
 
+- name: "NEO"
+  kind: "Word processor for authors"
+  maker: "Hugh Howey"
+  url: "https://github.com/hughhowey/neo"
+  domain: "github.com"
+  types: [software]
+  status: shipping
+  price: "Free, open source"
+  desc: "A distraction-free word processor for writing books, made by the author of <em>Silo</em>. Your library is a bookshelf with covers and word-goal progress bars; inside a book, one Enter is a new paragraph, two a scene break and three a new chapter. Spellcheck runs only when you ask, cut passages wait on a Darlings tab to be restored, and books are plain HTML and JSON files on your own disk, exported to EPUB, Word or PDF. No account. An Electron app for macOS, Windows and Linux, MIT licensed, at version 1.6.1 in late October. <a href=\"https://www.youtube.com/watch?v=_K-ExOiEv40\">Hugh's video</a> walks through it, and I'm <a href=\"/misc/writing/neo-fork/\">planning a fork</a> for my novel."
+
 - name: "Desert Ant Labs"
   kind: "On-device AI models"
   url: "https://desertant.com"

@@ -1,0 +1,12 @@
+{{- /* claude/skills: the skill shelf, from data/claude/skills.yaml. Static, no JS.
+       Reuses the mod card styles (.cl-mods, .cl-mod in css/pages/claude/claude.css). */ -}}
+{{- $skills := site.Data.claude.skills -}}
+{{- if not $skills }}{{ errorf "claude/skills: data/claude/skills.yaml is missing (page: %s)" .Page.RelPermalink }}{{ end -}}
+<div class="not-prose cl-mods">
+{{- range $skills }}
+<article class="cl-mod"><h3><a class="cl-skill-link" href="{{ .url }}">{{ .name }}</a></h3><p class="cl-skill-for">{{ .for }}</p><p>{{ .what }}</p><p>{{ .how }}</p><div class="cl-mod-tags">
+{{- with .by }}<span class="cl-tag">{{ . }}</span>{{ end -}}
+{{- with .cost }}<span class="cl-tag{{ if ne . "free" }} is-cost{{ end }}">{{ . }}</span>{{ end -}}
+</div></article>
+{{- end }}
+</div>

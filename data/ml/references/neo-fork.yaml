@@ -1,0 +1,18 @@
+# References for content/misc/writing/neo-fork.md, rendered by
+# {{< ml/references >}} under its Sources heading.
+
+- tag: Video
+  title: "NEO - A Writing Tool for Authors"
+  url: "https://www.youtube.com/watch?v=_K-ExOiEv40"
+  meta: "Hugh Howey · YouTube · watched October 2026"
+  note: "What NEO is and how it's meant to be used."
+- tag: Repo
+  title: "hughhowey/neo"
+  url: "https://github.com/hughhowey/neo"
+  meta: "Hugh Howey · GitHub · MIT · version 1.6.1, checked October 2026"
+  note: "The README, the contributing guide's ground rules, and the agent notes on the code's layout, the More Features switch and the CSS Highlight API."
+- tag: Art
+  title: "Antonello da Messina, Saint Jerome in his Study, about 1475"
+  url: "https://commons.wikimedia.org/wiki/File:Antonello_da_Messina_-_St_Jerome_in_his_study_-_National_Gallery_London.jpg"
+  meta: "National Gallery, London · Wikimedia Commons · public domain"
+  note: "The cover: a scholar at work, with a lion, a cat, a peacock and a partridge for company."

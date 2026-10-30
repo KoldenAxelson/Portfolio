@@ -54,6 +54,16 @@
   {{- with .Params.books }}
   <section>
     <h2 class="font-mono text-xs uppercase tracking-widest text-muted">{{ .label }}</h2>
+    {{- /* Key for the classic mark (impossible-list/book-card.html), shown only
+           when a shelf has a book with `classic: true`. */ -}}
+    {{- $hasClassic := false -}}
+    {{- range .shelves }}{{ range .items }}{{ if eq .classic true }}{{ $hasClassic = true }}{{ end }}{{ end }}{{ end -}}
+    {{- if $hasClassic }}
+    <p class="mt-2 flex items-center gap-1.5 text-xs text-muted">
+      <span class="inline-flex h-5 w-5 items-center justify-center rounded-full border border-accent/70 text-accent">{{ partial "func/svg-icon.html" (dict "name" "building-library" "class" "h-3 w-3" "width" "2") }}</span>
+      marks a classic, in the old sense: the <a href="/misc/writing/classical-inspiration/" class="underline decoration-border hover:text-accent">foundational books</a> of the West.
+    </p>
+    {{- end }}
     {{- range .shelves }}
     {{ partial "components/shelf.html" (dict "label" .label "items" (partial "func/shelf-order.html" .items) "card" "impossible-list/book-card.html") }}
     {{- end }}

@@ -1,6 +1,6 @@
 {{/* Writing — one collection's reading page: a list of its stories, then the
      stories themselves (each a `## ` heading in the source, with an illustration
-     and a moral from shortcodes/writing/). A page with `label` (notes, not stories: content/misc/writing/grunt-force.md)
+     and a moral from shortcodes/writing/). A page with `label` (notes, not stories: grunt-force.md, writing-techniques.md)
      keeps the contents list but doesn't number its parts as stories.
      Styles: assets/css/pages/writing/writing.css. */}}
 {{ define "banner" }}
@@ -12,6 +12,12 @@
 {{ define "main" }}
 {{- $css := resources.Get "css/pages/writing/writing.css" | minify | fingerprint -}}
 <link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" />
+{{- /* Notes pages built from videos (writing-techniques.md, classical-inspiration.md)
+       borrow the misc kit: the video-notes widget box and loader when the page
+       sets `youtube:`, and the ml/references source carousel. Both ship nothing
+       on a page that doesn't use them. */ -}}
+{{ partial "video-notes/assets.html" . }}
+{{ partial "ml/assets.html" . }}
 {{- $stories := partial "func/writing-story-count.html" . -}}
 {{- if gt $stories 1 }}
 <nav class="writing-toc not-prose" aria-label="Stories in this collection">{{ .TableOfContents }}</nav>

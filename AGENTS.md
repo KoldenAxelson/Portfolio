@@ -25,6 +25,7 @@ Read the matching skill in `private/skills/` before starting these tasks:
 | [`private/skills/ChapterHomeworkMake.md`](private/skills/ChapterHomeworkMake.md) | Adding a Homework section (interactive exercises) to a chapter. Optional per chapter. |
 | [`private/skills/ArticlePageMake.md`](private/skills/ArticlePageMake.md) | Writing or reworking a text-lite blog article (`content/articles/`). |
 | [`private/skills/VideoNotesPageMake.md`](private/skills/VideoNotesPageMake.md) | Writing or extending a `/misc` page from YouTube transcripts (`private/ideas/misc/videos/`). Read after ArticlePageMake.md. |
+| [`private/skills/YouTubeTranscripts.md`](private/skills/YouTubeTranscripts.md) | Konrad shares YouTube links, asks for transcripts or for picks from a channel, or hands you `private/ideas/misc/digest-prompt.md`. Fetch with `make transcripts`, then VideoNotesPageMake.md. |
 | [`private/skills/AuditCode.md`](private/skills/AuditCode.md) | Auditing, re-auditing or grading the codebase or a feature. |
 | [`private/skills/AuditArticle.md`](private/skills/AuditArticle.md) | Fact-checking and reviewing an article or chapter before it publishes. Never in the session that wrote it. |
 | [`private/skills/HumanizeWriting.md`](private/skills/HumanizeWriting.md) | Writing or editing any reader-facing prose: page text, data-file copy, FAQ answers, captions. |
@@ -53,10 +54,37 @@ Read the matching skill in `private/skills/` before starting these tasks:
   (`scripts/vault/seal.sh`, see the Brine and WishWhat targets). Re-seal after editing that
   source or the site's scripts. `make seal` and `make backup` copy `private/`
   and `static/vault/` to the external drive when it's mounted.
+- **Video transcripts:** queue YouTube links in
+  `private/ideas/misc/script-queue.csv` (url, optional name and note) and run
+  `make transcripts`. It saves each one to `private/ideas/misc/videos/`, writes
+  `private/ideas/misc/digest-prompt.md` for the agent that digests them, and
+  empties the queue. The API token is `YT_TRANSCRIPT_TOKEN` or
+  `private/youtube-transcript-token`.
 - **Markdown:** two single `~` in one paragraph render as strikethrough, so
   write "about" rather than "~" in prose.
 - **YAML data:** a bare `y` or `n` key parses as a boolean; don't use them as
   key names.
+
+**Keeping /now current:** /now is the front page of what Konrad is up to, so
+before you finish any task, decide whether it changed and update it yourself.
+Never ask permission and don't announce it: Konrad wants to find the changes
+on the page, not in the chat.
+
+1. Would a visitor notice it? A new page, section, tool or project, or one that
+   works noticeably differently, gets one line at the top of
+   `data/now/changes.yaml` (date, `new` or `update`, first-person text, url).
+   Fixes, refactors, styling, drafts behind the PIN and agent tooling don't. A
+   batch of related changes is one entry, not five. Never describe a sealed
+   page's contents.
+2. Did it change what Konrad is doing? A project's status moved (testing,
+   submitted, launched, paused), he started or finished a book or game, or what
+   he's learning shifted: update the matching field in `content/now.md`
+   (`working`, `building`, `learning`, `life`) or the Impossible List's
+   `current:` items, which /now reads.
+3. If either happened, set `updated:` in `content/now.md` to today.
+
+When it's a judgement call (is this big enough, did a status really change),
+make the call yourself and move on.
 
 **"Last updated" lines:** when you change a page whose front matter has an
 `updated:` date (it renders as "Last updated …"), set it to today's date in the

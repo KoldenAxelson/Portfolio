@@ -1,0 +1,61 @@
+# Big changes to the site, rendered at the bottom of /now by
+# layouts/_default/now.html. Only the newest ones show (the limit lives in
+# that template), so keep adding to the top and never trim: older entries
+# simply drop off the page.
+#
+# Only what a visitor would notice: a new page, a new section, a tool that
+# works differently. Typo fixes, refactors and drafts behind the PIN don't
+# count. Never list a sealed page's contents or hint at its passcode.
+#
+#   date : YYYY-MM-DD, the day it went live
+#   kind : "new" (a page or feature that didn't exist) or "update"
+#   text : one line, first person, what changed
+#   url  : where to see it (site path)
+- date: 2026-10-30
+  kind: new
+  text: "Writing Techniques: craft notes for my novel, boiled down from 22 videos, with a sentence rhythm meter."
+  url: "/misc/writing/writing-techniques/"
+- date: 2026-10-30
+  kind: new
+  text: "A plan for forking NEO, a word processor for authors, into one with a few helpful distractions."
+  url: "/misc/writing/neo-fork/"
+- date: 2026-10-30
+  kind: new
+  text: "Classical Inspiration, on reading the old books for a new one."
+  url: "/misc/writing/classical-inspiration/"
+- date: 2026-10-30
+  kind: update
+  text: "The Impossible List's reading shelf gained the classics, each marked with a little temple."
+  url: "/impossible-list/"
+- date: 2026-10-30
+  kind: update
+  text: "The Claude page has a shelf of favourite skills, starting with a Mac app builder."
+  url: "/misc/claude/"
+- date: 2026-10-30
+  kind: update
+  text: "Tech Watch: NEO, Hugh Howey's open-source writing app."
+  url: "/misc/tech-watch/"
+- date: 2026-10-28
+  kind: new
+  text: "Grunt Force, the story bible for the novel I'm writing, on the writing shelf."
+  url: "/misc/writing/grunt-force/"
+- date: 2026-10-28
+  kind: new
+  text: "WishWhat, the gift wish list app I co-founded, added to my projects."
+  url: "/projects/wishwhat/"
+- date: 2026-10-28
+  kind: new
+  text: "Rule Zero, the custom cards our Commander pod plays with."
+  url: "/misc/rule-zero/"
+- date: 2026-10-27
+  kind: new
+  text: "Ikigai, a short guide to being healthier and more purposeful."
+  url: "/misc/ikigai/"
+- date: 2026-10-23
+  kind: new
+  text: "A simulated Sun and a ray-traced black hole you can play with in the browser."
+  url: "/misc/sun/"
+- date: 2026-10-04
+  kind: new
+  text: "Harmony Pulse, the riding coach app I'm building for my mom."
+  url: "/projects/harmony-pulse/"

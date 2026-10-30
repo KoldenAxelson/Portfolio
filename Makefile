@@ -55,7 +55,7 @@ AI_PORT      := 6573    # localhost-only proxy port (ASCII "AI" = 65,73). Must
 # `?=` means an AI_MODEL from the environment wins and skips this detection.
 AI_MODEL     ?= $(shell command -v ollama >/dev/null 2>&1 && ollama list 2>/dev/null | awk 'NR==2 {print $$1}')
 
-.PHONY: help setup dev dev-drafts build css css-watch typecheck clean distclean ai-proxy ai-proxy-run ai-proxy-stop spinmasters verdant spacescape games seal backup workbooks workbooks-test examples examples-check
+.PHONY: help setup dev dev-drafts build css css-watch typecheck clean distclean ai-proxy ai-proxy-run ai-proxy-stop spinmasters verdant spacescape games seal backup workbooks workbooks-test examples examples-check transcripts transcripts-check
 
 help: ## Show this help
 	@echo "Portfolio — available commands:"
@@ -262,6 +262,12 @@ BACKUP_DIR ?= /Volumes/Extreme SSD/Development/Backups/Portfolio
 seal: $(HUGO) $(TAILWIND) ## Seal a vault: pick Drafts, GrowGo, Brine or WishWhat, then set its PIN; backs up to the external drive (scripts/vault/seal.sh)
 	@HUGO="$(HUGO)" TAILWIND="$(TAILWIND)" GROWGO_SOURCE="$(VAULT_IN)" bash scripts/vault/seal.sh
 	@bash scripts/vault/backup.sh "$(BACKUP_DIR)"
+
+transcripts: ## Fetch the videos in private/ideas/misc/script-queue.csv, write the digest prompt, clear the queue (token: YT_TRANSCRIPT_TOKEN)
+	@$(PYTHON) scripts/writing/fetch-transcripts.py
+
+transcripts-check: ## List what `make transcripts` would fetch, without calling the API
+	@$(PYTHON) scripts/writing/fetch-transcripts.py --dry-run
 
 backup: ## Copy private/ and static/vault/ to the external drive, if it's plugged in (scripts/vault/backup.sh)
 	@bash scripts/vault/backup.sh "$(BACKUP_DIR)"

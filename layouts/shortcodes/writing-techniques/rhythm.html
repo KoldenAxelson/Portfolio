@@ -1,0 +1,9 @@
+{{- /* writing-techniques/rhythm: live widget; behaviour in static/js/writing-techniques/wt-rhythm.js. */ -}}
+<div class="not-prose vn-demo" id="wt-rhythm" data-vn-src="/js/writing-techniques/wt-rhythm.js" data-vn-init="WtRhythm">
+<div class="vn-demo-label">Live · sentence rhythm meter</div>
+<label class="vn-sr" for="wt-text">Paragraph to measure</label>
+<textarea class="vn-input wt-text" id="wt-text" rows="6" spellcheck="true">The bus was late again. We stood by the fence in our gloves, forty of us, watching the road shimmer and pretending we didn't care whether it came, because caring was the kind of thing that showed up in your score. Owen talked. Kevin didn't. By nine the paint had dried on the posts we'd painted yesterday, and we painted them again.</textarea>
+<ol class="wt-bars" id="wt-bars" aria-label="Words per sentence"></ol>
+<p class="vn-verdict wt-verdict" id="wt-verdict" aria-live="polite"></p>
+<div class="vn-caption">Counts words between full stops, question marks and exclamation marks, as you type. Nothing leaves your browser. The sample is a practice paragraph of mine; paste your own over it.</div>
+</div>

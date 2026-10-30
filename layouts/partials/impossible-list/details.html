@@ -10,6 +10,7 @@
 */ -}}
 {{- with .item -}}
 <div class="sr-only">
+  {{- if .classic }}<p>A classic.</p>{{ end }}
   {{- if .current }}<p>{{ if $.consoleName }}Playing it now{{ else }}Reading it now{{ end }}.</p>{{ end }}
   {{- with $.consoleName }}<p>Played on {{ . }}.</p>{{ end }}
   {{- with .rating }}<p>Rated {{ . | lang.FormatNumber 1 }} out of 5.</p>{{ end }}
