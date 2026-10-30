@@ -66,3 +66,8 @@
   url: "https://youtu.be/9C4TRbucmhQ"
   meta: "Jay E | RoboNuggets · YouTube · watched October 2026"
   note: "The /generate skill: cheapest-first routing across Kie.ai, fal.ai and WaveSpeed, budgets, prompt logs, and the price comparison. His claims."
+- tag: Repo
+  title: "cursor/plugins: thermo-nuclear-code-quality-review"
+  url: "https://github.com/cursor/plugins/blob/main/cursor-team-kit/skills/thermo-nuclear-code-quality-review/SKILL.md"
+  meta: "Cursor · GitHub · checked October 2026"
+  note: "The code review on the skill shelf: what it checks, its approval bar, and that it only runs when called by name."

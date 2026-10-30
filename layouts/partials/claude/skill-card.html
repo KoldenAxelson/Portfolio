@@ -1,0 +1,33 @@
+{{- /*
+  claude/skill-card — one skill on the /misc/claude/ skill shelf, drawn by
+  components/shelf.html for shortcodes/claude/skills.html. Called with
+  (dict "item" <a data/claude/skills.yaml entry>). The name link comes first so
+  the shelf's arrow keys (scripts/site/widgets/shelf-row.ts) land on it. Every
+  card in a row is the same height; the details open as a panel over the card
+  rather than growing it, and stay in the HTML. Styles: .cl-sk* in
+  css/pages/claude/claude.css.
+*/ -}}
+{{- with .item -}}
+<article class="cl-sk" style="{{ printf "--sk-hue:%d" (int (.hue | default 150)) | safeCSS }}">
+  <div class="cl-sk-top" aria-hidden="true">
+    <span class="cl-sk-glyph">{{ partial "func/svg-icon.html" (dict "name" (.icon | default "puzzle-piece") "class" "h-6 w-6" "width" "1.7") }}</span>
+    {{- with .command }}<code class="cl-sk-cmd">{{ . }}</code>{{ end }}
+  </div>
+  <div class="cl-sk-body">
+    <h3 class="cl-sk-name"><a href="{{ .url }}">{{ .name }}</a></h3>
+    <p class="cl-sk-for">{{ .for }}</p>
+    <details class="cl-sk-more">
+      <summary>How it works</summary>
+      <div class="cl-sk-panel">
+        <p>{{ .what }}</p>
+        <p>{{ .how }}</p>
+      </div>
+    </details>
+  </div>
+  <div class="cl-sk-foot">
+    {{- with .by }}<span class="cl-sk-by" title="by {{ . }}">by {{ . }}</span>{{ end }}
+    {{- with .cost }}<span class="cl-sk-cost{{ if eq . "free" }} is-free{{ end }}">{{ . }}</span>{{ end }}
+    <a class="cl-sk-get" href="{{ .url }}" tabindex="-1" aria-hidden="true">Get it <span>→</span></a>
+  </div>
+</article>
+{{- end -}}

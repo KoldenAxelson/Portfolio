@@ -17,11 +17,43 @@
 .cl-mod p{margin:.3rem 0 0;font-size:.84rem;line-height:1.5;color:rgb(var(--c-muted));}
 .cl-mod-tags{display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.5rem;}
 .cl-mod-tags:empty{display:none;}
-/* the skill shelf (shortcodes/claude/skills.html) reuses the mod cards */
-.cl-skill-link{color:inherit;text-decoration:underline;text-decoration-color:rgb(var(--c-border));text-underline-offset:2px;}
-.cl-skill-link:hover{color:rgb(var(--c-accent));}
-.cl-skill-link:focus-visible{outline:2px solid rgb(var(--c-accent));outline-offset:2px;border-radius:2px;}
-.cl-mod p.cl-skill-for{color:rgb(var(--c-fg));font-weight:600;}
+/* ── the skill shelf (shortcodes/claude/skills.html) ───────────────────── */
+/* --sk-hue comes from each card's `hue` in data/claude/skills.yaml. */
+.cl-sks{margin:.6rem 0 1.4rem;}
+/* Each card sits in a components/shelf.html slot (w-72). Slots stretch to the
+   tallest card in the row and the card fills its slot, so a row is one height;
+   the details open over the card (.cl-sk-panel) so opening one grows nothing. */
+.cl-sk{position:relative;height:100%;display:flex;flex-direction:column;overflow:hidden;border:1px solid rgb(var(--c-border));border-radius:.9rem;background:rgb(var(--c-bg));transition:border-color .15s ease,transform .15s ease;}
+.cl-sk:hover{border-color:hsl(var(--sk-hue) 60% 55% / .7);transform:translateY(-2px);}
+@media (prefers-reduced-motion:reduce){.cl-sk,.cl-sk:hover{transition:none;transform:none;}}
+.cl-sk-top{display:flex;align-items:center;gap:.7rem;min-height:4.6rem;padding:.9rem 1rem;
+  background:
+    radial-gradient(circle at 1px 1px,hsl(var(--sk-hue) 60% 50% / .22) 1px,transparent 0) 0 0/12px 12px,
+    linear-gradient(135deg,hsl(var(--sk-hue) 70% 55% / .26),hsl(calc(var(--sk-hue) + 40) 70% 55% / .08));
+  border-bottom:1px solid hsl(var(--sk-hue) 60% 50% / .25);}
+.cl-sk-glyph{display:grid;place-items:center;flex:0 0 auto;width:2.6rem;height:2.6rem;border-radius:.7rem;background:rgb(var(--c-bg) / .85);color:hsl(var(--sk-hue) 65% 48%);box-shadow:0 1px 3px rgb(0 0 0 / .12);}
+.cl-sk-cmd{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--font-mono);font-size:.78rem;color:rgb(var(--c-fg));background:rgb(var(--c-bg) / .7);padding:.2rem .5rem;border-radius:.4rem;}
+.cl-sk-body{flex:1;display:flex;flex-direction:column;padding:.85rem 1rem .3rem;}
+.cl-sk-name{margin:0;font-size:1rem;font-weight:700;line-height:1.3;}
+.cl-sk-name a{color:rgb(var(--c-fg));text-decoration:none;}
+.cl-sk-name a:hover{color:hsl(var(--sk-hue) 60% 50%);}
+.cl-sk-name a:focus-visible,.cl-sk-get:focus-visible,.cl-sk-more summary:focus-visible{outline:2px solid rgb(var(--c-accent));outline-offset:2px;border-radius:3px;}
+.cl-sk-for{margin:.35rem 0 0;font-size:.88rem;line-height:1.5;color:rgb(var(--c-fg));display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden;}
+.cl-sk-more{margin-top:auto;padding-top:.6rem;}
+.cl-sk-more summary{cursor:pointer;width:fit-content;font-family:var(--font-mono);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:rgb(var(--c-muted));}
+.cl-sk-more summary:hover{color:rgb(var(--c-fg));}
+.cl-sk-more p{margin:.5rem 0 0;font-size:.82rem;line-height:1.55;color:rgb(var(--c-muted));}
+/* Open: the panel covers the card above the footer and scrolls; the summary
+   stays on top as its title and close control. */
+.cl-sk-more[open] summary{position:absolute;top:.85rem;left:1rem;z-index:3;color:rgb(var(--c-fg));}
+.cl-sk-more[open] .cl-sk-panel{position:absolute;inset:0;z-index:2;overflow-y:auto;padding:2.3rem 1rem 3.6rem;background:rgb(var(--c-bg));border-top:3px solid hsl(var(--sk-hue) 60% 50% / .6);}
+.cl-sk-more[open] .cl-sk-panel p:first-child{margin-top:0;}
+.cl-sk-foot{position:relative;z-index:3;display:flex;align-items:center;gap:.5rem;padding:.7rem 1rem .85rem;background:rgb(var(--c-bg));}
+.cl-sk-by{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.75rem;color:rgb(var(--c-muted));}
+.cl-sk-cost{flex:none;font-family:var(--font-mono);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;padding:.12rem .45rem;border-radius:999px;border:1px solid rgb(212 160 23 / .6);color:rgb(var(--c-fg));}
+.cl-sk-cost.is-free{border-color:rgb(var(--c-accent) / .6);}
+.cl-sk-get{flex:none;margin-left:auto;font-size:.8rem;font-weight:600;color:hsl(var(--sk-hue) 60% 48%);text-decoration:none;}
+.cl-sk-get:hover{text-decoration:underline;}
 .cl-tag{font-family:var(--font-mono);font-size:.58rem;letter-spacing:.08em;text-transform:uppercase;padding:.12rem .45rem;border-radius:999px;border:1px solid rgb(var(--c-border));color:rgb(var(--c-muted));}
 .cl-tag.is-cost{border-color:rgba(217,83,79,.55);color:rgb(var(--c-fg));}
 

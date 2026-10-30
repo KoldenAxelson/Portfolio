@@ -26,6 +26,7 @@ Read the matching skill in `private/skills/` before starting these tasks:
 | [`private/skills/ArticlePageMake.md`](private/skills/ArticlePageMake.md) | Writing or reworking a text-lite blog article (`content/articles/`). |
 | [`private/skills/VideoNotesPageMake.md`](private/skills/VideoNotesPageMake.md) | Writing or extending a `/misc` page from YouTube transcripts (`private/ideas/misc/videos/`). Read after ArticlePageMake.md. |
 | [`private/skills/YouTubeTranscripts.md`](private/skills/YouTubeTranscripts.md) | Konrad shares YouTube links, asks for transcripts or for picks from a channel, or hands you `private/ideas/misc/digest-prompt.md`. Fetch with `make transcripts`, then VideoNotesPageMake.md. |
+| [`private/skills/ProjectPageMake.md`](private/skills/ProjectPageMake.md) | Another project's repo is connected alongside Portfolio (Widda, GrowGo, Harmony Pulse…), or you're asked to add, refresh or retire a project page. |
 | [`private/skills/AuditCode.md`](private/skills/AuditCode.md) | Auditing, re-auditing or grading the codebase or a feature. |
 | [`private/skills/AuditArticle.md`](private/skills/AuditArticle.md) | Fact-checking and reviewing an article or chapter before it publishes. Never in the session that wrote it. |
 | [`private/skills/HumanizeWriting.md`](private/skills/HumanizeWriting.md) | Writing or editing any reader-facing prose: page text, data-file copy, FAQ answers, captions. |

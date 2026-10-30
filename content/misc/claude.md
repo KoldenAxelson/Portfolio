@@ -20,7 +20,7 @@
 # behaviour lazy-loaded from static/js/claude/.
 # ─────────────────────────────────────────────────────────────────────────────
 title: "Claude"
-description: "A living cheat sheet for Claude: what it can make (Docs, Slides, Design, Dashboards, Motion) and on which plans, power-user commands and shortcuts, running work in parallel, planning work with folders and the Elephant-Goldfish model, rules for writing skills with a linter, a shelf of favourite skills (a native Mac app builder, a pay-per-use image and video generator), and Claude Code mods."
+description: "A living cheat sheet for Claude: what it can make (Docs, Slides, Design, Dashboards, Motion) and on which plans, power-user commands and shortcuts, running work in parallel, planning work with folders and the Elephant-Goldfish model, rules for writing skills with a linter, a shelf of favourite skills (a native Mac app builder, a pay-per-use image and video generator, a brutally strict code review), and Claude Code mods."
 # Blank by default — uncomment to put a line under the H1 in the banner.
 #lead: "Keeping up, one revision at a time."
 blurb: "A living cheat sheet for Claude: what it can make, power-user shortcuts, parallel sessions, skill-writing rules and mods."
@@ -83,7 +83,9 @@ BAMA's maker says its speed loop cut his video editor's export time tenfold,
 and the /generate video puts GPT Image 2 at 5 cents for a 2K image on Kie.ai,
 against roughly 31 to 34 cents through Higgsfield's plans. Kie.ai is the
 cheapest but sometimes unreliable, so he defaults to fal.ai and uses WaveSpeed
-for models fal doesn't have.
+for models fal doesn't have. The thermo-nuclear review is the one I'd run on
+this site: its 1,000-line limit and "delete complexity, don't move it" are my
+own code standards, said louder.
 
 ## Mods
 
@@ -102,7 +104,8 @@ Start with Blast Radius and Reflect.
   and parallel work added; background explainers cut.
 - October 28, 2026: Planning the Work added, from two videos and the EGM
   README.
-- October 30, 2026: Skill Shelf added, with BAMA and /generate.
+- October 30, 2026: Skill Shelf added, with BAMA and /generate, then redesigned
+  as cards, plus Cursor's thermo-nuclear code review.
 
 ## Sources {#sources}
 
@@ -112,6 +115,6 @@ videos and are their claims, with the EGM command names and the
 not-an-official-product note checked against the repo's README, which credits
 Dave Rensin's essay for the idea. The skill shelf's speed and price figures
 are the videos' own, from October 2026; I checked BAMA's repo exists and is
-free, and haven't run either skill yet.
+free, read the code review's SKILL.md, and haven't run any of them yet.
 
 {{< ml/references >}}

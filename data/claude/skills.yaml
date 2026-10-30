@@ -9,7 +9,15 @@
 #   how  : how to get it
 #   url  : where it lives (a repo, or the video when there's no public repo)
 #   cost : "free", or the catch, shown as a tag
+#   command : how you call it, shown in the card's header (mono)
+#   icon : a key in data/icons.yaml for the header glyph
+#   hue  : 0-360, the header's tint, so neighbouring cards differ
+#   shelf: optional row name ("Build", "Review"); unset means "Skills". The
+#          rows only get labels once there's more than one.
 - name: "BAMA (Build Any Mac App)"
+  command: "/bama"
+  icon: "desktop"
+  hue: 210
   by: "Dave Ebbelaar"
   for: "A native Mac app built just for me: a tool, a utility, a clone of an app I pay for."
   what: "Skills grouped into start, plan, code, design and ship, with a /bama router that picks the next one. Builds Swift apps with local data, can rebuild a design from screenshots of an app you like, has a measure-then-optimise loop for heavy work, and can add a command line so agents can drive the app."
@@ -17,9 +25,22 @@
   url: "https://github.com/daveebbelaar/bama"
   cost: "free"
 - name: "/generate"
+  command: "/generate"
+  icon: "photo"
+  hue: 285
   by: "Jay E · RoboNuggets"
   for: "Images and video for a project without a Higgsfield-style subscription."
   what: "Routes each job to the cheapest model aggregator that's up (Kie.ai first, then fal.ai, then WaveSpeed), writes the prompts, works to a budget you set, logs every prompt, and keeps every file on your machine. You pay per generation."
   how: "There's no public repo. You build your own from his guide, which needs API keys from the aggregators. Give it a hard rule to quote the cost before it submits anything."
   url: "https://youtu.be/9C4TRbucmhQ"
   cost: "pay per use"
+- name: "Thermo-Nuclear Code Review"
+  by: "Cursor"
+  command: "/thermo-nuclear-code-quality-review"
+  icon: "fire"
+  hue: 18
+  for: "A brutally strict review of a branch before it merges: did this change delete complexity, or just move it around?"
+  what: "Hunts for \"code judo\" that makes a change dramatically simpler, and flags files pushed past 1,000 lines, conditionals bolted onto unrelated flows, thin wrappers, needless casts and logic in the wrong layer. It leaves a few high-conviction comments instead of a pile of nits, and won't approve a structural regression."
+  how: "It's a single SKILL.md in Cursor's team kit plugin, in the same format Claude Code reads. Drop it in your skills folder; it only runs when you ask for it by name."
+  url: "https://github.com/cursor/plugins/blob/main/cursor-team-kit/skills/thermo-nuclear-code-quality-review/SKILL.md"
+  cost: "free"

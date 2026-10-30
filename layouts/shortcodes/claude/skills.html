@@ -1,12 +1,15 @@
-{{- /* claude/skills: the skill shelf, from data/claude/skills.yaml. Static, no JS.
-       Reuses the mod card styles (.cl-mods, .cl-mod in css/pages/claude/claude.css). */ -}}
+{{- /* claude/skills: the skill shelf, from data/claude/skills.yaml, as sideways
+       rows like the Impossible List's (components/shelf.html, cards from
+       partials/claude/skill-card.html). An entry's optional `shelf` names its
+       row; rows appear in first-seen order, and the row label only shows once
+       there is more than one row. */ -}}
 {{- $skills := site.Data.claude.skills -}}
 {{- if not $skills }}{{ errorf "claude/skills: data/claude/skills.yaml is missing (page: %s)" .Page.RelPermalink }}{{ end -}}
-<div class="not-prose cl-mods">
-{{- range $skills }}
-<article class="cl-mod"><h3><a class="cl-skill-link" href="{{ .url }}">{{ .name }}</a></h3><p class="cl-skill-for">{{ .for }}</p><p>{{ .what }}</p><p>{{ .how }}</p><div class="cl-mod-tags">
-{{- with .by }}<span class="cl-tag">{{ . }}</span>{{ end -}}
-{{- with .cost }}<span class="cl-tag{{ if ne . "free" }} is-cost{{ end }}">{{ . }}</span>{{ end -}}
-</div></article>
+{{- $order := slice -}}
+{{- range $skills }}{{ $name := .shelf | default "Skills" }}{{ if not (in $order $name) }}{{ $order = $order | append $name }}{{ end }}{{ end -}}
+<div class="not-prose cl-sks">
+{{- range $order }}{{ $name := . }}
+  {{- $items := slice }}{{ range $skills }}{{ if eq (.shelf | default "Skills") $name }}{{ $items = $items | append . }}{{ end }}{{ end }}
+  {{ partial "components/shelf.html" (dict "label" $name "items" $items "card" "claude/skill-card.html" "width" "w-72" "showLabel" (gt (len $order) 1)) }}
 {{- end }}
 </div>
