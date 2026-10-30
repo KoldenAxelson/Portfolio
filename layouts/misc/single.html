@@ -61,6 +61,9 @@
 {{- /* Rule Zero: stylesheet and the table script. */ -}}
 {{- if .HasShortcode "rule-zero/table" }}{{ partial "rule-zero/assets.html" . }}{{ end }}
 
+{{- /* Commander deck pages: stylesheet (the card lines are <details>, no script). */ -}}
+{{- if or (.HasShortcode "mtg-deck/overview") (.HasShortcode "mtg-deck/list") (.HasShortcode "mtg-deck/combos") }}{{ partial "mtg-deck/assets.html" . }}{{ end }}
+
 {{- /* Brine mining pitch: stylesheet and the payback slider. */ -}}
 {{- if .HasShortcode "brine-mining/glance" }}{{ partial "brine-mining/assets.html" . }}{{ end }}
 

@@ -1,0 +1,16 @@
+{{- /*
+  mtg-deck/view-attrs — the attributes that let scripts/pages/mtg-deck/main.ts
+  open a card in the card viewer: its name, the scan (assets/img/mtg-deck/
+  cards/<scan>.jpg, saved by `make deck`, served as WebP; <scan> adds the
+  set and number when the decklist pins a printing), its rules text for
+  the image's alt text, and the Scryfall link. Nothing if there's no scan.
+
+    <summary {{ partial "mtg-deck/view-attrs.html" $card | safeHTMLAttr }}>
+
+  The values are escaped here (text context); safeHTMLAttr lets the caller
+  drop the string into a tag without html/template blanking it.
+*/ -}}
+{{- with resources.Get (printf "mtg-deck/cards/%s.jpg" (.scan | default .slug)) -}}
+{{- $scan := .Process "webp q82" -}}
+data-md-view="{{ $.name }}" data-md-scan="{{ $scan.RelPermalink }}" data-md-url="{{ $.url }}" data-md-alt="{{ $.name }}. {{ $.type }}. {{ replace $.text "\n" " " }}"
+{{- end -}}

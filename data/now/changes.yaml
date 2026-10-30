@@ -13,6 +13,26 @@
 #   url  : where to see it (site path)
 - date: 2026-10-30
   kind: new
+  text: "My Commander deck, Kami of the Crescent Moon: the full list, the mana curve, the combos it wins with, and a card viewer that opens any card in a window you can drag around."
+  url: "/misc/kami-deck/"
+- date: 2026-10-30
+  kind: new
+  text: "A page for Gamesect, my video game tracker and game-data API."
+  url: "/projects/gamesect/"
+- date: 2026-10-30
+  kind: new
+  text: "A page for Free Will Reminder, the app that buzzes kids at random to remind them they have free will."
+  url: "/projects/free-will-reminder/"
+- date: 2026-10-30
+  kind: new
+  text: "A page for CodeTurtle, the code reviewer I built for my own Mac."
+  url: "/projects/codeturtle/"
+- date: 2026-10-30
+  kind: update
+  text: "Brought the Widda write-up up to date: Stripe billing, one-click data deletion, and where the Google reviews stand."
+  url: "/projects/widda/"
+- date: 2026-10-30
+  kind: new
   text: "Writing Techniques: craft notes for my novel, boiled down from 22 videos, with a sentence rhythm meter."
   url: "/misc/writing/writing-techniques/"
 - date: 2026-10-30

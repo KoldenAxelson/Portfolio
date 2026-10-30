@@ -1,0 +1,39 @@
+{{- /*
+  mtg-deck/list — the 99, grouped by card type the way deck sites group them
+  (an artifact creature is a creature), cheapest first in each group. With
+  show="considering" it lists the cards I'm thinking about adding instead,
+  and marks any that the export lists but that are already in the deck.
+
+    {{< mtg-deck/list deck="kami" >}}
+    {{< mtg-deck/list deck="kami" show="considering" >}}
+
+  Data: data/mtg-deck/<deck>.json (scripts/mtg/build-deck.py). Each line is
+  partials/mtg-deck/card-row.html; tap it for the rules text.
+*/ -}}
+{{- $name := .Get "deck" -}}
+{{- $d := index site.Data "mtg-deck" $name -}}
+{{- if not $d }}{{ errorf "mtg-deck/list: no data/mtg-deck/%s.json (page: %s). Run `make deck`." $name .Page.RelPermalink }}{{ end -}}
+{{- if eq (.Get "show") "considering" }}
+<div class="not-prose md">
+  <ul class="md-group md-considering">
+    {{- range $d.considering }}
+    {{- if .in_deck }}
+    <li class="md-row is-dupe">
+      <div class="md-dupe"><span class="md-qty">✓</span><span class="md-name">{{ .name }}</span><span class="md-tag">Already in the deck</span></div>
+    </li>
+    {{- else }}{{ partial "mtg-deck/card-row.html" . }}{{ end }}
+    {{- end }}
+  </ul>
+</div>
+{{- else }}
+<div class="not-prose md md-list">
+  {{- range $d.groups }}
+  <section class="md-group" aria-labelledby="md-g-{{ .key }}">
+    <h3 id="md-g-{{ .key }}" class="md-group-h"><span class="md-dot md-mix-{{ .key }}" aria-hidden="true"></span>{{ .label }} <span class="md-group-n">{{ .count }}</span></h3>
+    <ul>
+      {{- range .cards }}{{ partial "mtg-deck/card-row.html" . }}{{ end }}
+    </ul>
+  </section>
+  {{- end }}
+</div>
+{{- end }}

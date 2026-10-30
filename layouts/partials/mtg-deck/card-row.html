@@ -1,0 +1,23 @@
+{{- /*
+  mtg-deck/card-row — one line of the deck list: count, name, mana cost.
+  With JS (scripts/pages/mtg-deck/main.ts), tapping the line opens the card
+  itself in a small window you can drag around; the summary carries the scan
+  and Scryfall link for that ([data-md-view], partials/mtg-deck/view-attrs.html).
+  Without JS it's a plain <details>: tapping opens the type and rules text.
+
+    {{ partial "mtg-deck/card-row.html" $card }}
+*/ -}}
+<li class="md-row">
+  <details>
+    <summary {{ partial "mtg-deck/view-attrs.html" . | safeHTMLAttr }}>
+      <span class="md-qty">{{ .qty }}</span>
+      <span class="md-name">{{ .name }}</span>
+      {{ partial "mtg-deck/mana.html" .cost }}
+    </summary>
+    <div class="md-card">
+      <p class="md-card-type">{{ .type }}</p>
+      {{ with .text }}<div class="md-card-text">{{ partial "mtg-deck/rules-text.html" . }}</div>{{ end }}
+      <a class="md-card-link" href="{{ .url }}" rel="noopener" target="_blank">On Scryfall ↗</a>
+    </div>
+  </details>
+</li>

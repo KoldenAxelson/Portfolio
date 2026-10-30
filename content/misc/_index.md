@@ -28,7 +28,7 @@ groups:
   - key: "tools"
     label: "Tools"
     icon: "wrench-screwdriver"
-    order: ["skyrim", "dnd", "rule-zero", "viva-pinata-tip", "drafts"]
+    order: ["skyrim", "dnd", "rule-zero", "kami-deck", "viva-pinata-tip", "drafts"]
   - key: "reference"
     label: "Reference"
     icon: "bookmark"

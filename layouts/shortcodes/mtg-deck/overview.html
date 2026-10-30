@@ -1,0 +1,65 @@
+{{- /*
+  mtg-deck/overview — the top of a deck page: the commander with its art and
+  rules text, the deck's numbers, the mana curve and the mix of card types.
+  Every number comes from data/mtg-deck/<deck>.json, which
+  scripts/mtg/build-deck.py writes from the decklist (`make deck`).
+
+    {{< mtg-deck/overview deck="kami" >}}
+
+  The art is assets/img/mtg-deck/<deck>.webp, Scryfall's art crop of the
+  commander, credited to its artist from the same data.
+*/ -}}
+{{- $name := .Get "deck" -}}
+{{- $d := index site.Data "mtg-deck" $name -}}
+{{- if not $d }}{{ errorf "mtg-deck/overview: no data/mtg-deck/%s.json (page: %s). Run `make deck`." $name .Page.RelPermalink }}{{ end -}}
+{{- $c := $d.commander -}}
+<div class="not-prose md md-overview">
+  <section class="md-hero" aria-labelledby="md-commander">
+    {{- with resources.Get (printf "mtg-deck/%s.webp" $name) }}
+    <figure class="md-art">
+      <img src="{{ .RelPermalink }}" width="{{ .Width }}" height="{{ .Height }}" alt="Card art for {{ $c.name }}" />
+      <figcaption>Art: {{ $c.artist }} · Wizards of the Coast</figcaption>
+    </figure>
+    {{- end }}
+    <div class="md-cmd">
+      <p class="md-kicker">Commander</p>
+      <h2 id="md-commander" class="md-cmd-name"><a href="{{ $c.url }}" rel="noopener" target="_blank" {{ partial "mtg-deck/view-attrs.html" $c | safeHTMLAttr }}>{{ $c.name }}</a>{{ partial "mtg-deck/mana.html" $c.cost }}</h2>
+      <p class="md-card-type">{{ $c.type }}</p>
+      <div class="md-cmd-text">{{ partial "mtg-deck/rules-text.html" $c.text }}</div>
+      <dl class="md-stats">
+        <div><dt>Cards</dt><dd>{{ $d.total }}</dd></div>
+        <div><dt>Lands</dt><dd>{{ $d.lands }}</dd></div>
+        <div><dt>Spells</dt><dd>{{ $d.spells }}</dd></div>
+        <div><dt title="Average mana value of the spells">Avg. MV</dt><dd>{{ lang.FormatNumber 2 $d.average_mv }}</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <div class="md-charts">
+    {{- $max := 1 }}{{ range $d.curve }}{{ $max = math.Max $max .count }}{{ end }}
+    <section class="md-curve" aria-labelledby="md-curve-h">
+      <h3 id="md-curve-h" class="md-label">Mana curve <span>spells by mana value</span></h3>
+      <ol class="md-bars">
+        {{- range $d.curve }}
+        <li style="--h:{{ div (mul .count 100.0) $max }}%">
+          <span class="md-bar-n">{{ .count }}</span>
+          <span class="md-bar" aria-hidden="true"></span>
+          <span class="md-bar-mv"><span class="sr-only">Mana value </span>{{ .mv }}</span>
+        </li>
+        {{- end }}
+      </ol>
+    </section>
+
+    <section class="md-types" aria-labelledby="md-types-h">
+      <h3 id="md-types-h" class="md-label">Card types <span>the 99</span></h3>
+      <div class="md-mix" aria-hidden="true">
+        {{- range $d.groups }}<span class="md-mix-{{ .key }}" style="flex:{{ .count }}"></span>{{ end -}}
+      </div>
+      <ul class="md-legend">
+        {{- range $d.groups }}
+        <li><span class="md-dot md-mix-{{ .key }}" aria-hidden="true"></span>{{ .label }} <b>{{ .count }}</b></li>
+        {{- end }}
+      </ul>
+    </section>
+  </div>
+</div>

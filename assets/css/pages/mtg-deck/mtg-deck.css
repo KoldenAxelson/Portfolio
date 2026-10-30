@@ -1,0 +1,168 @@
+/* Commander deck pages — layouts/shortcodes/mtg-deck/. Text first, like a
+   deck site's list view: no card scans except the commander's art, mana
+   symbols drawn in CSS, every line opens to its rules text. Phone first. */
+
+.md {
+  --md-blue: 212 72% 52%;
+  --md-radius: .9rem;
+  /* One hue per card type; the bar, legend and group headings share them. */
+  --md-creature: 152 45% 46%;
+  --md-planeswalker: 280 45% 58%;
+  --md-instant: 205 75% 55%;
+  --md-sorcery: 0 62% 58%;
+  --md-artifact: 38 20% 58%;
+  --md-enchantment: 262 55% 64%;
+  --md-land: 30 35% 45%;
+  --md-other: 0 0% 60%;
+}
+.md-mix-creature { --t: var(--md-creature); }
+.md-mix-planeswalker { --t: var(--md-planeswalker); }
+.md-mix-instant { --t: var(--md-instant); }
+.md-mix-sorcery { --t: var(--md-sorcery); }
+.md-mix-artifact { --t: var(--md-artifact); }
+.md-mix-enchantment { --t: var(--md-enchantment); }
+.md-mix-land { --t: var(--md-land); }
+.md-mix-other { --t: var(--md-other); }
+
+.md-label { display: flex; align-items: baseline; gap: .5rem; margin: 0 0 .9rem; font: 600 .7rem var(--font-mono); letter-spacing: .14em; text-transform: uppercase; color: rgb(var(--c-fg)); }
+.md-label span { font-weight: 400; letter-spacing: .06em; text-transform: none; color: rgb(var(--c-muted)); }
+
+/* ---- Mana symbols ------------------------------------------------------ */
+.md-cost { display: inline-flex; gap: 3px; flex: none; vertical-align: middle; }
+.md-pip { display: inline-grid; place-items: center; width: 1.05em; height: 1.05em; border-radius: 50%; font: 700 .68em/1 var(--font-sans);
+  box-shadow: inset 0 -1px 0 rgb(0 0 0 / .25), 0 0 0 1px rgb(0 0 0 / .15); }
+.md-pip-n { background: #cac5c0; color: #1b1b1b; }
+.md-pip-u { background: radial-gradient(circle at 35% 30%, hsl(205 90% 80%), hsl(var(--md-blue)) 55%, hsl(214 70% 36%)); }
+.md-pip-w { background: #f8f2d8; } .md-pip-b { background: #2b2623; } .md-pip-r { background: #e0573f; } .md-pip-g { background: #3f9a5b; }
+.md-pip.is-phyrexian { box-shadow: inset 0 0 0 2px rgb(255 255 255 / .75), 0 0 0 1px rgb(0 0 0 / .2); }
+.md-sym { display: inline-block; min-width: 1.3em; padding: 0 .25em; border-radius: 999px; background: rgb(var(--c-border) / .6); font: 600 .72em/1.5 var(--font-mono); text-align: center; vertical-align: .08em; }
+
+/* ---- Commander --------------------------------------------------------- */
+.md-hero { display: grid; gap: 1.25rem; padding: 1rem; border: 1px solid rgb(var(--c-border)); border-radius: var(--md-radius);
+  background: radial-gradient(120% 90% at 100% 0%, hsl(var(--md-blue) / .14), transparent 60%), rgb(var(--c-bg)); }
+@media (min-width: 768px) { .md-hero { grid-template-columns: minmax(0, 23rem) minmax(0, 1fr); gap: 1.75rem; padding: 1.25rem; align-items: start; } }
+.md-art { margin: 0; }
+.md-art img { display: block; width: 100%; height: auto; border-radius: calc(var(--md-radius) - .35rem); box-shadow: 0 14px 30px -18px hsl(220 60% 10% / .8); }
+.md-art figcaption { margin-top: .4rem; font: .7rem var(--font-mono); color: rgb(var(--c-muted)); }
+.md-kicker { margin: 0 0 .3rem; font: 600 .68rem var(--font-mono); letter-spacing: .16em; text-transform: uppercase; color: hsl(var(--md-blue)); }
+.md-cmd-name { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .7rem; margin: 0; font: 700 clamp(1.35rem, 3.5vw, 1.75rem)/1.15 var(--font-serif); color: rgb(var(--c-fg)); }
+.md-cmd-name a { color: inherit; text-decoration: none; }
+.md-cmd-name a:hover { text-decoration: underline; text-underline-offset: .2em; }
+.md-cmd-name .md-cost { font-size: 1.1rem; }
+.md-card-type { margin: .35rem 0 0; font: .78rem var(--font-mono); color: rgb(var(--c-muted)); }
+.md-cmd-text { margin: .8rem 0 0; padding: .7rem .9rem; border-left: 3px solid hsl(var(--md-blue)); border-radius: 0 .5rem .5rem 0; background: hsl(var(--md-blue) / .07); font-size: .95rem; line-height: 1.55; }
+.md-cmd-text p, .md-card-text p { margin: 0; }
+.md-cmd-text p + p, .md-card-text p + p { margin-top: .4rem; }
+.md-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .5rem; margin: 1rem 0 0; }
+@media (min-width: 520px) { .md-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.md-stats > div { padding: .55rem .7rem; border: 1px solid rgb(var(--c-border)); border-radius: .6rem; background: rgb(var(--c-bg) / .7); }
+.md-stats dt { font: .66rem var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: rgb(var(--c-muted)); }
+.md-stats dd { margin: .1rem 0 0; font: 700 1.35rem/1.1 var(--font-sans); font-variant-numeric: tabular-nums; color: rgb(var(--c-fg)); }
+
+/* ---- Curve and type mix ------------------------------------------------ */
+.md-charts { display: grid; gap: 1rem; margin-top: 1rem; }
+@media (min-width: 768px) { .md-charts { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); } }
+.md-curve, .md-types { padding: 1rem; border: 1px solid rgb(var(--c-border)); border-radius: var(--md-radius); }
+.md-bars { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: .4rem; height: 9rem; margin: 0; padding: 0; list-style: none; }
+.md-bars li { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; min-width: 0; }
+.md-bar { width: 100%; height: var(--h); min-height: 2px; border-radius: .35rem .35rem .15rem .15rem;
+  background: linear-gradient(hsl(var(--md-blue)), hsl(var(--md-blue) / .55)); transform-origin: bottom; animation: md-grow .6s cubic-bezier(.2, .8, .2, 1) both; }
+.md-bars li:nth-child(2) .md-bar { animation-delay: .04s; } .md-bars li:nth-child(3) .md-bar { animation-delay: .08s; }
+.md-bars li:nth-child(4) .md-bar { animation-delay: .12s; } .md-bars li:nth-child(5) .md-bar { animation-delay: .16s; }
+.md-bars li:nth-child(6) .md-bar { animation-delay: .2s; } .md-bars li:nth-child(7) .md-bar { animation-delay: .24s; } .md-bars li:nth-child(8) .md-bar { animation-delay: .28s; }
+@keyframes md-grow { from { transform: scaleY(0); } }
+.md-bar-n { margin-bottom: .25rem; font: 600 .75rem var(--font-mono); font-variant-numeric: tabular-nums; color: rgb(var(--c-fg)); }
+.md-bar-mv { margin-top: .35rem; font: .72rem var(--font-mono); color: rgb(var(--c-muted)); }
+.md-mix { display: flex; gap: 2px; height: .9rem; overflow: hidden; border-radius: 999px; }
+.md-mix > span, .md-dot { background: hsl(var(--t)); }
+.md-legend { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .45rem 1rem; margin: 1rem 0 0; padding: 0; list-style: none; font-size: .85rem; color: rgb(var(--c-fg)); }
+.md-legend li { display: flex; align-items: center; gap: .45rem; }
+.md-legend b { margin-left: auto; font: 600 .8rem var(--font-mono); font-variant-numeric: tabular-nums; }
+.md-dot { display: inline-block; flex: none; width: .6rem; height: .6rem; border-radius: 50%; }
+
+/* ---- The list ---------------------------------------------------------- */
+.md-list { columns: 17rem; column-gap: 1.75rem; }
+.md-list .md-group { break-inside: avoid; margin: 0 0 1.4rem; }
+.md-group-h { display: flex; align-items: center; gap: .5rem; margin: 0 0 .35rem; padding-bottom: .35rem; border-bottom: 1px solid rgb(var(--c-border));
+  font: 600 .74rem var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: rgb(var(--c-fg)); }
+.md-group-n { margin-left: auto; padding: .05rem .5rem; border-radius: 999px; background: rgb(var(--c-border) / .6); font-weight: 600; letter-spacing: 0; }
+.md-group ul, ul.md-group { margin: 0; padding: 0; list-style: none; }
+
+.md-row summary, .md-dupe { display: grid; grid-template-columns: 1.6rem minmax(0, 1fr) auto; align-items: center; gap: .5rem; padding: .3rem .4rem; border-radius: .4rem; }
+.md-row summary { list-style: none; cursor: pointer; transition: background-color .15s; }
+.md-row summary::-webkit-details-marker { display: none; }
+.md-row summary:hover, .md-row details[open] summary { background: hsl(var(--md-blue) / .1); }
+.md-row summary:focus-visible { outline: 2px solid rgb(var(--c-accent)); outline-offset: 1px; }
+.md-qty { font: .78rem var(--font-mono); font-variant-numeric: tabular-nums; color: rgb(var(--c-muted)); text-align: right; }
+.md-name { overflow: hidden; font-size: .92rem; color: rgb(var(--c-fg)); text-overflow: ellipsis; white-space: nowrap; }
+.md-row details[open] .md-name { white-space: normal; }
+.md-card { margin: .2rem 0 .6rem 2.1rem; padding: .6rem .75rem; border-left: 2px solid hsl(var(--md-blue) / .6); font-size: .85rem; line-height: 1.5; color: rgb(var(--c-fg)); }
+.md-card .md-card-type { margin: 0 0 .4rem; font-size: .72rem; }
+.md-card-link { display: inline-block; margin-top: .5rem; font: .72rem var(--font-mono); color: rgb(var(--c-accent)); }
+.is-dupe .md-name { color: rgb(var(--c-muted)); text-decoration: line-through; }
+.md-tag { font: .66rem var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: rgb(var(--c-muted)); }
+.md-considering { columns: 17rem; column-gap: 1.75rem; }
+.md-considering > li { break-inside: avoid; }
+
+/* ---- Combos ------------------------------------------------------------ */
+.md-combos { display: grid; gap: 1rem; margin: 0; padding: 0; list-style: none; }
+@media (min-width: 768px) { .md-combos { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.md-combo { display: flex; flex-direction: column; padding: 1rem; border: 1px solid rgb(var(--c-border)); border-radius: var(--md-radius); }
+.md-combo-gives { align-self: flex-start; margin: 0; padding: .15rem .55rem; border-radius: 999px; background: hsl(var(--md-blue) / .14); font: 600 .66rem var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: hsl(var(--md-blue)); }
+.md-combo-name { margin: .55rem 0 .5rem; font: 700 1.05rem/1.25 var(--font-serif); color: rgb(var(--c-fg)); }
+.md-combo-pieces { margin: 0 0 .6rem; padding: .25rem 0; border-block: 1px dashed rgb(var(--c-border)); list-style: none; }
+.md-combo-pieces .md-row summary { grid-template-columns: .9rem minmax(0, 1fr) auto; }
+.md-combo-pieces .md-qty { font-size: 0; }
+.md-combo-pieces .md-qty::before { content: "+"; font-size: .8rem; }
+.md-combo-pieces .md-row:first-child .md-qty::before { content: "•"; }
+.md-combo-pieces .md-card { margin-left: 1.4rem; }
+.md-combo-how { margin: 0; font-size: .88rem; line-height: 1.55; color: rgb(var(--c-muted)); }
+
+@media (prefers-reduced-motion: reduce) { .md-bar { animation: none; } .md-row summary { transition: none; } }
+
+/* ---- Card viewer (scripts/pages/mtg-deck/main.ts) ----------------------
+   Small windows like Basic Logic's term windows (css/site/definitions.css):
+   fixed on screen, dragged by the header, opened with a two-step grow then
+   fade. The script adds .has-viewer to the deck once it's running. */
+.md.has-viewer .md-row summary[aria-expanded="true"],
+.md-cmd-name a[aria-expanded="true"] { background: hsl(var(--md-blue) / .16); }
+.md-cmd-name a[aria-expanded="true"] { border-radius: .3rem; }
+.md-windows { position: fixed; inset: 0; z-index: 60; pointer-events: none; }
+.md-win { box-sizing: border-box; position: fixed; width: 17.5rem; max-width: calc(100vw - 1.5rem); max-height: calc(100dvh - 1.5rem);
+  display: flex; flex-direction: column; pointer-events: auto; border-radius: .875rem;
+  background: rgb(var(--glass-bg, var(--c-bg)) / .94); border: 1px solid rgb(var(--c-border));
+  -webkit-backdrop-filter: blur(14px) saturate(160%); backdrop-filter: blur(14px) saturate(160%);
+  box-shadow: inset 0 1px 0 0 rgb(var(--glass-hi, 255 255 255) / .5), 0 18px 44px -16px rgb(0 0 0 / .32);
+  opacity: 0; transform: scale(.82); transition: opacity 120ms ease, transform 200ms cubic-bezier(.2, .8, .2, 1); }
+@media (prefers-color-scheme: dark) { .md-win { box-shadow: inset 0 1px 0 0 rgb(var(--glass-hi, 255 255 255) / .1), 0 18px 44px -16px rgb(0 0 0 / .8); } }
+.md-win.is-open { opacity: 1; transform: scale(1); }
+.md-win:focus-visible { outline: 2px solid rgb(var(--c-accent)); outline-offset: 2px; }
+.md-win.is-dragging { transition: none; box-shadow: 0 26px 60px -18px rgb(0 0 0 / .45); }
+.md-win-head > *, .md-win-body { opacity: 0; transition: opacity 170ms ease; }
+.md-win.is-filled .md-win-head > *, .md-win.is-filled .md-win-body { opacity: 1; }
+.md-win-head { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: .6rem; padding: .55rem .55rem .55rem .9rem;
+  border-bottom: 1px solid rgb(var(--c-border) / .7); cursor: grab; touch-action: none; user-select: none; }
+.md-win.is-dragging .md-win-head { cursor: grabbing; }
+.md-win-label { margin: 0; overflow: hidden; font: 600 .66rem var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: hsl(var(--md-blue)); text-overflow: ellipsis; white-space: nowrap; }
+.md-win-close { flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 999px;
+  border: 1px solid rgb(var(--c-border)); background: rgb(var(--c-bg) / .6); color: rgb(var(--c-muted)); cursor: pointer; transition: color .12s, border-color .12s; }
+.md-win-close:hover { color: rgb(var(--c-accent)); border-color: rgb(var(--c-accent)); }
+.md-win-body { transition-delay: 40ms; overflow-y: auto; padding: .75rem; }
+/* The card keeps its real 63:88 shape while the scan loads, with a soft
+   shimmer, so the window never jumps in size. */
+.md-win-card { position: relative; aspect-ratio: 63 / 88; overflow: hidden; border-radius: 4.75% / 3.4%;
+  background: linear-gradient(110deg, rgb(var(--c-border) / .35) 30%, rgb(var(--c-border) / .7) 50%, rgb(var(--c-border) / .35) 70%) 0 0 / 250% 100%;
+  animation: md-shimmer 1.2s linear infinite; box-shadow: 0 10px 24px -14px rgb(0 0 0 / .6); }
+.md-win-card.is-loaded, .md-win-card.is-missing { animation: none; }
+.md-win-card.is-loaded { background: #111; }
+@keyframes md-shimmer { to { background-position: -250% 0; } }
+.md-win-img { display: block; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .25s ease; }
+.md-win-card.is-loaded .md-win-img { opacity: 1; }
+.md-win-card.is-missing .md-win-img { display: none; }
+.md-win-missing { margin: 0; padding: 1rem; font-size: .85rem; line-height: 1.5; color: rgb(var(--c-fg)); }
+.md-win-link { display: inline-block; margin-top: .55rem; font: .72rem var(--font-mono); color: rgb(var(--c-accent)); }
+@media (prefers-reduced-motion: reduce) {
+  .md-win, .md-win.is-open { transition: opacity .01s; transform: none; }
+  .md-win-head > *, .md-win-body, .md-win-img { transition: opacity .01s; }
+  .md-win-card { animation: none; }
+}

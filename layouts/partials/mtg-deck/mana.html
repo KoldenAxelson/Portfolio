@@ -1,0 +1,18 @@
+{{- /*
+  mtg-deck/mana — a mana cost as pips: "{2}{U}{U}" becomes a grey 2 and two
+  blue discs (a Phyrexian {U/P} gets a ring, since it can be paid with life). Drawn in CSS (mtg-deck.css, .md-pip-*), so no symbol images.
+  The whole cost is read out once from aria-label; the pips are hidden.
+
+    {{ partial "mtg-deck/mana.html" "{2}{U}{U}" }}
+*/ -}}
+{{- $syms := findRE `\{[^}]+\}` . -}}
+{{- if $syms -}}
+{{- $colours := slice "W" "U" "B" "R" "G" -}}
+<span class="md-cost" role="img" aria-label="Mana cost {{ trim (replace (delimit $syms "") "}{" " ") "{}" }}">
+  {{- range $syms }}{{ $s := trim . "{}" }}
+  {{- $phy := hasSuffix $s "/P" }}{{ $base := cond $phy (strings.TrimSuffix "/P" $s) $s }}
+  {{- if in $colours $base }}<span class="md-pip md-pip-{{ lower $base }}{{ if $phy }} is-phyrexian{{ end }}" aria-hidden="true"></span>
+  {{- else }}<span class="md-pip md-pip-n" aria-hidden="true">{{ $s }}</span>{{ end }}
+  {{- end -}}
+</span>
+{{- end -}}

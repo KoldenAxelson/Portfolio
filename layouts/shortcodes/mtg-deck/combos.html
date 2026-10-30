@@ -1,0 +1,33 @@
+{{- /*
+  mtg-deck/combos — the deck's loops as cards: what it makes, the pieces
+  (each a line from the deck list, so it opens to its rules text), and how it
+  works. From data/mtg-deck/combos/<deck>.yaml; the pieces are looked up by
+  name in data/mtg-deck/<deck>.json, and a piece that isn't in the deck fails
+  the build.
+
+    {{< mtg-deck/combos deck="kami" >}}
+*/ -}}
+{{- $name := .Get "deck" -}}
+{{- $d := index site.Data "mtg-deck" $name -}}
+{{- $combos := (index site.Data "mtg-deck" "combos" $name).combos -}}
+{{- if not (and $d $combos) }}{{ errorf "mtg-deck/combos: need data/mtg-deck/%s.json and data/mtg-deck/combos/%s.yaml (page: %s)" $name $name .Page.RelPermalink }}{{ end -}}
+{{- $byName := dict (lower $d.commander.name) $d.commander -}}
+{{- range $d.groups }}{{ range .cards }}{{ $byName = merge $byName (dict (lower .name) .) }}{{ end }}{{ end -}}
+<div class="not-prose md">
+  <ul class="md-combos">
+    {{- range $combos }}
+    <li class="md-combo">
+      <p class="md-combo-gives">{{ .gives }}</p>
+      <h3 class="md-combo-name">{{ .name }}</h3>
+      <ul class="md-combo-pieces">
+        {{- range .pieces }}
+        {{- $card := index $byName (lower .) }}
+        {{- if not $card }}{{ errorf "mtg-deck/combos: %q isn't in the %s deck (data/mtg-deck/combos/%s.yaml)" . $name $name }}{{ end }}
+        {{ partial "mtg-deck/card-row.html" $card }}
+        {{- end }}
+      </ul>
+      <p class="md-combo-how">{{ .how }}</p>
+    </li>
+    {{- end }}
+  </ul>
+</div>

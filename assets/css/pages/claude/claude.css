@@ -123,6 +123,10 @@
 /* ── Elephant-Goldfish flow (shortcodes/claude/egm-flow.html) ─────────────── */
 .cl-egm{margin:1.2rem 0;padding:.8rem .6rem .6rem;border:1px solid rgb(var(--c-border));border-radius:.75rem;background:rgb(var(--c-border) / .12);}
 .cl-egm svg{display:block;width:100%;max-width:40rem;height:auto;margin:0 auto;overflow:visible;}
+/* Phones get the tall drawing (shortcodes/claude/egm-flow.html); the wide one's
+   labels would shrink to ~8px there. */
+.cl-egm .cl-egm-tall{display:none;max-width:22rem;}
+@media (max-width:639px){.cl-egm .cl-egm-wide{display:none;}.cl-egm .cl-egm-tall{display:block;}}
 .cl-egm-kick{font:700 10px var(--font-mono);letter-spacing:.14em;fill:rgb(var(--c-muted));}
 .cl-egm-sub{font:500 11.5px var(--font-sans);fill:rgb(var(--c-muted));}
 .cl-egm-big{font-size:26px;}
@@ -139,12 +143,15 @@
 .cl-egm-packet{fill:rgb(var(--c-fg));opacity:0;}
 @media (prefers-reduced-motion:no-preference){
   .cl-egm-chat{animation:cl-egm-bump 6s ease-in-out infinite;}
+  .cl-egm-chat-tall{animation-name:cl-egm-bump-tall;}
   .cl-egm-packet{animation:cl-egm-send 6s ease-in-out infinite;animation-delay:calc(var(--i) * .12s);}
   .cl-egm-fish{transform-box:fill-box;transform-origin:center;animation:cl-egm-ping 6s ease-out infinite;animation-delay:calc(var(--i) * .12s);}
   .cl-egm-report{animation:cl-egm-glow 6s ease-in-out infinite;}
 }
 /* The chat tries to follow the plan and bounces off the wall at x 172. */
 @keyframes cl-egm-bump{0%,10%{transform:translateX(0);opacity:1;}35%{transform:translateX(50px);opacity:1;}42%{transform:translateX(42px);opacity:.25;}60%,100%{transform:translateX(0);opacity:1;}}
+/* In the tall drawing it drops toward the wall at y 196 instead. */
+@keyframes cl-egm-bump-tall{0%,10%{transform:translateY(0);opacity:1;}35%{transform:translateY(40px);opacity:1;}42%{transform:translateY(32px);opacity:.25;}60%,100%{transform:translateY(0);opacity:1;}}
 @keyframes cl-egm-send{0%,20%{offset-distance:0%;opacity:0;}22%{opacity:1;}45%{offset-distance:100%;opacity:1;}48%,100%{offset-distance:100%;opacity:0;}}
 @keyframes cl-egm-ping{0%,44%{transform:scale(1);}50%{transform:scale(1.35);}58%,100%{transform:scale(1);}}
 @keyframes cl-egm-glow{0%,62%{fill:rgb(var(--c-bg));}72%,88%{fill:rgb(var(--c-accent) / .25);}100%{fill:rgb(var(--c-bg));}}

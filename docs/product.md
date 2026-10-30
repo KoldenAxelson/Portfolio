@@ -113,14 +113,22 @@ Real, verifiable, and safe to use:
 - **Shipped products:** VisorPlate (visorplate-us.com; shipped, never closed a
   dealership, on hiatus since August 2026), BigHammerGarage (bighammergarage.com, delivered contract), Neofolio (MIT,
   public repo), Crunchy (public repo).
-- **In progress:** Widda (widda.club), private development, pre-launch. GrowGo
+- **In progress:** Widda (widda.club), built and deployed but pre-launch: Google
+  OAuth verification submitted 2026-10-30, Chrome Web Store listing not yet
+  submitted, Stripe billing in test mode. GrowGo
   (hyperlocal food marketplace), resurrected August 2026 — working Flutter
   prototype + Cloudflare Workers/D1 backend, pre-launch; its investor pitch is
   passcode-gated at `/misc/growgo`. Harmony Pulse (iPhone and Apple Watch app
   coaching horse riders from two heart-rate straps), started August 2026 —
   built for one client, Konrad's mother Kirstin Wright; in testing with her
   two horses, not released (do not quote a version number, it changes weekly). Its public showcase is `/misc/harmony-pulse`
-  (copy in `data/harmony-pulse/showcase.yaml`).
+  (copy in `data/harmony-pulse/showcase.yaml`). CodeTurtle (local code-review
+  tool: Rust CLI plus native macOS app, built October 2026), used on Konrad's
+  own projects; not released, no public repo. Gamesect (video game tracking site
+  and game-data API on a 393,761-game catalog, started July 2026) is pre-alpha:
+  the Go API and Postgres run locally, not deployed. Free Will Reminder (Flutter app
+  for kids that buzzes a few times a week to remind them they have free will)
+  runs on Android as a sideloaded test build; not in either app store.
 - **On hiatus:** WishWhat (gift wish list app, 2024–2025), co-founded with
   designer Phil Honeycutt. Figma designs and an early iOS build; never launched,
   no users. Its project pitch is passcode-gated at `/misc/wishwhat`; never
@@ -146,11 +154,16 @@ Real, verifiable, and safe to use:
 **Absences that must not be fabricated:** there are no testimonials, no customer
 logos, no user counts, no revenue figures, no press coverage, no case studies,
 and no performance benchmarks. Konrad's degree-level education is general college
-coursework at Cuesta College — do not upgrade it. Widda has not launched; do not
-imply it has. GrowGo has not launched and has no revenue; do not imply otherwise,
+coursework at Cuesta College — do not upgrade it. Widda has not launched and is not
+on the Chrome Web Store; do not imply either. GrowGo has not launched and has no revenue; do not imply otherwise,
 and never surface or guess its pitch passcode. Harmony Pulse is not on the App
 Store and has no price, launch date or users beyond its one tester; it is a
 training aid and must never be described as a veterinary or medical device.
+CodeTurtle has no public release, no public repo and no users besides Konrad;
+do not link a repo or imply anyone else runs it.
+Free Will Reminder is not in the App Store or on Google Play and has no users
+or downloads to quote. Gamesect has not launched, has no users and no public
+repo; its reviewer personas are generated demo data, never real reviews.
 
 ## Product Principles
 

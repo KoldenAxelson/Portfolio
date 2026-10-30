@@ -1,10 +1,12 @@
 {{- /* claude/egm-flow: the Elephant-Goldfish review as a motion graphic. The
        plan travels to six fresh reviewers; the chat that wrote it stops at the
        wall. SVG + CSS only (css/pages/claude/claude.css, .cl-egm); reduced
-       motion shows the still. The six lenses are the brainstorm reviewers in the repo's skills/egm-brainstorm/SKILL.md (zoom-out, comprehension, design, codebase-details, implementation-readiness, structural). */ -}}
+       motion shows the still. Two drawings of the same flow: the wide one runs
+       left to right; under 640px it would shrink its labels to ~8px, so phones
+       get the tall one instead, top to bottom, at full reading size. The six lenses are the brainstorm reviewers in the repo's skills/egm-brainstorm/SKILL.md (zoom-out, comprehension, design, codebase-details, implementation-readiness, structural). */ -}}
 {{- $lenses := slice "Simpler way?" "Outsider read" "Design" "Fits the code?" "Buildable?" "Structure" -}}
 <figure class="not-prose cl-egm">
-<svg viewBox="0 0 480 262" role="img" aria-labelledby="cl-egm-title">
+<svg class="cl-egm-wide" viewBox="0 0 480 262" role="img" aria-labelledby="cl-egm-title">
   <title id="cl-egm-title">The elephant, which remembers your chat, writes the plan. Six goldfish reviewers get only the plan and the code; the chat stops at a wall. Their notes come back as one report for you to decide on.</title>
   <text class="cl-egm-kick" x="46" y="16" text-anchor="middle">ELEPHANT</text>
   <text class="cl-egm-sub" x="46" y="30" text-anchor="middle">remembers</text>
@@ -35,6 +37,37 @@
   <text class="cl-egm-kick" x="422" y="16" text-anchor="middle">YOU</text>
   <text class="cl-egm-sub" x="422" y="174" text-anchor="middle">one report,</text>
   <text class="cl-egm-sub" x="422" y="187" text-anchor="middle">you decide</text>
+</svg>
+<svg class="cl-egm-tall" viewBox="0 0 320 586" role="img" aria-labelledby="cl-egm-title-tall">
+  <title id="cl-egm-title-tall">The elephant, which remembers your chat, writes the plan. Six goldfish reviewers get only the plan and the code; the chat stops at a wall. Their notes come back as one report for you to decide on.</title>
+  <text class="cl-egm-kick" x="70" y="16" text-anchor="middle">ELEPHANT</text>
+  <text class="cl-egm-sub" x="70" y="31" text-anchor="middle">remembers the chat</text>
+  <circle class="cl-egm-node" cx="70" cy="84" r="30" />
+  <text class="cl-egm-big" x="70" y="93" text-anchor="middle">🐘</text>
+  <g class="cl-egm-chat cl-egm-chat-tall"><rect x="50" y="128" width="40" height="20" rx="8" /><text x="70" y="142" text-anchor="middle">chat</text></g>
+  <path class="cl-egm-link" d="M100 84 H148" />
+  <rect class="cl-egm-doc" x="150" y="61" width="36" height="46" rx="4" />
+  <path class="cl-egm-docline" d="M157 74 h22 M157 82 h22 M157 90 h16 M157 98 h20" />
+  <text class="cl-egm-sub" x="198" y="82">plan</text>
+  <text class="cl-egm-sub" x="198" y="96">+ code</text>
+  <line class="cl-egm-wall" x1="16" y1="196" x2="304" y2="196" />
+  <text class="cl-egm-sub" x="304" y="186" text-anchor="end">no chat past here</text>
+  <text class="cl-egm-kick" x="16" y="226">GOLDFISH</text>
+  <text class="cl-egm-sub" x="304" y="226" text-anchor="end">fresh subagents</text>
+  {{- range $i, $lens := $lenses }}
+  {{- $y := add 272 (mul $i 38) }}
+  {{- $in := printf "M168 108 V 242 H 26 V %d H 40" $y }}
+  <path class="cl-egm-link" d="{{ $in }}" />
+  <circle class="cl-egm-packet" r="4" style="--i: {{ $i }}; offset-path: path('{{ $in }}')" />
+  <circle class="cl-egm-fish" cx="50" cy="{{ $y }}" r="10" style="--i: {{ $i }}" />
+  <text class="cl-egm-lens" x="68" y="{{ add $y 4 }}">{{ $lens }}</text>
+  <path class="cl-egm-link" d="M186 {{ $y }} H 294 V 527 H 186" />
+  {{- end }}
+  <rect class="cl-egm-report" x="144" y="504" width="40" height="46" rx="4" />
+  <path class="cl-egm-docline" d="M151 517 h26 M151 525 h26 M151 533 h18" />
+  <text class="cl-egm-kick" x="130" y="518" text-anchor="end">YOU</text>
+  <text class="cl-egm-sub" x="130" y="534" text-anchor="end">one report,</text>
+  <text class="cl-egm-sub" x="130" y="548" text-anchor="end">you decide</text>
 </svg>
 <figcaption class="vn-caption">The goldfish review in /egm-brainstorm, after AI LABS' walkthrough and the repo: one subagent starts six more, each reading the plan through a different lens, and folds their notes into a single report. /egm-review then runs its own five stages, one after another.</figcaption>
 </figure>

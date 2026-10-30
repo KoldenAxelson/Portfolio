@@ -1,0 +1,7 @@
+{{- /* The Commander deck stylesheet and card viewer, for a misc page that
+       shows a deck from data/mtg-deck/. Called from layouts/misc/single.html
+       when the page uses any mtg-deck/ shortcode. */ -}}
+{{- $css := resources.Get "css/pages/mtg-deck/mtg-deck.css" | minify | fingerprint -}}
+<link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" />
+{{- $js := resources.Get "scripts/pages/mtg-deck/main.ts" | js.Build (dict "minify" true "target" "es2018" "format" "iife") | fingerprint -}}
+<script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>

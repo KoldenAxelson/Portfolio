@@ -26,9 +26,9 @@ experience:
     highlights:
       - "Built bighammergarage.com from scratch for a YouTube studio's merch store — every tool the client needs and none they don't, roughly two dozen shirt-and-hat sales to date, hosted for $12/year with no Shopify subscription to manage."
       - "Shipped GrowGo's working prototype — a farmers-market marketplace on Flutter and Cloudflare Workers + D1 — after pitching it for VC funding in 2025."
-      - "Took Widda (widda.club), a monetization tool for YouTubers, through Chrome Web Store submission with a small launch team."
+      - "Built and deployed Widda (widda.club), a Chrome extension and creator dashboard for YouTubers on a Go and PostgreSQL API with Stripe billing; now in Google's OAuth verification ahead of the Chrome Web Store."
       - "Built a Discord community and a custom bot using game-design principles — group accountability with a \"casino points\" carrot-and-stick loop."
-    stack: ["Cloudflare Pages", "TypeScript", "Laravel", "Astro", "Discord API"]
+    stack: ["Go", "PostgreSQL", "Cloudflare Pages", "TypeScript", "Laravel", "Astro", "Discord API"]
     thoughts:
       - "Going independent meant being CEO, engineer, and shipping clerk on the same Tuesday."
       - "A VC pitch that failed taught me more than a funded one would have."

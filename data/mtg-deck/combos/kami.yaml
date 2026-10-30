@@ -1,0 +1,26 @@
+# The loops in the Kami deck, for {{< mtg-deck/combos deck="kami" >}}.
+# Hand-written, unlike ../kami.json. Every card in `pieces` must be in the
+# deck (the shortcode fails the build if one isn't), so a cut card can't leave
+# a combo behind that no longer works. Checked against the Scryfall rules
+# text on 2026-10-30.
+combos:
+  - name: Power Artifact on a Monolith
+    gives: Infinite colourless mana
+    pieces: [Power Artifact, Basalt Monolith]
+    how: "Power Artifact cuts Basalt Monolith's untap cost from three to one. It taps for three, so every loop nets two. Grim Monolith works too: its untap drops to two and each loop nets one."
+  - name: Rings and Basalt
+    gives: Infinite colourless mana
+    pieces: [Rings of Brighthearth, Basalt Monolith]
+    how: "Tap Basalt for three and pay that to start untapping it, then pay two to copy the untap with Rings. The copy untaps it first, so it taps again before the original resolves. With two spare mana to start, each loop nets one."
+  - name: Scepter and Reversal
+    gives: Infinite mana, infinite untaps
+    pieces: [Isochron Scepter, Dramatic Reversal]
+    how: "Imprint Dramatic Reversal on the Scepter. Once the rocks make three or more mana (Sol Ring and Grim Monolith will do), each activation untaps every rock and the Scepter itself, with mana to spare."
+  - name: Palinchron at high tide
+    gives: Infinite blue mana
+    pieces: [Palinchron, High Tide]
+    how: "With seven Islands and High Tide resolved, Palinchron untaps them for fourteen blue. Four bounces it, seven recasts it, and three is left over each time. Caged Sun or Gauntlet of Power naming blue does the same job."
+  - name: The win
+    gives: Win the game
+    pieces: [Laboratory Maniac, Braingeyser]
+    how: "Any infinite mana above goes into Braingeyser (or Mind Spring) targeting myself for more cards than my library holds. With Laboratory Maniac out, the draw from an empty library wins instead."

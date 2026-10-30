@@ -65,7 +65,7 @@ session:
       body: 'Every session ends with a report card, a heart-rate chart, a map of where it happened and a short debrief.'
       shot: { src: '/harmony-pulse/report-card.png', alt: 'A sample report card: an overall score of 80, with separate grades for calm, breathing, follow-through, rhythm and transitions.', crop: 'report' }
     - title: 'Keep practising'
-      body: 'Quests are short guided sessions, from six minutes of slow breathing to walk and trot on cue. A daily tip keeps the habit going.'
+      body: 'Quests are short guided sessions, like walk and trot on cue, where the coach says what to do and when. A daily tip keeps the habit going.'
       shot: { src: '/harmony-pulse/quests.jpg', alt: 'The Quests screen, listing six guided sessions from Slow breathing to Canter on cue.', crop: 'top' }
   note: 'The app screens on this page are the real app, running a development build.'
 
@@ -84,7 +84,7 @@ reads:
     - who: 'From yours'
       tone: 'rider'
       items:
-        - { title: 'Breathing', body: 'The moments you stop breathing, usually right before you ask for something.' }
+        - { title: 'Breathing', body: 'The moments your breath goes still, usually right before you ask for something. When your breathing is slow and smooth, it says it can''t tell.' }
         - { title: 'Calm', body: 'How smooth and even your heart rhythm is at halt and walk.' }
         - { title: 'Heart-rate zones', body: 'How hard you were working, minute by minute.' }
 
@@ -112,10 +112,10 @@ report:
     - { src: '/harmony-pulse/report-heart.png', alt: 'A sample chart of horse and rider heart rate across the ride, with gait bands underneath and marks where the coach spoke.' }
   caption: 'A sample report, made by the app from a simulated ride.'
   points:
-    - { title: 'A grade once you are done', body: 'Calm, breathing, rhythm and transitions each get a score. The app never scores you while you ride.' }
+    - { title: 'A grade once you are done', body: 'You and your horse each get your own score, and every row opens to show how it was worked out. The app never scores you while you ride.' }
     - { title: 'Both hearts on one chart', body: 'His and yours, over the gaits, with a mark wherever the coach spoke.' }
     - { title: 'Where it happened', body: 'The route on a map, with the moments worth a look numbered on it.' }
-    - { title: 'Your own words', body: 'The notes you write after a session are printed on the report.' }
+    - { title: 'Your own words', body: 'Your notes, voice notes and photos from the session go on the report.' }
 
 offline:
   eyebrow: 'No signal needed'
@@ -146,14 +146,15 @@ status:
   done:
     - { title: 'It works end to end', body: 'Recording, live coaching, debrief and trainer report all run on an iPhone, with an Apple Watch app for marks and voice notes.' }
     - { title: 'New builds keep coming', body: 'Kirstin rides with each one, and her notes shape the next.' }
-    - { title: 'Tested on real rides', body: 'Schooling, trail, groundwork, liberty and solo practice, with Bowie and Denali.' }
+    - { title: 'Tested on real rides', body: 'More than forty sessions so far: schooling, trail, groundwork, liberty and solo practice, with Bowie and Denali.' }
+    - { title: 'Checked against real data', body: 'The calm reading was tested against an open breathing study and side by side with the breathing app Kirstin already uses.' }
     - { title: 'Started 26 August 2026', body: 'From the first line of code to a coach that talks took about five weeks.' }
   next:
     heading: 'What we are teaching it next'
     items:
-      - 'Canter, the gait it has had the least practice with.'
+      - 'Canter. It has one real session so far, and it needs a clean minute of it.'
       - 'Transitions, measured against what a clean one really looks like.'
-      - 'Breath-holds, which it still flags too often.'
+      - 'Breath-holds in the saddle. Sitting calm, her breathing is too smooth for it to see one, and it says so.'
 
 vision:
   eyebrow: 'Where it is going'

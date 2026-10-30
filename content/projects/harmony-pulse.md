@@ -84,10 +84,12 @@ support, she gets a plain structured debrief built from the same numbers.
 ## What I've built
 
 - A Swift package that holds all the logic and depends only on Foundation, so
-  it builds and tests on Linux in CI. It has more than 500 tests, including a golden event
+  it builds and tests on Linux in CI. It has more than 800 tests, including a golden event
   log that fails the build when a change moves a single cue.
-- The iPhone app in SwiftUI: pairing, the live ride screen, the report card,
-  heart-rate charts, a route map, session history, and a trainer report
+- The iPhone app in SwiftUI: pairing, the live ride screen, a report card
+  that scores her and the horse separately and opens each row to show how it
+  was worked out, heart-rate charts, a route map, photos and voice notes taken
+  mid-ride, session history, and a trainer report
   exported as one HTML file.
 - An Apple Watch app that owns the workout session and gives her a Log button
   and press-and-hold voice notes, so she doesn't have to reach for the phone.
@@ -99,14 +101,24 @@ support, she gets a plain structured debrief built from the same numbers.
 
 ## Current state
 
-It's in testing with one rider and two horses. She sends real
-sessions from the barn, and the work has moved from building to tuning, which means
-checking that what the app reads is what happened.
+It's in testing with one rider and two horses. She has sent more than forty
+sessions, from the barn and from home, and the work has moved from building to
+tuning, which means checking that what the app reads is what happened. A new
+build reaches her every few days, usually carrying something she asked for in
+the last batch.
 
-Gait at walk and trot was retuned on real strap data, and the rider's calm
-reading was checked against an open breathing dataset. Other readings aren't
-there yet. Canter has the least real data behind it, transitions are unvalidated, and
-the breath-hold detector flags far too often, so that one gets fixed first.
+Her calm reading has held up best. It was checked against an open breathing
+dataset, then run side by side with the breathing app she already practises
+with, and the point where it calls her settled moved to agree with that app.
+Gait at walk and trot was retuned on real strap data. Canter has one real
+session behind it and reads plausibly, but the horse broke to trot in both
+canters, so it still needs a clean minute to tune on. Transitions are
+unvalidated.
+
+The breath-hold reading flagged far too often, so I rebuilt it. It now finds
+her holds when she's standing. Sitting calm, her heart rhythm is already too
+smooth for it to see one, so it says it can't tell rather than guess. Whether
+it works in the saddle is the next open question.
 
 There's no launch date and no business plan. The goal is to make it everything
 she wants it to be. Her next idea is a coach that keeps what her trainer said

@@ -1,0 +1,9 @@
+{{- /*
+  mtg-deck/rules-text — a card's Scryfall rules text as paragraphs, with each
+  {symbol} drawn as a small inline token ({T}, {U}, {3}).
+
+    {{ partial "mtg-deck/rules-text.html" $card.text }}
+*/ -}}
+{{- range split . "\n" }}{{ if . }}
+<p>{{ . | htmlEscape | replaceRE `\{([^}]+)\}` `<span class="md-sym">$1</span>` | safeHTML }}</p>
+{{- end }}{{ end -}}
