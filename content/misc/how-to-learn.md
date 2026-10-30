@@ -248,11 +248,12 @@ Two external checks, because either one alone will miss something:
 - Publish your written attempt somewhere public, with your name on it, dead ends
   and mistakes included.
 
-## Source
+## Sources {#sources}
 
-[*The Curriculum That Produced More Geniuses Than Any University*](https://youtu.be/NN9Dl3zhYp0)
-— everything above is a synthesis of that video's argument, not independent
+Everything above is a synthesis of one video's argument, not independent
 research. The names and figures are the ones it asserts; I have normalised the
 transliterations (the auto-captions mangle Zhu Xi, *hányǒng* and *ḥavruta*) but
 I have not gone back to the primary sources to check the claims, which is
 exactly what Session 3 would have me do.
+
+{{< ml/references >}}

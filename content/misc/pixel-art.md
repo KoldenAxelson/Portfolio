@@ -110,7 +110,7 @@ shadow pass and add a still, invisible copy that only casts shadows.
 - The canopy-of-billboards trick, for trees that match the grass.
 - A still shadow caster under anything that sways.
 
-## Source
+## Sources {#sources}
 
 One video, watched in October 2026. Everything above is my synthesis of the
 tutorial; the settings named (Godot 4.5, Blender 4.5, a noise frequency of
@@ -119,4 +119,4 @@ billboard technique is credited to another creator whose name the captions
 garble, so I've left both out. The grass instancing in its village scene uses
 the Spatial Gardener plugin.
 
-- [Stylized 3D pixel-art grass and trees](https://youtu.be/iPbYzFWECz4): billboarded grass and trees, cel and rim lighting, global noise-driven wind, the shadow-flicker fix.
+{{< ml/references >}}

@@ -126,14 +126,11 @@ Codex drive the Rive editor through computer use to add new animations.
   on press) instead of asking for "an animation."
 - Give every animated thing a resting state, and review the result by eye.
 
-## Source
+## Sources {#sources}
 
 Three videos, watched in October 2026. Everything above is my synthesis of
 their arguments, and the details (effort timings, the Disney history, the job
-history) are the narrators' own. The second video's narrator isn't named in
-the transcript, and the captions garble one animation tool's name, so I've
-left both out. Two of the three end by pointing to a paid community or vault.
+history) are the narrators' own. The captions garble one animation tool's name,
+so I've left it out. Two of the three end by pointing to a paid community or vault.
 
-- [Making videos with Claude Code and JavaScript](https://youtu.be/rscb1DgJtNg): frames as a function of time, the render loop, prompting, references, turning it into a skill.
-- [A whole video made from one folder](https://youtu.be/EhWlGingCl0): the five-stage pipeline and the Disney studio it copies.
-- [John on animation in apps](https://youtu.be/f-Ar8mwm3kQ): why motion matters, the technique vocabulary, resting states, reviewing by eye.
+{{< ml/references >}}

@@ -198,25 +198,12 @@ The loop I'm taking to [my CV](/cv), from all eight videos:
 7. Walk into the interview with a clear first minute, and leave with the next
    step and a date.
 
-## Source
+## Sources {#sources}
 
 Eight videos, watched between August and October 2026. Everything above is my
 synthesis of their arguments, and the numbers and names are the ones the videos
 assert. Two claims stay theirs until someone checks them against primary
 sources: Farah's legal claim in the ATS video, that OFCCP and EEOC rules flatly
 prohibit automated hiring decisions, and the second recruiter's 80/20 split.
-That video never gives the recruiter's name, so I haven't guessed it.
 
-Seven from [Farah Sharghi's channel](https://www.youtube.com/@Farah_Sharghi):
-
-- [*"Beat the ATS"? They Lied, the Resume Truth*](https://youtu.be/nUlomY7RsIg): the five myths, the OCR family history, the Lever walkthrough.
-- [*Resume Masterclass to get FAANG Interviews*](https://youtu.be/ck5nw7R1uEs): the full formula, from research and summary through XYZ, education, formatting and tailoring.
-- [*6 Résumé Secrets That Get You Hired*](https://youtu.be/eGmZZFJ-8PY): safe hands, risk on the page, translation, verbs, signal, range.
-- [*Why "Lying" On Your Resume Gets You Hired*](https://youtu.be/rAoo7X7V-Ps): the line between translation and what pulls offers.
-- [*Why "Lying" Gets You Hired*](https://youtu.be/T__1QViXUxk): the nine interview answers everyone expects.
-- [*Why The Best Candidate Doesn't Get The Job*](https://youtu.be/RyMrWQZBtis): alignment, recruiter incentives, "you are not a pick me."
-- [*The One Rule That Gets You Hired*](https://youtu.be/mVJwjI3JP0I): impossible to misunderstand, the rule under all of it.
-
-And one from a second former recruiter:
-
-- [An ex-recruiter on the psychology of landing a job](https://youtu.be/m4U4iDuZaDk): cognitive ease, the halo effect, confirmation bias in the first 90 seconds, likability, authority, and the commitment lock.
+{{< ml/references >}}

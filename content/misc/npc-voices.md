@@ -157,7 +157,7 @@ line. My rebuild's whole cast is six entries in a data file and no audio files
 at all, which still delights me, and a voice you make in the lab copies out as
 a seventh.
 
-## Source
+## Sources {#sources}
 
 One video, watched in October 2026. Everything above is my synthesis of the
 video's explanation, and the sizes and numbers are its own. The captions mangle a few
@@ -175,4 +175,4 @@ uses their vowel in "bought". The amounts in the tune (how far a phrase
 drifts, how high a question goes) and each character's settings are mine,
 tuned by ear.
 
-- [I Gave My NPCs Voices Without Recording Anything](https://youtu.be/NaW0d7Tghw0): the three flavors, the typewriter timer, formant vowels and the three fixes, tube length per character, vowel groups, and the punctuation tune.
+{{< ml/references >}}

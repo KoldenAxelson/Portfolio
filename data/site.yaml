@@ -55,6 +55,10 @@ links:
   twitter: ""
   mastodon: ""
   bluesky: ""
+  # Directory profiles: no icon in the social row (social-icons.html lists its
+  # keys), but they join the Person schema's sameAs (head/seo.html), and /now
+  # links its listing (layouts/_default/now.html).
+  nownownow: "https://nownownow.com/p/p7bE"
 
 # Top-nav items. Order matters. Each `icon` keys into data/icons.yaml.
 # Deliberately small: Projects (the work), About (the person + Now/Uses/Impossible

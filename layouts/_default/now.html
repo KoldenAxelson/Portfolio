@@ -88,6 +88,6 @@
 </div>
 
 <p class="mt-16 text-sm text-muted">
-  This is a /now page. Find others in the directory at <a href="https://nownownow.com" rel="noopener">nownownow.com</a>.
+  This is a /now page{{ with site.Data.site.links.nownownow }}, <a href="{{ . }}" rel="me noopener">listed on nownownow.com</a>{{ end }}. Find others in the directory at <a href="https://nownownow.com" rel="noopener">nownownow.com</a>.
 </p>
 {{ end }}

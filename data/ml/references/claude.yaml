@@ -1,0 +1,53 @@
+# References for content/misc/claude.md, rendered by {{< ml/references >}} under
+# its Sources heading. Numbering is automatic; add a video by adding an entry.
+
+- tag: Docs
+  title: "Claude Code on desktop"
+  url: "https://code.claude.com/docs/en/desktop"
+  meta: "Anthropic · docs · checked October 2026"
+  note: "Split view, sessions, Remote Control and the desktop Code tab."
+- tag: Docs
+  title: "Commands reference"
+  url: "https://code.claude.com/docs/en/commands"
+  meta: "Anthropic · docs · checked October 2026"
+  note: "The slash commands in Power User Tools."
+- tag: Docs
+  title: "Dashboards and Motion"
+  url: "https://claude.com/resources/articles/dashboards-and-motion"
+  meta: "Anthropic · article · checked October 2026"
+  note: "Two of the things Claude can make, and on which plans."
+- tag: Docs
+  title: "Get started with Claude Motion"
+  url: "https://support.claude.com/en/articles/17454997-get-started-with-claude-motion"
+  meta: "Anthropic · help center · checked October 2026"
+  note: "Motion specifics."
+- tag: Docs
+  title: "Projects, redesigned"
+  url: "https://claude.com/resources/articles/projects-redesigned"
+  meta: "Anthropic · article · checked October 2026"
+  note: "Projects as a way to run work in parallel."
+- tag: Docs
+  title: "Skill authoring best practices"
+  url: "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices"
+  meta: "Anthropic · docs · checked October 2026"
+  note: "The source of every skill-writing rule marked \"Anthropic docs\"."
+- tag: Video
+  title: "9 NEW Claude Mods that can truly change how you work"
+  url: "https://youtu.be/lDrAZ1wAyVs"
+  meta: "Jay E | RoboNuggets · YouTube · watched October 2026"
+  note: "The mods, and the hook rule. Its claims."
+- tag: Video
+  title: "Why Building AI Agents Is (Mostly) a Waste of Time"
+  url: "https://youtu.be/JPJ0gbCUSQk"
+  meta: "Jake Van Clief · YouTube · watched October 2026"
+  note: "Folders, not agents."
+- tag: Video
+  title: "EGM: Google's New Way To Use Claude Code Is Insane"
+  url: "https://youtu.be/xxf6D9jynFw"
+  meta: "AI LABS · YouTube · watched October 2026"
+  note: "The Elephant-Goldfish walkthrough and the CLAUDE.md warning."
+- tag: Repo
+  title: "google/elephant-goldfish-model"
+  url: "https://github.com/google/elephant-goldfish-model"
+  meta: "Google · GitHub · Apache 2.0 · checked October 2026"
+  note: "Command names, the not-an-official-product note, and the credit to Dave Rensin's essay."

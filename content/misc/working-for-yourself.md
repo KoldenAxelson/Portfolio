@@ -188,18 +188,13 @@ Read in order, it's a path more than a choice:
 5. Know the break-even, and keep enough cash to survive the gap between
    earning money and receiving it.
 
-## Source
+## Sources {#sources}
 
 Five videos, watched in October 2026. Everything above is my synthesis of their
 arguments, and the figures (Atlassian's and Linear's valuations, the $110
 million sale, the $400 license, the freelancer's client list) are the
 speakers' claims. I've treated the million-dollar video with the most caution,
-because its statistics come without sources. Two
-narrators aren't named in the transcripts, and the founder's name and the
-footage site's address are garbled by the captions, so I haven't guessed them.
+because its statistics come without sources. The
+footage site's address is garbled by the captions, so I've left it out.
 
-- [Jamie on starting a freelance business in seven days](https://youtu.be/aymkhtyJfYM): the lane, the offer formula, the subcontract floor price, the four-stage process, network and job-board scripts.
-- [How Linear broke into a monopoly](https://youtu.be/pRf8_40EDtM): persona-scoped MVP, slow onboarding, infrastructure as an advantage, taste over metrics, zero bugs.
-- [A founder's blueprint for a million dollars](https://youtu.be/y5ks4FhoGfQ): high leverage, the customer advisory board, the black car product, what-how-who, the fake-door test.
-- [A free public domain footage site](https://youtu.be/2dzqQItDmdg): the $400 Patton clip and the free alternative.
-- [An MBA in 25 minutes](https://youtu.be/b64W3-ggKHk): marketing, accounting, quantitative analysis and finance in one sitting.
+{{< ml/references >}}

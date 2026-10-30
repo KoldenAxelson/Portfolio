@@ -205,18 +205,13 @@ the ones I've been skipping. Here's my plan:
 6. At work, send a recap after every vague ask, and get promotion criteria in
    writing.
 
-## Source
+## Sources {#sources}
 
 Five videos, watched in October 2026. Everything above is my synthesis of
 their arguments, and the figures (followers, revenue, years, the PwC sale, the
 nine years of monthly contact, the $7 offer and the email numbers) are the
-speakers' own claims. Four of the five pitch a paid program or a book along the way; I've kept their advice and left the pitches. The brand and office videos
-don't give their narrators' names, and the speaking coach gives only a first name, once and in
-passing, so I've called all three by what they do. The persuasion system in section 3 is my own notes, not
+speakers' own claims. Four of the five pitch a paid program or a book along the way; I've kept their advice and left the pitches. In the prose I've called most
+speakers by what they do; whose channel each video is from is on its card below. The persuasion system in section 3 is my own notes, not
 something from these videos.
 
-- [A founder on building a personal brand](https://youtu.be/dn7x0Sr2IhY): the definition, content categories and IP, two platforms, the content waterfall, batching.
-- [How to make YouTube so fun you post every day](https://youtu.be/XMkU76jKsQg): self-expression over grinding, emails and sales over views, a low-ticket offer, three to seven videos a week.
-- [Keith Ferrazzi on rebuilding a network from zero](https://youtu.be/iHNNQFYkwCo): the list of 25, the anchor tenant, the dinner format, priority pings.
-- [Simon Squibb's ten steps of selling](https://youtu.be/amdXa3CfzHw): honesty, guarantee versus hope, the three steps in order, leverage, the sizzle.
-- [A former banker on office politics](https://youtu.be/j_bMi4FUyEg): visibility, recap emails, vague promises, knowing your worth.
+{{< ml/references >}}

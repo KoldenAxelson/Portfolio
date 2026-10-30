@@ -162,11 +162,11 @@ one main job, and treat each as a fresh start. A bad morning still leaves two.
 - Before the scroll or the snack, ask what you actually need.
 - A bad morning still leaves the afternoon.
 
-## Source
+## Sources {#sources}
 
 Six videos, written up in October 2026. Everything above is my synthesis, and
-the personal details are the speakers' own. Only the self-improvement video
-names its speaker in the transcript (James), so I haven't guessed the others.
+the personal details are the speakers' own. Whose channel each video is
+from is on its card below.
 
 The discipline video's neuroscience (dopamine as a present-biased system,
 clutter crowding working memory) is her explanation, and I haven't checked it.
@@ -176,9 +176,4 @@ kept its ideas and left the quotes. I also left out the passion video's
 section on cannabis, ADHD medication and dopamine, which is medical territory
 I can't check, and the self-improvement video's blocking setup.
 
-- [Why You're Too Smart To Be This Broke](https://youtu.be/OV4ZuQQO2v4): the knowing-doing gap, learning by doing, and the tiny-experiment pact.
-- [How to force passion](https://youtu.be/IznpzDrjaGo): behavioral activation, ten-minute timers, Cal Newport, and play.
-- [You'll Never Look at Pleasure the Same After This](https://youtu.be/PXbf0jpS2g4): pleasure as anaesthesia, the guilt afterward, and the question to ask before the scroll.
-- [How to trick your brain into becoming so disciplined](https://youtu.be/DzfF5SEzpWE): why willpower is the wrong tool, temptation bundling, cues and environment.
-- [7 years of self improvement lessons in 4 min](https://youtu.be/Fdc1E0VjbZc): the trust score, the graduation method, never miss twice, the four laws, and a day in three parts.
-- [This is boring but you'll outwork everyone](https://youtu.be/yDQPa-IVdTA): repetition over new methods, "what's the alternative?", and the wait as preparation.
+{{< ml/references >}}

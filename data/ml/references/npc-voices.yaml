@@ -1,0 +1,13 @@
+# References for content/misc/npc-voices.md, rendered by {{< ml/references >}} under
+# its Sources heading. Numbering is automatic; add a video by adding an entry.
+
+- tag: Video
+  title: "I Gave My NPCs Voices Without Recording Anything"
+  url: "https://youtu.be/NaW0d7Tghw0"
+  meta: "UnitOfTime · YouTube · watched October 2026"
+  note: "The three flavors, the typewriter timer, formant vowels and the three fixes, tube length per character, vowel groups, and the punctuation tune."
+- tag: Repo
+  title: "unitoftime/flow"
+  url: "https://github.com/unitoftime/flow"
+  meta: "UnitOfTime · GitHub · MIT"
+  note: "The Go game library behind the channel. It has an audio package, but no mumble speech that I could see."

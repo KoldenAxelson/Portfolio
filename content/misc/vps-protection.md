@@ -198,7 +198,7 @@ sudo ufw delete allow 2222/tcp
 After that comes the app, and then the harder question of what it's allowed to
 touch.
 
-## Source
+## Sources {#sources}
 
 One video, watched in October 2026. Everything above is a synthesis of the
 skit, not independent research. The twelve seconds and the 98.1% are its
@@ -207,6 +207,4 @@ alternative init systems and what the bro wanted to bet on. The commands are
 mine and assume Ubuntu 24.04, where SSH is socket activated; on older releases
 restart `ssh` instead of `ssh.socket`.
 
-- [*"Just use a VPS bro" (OpenClaw version)*](https://youtu.be/40SnEd1RWUU),
-  Kai Lentit, February 2026: the steps, their order, and every quote on this
-  page.
+{{< ml/references >}}

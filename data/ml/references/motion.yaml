@@ -1,0 +1,18 @@
+# References for content/misc/motion.md, rendered by {{< ml/references >}} under
+# its Sources heading. Numbering is automatic; add a video by adding an entry.
+
+- tag: Video
+  title: "Claude Now Does Video (FOR FREE) Thanks To JavaScript"
+  url: "https://youtu.be/rscb1DgJtNg"
+  meta: "Chase AI · YouTube · watched October 2026"
+  note: "Frames as a function of time, the render loop, prompting, references, turning it into a skill."
+- tag: Video
+  title: "Turning lectures into animation for the non animator!"
+  url: "https://youtu.be/EhWlGingCl0"
+  meta: "Jake Van Clief · YouTube · watched October 2026"
+  note: "The five-stage pipeline and the Disney studio it copies."
+- tag: Video
+  title: "AI App Animations is Hard Until You Learn This"
+  url: "https://youtu.be/f-Ar8mwm3kQ"
+  meta: "John Kim · YouTube · watched October 2026"
+  note: "Why motion matters, the technique vocabulary, resting states, reviewing by eye."

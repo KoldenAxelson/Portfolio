@@ -90,20 +90,12 @@ Start with Blast Radius and Reflect.
 - October 28, 2026: Planning the Work added, from two videos and the EGM
   README.
 
-## Sources
+## Sources {#sources}
 
-Checked against Anthropic's
-[Claude Code desktop docs](https://code.claude.com/docs/en/desktop),
-[commands reference](https://code.claude.com/docs/en/commands),
-[Dashboards and Motion](https://claude.com/resources/articles/dashboards-and-motion),
-[Motion help](https://support.claude.com/en/articles/17454997-get-started-with-claude-motion),
-[projects](https://claude.com/resources/articles/projects-redesigned) and
-[skill best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices).
-Mods are from [a video](https://youtu.be/lDrAZ1wAyVs) and are its claims.
-"Folders, not agents" is Jake Van Clief's argument in
-[Why Building AI Agents Is (Mostly) a Waste of Time](https://youtu.be/JPJ0gbCUSQk).
-The Elephant-Goldfish card is from AI LABS'
-[walkthrough](https://youtu.be/xxf6D9jynFw), with the command names and the
-not-official note checked against
-[the repo's README](https://github.com/google/elephant-goldfish-model), which
-credits Dave Rensin's essay for the idea.
+Checked against Anthropic's own docs and help pages where they cover it. The
+mods, "folders, not agents" and the Elephant-Goldfish walkthrough come from
+videos and are their claims, with the EGM command names and the
+not-an-official-product note checked against the repo's README, which credits
+Dave Rensin's essay for the idea.
+
+{{< ml/references >}}

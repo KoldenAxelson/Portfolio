@@ -1,0 +1,8 @@
+# References for content/misc/pixel-art.md, rendered by {{< ml/references >}} under
+# its Sources heading. Numbering is automatic; add a video by adding an entry.
+
+- tag: Video
+  title: "Stylized Grass & Trees for Pixel Art 3D in Godot 4"
+  url: "https://youtu.be/iPbYzFWECz4"
+  meta: "Eduardo Schildt · YouTube · watched October 2026"
+  note: "Billboarded grass and trees, cel and rim lighting, global noise-driven wind, the shadow-flicker fix."
