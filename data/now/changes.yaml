@@ -14,6 +14,10 @@
 #   project : optional project slug, for the icon beside the entry. A /projects/
 #             url gets its project's icon on its own; anything else shows the
 #             site's mark unless this names a project.
+- date: 2026-10-31
+  kind: update
+  text: "Finished a beta showcase video for Widda, a short on what it does at checkout. I'll re-render it once Widda is in the Chrome Web Store."
+  url: "/projects/widda/"
 - date: 2026-10-30
   kind: new
   text: "Posting Pipeline: an animated diagram of how my articles get to dev.to and LinkedIn on their own, with the live queue under it."
