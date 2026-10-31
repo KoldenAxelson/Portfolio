@@ -3,6 +3,8 @@ title: 'How Do You Protect a Model''s Weights?'
 description: "Months of compute and a fortune in chips end up as one set of files. Why AI labs treat model weights as crown jewels, how they get stolen, the controls that stop it, and the case for giving them away."
 pubDate: 2026-09-16
 tags: ['ml', 'security', 'explainer']
+cover: '/covers/securing-model-weights.webp'
+image: '/share/securing-model-weights.jpg'
 glossary: "ml"
 featured: true
 thoughts:

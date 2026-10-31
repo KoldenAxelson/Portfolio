@@ -4,6 +4,8 @@ description: "Jev is a decision model: you ask a question and list the allowed a
 pubDate: 2026-09-24
 updatedDate: 2026-10-15
 tags: ['ml', 'decision-models', 'efficiency', 'explainer']
+cover: '/covers/jev-decision-models.webp'
+image: '/share/jev-decision-models.jpg'
 glossary: "ml"
 featured: true
 thoughts:

@@ -3,6 +3,8 @@ title: 'How Does a Model Actually Learn?'
 description: "No math required: loss, gradient descent, learning rates and overfitting, with a line you can train by hand and a curve you can watch memorize the practice test."
 pubDate: 2026-09-01
 tags: ['ml', 'training', 'fundamentals', 'explainer']
+cover: '/covers/how-a-model-learns.webp'
+image: '/share/how-a-model-learns.jpg'
 glossary: "ml"
 thoughts:
   - "'The machine learns' sounds mystical. It's a very patient game of hot and cold."

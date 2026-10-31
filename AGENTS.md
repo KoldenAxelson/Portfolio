@@ -27,6 +27,8 @@ Read the matching skill in `private/skills/` before starting these tasks:
 | [`private/skills/VideoNotesPageMake.md`](private/skills/VideoNotesPageMake.md) | Writing or extending a `/misc` page from YouTube transcripts (`private/ideas/misc/videos/`). Read after ArticlePageMake.md. |
 | [`private/skills/YouTubeTranscripts.md`](private/skills/YouTubeTranscripts.md) | Konrad shares YouTube links, asks for transcripts or for picks from a channel, or hands you `private/ideas/misc/digest-prompt.md`. Fetch with `make transcripts`, then VideoNotesPageMake.md. |
 | [`private/skills/ProjectPageMake.md`](private/skills/ProjectPageMake.md) | Another project's repo is connected alongside Portfolio (Widda, GrowGo, Harmony Pulse…), or you're asked to add, refresh or retire a project page. |
+| [`private/skills/LinkedInPost.md`](private/skills/LinkedInPost.md) | Any LinkedIn post: for a new article, a site addition or a project, or copy for the social pipeline. Konrad's LinkedIn voice, not the site voice. |
+| [`private/skills/ImageGenerate.md`](private/skills/ImageGenerate.md) | An article needs its cover and share card, Konrad asks for an image ("/generate"), or a post needs art. Pay per image on fal.ai, within the monthly budget. |
 | [`private/skills/AuditCode.md`](private/skills/AuditCode.md) | Auditing, re-auditing or grading the codebase or a feature. |
 | [`private/skills/AuditArticle.md`](private/skills/AuditArticle.md) | Fact-checking and reviewing an article or chapter before it publishes. Never in the session that wrote it. |
 | [`private/skills/HumanizeWriting.md`](private/skills/HumanizeWriting.md) | Writing or editing any reader-facing prose: page text, data-file copy, FAQ answers, captions. |
@@ -83,6 +85,14 @@ on the page, not in the chat.
    (`working`, `building`, `learning`, `life`) or the Impossible List's
    `current:` items, which /now reads.
 3. If either happened, set `updated:` in `content/now.md` to today.
+4. Is it worth sharing? A newly published article always is (give it a cover
+   first: `private/skills/ImageGenerate.md`). A site addition is if a
+   recruiter would find it interesting. Add an entry to the bottom of
+   `data/social/queue.yaml` (an `article:` cross-posts it to dev.to; the
+   `linkedin:` text follows `private/skills/LinkedInPost.md`), dated on the
+   next free Monday or Friday after the last entry, then run
+   `make social-queue`. The posting Worker sends it on that day. Same rule as
+   the rest: don't ask, don't announce.
 
 When it's a judgement call (is this big enough, did a status really change),
 make the call yourself and move on.

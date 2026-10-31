@@ -3,6 +3,8 @@ title: 'Can a Government Agency Just Use ChatGPT?'
 description: "Running AI in a government cloud: FedRAMP, GovCloud regions, air-gapped models, audit logs and agents, as of September 2026. Same plumbing as anywhere else, with the boundaries drawn in ink."
 pubDate: 2026-09-26
 tags: ['ml', 'government', 'security', 'compliance', 'explainer']
+cover: '/covers/ai-in-government-cloud.webp'
+image: '/share/ai-in-government-cloud.jpg'
 glossary: "ml"
 featured: true
 thoughts:

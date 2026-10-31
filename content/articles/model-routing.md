@@ -3,6 +3,8 @@ title: 'Why Pay for the Smartest Model Every Time?'
 description: "Most questions don't need your most expensive model. Routing, cascades, distillation and caching: the four ways to send each request to the cheapest model that can handle it, and how to know it's still good enough."
 pubDate: 2026-09-25
 tags: ['ml', 'inference', 'efficiency', 'cost', 'explainer']
+cover: '/covers/model-routing.webp'
+image: '/share/model-routing.jpg'
 glossary: "ml"
 thoughts:
   - "Third in the 'make AI cheap' trio, after quantization and decision models. This one is mostly plumbing, which is why I like it."

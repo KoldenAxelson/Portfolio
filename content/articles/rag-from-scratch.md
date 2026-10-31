@@ -3,6 +3,8 @@ title: 'Why Does RAG Get the Wrong Answer?'
 description: "Retrieval-augmented generation looks easy in a demo and breaks in production. Chunking, embeddings, keyword vs. vector vs. hybrid search, reranking, and why a wrong answer is often a search bug."
 pubDate: 2026-09-08
 tags: ['ml', 'rag', 'search', 'explainer']
+cover: '/covers/rag-from-scratch.webp'
+image: '/share/rag-from-scratch.jpg'
 glossary: "ml"
 thoughts:
   - "Chase a RAG bug long enough and it usually turns out to be a search bug."

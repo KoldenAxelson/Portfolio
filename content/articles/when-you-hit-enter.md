@@ -3,6 +3,8 @@ title: 'What Happens When You Hit Enter?'
 description: "From keypress to streaming words: tokens, attention, next-token prediction, temperature, and the two phases of serving (prefill and decode) that decide how fast an answer arrives and what it costs."
 pubDate: 2026-09-11
 tags: ['ml', 'llm', 'inference', 'explainer']
+cover: '/covers/when-you-hit-enter.webp'
+image: '/share/when-you-hit-enter.jpg'
 glossary: "ml"
 thoughts:
   - "Every step in this post is something somebody has to serve, scale and pay for, which is the part I find interesting."

@@ -1,0 +1,292 @@
+# The social queue: what the posting Worker sends, and when.
+#
+# scripts/social/build-queue.py turns this into static/social/queue.json
+# (`make social-queue`), which the site publishes and the Worker
+# (services/workers/social/) reads every morning. Anything dated today or
+# earlier that hasn't gone out yet goes out: an `article` is cross-posted to
+# dev.to, and the `linkedin` text is emailed to Konrad with a one-tap copy
+# button (private/skills/LinkedInPost.md has the voice).
+#
+# Add to the bottom; never edit an entry that has already gone out (the Worker
+# remembers by id). Pacing: LinkedIn at most twice a week, on the Monday and
+# Friday slots after the last entry here, unless something is time-sensitive.
+#
+# The backlog, as agreed on 2026-10-30: the three time-sensitive articles
+# first, the living ones last, the rest every Monday and Friday.
+
+- id: ai-in-government-cloud
+  date: 2026-10-31
+  article: ai-in-government-cloud
+  linkedin: |
+    Can a government agency just use ChatGPT? As of September 2026, increasingly yes. In August 2025, GSA put ChatGPT Enterprise and Claude in front of agencies for $1 each for a year.
+
+    The model is the same model everywhere. What changes in government is the boundary around it: who runs the servers, whose staff can see the prompts, and who signed off.
+
+    I wrote up the four places a model can live:
+    • A certified AI service, like the chat assistants FedRAMP fast-tracked
+    • A model service in a government region, such as Bedrock in GovCloud
+    • A classified cloud: Bedrock and GPT-5.2 both run at Secret and Top Secret
+    • Your own hardware, even air-gapped, where Google now sells Gemini
+
+    The part I'd underline is agents. AWS brought Bedrock AgentCore to GovCloud in May 2026, and Microsoft's Foundry Agent Service reached Azure Government in September. An agent that can file, send or change records needs least privilege, human approval for anything it can't undo, and an audit log that ties every action to a person.
+
+    One more lesson that applies to any vendor: design so you can swap the model behind your app without re-certifying everything around it.
+
+    Full write-up, with every rule dated and sourced: https://wrightfunctions.com/articles/ai-in-government-cloud/
+
+- id: rent-or-run
+  date: 2026-11-02
+  article: rent-or-run
+  linkedin: |
+    Two rented H100s cost about $6,100 a month if you leave them on, whether they answer ten questions or ten million. That's enough to hold a 70-billion-weight model at 16 bits, and it's the number every "should we self-host?" conversation has to beat.
+
+    An API is a meter. Self-hosting is a lease.
+
+    I compared the two on what teams actually argue about, with September 2026 prices:
+    • Cost, and where the break-even sits
+    • Buying the box: an RTX 5090 at $1,999, plus roughly $77 a month in power at full draw around the clock
+    • Speed: rate limits on one side, capacity limits on the other
+    • Privacy: "they promised" and "it never left the building" read differently to an auditor
+    • Who gets paged when the model is down
+
+    The part I'd underline: hosted open-model prices are so low that two rented GPUs have to stay busy around the clock to compete. Big, steady workloads can get there. Many teams can't, and they'd be paying for idle GPUs overnight.
+
+    So my default is to rent. Start on the meter, and sign the lease when the meter runs all night. Then re-run the numbers every few months, because they won't hold still.
+
+    Full write-up, with a break-even calculator: https://wrightfunctions.com/articles/rent-or-run/
+
+- id: model-routing
+  date: 2026-11-04
+  article: model-routing
+  linkedin: |
+    Plenty of AI apps send every request to their most expensive model, even when the cheapest one in the same family costs a tenth as much. That's paying the head chef to make toast.
+
+    I wrote up the four ways to stop:
+    • Routing: a small classifier picks who answers, before anyone does
+    • Cascades: the cheap model goes first and escalates when it's unsure
+    • Distillation: train the small model on the big one's answers for your task
+    • Caching: the cheapest answer is one you've already given
+
+    The published numbers are big. RouteLLM reported cutting costs by more than 85% on one benchmark while keeping 95% of GPT-4's quality.
+
+    The part I'd underline: routing failures are silent. A misrouted question gets a confident, cheap, wrong answer and nothing crashes. Keep a test set and gate every change on it.
+
+    Full write-up, with a slider for the confidence threshold: https://wrightfunctions.com/articles/model-routing/
+
+- id: what-is-ml-infrastructure
+  date: 2026-11-06
+  article: what-is-ml-infrastructure
+  linkedin: |
+    Getting a model to work once, on your laptop, is the easy 10%. The other 90% is feeding it fresh data, retraining it without breaking anything, and putting the result in front of real users, again and again.
+
+    The way I picture it: the model is the recipe, and ML infrastructure is the restaurant.
+
+    I wrote an explainer that builds the restaurant one piece at a time:
+    • The data layer: labels, feature stores and versioned snapshots
+    • The eval gate, which stops a worse model from shipping
+    • Drift monitoring, because a frozen model slowly falls behind the world
+    • Serving and autoscaling, so latency stays flat under load
+    • The harness that turns a bare model into an agent
+
+    The part I'd underline: machine learning fails silently. Ask a model something it can't handle and it hands you a confident, well-formatted, wrong answer, in the same shape as a right one. Google's ML Test Score turns the defence into a 28-point rubric, and guardrails and fallbacks catch the rest before a user sees it.
+
+    If you've run servers, deploys and budgets, you already speak most of this language.
+
+    Full write-up, with a digit-reading neural network that runs in your browser and a traffic slider you can push until autoscaling kicks in: https://wrightfunctions.com/articles/what-is-ml-infrastructure/
+
+- id: when-you-hit-enter
+  date: 2026-11-09
+  article: when-you-hit-enter
+  linkedin: |
+    The pause before a chatbot's first word and the quick stream after it are two different jobs on the server. First comes prefill, where the model reads your whole prompt in one parallel pass. Then decode: one token per step, each step reading the entire model from memory.
+
+    I traced the trip from keypress to streaming words:
+    • Text becomes tokens, about four characters each in English as a rule of thumb
+    • Attention lets every token weigh the ones before it
+    • The next token is a weighted dice roll, shaped by temperature
+    • A KV cache saves the model from rereading the whole conversation
+
+    The part I'd underline is the size of that cache. For one 13-billion-weight model, the vLLM paper works out 800 KB per token, and up to 1.6 GB for a single long request. That's one reason context windows have a limit and long conversations cost more.
+
+    It also explains a small mystery. Even at temperature 0, answers can differ run to run. Researchers at Thinking Machines traced that to the server: the other requests batched with yours change the arithmetic very slightly, and one flipped token sends the answer somewhere new.
+
+    Full write-up, with a KV cache you can watch fill as it decodes: https://wrightfunctions.com/articles/when-you-hit-enter/
+
+- id: how-a-model-learns
+  date: 2026-11-13
+  article: how-a-model-learns
+  linkedin: |
+    Meta trained Llama 3 405B over 1.2 million steps and 15.6 trillion tokens. Every one of those steps was the same three moves: measure how wrong the model is, feel which way is less wrong, and take a small step.
+
+    Picture standing on a hillside in fog. You can't see the valley, but you can feel the slope under your feet.
+
+    That's gradient descent, usually credited to Cauchy in 1847, and I wrote a no-math explainer of it. It covers loss, the one number for "how wrong", and the learning rate, where steps that are too small take a long time to converge and steps that are too big bounce around the bottom.
+
+    The part I'd underline is the trap at the end. A flexible enough model can drive its training loss almost to zero by memorizing the examples, noise and all. The defence is to hold data back and score the model on a test set it never trained on, the way MNIST ships 60,000 training images and 10,000 test images.
+
+    It also explains retraining: when the world drifts away from the training data, you play the game again on newer data.
+
+    Full write-up, with a line you can train by hand and a curve you can watch memorize the practice test: https://wrightfunctions.com/articles/how-a-model-learns/
+
+- id: post-training
+  date: 2026-11-16
+  article: post-training
+  linkedin: |
+    In OpenAI's InstructGPT work, people preferred answers from a tuned model with 1.3 billion weights over the 175-billion-weight GPT-3. That gap is post-training: the steps that turn a text predictor into an assistant.
+
+    Ask a freshly trained model for the capital of France and you might get more quiz questions back. On the web, questions are often followed by more questions.
+
+    I wrote up the layers in order:
+    • Example answers, which teach the format
+    • Human preferences, through RLHF or the simpler DPO
+    • Rewards a program can check, which took DeepSeek R1-Zero from 15.6% to 71.0% on AIME 2024
+    • Written principles, as in Anthropic's Constitutional AI
+
+    The part I'd underline: anything trained to maximize a score learns to maximize the score. People tend to rate agreeable answers more highly, and a model trained on those ratings partly learns to tell people what they want to hear. In April 2025, OpenAI rolled back a GPT-4o update for being "overly flattering or agreeable." That's why the evals around post-training matter as much as the training itself.
+
+    Full write-up, with a demo where you play the labeler, flattery included: https://wrightfunctions.com/articles/post-training/
+
+- id: gpus-for-server-people
+  date: 2026-11-20
+  article: gpus-for-server-people
+  linkedin: |
+    An NVIDIA H100 can do about a thousand trillion 16-bit operations a second. Ask it to write a reply for a single user with an 8-billion-weight model, and its math units are busy less than 1% of the time.
+
+    The rest of the time, it waits on memory. If you've ever tuned a database that was really bottlenecked on disk, you already know the shape of this problem.
+
+    A 2024 paper charted why: over 20 years, peak compute on server hardware grew about 60,000 times, while memory bandwidth grew about 100 times. To produce each token, a dense model reads every weight from memory and uses it for one multiply and one add.
+
+    The part I'd underline is the fix, batching. Read the weights once and use them for many users' requests at the same time. The memory trip costs the same, and the math that was sitting idle finally gets used. Around a few hundred requests, math catches up with memory. It's also why quantization speeds things up: fewer bytes to read.
+
+    I also cover the other accelerators you'll meet as of September 2026 (AMD Instinct, Google's TPUs, AWS Trainium), and why every spec sheet starts with memory.
+
+    Full write-up for server people, with a demo that batches requests until the math catches up: https://wrightfunctions.com/articles/gpus-for-server-people/
+
+- id: training-on-16000-gpus
+  date: 2026-11-23
+  article: training-on-16000-gpus
+  linkedin: |
+    Meta trained Llama 3 405B on up to 16,000 H100 GPUs at once. In one 54-day stretch, the job was interrupted 466 times, about once every three hours, and training still made progress more than 90% of the time.
+
+    How that works is mostly a distributed-systems story. I wrote it up for people who run clusters:
+    • Data parallelism, and the all-reduce that keeps every copy identical
+    • FSDP, tensor and pipeline parallelism for models too big for one GPU
+    • Checkpoints, and how often to save them
+    • MFU, the number labs use to measure the waste
+
+    The part I'd underline is how routine failure is. About 78% of Meta's unexpected interruptions were confirmed or suspected hardware problems, and automation did the recovering: significant manual intervention was needed only three times in those 54 days. Checkpoints carry the load. Save too often and you waste time saving; save too rarely and every failure throws away hours. PyTorch reported cutting checkpoint pauses by 10 to 20 times with asynchronous saves.
+
+    Even then, PaLM reached 46.2% MFU and Llama 3 reached 38 to 43%. Leaving around half the silicon idle is normal.
+
+    Full write-up, with a parallelism demo and a checkpoint demo you can switch to background saves: https://wrightfunctions.com/articles/training-on-16000-gpus/
+
+- id: rag-from-scratch
+  date: 2026-11-27
+  article: rag-from-scratch
+  linkedin: |
+    When a RAG system gives a wrong answer, the model often did fine with what it was given. The search handed it the wrong text.
+
+    Anthropic's contextual retrieval shows how much the search side matters: adding a sentence of context to each chunk, combined with keyword search, cut top-20 retrieval failures by 49% in their tests, and by 67% with reranking.
+
+    My write-up walks the pipeline:
+    • Chunking, which quietly decides what your system can answer
+    • Keyword search with BM25, still a robust baseline
+    • Vector search, which finds meaning and misses exact terms
+    • Hybrid search, merged with reciprocal rank fusion
+    • Reranking, a slower second read of the shortlist
+
+    The clearest example of why you want both searches: vector search understands that "can't reach the office network" is about the VPN, and shrugs at "ERR-4031". Keyword search is the other way round.
+
+    The part I'd underline is cheap and boring. Log what was retrieved for every answer. When a user reports a wrong answer, that log tells you in seconds whether search missed or the model misread. Treat a wrong answer as a search bug until it proves otherwise.
+
+    Full write-up, with demos for chunking and for keyword, vector and hybrid search: https://wrightfunctions.com/articles/rag-from-scratch/
+
+- id: evals
+  date: 2026-11-30
+  article: evals
+  linkedin: |
+    Just by changing the order of two answers, researchers got a small model to beat ChatGPT on 66 of 80 questions, with ChatGPT as the judge.
+
+    That's the trouble with grading language. For ordinary code, a test knows the right answer. For "write a polite reply to this angry customer", there are a million good ones.
+
+    I wrote up how teams measure it anyway:
+    • Locked test sets, and the leaks that ruin them
+    • LLM judges, which agreed with humans over 80% of the time in one 2023 study
+    • A regression suite of every embarrassing production failure
+    • Evals in CI, so a score drop fails the build
+
+    The part I'd underline: the fixes for judge bias are dull, and most of them work. Ask twice with the order swapped and count only consistent verdicts. Give the judge the facts to grade against. Spot-check it against a person, often.
+
+    Write down what "better" means before you look, so the gate can show that a model improved. Open-source tools like promptfoo and the UK AI Security Institute's Inspect already make this practical.
+
+    Full write-up, with a demo where you grade the answers yourself and then hand them to a judge: https://wrightfunctions.com/articles/evals/
+
+- id: prompt-injection
+  date: 2026-12-04
+  article: prompt-injection
+  linkedin: |
+    In October 2025, a group of security researchers broke 12 published prompt injection defences, most with attack success above 90%, even though most had reported near-zero.
+
+    After Riley Goodside showed GPT-3 obeying "Ignore the above directions" in 2022, Simon Willison named it prompt injection and compared it to SQL injection. The comparison holds until the fix. SQL injection got parameterized queries. A language model has no separate lane for instructions and data. As the UK's NCSC put it, there is only ever "next token".
+
+    What helps reads like an ops runbook:
+    • Least privilege: an email summarizer doesn't get a send button
+    • Human approval before sending, paying or deleting
+    • Break the lethal trifecta of private data, untrusted content and a way to send data out
+    • Isolation, where the model that reads untrusted text never decides what to do
+
+    The part I'd underline: there's no bug to patch, because reading instructions out of text is the whole point. Treat the model like an untrusted user on your network. Give it the least access that does the job, log what it does, and put a person in front of anything you can't undo.
+
+    Full write-up, with an email assistant you can try to hijack: https://wrightfunctions.com/articles/prompt-injection/
+
+- id: securing-model-weights
+  date: 2026-12-07
+  article: securing-model-weights
+  linkedin: |
+    Meta trained Llama 3.1 405B for 30.84 million GPU hours. The result is about 810 GB of weights, small enough for a single 1 TB consumer SSD.
+
+    That's the security problem in one line: the weights are the product, and you can copy them in an afternoon.
+
+    RAND's 2024 report counts 38 distinct ways to steal them, and most fall into families any ops person knows: malicious code, stolen credentials, supply-chain attacks, insiders and physical access. The defences are familiar too. Anthropic said its May 2025 approach uses more than 100 controls, including:
+    • Two-person access, the rule for nuclear launch keys and bank vaults
+    • Software allowlisting on machines near the weights
+    • Egress bandwidth caps, which turn a quick copy into a slow, visible one
+
+    The part I'd underline: no single control closes everything, and logging closes nothing on its own. It only tells you what's happening, so someone has to read the logs.
+
+    I also cover confidential computing on GPUs, why safetensors files can't run code when loaded, and the case for publishing open weights on purpose. Publishing is a choice; having an unreleased model taken from you isn't.
+
+    Full write-up, with a demo where you close the theft paths yourself: https://wrightfunctions.com/articles/securing-model-weights/
+
+- id: quantization-living-history
+  date: 2026-12-11
+  article: quantization-living-history
+  linkedin: |
+    In 2020, GPT-3's 175 billion weights took 350 GB at 16 bits. Five years later, OpenAI released a 120-billion-weight model that fits on one GPU. The models got rounder.
+
+    Picture a ruler. A 16-bit ruler has 65,536 marks; a 4-bit ruler has 16. Quantization is measuring with the coarser one.
+
+    I wrote the history as a living article, from phone models in 2015 to 1-bit language models:
+    • Deep Compression shrank AlexNet from 240 MB to 6.9 MB with no loss of accuracy
+    • Tim Dettmers' LLM.int8() caught the outliers that broke 8-bit rounding
+    • GPTQ and AWQ made 4-bit the standard way to serve open models
+    • Georgi Gerganov's llama.cpp ran LLaMA at 4 bits on a MacBook CPU
+    • BitNet b1.58 trained with weights of just -1, 0 and +1
+
+    The part I'd underline: quantization stopped being something done to a model and became the format it's made in. DeepSeek-V3 trained largely in FP8, gpt-oss shipped in 4-bit, and NVIDIA trained a 12-billion-weight model entirely in 4-bit. As of September 2026, if you're running a model yourself, 4-bit is the place to start.
+
+    Full history, with a timeline you can tap through and a model you can drag down the bit widths. The changelog says what moved: https://wrightfunctions.com/articles/quantization-living-history/
+
+- id: jev-decision-models
+  date: 2026-12-14
+  article: jev-decision-models
+  linkedin: |
+    Classifying a million 1,000-token tickets a month with Jev costs about $42, at its September 2026 price of $0.042 per million input tokens with free output.
+
+    Today we often ask an LLM for a paragraph and dig a yes out of it with string matching. That's hiring a novelist to tick a checkbox.
+
+    Jev, from TypeSafe AI, is a decision model. You send text, a question and the allowed answers, and it returns odds for each one. My write-up covers why that's cheap, where it fits (triage, moderation, agent safety checks), and where it falls over. In AIMultiple's independent test of 50 browser-automation tasks, a frontier LLM finished 47 and Jev finished 17, at roughly a hundredth of the cost per finished task.
+
+    The part I'd underline is calibration. Odds are only useful if "80%" is right about 80% of the time. Three outside researchers since found Jev's stated odds on list questions within about three points of its accuracy, on average. Yes/no questions were messier, and picking each cutoff from 1,000 labelled examples lifted F1 on one legal-clause test from 0.50 to 0.75. Set your cutoffs from your own labelled data.
+
+    Full write-up, updated October 15, with a threshold slider comparing a calibrated model to an overconfident one: https://wrightfunctions.com/articles/jev-decision-models/

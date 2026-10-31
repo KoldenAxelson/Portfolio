@@ -55,7 +55,7 @@ AI_PORT      := 6573    # localhost-only proxy port (ASCII "AI" = 65,73). Must
 # `?=` means an AI_MODEL from the environment wins and skips this detection.
 AI_MODEL     ?= $(shell command -v ollama >/dev/null 2>&1 && ollama list 2>/dev/null | awk 'NR==2 {print $$1}')
 
-.PHONY: help setup dev dev-drafts build css css-watch typecheck clean distclean ai-proxy ai-proxy-run ai-proxy-stop spinmasters verdant spacescape games seal backup workbooks workbooks-test examples examples-check transcripts transcripts-check deck
+.PHONY: help setup dev dev-drafts build css css-watch typecheck clean distclean ai-proxy ai-proxy-run ai-proxy-stop spinmasters verdant spacescape games seal backup workbooks workbooks-test examples examples-check transcripts transcripts-check deck image-quote image cover images-spent social-queue social-deploy social-status social-run
 
 help: ## Show this help
 	@echo "Portfolio — available commands:"
@@ -268,6 +268,30 @@ transcripts: ## Fetch the videos in private/ideas/misc/script-queue.csv, write t
 
 transcripts-check: ## List what `make transcripts` would fetch, without calling the API
 	@$(PYTHON) scripts/writing/fetch-transcripts.py --dry-run
+
+social-queue: ## Build static/social/queue.json from data/social/queue.yaml (dev.to bodies, LinkedIn text)
+	@$(PYTHON) scripts/social/build-queue.py
+
+social-deploy: ## Create or update the posting Worker on Cloudflare (needs CLOUDFLARE_API_TOKEN and DEVTO_API_KEY in .env)
+	@$(PYTHON) scripts/social/deploy.py deploy
+
+social-status: ## What the posting Worker has queued and sent
+	@$(PYTHON) scripts/social/deploy.py status
+
+social-run: ## Make the posting Worker send today's batch now
+	@$(PYTHON) scripts/social/deploy.py run
+
+image-quote: ## Price an image without spending (SLUG=, PROMPT=; scripts/images/generate.py)
+	@$(PYTHON) scripts/images/generate.py art --slug "$(SLUG)" --prompt "$(PROMPT)"
+
+image: ## Generate an article's art on fal.ai, pay per image, within IMAGE_BUDGET_USD (SLUG=, PROMPT=)
+	@$(PYTHON) scripts/images/generate.py art --slug "$(SLUG)" --prompt "$(PROMPT)" --go
+
+cover: ## Make an article's cover and 1200x630 share card from its art (SLUG=)
+	@$(PYTHON) scripts/images/generate.py cover --slug "$(SLUG)"
+
+images-spent: ## This month's image spend and the last few jobs
+	@$(PYTHON) scripts/images/generate.py spent
 
 deck: ## Rebuild data/mtg-deck/<name>.json from each decklist in scripts/mtg/decks/ (card data and scans from Scryfall)
 	@$(PYTHON) scripts/mtg/build-deck.py

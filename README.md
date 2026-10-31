@@ -62,7 +62,7 @@ layouts/
   partials/       site/ components/ func/ schema/ head/ + one folder per feature
   shortcodes/     site-wide ones at the root, feature ones in <feature>/
 static/           fonts, js/<feature>/, img/ (served from the root), games, vault
-scripts/          hand-run tools: maps/ writing/ workbooks/ vault/ ai/ mtg/
+scripts/          hand-run tools: maps/ writing/ workbooks/ vault/ ai/ mtg/ images/ social/
 docs/             authoring/ games/ ops/ product.md
 services/         ai-proxy/ (Go proxy + context.md) · workers/ (Cloudflare Workers)
 workbooks/        Python for ML packets (tested in CI, zipped into static/downloads/)

@@ -3,6 +3,8 @@ title: 'How Do You Know a Model Got Better?'
 description: "Evals, explained for people who ship software: test sets and the leaks that ruin them, why grading language is hard, LLM judges and their biases, and turning all of it into a gate your deploys have to pass."
 pubDate: 2026-09-03
 tags: ['ml', 'evals', 'mlops', 'explainer']
+cover: '/covers/evals.webp'
+image: '/share/evals.jpg'
 glossary: "ml"
 thoughts:
   - "Evals are just tests where the expected output is 'something good', which is the hard part."

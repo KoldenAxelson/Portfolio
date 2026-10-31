@@ -3,6 +3,8 @@ title: 'What Is ML Infrastructure?'
 description: "Machine learning infrastructure is what's built around these AI models to turn a chatbot into a real business: hooking up tools, and housing it on architecture to serve millions."
 pubDate: 2026-07-15
 tags: ['ml', 'infrastructure', 'mlops', 'explainer']
+cover: '/covers/what-is-ml-infrastructure.webp'
+image: '/share/what-is-ml-infrastructure.jpg'
 glossary: "ml"
 thoughts:
   - "Wrote the version I wish someone had handed me when 'MLOps' still sounded like a spell."

@@ -3,6 +3,8 @@ title: 'Should You Rent AI or Run Your Own?'
 description: "API or your own GPUs? The cost crossover, speed, privacy, quality and who gets paged at 3 a.m., with September 2026 prices and a break-even calculator."
 pubDate: 2026-09-21
 tags: ['ml', 'inference', 'cost', 'explainer']
+cover: '/covers/rent-or-run.webp'
+image: '/share/rent-or-run.jpg'
 glossary: "ml"
 thoughts:
   - "Every infra team has the build-versus-buy argument eventually. This is the AI edition, with numbers."

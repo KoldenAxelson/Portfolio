@@ -3,6 +3,8 @@ title: 'Why Does a GPU Spend Most of Its Time Waiting?'
 description: "GPUs for people who run servers: why AI runs on thousands of simple cores, why memory bandwidth matters more than raw speed, and why batching is one of the biggest tricks in serving."
 pubDate: 2026-09-10
 tags: ['ml', 'hardware', 'inference', 'explainer']
+cover: '/covers/gpus-for-server-people.webp'
+image: '/share/gpus-for-server-people.jpg'
 glossary: "ml"
 featured: true
 thoughts:

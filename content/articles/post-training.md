@@ -3,6 +3,8 @@ title: 'How Does a Text Predictor Become an Assistant?'
 description: "A freshly trained language model doesn't answer questions; it continues them. Post-training explained: example answers, human preferences, RLHF and DPO, rewards a program can check, written principles, and the ways it all goes wrong."
 pubDate: 2026-09-05
 tags: ['ml', 'llm', 'post-training', 'explainer']
+cover: '/covers/post-training.webp'
+image: '/share/post-training.jpg'
 glossary: "ml"
 thoughts:
   - "Pretraining gives a model its knowledge. Everything that makes it pleasant, or unbearable, to talk to happens afterwards."

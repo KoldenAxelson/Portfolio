@@ -3,6 +3,8 @@ title: 'How Do You Train One Model on 16,000 GPUs?'
 description: "Training a frontier model is a distributed-systems problem with a very expensive failure mode. How the work is split across thousands of GPUs, how they talk, what breaks, and how labs measure the waste."
 pubDate: 2026-09-13
 tags: ['ml', 'training', 'distributed-systems', 'explainer']
+cover: '/covers/training-on-16000-gpus.webp'
+image: '/share/training-on-16000-gpus.jpg'
 glossary: "ml"
 thoughts:
   - "It's the same cluster babysitting as anywhere else, with a far pricier pager."

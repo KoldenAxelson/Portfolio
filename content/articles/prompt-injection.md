@@ -3,6 +3,8 @@ title: 'What Is Prompt Injection, and Why Can''t We Patch It?'
 description: "Prompt injection is SQL injection's younger sibling: instructions hidden in data. Why language models can't tell the two apart, why agents raise the stakes, and the defences that actually help."
 pubDate: 2026-09-18
 tags: ['ml', 'security', 'agents', 'explainer']
+cover: '/covers/prompt-injection.webp'
+image: '/share/prompt-injection.jpg'
 glossary: "ml"
 featured: true
 thoughts:

@@ -13,6 +13,10 @@
 #   url  : where to see it (site path)
 - date: 2026-10-30
   kind: update
+  text: "Every published article has its own cover illustration now, and a proper preview card when you share the link."
+  url: "/articles/"
+- date: 2026-10-30
+  kind: update
   text: "Writing Techniques now has a dozen live demos: find your echoes and weak words, sort untagged dialogue by voice, stretch a book's pacing until it snaps, and more."
   url: "/misc/writing/writing-techniques/"
 - date: 2026-10-30

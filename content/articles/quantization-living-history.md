@@ -4,6 +4,8 @@ description: "How AI models shrank from racks of GPUs toward laptops and phones,
 pubDate: 2026-09-24
 updatedDate: 2026-10-15
 tags: ['ml', 'quantization', 'efficiency', 'explainer']
+cover: '/covers/quantization-living-history.webp'
+image: '/share/quantization-living-history.jpg'
 glossary: "ml"
 thoughts:
   - "A living article: I add to this one whenever a new trick lands. The changelog at the bottom says what moved."
