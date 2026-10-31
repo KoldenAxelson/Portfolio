@@ -60,7 +60,7 @@ Finally, when winter arrived and the raccoon family was truly desperate, Corvus 
 
 As Corvus flew away, he felt proud that he had brought fairness to the forest at last.
 
-{{< writing/moral >}}A wise leader ensures everyone has what they need, even when some don’t want to share.{{< /writing/moral >}}
+{{< writing/moral >}}Good intentions and the power to enforce them don’t make taking right. They only make it impossible to refuse.{{< /writing/moral >}}
 
 ## The Owl’s Tale
 
@@ -112,4 +112,4 @@ The squirrels thanked the owl and huddled together to discuss what they had lear
 
 The old owl smiled for the first time in years as she watched the young squirrels begin to plan their new community.
 
-{{< writing/moral >}}Learning from past mistakes, we can build something better.{{< /writing/moral >}}
+{{< writing/moral >}}When no one may keep what they earn, no one bothers to earn it, and plenty turns to empty.{{< /writing/moral >}}
