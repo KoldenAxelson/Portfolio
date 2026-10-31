@@ -1,0 +1,102 @@
+/* /misc/social-pipeline/: the posting pipeline diagram. Markup:
+   layouts/shortcodes/social-pipeline/diagram.html; the SVG is drawn by
+   scripts/pages/social-pipeline/main.ts, which adds .is-js to the figure.
+   Without it, the steps show as a plain numbered list. */
+
+.sp { --sp-held: 217 83 79; --sp-ease: cubic-bezier(.2, .8, .2, 1);
+  margin: 0 0 2rem; padding: 1rem; border: 1px solid rgb(var(--c-border)); border-radius: 1rem;
+  background: radial-gradient(120% 80% at 0% 0%, rgb(var(--c-accent) / .07), transparent 60%), rgb(var(--c-border) / .12); }
+
+/* ---- Controls ----------------------------------------------------------- */
+.sp-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem; margin-bottom: .75rem; }
+.sp-bar[hidden] { display: none; }
+.sp-seg { display: inline-grid; grid-auto-flow: column; padding: 3px; border-radius: 999px; background: rgb(var(--c-border) / .6); }
+.sp-seg-btn { padding: .4rem .9rem; border-radius: 999px; font: 600 .8rem var(--font-sans); color: rgb(var(--c-muted)); transition: background .2s, color .2s; }
+.sp-seg-btn[aria-pressed="true"] { background: rgb(var(--c-bg)); color: rgb(var(--c-fg)); box-shadow: 0 1px 3px rgb(0 0 0 / .12); }
+.sp-seg-btn[data-sp-mode="held"][aria-pressed="true"] { color: rgb(var(--sp-held)); }
+.sp-ctrl { display: inline-flex; gap: .35rem; }
+.sp-btn { display: grid; place-items: center; width: 2.25rem; height: 2.25rem; border: 1px solid rgb(var(--c-border)); border-radius: 999px;
+  background: rgb(var(--c-bg)); color: rgb(var(--c-fg)); font: 600 1rem/1 var(--font-sans); transition: border-color .2s, color .2s; }
+.sp-play { font-size: .7rem; letter-spacing: -.05em; }
+.sp-btn:hover, .sp-seg-btn:hover { color: rgb(var(--c-accent)); }
+.sp-btn:hover { border-color: rgb(var(--c-accent)); }
+
+/* ---- Drawing ------------------------------------------------------------ */
+.sp-stage { min-height: 8rem; }
+.sp-svg { display: block; width: 100%; height: auto; margin: 0 auto; overflow: visible; }
+.sp-tall { max-width: 26rem; }
+.sp-zone rect { fill: rgb(var(--c-bg) / .55); stroke: rgb(var(--c-border)); stroke-width: 1.5; stroke-dasharray: 4 6; }
+.sp-zone-label { font: 700 11px var(--font-mono); letter-spacing: .16em; fill: rgb(var(--c-muted)); }
+.sp-zone-sub { font: 500 11px var(--font-sans); fill: rgb(var(--c-muted) / .8); paint-order: stroke; stroke: rgb(var(--c-bg)); stroke-width: 4px; stroke-linejoin: round; }
+.sp-edge { fill: none; stroke: rgb(var(--c-muted) / .35); stroke-width: 1.6; transition: stroke .3s, stroke-width .3s; }
+.sp-edge.is-held-edge { stroke-dasharray: 5 5; stroke: rgb(var(--sp-held) / .3); }
+.sp-edge.is-done { stroke: rgb(var(--c-accent) / .45); }
+.sp-edge.is-on { stroke: rgb(var(--c-accent)); stroke-width: 2.4; stroke-dasharray: 7 6; animation: sp-march .6s linear infinite; }
+.sp-edge.is-held { stroke: rgb(var(--sp-held)); stroke-width: 2.4; stroke-dasharray: 7 6; animation: sp-march .6s linear infinite; }
+.sp-head { fill: rgb(var(--c-muted) / .5); }
+.sp-head.is-on { fill: rgb(var(--c-accent)); }
+.sp-head.is-held { fill: rgb(var(--sp-held)); }
+.sp-edge-label { font: 600 10.5px var(--font-mono); fill: rgb(var(--c-muted)); paint-order: stroke; stroke: rgb(var(--c-bg)); stroke-width: 4px; stroke-linejoin: round; }
+.sp-edge-label.is-held-edge { fill: rgb(var(--sp-held)); opacity: 0; transition: opacity .3s; }
+.is-held-mode .sp-edge-label.is-held-edge { opacity: 1; }
+.sp-edge.is-held-edge:not(.is-held) { opacity: 0; transition: opacity .3s; }
+.is-held-mode .sp-edge.is-held-edge { opacity: 1; }
+
+.sp-node rect { fill: rgb(var(--c-bg)); stroke: rgb(var(--c-fg) / .22); stroke-width: 1.5; transition: fill .35s, stroke .35s, filter .35s; }
+.sp-node-label { font: 650 13.5px var(--font-sans); fill: rgb(var(--c-fg)); }
+.sp-node-sub { font: 500 10.5px var(--font-sans); fill: rgb(var(--c-muted)); }
+.sp-node.is-done rect { stroke: rgb(var(--c-accent) / .55); }
+.sp-node.is-on rect { fill: rgb(var(--c-accent) / .14); stroke: rgb(var(--c-accent)); stroke-width: 2.2; filter: drop-shadow(0 0 10px rgb(var(--c-accent) / .45)); }
+.sp-node.is-held rect { fill: rgb(var(--sp-held) / .12); stroke: rgb(var(--sp-held)); stroke-width: 2.2; filter: drop-shadow(0 0 10px rgb(var(--sp-held) / .4)); }
+.sp-node.is-on, .sp-node.is-held { animation: sp-pop .45s var(--sp-ease); transform-box: fill-box; transform-origin: center; }
+
+.sp-packet circle { fill: rgb(var(--c-accent)); }
+.sp-packet .sp-packet-halo { fill: rgb(var(--c-accent) / .25); }
+.sp-packet.is-held circle { fill: rgb(var(--sp-held)); }
+.sp-packet.is-held .sp-packet-halo { fill: rgb(var(--sp-held) / .25); }
+
+@keyframes sp-march { to { stroke-dashoffset: -13; } }
+@keyframes sp-pop { 0% { transform: scale(1); } 45% { transform: scale(1.06); } 100% { transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) {
+  .sp-edge.is-on, .sp-edge.is-held, .sp-node.is-on, .sp-node.is-held { animation: none; }
+}
+
+/* ---- Caption and step dots ---------------------------------------------- */
+.sp-caption { min-height: 3.2em; margin: .9rem auto 0; max-width: 42rem; text-align: center;
+  font: 500 1.05rem/1.5 var(--font-sans); color: rgb(var(--c-fg)); text-wrap: balance; }
+.sp-caption.is-held { color: rgb(var(--sp-held)); }
+.sp-caption[hidden] { display: none; }
+
+/* No script: a readable numbered list. */
+.sp-steps { margin: 0; padding: 0; list-style: none; display: grid; gap: .5rem; }
+.sp-step button { display: flex; gap: .75rem; align-items: baseline; width: 100%; text-align: left; font: 500 .95rem/1.45 var(--font-sans); color: rgb(var(--c-fg)); cursor: default; }
+.sp-num { flex: none; display: grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 999px;
+  font: 700 .72rem var(--font-mono); color: rgb(var(--c-muted)); background: rgb(var(--c-border) / .7); transition: background .25s, color .25s, transform .25s; }
+.sp-step.is-held .sp-num { color: rgb(var(--sp-held)); }
+
+/* With script: just the numbers, as a scrubber under the caption. */
+.sp.is-js .sp-steps { display: flex; justify-content: center; flex-wrap: wrap; gap: .4rem; margin-top: .6rem; }
+.sp.is-js .sp-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.sp.is-js .sp-step button { width: auto; cursor: pointer; }
+.sp.is-js .sp-step.is-skipped { display: none; }
+.sp.is-js .sp-step button:hover .sp-num { color: rgb(var(--c-fg)); }
+.sp.is-js .sp-step.is-current .sp-num { background: rgb(var(--c-accent)); color: rgb(var(--c-bg)); transform: scale(1.12); }
+.sp.is-js .sp-step.is-held.is-current .sp-num { background: rgb(var(--sp-held)); color: #fff; }
+
+/* ---- The live queue ----------------------------------------------------- */
+.sp-queue { margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid rgb(var(--c-border)); }
+.sp-queue[hidden] { display: none; }
+.sp-kick { display: flex; align-items: center; gap: .5rem; margin: 0 0 .6rem; font: 700 .68rem var(--font-mono); letter-spacing: .14em; text-transform: uppercase; color: rgb(var(--c-muted)); }
+.sp-dot { width: .5rem; height: .5rem; border-radius: 999px; background: rgb(var(--c-accent)); box-shadow: 0 0 0 0 rgb(var(--c-accent) / .5); animation: sp-ping 2s ease-out infinite; }
+@keyframes sp-ping { 0% { box-shadow: 0 0 0 0 rgb(var(--c-accent) / .5); } 70%, 100% { box-shadow: 0 0 0 .5rem rgb(var(--c-accent) / 0); } }
+@media (prefers-reduced-motion: reduce) { .sp-dot { animation: none; } }
+.sp-q { display: flex; gap: .6rem; margin: 0; padding: 0 0 .5rem; list-style: none; overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: thin; }
+.sp-q-item { flex: 0 0 11.5rem; scroll-snap-align: start; }
+.sp-q-item a { display: flex; flex-direction: column; gap: .3rem; height: 100%; padding: .65rem .75rem; border: 1px solid rgb(var(--c-border)); border-radius: .75rem;
+  background: rgb(var(--c-bg)); text-decoration: none; transition: border-color .2s, transform .2s var(--sp-ease); }
+.sp-q-item a:hover { border-color: rgb(var(--c-accent)); transform: translateY(-2px); }
+.sp-q-date { font: 600 .68rem var(--font-mono); letter-spacing: .04em; color: rgb(var(--c-muted)); }
+.sp-q-title { font: 600 .84rem/1.3 var(--font-sans); color: rgb(var(--c-fg)); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.sp-q-item.is-past { opacity: .55; }
+.sp-q-item.is-next a { border-color: rgb(var(--c-accent)); background: rgb(var(--c-accent) / .08); }
+.sp-q-item.is-next .sp-q-date { color: rgb(var(--c-accent)); }

@@ -1,0 +1,50 @@
+# The posting pipeline as a graph, for /misc/social-pipeline/ (shortcode
+# social-pipeline/diagram, script scripts/pages/social-pipeline/main.ts).
+# Two drawings of the same graph: `wide` (viewBox 1000x480) and `tall` for
+# phones (viewBox 360x960). Coordinates are node centres. Keep this in step
+# with services/workers/social/worker.js and scripts/social/build-queue.py.
+zones:
+  - { id: repo, label: "REPO", sub: "on the laptop", wide: [14, 14, 328, 452], tall: [8, 10, 344, 372] }
+  - { id: cf, label: "CLOUDFLARE", sub: "runs on its own", wide: [356, 14, 352, 452], tall: [8, 400, 344, 288] }
+  - { id: out, label: "OUT", sub: "where people see it", wide: [722, 14, 264, 452], tall: [8, 716, 344, 236] }
+nodes:
+  - { id: art, label: "fal.ai", sub: "art, about 8¢", wide: [98, 110], tall: [92, 72] }
+  - { id: article, label: "Article", sub: "cover + header + card", wide: [258, 110], tall: [268, 72] }
+  - { id: claude, label: "Claude", sub: "LinkedIn post skill", wide: [98, 240], tall: [92, 192] }
+  - { id: queue, label: "queue.yaml", sub: "a Mon or Fri slot", wide: [258, 240], tall: [268, 192] }
+  - { id: build, label: "build-queue.py", sub: "checks + dev.to copy", wide: [258, 370], tall: [268, 312] }
+  - { id: site, label: "Site", sub: "Pages + queue.json", wide: [450, 370], tall: [268, 460] }
+  - { id: cron, label: "Worker", sub: "cron 15:17 UTC", wide: [450, 240], tall: [92, 460] }
+  - { id: live, label: "Live check", sub: "200, canonical, indexed", wide: [620, 240], tall: [92, 580] }
+  - { id: kv, label: "KV", sub: "sent ids + lock", wide: [620, 370], tall: [268, 580] }
+  - { id: devto, label: "dev.to", sub: "Forem API", wide: [854, 90], tall: [92, 776] }
+  - { id: mail, label: "Email", sub: "to Proton", wide: [854, 200], tall: [268, 776] }
+  - { id: copy, label: "Copy page", sub: "one tap copies", wide: [854, 310], tall: [268, 880] }
+  - { id: linkedin, label: "LinkedIn", sub: "Konrad hits Post", wide: [854, 420], tall: [92, 880] }
+edges:
+  - { from: art, to: article }
+  - { from: article, to: queue }
+  - { from: claude, to: queue }
+  - { from: queue, to: build }
+  - { from: build, to: site, label: "git push" }
+  - { from: site, to: cron, label: "reads" }
+  - { from: cron, to: live }
+  - { from: live, to: cron, loop: { wide: top, tall: left }, held: true, label: "not yet" }
+  - { from: live, to: kv }
+  - { from: live, to: devto }
+  - { from: live, to: mail }
+  - { from: mail, to: copy }
+  - { from: copy, to: linkedin }
+# One line each: the caption under the drawing. `held` steps play only in the
+# "page isn't live yet" run, `live` steps only in the normal one.
+steps:
+  - { go: [art>article], light: [art, article], text: "One illustration per article becomes its cover, this header and the link-preview card." }
+  - { go: [article>queue, claude>queue], light: [claude, queue], text: "Claude writes the LinkedIn post and books the next free Monday or Friday." }
+  - { go: [queue>build], light: [build], text: "The build checks the pacing and ids, then writes the dev.to copy." }
+  - { go: [build>site], light: [site], text: "A push publishes the site, queue.json included." }
+  - { go: [site>cron], light: [cron], text: "Every morning the Worker wakes and reads today's slot." }
+  - { go: [cron>live], light: [live], text: "Is the page really up: a 200, its own canonical, not noindex?" }
+  - { go: [live>cron], light: [cron], held: true, text: "Not yet. Nothing goes out; it tries again tomorrow." }
+  - { go: [live>devto, live>mail], light: [devto, mail], live: true, text: "dev.to gets the article, linked home and marked AI-assisted. LinkedIn gets an email." }
+  - { go: [mail>copy, copy>linkedin], light: [copy, linkedin], live: true, text: "One tap copies the post and opens LinkedIn." }
+  - { go: [live>kv], light: [kv], live: true, text: "KV remembers each id, so nothing goes out twice." }

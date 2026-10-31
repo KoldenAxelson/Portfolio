@@ -67,6 +67,9 @@
 {{- /* Brine mining pitch: stylesheet and the payback slider. */ -}}
 {{- if .HasShortcode "brine-mining/glance" }}{{ partial "brine-mining/assets.html" . }}{{ end }}
 
+{{- /* Posting pipeline: stylesheet and the diagram player. */ -}}
+{{- if .HasShortcode "social-pipeline/diagram" }}{{ partial "social-pipeline/assets.html" . }}{{ end }}
+
 {{- /* Supplement stacks: stylesheet. */ -}}
 {{- if .HasShortcode "supplements/stack" }}{{ partial "supplements/assets.html" . }}{{ end }}
 

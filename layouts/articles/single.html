@@ -8,6 +8,18 @@
       · Not listed on the site yet. <a href="{{ partial "func/url.html" "/misc/drafts" }}" class="text-fg underline decoration-border hover:!text-accent">All drafts</a>
     </p>
     {{- end }}
+    {{- /* The header banner: the article's generated art (scripts/images/generate.py
+           cover writes assets/img/headers/<slug>.webp beside the cover and share
+           card). Shown when the file exists, so there's no front matter to keep in
+           step. Cropped to a wide strip here; the house style puts the subject
+           right of centre, hence the 62% focus. Decorative, so alt is empty. */ -}}
+    {{- with resources.Get (printf "headers/%s.webp" .File.ContentBaseName) }}
+    {{- $sm := .Resize "720x webp q80" }}
+    {{- $lg := cond (gt .Width 1440) (.Resize "1440x webp q80") . }}
+    <figure class="article-header mb-8 overflow-hidden rounded-xl border border-border bg-border/30">
+      <img src="{{ $lg.RelPermalink }}" srcset="{{ $sm.RelPermalink }} 720w, {{ $lg.RelPermalink }} {{ $lg.Width }}w" sizes="(min-width: 56rem) 52rem, 100vw" width="{{ $lg.Width }}" height="{{ $lg.Height }}" alt="" fetchpriority="high" decoding="async" class="aspect-video w-full object-cover sm:aspect-[21/9] object-[62%_50%]" />
+    </figure>
+    {{- end }}
     <h1 class="flex items-center gap-3 text-3xl font-medium sm:text-4xl">
       {{- partial "components/article-mark.html" (dict "page" . "class" "h-7 w-7") }}
       <span>{{ .Title }}</span>

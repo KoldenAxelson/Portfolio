@@ -14,7 +14,8 @@ Three steps, three subcommands:
          logs the job to private/images/ledger.csv.
   cover  From that art, writes the square cover (assets/img/covers/<slug>.webp
          and static/img/covers/<slug>.webp, 512px) and the 1200x630 share card
-         (static/img/share/<slug>.jpg) with the article's title set in Inter.
+         (static/img/share/<slug>.jpg) with the article's title set in Inter,
+         and the article's header banner (assets/img/headers/<slug>.webp).
          The model never draws the title: image models still garble letters.
   spent  Prints this month's total and the last few jobs.
 
@@ -84,6 +85,10 @@ HOUSE_STYLE = (
 GREEN = (3, 119, 55)
 CREAM = (250, 247, 240)
 SHARE_SIZE = (1200, 630)
+# The article's header banner: the whole art, no text, for layouts/articles/single.html
+# (which crops it to a wide strip in CSS). Under assets/ so Hugo resizes it.
+HEADER_DIR = ROOT / "assets" / "img" / "headers"
+HEADER_MAX_W = 1600
 COVER_PX = 512
 
 
@@ -287,6 +292,11 @@ def cmd_cover(args: argparse.Namespace) -> None:
         d.mkdir(parents=True, exist_ok=True)
         cover.save(d / f"{args.slug}.webp", "WEBP", quality=84)
 
+    # Header: the art as it is, for the banner over the article.
+    HEADER_DIR.mkdir(parents=True, exist_ok=True)
+    header = art if w <= HEADER_MAX_W else art.resize((HEADER_MAX_W, round(h * HEADER_MAX_W / w)), Image.LANCZOS)
+    header.save(HEADER_DIR / f"{args.slug}.webp", "WEBP", quality=82)
+
     # Share card: the art filling 1200x630, a cream panel on the left with
     # the title, the domain under it, and the site's green as a rule.
     sw, sh = SHARE_SIZE
@@ -320,6 +330,7 @@ def cmd_cover(args: argparse.Namespace) -> None:
     card.save(share, "JPEG", quality=88, optimize=True, progressive=True)
     print(f"Cover: {', '.join(str((d / (args.slug + '.webp')).relative_to(ROOT)) for d in COVER_DIRS)}")
     print(f"Share card: {share.relative_to(ROOT)}")
+    print(f"Header: {(HEADER_DIR / (args.slug + '.webp')).relative_to(ROOT)} (shown automatically)")
     print("Front matter for the article:")
     print(f"  cover: '/covers/{args.slug}.webp'")
     print(f"  image: '/share/{args.slug}.jpg'")

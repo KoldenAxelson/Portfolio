@@ -32,7 +32,7 @@ groups:
   - key: "reference"
     label: "Reference"
     icon: "bookmark"
-    order: ["cool-sites", "tech-watch", "claude", "supplements", "fathers-puzzle", "brine-mining"]
+    order: ["cool-sites", "tech-watch", "claude", "social-pipeline", "supplements", "fathers-puzzle", "brine-mining"]
   - key: "learn"
     label: "Learn"
     icon: "academic-cap"

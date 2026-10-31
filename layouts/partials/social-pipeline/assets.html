@@ -1,0 +1,7 @@
+{{- /* The posting-pipeline diagram's stylesheet and player, for
+       /misc/social-pipeline/. Called once from layouts/misc/single.html when
+       the page uses social-pipeline/diagram. */ -}}
+{{- $css := resources.Get "css/pages/social-pipeline/social-pipeline.css" | minify | fingerprint -}}
+<link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" />
+{{- $js := resources.Get "scripts/pages/social-pipeline/main.ts" | js.Build (dict "minify" true "target" "es2018" "format" "iife") | fingerprint -}}
+<script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}" data-queue="{{ "social/queue.json" | relURL }}"></script>

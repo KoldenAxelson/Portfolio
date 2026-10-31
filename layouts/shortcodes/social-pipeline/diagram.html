@@ -1,0 +1,32 @@
+{{- /* social-pipeline/diagram: how an article gets to dev.to and LinkedIn, as
+       a looping animation. The graph is data/social-pipeline.yaml; this renders
+       it as a numbered list (what you get without the script, and what a
+       screen reader reads), and scripts/pages/social-pipeline/main.ts draws
+       the SVG from the same JSON and plays the steps. The queue strip is
+       fetched live from /social/queue.json. Styles: css/pages/social-pipeline. */ -}}
+{{- $g := index site.Data "social-pipeline" -}}
+<figure class="not-prose sp" data-sp>
+  <div class="sp-bar" hidden>
+    <div class="sp-seg" role="group" aria-label="Which morning">
+      <button type="button" class="sp-seg-btn" data-sp-mode="live" aria-pressed="true">Page is live</button>
+      <button type="button" class="sp-seg-btn" data-sp-mode="held" aria-pressed="false">Not live yet</button>
+    </div>
+    <div class="sp-ctrl">
+      <button type="button" class="sp-btn" data-sp-prev aria-label="Previous step">‹</button>
+      <button type="button" class="sp-btn sp-play" data-sp-play aria-label="Pause">❚❚</button>
+      <button type="button" class="sp-btn" data-sp-next aria-label="Next step">›</button>
+    </div>
+  </div>
+  <div class="sp-stage" data-sp-stage></div>
+  <p class="sp-caption" data-sp-caption aria-live="polite" hidden></p>
+  <ol class="sp-steps" data-sp-steps>
+    {{- range $i, $s := $g.steps }}
+    <li class="sp-step{{ if $s.held }} is-held{{ end }}{{ if $s.live }} is-live{{ end }}" data-i="{{ $i }}"><button type="button" tabindex="-1"><span class="sp-num">{{ add $i 1 }}</span><span class="sp-text">{{ $s.text }}</span></button></li>
+    {{- end }}
+  </ol>
+  <div class="sp-queue" data-sp-queue hidden>
+    <p class="sp-kick"><span class="sp-dot" aria-hidden="true"></span>The queue right now</p>
+    <ol class="sp-q" data-sp-q></ol>
+  </div>
+  <script type="application/json" data-sp-graph>{{ $g | jsonify | safeJS }}</script>
+</figure>

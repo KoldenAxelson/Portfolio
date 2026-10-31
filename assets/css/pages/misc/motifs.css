@@ -349,3 +349,70 @@
   .mf-bm .ingot { opacity: 1; }
   .mf-bm .fresh, .mf-bm .drop, .mf-bm .emit, .mf-bm .glint { display: none; }
 }
+
+/* ---- Posting Pipeline: article → Worker → dev.to + email → LinkedIn ------
+   One 6s loop, partials/misc/live/social-pipeline.html. The packets ride
+   offset-path; each wire lights behind its packet (pathLength="1"). */
+.mf-pp { --pp-t: 6s; --pp-li: 10 102 194; }
+.mf-pp .pp-wire { fill: none; stroke: rgb(var(--c-muted) / .3); stroke-width: 1.4; }
+.mf-pp .pp-lit { fill: none; stroke: rgb(var(--c-accent)); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 1 1; stroke-dashoffset: 1; opacity: 0; }
+.mf-pp .pp-lit-a { animation: mf-pp-lit-a var(--pp-t) ease-in-out infinite; }
+.mf-pp .pp-lit-b, .mf-pp .pp-lit-c { animation: mf-pp-lit-bc var(--pp-t) ease-in-out infinite; }
+.mf-pp .pp-lit-d { animation: mf-pp-lit-d var(--pp-t) ease-in-out infinite; }
+@keyframes mf-pp-lit-a  { 0% { stroke-dashoffset: 1; opacity: 1; } 18% { stroke-dashoffset: 0; opacity: 1; } 92% { stroke-dashoffset: 0; opacity: 1; } 100% { stroke-dashoffset: 0; opacity: 0; } }
+@keyframes mf-pp-lit-bc { 0%, 26% { stroke-dashoffset: 1; opacity: 1; } 46% { stroke-dashoffset: 0; } 92% { stroke-dashoffset: 0; opacity: 1; } 100% { stroke-dashoffset: 0; opacity: 0; } }
+@keyframes mf-pp-lit-d  { 0%, 52% { stroke-dashoffset: 1; opacity: 1; } 63% { stroke-dashoffset: 0; } 92% { stroke-dashoffset: 0; opacity: 1; } 100% { stroke-dashoffset: 0; opacity: 0; } }
+
+.mf-pp .pp-dot { fill: rgb(var(--c-accent)); opacity: 0; offset-rotate: 0deg; filter: drop-shadow(0 0 3px rgb(var(--c-accent) / .8)); }
+.mf-pp .pp-dot-a { animation: mf-pp-dot-a var(--pp-t) ease-in-out infinite; }
+.mf-pp .pp-dot-b, .mf-pp .pp-dot-c { animation: mf-pp-dot-bc var(--pp-t) ease-in-out infinite; }
+.mf-pp .pp-dot-d { animation: mf-pp-dot-d var(--pp-t) ease-in-out infinite; }
+@keyframes mf-pp-dot-a  { 0% { offset-distance: 0%; opacity: 1; } 18% { offset-distance: 100%; opacity: 1; } 20%, 100% { offset-distance: 100%; opacity: 0; } }
+@keyframes mf-pp-dot-bc { 0%, 25% { offset-distance: 0%; opacity: 0; } 26% { opacity: 1; } 46% { offset-distance: 100%; opacity: 1; } 48%, 100% { offset-distance: 100%; opacity: 0; } }
+@keyframes mf-pp-dot-d  { 0%, 51% { offset-distance: 0%; opacity: 0; } 52% { opacity: 1; } 63% { offset-distance: 100%; opacity: 1; } 65%, 100% { offset-distance: 100%; opacity: 0; } }
+
+/* The article: its header art catches the light as it leaves. */
+.mf-pp .pp-art { fill: rgb(var(--c-accent) / .22); }
+.mf-pp .pp-hill { fill: rgb(var(--c-accent) / .55); }
+.mf-pp .pp-sun { fill: #f59e0b; }
+.mf-pp .pp-text { fill: none; stroke: rgb(var(--c-muted) / .7); stroke-width: 2.4; stroke-linecap: round; }
+.mf-pp .pp-doc { transform-box: fill-box; transform-origin: center; animation: mf-pp-doc var(--pp-t) ease-out infinite; }
+@keyframes mf-pp-doc { 0% { transform: scale(1.05); } 10%, 100% { transform: none; } }
+
+/* The Worker's clock: the minute hand sweeps once a loop; it pulses on arrival. */
+.mf-pp .pp-ring { fill: rgb(var(--c-bg) / .9); stroke: rgb(var(--c-fg) / .55); stroke-width: 1.5; }
+.mf-pp .pp-ticks { stroke: rgb(var(--c-muted)); stroke-width: 1.4; stroke-linecap: round; }
+.mf-pp .pp-hand, .mf-pp .pp-hand-h { stroke: rgb(var(--c-fg)); stroke-width: 1.8; stroke-linecap: round; }
+.mf-pp .pp-hand { transform-origin: 160px 96px; animation: mf-spin var(--pp-t) linear infinite; }
+.mf-pp .pp-pulse { fill: none; stroke: rgb(var(--c-accent)); stroke-width: 2; opacity: 0; transform-origin: 160px 96px; animation: mf-pp-pulse var(--pp-t) ease-out infinite; }
+@keyframes mf-pp-pulse { 0%, 17% { opacity: 0; transform: scale(1); } 19% { opacity: .9; transform: scale(1); } 32%, 100% { opacity: 0; transform: scale(1.6); } }
+.mf-pp .pp-check circle { fill: rgb(var(--c-accent)); }
+.mf-pp .pp-check path { fill: none; stroke: rgb(var(--c-bg)); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.mf-pp .pp-check { transform-box: fill-box; transform-origin: center; opacity: 0; animation: mf-pp-check var(--pp-t) cubic-bezier(.2, .9, .3, 1.4) infinite; }
+@keyframes mf-pp-check { 0%, 19% { opacity: 0; transform: scale(.2); } 25%, 92% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
+
+/* The tiles: each lands with a bump when its packet arrives. */
+.mf-pp .pp-tile { transform-box: fill-box; transform-origin: center; }
+.mf-pp .pp-devto rect { fill: rgb(var(--c-fg)); }
+.mf-pp .pp-devto text { font: 700 10px var(--font-mono); fill: rgb(var(--c-bg)); }
+.mf-pp .pp-devto, .mf-pp .pp-mail { animation: mf-pp-land-bc var(--pp-t) ease-out infinite; }
+@keyframes mf-pp-land-bc { 0%, 45% { transform: none; } 49% { transform: scale(1.1); } 55%, 100% { transform: none; } }
+.mf-pp .pp-env { fill: rgb(var(--c-bg)); stroke: rgb(var(--c-fg) / .7); stroke-width: 1.2; }
+.mf-pp .pp-flap { fill: none; stroke: rgb(var(--c-fg) / .7); stroke-width: 1.2; stroke-linejoin: round; transform-box: fill-box; transform-origin: 50% 0; animation: mf-pp-flap var(--pp-t) ease-in-out infinite; }
+@keyframes mf-pp-flap { 0%, 47% { transform: none; } 53%, 60% { transform: scaleY(-1); } 66%, 100% { transform: none; } }
+.mf-pp .pp-li rect { fill: rgb(var(--pp-li)); }
+.mf-pp .pp-li text { font: 700 10px var(--font-sans); fill: #fff; }
+.mf-pp .pp-li { animation: mf-pp-land-d var(--pp-t) ease-out infinite; }
+@keyframes mf-pp-land-d { 0%, 62% { transform: none; filter: none; } 66% { transform: scale(1.12); filter: drop-shadow(0 0 6px rgb(var(--pp-li) / .7)); } 74%, 100% { transform: none; filter: none; } }
+.mf-pp .pp-like { fill: #f43f5e; opacity: 0; animation: mf-pp-like var(--pp-t) ease-out infinite; animation-delay: calc(var(--i) * .25s); }
+@keyframes mf-pp-like { 0%, 66% { opacity: 0; translate: 0 0; } 70% { opacity: 1; } 92% { opacity: .9; translate: 0 -26px; } 96%, 100% { opacity: 0; translate: 0 -30px; } }
+
+/* The week: the next posting day blinks. */
+.mf-pp .pp-day { fill: rgb(var(--c-border)); }
+.mf-pp .pp-day.is-on { fill: rgb(var(--c-accent)); }
+.mf-pp .pp-day.is-next { animation: mf-blink 2s steps(1) infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .mf-pp .pp-lit, .mf-pp .pp-check { opacity: 1; stroke-dashoffset: 0; }
+  .mf-pp .pp-dot, .mf-pp .pp-pulse, .mf-pp .pp-like { display: none; }
+}
