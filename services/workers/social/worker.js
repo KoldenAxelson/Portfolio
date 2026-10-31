@@ -17,7 +17,7 @@
 //   SOCIAL         KV namespace
 //   MAILER         send_email binding, locked to Konrad's verified address
 //   DEVTO_API_KEY  secret
-//   RUN_KEY        secret, for /run and /status
+//   RUN_KEY        secret, for /run, /status and /test
 //   QUEUE_URL, MAIL_FROM, MAIL_TO, PAGE_BASE   plain vars
 
 import { EmailMessage } from "cloudflare:email";
@@ -241,6 +241,14 @@ export default {
     const authed = url.searchParams.get("key") && url.searchParams.get("key") === env.RUN_KEY;
     if (url.pathname === "/run" && authed) {
       return Response.json(await run(env));
+    }
+    // A sample email with the first queued post, marking nothing as sent.
+    if (url.pathname === "/test" && authed) {
+      const item = (await loadQueue(env)).find((i) => i.linkedin);
+      if (!item) return Response.json({ sent: false, reason: "nothing in the queue" });
+      const note = ["This is a test. Nothing was posted or marked as sent."];
+      await sendEmail(env, `Test: LinkedIn post ready: ${item.title}`, emailHtml(env, [item], note), emailText(env, [item], note));
+      return Response.json({ sent: true, id: item.id });
     }
     if (url.pathname === "/status" && authed) {
       const items = await loadQueue(env);

@@ -4,6 +4,7 @@
     make social-deploy           # create or update everything, idempotent
     make social-status           # what's queued, what's been sent
     make social-run              # run today's batch now instead of waiting for the cron
+    make social-test             # email a sample of the first queued post; marks nothing sent
 
 No wrangler and no Node: the site stays Node-free, so this talks to the API
 directly. It needs a Cloudflare API token in .env (CLOUDFLARE_API_TOKEN=,
@@ -37,7 +38,7 @@ KV_TITLE = "wrightfunctions-social"
 API = "https://api.cloudflare.com/client/v4"
 QUEUE_URL = "https://wrightfunctions.com/social/queue.json"
 MAIL_FROM = "social@wrightfunctions.com"
-MAIL_TO = "konradwright95@gmail.com"  # a verified Email Routing destination
+MAIL_TO = "konradwright@protonmail.com"  # a verified Email Routing destination
 CRON = "17 15 * * *"  # 15:17 UTC: 8:17 a.m. Pacific in summer, 7:17 in winter
 COMPAT_DATE = "2025-01-15"
 UA = "wrightfunctions-social-deploy/1.0 (+https://wrightfunctions.com)"
@@ -162,4 +163,4 @@ def poke(path: str) -> None:
 
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else "deploy"
-    {"deploy": deploy, "status": lambda: poke("/status"), "run": lambda: poke("/run")}.get(cmd, lambda: die(f"unknown command {cmd}"))()
+    {"deploy": deploy, "status": lambda: poke("/status"), "run": lambda: poke("/run"), "test": lambda: poke("/test")}.get(cmd, lambda: die(f"unknown command {cmd}"))()
