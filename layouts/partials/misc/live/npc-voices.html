@@ -34,7 +34,7 @@
   {{- $lift := cond (ge $i $lastWordAt) 12 0 }}
   {{- $y := sub (add 62 (mul $syllable 2.5)) $lift }}
   <rect class="nv-under" x="{{ sub $x 0.5 }}" y="135" width="{{ $advance }}" height="1.6" style="animation-delay: {{ $delay }}s" />
-  <circle class="nv-blip" cx="{{ add $x 3.3 }}" cy="{{ $y }}" r="3.4" style="animation-delay: {{ $delay }}s" />
+  <g transform="translate({{ add $x 3.3 }} {{ $y }})"><circle class="nv-blip pivot" r="3.4" style="animation-delay: {{ $delay }}s" /></g>
   {{- $syllable = add $syllable 1 }}
   {{- end }}
   {{- end }}

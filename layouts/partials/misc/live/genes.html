@@ -11,6 +11,10 @@
   clipped to the helix. That slide is the same wave the beads ride, so the
   strands and the beads stay together.
 
+  Each column is drawn around its own 0,0 (the wrapper's transform attribute
+  places it), so the rung and beads pivot on 0 0 and the strands slide by
+  --mf-px pixels: see the zoom note at the top of motifs.css.
+
   Every moving part also carries its position at the poster moment as an
   inline transform, so with reduced motion the card is the same helix, frozen
   mid-turn. The CSS animation overrides it while running. The delays below
@@ -56,15 +60,17 @@
   {{- $depthDelay := printf "%.3fs" (mul -1 (add $phase 0.25) $turnSeconds) }}
   {{- $depthDelayOpposite := printf "%.3fs" (mul -1 (add $phase 0.75) $turnSeconds) }}
   <g class="pair">
-    <g class="rung" style="--d: {{ $delay }}; transform-origin: {{ $x }}px {{ $centerY }}px; transform: scaleY({{ printf "%.3f" $cos }})">
-      <line class="base base-{{ $base }}" x1="{{ $x }}" y1="{{ $centerY }}" x2="{{ $x }}" y2="{{ sub $centerY $amplitude }}" />
-      <line class="base base-{{ $pair }}" x1="{{ $x }}" y1="{{ $centerY }}" x2="{{ $x }}" y2="{{ add $centerY $amplitude }}" />
-    </g>
-    <g class="strand" style="--d: {{ $delay }}; transform: translateY({{ printf "%.2f" (mul -1 $amplitude $cos) }}px)">
-      <circle class="bead" cx="{{ $x }}" cy="{{ $centerY }}" r="3.6" style="--d: {{ $depthDelay }}; transform: scale({{ printf "%.3f" (add 0.775 (mul 0.225 $sin)) }})" />
-    </g>
-    <g class="strand" style="--d: {{ $delayOpposite }}; transform: translateY({{ printf "%.2f" (mul $amplitude $cos) }}px)">
-      <circle class="bead bead-b" cx="{{ $x }}" cy="{{ $centerY }}" r="3.6" style="--d: {{ $depthDelayOpposite }}; transform: scale({{ printf "%.3f" (sub 0.775 (mul 0.225 $sin)) }})" />
+    <g transform="translate({{ $x }} {{ $centerY }})">
+      <g class="rung pivot" style="--d: {{ $delay }}; transform: scaleY({{ printf "%.3f" $cos }})">
+        <line class="base base-{{ $base }}" y2="{{ mul -1 $amplitude }}" />
+        <line class="base base-{{ $pair }}" y2="{{ $amplitude }}" />
+      </g>
+      <g class="strand" style="--d: {{ $delay }}; transform: translateY(calc({{ printf "%.2f" (mul -1 $amplitude $cos) }}px * var(--mf-px, 1)))">
+        <circle class="bead pivot" r="3.6" style="--d: {{ $depthDelay }}; transform: scale({{ printf "%.3f" (add 0.775 (mul 0.225 $sin)) }})" />
+      </g>
+      <g class="strand" style="--d: {{ $delayOpposite }}; transform: translateY(calc({{ printf "%.2f" (mul $amplitude $cos) }}px * var(--mf-px, 1)))">
+        <circle class="bead bead-b pivot" r="3.6" style="--d: {{ $depthDelayOpposite }}; transform: scale({{ printf "%.3f" (sub 0.775 (mul 0.225 $sin)) }})" />
+      </g>
     </g>
   </g>
   {{- end }}

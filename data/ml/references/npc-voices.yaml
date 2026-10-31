@@ -1,13 +1,69 @@
-# References for content/misc/npc-voices.md, rendered by {{< ml/references >}} under
-# its Sources heading. Numbering is automatic; add a video by adding an entry.
+# Sources for content/misc/npc-voices.md, rendered by {{< ml/references >}}
+# under its Sources heading. Numbering is automatic; add a source by adding an
+# entry. Looked up 2026-10-31.
 
 - tag: Video
   title: "I Gave My NPCs Voices Without Recording Anything"
   url: "https://youtu.be/NaW0d7Tghw0"
   meta: "UnitOfTime · YouTube · watched October 2026"
-  note: "The three flavors, the typewriter timer, formant vowels and the three fixes, tube length per character, vowel groups, and the punctuation tune."
+  note: "The system this toy rebuilds: a typewriter clock, vowels from a buzz and three bands, a cast from tube length, one sound per syllable, and a tune from punctuation. Watch it for how the trick works."
 - tag: Repo
   title: "unitoftime/flow"
   url: "https://github.com/unitoftime/flow"
   meta: "UnitOfTime · GitHub · MIT"
-  note: "The Go game library behind the channel. It has an audio package, but no mumble speech that I could see."
+  note: "The Go game library behind the channel. It has an audio package, but no mumble speech that I could see, so the code here is my own rebuild."
+- tag: Paper
+  title: "Control Methods Used in a Study of the Vowels"
+  url: "https://doi.org/10.1121/1.1906875"
+  meta: "Peterson and Barney · J. Acoust. Soc. Am. 24(2) · 1952"
+  note: "The vowel bands. Bell Labs measured the vowels of 76 speakers; their averages for adult men are where the six vowels here start. They have no \"oh\", so oh borrows their vowel in \"hawed\"."
+- tag: Paper
+  title: "Software for a Cascade/Parallel Formant Synthesizer"
+  url: "https://doi.org/10.1121/1.383940"
+  meta: "Dennis H. Klatt · J. Acoust. Soc. Am. 67(3) · 1980"
+  note: "The classic version of the buzz-through-resonators idea, with a buzz source and a bank of formant resonators. The voices here are a tiny cousin: three resonators side by side, Klatt's parallel layout."
+- tag: Paper
+  title: "Acoustic Loci and Transitional Cues for Consonants"
+  url: "https://doi.org/10.1121/1.1908024"
+  meta: "Delattre, Liberman and Cooper · J. Acoust. Soc. Am. 27(4) · 1955"
+  note: "Where the consonants come from. A b, d or g is heard in where the vowel's second band glides in from: about 720, 1800 and 3000 Hz. Each syllable here slides its bands in from the consonant's spot."
+- tag: Paper
+  title: "Acoustic Characteristics of English Fricatives"
+  url: "https://doi.org/10.1121/1.1288413"
+  meta: "Jongman, Wayland and Wong · J. Acoust. Soc. Am. 108(3) · 2000"
+  note: "The hiss in s and sh. \"sh\" peaks around 2.5 to 3 kHz and \"s\" well above it, which is where the noise bands for the two sit."
+- tag: Wiki
+  title: "Animalese"
+  url: "https://nookipedia.com/wiki/Animalese"
+  meta: "Nookipedia · Animal Crossing wiki"
+  note: "How Animal Crossing's villagers talk: every letter spelled out as a sound, faster or slower depending on the game, higher when a villager is happy and lower when sad or angry, with cranky villagers deeper and gravellier."
+- tag: Wiki
+  title: "Bebebese"
+  url: "https://nookipedia.com/wiki/Bebebese"
+  meta: "Nookipedia · Animal Crossing wiki"
+  note: "Animal Crossing's other voice, a typewriter-like patter with no vowels in it. Villagers use it for muttered or whispered lines, shown as faded text."
+- tag: Repo
+  title: "animalese.js"
+  url: "https://github.com/Acedio/animalese.js"
+  meta: "Acedio · GitHub · with a live demo"
+  note: "Someone else's take on the same itch: a JavaScript library that approximates villager speech in the browser, with a demo you can type into."
+- tag: Interview
+  title: "20 Years After The Release Of Banjo-Kazooie, We Speak To The Guys Who Made It"
+  url: "https://www.nintendolife.com/news/2018/12/feature_20_years_after_the_release_of_banjo-kazooie_we_speak_to_the_guys_who_made_it"
+  meta: "Kyle Campbell · Nintendo Life · June 2018"
+  note: "Why Banjo grunts. Programmer Chris Sutherland was Banjo's voice; the team went with edited noises over recorded speech because the game was racing to finish, and the \"Guhuh\" was Tim Stamper's idea."
+- tag: Repo
+  title: "ut-voice"
+  url: "https://github.com/Broknsun/ut-voice"
+  meta: "Broknsun · GitHub · MIT"
+  note: "An Undertale-style blip voice built from pure synthesis, no game audio. Its point that a beep needs a little random pitch to sound like a throat and not a telegraph applies to every voice in this toy."
+- tag: Article
+  title: "Synchronize audio and video playback on the web"
+  url: "https://web.dev/articles/audio-output-latency"
+  meta: "François Beaufort · web.dev · updated June 2022"
+  note: "Why the lit letters wait for the sound: a browser can say how far behind the speakers run, and a page can use that to paint what you see at the moment you hear it."
+- tag: Bug
+  title: "Audio passed through WebAudio is delayed and glitchy on Safari"
+  url: "https://bugs.webkit.org/show_bug.cgi?id=221334"
+  meta: "WebKit Bugzilla · bug 221334 · opened 2021, still open"
+  note: "Safari on a Mac can play Web Audio close to a second late over Bluetooth headphones. The toy asks the browser which sample is actually playing rather than trusting the clock alone."

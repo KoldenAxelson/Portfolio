@@ -32,7 +32,7 @@
   <path d="M52 86 h56" class="rim" />
   {{- range $i, $p := $parts }}
   {{- $fill := index $fills $i }}
-  <g class="pill" style="--i: {{ $i }}">
+  <g transform="translate(80 96)"><g class="pill pivot" style="--i: {{ $i }}"><g transform="translate(-80 -96)">
     {{- if $p.softgel }}
     <ellipse cx="80" cy="96" rx="12" ry="7" fill="{{ $fill | safeCSS }}" />
     <ellipse cx="76" cy="93" rx="4" ry="2" fill="#fff" opacity=".45" />
@@ -40,7 +40,7 @@
     <rect x="66" y="90" width="28" height="12" rx="6" fill="#f4f1ea" />
     <path d="M80 90 h8 a6 6 0 0 1 0 12 h-8 z" fill="{{ $fill | safeCSS }}" />
     {{- end }}
-  </g>
+  </g></g></g>
   {{- end }}
   {{- /* the checklist */}}
   {{- range $i, $p := $parts }}

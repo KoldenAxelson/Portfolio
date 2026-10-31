@@ -16,7 +16,7 @@
   <text class="kicker" x="14" y="18">DAGEA · THE KNOWN WORLD</text>
   {{- /* The chart, 1000×773 in its own units, fitted into the band. */}}
   <svg x="38" y="8" width="244" height="188" viewBox="{{ $map.viewBox }}">
-    <g class="chart">
+    <g transform="translate(500 386)"><g class="chart pivot"><g transform="translate(-500 -386)">
     <g class="lands">
       {{- range $i, $code := $order }}{{ with index $map.units $code }}
       <path class="land" d="{{ .d }}" style="--i: {{ $i }}" />
@@ -41,15 +41,15 @@
     {{- range $i, $code := $order }}{{ with index $map.units $code }}
     <text class="name" x="{{ .cx }}" y="{{ .cy }}" text-anchor="middle" style="--i: {{ $i }}">{{ .name }}</text>
     {{- end }}{{ end }}
-    </g>
+    </g></g></g>
   </svg>
   {{- /* Compass rose, top right. */}}
-  <g class="rose" transform="translate(292 44)">
+  <g transform="translate(292 44)"><g class="rose pivot">
     <circle r="14" class="line" />
     <path d="M0 -17 L3 -3 L0 0 L-3 -3 Z" class="accent" />
     <path d="M0 17 L3 3 L0 0 L-3 3 Z" class="muted" />
     <path d="M-17 0 L-3 -3 L0 0 L-3 3 Z M17 0 L3 -3 L0 0 L3 3 Z" class="muted" fill-opacity=".6" />
     <text y="-20" text-anchor="middle" class="mono accent" font-size="6" font-weight="700">N</text>
-  </g>
+  </g></g>
 </svg>
 </span>

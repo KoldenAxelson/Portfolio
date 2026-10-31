@@ -62,7 +62,7 @@
     </g>
     <path class="now-base" d="{{ $d }}" />
     <path class="now-trace" d="{{ $d }}" pathLength="1" />
-    <circle class="now-head" r="3.4" style="offset-path: path('{{ $d }}')" />
+    <circle class="now-head on-path" r="3.4" style="--r: 3.4px; offset-path: path('{{ $d }}')" />
     {{- range $marks }}
     <text x="{{ .x }}" y="166" text-anchor="middle" font-size="{{ cond .focus "9" "7.5" }}" class="{{ cond .focus "sans fg" "sans muted" }}" font-weight="{{ cond .focus "650" "500" }}">{{ .title }}</text>
     {{- end }}

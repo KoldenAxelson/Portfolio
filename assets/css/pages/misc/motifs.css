@@ -28,16 +28,34 @@
 .mf .stroke-accent { fill: none; stroke: rgb(var(--c-accent)); }
 .mf .panel { fill: rgb(var(--c-bg) / 0.85); stroke: rgb(var(--c-border)); stroke-width: 1; }
 
+/* Page zoom. Safari multiplies pixel lengths in a CSS transform on an SVG
+   element by the page zoom (WebKit bug 194903, still there in 2026), so on a
+   zoomed page every pixel pivot drifts and every pixel slide overshoots. Two
+   rules keep the cards right at any zoom:
+   · Anything that turns or scales carries .pivot and is drawn around its own
+     0,0, with a wrapper's transform attribute (which zoom leaves alone)
+     putting it in place. It pivots on 0 0, and zero stays zero.
+   · Every pixel slide is multiplied by --mf-px, the stretch that
+     scripts/site/widgets/svg-zoom.ts measures and divides back out. It is 1
+     everywhere except a zoomed Safari.
+   · A dot riding an offset-path (.on-path) has its path stretched the same
+     way. Its scale is --mf-px, which shrinks the ride back onto the track
+     (scale applies after the path offset), and its radius --r grows by the
+     same factor so the dot itself stays the same size. */
+:root { --mf-px: 1; }
+.mf .pivot { transform-box: view-box; transform-origin: 0 0; }
+.mf .on-path { transform-box: view-box; transform-origin: 0 0; scale: var(--mf-px); r: calc(var(--r) / var(--mf-px)); }
+
 /* ---- VPS Protection: probes break on a closed firewall ------------------- */
 .mf-vps .probe { animation: mf-vps-probe var(--d, 2.4s) cubic-bezier(.4, 0, .9, .6) var(--delay, 0s) infinite; opacity: 0; }
 @keyframes mf-vps-probe {
-  0% { transform: translate(var(--x0), var(--y0)); opacity: 0; }
+  0% { transform: translate(calc(var(--x0) * var(--mf-px)), calc(var(--y0) * var(--mf-px))); opacity: 0; }
   10% { opacity: 1; }
-  70% { transform: translate(var(--x1), var(--y1)); opacity: 1; }
-  78%, 100% { transform: translate(var(--x1), var(--y1)) scale(2.4); opacity: 0; }
+  70% { transform: translate(calc(var(--x1) * var(--mf-px)), calc(var(--y1) * var(--mf-px))); opacity: 1; }
+  78%, 100% { transform: translate(calc(var(--x1) * var(--mf-px)), calc(var(--y1) * var(--mf-px))) scale(2.4); opacity: 0; }
 }
-.mf-vps .ring { stroke-dasharray: 6 5; animation: mf-spin 18s linear infinite; transform-origin: 160px 104px; }
-.mf-vps .ring-flash { opacity: 0; animation: mf-vps-flash 2.4s ease-out infinite; transform-origin: 160px 104px; }
+.mf-vps .ring { stroke-dasharray: 6 5; animation: mf-spin 18s linear infinite; }
+.mf-vps .ring-flash { opacity: 0; animation: mf-vps-flash 2.4s ease-out infinite; }
 @keyframes mf-vps-flash { 0%, 66% { opacity: 0; } 72% { opacity: .55; } 100% { opacity: 0; } }
 .mf-vps .tunnel { stroke-dasharray: 3 4; animation: mf-dash 1.2s linear infinite; }
 .mf-vps .led { animation: mf-blink 1.6s steps(1) infinite; }
@@ -51,12 +69,12 @@
 .mf-dnd .stage { opacity: 0; animation: mf-dnd-stage 12s infinite; animation-delay: calc(var(--i) * 3s); }
 .mf-dnd .stage:first-of-type { opacity: 1; }
 @keyframes mf-dnd-stage { 0% { opacity: 0; } 3%, 22% { opacity: 1; } 25%, 100% { opacity: 0; } }
-.mf-dnd .die { transform-box: fill-box; transform-origin: center; animation: mf-dnd-roll 12s cubic-bezier(.2, .9, .3, 1) infinite; animation-delay: calc(var(--i) * 3s); }
+.mf-dnd .die { animation: mf-dnd-roll 12s cubic-bezier(.2, .9, .3, 1) infinite; animation-delay: calc(var(--i) * 3s); }
 @keyframes mf-dnd-roll { 0% { transform: rotate(-200deg) scale(.6); } 8%, 100% { transform: rotate(0) scale(1); } }
 .mf-dnd .roll { opacity: 0; animation: mf-dnd-num 12s infinite; animation-delay: calc(var(--i) * 3s); }
 @keyframes mf-dnd-num { 0%, 7% { opacity: 0; } 9%, 22% { opacity: 1; } 25%, 100% { opacity: 0; } }
 .mf-dnd .move { opacity: 0; animation: mf-dnd-move 12s infinite; animation-delay: calc(var(--i) * 3s); }
-@keyframes mf-dnd-move { 0%, 9% { opacity: 0; transform: translateX(-6px); } 12%, 22% { opacity: 1; transform: none; } 25%, 100% { opacity: 0; } }
+@keyframes mf-dnd-move { 0%, 9% { opacity: 0; transform: translateX(calc(-6px * var(--mf-px))); } 12%, 22% { opacity: 1; transform: none; } 25%, 100% { opacity: 0; } }
 
 /* ---- Drafts: the PIN goes in, the lock lifts, a draft peeks out ---------- */
 /* The dots fill one by one, then all four clear together when it relocks:
@@ -71,12 +89,12 @@
 @keyframes mf-drafts-pin-3 { 0%, 16% { fill-opacity: 0; } 17%, 76% { fill-opacity: 1; } 77%, 100% { fill-opacity: 0; } }
 @keyframes mf-drafts-pin-4 { 0%, 22% { fill-opacity: 0; } 23%, 76% { fill-opacity: 1; } 77%, 100% { fill-opacity: 0; } }
 .mf-drafts .shackle { animation: mf-drafts-open 6s infinite; }
-@keyframes mf-drafts-open { 0%, 26% { transform: none; } 32%, 70% { transform: translateY(-9px); } 76%, 100% { transform: none; } }
+@keyframes mf-drafts-open { 0%, 26% { transform: none; } 32%, 70% { transform: translateY(calc(-9px * var(--mf-px))); } 76%, 100% { transform: none; } }
 .mf-drafts .doc { animation: mf-drafts-doc 6s infinite; opacity: 0; }
-@keyframes mf-drafts-doc { 0%, 30% { opacity: 0; transform: translateY(16px); } 40%, 66% { opacity: 1; transform: none; } 74%, 100% { opacity: 0; transform: translateY(16px); } }
+@keyframes mf-drafts-doc { 0%, 30% { opacity: 0; transform: translateY(calc(16px * var(--mf-px))); } 40%, 66% { opacity: 1; transform: none; } 74%, 100% { opacity: 0; transform: translateY(calc(16px * var(--mf-px))); } }
 
 /* ---- Tech Watch: a radar picks up what I'm watching -------------------- */
-.mf-tw .sweep { transform-origin: 160px 108px; animation: mf-spin 4s linear infinite; }
+.mf-tw .sweep { animation: mf-spin 4s linear infinite; }
 .mf-tw .blip { animation: mf-tw-blip 4s linear infinite; animation-delay: var(--delay); opacity: .25; }
 @keyframes mf-tw-blip { 0% { opacity: 1; } 55% { opacity: .25; } 100% { opacity: .25; } }
 
@@ -90,7 +108,7 @@
 @keyframes mf-logic-2 { 0%, 25% { opacity: 0; } 31%, 92% { opacity: 1; } 100% { opacity: 0; } }
 @keyframes mf-logic-3 { 0%, 55% { opacity: 0; } 61%, 92% { opacity: 1; } 100% { opacity: 0; } }
 .mf-logic .who { animation: mf-logic-drop 8s cubic-bezier(.5, 0, .3, 1.3) infinite; }
-@keyframes mf-logic-drop { 0%, 25% { transform: translate(-62px, -86px); } 40%, 100% { transform: none; } }
+@keyframes mf-logic-drop { 0%, 25% { transform: translate(calc(-62px * var(--mf-px)), calc(-86px * var(--mf-px))); } 40%, 100% { transform: none; } }
 .mf-logic .outer { animation: mf-logic-lit 8s infinite; }
 @keyframes mf-logic-lit { 0%, 55% { stroke: rgb(var(--c-border)); } 62%, 92% { stroke: rgb(var(--c-accent)); } 100% { stroke: rgb(var(--c-border)); } }
 
@@ -99,7 +117,7 @@
 @keyframes mf-braid-draw { 0% { stroke-dashoffset: var(--len); } 80%, 92% { stroke-dashoffset: 0; opacity: 1; } 100% { stroke-dashoffset: 0; opacity: 0; } }
 
 /* ---- Python for ML: fit a model, watch the loss fall ------------------- */
-.mf-py .cover { transform-box: fill-box; transform-origin: right center; transform: scaleX(0); animation: mf-py-type 8s steps(var(--n)) infinite backwards; animation-delay: var(--delay); }
+.mf-py .cover { transform: scaleX(0); animation: mf-py-type 8s steps(var(--n)) infinite backwards; animation-delay: var(--delay); }
 @keyframes mf-py-type { 0% { transform: scaleX(1); } 14%, 92% { transform: scaleX(0); } 100% { transform: scaleX(1); } }
 .mf-py .loss { animation: mf-py-loss 8s ease-out infinite; }
 @keyframes mf-py-loss { 0%, 30% { stroke-dashoffset: 300; } 80%, 100% { stroke-dashoffset: 0; } }
@@ -123,28 +141,28 @@
 
 /* ---- Getting Known: one pillar piece, poured into many ---------------- */
 .mf-gk .tier { opacity: 0; animation: mf-gk-tier 7s infinite; animation-delay: calc(var(--i) * .7s); }
-@keyframes mf-gk-tier { 0% { opacity: 0; transform: translateY(-6px); } 6%, 80% { opacity: 1; transform: none; } 90%, 100% { opacity: 0; } }
+@keyframes mf-gk-tier { 0% { opacity: 0; transform: translateY(calc(-6px * var(--mf-px))); } 6%, 80% { opacity: 1; transform: none; } 90%, 100% { opacity: 0; } }
 .mf-gk .flow { stroke-dasharray: 2 4; animation: mf-dash 1s linear infinite; }
 
 /* ---- Resume Tips: the five-second pass --------------------------------- */
 .mf-rt .scan { animation: mf-rt-scan 6s cubic-bezier(.5, 0, .3, 1) infinite; }
 @keyframes mf-rt-scan {
   0%, 18% { transform: translateY(0); }
-  32% { transform: translateY(28px); }
-  48% { transform: translateY(56px); }
-  64%, 100% { transform: translateY(84px); }
+  32% { transform: translateY(calc(28px * var(--mf-px))); }
+  48% { transform: translateY(calc(56px * var(--mf-px))); }
+  64%, 100% { transform: translateY(calc(84px * var(--mf-px))); }
 }
 @property --mf-five { syntax: '<integer>'; inherits: true; initial-value: 5; }
 .mf-rt .count { counter-reset: n var(--mf-five); animation: mf-rt-count 6s linear infinite; }
 .mf-rt .count::before { content: counter(n) "s"; }
 @keyframes mf-rt-count { 0% { --mf-five: 5; } 80%, 100% { --mf-five: 0; } }
-.mf-rt .stamp { opacity: 0; transform-box: fill-box; transform-origin: center; animation: mf-rt-stamp 6s infinite; }
+.mf-rt .stamp { opacity: 0; animation: mf-rt-stamp 6s infinite; }
 @keyframes mf-rt-stamp { 0%, 80% { opacity: 0; transform: rotate(-8deg) scale(1.6); } 84%, 96% { opacity: 1; transform: rotate(-8deg) scale(1); } 100% { opacity: 0; } }
 
 /* ---- Working for Yourself: price the floor, find break-even ------------- */
 .mf-wy .rev { animation: mf-wy-rev 8s ease-out infinite; }
 @keyframes mf-wy-rev { 0%, 10% { stroke-dashoffset: 292; } 60%, 100% { stroke-dashoffset: 0; } }
-.mf-wy .even { opacity: 0; transform-box: fill-box; transform-origin: center; animation: mf-wy-even 8s infinite; }
+.mf-wy .even { opacity: 0; animation: mf-wy-even 8s infinite; }
 @keyframes mf-wy-even { 0%, 40% { opacity: 0; transform: scale(.2); } 46% { opacity: 1; transform: scale(1.6); } 52%, 94% { opacity: 1; transform: scale(1); } 100% { opacity: 0; } }
 .mf-wy .term { opacity: 0; animation: mf-wy-term 8s infinite; animation-delay: calc(var(--i) * .45s); }
 @keyframes mf-wy-term { 0% { opacity: 0; } 5%, 92% { opacity: 1; } 100% { opacity: 0; } }
@@ -154,17 +172,17 @@
 
 
 /* ---- Ikigai: four circles meet in the middle ---------------------------- */
-.mf-ik .circle { transform: translate(var(--x), var(--y)); animation: mf-ik-in 10s cubic-bezier(.3, .8, .3, 1) infinite; animation-delay: calc(var(--i) * .25s); }
+.mf-ik .circle { transform: translate(calc(var(--x) * var(--mf-px)), calc(var(--y) * var(--mf-px))); animation: mf-ik-in 10s cubic-bezier(.3, .8, .3, 1) infinite; animation-delay: calc(var(--i) * .25s); }
 @keyframes mf-ik-in {
-  0% { transform: translate(calc(var(--x) * 2.6), calc(var(--y) * 2.6)); opacity: 0; }
-  14%, 88% { transform: translate(var(--x), var(--y)); opacity: 1; }
-  100% { transform: translate(var(--x), var(--y)); opacity: 0; }
+  0% { transform: translate(calc(var(--x) * 2.6 * var(--mf-px)), calc(var(--y) * 2.6 * var(--mf-px))); opacity: 0; }
+  14%, 88% { transform: translate(calc(var(--x) * var(--mf-px)), calc(var(--y) * var(--mf-px))); opacity: 1; }
+  100% { transform: translate(calc(var(--x) * var(--mf-px)), calc(var(--y) * var(--mf-px))); opacity: 0; }
 }
 .mf-ik .cl { animation: mf-ik-label 10s infinite; animation-delay: calc(var(--i) * .25s); }
 @keyframes mf-ik-label { 0%, 8% { opacity: 0; } 16%, 88% { opacity: 1; } 100% { opacity: 0; } }
 .mf-ik .ov { opacity: 0; animation: mf-ik-ov 10s infinite; animation-delay: calc(1.8s + var(--i) * .6s); }
 @keyframes mf-ik-ov { 0% { opacity: 0; } 5%, 60% { opacity: 1; } 68%, 100% { opacity: 0; } }
-.mf-ik .core { opacity: 0; transform-box: fill-box; transform-origin: center; animation: mf-ik-core 10s infinite; }
+.mf-ik .core { opacity: 0; animation: mf-ik-core 10s infinite; }
 @keyframes mf-ik-core {
   0%, 52% { opacity: 0; transform: scale(.6); filter: none; }
   58% { opacity: 1; transform: scale(1.25); filter: drop-shadow(0 0 6px rgb(var(--c-accent))); }
@@ -178,15 +196,15 @@
    alternates, and the sine easing makes the beads trace a sine wave. */
 .mf-dna { --T: 6s; --swing: cubic-bezier(.37, 0, .63, 1); }
 .mf-dna .strand { animation: mf-dna-y calc(var(--T) / 2) var(--swing) var(--d) infinite alternate; }
-@keyframes mf-dna-y { from { transform: translateY(-38px); } to { transform: translateY(38px); } }
-.mf-dna .rung { transform-box: view-box; animation: mf-dna-rung calc(var(--T) / 2) var(--swing) var(--d) infinite alternate; }
+@keyframes mf-dna-y { from { transform: translateY(calc(-38px * var(--mf-px))); } to { transform: translateY(calc(38px * var(--mf-px))); } }
+.mf-dna .rung { animation: mf-dna-rung calc(var(--T) / 2) var(--swing) var(--d) infinite alternate; }
 @keyframes mf-dna-rung { from { transform: scaleY(1); } to { transform: scaleY(-1); } }
-.mf-dna .bead { fill: rgb(var(--c-accent)); transform-box: fill-box; transform-origin: center;
+.mf-dna .bead { fill: rgb(var(--c-accent));
   animation: mf-dna-depth calc(var(--T) / 2) var(--swing) var(--d) infinite alternate; }
 .mf-dna .bead-b { fill: rgb(var(--c-fg)); }
 @keyframes mf-dna-depth { from { transform: scale(.55); opacity: .35; } to { transform: scale(1); opacity: 1; } }
 .mf-dna .backbones { animation: mf-dna-slide var(--T) linear infinite; }
-@keyframes mf-dna-slide { to { transform: translateX(calc(-1 * var(--wavelength))); } }
+@keyframes mf-dna-slide { to { transform: translateX(calc(-1 * var(--wavelength) * var(--mf-px))); } }
 .mf-dna .backbone { fill: none; stroke: rgb(var(--c-accent) / .55); stroke-width: 1.6; stroke-linecap: round; }
 .mf-dna .backbone-b { stroke: rgb(var(--c-fg) / .3); }
 .mf-dna .base { stroke-width: 1.6; stroke-linecap: round; }
@@ -239,7 +257,7 @@
    `backwards` holds each delayed piece at its first keyframe until its turn.
    Each piece's window is cut so that, delay included, it has cleared by ~13s:
    the 14s loop restarts on a blank chart. */
-.mf-dagea .chart { transform-origin: 500px 386px; animation: mf-dagea-drift 14s ease-in-out infinite; }
+.mf-dagea .chart { animation: mf-dagea-drift 14s ease-in-out infinite; }
 @keyframes mf-dagea-drift { 0% { transform: scale(1); } 90% { transform: scale(1.05); } 100% { transform: scale(1.05); } }
 .mf-dagea .coast { fill: none; stroke: rgb(var(--c-fg)); stroke-width: 3.2; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 0;
   animation: mf-dagea-ink 14s ease-in-out infinite backwards; animation-delay: calc(var(--i) * .45s); }
@@ -255,9 +273,9 @@
 .mf-dagea .name { font: italic 600 30px Georgia, 'Times New Roman', serif; letter-spacing: .04em; fill: rgb(var(--c-fg));
   paint-order: stroke; stroke: rgb(var(--c-bg) / .8); stroke-width: 6px;
   animation: mf-dagea-name 14s infinite backwards; animation-delay: calc(5s + var(--i) * .35s); }
-@keyframes mf-dagea-name { 0% { opacity: 0; transform: translateY(8px); } 4%, 38% { opacity: 1; transform: none; } 44%, 100% { opacity: 0; } }
+@keyframes mf-dagea-name { 0% { opacity: 0; transform: translateY(calc(8px * var(--mf-px))); } 4%, 38% { opacity: 1; transform: none; } 44%, 100% { opacity: 0; } }
 .mf-dagea .rose { animation: mf-dagea-rose 14s cubic-bezier(.3, .8, .3, 1) infinite; }
-@keyframes mf-dagea-rose { 0% { opacity: 0; transform: translate(292px, 44px) rotate(-120deg) scale(.5); } 10%, 88% { opacity: 1; transform: translate(292px, 44px); } 96%, 100% { opacity: 0; transform: translate(292px, 44px); } }
+@keyframes mf-dagea-rose { 0% { opacity: 0; transform: rotate(-120deg) scale(.5); } 10%, 88% { opacity: 1; transform: none; } 96%, 100% { opacity: 0; transform: none; } }
 
 /* ---- Rule Zero: four cards dealt into four seats, two rounds ----------- */
 .mf-rz .rz-felt { position: absolute; inset: 12% 8%; border-radius: 50%; background: radial-gradient(closest-side, rgb(var(--c-accent) / .14), transparent); }
@@ -286,14 +304,14 @@
 .mf-sp .cap { fill: rgb(var(--c-fg) / .8); }
 .mf-sp .box { fill: none; stroke: rgb(var(--c-muted)); stroke-width: 1.4; }
 .mf-sp .tick { fill: none; stroke: rgb(var(--c-accent)); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; }
-.mf-sp .pill { opacity: 0; transform-box: fill-box; transform-origin: center;
+.mf-sp .pill { opacity: 0;
   animation: mf-sp-drop var(--loop) cubic-bezier(.5, 0, .75, .3) infinite; animation-delay: calc(var(--i) * var(--step)); }
 .mf-sp .row .tick { animation: var(--tick) var(--loop) ease-out infinite; }
 @keyframes mf-sp-drop {
-  0% { opacity: 0; transform: translateY(-52px) rotate(-40deg); }
+  0% { opacity: 0; transform: translateY(calc(-52px * var(--mf-px))) rotate(-40deg); }
   5% { opacity: 1; }
-  18% { opacity: 1; transform: translateY(6px) rotate(25deg); }
-  24%, 100% { opacity: 0; transform: translateY(22px) rotate(25deg); }
+  18% { opacity: 1; transform: translateY(calc(6px * var(--mf-px))) rotate(25deg); }
+  24%, 100% { opacity: 0; transform: translateY(calc(22px * var(--mf-px))) rotate(25deg); }
 }
 
 /* ---- NPC Voices: a text box types a line, blips mark the voiced letters -- */
@@ -306,7 +324,7 @@
 .mf-nv .nv-tag-text { fill: #f5c451; letter-spacing: .06em; }
 .mf-nv .nv-ch { fill: #f4f1ea; animation: mf-nv-type var(--loop) steps(1, end) infinite backwards; }
 .mf-nv .nv-under { fill: #f5c451; opacity: 0; animation: mf-nv-type var(--loop) steps(1, end) infinite backwards; }
-.mf-nv .nv-blip { fill: rgb(var(--c-accent)); opacity: 0; transform-box: fill-box; transform-origin: center; animation: mf-nv-blip var(--loop) ease-out infinite backwards; }
+.mf-nv .nv-blip { fill: rgb(var(--c-accent)); opacity: 0; animation: mf-nv-blip var(--loop) ease-out infinite backwards; }
 @keyframes mf-nv-type { 0% { opacity: 0; } 1%, 58% { opacity: 1; } 59%, 100% { opacity: 0; } }
 @keyframes mf-nv-blip { 0% { opacity: 1; transform: scale(.3); } 4% { opacity: 1; transform: scale(1.25); } 58% { opacity: .55; transform: scale(1); } 59%, 100% { opacity: 0; transform: scale(.3); } }
 
@@ -325,26 +343,26 @@
 
 /* ---- Brine Mining: seawater in, fresh water out, magnesium stacking ------ */
 .mf-bm .wave { fill: none; stroke: #38bdf8; stroke-width: 1.6; stroke-linecap: round; animation: mf-bm-wave 1.6s linear infinite; }
-@keyframes mf-bm-wave { to { transform: translateX(16px); } }
+@keyframes mf-bm-wave { to { transform: translateX(calc(16px * var(--mf-px))); } }
 .mf-bm .water { fill: #38bdf8; }
 .mf-bm .fresh { fill: #38bdf8; opacity: 0; animation: mf-bm-fresh 1.8s linear var(--delay) infinite; }
-@keyframes mf-bm-fresh { 0% { transform: translateX(148px); opacity: 0; } 10%, 85% { opacity: 1; } 100% { transform: translateX(244px); opacity: 0; } }
+@keyframes mf-bm-fresh { 0% { transform: translateX(calc(148px * var(--mf-px))); opacity: 0; } 10%, 85% { opacity: 1; } 100% { transform: translateX(calc(244px * var(--mf-px))); opacity: 0; } }
 .mf-bm .pipe { fill: none; stroke: rgb(var(--c-border)); stroke-width: 3; stroke-linecap: round; }
 .mf-bm .drop { fill: rgb(var(--c-muted)); opacity: 0; animation: mf-bm-drop 1.8s ease-in var(--delay) infinite; }
-@keyframes mf-bm-drop { 0% { transform: translateY(66px); opacity: 0; } 10%, 85% { opacity: .9; } 100% { transform: translateY(170px); opacity: 0; } }
+@keyframes mf-bm-drop { 0% { transform: translateY(calc(66px * var(--mf-px))); opacity: 0; } 10%, 85% { opacity: .9; } 100% { transform: translateY(calc(170px * var(--mf-px))); opacity: 0; } }
 .mf-bm .emit { fill: rgb(var(--c-muted)); opacity: 0; animation: mf-bm-emit 1.8s ease-out infinite; animation-delay: calc(var(--i) * .6s + .3s); }
-@keyframes mf-bm-emit { 0% { transform: translateX(122px); opacity: 0; } 15%, 70% { opacity: .9; } 100% { transform: translateX(172px); opacity: 0; } }
+@keyframes mf-bm-emit { 0% { transform: translateX(calc(122px * var(--mf-px))); opacity: 0; } 15%, 70% { opacity: .9; } 100% { transform: translateX(calc(172px * var(--mf-px))); opacity: 0; } }
 .mf-bm .ingot { fill: rgb(var(--c-accent) / .85); stroke: rgb(var(--c-accent)); stroke-width: 1; stroke-linejoin: round;
   opacity: 0; animation: 6s cubic-bezier(.2, .9, .3, 1.2) infinite; }
 /* Each ingot drops in at its own moment; the stack clears together at the end of the cycle. */
 .mf-bm .ingot:nth-child(1) { animation-name: mf-bm-ingot-1; }
 .mf-bm .ingot:nth-child(2) { animation-name: mf-bm-ingot-2; }
 .mf-bm .ingot:nth-child(3) { animation-name: mf-bm-ingot-3; }
-@keyframes mf-bm-ingot-1 { 0%, 10% { opacity: 0; transform: translateY(-14px); } 16%, 92% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
-@keyframes mf-bm-ingot-2 { 0%, 35% { opacity: 0; transform: translateY(-14px); } 41%, 92% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
-@keyframes mf-bm-ingot-3 { 0%, 60% { opacity: 0; transform: translateY(-14px); } 66%, 92% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
-.mf-bm .glint { fill: rgb(255 255 255 / .55); opacity: 0; transform-box: fill-box; transform-origin: center; transform: skewX(-20deg); animation: mf-bm-glint 6s ease-in-out infinite; }
-@keyframes mf-bm-glint { 0%, 70% { opacity: 0; transform: skewX(-20deg) translateX(0); } 72% { opacity: 1; } 84% { opacity: 1; transform: skewX(-20deg) translateX(96px); } 86%, 100% { opacity: 0; transform: skewX(-20deg) translateX(96px); } }
+@keyframes mf-bm-ingot-1 { 0%, 10% { opacity: 0; transform: translateY(calc(-14px * var(--mf-px))); } 16%, 92% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
+@keyframes mf-bm-ingot-2 { 0%, 35% { opacity: 0; transform: translateY(calc(-14px * var(--mf-px))); } 41%, 92% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
+@keyframes mf-bm-ingot-3 { 0%, 60% { opacity: 0; transform: translateY(calc(-14px * var(--mf-px))); } 66%, 92% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
+.mf-bm .glint { fill: rgb(255 255 255 / .55); opacity: 0; transform: skewX(-20deg); animation: mf-bm-glint 6s ease-in-out infinite; }
+@keyframes mf-bm-glint { 0%, 70% { opacity: 0; transform: skewX(-20deg) translateX(0); } 72% { opacity: 1; } 84% { opacity: 1; transform: skewX(-20deg) translateX(calc(96px * var(--mf-px))); } 86%, 100% { opacity: 0; transform: skewX(-20deg) translateX(calc(96px * var(--mf-px))); } }
 @media (prefers-reduced-motion: reduce) {
   .mf-bm .ingot { opacity: 1; }
   .mf-bm .fresh, .mf-bm .drop, .mf-bm .emit, .mf-bm .glint { display: none; }
@@ -376,36 +394,35 @@
 .mf-pp .pp-hill { fill: rgb(var(--c-accent) / .55); }
 .mf-pp .pp-sun { fill: #f59e0b; }
 .mf-pp .pp-text { fill: none; stroke: rgb(var(--c-muted) / .7); stroke-width: 2.4; stroke-linecap: round; }
-.mf-pp .pp-doc { transform-box: fill-box; transform-origin: center; animation: mf-pp-doc var(--pp-t) ease-out infinite; }
+.mf-pp .pp-doc { animation: mf-pp-doc var(--pp-t) ease-out infinite; }
 @keyframes mf-pp-doc { 0% { transform: scale(1.05); } 10%, 100% { transform: none; } }
 
 /* The Worker's clock: the minute hand sweeps once a loop; it pulses on arrival. */
 .mf-pp .pp-ring { fill: rgb(var(--c-bg) / .9); stroke: rgb(var(--c-fg) / .55); stroke-width: 1.5; }
 .mf-pp .pp-ticks { stroke: rgb(var(--c-muted)); stroke-width: 1.4; stroke-linecap: round; }
 .mf-pp .pp-hand, .mf-pp .pp-hand-h { stroke: rgb(var(--c-fg)); stroke-width: 1.8; stroke-linecap: round; }
-.mf-pp .pp-hand { transform-origin: 160px 96px; animation: mf-spin var(--pp-t) linear infinite; }
-.mf-pp .pp-pulse { fill: none; stroke: rgb(var(--c-accent)); stroke-width: 2; opacity: 0; transform-origin: 160px 96px; animation: mf-pp-pulse var(--pp-t) ease-out infinite; }
+.mf-pp .pp-hand { animation: mf-spin var(--pp-t) linear infinite; }
+.mf-pp .pp-pulse { fill: none; stroke: rgb(var(--c-accent)); stroke-width: 2; opacity: 0; animation: mf-pp-pulse var(--pp-t) ease-out infinite; }
 @keyframes mf-pp-pulse { 0%, 17% { opacity: 0; transform: scale(1); } 19% { opacity: .9; transform: scale(1); } 32%, 100% { opacity: 0; transform: scale(1.6); } }
 .mf-pp .pp-check circle { fill: rgb(var(--c-accent)); }
 .mf-pp .pp-check path { fill: none; stroke: rgb(var(--c-bg)); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-.mf-pp .pp-check { transform-box: fill-box; transform-origin: center; opacity: 0; animation: mf-pp-check var(--pp-t) cubic-bezier(.2, .9, .3, 1.4) infinite; }
+.mf-pp .pp-check { opacity: 0; animation: mf-pp-check var(--pp-t) cubic-bezier(.2, .9, .3, 1.4) infinite; }
 @keyframes mf-pp-check { 0%, 19% { opacity: 0; transform: scale(.2); } 25%, 92% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
 
 /* The tiles: each lands with a bump when its packet arrives. */
-.mf-pp .pp-tile { transform-box: fill-box; transform-origin: center; }
 .mf-pp .pp-devto rect { fill: rgb(var(--c-fg)); }
 .mf-pp .pp-devto text { font: 700 10px var(--font-mono); fill: rgb(var(--c-bg)); }
 .mf-pp .pp-devto, .mf-pp .pp-mail { animation: mf-pp-land-bc var(--pp-t) ease-out infinite; }
 @keyframes mf-pp-land-bc { 0%, 45% { transform: none; } 49% { transform: scale(1.1); } 55%, 100% { transform: none; } }
 .mf-pp .pp-env { fill: rgb(var(--c-bg)); stroke: rgb(var(--c-fg) / .7); stroke-width: 1.2; }
-.mf-pp .pp-flap { fill: none; stroke: rgb(var(--c-fg) / .7); stroke-width: 1.2; stroke-linejoin: round; transform-box: fill-box; transform-origin: 50% 0; animation: mf-pp-flap var(--pp-t) ease-in-out infinite; }
+.mf-pp .pp-flap { fill: none; stroke: rgb(var(--c-fg) / .7); stroke-width: 1.2; stroke-linejoin: round; animation: mf-pp-flap var(--pp-t) ease-in-out infinite; }
 @keyframes mf-pp-flap { 0%, 47% { transform: none; } 53%, 60% { transform: scaleY(-1); } 66%, 100% { transform: none; } }
 .mf-pp .pp-li rect { fill: rgb(var(--pp-li)); }
 .mf-pp .pp-li text { font: 700 10px var(--font-sans); fill: #fff; }
 .mf-pp .pp-li { animation: mf-pp-land-d var(--pp-t) ease-out infinite; }
 @keyframes mf-pp-land-d { 0%, 62% { transform: none; filter: none; } 66% { transform: scale(1.12); filter: drop-shadow(0 0 6px rgb(var(--pp-li) / .7)); } 74%, 100% { transform: none; filter: none; } }
 .mf-pp .pp-like { fill: #f43f5e; opacity: 0; animation: mf-pp-like var(--pp-t) ease-out infinite; animation-delay: calc(var(--i) * .25s); }
-@keyframes mf-pp-like { 0%, 66% { opacity: 0; translate: 0 0; } 70% { opacity: 1; } 92% { opacity: .9; translate: 0 -26px; } 96%, 100% { opacity: 0; translate: 0 -30px; } }
+@keyframes mf-pp-like { 0%, 66% { opacity: 0; translate: 0 0; } 70% { opacity: 1; } 92% { opacity: .9; translate: 0 calc(-26px * var(--mf-px)); } 96%, 100% { opacity: 0; translate: 0 calc(-30px * var(--mf-px)); } }
 
 /* The week: the next posting day blinks. */
 .mf-pp .pp-day { fill: rgb(var(--c-border)); }

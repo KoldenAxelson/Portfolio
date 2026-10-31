@@ -24,7 +24,7 @@
   {{- $move := index $moves (mod $i (len $moves)) }}
   <g class="stage" style="--i: {{ $i }}">
     <g transform="translate(92 106)">
-      <g class="die">
+      <g class="die pivot">
         <path d="{{ .outline }}" class="stroke-accent" stroke-width="2" stroke-linejoin="round" fill="rgb(var(--c-accent) / .1)" />
         {{- with .inner }}<path d="{{ . }}" class="stroke-accent" stroke-width="1" stroke-opacity=".45" />{{ end }}
       </g>

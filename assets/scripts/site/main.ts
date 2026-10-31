@@ -19,6 +19,7 @@ import { initPlateMap } from './widgets/plate-map';
 import { initCarousels } from './widgets/carousel';
 import { initPhotoCycle } from './widgets/photo-cycle';
 import { initCardWake } from './widgets/card-wake';
+import { initSvgZoom } from './widgets/svg-zoom';
 import { initShelfRows } from './widgets/shelf-row';
 import { initVault } from './widgets/vault';
 import { initGameEmbed } from './games/game-embed';
@@ -66,6 +67,7 @@ function initPage(): void {
   initPlateMap();
   initCarousels();
   initPhotoCycle();
+  initSvgZoom();
   initCardWake();
   initShelfRows();
   initVault();

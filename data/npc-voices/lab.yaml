@@ -1,8 +1,10 @@
-# The voice lab on /misc/npc-voices/ (shortcodes/npc-voices/lab.html): every
+# Advanced view on /misc/npc-voices/ (shortcodes/npc-voices/lab.html): every
 # knob the system has, grouped. The shortcode renders these controls and
-# partials/npc-voices/data.html hands the tuning defaults to every widget, so
+# partials/npc-voices/data.html hands the tuning defaults to the script, so
 # the knobs here have no copy in static/js/npc-voices/nv-voice.js; fixed
-# constants (beep length, peak level, the gap in "Whole cast") stay there. A new knob
+# constants (beep length, peak level) stay there. Simple view (picker.yaml)
+# sets the same keys. The toggle defaults only matter without JS: the script
+# starts Advanced from the Simple pick. A new knob
 # is an entry here plus the line in nv-voice.js that reads it (by key).
 #
 # target: "voice" = one character's settings (the fields of voices.yaml);
@@ -32,6 +34,10 @@ toggles:
     label: "Punctuation tune"
     options: [{ value: false, label: "Off" }, { value: true, label: "On" }]
     default: true
+  - key: "consonants"
+    label: "Consonants"
+    options: [{ value: false, label: "Off" }, { value: true, label: "On" }]
+    default: false
 groups:
   - label: "Voice"
     sliders:
@@ -39,6 +45,7 @@ groups:
       - { key: "tube", target: "voice", label: "Tube (shorter →)", min: 0.7, max: 1.6, step: 0.01, unit: "×" }
       - { key: "mouth", target: "voice", label: "Mouth open", min: 0.2, max: 1, step: 0.01, unit: "" }
       - { key: "breath", target: "voice", label: "Breath", min: 0, max: 0.5, step: 0.01, unit: "" }
+      - { key: "whisper", target: "voice", label: "Whisper", min: 0, max: 1, step: 0.05, unit: "" }
       - { key: "wobble", target: "voice", label: "Old-age wobble", min: 0, max: 2, step: 0.05, unit: "st" }
   - label: "Rhythm"
     sliders:
@@ -46,6 +53,7 @@ groups:
       - { key: "commaX", target: "tuning", label: "Comma pause", min: 1, max: 6, step: 0.5, unit: "× letter", default: 3 }
       - { key: "stopX", target: "tuning", label: "Sentence pause", min: 1, max: 4, step: 0.5, unit: "× comma", default: 2 }
       - { key: "soundMs", target: "tuning", label: "Sound length", min: 60, max: 280, step: 5, unit: "ms", default: 140 }
+      - { key: "consonantMs", target: "tuning", label: "Consonant length", min: 15, max: 90, step: 1, unit: "ms", default: 45 }
   - label: "Tune"
     sliders:
       - { key: "drift", target: "tuning", label: "Phrase drift down", min: 0, max: 8, step: 0.5, unit: "st", default: 3 }
@@ -60,3 +68,4 @@ groups:
       - { key: "releaseMs", target: "tuning", label: "Let go", min: 10, max: 140, step: 5, unit: "ms", default: 60 }
       - { key: "bandWidth", target: "tuning", label: "Band width", min: 0.4, max: 3, step: 0.1, unit: "×", default: 1 }
       - { key: "wobbleHz", target: "tuning", label: "Wobble speed", min: 0.5, max: 6, step: 0.1, unit: "Hz", default: 2 }
+      - { key: "consonantMix", target: "tuning", label: "Consonant strength", min: 0, max: 2, step: 0.05, unit: "×", default: 1 }

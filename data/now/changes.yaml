@@ -16,6 +16,10 @@
 #             site's mark unless this names a project.
 - date: 2026-10-31
   kind: update
+  text: "NPC Voices is a toy now: pick a voice, age, mood and game style (Animal Crossing, Undertale and friends) and it mumbles or whispers your line, consonants and all, or open Advanced for every slider."
+  url: "/misc/npc-voices/"
+- date: 2026-10-31
+  kind: update
   text: "Finished a beta showcase video for Widda, a short on what it does at checkout. I'll re-render it once Widda is in the Chrome Web Store."
   url: "/projects/widda/"
 - date: 2026-10-30

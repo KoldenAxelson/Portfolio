@@ -1,35 +1,80 @@
-/* /misc/npc-voices/ widgets (shortcodes/npc-voices/, partials/npc-voices/box.html),
-   on top of the shared video-notes box. The dialogue box keeps the same dark
-   game-UI colours in both themes on purpose: it's a picture of a game's text box.
+/* /misc/npc-voices/ voice maker (shortcodes/npc-voices/lab.html,
+   partials/npc-voices/box.html), on top of the shared video-notes box. The
+   dialogue box and the pitch strip use the chips' surface and the theme accent,
+   so they follow light and dark like everything else.
    .nv-ch and its is-hidden / is-voiced states are set by static/js/npc-voices/nv-voice.js. */
-.nv-stages { display: flex; flex-wrap: wrap; gap: .45rem; margin: 0; padding: 0; list-style: none; }
-.nv-stage { display: inline-flex; align-items: center; gap: .45rem; font-size: .8rem; padding: .35rem .7rem .35rem .4rem; }
-.nv-n { display: inline-grid; place-items: center; width: 1.3rem; height: 1.3rem; border-radius: 999px; background: rgb(var(--c-border) / .6); font: 600 .7rem var(--font-mono); }
-.nv-stage[aria-pressed="true"] .nv-n { background: rgb(var(--c-accent)); color: rgb(var(--c-bg)); }
-.nv-stage:disabled { opacity: 1; cursor: default; }
-.nv-what { min-height: 2.6em; margin: .85rem 0 0; font-size: .88rem; line-height: 1.5; color: rgb(var(--c-fg) / .9); }
-
-.nv-box { position: relative; margin-top: 1.1rem; padding: 1.25rem 1.1rem 1.05rem; border: 2px solid #e9e4d8; border-radius: .5rem; background: #161821; box-shadow: inset 0 0 0 3px #161821, inset 0 0 0 4px #e9e4d8; }
-.nv-speaker { position: absolute; top: -.8rem; left: .9rem; padding: .1rem .55rem; border: 2px solid #e9e4d8; border-radius: .35rem; background: #2a2d3a; color: #f5c451; font: 700 .72rem var(--font-mono); letter-spacing: .06em; text-transform: uppercase; }
-.nv-line { min-height: 3.2em; margin: 0; color: #f4f1ea; font: 500 1rem/1.6 var(--font-mono); overflow-wrap: anywhere; }
+.nv-box { position: relative; flex: 1; min-width: 0; padding: 1.25rem 1.1rem 1.05rem; border: 1px solid rgb(var(--c-border)); border-radius: .6rem; background: rgb(var(--c-bg)); }
+.nv-speaker { position: absolute; top: -.75rem; left: .9rem; padding: .1rem .55rem; border: 1px solid rgb(var(--c-border)); border-radius: .35rem; background: rgb(var(--c-bg)); color: rgb(var(--c-accent)); font: 700 .72rem var(--font-mono); letter-spacing: .06em; text-transform: uppercase; }
+.nv-line { min-height: 3.2em; margin: 0; color: rgb(var(--c-fg)); font: 500 1rem/1.6 var(--font-mono); overflow-wrap: anywhere; }
 .nv-ch.is-hidden { visibility: hidden; }
-.nv-ch.is-voiced { text-decoration: underline 2px #f5c451; text-underline-offset: .28em; }
+/* data-face on the box comes from the voice's face flag (picker.yaml's encore). */
+.nv-box[data-face="comic"] .nv-line, .nv-box[data-face="comic"] .nv-speaker { font-family: "Comic Sans MS", "Comic Sans", "Chalkboard SE", "Comic Neue", cursive; }
+.nv-box[data-face="comic"] .nv-speaker { text-transform: none; letter-spacing: 0; }
 
-.nv-tune { display: block; width: 100%; height: auto; margin-top: .6rem; }
-.nv-rate { font: .75rem var(--font-mono); color: rgb(var(--c-muted)); }
+/* The play button sits beside the box; data-playing (set by initPlayer) swaps
+   its triangle for a stop square. */
+.nv-stage { display: flex; align-items: center; gap: .8rem; margin-top: 1.1rem; }
+.nv-play { flex: none; display: grid; place-items: center; width: 3.25rem; height: 3.25rem; border: 1px solid rgb(var(--c-accent) / .55); border-radius: 999px; background: rgb(var(--c-accent) / .14); color: rgb(var(--c-fg)); cursor: pointer; transition: background-color .15s ease, transform .12s ease; }
+.nv-play:hover { background: rgb(var(--c-accent) / .24); }
+.nv-play:active { transform: scale(.95); }
+.nv-play[hidden] { display: none; }
+.nv-play svg { width: 1.35rem; height: 1.35rem; fill: currentColor; }
+.nv-play .nv-play-icon { margin-left: .15rem; }
+.nv-play .nv-stop-icon, .nv-play[data-playing="true"] .nv-play-icon { display: none; }
+.nv-play[data-playing="true"] .nv-stop-icon { display: block; }
 
-.nv-voices { display: flex; flex-wrap: wrap; gap: .45rem; }
-.nv-voices .vn-btn:disabled { opacity: 1; cursor: default; }
-.nv-field-label { display: block; margin: 1rem 0 .35rem; font: 600 .66rem var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: rgb(var(--c-muted)); }
-.nv-input:disabled { opacity: .8; }
+/* Simple/Advanced is one round toggle in the widget's corner, pressed for Advanced. */
+.nv-maker { position: relative; }
+.nv-mode { position: absolute; top: .6rem; right: .7rem; display: grid; place-items: center; width: 2rem; height: 2rem; border: 1px solid rgb(var(--c-border)); border-radius: 999px; background: rgb(var(--c-bg)); color: rgb(var(--c-muted)); cursor: pointer; transition: color .15s ease, background-color .15s ease, border-color .15s ease; }
+.nv-mode:hover { color: rgb(var(--c-accent)); }
+.nv-mode[aria-pressed="true"] { border-color: rgb(var(--c-accent)); background: rgb(var(--c-accent) / .16); color: rgb(var(--c-accent)); }
+.nv-mode[hidden] { display: none; }
+.nv-mode-icon { width: 1.1rem; height: 1.1rem; }
+.nv-title { margin: 0 3rem .7rem 0; font: 700 1.15rem/1.3 var(--font-sans); letter-spacing: -.01em; color: rgb(var(--c-fg)); }
+.nv-ch.is-voiced { text-decoration: underline 2px rgb(var(--c-accent)); text-underline-offset: .28em; }
 
-/* ── the voice lab (shortcodes/npc-voices/lab.html) ─────────────────────── */
-/* Controls are built from data/npc-voices/lab.yaml; aria-pressed and values are
-   kept in step by NvLab in static/js/npc-voices/nv-voice.js. */
+/* The same surface as the dialogue box. drawTune in nv-voice.js reads the
+   --nv-tune-* colours from here; lit dots match the voiced-letter underline. */
+.nv-tune-well { margin-top: .75rem; padding: .45rem .5rem; min-height: 3.2rem; border: 1px solid rgb(var(--c-border)); border-radius: .6rem; background: rgb(var(--c-bg)); --nv-tune-line: rgb(var(--c-border)); --nv-tune-dot: rgb(var(--c-muted)); --nv-tune-lit: rgb(var(--c-accent)); }
+.nv-tune { display: block; width: 100%; height: auto; }
+.nv-rate { min-height: 1.2em; margin: .35rem 0 0; font: .75rem var(--font-mono); color: rgb(var(--c-muted)); }
+
+/* ── controls ─────────────────────────────────────────────────────────── */
+/* Simple view's chips come from data/npc-voices/picker.yaml, Advanced view's
+   from lab.yaml; aria-pressed and values are kept in step by
+   NvLab in static/js/npc-voices/nv-voice.js. */
+.nv-btn{display:inline-flex;align-items:center;gap:.45rem;}
+.nv-btn-icon{width:1rem;height:1rem;flex-shrink:0;}
+.nv-mode:focus-visible,.nv-play:focus-visible,.nv-chip:focus-visible{outline:2px solid rgb(var(--c-accent));outline-offset:1px;}
+.nv-panel{margin-top:1rem;}
+.nv-panel[hidden]{display:none;}
+.nv-pick-row{display:grid;gap:.4rem;padding:.7rem 0;border-top:1px solid rgb(var(--c-border) / .7);}
+.nv-pick-row:first-child{border-top:0;padding-top:.2rem;}
+@media (min-width:640px){.nv-pick-row{grid-template-columns:7.5rem 1fr;align-items:center;}.nv-pick-row .nv-lab-label{margin:0;}}
+/* Every row is equal columns that fill it, one per option (--nv-n, set by
+   lab.html); rows of four fold to two by two on a phone. */
+.nv-chips{display:grid;grid-template-columns:repeat(var(--nv-n,3),minmax(0,1fr));gap:.45rem;}
+@media (max-width:639px){.nv-chips-many{grid-template-columns:repeat(2,minmax(0,1fr));}}
+.nv-chip{display:flex;align-items:center;justify-content:center;gap:.5rem;min-width:0;padding:.55rem .6rem;border:1px solid rgb(var(--c-border));border-radius:.6rem;background:rgb(var(--c-bg));color:rgb(var(--c-fg));font:500 .84rem var(--font-sans);cursor:pointer;transition:border-color .15s ease,background-color .15s ease;}
+.nv-chip:hover:not(:disabled){border-color:rgb(var(--c-accent) / .6);}
+.nv-chip[aria-pressed="true"]{border-color:rgb(var(--c-accent));background:rgb(var(--c-accent) / .16);font-weight:600;}
+.nv-chip:disabled{cursor:default;}
+.nv-chip-icon{width:1.15rem;height:1.15rem;flex-shrink:0;color:rgb(var(--c-muted));transition:color .15s ease;}
+.nv-chip:hover:not(:disabled) .nv-chip-icon,.nv-chip[aria-pressed="true"] .nv-chip-icon{color:rgb(var(--c-accent));}
+.nv-chip-text{min-width:0;}
+.nv-chip-label{display:block;}
+/* A chip's encore (picker.yaml): NvLab sets data-encore and swaps the label and hint. */
+.nv-chip-icon-encore,.nv-chip[data-encore="true"] .nv-chip-icon:not(.nv-chip-icon-encore){display:none;}
+.nv-chip[data-encore="true"] .nv-chip-icon-encore{display:block;}
+/* Icon above the label in a tile, so a two-word game name gets the full width. */
+.nv-chips-tiles .nv-chip{flex-direction:column;justify-content:flex-start;align-items:flex-start;gap:.35rem;padding:.6rem .75rem;text-align:left;line-height:1.3;}
+.nv-chips-tiles .nv-chip-text{white-space:nowrap;}
+.nv-chips-tiles .nv-chip-hint{white-space:normal;}
+.nv-chip-hint{display:block;margin-top:.15rem;font-size:.72rem;font-weight:400;color:rgb(var(--c-muted));}
+.nv-panel-actions{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem;}
 .nv-lab-top{display:grid;gap:.6rem;}
 @media (min-width:640px){.nv-lab-top{grid-template-columns:1fr 1fr;}}
-.nv-lab-field{display:block;margin-top:.6rem;}
-.nv-lab-top .nv-lab-field{margin-top:0;}
+.nv-lab-field{display:block;}
 .nv-lab-label{display:block;margin-bottom:.3rem;font:600 .62rem var(--font-mono);letter-spacing:.1em;text-transform:uppercase;color:rgb(var(--c-muted));}
 .nv-lab-text{resize:vertical;min-height:3.2rem;}
 .nv-lab-select{font-size:.88rem;}
@@ -49,7 +94,8 @@
 .nv-lab-opt[aria-pressed="true"]{background:rgb(var(--c-accent) / .16);color:rgb(var(--c-fg));font-weight:600;}
 .nv-lab-opt:disabled{cursor:default;}
 .nv-lab-opt:focus-visible,.nv-lab-vowel:focus-visible{outline:2px solid rgb(var(--c-accent));outline-offset:-2px;}
-.nv-lab-panel{display:grid;gap:.6rem;margin-top:1rem;align-items:start;}
+/* Grid rows stretch, so side-by-side slider groups match the taller one. */
+.nv-lab-panel{display:grid;gap:.6rem;margin-top:1rem;}
 @media (min-width:640px){.nv-lab-panel{grid-template-columns:1fr 1fr;}}
 .nv-lab-group{border:1px solid rgb(var(--c-border));border-radius:.6rem;background:rgb(var(--c-bg));}
 .nv-lab-group-head{padding:.55rem .75rem;cursor:pointer;font:600 .68rem var(--font-mono);letter-spacing:.09em;text-transform:uppercase;color:rgb(var(--c-fg));}

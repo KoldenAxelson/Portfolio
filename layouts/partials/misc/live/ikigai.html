@@ -27,7 +27,7 @@
     {{- $a := index $pos (index $circle (index $o.between 0)) }}{{ $b := index $pos (index $circle (index $o.between 1)) }}
     <text class="ov mono muted" x="{{ mul 0.9 (add (index $a 0) (index $b 0)) }}" y="{{ add (mul 0.9 (add (index $a 1) (index $b 1))) 2 }}" text-anchor="middle" font-size="6.5" style="--i: {{ $i }}">{{ $o.name }}</text>
     {{- end }}
-    <text class="core sans fg" y="4" text-anchor="middle" font-size="11" font-weight="700">{{ $ik.metaphor }}</text>
+    <text class="core pivot sans fg" y="4" text-anchor="middle" font-size="11" font-weight="700">{{ $ik.metaphor }}</text>
   </g>
 </svg>
 </span>

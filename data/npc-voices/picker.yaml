@@ -1,0 +1,131 @@
+# Simple view on /misc/npc-voices/ (shortcodes/npc-voices/lab.html): one row of
+# choices per category, rendered as chips. static/js/npc-voices/nv-voice.js
+# (settingsFromPicks) starts from `base` and applies the picked option of each
+# category in this order, so a later row can override an earlier one.
+#
+# Per option:
+#   set   : values to put in place. Keys are voice fields (pitchHz, tube,
+#           mouth, breath, whisper, wobble: see voices.yaml) or tuning keys
+#           (lab.yaml).
+#   scale : multipliers on the value so far, same keys.
+#   flags : how text becomes sound (the lab.yaml toggles):
+#           tone "beep" | "voice"; every (sound on every letter, or only where a
+#           vowel group starts); vowel "letter" | "random"; shape "hit" | "swell";
+#           human (breath and jitter); tune (punctuation shapes the pitch);
+#           consonants (each syllable opens on its consonant). Off unless a
+#           style asks: the devlog tried consonants and dropped them, so
+#           Mythfall is vowels only; Animalese spells out every letter.
+#   icon  : a key in data/icons.yaml, drawn on the chip.
+#   hint  : a second line under the label (shown for categories with `tiles`).
+#   encore: a hidden option a second press on the chip swaps in, with its own
+#           label, icon, hint, speaker name and settings on top of the chip's.
+#           Extra flags: wave "square" (beeps), blip (a beep's own length,
+#           attack, release, octave and per-blip wobble), face "comic" (the
+#           dialogue box's font), lowercase (spoken and shown in lowercase).
+# default : the option picked on load.
+#
+# names : the speaker tag for each "<age>-<voice>" pair of picks.
+#
+# Female and young move the tube as well as the pitch: pitch alone is the
+# "guard pitched up" that sounds like a man straining.
+base:
+  pitchHz: 150
+  tube: 1
+  mouth: 1
+  breath: 0.12
+  whisper: 0
+  wobble: 0
+  flags: { tone: "voice", every: false, vowel: "letter", shape: "swell", human: true, tune: true, consonants: false }
+names:
+  young-male: "Boy"
+  young-female: "Girl"
+  young-neutral: "Kid"
+  adult-male: "Guard"
+  adult-female: "Merchant"
+  adult-neutral: "Stranger"
+  senior-male: "Old man"
+  senior-female: "Old woman"
+  senior-neutral: "Elder"
+categories:
+  - key: "voice"
+    label: "Voice"
+    default: "male"
+    options:
+      - { key: "male", icon: "gender-male", label: "Male", set: { pitchHz: 105, tube: 1 } }
+      - { key: "female", icon: "gender-female", label: "Female", set: { pitchHz: 205, tube: 1.18 } }
+      - { key: "neutral", icon: "gender-neutral", label: "Neutral", set: { pitchHz: 150, tube: 1.09 } }
+  - key: "age"
+    label: "Age"
+    default: "adult"
+    options:
+      - { key: "young", icon: "sprout", label: "Young", scale: { pitchHz: 1.3, tube: 1.13 }, set: { breath: 0.08 } }
+      - { key: "adult", icon: "tree", label: "Adult" }
+      - { key: "senior", icon: "cane", label: "Senior", scale: { pitchHz: 0.92, letterMs: 1.15 }, set: { wobble: 0.7, breath: 0.2 } }
+  # Animal Crossing's villagers speak higher when happy and lower when sad or
+  # angry (Nookipedia, "Animalese"); the pace and texture here are by ear.
+  - key: "mood"
+    label: "Mood"
+    default: "calm"
+    options:
+      - { key: "calm", icon: "face-calm", label: "Calm" }
+      - { key: "happy", icon: "face-happy", label: "Happy", scale: { pitchHz: 1.15, letterMs: 0.9 }, set: { nudge: 0.8, exclaimLift: 4 } }
+      - { key: "sad", icon: "face-sad", label: "Sad", scale: { pitchHz: 0.88, letterMs: 1.3, breath: 1.5 }, set: { drift: 5 } }
+      - { key: "angry", icon: "face-angry", label: "Angry", scale: { pitchHz: 0.9, letterMs: 0.85 }, set: { jitterPct: 6, attackMs: 10, shoutLift: 6 } }
+  - key: "style"
+    label: "Game style"
+    default: "mythfall"
+    tiles: true
+    options:
+      - key: "mythfall"
+        icon: "sword"
+        label: "Mythfall"
+        hint: "A hum per syllable"
+      - key: "crossing"
+        icon: "leaf"
+        label: "Animal Crossing"
+        hint: "A quick sound for every letter"
+        scale: { letterMs: 0.8, pitchHz: 1.2 }
+        flags: { every: true, consonants: true }
+      - key: "undertale"
+        icon: "heart"
+        label: "Undertale"
+        hint: "One plain beep per letter"
+        flags: { tone: "beep", every: true, human: false, tune: false }
+        # Press the tile again for its encore. Sans speaks in lowercase Comic
+        # Sans in the game (Undertale Wiki). His blip follows ut-voice's
+        # synthesized "sans" (github.com/Broknsun/ut-voice, MIT): a 50% square
+        # at about 105 Hz (112 × its 0.94 drop), 48 ms long with a 4 ms attack
+        # and a 12 ms curved release, ±6% pitch per blip, about 58 ms a letter.
+        # No game audio is used. Press again, or pick another style, to leave.
+        encore:
+          label: "Sans"
+          icon: "skull"
+          hint: "lowercase, in Comic Sans"
+          name: "sans"
+          set: { pitchHz: 105, letterMs: 58 }
+          flags:
+            wave: "square"
+            face: "comic"
+            lowercase: true
+            blip: { ms: 48, attackMs: 4, releaseMs: 12, octave: 1, wobble: 0.06 }
+      - key: "banjo"
+        icon: "paw"
+        label: "Banjo-Kazooie"
+        hint: "Grunts in a random order"
+        set: { nudge: 1.5 }
+        flags: { vowel: "random", tune: false }
+  - key: "manner"
+    label: "Manner"
+    default: "clear"
+    options:
+      - { key: "clear", icon: "wave-clear", label: "Clear" }
+      - { key: "mumbly", icon: "wave-mumble", label: "Mumbly", set: { mouth: 0.45, breath: 0.22 } }
+      - { key: "breathy", icon: "wind", label: "Breathy", set: { breath: 0.38 } }
+      - { key: "whisper", icon: "whisper", label: "Whisper", set: { whisper: 1 } }
+  - key: "pace"
+    label: "Pace"
+    default: "normal"
+    options:
+      - { key: "slow", icon: "pace-slow", label: "Slow", scale: { letterMs: 1.45 } }
+      - { key: "normal", icon: "pace-normal", label: "Normal" }
+      - { key: "fast", icon: "pace-fast", label: "Fast", scale: { letterMs: 0.7 } }

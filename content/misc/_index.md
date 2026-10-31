@@ -20,11 +20,11 @@ groups:
   - key: "play"
     label: "Play with it"
     icon: "play"
-    order: ["black-hole", "emergence", "sun", "quotes"]
+    order: ["black-hole", "emergence", "npc-voices", "sun", "quotes"]
   - key: "make"
     label: "Make things"
     icon: "pencil-square"
-    order: ["writing", "npc-voices", "pixel-art", "motion", "vps-protection", "dagea", "ba-gil"]
+    order: ["writing", "pixel-art", "motion", "vps-protection", "dagea", "ba-gil"]
   - key: "tools"
     label: "Tools"
     icon: "wrench-screwdriver"

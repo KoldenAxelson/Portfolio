@@ -23,10 +23,14 @@
   {{- end }}
   <path d="M{{ sub $cx 86 }} {{ $cy }} H{{ add $cx 86 }} M{{ $cx }} {{ sub $cy 86 }} V{{ add $cy 86 }}" class="line" stroke-opacity=".6" />
   {{- /* The wedge trails the leading edge, which starts pointing right (0°)
-         and turns clockwise; a blip at angle θ is hit θ/360 of the way round. */}}
-  <g class="sweep">
-    <path d="M{{ $cx }} {{ $cy }} L{{ add $cx 86 }} {{ $cy }} A86 86 0 0 0 {{ add $cx (mul 86 (math.Cos (math.Div (mul -40 math.Pi) 180))) }} {{ add $cy (mul 86 (math.Sin (math.Div (mul -40 math.Pi) 180))) }} Z" fill="url(#mf-tw-sweep)" />
-    <line x1="{{ $cx }}" y1="{{ $cy }}" x2="{{ add $cx 86 }}" y2="{{ $cy }}" class="stroke-accent" stroke-width="1.2" />
+         and turns clockwise; a blip at angle θ is hit θ/360 of the way round.
+         It's drawn around 0,0 and turns about it, placed by the wrapper:
+         see the page-zoom note at the top of motifs.css. */}}
+  <g transform="translate({{ $cx }} {{ $cy }})">
+    <g class="sweep pivot">
+      <path d="M0 0 L86 0 A86 86 0 0 0 {{ mul 86 (math.Cos (math.Div (mul -40 math.Pi) 180)) }} {{ mul 86 (math.Sin (math.Div (mul -40 math.Pi) 180)) }} Z" fill="url(#mf-tw-sweep)" />
+      <line x1="0" y1="0" x2="86" y2="0" class="stroke-accent" stroke-width="1.2" />
+    </g>
   </g>
   {{- range $i, $item := $items }}
   {{- $deg := add 20 (mul (div 360.0 $n) $i) }}
