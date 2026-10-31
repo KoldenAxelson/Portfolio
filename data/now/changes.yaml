@@ -15,6 +15,14 @@
 #             url gets its project's icon on its own; anything else shows the
 #             site's mark unless this names a project.
 - date: 2026-10-30
+  kind: new
+  text: "Posting Pipeline: an animated diagram of how my articles get to dev.to and LinkedIn on their own, with the live queue under it."
+  url: "/misc/social-pipeline/"
+- date: 2026-10-30
+  kind: update
+  text: "New storybook paintings for both fable trilogies, and sharper morals for the Crow and the Owl."
+  url: "/misc/writing/acorn-trilogy/"
+- date: 2026-10-30
   kind: update
   text: "Every published article has its own cover illustration now, and a proper preview card when you share the link."
   url: "/articles/"
