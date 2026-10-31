@@ -49,11 +49,15 @@ def die(msg: str) -> None:
 
 
 def env_value(name: str) -> str:
+    """A NAME=value line in .env. Allows `export `, quotes and a trailing # comment."""
     if ENV_FILE.exists():
         for line in ENV_FILE.read_text(encoding="utf-8").splitlines():
             key, sep, value = line.strip().removeprefix("export ").partition("=")
             if sep and key.strip() == name:
-                return value.strip().strip('"').strip("'")
+                value = value.strip()
+                if value[:1] in "\"'" and value[:1] and value.count(value[0]) >= 2:
+                    return value[1:value.index(value[0], 1)]
+                return value.split(" #")[0].strip()
     return ""
 
 
@@ -107,6 +111,8 @@ def upload(token: str, kv_id: str, page_base: str) -> None:
             {"type": "plain_text", "name": "PAGE_BASE", "text": page_base},
         ],
         "keep_bindings": ["secret_text"],
+        # Workers Logs, so a failed cron run (it has no one to tell) leaves a trace.
+        "observability": {"enabled": True},
     }
     boundary = f"----wf{uuid.uuid4().hex}"
     parts = [
@@ -155,8 +161,9 @@ def deploy() -> None:
 
 def poke(path: str) -> None:
     token = require("CLOUDFLARE_API_TOKEN", "Make one from the 'Edit Cloudflare Workers' template.")
-    url = f"{workers_dev_url(token)}{path}?key={require('SOCIAL_RUN_KEY', 'Run make social-deploy first.')}"
-    req = urllib.request.Request(url, headers={"User-Agent": UA})
+    key = require("SOCIAL_RUN_KEY", "Run make social-deploy first.")
+    req = urllib.request.Request(f"{workers_dev_url(token)}{path}",
+                                 headers={"User-Agent": UA, "Authorization": f"Bearer {key}"})
     with urllib.request.urlopen(req, timeout=120) as res:
         print(json.dumps(json.load(res), indent=1))
 

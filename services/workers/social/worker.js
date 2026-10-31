@@ -11,13 +11,15 @@
 //             becomes an API call and the email goes away.)
 //
 // What's been sent is remembered in KV (SOCIAL) by post id, so nothing goes
-// twice and a missed day catches up the next morning. Bindings and secrets
-// are set by scripts/social/deploy.py:
+// twice and a missed day catches up the next morning, one dev.to article a
+// day so a backlog doesn't land all at once. Report lines wait in KV until an
+// email carrying them gets through. Bindings and secrets are set by
+// scripts/social/deploy.py:
 //
 //   SOCIAL         KV namespace
 //   MAILER         send_email binding, locked to Konrad's verified address
 //   DEVTO_API_KEY  secret
-//   RUN_KEY        secret, for /run, /status and /test
+//   RUN_KEY        secret, sent as "Authorization: Bearer <key>" to /run, /status and /test
 //   QUEUE_URL, MAIL_FROM, MAIL_TO, PAGE_BASE   plain vars
 
 import { EmailMessage } from "cloudflare:email";
@@ -25,6 +27,8 @@ import { EmailMessage } from "cloudflare:email";
 const TZ = "America/Los_Angeles";
 const UA = "wrightfunctions-social/1.0 (+https://wrightfunctions.com)";
 const GREEN = "#037737";
+const LOCK_TTL_S = 300; // a run holds this long at most; KV's minimum TTL is 60
+const SUBJECT_CHUNK = 45; // bytes per RFC 2047 encoded-word, so each stays under 75 characters
 
 // ---- Small helpers -------------------------------------------------------
 
@@ -45,8 +49,24 @@ function b64(str) {
   return btoa(bin).replace(/(.{76})/g, "$1\r\n");
 }
 
-function encodedWord(s) {
-  return `=?UTF-8?B?${b64(s).replace(/\r\n/g, "")}?=`;
+// A subject as encoded-words of at most SUBJECT_CHUNK bytes, cut on
+// character boundaries and folded onto continuation lines.
+function encodedSubject(s) {
+  const words = [];
+  let chunk = "";
+  for (const ch of s) {
+    if (new TextEncoder().encode(chunk + ch).length > SUBJECT_CHUNK) { words.push(chunk); chunk = ""; }
+    chunk += ch;
+  }
+  if (chunk) words.push(chunk);
+  return words.map((w) => `=?UTF-8?B?${b64(w).replace(/\r\n/g, "")}?=`).join("\r\n ");
+}
+
+async function authorized(request, env) {
+  const given = (request.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
+  const a = new TextEncoder().encode(given);
+  const b = new TextEncoder().encode(env.RUN_KEY || "");
+  return a.byteLength === b.byteLength && b.byteLength > 0 && crypto.subtle.timingSafeEqual(a, b);
 }
 
 async function loadQueue(env) {
@@ -56,37 +76,57 @@ async function loadQueue(env) {
   return data.items || [];
 }
 
+// Live means: it answers 200, it's the page itself (its canonical link is this
+// URL, so a host's fallback page doesn't count), and it isn't a sealed or
+// in-review page, which the site marks noindex.
 async function isLive(url) {
   const res = await fetch(url, { method: "GET", headers: { "User-Agent": UA }, redirect: "follow" });
-  return res.ok;
+  if (!res.ok) return false;
+  const html = await res.text();
+  const canonical = html.match(/<link[^>]*rel="?canonical"?[^>]*href="?([^"\s>]+)/i);
+  if (!canonical || canonical[1] !== url) return false;
+  return !/<meta[^>]*name="?robots"?[^>]*noindex/i.test(html);
 }
 
 // ---- dev.to --------------------------------------------------------------
 
+const DEVTO_HEADERS = (env) => ({
+  "api-key": env.DEVTO_API_KEY,
+  "accept": "application/vnd.forem.api-v1+json",
+  "content-type": "application/json",
+  "User-Agent": UA,
+});
+
+// The body carries dev.to front matter (title, tags, cover, canonical link,
+// AI disclosure), written by build-queue.py, so it's the whole request.
 async function postToDevto(env, item) {
-  const d = item.devto;
-  const article = {
-    title: d.title,
-    body_markdown: d.body_markdown,
-    published: true,
-    description: d.description,
-    tags: d.tags,
-    canonical_url: d.canonical_url,
-  };
-  if (d.main_image) article.main_image = d.main_image;
   const res = await fetch("https://dev.to/api/articles", {
     method: "POST",
-    headers: {
-      "api-key": env.DEVTO_API_KEY,
-      "accept": "application/vnd.forem.api-v1+json",
-      "content-type": "application/json",
-      "User-Agent": UA,
-    },
-    body: JSON.stringify({ article }),
+    headers: DEVTO_HEADERS(env),
+    body: JSON.stringify({ article: { body_markdown: item.devto.body_markdown } }),
   });
   const text = await res.text();
-  if (!res.ok) throw new Error(`dev.to: HTTP ${res.status}: ${text.slice(0, 300)}`);
-  return JSON.parse(text).url;
+  if (res.ok) return JSON.parse(text).url;
+  // dev.to refuses a second published article with the same canonical URL. If
+  // that's why, the article is already there (an earlier run posted it and
+  // then failed to record it): find it and record it instead of failing daily.
+  if (res.status === 422 && /canonical/i.test(text)) {
+    const found = await findOnDevto(env, item.devto.canonical_url);
+    if (found) return found;
+  }
+  throw new Error(`dev.to: HTTP ${res.status}: ${text.slice(0, 300)}`);
+}
+
+async function findOnDevto(env, canonical) {
+  for (let page = 1; page <= 5; page++) {
+    const res = await fetch(`https://dev.to/api/articles/me/all?per_page=100&page=${page}`, { headers: DEVTO_HEADERS(env) });
+    if (!res.ok) return null;
+    const list = await res.json();
+    const hit = list.find((a) => a.canonical_url === canonical);
+    if (hit) return hit.url;
+    if (list.length < 100) return null;
+  }
+  return null;
 }
 
 // ---- The email -----------------------------------------------------------
@@ -120,7 +160,7 @@ async function sendEmail(env, subject, html, text) {
   const raw = [
     `From: wrightfunctions.com <${env.MAIL_FROM}>`,
     `To: ${env.MAIL_TO}`,
-    `Subject: ${encodedWord(subject)}`,
+    `Subject: ${encodedSubject(subject)}`,
     `Date: ${new Date().toUTCString()}`,
     `Message-ID: <${crypto.randomUUID()}@wrightfunctions.com>`,
     "MIME-Version: 1.0",
@@ -144,11 +184,34 @@ async function sendEmail(env, subject, html, text) {
 
 // ---- The daily run -------------------------------------------------------
 
+async function remember(env, key, value) {
+  try { await env.SOCIAL.put(key, JSON.stringify(value)); return true; }
+  catch (err) { console.error(`KV put ${key} failed`, err); return false; }
+}
+
+async function pendingNotes(env) {
+  return JSON.parse((await env.SOCIAL.get("notes:pending")) || "[]");
+}
+
 async function run(env) {
+  // A second run while one is going (cron plus a manual /run) would read the
+  // same "not sent yet" state. KV isn't transactional, so this only narrows
+  // the window, but the window is the problem.
+  if (await env.SOCIAL.get("lock")) return { skipped: "another run is in progress" };
+  await env.SOCIAL.put("lock", "1", { expirationTtl: LOCK_TTL_S });
+  try {
+    return await runLocked(env);
+  } finally {
+    await env.SOCIAL.delete("lock");
+  }
+}
+
+async function runLocked(env) {
   const day = today();
   const items = (await loadQueue(env)).filter((i) => i.date <= day);
   const linkedin = [];
-  const notes = [];
+  const notes = await pendingNotes(env);
+  let devtoPosted = false;
   for (const item of items) {
     const devtoDue = item.devto && !(await env.SOCIAL.get(`devto:${item.id}`));
     const linkedinDue = item.linkedin && !(await env.SOCIAL.get(`li:${item.id}`));
@@ -158,10 +221,13 @@ async function run(env) {
       notes.push(`Held "${item.title}": ${item.url} isn't live yet. It'll go out the first morning it is.`);
       continue;
     }
-    if (devtoDue) {
+    if (devtoDue && devtoPosted) {
+      notes.push(`dev.to: "${item.title}" is due and goes out tomorrow (one a day).`);
+    } else if (devtoDue) {
+      devtoPosted = true;
       try {
         const url = await postToDevto(env, item);
-        await env.SOCIAL.put(`devto:${item.id}`, JSON.stringify({ url, at: new Date().toISOString() }));
+        await remember(env, `devto:${item.id}`, { url, at: new Date().toISOString() });
         notes.push(`dev.to: published "${item.title}": ${url}`);
       } catch (err) {
         notes.push(`dev.to: couldn't post "${item.title}" (it'll retry tomorrow): ${err.message}`);
@@ -169,13 +235,23 @@ async function run(env) {
     }
     if (linkedinDue) linkedin.push(item);
   }
-  if (linkedin.length || notes.length) {
-    const subject = linkedin.length === 1 ? `LinkedIn post ready: ${linkedin[0].title}`
-      : linkedin.length > 1 ? `${linkedin.length} LinkedIn posts ready`
-      : "wrightfunctions.com posting report";
+  notes.splice(0, notes.length, ...new Set(notes)); // a held item repeats in carried-over notes
+  if (!linkedin.length && !notes.length) return { day, due: items.map((i) => i.id), emailed: [], notes };
+  // The copy page reads the post from KV, so it never has to fetch the queue.
+  for (const item of linkedin) await remember(env, `post:${item.id}`, { title: item.title, linkedin: item.linkedin });
+  const subject = linkedin.length === 1 ? `LinkedIn post ready: ${linkedin[0].title}`
+    : linkedin.length > 1 ? `${linkedin.length} LinkedIn posts ready`
+    : "wrightfunctions.com posting report";
+  try {
     await sendEmail(env, subject, emailHtml(env, linkedin, notes), emailText(env, linkedin, notes));
-    for (const item of linkedin) await env.SOCIAL.put(`li:${item.id}`, JSON.stringify({ emailed: new Date().toISOString() }));
+  } catch (err) {
+    // Keep the report for the next email; the LinkedIn posts stay unsent and
+    // go out with it.
+    await remember(env, "notes:pending", notes);
+    throw err;
   }
+  await env.SOCIAL.delete("notes:pending");
+  for (const item of linkedin) await remember(env, `li:${item.id}`, { emailed: new Date().toISOString() });
   return { day, due: items.map((i) => i.id), emailed: linkedin.map((i) => i.id), notes };
 }
 
@@ -227,38 +303,37 @@ document.getElementById("go").addEventListener("click", async () => {
 
 export default {
   async scheduled(_event, env, ctx) {
-    ctx.waitUntil(run(env));
+    ctx.waitUntil(run(env).catch((err) => console.error("social run failed", err)));
   },
 
   async fetch(request, env) {
     const url = new URL(request.url);
     const page = url.pathname.match(/^\/p\/([a-z0-9-]+)\/?$/);
     if (page) {
-      const item = (await loadQueue(env)).find((i) => i.id === page[1] && i.linkedin);
+      const item = JSON.parse((await env.SOCIAL.get(`post:${page[1]}`)) || "null");
       if (!item) return new Response("Not found", { status: 404 });
       return new Response(copyPage(item), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } });
     }
-    const authed = url.searchParams.get("key") && url.searchParams.get("key") === env.RUN_KEY;
-    if (url.pathname === "/run" && authed) {
-      return Response.json(await run(env));
+    if (!["/run", "/status", "/test"].includes(url.pathname) || !(await authorized(request, env))) {
+      return new Response("Not found", { status: 404 });
     }
-    // A sample email with the first queued post, marking nothing as sent.
-    if (url.pathname === "/test" && authed) {
+    if (url.pathname === "/run") return Response.json(await run(env));
+    if (url.pathname === "/test") {
+      // A sample email with the first queued post, marking nothing as sent.
       const item = (await loadQueue(env)).find((i) => i.linkedin);
       if (!item) return Response.json({ sent: false, reason: "nothing in the queue" });
+      await remember(env, `post:${item.id}`, { title: item.title, linkedin: item.linkedin });
       const note = ["This is a test. Nothing was posted or marked as sent."];
       await sendEmail(env, `Test: LinkedIn post ready: ${item.title}`, emailHtml(env, [item], note), emailText(env, [item], note));
       return Response.json({ sent: true, id: item.id });
     }
-    if (url.pathname === "/status" && authed) {
-      const items = await loadQueue(env);
-      const rows = [];
-      for (const i of items) {
-        rows.push({ id: i.id, date: i.date, devto: i.devto ? JSON.parse((await env.SOCIAL.get(`devto:${i.id}`)) || "null") : "n/a",
-                    linkedin: i.linkedin ? JSON.parse((await env.SOCIAL.get(`li:${i.id}`)) || "null") : "n/a" });
-      }
-      return Response.json({ today: today(), items: rows });
+    const items = await loadQueue(env);
+    const rows = [];
+    for (const i of items) {
+      rows.push({ id: i.id, date: i.date,
+        devto: i.devto ? JSON.parse((await env.SOCIAL.get(`devto:${i.id}`)) || "null") : "n/a",
+        linkedin: i.linkedin ? JSON.parse((await env.SOCIAL.get(`li:${i.id}`)) || "null") : "n/a" });
     }
-    return new Response("Not found", { status: 404 });
+    return Response.json({ today: today(), pending_notes: await pendingNotes(env), items: rows });
   },
 };

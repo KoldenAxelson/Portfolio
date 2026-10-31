@@ -13,7 +13,9 @@
 {{- $description := cond (ne $sealed "") "This page is passcode-locked." (.Params.description | default $site.description) -}}
 {{- $isArticleKind := and (eq .Kind "page") (in (slice "articles" "projects") .Section) -}}
 {{- $type := .Params.ogtype | default (cond $isArticleKind "article" "website") -}}
-{{- $image := .Params.image | default .Params.cover | default $site.ogImage -}}
+{{- /* A sealed page's own card or cover would show what's behind the lock,
+       so it falls back to the site image. */ -}}
+{{- $image := cond (ne $sealed "") $site.ogImage (.Params.image | default .Params.cover | default $site.ogImage) -}}
 {{- $ogImage := "" -}}
 {{- with $image -}}
   {{- if hasPrefix . "http" -}}{{ $ogImage = . }}{{- else -}}{{ $ogImage = printf "%s%s" $siteUrl . }}{{- end -}}

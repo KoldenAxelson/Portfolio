@@ -91,8 +91,9 @@ on the page, not in the chat.
    `data/social/queue.yaml` (an `article:` cross-posts it to dev.to; the
    `linkedin:` text follows `private/skills/LinkedInPost.md`), dated on the
    next free Monday or Friday after the last entry, then run
-   `make social-queue`. The posting Worker sends it on that day. Same rule as
-   the rest: don't ask, don't announce.
+   `make social-queue`. The posting Worker sends it on that day. Don't ask,
+   but do say it in one line of the reply ("queued for LinkedIn and dev.to on
+   Fri Dec 4"), because dev.to publishes in public without Konrad touching it.
 
 When it's a judgement call (is this big enough, did a status really change),
 make the call yourself and move on.

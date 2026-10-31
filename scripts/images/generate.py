@@ -62,6 +62,13 @@ PRICES = {
     "fal-ai/nano-banana-2": (0.08, "2026-10-30"),
     "fal-ai/flux/schnell": (0.003, "2026-10-30"),  # per megapixel; a 1K image is about one
 }
+# Each model's own way of asking for a 16:9 image (the cover and card crops
+# assume it). schnell has no aspect_ratio; it takes a named image_size.
+MODEL_INPUTS = {
+    "fal-ai/nano-banana-2": {"aspect_ratio": "16:9", "resolution": "1K", "output_format": "png"},
+    "fal-ai/flux/schnell": {"image_size": "landscape_16_9", "output_format": "png"},
+}
+POLL_RETRIES = 5
 DEFAULT_MODEL = "fal-ai/nano-banana-2"
 
 # The site's house style for article art, so the covers read as one series.
@@ -84,26 +91,30 @@ def die(msg: str) -> None:
     sys.exit(f"images: {msg}")
 
 
-def read_key() -> str:
-    key = os.environ.get(KEY_NAME, "").strip()
-    if key:
-        return key
+def env_value(name: str) -> str:
+    """$NAME, else a NAME=value line in .env (`export `, quotes and a trailing # comment allowed)."""
+    if os.environ.get(name, "").strip():
+        return os.environ[name].strip()
     if ENV_FILE.exists():
         for line in ENV_FILE.read_text(encoding="utf-8").splitlines():
-            name, sep, value = line.strip().removeprefix("export ").partition("=")
-            if sep and name.strip() == KEY_NAME:
-                return value.strip().strip('"').strip("'")
-    die(f"no API key. Put a {KEY_NAME}= line in .env (fal.ai > Dashboard > Keys).")
+            key, sep, value = line.strip().removeprefix("export ").partition("=")
+            if sep and key.strip() == name:
+                value = value.strip()
+                if value[:1] in "\"'" and value[:1] and value.count(value[0]) >= 2:
+                    return value[1:value.index(value[0], 1)]
+                return value.split(" #")[0].strip()
     return ""
 
 
+def read_key() -> str:
+    key = env_value(KEY_NAME)
+    if not key:
+        die(f"no API key. Put a {KEY_NAME}= line in .env (fal.ai > Dashboard > Keys).")
+    return key
+
+
 def budget() -> float:
-    raw = os.environ.get("IMAGE_BUDGET_USD", "")
-    if not raw and ENV_FILE.exists():
-        for line in ENV_FILE.read_text(encoding="utf-8").splitlines():
-            name, sep, value = line.strip().partition("=")
-            if sep and name.strip() == "IMAGE_BUDGET_USD":
-                raw = value.strip().strip('"')
+    raw = env_value("IMAGE_BUDGET_USD")
     try:
         return float(raw) if raw else DEFAULT_BUDGET_USD
     except ValueError:
@@ -123,18 +134,20 @@ def spent_this_month() -> float:
     return sum(float(r["usd"]) for r in ledger_rows() if r["date"].startswith(month))
 
 
-def log_job(slug: str, model: str, usd: float, prompt: str, out: Path) -> None:
+def log_job(slug: str, model: str, usd: float, prompt: str, out: Path, request_id: str) -> None:
+    """Logged the moment fal accepts the job, since that's when it's charged,
+    so a timeout or failed download still counts against the budget."""
     LEDGER.parent.mkdir(parents=True, exist_ok=True)
     new = not LEDGER.exists()
     with LEDGER.open("a", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
         if new:
-            w.writerow(["date", "slug", "model", "usd", "file", "prompt"])
+            w.writerow(["date", "slug", "model", "usd", "file", "prompt", "request_id"])
         w.writerow([dt.datetime.now().isoformat(timespec="seconds"), slug, model, f"{usd:.3f}",
-                    out.relative_to(ROOT), prompt])
+                    out.relative_to(ROOT), prompt, request_id])
 
 
-def request(url: str, key: str, body: dict | None = None) -> dict:
+def request(url: str, key: str, body: dict | None = None, quiet: bool = False) -> dict:
     data = json.dumps(body).encode() if body is not None else None
     req = urllib.request.Request(url, data=data, method="POST" if body is not None else "GET", headers={
         "Authorization": f"Key {key}", "Content-Type": "application/json",
@@ -144,27 +157,45 @@ def request(url: str, key: str, body: dict | None = None) -> dict:
             return json.load(res)
     except urllib.error.HTTPError as e:
         detail = e.read().decode("utf-8", "replace")[:400]
+        if quiet:
+            raise RuntimeError(f"fal.ai answered {e.code}: {detail}") from e
         die(f"fal.ai answered {e.code}: {detail}")
+    except urllib.error.URLError as e:
+        if quiet:
+            raise RuntimeError(f"couldn't reach fal.ai: {e.reason}") from e
+        die(f"couldn't reach fal.ai: {e.reason}")
     return {}
 
 
-def run_model(model: str, prompt: str, key: str) -> str:
-    """Submit to fal's queue, wait, return the image URL."""
-    job = request(f"{QUEUE_HOST}/{model}", key, {
-        "prompt": prompt, "aspect_ratio": "16:9", "resolution": "1K",
-        "num_images": 1, "output_format": "png"})
-    status_url, response_url = job.get("status_url"), job.get("response_url")
-    if not status_url or not response_url:
+def submit(model: str, prompt: str, key: str) -> dict:
+    """Submit to fal's queue; returns the job (request_id, status_url, response_url)."""
+    job = request(f"{QUEUE_HOST}/{model}", key, {"prompt": prompt, "num_images": 1, **MODEL_INPUTS[model]})
+    if not job.get("status_url") or not job.get("response_url"):
         die(f"unexpected submit response: {json.dumps(job)[:300]}")
+    return job
+
+
+def wait_for(job: dict, key: str) -> str:
+    """Poll until fal says COMPLETED, riding out a few transient errors; return the image URL."""
     deadline = time.time() + TIMEOUT_S
+    errors = 0
     while True:
-        status = request(status_url, key)
+        try:
+            status = request(job["status_url"], key, quiet=True)
+        except RuntimeError as e:
+            errors += 1
+            if errors > POLL_RETRIES:
+                die(f"{e}; the job ({job['request_id']}) is logged and may still finish: {job['response_url']}")
+            time.sleep(POLL_EVERY_S * errors)
+            continue
         if status.get("status") == "COMPLETED":
+            if status.get("error"):
+                die(f"fal reported the job failed: {status['error']}")
             break
         if time.time() > deadline:
-            die(f"timed out after {TIMEOUT_S}s; the job may still finish: {response_url}")
+            die(f"timed out after {TIMEOUT_S}s; the job is logged and may still finish: {job['response_url']}")
         time.sleep(POLL_EVERY_S)
-    result = request(response_url, key)
+    result = request(job["response_url"], key)
     images = result.get("images") or []
     if not images or not images[0].get("url"):
         die(f"no image in the result (a failed job also reports COMPLETED): {json.dumps(result)[:300]}")
@@ -193,10 +224,12 @@ def cmd_art(args: argparse.Namespace) -> None:
         return
     if already + usd > cap:
         die(f"that would take this month to ${already + usd:.2f}, over the ${cap:.2f} budget. "
-            "Raise IMAGE_BUDGET_USD in .env if Konrad agrees.")
-    url = run_model(args.model, prompt, read_key())
+            "Stop and ask Konrad; only he changes IMAGE_BUDGET_USD.")
+    key = read_key()
+    job = submit(args.model, prompt, key)
+    log_job(args.slug, args.model, usd, prompt, out, job.get("request_id", ""))
+    url = wait_for(job, key)
     download(url, out)
-    log_job(args.slug, args.model, usd, prompt, out)
     print(f"Saved {out.relative_to(ROOT)}. Month total ${already + usd:.2f}.")
 
 
