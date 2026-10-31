@@ -8,6 +8,7 @@ stack: ['Rust', 'tree-sitter', 'Swift', 'SwiftUI', 'Claude Code', 'SARIF']
 role: 'Solo build'
 year: '2026'
 status: 'in-progress'
+cover: '/covers/codeturtle.webp'
 featured: false
 thoughts:
   - 'I spent five years clearing Fortify findings. This is the reviewer I wanted on the other side of that desk.'

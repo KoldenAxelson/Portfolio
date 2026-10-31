@@ -32,6 +32,7 @@ building:
     status: "Back from the archive"
     line: "My farmers-market app. The pitch got love and no checks, so this time the working app does the talking. Wiring up Stripe and production."
   - page: "/projects/codeturtle"
+    icon: "/covers/codeturtle.webp"
     status: "Fixing what its first real run showed"
     line: "A code reviewer for my own Mac that checks a repo against its own rules and can have Claude fix what it finds."
   - page: "/projects/gamesect"
@@ -43,7 +44,6 @@ building:
     status: "Waiting on the real sounds"
     line: "A silly app that buzzes kids a few times a week to remind them they have free will. Runs on Android; not in the stores yet."
 learning: "How to get more eyes on what I ship. Ship first, then promote."
-readingNote: "Done with my self-help phase. Turns out stories stick better than frameworks do."
 life:
   - "Working on more than ever for less than ever. I know where the ship is heading."
   - "Open to pretty much any work: full-time, contract, consulting or collaborations."

@@ -72,7 +72,7 @@ Until the day the foxes returned.
 
 ## The Fox’s Plan
 
-{{< writing/illustration "fox-den" "A fox resting outside his den in the rocky hills, smiling, while a crow watches from a branch" >}}
+{{< writing/illustration "fox-den" "A well-fed fox curled up asleep outside his den in the rocky hills, while a crow watches from a branch" >}}
 
 Far in the rocky hills, the clever fox had been hunting black rabbits for many years. Life was easy - the black rabbits never worked together, so he could catch one whenever he was hungry.
 

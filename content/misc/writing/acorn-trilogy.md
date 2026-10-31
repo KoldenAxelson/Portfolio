@@ -8,7 +8,7 @@ weight: 2
 
 ## The Little Squirrel and His Acorns
 
-{{< writing/illustration "nutkin" "A red squirrel holding an acorn beside a tree stump heaped with acorns, in an autumn forest" >}}
+{{< writing/illustration "nutkin" "A red squirrel holding an acorn beside a tree stump heaped with acorns in an autumn forest, while raccoons peek out of the ferns behind him" >}}
 
 Once upon a time, there was a little squirrel named Nutkin who worked all summer collecting acorns. He gathered them one by one and stored them proudly in his tree.
 
@@ -64,7 +64,7 @@ As Corvus flew away, he felt proud that he had brought fairness to the forest at
 
 ## The Owl’s Tale
 
-{{< writing/illustration "owl" "A horned owl on a snow-covered branch above an empty winter forest" >}}
+{{< writing/illustration "owl" "A horned owl on a snow-covered branch, looking down at three young squirrels in an empty winter forest" >}}
 
 Three young squirrels had traveled far to find a new home. They came upon a beautiful forest filled with oak trees heavy with acorns, clear streams, and plenty of shelter.
 

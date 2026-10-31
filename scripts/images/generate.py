@@ -70,6 +70,8 @@ MODEL_INPUTS = {
     "fal-ai/flux/schnell": {"image_size": "landscape_16_9", "output_format": "png"},
 }
 POLL_RETRIES = 5
+# Other shapes, for `art --aspect`. schnell has no 2:3 or 3:2, so it gets the nearest.
+ASPECTS = {"16:9": "landscape_16_9", "3:2": "landscape_4_3", "2:3": "portrait_4_3"}
 DEFAULT_MODEL = "fal-ai/nano-banana-2"
 
 # The site's house style for article art, so the covers read as one series.
@@ -81,6 +83,17 @@ HOUSE_STYLE = (
     "Wide composition with the subject in the right two thirds and quiet space "
     "on the left. No text, no letters, no numbers, no logos, no watermarks."
 )
+
+# For the stories on /misc/writing/ (the fable trilogies): a picture book,
+# not an article diagram. Used by `art --style story`.
+STORY_STYLE = (
+    "Storybook illustration for a short moral fable. Gouache and watercolour "
+    "on textured paper, soft natural light, rich seasonal colour, gentle and "
+    "timeless like a classic picture book, with a quiet note of melancholy. "
+    "Animals drawn naturally, not cartoonish, no clothes. "
+    "No text, no letters, no numbers, no logos, no watermarks."
+)
+STYLES = {"article": HOUSE_STYLE, "story": STORY_STYLE}
 
 GREEN = (3, 119, 55)
 CREAM = (250, 247, 240)
@@ -172,9 +185,14 @@ def request(url: str, key: str, body: dict | None = None, quiet: bool = False) -
     return {}
 
 
-def submit(model: str, prompt: str, key: str) -> dict:
+def submit(model: str, prompt: str, key: str, aspect: str = "16:9") -> dict:
     """Submit to fal's queue; returns the job (request_id, status_url, response_url)."""
-    job = request(f"{QUEUE_HOST}/{model}", key, {"prompt": prompt, "num_images": 1, **MODEL_INPUTS[model]})
+    inputs = dict(MODEL_INPUTS[model])
+    if "aspect_ratio" in inputs:
+        inputs["aspect_ratio"] = aspect
+    else:
+        inputs["image_size"] = ASPECTS[aspect]
+    job = request(f"{QUEUE_HOST}/{model}", key, {"prompt": prompt, "num_images": 1, **inputs})
     if not job.get("status_url") or not job.get("response_url"):
         die(f"unexpected submit response: {json.dumps(job)[:300]}")
     return job
@@ -218,7 +236,7 @@ def cmd_art(args: argparse.Namespace) -> None:
     if args.model not in PRICES:
         die(f"{args.model} has no checked price. Look it up on fal.ai/pricing and add it to PRICES.")
     usd, checked = PRICES[args.model]
-    prompt = f"{args.prompt.strip()} {HOUSE_STYLE}" if not args.raw else args.prompt.strip()
+    prompt = f"{args.prompt.strip()} {STYLES[args.style]}" if not args.raw else args.prompt.strip()
     out = ART_DIR / f"{args.slug}.png"
     already = spent_this_month()
     cap = budget()
@@ -231,7 +249,7 @@ def cmd_art(args: argparse.Namespace) -> None:
         die(f"that would take this month to ${already + usd:.2f}, over the ${cap:.2f} budget. "
             "Stop and ask Konrad; only he changes IMAGE_BUDGET_USD.")
     key = read_key()
-    job = submit(args.model, prompt, key)
+    job = submit(args.model, prompt, key, args.aspect)
     log_job(args.slug, args.model, usd, prompt, out, job.get("request_id", ""))
     url = wait_for(job, key)
     download(url, out)
@@ -336,6 +354,107 @@ def cmd_cover(args: argparse.Namespace) -> None:
     print(f"  image: '/share/{args.slug}.jpg'")
 
 
+def cmd_fetch(args: argparse.Namespace) -> None:
+    """Download a job that was paid for but never arrived (a timeout, a killed
+    run): looks up its request id in the ledger and asks fal for the result."""
+    rows = [r for r in ledger_rows() if r["slug"] == args.slug and r.get("request_id")]
+    if not rows:
+        die(f"no logged job with a request id for {args.slug}")
+    row = rows[-1]
+    base = f"{QUEUE_HOST}/{row['model']}/requests/{row['request_id']}"
+    url = wait_for({"request_id": row["request_id"], "status_url": f"{base}/status", "response_url": base}, read_key())
+    out = ROOT / row["file"]
+    download(url, out)
+    print(f"Fetched {out.relative_to(ROOT)} (no new charge).")
+
+
+SERIF = Path("/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf")
+SERIF_ITALIC = Path("/usr/share/fonts/truetype/dejavu/DejaVuSerif-Italic.ttf")
+WRITING_DIR = ROOT / "assets" / "img" / "writing"
+WRITING_W = 1200
+
+
+def trim_paper(art):
+    """Cut away the blank paper the story style tends to paint around a picture:
+    the box of everything that differs from the corner colour, then a little
+    further in, past the ragged painted edge."""
+    from PIL import Image, ImageChops
+    w, h = art.size
+    corner = art.getpixel((2, 2))
+    diff = ImageChops.difference(art, Image.new("RGB", art.size, corner)).convert("L")
+    box = diff.point(lambda v: 255 if v > 38 else 0).getbbox()
+    if not box:
+        return art
+    l, t, r, b = box
+    if (r - l) * (b - t) > 0.97 * w * h:     # no margin to speak of
+        return art
+    ix, iy = round((r - l) * 0.035), round((b - t) * 0.035)
+    return art.crop((l + ix, t + iy, r - ix, b - iy))
+
+
+def cmd_story(args: argparse.Namespace) -> None:
+    """A story picture for /misc/writing/: the art at 1200 wide as
+    assets/img/writing/<slug>.webp. With --title it's a book cover: the title
+    (and --lead) set in serif over a soft fade at the top, where the story
+    style's cover prompts leave quiet space."""
+    try:
+        from PIL import Image, ImageDraw, ImageFont
+    except ImportError:
+        die("Pillow isn't installed here: python3 -m pip install pillow")
+    art_path = ART_DIR / f"{args.slug}.png"
+    if not art_path.exists():
+        die(f"no art yet at {art_path.relative_to(ROOT)}; run the art step first")
+    art = trim_paper(Image.open(art_path).convert("RGB"))
+    # Exactly 3:2 or 2:3, like the other pictures on the shelf (the model's
+    # "3:2" comes back a few pixels off).
+    w, h = art.size
+    ratio = 3 / 2 if w >= h else 2 / 3
+    if w / h > ratio:
+        cw = round(h * ratio); art = art.crop(((w - cw) // 2, 0, (w - cw) // 2 + cw, h))
+    else:
+        ch = round(w / ratio); art = art.crop((0, (h - ch) // 2, w, (h - ch) // 2 + ch))
+    img = art.resize((WRITING_W, round(WRITING_W / ratio)), Image.LANCZOS)
+    if args.title:
+        if not SERIF.exists():
+            die(f"no serif font at {SERIF}; install fonts-dejavu")
+        W, H = img.size
+        draw = ImageDraw.Draw(img)
+        # The title: as large as fits in two lines (three only if it must), so
+        # the band stays shallow and the picture keeps its top.
+        lines, size = [], 132
+        for size in range(132, 86, -4):
+            tf = ImageFont.truetype(str(SERIF), size)
+            lines = wrap(draw, args.title, tf, W - 140)
+            if len(lines) <= 2:
+                break
+        lf = ImageFont.truetype(str(SERIF_ITALIC if SERIF_ITALIC.exists() else SERIF), 44)
+        line_h = round(size * 1.12)
+        text_bottom = 110 + line_h * len(lines) + (70 if args.lead else 0)
+        # A solid band in the art's own colour, deepened and kept saturated,
+        # down to just under the text, then a short fade into the picture.
+        import colorsys
+        avg = img.crop((0, 0, W, H // 2)).resize((1, 1), Image.LANCZOS).getpixel((0, 0))
+        hh, ss, _ = colorsys.rgb_to_hsv(*(c / 255 for c in avg))
+        ink = tuple(round(c * 255) for c in colorsys.hsv_to_rgb(hh, max(ss, 0.5), 0.26))
+        solid, fade = text_bottom + 40, round(H * 0.08)
+        shade = Image.new("L", (1, H))
+        for y in range(H):
+            t = 1.0 if y <= solid else max(0.0, 1 - (y - solid) / fade)
+            shade.putpixel((0, y), round(255 * t ** 1.3))
+        img = Image.composite(Image.new("RGB", (W, H), ink), img, shade.resize((W, H)))
+        draw = ImageDraw.Draw(img)
+        y = 110
+        for line in lines:
+            draw.text((W // 2, y), line, font=tf, fill=(250, 246, 236), anchor="ma")
+            y += line_h
+        if args.lead:
+            draw.text((W // 2, y + 22), args.lead, font=lf, fill=(236, 228, 210), anchor="ma")
+    WRITING_DIR.mkdir(parents=True, exist_ok=True)
+    out = WRITING_DIR / f"{args.slug}.webp"
+    img.save(out, "WEBP", quality=84)
+    print(f"Story picture: {out.relative_to(ROOT)} ({img.width}x{img.height})")
+
+
 def cmd_spent(_: argparse.Namespace) -> None:
     rows = ledger_rows()
     print(f"This month: ${spent_this_month():.2f} of ${budget():.2f}.")
@@ -351,12 +470,22 @@ def main() -> None:
     a.add_argument("--prompt", required=True, help="the subject; the house style is added unless --raw")
     a.add_argument("--model", default=DEFAULT_MODEL)
     a.add_argument("--raw", action="store_true", help="send the prompt as-is, without the house style")
+    a.add_argument("--style", choices=sorted(STYLES), default="article", help="article (default) or story")
+    a.add_argument("--aspect", choices=sorted(ASPECTS), default="16:9", help="16:9 (default), 3:2 or 2:3")
     a.add_argument("--go", action="store_true", help="spend; without it, only quote")
     a.set_defaults(func=cmd_art)
     c = sub.add_parser("cover", help="cover and share card from the art")
     c.add_argument("--slug", required=True)
     c.add_argument("--title", help="defaults to the article's front-matter title")
     c.set_defaults(func=cmd_cover)
+    f = sub.add_parser("fetch", help="download a logged job that never arrived, without paying again")
+    f.add_argument("--slug", required=True)
+    f.set_defaults(func=cmd_fetch)
+    w = sub.add_parser("story", help="a /misc/writing/ picture (or, with --title, a book cover) from the art")
+    w.add_argument("--slug", required=True)
+    w.add_argument("--title")
+    w.add_argument("--lead")
+    w.set_defaults(func=cmd_story)
     s = sub.add_parser("spent", help="this month's spend and the last jobs")
     s.set_defaults(func=cmd_spent)
     args = p.parse_args()
