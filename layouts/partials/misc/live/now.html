@@ -1,50 +1,82 @@
 {{- /*
-  misc/live/now — the Now card as a departure board. One flap at a time
-  turns over to the next thing on /now: the project I'm working on, the others
-  I'm building (content/now.md `working` and `building`), then the game and
-  book the Impossible List marks current (func/about-now.html, the same source
-  as the page's "Off the clock"), so the card is current whenever the page is.
-  A live dot and the page's date sit above it.
-  Pure HTML + CSS; the flip timing is generated for however many entries.
+  misc/live/now — the Now card as a heart monitor. An ECG trace sweeps across;
+  each project on /now (content/now.md `working` and `building`) sits on a
+  heartbeat with its app icon, and pops as the pulse passes through it. The
+  one I'm working on is in the middle and larger. A live dot and the page's
+  date sit above. Current whenever the page is; no script.
+
+  Timing: the trace is one path (pathLength 1) with a dash sweeping along it.
+  A spike adds SPIKE units of path beyond its width, so each icon's moment is
+  worked out from where its peak falls along the whole path, not from its x.
+  Keep SPIKE and PEAK in step with the spike shape below.
 */ -}}
 {{- with site.GetPage "/now" }}
-{{- $entries := slice -}}
-{{- with .Params.working }}{{ with site.GetPage .page }}{{ $entries = $entries | append (dict "label" "Working on" "value" .Title) }}{{ end }}{{ end -}}
-{{- range .Params.building }}{{ with site.GetPage .page }}{{ $entries = $entries | append (dict "label" "Building" "value" .Title) }}{{ end }}{{ end -}}
-{{- $current := partial "func/about-now.html" . -}}
-{{- with $current.game }}{{ $entries = $entries | append (dict "label" "Playing" "value" .title) }}{{ end -}}
-{{- with $current.book }}{{ $entries = $entries | append (dict "label" "Reading" "value" .title) }}{{ end -}}
-{{- $n := len $entries -}}
-{{- $hold := 3 -}}
-{{- $cycle := mul $n $hold -}}
-{{- $show := div 100.0 $n -}}
-{{- $flip := div (mul 100.0 0.45) $cycle -}}
+{{- $items := slice -}}
+{{- range .Params.building }}{{ $b := . }}{{ with site.GetPage .page }}{{ $items = $items | append (dict "title" .Title "icon" $b.icon "focus" false) }}{{ end }}{{ end -}}
+{{- with .Params.working }}{{ $w := . }}{{ with site.GetPage .page }}
+  {{- /* The focus goes in the middle. */ -}}
+  {{- $mid := div (len $items) 2 -}}
+  {{- $items = (first $mid $items) | append (dict "title" .Title "icon" $w.icon "focus" true) | append (after $mid $items) -}}
+{{- end }}{{ end -}}
+{{- $n := len $items -}}
+{{- $W := 320.0 }}{{ $base := 128 }}{{ $SPIKE := 113.4 }}{{ $PEAK := 46.3 -}}
+{{- $total := add $W (mul $n $SPIKE) -}}
+{{- $cycle := 3.6 }}{{ $sweep := 0.625 -}}
+{{- $d := printf "M0 %d" $base -}}
+{{- $marks := slice -}}
+{{- range $i, $it := $items }}
+  {{- $x := div (mul $W (add $i 1)) (add $n 1) -}}
+  {{- $d = printf "%s L%.1f %d L%.1f %d L%.1f %d L%.1f %d L%.1f %d L%.1f %d L%.1f %d L%.1f %d L%.1f %d L%.1f %d L%.1f %d" $d
+      (sub $x 26) $base (sub $x 20) (sub $base 4) (sub $x 14) $base (sub $x 7) $base (sub $x 4) (add $base 6)
+      $x (sub $base 38) (add $x 4) (add $base 16) (add $x 8) $base (add $x 16) $base (add $x 23) (sub $base 6) (add $x 30) $base -}}
+  {{- $at := div (add (add $x (mul $i $SPIKE)) $PEAK) $total -}}
+  {{- $marks = $marks | append (merge $it (dict "x" $x "delay" (mul $at $sweep $cycle))) -}}
+{{- end }}
+{{- $d = printf "%s L%.0f %d" $d $W $base -}}
 <style>
-  .mf-now .flap { opacity: 0; transform-origin: 50% 50%; backface-visibility: hidden; animation: mf-now-flap {{ $cycle }}s cubic-bezier(.4, 0, .2, 1) infinite; animation-delay: calc(var(--i) * {{ $hold }}s - {{ $hold }}s * .15); }
-  .mf-now .flap:first-child { opacity: 1; }
-  @keyframes mf-now-flap {
-    0% { opacity: 0; transform: perspective(300px) rotateX(-90deg); }
-    {{ printf "%.2f" $flip }}% { opacity: 1; transform: perspective(300px) rotateX(0); }
-    {{ printf "%.2f" $show }}% { opacity: 1; transform: perspective(300px) rotateX(0); }
-    {{ printf "%.2f" (add $show $flip) }}% { opacity: 0; transform: perspective(300px) rotateX(90deg); }
-    100% { opacity: 0; transform: perspective(300px) rotateX(90deg); }
-  }
+  .mf-now { --now-t: {{ $cycle }}s; }
+  .mf-now .now-base { fill: none; stroke: rgb(var(--c-muted) / .22); stroke-width: 1.2; stroke-linejoin: round; }
+  .mf-now .now-trace { fill: none; stroke: rgb(var(--c-accent)); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round;
+    stroke-dasharray: .28 1.4; stroke-dashoffset: .28; filter: drop-shadow(0 0 3px rgb(var(--c-accent) / .6));
+    animation: mf-now-trace var(--now-t) linear infinite; }
+  @keyframes mf-now-trace { 0% { stroke-dashoffset: .28; } {{ printf "%.1f" (mul $sweep 128) }}%, 100% { stroke-dashoffset: -1; } }
+  .mf-now .now-head { fill: rgb(var(--c-accent)); offset-rotate: 0deg; opacity: 0; filter: drop-shadow(0 0 4px rgb(var(--c-accent))); animation: mf-now-head var(--now-t) linear infinite; }
+  @keyframes mf-now-head { 0% { offset-distance: 0%; opacity: 1; } {{ printf "%.1f" (mul $sweep 100) }}% { offset-distance: 100%; opacity: 1; } {{ printf "%.1f" (add (mul $sweep 100) 3) }}%, 100% { offset-distance: 100%; opacity: 0; } }
+  .mf-now .now-icon { animation: mf-now-beat var(--now-t) cubic-bezier(.2, .9, .3, 1.3) infinite; animation-delay: var(--delay); }
+  @keyframes mf-now-beat { 0% { transform: translate(-50%, -50%) scale(1); } 5% { transform: translate(-50%, -50%) scale(1.16); } 16%, 100% { transform: translate(-50%, -50%) scale(1); } }
+  .mf-now .now-icon::after { content: ""; position: absolute; inset: 0; border-radius: 22%; box-shadow: 0 0 0 0 rgb(var(--c-accent) / .55); animation: mf-now-ring var(--now-t) ease-out infinite; animation-delay: var(--delay); }
+  @keyframes mf-now-ring { 0% { box-shadow: 0 0 0 0 rgb(var(--c-accent) / .55); } 22%, 100% { box-shadow: 0 0 0 12px rgb(var(--c-accent) / 0); } }
   .mf-now .live { animation: mf-now-live 1.6s ease-in-out infinite; }
   @keyframes mf-now-live { 50% { opacity: .3; } }
-  @media (prefers-reduced-motion: reduce) { .mf-now .flap, .mf-now .live { animation: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    .mf-now .now-trace { stroke-dasharray: none; stroke-dashoffset: 0; opacity: .7; }
+    .mf-now .now-head { display: none; }
+  }
 </style>
 <span class="mf mf-now" aria-hidden="true">
+  <svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid meet">
+    {{- /* A faint monitor grid. */}}
+    <g stroke="rgb(var(--c-border))" stroke-width=".6" opacity=".7">
+      {{- range seq 1 9 }}<line x1="{{ mul . 32 }}" y1="32" x2="{{ mul . 32 }}" y2="176" />{{ end }}
+      {{- range seq 1 4 }}<line x1="0" y1="{{ add 16 (mul . 32) }}" x2="320" y2="{{ add 16 (mul . 32) }}" />{{ end }}
+    </g>
+    <path class="now-base" d="{{ $d }}" />
+    <path class="now-trace" d="{{ $d }}" pathLength="1" />
+    <circle class="now-head" r="3.4" style="offset-path: path('{{ $d }}')" />
+    {{- range $marks }}
+    <text x="{{ .x }}" y="166" text-anchor="middle" font-size="{{ cond .focus "9" "7.5" }}" class="{{ cond .focus "sans fg" "sans muted" }}" font-weight="{{ cond .focus "650" "500" }}">{{ .title }}</text>
+    {{- end }}
+  </svg>
   <span class="absolute left-3.5 top-2.5 flex items-center gap-1.5 font-mono text-[0.44rem] font-semibold uppercase tracking-[0.16em] text-muted">
     <span class="live h-1.5 w-1.5 rounded-full bg-accent"></span>Now{{ with .Params.updated }} · {{ (time.AsTime .).Format "Jan 2006" }}{{ end }}
   </span>
-  <span class="absolute inset-x-5 top-1/2 block h-[4.5rem] -translate-y-1/2">
-    {{- range $i, $e := $entries }}
-    <span class="flap absolute inset-0 flex flex-col justify-center rounded-lg border border-border/70 bg-bg/80 px-4 shadow-lg" style="--i: {{ $i }}">
-      <span class="absolute inset-x-0 top-1/2 h-px bg-border/70"></span>
-      <span class="font-mono text-[0.55rem] uppercase tracking-widest text-accent">{{ $e.label }}</span>
-      <span class="mt-1 truncate text-lg font-semibold leading-tight text-fg">{{ $e.value }}</span>
-    </span>
-    {{- end }}
+  {{- range $marks }}
+  {{- $px := cond .focus 72 48 }}
+  {{- $ic := partial "func/cover.html" (dict "path" .icon "width" $px "height" $px "fit" true) }}
+  {{- $size := cond .focus 19 13.5 }}
+  <span class="now-icon absolute block rounded-[22%] bg-bg shadow-md" style="left: {{ div (mul .x 100) 320 }}%; top: {{ cond .focus 28 33 }}%; width: {{ $size }}%; aspect-ratio: 1; transform: translate(-50%, -50%); --delay: {{ printf "%.2f" .delay }}s">
+    <img src="{{ $ic.src }}"{{ with $ic.srcset }} srcset="{{ . }}"{{ end }} alt="" width="{{ $px }}" height="{{ $px }}" loading="lazy" decoding="async" class="h-full w-full rounded-[22%] object-contain" />
   </span>
+  {{- end }}
 </span>
 {{- end }}

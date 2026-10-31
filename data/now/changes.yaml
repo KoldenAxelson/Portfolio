@@ -11,6 +11,9 @@
 #   kind : "new" (a page or feature that didn't exist) or "update"
 #   text : one line, first person, what changed
 #   url  : where to see it (site path)
+#   project : optional project slug, for the icon beside the entry. A /projects/
+#             url gets its project's icon on its own; anything else shows the
+#             site's mark unless this names a project.
 - date: 2026-10-30
   kind: update
   text: "Every published article has its own cover illustration now, and a proper preview card when you share the link."

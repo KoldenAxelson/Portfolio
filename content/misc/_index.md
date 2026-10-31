@@ -44,7 +44,7 @@ groups:
   - key: "about"
     label: "About me"
     icon: "user"
-    order: ["impossible-list", "genes", "now", "uses"]
+    order: ["now", "impossible-list", "genes", "uses"]
 
 # Pages that belong on this shelf but live outside content/misc/, so their URLs
 # stay where they are (/now, /uses — both are linked from elsewhere and indexed
