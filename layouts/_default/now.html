@@ -120,7 +120,7 @@
         {{- $ic := partial "func/cover.html" (dict "path" $proj.Params.cover "width" 32 "height" 32 "fit" true) }}
         <img src="{{ $ic.src }}"{{ with $ic.srcset }} srcset="{{ . }}"{{ end }} width="32" height="32" alt="" title="{{ $proj.Title }}" loading="lazy" class="h-8 w-8 shrink-0 rounded-[22%] object-contain" />
         {{- else }}
-        <span title="The site" class="grid h-8 w-8 shrink-0 place-items-center rounded-[22%] border border-border/70 bg-bg"><img src="{{ "logo-mark.svg" | relURL }}" width="20" height="20" alt="" loading="lazy" class="h-5 w-5" /></span>
+        <img src="{{ "logo-mark.svg" | relURL }}" width="32" height="32" alt="" title="The site" loading="lazy" class="h-8 w-8 shrink-0 object-contain" />
         {{- end }}
         <span class="flex min-w-0 flex-1 flex-col gap-1 sm:flex-row sm:items-baseline sm:gap-4">
           <span class="flex shrink-0 items-center gap-2 font-mono text-xs text-muted sm:w-32">
