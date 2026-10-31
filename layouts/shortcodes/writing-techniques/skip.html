@@ -1,0 +1,30 @@
+{{- /* writing-techniques/skip: live widget; behaviour in static/js/writing-techniques/wt-skip.js.
+       Pick how much time passes and how loudly to say so; it shows the break
+       that fits the gap and the line that would open the next section. The
+       break sizes are his; every line is mine. */ -}}
+<div class="not-prose vn-demo" id="wt-skip" data-vn-src="/js/writing-techniques/wt-skip.js" data-vn-init="WtSkip">
+<div class="vn-demo-label">Live · skip some time</div>
+<div class="wt-skip-ctl" id="wt-skip-ctl" hidden>
+  <div class="wt-seg-row"><span class="wt-lab">Gap</span><div class="wt-seg" role="group" aria-label="How much time passes">
+    <button class="wt-seg-btn" type="button" data-wt-gap="hour" aria-pressed="false">An hour</button>
+    <button class="wt-seg-btn" type="button" data-wt-gap="day" aria-pressed="false">A night</button>
+    <button class="wt-seg-btn" type="button" data-wt-gap="weeks" aria-pressed="true">Three weeks</button>
+    <button class="wt-seg-btn" type="button" data-wt-gap="years" aria-pressed="false">Four years</button>
+  </div></div>
+  <div class="wt-seg-row"><span class="wt-lab">Told by</span><div class="wt-seg" role="group" aria-label="How the reader finds out">
+    <button class="wt-seg-btn" type="button" data-wt-how="header" aria-pressed="false">Date header</button>
+    <button class="wt-seg-btn" type="button" data-wt-how="marker" aria-pressed="false">Time marker</button>
+    <button class="wt-seg-btn" type="button" data-wt-how="clue" aria-pressed="true">A clue</button>
+    <button class="wt-seg-btn" type="button" data-wt-how="summary" aria-pressed="false">Summary</button>
+    <button class="wt-seg-btn" type="button" data-wt-how="none" aria-pressed="false">Nothing</button>
+  </div></div>
+</div>
+<div class="wt-skip-page" id="wt-skip-page" aria-live="polite">
+  <p class="wt-skip-prev">…and Mateo's bunk stayed made, the corners tight, the way he'd left it.</p>
+  <p class="wt-skip-break" id="wt-skip-break">Chapter 12</p>
+  <p class="wt-skip-head" id="wt-skip-head" hidden></p>
+  <p class="wt-skip-next" id="wt-skip-next">The stitches behind Mateo's ear had healed to a pink line by the time he came back.</p>
+</div>
+<p class="vn-verdict" id="wt-skip-verdict" aria-live="polite"></p>
+<div class="vn-caption">Break sizes from the video: a scene break for about a day, a new chapter for weeks, a new part for years. Saying nothing is the riskiest choice, and the risk grows with the gap.</div>
+</div>

@@ -1,0 +1,18 @@
+{{- /* writing-techniques/pace: live widget; behaviour in static/js/writing-techniques/wt-pace.js.
+       Ten chapters, each action, quiet or talk; a line traces how wound up
+       the reader is. The tension model (how much each kind adds or lets go)
+       is my own sketch of his rubber band, set in the script. */ -}}
+<div class="not-prose vn-demo" id="wt-pace" data-vn-src="/js/writing-techniques/wt-pace.js" data-vn-init="WtPace">
+<div class="vn-demo-label">Live · stretch the rubber band</div>
+<div class="wt-seg-row" id="wt-pace-presets" hidden><span class="wt-lab">Start from</span><div class="wt-seg" role="group" aria-label="Start from">
+  <button class="wt-seg-btn" type="button" data-wt-pace="AQATAQTAAQ">Alternating</button>
+  <button class="wt-seg-btn" type="button" data-wt-pace="AAAAAAAAAA">All action</button>
+  <button class="wt-seg-btn" type="button" data-wt-pace="QTTTTQATTQ">Talk heavy</button>
+</div></div>
+<svg class="wt-pace-line" id="wt-pace-svg" viewBox="0 0 400 110" aria-hidden="true"></svg>
+<ol class="wt-pace-slots" id="wt-pace-slots" aria-label="Chapters: press one to change its kind">
+  <li>Action</li><li>Quiet</li><li>Action</li><li>Talk</li><li>Action</li><li>Quiet</li><li>Talk</li><li>Action</li><li>Action</li><li>Quiet</li>
+</ol>
+<p class="vn-verdict" id="wt-pace-verdict" aria-live="polite"></p>
+<div class="vn-caption">Press a chapter to cycle it between action, quiet and talk. Action winds the band tighter, quiet lets it go, talk adds a little. Three action chapters in a row and the band snaps (the reader goes numb); three talk chapters in a row and it drags.</div>
+</div>

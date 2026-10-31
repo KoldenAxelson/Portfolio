@@ -1,0 +1,19 @@
+{{- /* writing-techniques/outcome: live widget; behaviour in static/js/writing-techniques/wt-outcome.js.
+       One scene goal and four ways it can end: yes, yes but, no, no and. The
+       scene and its endings are mine, from the Grunt Force outline. */ -}}
+<div class="not-prose vn-demo" id="wt-outcome" data-vn-src="/js/writing-techniques/wt-outcome.js" data-vn-init="WtOutcome">
+<div class="vn-demo-label">Live · how the scene ends</div>
+<p class="wt-outcome-goal">Owen wants Sergeant Reyes to sign off on a squad game night in the Commons. How does the scene end?</p>
+<div class="wt-seg" role="group" aria-label="Ending" id="wt-outcome-pick" hidden>
+  <button class="wt-seg-btn" type="button" data-wt-end="yes" aria-pressed="false">Yes</button>
+  <button class="wt-seg-btn" type="button" data-wt-end="yesbut" aria-pressed="true">Yes, but</button>
+  <button class="wt-seg-btn" type="button" data-wt-end="no" aria-pressed="false">No</button>
+  <button class="wt-seg-btn" type="button" data-wt-end="noand" aria-pressed="false">No, and</button>
+</div>
+<div class="wt-outcome-out" aria-live="polite">
+  <p class="wt-outcome-end" id="wt-outcome-end">Reyes signs. The room books under Owen's ID, and the next morning his score is down four.</p>
+  <p class="wt-outcome-ask"><span>The reader asks</span> <span id="wt-outcome-ask">Was it the game night? What else is the score watching?</span></p>
+  <div class="wt-meter" id="wt-outcome-meter" hidden><span class="wt-meter-label">Pull into the next scene</span><span class="wt-meter-track"><span class="wt-meter-fill" id="wt-outcome-fill"></span></span></div>
+</div>
+<div class="vn-caption">The "and" in "no, and" is the character's reaction, which is why it pulls hardest. The pull meter is my own reading of each ending.</div>
+</div>

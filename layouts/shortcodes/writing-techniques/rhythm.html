@@ -1,8 +1,13 @@
-{{- /* writing-techniques/rhythm: live widget; behaviour in static/js/writing-techniques/wt-rhythm.js. */ -}}
+{{- /* writing-techniques/rhythm: live widget; behaviour in static/js/writing-techniques/wt-rhythm.js.
+       The editor shell (.wt-ed) paints the shortest and longest sentences
+       behind the text as you type; the bars below give each sentence's length. */ -}}
 <div class="not-prose vn-demo" id="wt-rhythm" data-vn-src="/js/writing-techniques/wt-rhythm.js" data-vn-init="WtRhythm">
 <div class="vn-demo-label">Live · sentence rhythm meter</div>
-<label class="vn-sr" for="wt-text">Paragraph to measure</label>
-<textarea class="vn-input wt-text" id="wt-text" rows="6" spellcheck="true">The bus was late again. We stood by the fence in our gloves, forty of us, watching the road shimmer and pretending we didn't care whether it came, because caring was the kind of thing that showed up in your score. Owen talked. Kevin didn't. By nine the paint had dried on the posts we'd painted yesterday, and we painted them again.</textarea>
+<div class="wt-ed">
+  <div class="wt-ed-field"><div class="wt-ed-back" aria-hidden="true"></div><label class="vn-sr" for="wt-text">Paragraph to measure</label><textarea class="wt-ed-input" id="wt-text" rows="5" spellcheck="true">The bus was late again. We stood by the fence in our gloves, forty of us, watching the road shimmer and pretending we didn't care whether it came, because caring was the kind of thing that showed up in your score. Owen talked. Kevin didn't. By nine the paint had dried on the posts we'd painted yesterday, and we painted them again.</textarea></div>
+  <div class="wt-ed-foot"><span class="wt-ed-count" aria-hidden="true"></span><span class="wt-key"><i class="wt-key-short"></i>shortest</span><span class="wt-key"><i class="wt-key-long"></i>longest</span></div>
+</div>
+<div class="wt-stats" id="wt-rhythm-stats" aria-hidden="true"></div>
 <ol class="wt-bars" id="wt-bars" aria-label="Words per sentence"></ol>
 <p class="vn-verdict wt-verdict" id="wt-verdict" aria-live="polite"></p>
 <div class="vn-caption">Counts words between full stops, question marks and exclamation marks, as you type. Nothing leaves your browser. The sample is a practice paragraph of mine; paste your own over it.</div>

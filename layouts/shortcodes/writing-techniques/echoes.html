@@ -1,0 +1,14 @@
+{{- /* writing-techniques/echoes: live widget; behaviour in static/js/writing-techniques/wt-echoes.js.
+       Colours every word that comes back within 40 words of itself, right in
+       the editor (.wt-ed paints marks behind the text), then lets you mark
+       each one as chosen or accidental. The sample is mine. */ -}}
+<div class="not-prose vn-demo" id="wt-echoes" data-vn-src="/js/writing-techniques/wt-echoes.js" data-vn-init="WtEchoes">
+<div class="vn-demo-label">Live · echo finder</div>
+<div class="wt-ed">
+  <div class="wt-ed-field"><div class="wt-ed-back" id="wt-echo-back" aria-hidden="true"></div><label class="vn-sr" for="wt-echo-text">Paragraph to check</label><textarea class="wt-ed-input" id="wt-echo-text" rows="4" spellcheck="true">Every shift earns a point. Every point earns a perk. Every perk buys a quiet night. I walked back to my container and looked at the container next door, where the light was on, and the light made the fence look new.</textarea></div>
+  <div class="wt-ed-foot"><span class="wt-ed-count" aria-hidden="true"></span><span class="wt-pill" id="wt-echo-pill" aria-hidden="true"></span></div>
+</div>
+<div class="wt-chips" id="wt-echo-chips" role="group" aria-label="Repeated words: press one to mark it as on purpose"></div>
+<p class="vn-verdict" id="wt-echo-verdict" aria-live="polite"></p>
+<div class="vn-caption">Ignores small words (the, and, was) and treats a plural as its singular. Press a word to mark it as on purpose; a dashed underline means it's still unmarked. The first four repeats in my sample are chosen and the last two crept in. Nothing leaves your browser.</div>
+</div>

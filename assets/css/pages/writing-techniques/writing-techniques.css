@@ -1,12 +1,254 @@
-/* Widgets on /misc/writing/writing-techniques/. The shared box is css/pages/video-notes/shell.css. */
-.wt-text{display:block;width:100%;min-height:8rem;resize:vertical;font-size:.92rem;line-height:1.55;}
+/* Widgets on /misc/writing/writing-techniques/. The shared box is css/pages/video-notes/shell.css.
+   Each block names its shortcode (layouts/shortcodes/writing-techniques/) and
+   script (static/js/writing-techniques/). State classes (is-*) are set by the
+   scripts. Phone first: every widget has to work at 360px. */
+
+/* ---- Shared bits ------------------------------------------------------ */
+.wt-lab{font-family:var(--font-mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:rgb(var(--c-muted));}
+.wt-chips,.wt-cut-keys,.wt-eyes-pick{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.8rem;}
+.wt-chips:empty{display:none;}
+.wt-chip{font:inherit;font-size:.8rem;padding:.28rem .65rem;border-radius:999px;border:1px solid rgb(var(--c-border));background:rgb(var(--c-bg));color:rgb(var(--c-fg));cursor:pointer;transition:background-color .15s ease,border-color .15s ease,opacity .15s ease;}
+.wt-chip:hover:not(:disabled){border-color:rgb(var(--c-accent) / .6);}
+.wt-chip:disabled{opacity:.4;cursor:default;}
+.wt-chip:focus-visible,.wt-slip:focus-visible,.wt-pace-slot:focus-visible{outline:2px solid rgb(var(--c-accent));outline-offset:2px;}
+.wt-check{display:inline-flex;align-items:center;gap:.45rem;margin-top:.8rem;font-size:.85rem;color:rgb(var(--c-fg));cursor:pointer;}
+.wt-check input{width:1rem;height:1rem;accent-color:rgb(var(--c-accent));}
+.wt-checks{display:flex;flex-wrap:wrap;gap:.4rem 1.2rem;}
+.wt-checks .wt-check{margin-top:0;}
+/* Segmented control, after the iOS pattern (X's Country / Language, Google's
+   Small / Medium): a tinted track, the chosen segment raised as a light
+   thumb. Equal segments in one row; on a phone the track takes the full
+   width and a long label wraps inside its segment instead of the track
+   breaking into rows. */
+.wt-seg{display:inline-grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:2px;padding:3px;border-radius:.7rem;background:rgb(var(--c-border) / .45);}
+@media (max-width:639px){.wt-seg{display:grid;width:100%;box-sizing:border-box;}.wt-seg:has(> :nth-child(5)){grid-auto-flow:row;grid-template-columns:repeat(3,minmax(0,1fr));}}
+.wt-seg-btn{font:inherit;font-size:.82rem;font-weight:500;line-height:1.25;padding:.38rem .8rem;border:0;border-radius:.55rem;text-align:center;background:transparent;color:rgb(var(--c-muted));cursor:pointer;transition:background-color .15s ease,color .15s ease,box-shadow .15s ease;}
+.wt-seg-btn:hover{color:rgb(var(--c-fg));}
+.wt-seg-btn[aria-pressed="true"]{background:rgb(var(--c-bg));color:rgb(var(--c-fg));box-shadow:0 1px 2px rgb(0 0 0 / .12),0 0 0 1px rgb(var(--c-border) / .6);}
+.wt-seg-btn:focus-visible{outline:2px solid rgb(var(--c-accent));outline-offset:1px;}
+.wt-seg-row{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem .7rem;}
+@media (max-width:639px){.wt-seg-row{display:grid;}.wt-seg-btn{padding:.38rem .45rem;}}
+.wt-seg-row .wt-lab{min-width:4.4rem;}
+.wt-seg-row + .wt-seg-row{margin-top:.5rem;}
+.vn-demo > .wt-seg,.vn-demo > .wt-seg-row{margin-bottom:.9rem;}
+
+/* Editor shell (wt-editor.js), after Hume's and Descript's editors: the marks
+   live in the text you're typing, and a footer carries the count and a
+   status pill. The backdrop must match the textarea's box exactly. */
+.wt-ed{border:1px solid rgb(var(--c-border));border-radius:.6rem;background:rgb(var(--c-bg));overflow:hidden;transition:border-color .15s ease,box-shadow .15s ease;}
+.wt-ed:focus-within{border-color:rgb(var(--c-accent) / .7);box-shadow:0 0 0 3px rgb(var(--c-accent) / .15);}
+.wt-ed-field{position:relative;}
+.wt-ed-back,.wt-ed-input{box-sizing:border-box;margin:0;padding:.8rem .9rem;border:0;font-family:var(--font-sans);font-size:.95rem;line-height:1.75;letter-spacing:normal;white-space:pre-wrap;overflow-wrap:break-word;word-break:normal;tab-size:4;}
+.wt-ed-back{position:absolute;inset:0;overflow:hidden;color:transparent;pointer-events:none;}
+.wt-ed-input{position:relative;display:block;width:100%;min-height:4.5rem;resize:vertical;overflow:auto;background:transparent;color:rgb(var(--c-fg));caret-color:rgb(var(--c-accent));}
+.wt-ed-input:focus{outline:none;}
+/* Once the script grows the box to fit, it never scrolls or resizes by hand. */
+.has-editor .wt-ed-input{resize:none;overflow:hidden;}
+.wt-ed-mark{color:transparent;background:transparent;border-radius:.2em;}
+.wt-ed-foot{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem .9rem;padding:.45rem .9rem;border-top:1px solid rgb(var(--c-border) / .7);background:rgb(var(--c-border) / .14);font-size:.75rem;color:rgb(var(--c-muted));}
+.wt-ed-count{font-family:var(--font-mono);font-size:.7rem;font-variant-numeric:tabular-nums;margin-right:auto;}
+.wt-ed-foot .wt-check{margin-top:0;font-size:.78rem;}
+.wt-key{display:inline-flex;align-items:center;gap:.35rem;}
+.wt-key i{display:inline-block;width:.75rem;height:.75rem;border-radius:.2rem;}
+/* Grammarly's score chip: one line of status at the editor's edge. */
+.wt-pill{padding:.15rem .6rem;border-radius:999px;border:1px solid rgba(217,83,79,.45);background:rgba(217,83,79,.08);color:rgb(var(--c-fg));font-size:.72rem;font-weight:600;}
+.wt-pill.is-good{border-color:rgb(var(--c-accent) / .5);background:rgb(var(--c-accent) / .1);}
+.wt-pill:empty{display:none;}
+
+/* Stat headline, after WHOOP's activity summary: a big number over a small
+   label, so the result reads before the advice does. */
+.wt-stats{display:flex;flex-wrap:wrap;gap:1.6rem;margin-top:1rem;}
+.wt-stats:empty{display:none;}
+.wt-stat{display:grid;gap:.1rem;}
+.wt-stat b{font-size:1.6rem;line-height:1;font-weight:700;font-variant-numeric:tabular-nums;color:rgb(var(--c-fg));}
+.wt-stat span{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:rgb(var(--c-muted));}
+.wt-stat.is-bad b{color:rgb(217 83 79);}
+.wt-flag{font-family:var(--font-mono);font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;color:rgb(217 83 79);white-space:nowrap;}
+
+/* Verdicts fill in once the script runs; until then (or without JS) they'd
+   be empty boxes. */
+.vn-demo[id^="wt-"] .vn-verdict:empty{display:none;}
+
+/* ---- Rhythm meter: rhythm.html, wt-rhythm.js --------------------------- */
 .wt-bars{display:grid;gap:.3rem;margin:1rem 0 0;padding:0;list-style:none;}
 .wt-bars:empty{display:none;}
 .wt-bar{display:grid;grid-template-columns:2.2rem minmax(0,1fr);align-items:center;gap:.5rem;}
 .wt-n{font-family:var(--font-mono);font-size:.72rem;text-align:right;color:rgb(var(--c-muted));font-variant-numeric:tabular-nums;}
 .wt-fill{display:block;height:.7rem;min-width:.35rem;border-radius:999px;background:rgb(var(--c-border));}
-/* is-short / is-long are set by static/js/writing-techniques/wt-rhythm.js. */
-.wt-bar.is-short .wt-fill,.wt-bar.is-long .wt-fill{background:rgb(var(--c-accent));}
+.wt-bar.is-short .wt-fill{background:rgb(var(--c-accent));}
 .wt-bar.is-short .wt-n,.wt-bar.is-long .wt-n{color:rgb(var(--c-fg));font-weight:700;}
+.wt-ed-mark.is-short,.wt-key-short{background:rgb(var(--c-accent) / .22);}
+.wt-ed-mark.is-long,.wt-key-long{background:rgb(59 130 246 / .16);}
+.wt-bar.is-long .wt-fill{background:rgb(59 130 246 / .8);}
 .wt-verdict{margin-top:.8rem;}
 .wt-verdict:empty{display:none;}
+
+/* ---- Openings and landings: landings.html, wt-landings.js -------------- */
+.wt-ed-mark.is-open,.wt-key-open{background:rgba(217,83,79,.18);}
+.wt-ed-mark.is-weak{text-decoration:underline rgb(217 83 79);text-decoration-thickness:2px;text-underline-offset:4px;}
+.wt-key-weak{height:2px !important;border-radius:0 !important;background:rgb(217 83 79);}
+.wt-land{display:grid;gap:.35rem;margin:1rem 0 0;padding:0;list-style:none;}
+.wt-land:empty{display:none;}
+.wt-land-row{display:grid;grid-template-columns:4.2rem minmax(0,1fr);gap:.25rem .7rem;align-items:baseline;padding:.4rem .55rem;border-radius:.4rem;border:1px solid transparent;font-size:.88rem;line-height:1.5;}
+.wt-land-row.is-repeat,.wt-land-row.is-weak{border-color:rgba(217,83,79,.35);background:rgba(217,83,79,.05);}
+/* The opening word as a pill at the head of the row, after ElevenLabs'
+   one-sentence-per-line script view. */
+.wt-land-open{justify-self:start;max-width:100%;overflow:hidden;padding:.05rem .5rem;border-radius:999px;border:1px solid rgb(var(--c-accent) / .45);background:rgb(var(--c-accent) / .08);font-family:var(--font-mono);font-size:.7rem;text-overflow:ellipsis;white-space:nowrap;color:rgb(var(--c-fg));}
+.wt-land-row.is-repeat .wt-land-open{border-color:rgba(217,83,79,.6);background:rgba(217,83,79,.1);font-weight:700;}
+.wt-land-text{color:rgb(var(--c-fg));}
+.wt-land-end{text-decoration-thickness:2px;text-underline-offset:3px;text-decoration-color:rgb(var(--c-accent));font-weight:600;}
+.wt-land-row.is-weak .wt-land-end{text-decoration-color:rgb(217 83 79);}
+.wt-land-row .wt-flag{grid-column:2;}
+
+/* ---- Echo finder: echoes.html, wt-echoes.js ----------------------------
+   Six hues, light enough to read through in both themes. A chosen echo goes
+   solid; an unmarked one keeps a dashed underline, so the eye goes to it. */
+.wt-echo-0{--e:16 185 129;} .wt-echo-1{--e:59 130 246;} .wt-echo-2{--e:245 158 11;}
+.wt-echo-3{--e:236 72 153;} .wt-echo-4{--e:139 92 246;} .wt-echo-5{--e:20 184 166;}
+.wt-ed-mark.wt-echo{background:rgb(var(--e) / .2);text-decoration:underline dashed rgb(var(--e));text-decoration-thickness:1.5px;text-underline-offset:4px;}
+.wt-ed-mark.wt-echo.is-chosen{background:rgb(var(--e) / .38);text-decoration:none;}
+.wt-chip[class*="wt-echo-"]{display:inline-flex;align-items:baseline;gap:.35rem;border-color:rgb(var(--e) / .7);border-style:dashed;}
+.wt-chip[class*="wt-echo-"] small{font-family:var(--font-mono);font-size:.68rem;color:rgb(var(--c-muted));}
+.wt-chip[class*="wt-echo-"][aria-pressed="true"]{border-style:solid;background:rgb(var(--e) / .22);}
+.wt-chip[class*="wt-echo-"][aria-pressed="true"]::before{content:"✓";font-weight:700;color:rgb(var(--e));}
+
+/* ---- Revision search: cut.html, wt-cut.js ------------------------------ */
+.wt-cut-k-weasel{--k:148 163 184;} .wt-cut-k-puff{--k:139 92 246;} .wt-cut-k-filter{--k:59 130 246;}
+.wt-cut-k-time{--k:245 158 11;} .wt-cut-k-empty{--k:107 114 128;} .wt-cut-k-inflation{--k:236 72 153;}
+.wt-cut-k-hedge{--k:20 184 166;} .wt-cut-k-doubled{--k:217 83 79;} .wt-cut-k-chain{--k:16 185 129;}
+/* Descript marks filler words with a dotted underline in the transcript; same
+   idea here, one colour per kind, with a faint wash so a mark is findable at
+   a glance. A preposition chain gets a wavy line under the whole run. */
+.wt-ed-mark.wt-cut-m{background:rgb(var(--k) / .13);text-decoration:underline dotted rgb(var(--k));text-decoration-thickness:2px;text-underline-offset:4px;}
+.wt-ed-mark.wt-cut-k-chain{background:transparent;text-decoration-style:wavy;text-decoration-thickness:1.5px;}
+.wt-cut-chip{display:inline-flex;align-items:center;gap:.4rem;font-size:.78rem;}
+.wt-cut-chip i{width:.55rem;height:.55rem;border-radius:50%;background:rgb(var(--k));}
+.wt-cut-chip small{min-width:1.1rem;padding:0 .3rem;border-radius:999px;background:rgb(var(--k) / .18);font-family:var(--font-mono);font-size:.68rem;font-variant-numeric:tabular-nums;text-align:center;}
+.wt-cut-chip.is-zero{opacity:.5;}
+.wt-cut-chip[aria-pressed="false"]{opacity:.45;}
+.wt-cut-chip[aria-pressed="false"] span{text-decoration:line-through;}
+
+/* ---- One street, two narrators: eyes.html, wt-eyes.js ------------------ */
+.wt-eyes-pick{margin-top:.6rem;}
+.wt-eyes-chip{display:inline-flex;align-items:baseline;gap:.4rem;}
+.wt-eyes-chip small{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;color:rgb(var(--c-muted));}
+.wt-eyes-chip[aria-pressed="true"]{border-color:rgb(var(--c-accent));background:rgb(var(--c-accent) / .14);}
+.wt-eyes-para{margin:1rem 0 0;padding:.8rem 1rem;border-left:3px solid rgb(var(--c-accent));border-radius:0 .45rem .45rem 0;background:rgb(var(--c-bg));font-family:var(--font-serif);font-size:1rem;line-height:1.65;color:rgb(var(--c-fg));transition:opacity .2s ease;}
+.wt-eyes-para.is-empty{color:rgb(var(--c-muted));font-style:italic;}
+
+/* ---- Who said it: voices.html, wt-voices.js ---------------------------- */
+.wt-voices-setup,.wt-outcome-goal,.wt-slips-q{margin:0 0 .8rem;font-size:.88rem;line-height:1.55;color:rgb(var(--c-muted));}
+.wt-voices{display:grid;gap:.6rem;margin:0;padding:0;list-style:none;counter-reset:wtv;}
+.wt-voices > li{counter-increment:wtv;position:relative;padding:.65rem .8rem .65rem 2.3rem;border-radius:.5rem;border:1px solid rgb(var(--c-border));background:rgb(var(--c-bg));font-family:var(--font-serif);font-size:.98rem;line-height:1.55;color:rgb(var(--c-fg));transition:border-color .2s ease;}
+.wt-voices > li::before{content:counter(wtv);position:absolute;left:.85rem;top:.72rem;font-family:var(--font-mono);font-size:.7rem;color:rgb(var(--c-muted));}
+.wt-voices > li.is-right{border-color:rgb(var(--c-accent) / .6);}
+.wt-voices > li.is-wrong{border-color:rgba(217,83,79,.6);}
+.wt-voices-pick{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin-top:.55rem;font-family:var(--font-sans);}
+/* Answer options after Quizlet's Learn mode: plain bordered choices; the
+   pick turns green with a tick or red with a cross, and a wrong pick
+   outlines the right answer. */
+.wt-opt{display:inline-flex;align-items:center;gap:.35rem;font:inherit;font-size:.8rem;font-weight:500;padding:.3rem .8rem;border-radius:.5rem;border:1.5px solid rgb(var(--c-border));background:rgb(var(--c-bg));color:rgb(var(--c-fg));cursor:pointer;transition:border-color .15s ease,background-color .15s ease;}
+.wt-opt:hover:not(:disabled){border-color:rgb(var(--c-accent) / .6);}
+.wt-opt:focus-visible{outline:2px solid rgb(var(--c-accent));outline-offset:2px;}
+.wt-opt:disabled{cursor:default;opacity:.4;}
+.wt-opt.is-truth{opacity:1;border-color:rgb(var(--c-accent));}
+.wt-opt[aria-pressed="true"]{opacity:1;}
+.is-right .wt-opt[aria-pressed="true"]{border-color:rgb(var(--c-accent));background:rgb(var(--c-accent) / .14);}
+.is-right .wt-opt[aria-pressed="true"]::before{content:"✓";font-weight:700;color:rgb(var(--c-accent));}
+.is-wrong .wt-opt[aria-pressed="true"]{border-color:rgb(217 83 79);background:rgba(217,83,79,.1);}
+.is-wrong .wt-opt[aria-pressed="true"]::before{content:"✕";font-weight:700;color:rgb(217 83 79);}
+.wt-voices-answer{font-size:.78rem;font-weight:600;}
+.is-right .wt-voices-answer{color:rgb(var(--c-accent));}
+.is-wrong .wt-voices-answer{color:rgb(217 83 79);}
+.wt-progress{display:grid;grid-template-columns:repeat(6,minmax(0,1fr)) auto;align-items:center;gap:.3rem;margin-bottom:.9rem;}
+.wt-progress span{height:.35rem;border-radius:999px;background:rgb(var(--c-border) / .7);transition:background-color .2s ease;}
+.wt-progress span.is-right{background:rgb(var(--c-accent));}
+.wt-progress span.is-wrong{background:rgb(217 83 79);}
+.wt-progress b{margin-left:.4rem;padding:.05rem .5rem;border-radius:999px;background:rgb(var(--c-border) / .5);font:600 .68rem var(--font-mono);font-variant-numeric:tabular-nums;color:rgb(var(--c-fg));}
+.wt-voices-again{margin-top:.6rem;}
+
+/* ---- How many beats: beats.html, wt-beats.js --------------------------- */
+.wt-beats-scene{margin-top:1rem;padding:.8rem 1rem;border-radius:.45rem;background:rgb(var(--c-bg));border:1px solid rgb(var(--c-border) / .7);font-family:var(--font-serif);font-size:.98rem;line-height:1.6;color:rgb(var(--c-fg));}
+.wt-beats-scene p{margin:0;}
+.wt-beats-scene p + p{margin-top:.45rem;}
+
+/* ---- How the scene ends: outcome.html, wt-outcome.js ------------------- */
+.wt-outcome-out{margin-top:1rem;padding:.8rem 1rem;border-radius:.45rem;background:rgb(var(--c-bg));border:1px solid rgb(var(--c-border) / .7);}
+.wt-outcome-end{margin:0;font-family:var(--font-serif);font-size:1rem;line-height:1.6;color:rgb(var(--c-fg));}
+.wt-outcome-ask{margin:.7rem 0 0;font-size:.86rem;line-height:1.5;color:rgb(var(--c-fg));}
+.wt-outcome-ask > span:first-child{margin-right:.35rem;font-family:var(--font-mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:rgb(var(--c-muted));}
+.wt-meter{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:.7rem;margin-top:.8rem;}
+.wt-meter[hidden]{display:none;}
+.wt-meter-label{font-family:var(--font-mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:rgb(var(--c-muted));}
+.wt-meter-track{display:block;height:.55rem;border-radius:999px;background:rgb(var(--c-border) / .6);overflow:hidden;}
+.wt-meter-fill{display:block;height:100%;width:0;border-radius:inherit;background:rgb(var(--c-accent));transition:width .45s cubic-bezier(.2,.8,.2,1);}
+.wt-meter-fill.is-low{background:rgb(217 83 79 / .75);}
+
+/* ---- Rubber band: pace.html, wt-pace.js -------------------------------- */
+.wt-pace-line{display:block;width:100%;height:7rem;margin-top:1rem;overflow:visible;}
+.wt-pace-area{fill:rgb(var(--c-accent) / .1);}
+.wt-pace-path{fill:none;stroke:rgb(var(--c-accent));stroke-width:2.5;stroke-linejoin:round;vector-effect:non-scaling-stroke;}
+.wt-pace-limit{stroke:rgba(217,83,79,.6);stroke-width:1;stroke-dasharray:4 4;vector-effect:non-scaling-stroke;}
+.wt-pace-dot{fill:rgb(var(--c-bg));stroke:rgb(var(--c-accent));stroke-width:2;vector-effect:non-scaling-stroke;}
+.wt-pace-dot.is-snapped{fill:rgb(217 83 79);stroke:rgb(217 83 79);}
+.wt-pace-slots{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:.25rem;margin:.4rem 0 0;padding:0;list-style:none;font-size:.7rem;}
+.wt-pace-slots > li{text-align:center;}
+/* Without JS the slots are plain labels and there's no line to draw. */
+.wt-pace-line:empty{display:none;}
+.wt-pace-slots > li:not(:has(button)){padding:.35rem 0;border-radius:.4rem;border:1px solid rgb(var(--c-border));overflow:hidden;font:600 .6rem var(--font-mono);text-overflow:ellipsis;color:rgb(var(--c-fg));}
+.wt-pace-slot{width:100%;min-height:2.6rem;padding:.2rem 0;border-radius:.4rem;border:1px solid rgb(var(--c-border));background:rgb(var(--c-bg));color:rgb(var(--c-fg));font:600 .62rem/1.1 var(--font-mono);letter-spacing:.02em;cursor:pointer;writing-mode:vertical-rl;transform:rotate(180deg);transition:background-color .15s ease,border-color .15s ease;}
+@media (min-width:560px){.wt-pace-slot{writing-mode:horizontal-tb;transform:none;font-size:.68rem;}}
+.wt-pace-slot.is-A{background:rgb(var(--c-accent) / .2);border-color:rgb(var(--c-accent) / .55);}
+.wt-pace-slot.is-Q{background:rgb(var(--c-bg));}
+.wt-pace-slot.is-T{background:rgb(var(--c-border) / .45);}
+.wt-pace-slot.is-snapped,.wt-pace-slot.is-drag{border-color:rgb(217 83 79);box-shadow:inset 0 -3px 0 rgb(217 83 79);}
+
+/* ---- The knife or the wound: wound.html, wt-wound.js ------------------- */
+.wt-wound-page{margin-top:1rem;padding:.9rem 1rem;border-radius:.45rem;background:rgb(var(--c-bg));border:1px solid rgb(var(--c-border) / .7);font-family:var(--font-serif);font-size:1rem;line-height:1.65;color:rgb(var(--c-fg));}
+.wt-wound-page p{margin:0;}
+.wt-wound-page p:not([hidden]) ~ p:not([hidden]){margin-top:.7rem;}
+.wt-wound-page:not(:has(p:not([hidden])))::before{content:"(blank page)";color:rgb(var(--c-muted));font-style:italic;}
+
+/* ---- Psychic distance: distance.html, wt-distance.js ------------------- */
+.wt-slider{display:flex;align-items:center;gap:.7rem;font-family:var(--font-mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:rgb(var(--c-muted));}
+.wt-slider input{flex:1;accent-color:rgb(var(--c-accent));}
+.wt-dist-steps{display:grid;gap:.3rem;margin:.9rem 0 0;padding:0;list-style:none;}
+.wt-dist-steps > li{display:grid;gap:.15rem;padding:.5rem .75rem;border-radius:.45rem;border:1px solid transparent;font-family:var(--font-serif);font-size:.95rem;line-height:1.5;color:rgb(var(--c-fg));transition:opacity .2s ease,background-color .2s ease,border-color .2s ease;}
+.wt-dist-k{font-family:var(--font-mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:rgb(var(--c-muted));}
+.is-live .wt-dist-steps > li{opacity:.38;}
+.is-live .wt-dist-steps > li.is-on{opacity:1;border-color:rgb(var(--c-accent) / .55);background:rgb(var(--c-bg));}
+.is-live .wt-dist-steps > li.is-on .wt-dist-k{color:rgb(var(--c-accent));}
+.wt-slips{margin-top:1.2rem;padding-top:1rem;border-top:1px dashed rgb(var(--c-border));}
+.wt-slips-list{display:grid;gap:.35rem;margin:0;padding:0;list-style:none;font-family:var(--font-serif);font-size:.95rem;line-height:1.5;color:rgb(var(--c-fg));}
+.wt-slip{display:block;width:100%;padding:.45rem .7rem;border-radius:.45rem;border:1px solid rgb(var(--c-border));background:rgb(var(--c-bg));color:rgb(var(--c-fg));font:inherit;font-family:var(--font-serif);font-size:.95rem;line-height:1.5;text-align:left;cursor:pointer;transition:border-color .15s ease;}
+.wt-slip:hover{border-color:rgb(var(--c-accent) / .6);}
+.wt-slip[aria-pressed="true"]{cursor:default;}
+.is-slip .wt-slip{border-color:rgb(var(--c-accent));background:rgb(var(--c-accent) / .1);}
+.is-fine .wt-slip{opacity:.6;}
+.wt-slip-note{display:block;padding:.3rem .7rem 0;font-size:.82rem;line-height:1.5;color:rgb(var(--c-muted));}
+.wt-slip-note:empty{display:none;}
+
+/* ---- Skip some time: skip.html, wt-skip.js ----------------------------- */
+.wt-skip-ctl .wt-seg-btn{padding:.32rem .65rem;font-size:.78rem;}
+.wt-skip-page{margin-top:1rem;padding:1rem;border-radius:.45rem;background:rgb(var(--c-bg));border:1px solid rgb(var(--c-border) / .7);font-family:var(--font-serif);font-size:1rem;line-height:1.6;color:rgb(var(--c-fg));}
+.wt-skip-page p{margin:0;}
+.wt-skip-prev{color:rgb(var(--c-muted));}
+.wt-skip-break{margin:1rem 0 .8rem !important;text-align:center;font-family:var(--font-mono);font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:rgb(var(--c-accent));}
+.wt-skip-break[hidden]{display:block !important;visibility:hidden;margin:.5rem 0 !important;height:.4rem;}
+.wt-skip-head{margin-bottom:.4rem !important;font-family:var(--font-mono);font-size:.78rem;letter-spacing:.06em;color:rgb(var(--c-muted));}
+
+/* ---- Today's drill: drill.html, wt-drill.js ---------------------------- */
+.wt-drill-card{padding:.8rem 1rem;border-radius:.5rem;border:1px solid rgb(var(--c-accent) / .45);background:rgb(var(--c-accent) / .06);}
+.wt-drill-name{margin:0;font-weight:700;font-size:1rem;}
+.wt-drill-name a{color:rgb(var(--c-fg));text-decoration:underline;text-decoration-color:rgb(var(--c-accent) / .5);text-underline-offset:3px;}
+.wt-drill-task{margin:.3rem 0 0;font-size:.92rem;line-height:1.55;color:rgb(var(--c-fg));}
+.wt-drill-boxes{display:grid;gap:.8rem;margin-top:1rem;}
+@media (min-width:640px){.wt-drill-boxes{grid-template-columns:1fr 1fr;}}
+.wt-drill-boxes[hidden]{display:none;}
+.wt-drill-box{display:grid;gap:.35rem;}
+.wt-drill-box textarea{resize:vertical;font-size:.92rem;line-height:1.55;}
+.wt-drill-stat{min-height:1.1rem;font-size:.78rem;color:rgb(var(--c-muted));}
+
+@media (prefers-reduced-motion:reduce){
+  .wt-chip,.wt-seg-btn,.wt-opt,.wt-ed,.wt-progress span,.wt-meter-fill,.wt-dist-steps > li,.wt-eyes-para,.wt-voices > li,.wt-slip,.wt-pace-slot{transition:none;}
+}

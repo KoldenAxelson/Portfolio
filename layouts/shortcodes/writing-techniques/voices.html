@@ -1,0 +1,19 @@
+{{- /* writing-techniques/voices: live widget; behaviour in static/js/writing-techniques/wt-voices.js.
+       His tagless test: six lines from three Grunt Force narrators with no
+       tags, and you say who spoke. The lines are mine, written to each
+       narrator's voice notes in grunt-force.md. */ -}}
+<div class="not-prose vn-demo" id="wt-voices" data-vn-src="/js/writing-techniques/wt-voices.js" data-vn-init="WtVoices">
+<div class="vn-demo-label">Live · who said it?</div>
+<div class="wt-progress" id="wt-voices-progress" aria-hidden="true" hidden></div>
+<p class="wt-voices-setup">The new scores just went up on the board in the mess hall. Owen is earnest and wordy, Andre quick and guarded, Kevin dry and clinical.</p>
+<ol class="wt-voices" id="wt-voices-list">
+  <li data-wt-who="owen">“Okay, but think about what it means that they show us the scores at all. A system that hides nothing has nothing to hide.”</li>
+  <li data-wt-who="andre">“Mine went up. Don't look at me like that.”</li>
+  <li data-wt-who="kevin">“Correlation. Half the base painted fences yesterday. Half the base went up.”</li>
+  <li data-wt-who="andre">“Who checks the board at six in the morning? Besides him.”</li>
+  <li data-wt-who="kevin">“One of us goes down this week. Statistically. I'd volunteer, but I hate being useful.”</li>
+  <li data-wt-who="owen">“It's not a punishment, guys, it's feedback, and feedback is the whole point of a community.”</li>
+</ol>
+<p class="vn-verdict" id="wt-voices-verdict" aria-live="polite"></p>
+<div class="vn-caption">If you can sort a page of untagged lines, the voices are doing their job. The answers show under each line once you pick. Without JavaScript the lines still read in order.</div>
+</div>

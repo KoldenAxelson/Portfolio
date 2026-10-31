@@ -1,0 +1,19 @@
+{{- /* writing-techniques/landings: live widget; behaviour in static/js/writing-techniques/wt-landings.js.
+       Each sentence's first word and last word, side by side, so a run of
+       identical openings and a run of weak endings show up at a glance. The
+       two sample paragraphs are mine. */ -}}
+<div class="not-prose vn-demo" id="wt-landings" data-vn-src="/js/writing-techniques/wt-landings.js" data-vn-init="WtLandings">
+<div class="vn-demo-label">Live · where each sentence starts and lands</div>
+<div class="wt-seg wt-presets" role="group" aria-label="Sample paragraph" hidden>
+  <button class="wt-seg-btn" type="button" data-wt-preset="draft" aria-pressed="true">First draft</button>
+  <button class="wt-seg-btn" type="button" data-wt-preset="revised" aria-pressed="false">Revised</button>
+</div>
+<div class="wt-ed">
+  <div class="wt-ed-field"><div class="wt-ed-back" aria-hidden="true"></div><label class="vn-sr" for="wt-land-text">Paragraph to check</label><textarea class="wt-ed-input" id="wt-land-text" rows="4" spellcheck="true">He walked to the mess hall. He got a tray and sat down with it. He looked at the screen on the wall and the score was there again. He didn't really want to eat anything after that. The noise was loud and he hated it.</textarea></div>
+  <div class="wt-ed-foot"><span class="wt-ed-count" aria-hidden="true"></span><span class="wt-key"><i class="wt-key-open"></i>same opening</span><span class="wt-key"><i class="wt-key-weak"></i>weak landing</span></div>
+</div>
+<div class="wt-stats" id="wt-land-stats" aria-hidden="true"></div>
+<ol class="wt-land" id="wt-land-list" aria-label="Sentences, with their first and last words"></ol>
+<p class="vn-verdict" id="wt-land-verdict" aria-live="polite"></p>
+<div class="vn-caption">Below the editor, each sentence gets a row: its first word in the pill, the word it ends on underlined. It flags an opening that repeats the sentence before, and an ending on a word that carries nothing (it, there, again, that, an -ly word). Both are prompts, never rules. Paste your own paragraph over mine.</div>
+</div>

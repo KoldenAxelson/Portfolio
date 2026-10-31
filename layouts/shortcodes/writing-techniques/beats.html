@@ -1,0 +1,21 @@
+{{- /* writing-techniques/beats: live widget; behaviour in static/js/writing-techniques/wt-beats.js.
+       One six-line exchange with no beats, a few, or one on every line. The
+       exchange is mine; with JS off it shows the version with a few. */ -}}
+<div class="not-prose vn-demo" id="wt-beats" data-vn-src="/js/writing-techniques/wt-beats.js" data-vn-init="WtBeats">
+<div class="vn-demo-label">Live · how many beats</div>
+<div class="wt-seg" role="group" aria-label="Beats" id="wt-beats-modes" hidden>
+  <button class="wt-seg-btn" type="button" data-wt-beats="none" aria-pressed="false">None</button>
+  <button class="wt-seg-btn" type="button" data-wt-beats="some" aria-pressed="true">A few</button>
+  <button class="wt-seg-btn" type="button" data-wt-beats="every" aria-pressed="false">Every line</button>
+</div>
+<div class="wt-beats-scene" id="wt-beats-scene">
+  <p>Owen set his tray down across from Andre. “You saw the board?”</p>
+  <p>“I saw it.”</p>
+  <p>“You went up eleven.”</p>
+  <p>“Lucky.”</p>
+  <p>“Nobody goes up eleven.”</p>
+  <p>Andre stood and pushed his chair in. “I do.”</p>
+</div>
+<p class="vn-verdict" id="wt-beats-verdict" aria-live="polite"></p>
+<div class="vn-caption">The same six lines each time; only the actions around them change.</div>
+</div>

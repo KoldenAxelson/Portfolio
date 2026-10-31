@@ -1,0 +1,27 @@
+{{- /* writing-techniques/distance: live widget; behaviour in static/js/writing-techniques/wt-distance.js.
+       John Gardner's psychic distance as a slider over one moment, five steps
+       from the year and the place to inside Kevin's head, then a close-third
+       paragraph with two slips to find. Every line is mine. */ -}}
+<div class="not-prose vn-demo" id="wt-distance" data-vn-src="/js/writing-techniques/wt-distance.js" data-vn-init="WtDistance">
+<div class="vn-demo-label">Live · psychic distance</div>
+<label class="wt-slider" id="wt-dist-wrap" hidden><span>Far</span><input type="range" id="wt-dist" min="1" max="5" step="1" value="3" aria-valuetext="3: his view, the narrator's words" /><span>Close</span></label>
+<ol class="wt-dist-steps" id="wt-dist-steps">
+  <li data-wt-step="1"><span class="wt-dist-k">The year and the place</span> In the spring of 2042, the base outside Old Mexico fed ninety thousand people a day.</li>
+  <li data-wt-step="2"><span class="wt-dist-k">A name and a file</span> Kevin Lin, thirty, once a medical student, ate his dinner in Hall C.</li>
+  <li data-wt-step="3"><span class="wt-dist-k">His view, the narrator's words</span> Kevin didn't like Hall C at dinner. Too many people, too much noise.</li>
+  <li data-wt-step="4"><span class="wt-dist-k">His words, mostly</span> God, the noise. Four thousand trays, and every one of them hitting a table.</li>
+  <li data-wt-step="5"><span class="wt-dist-k">Inside his head</span> Trays. Trays. Make it stop.</li>
+</ol>
+<div class="wt-slips" id="wt-slips">
+  <p class="wt-slips-q">Close third on Kevin. Two of these sentences slip. Press the ones you'd fix.</p>
+  <ol class="wt-slips-list" id="wt-slips-list">
+    <li data-wt-slip="">Kevin carried his tray to the far end, where the noise thinned out.</li>
+    <li data-wt-slip="">He sat with his back to the board so he wouldn't have to read it.</li>
+    <li data-wt-slip="distance">Hall C had been built in 2039 by contractors from Ohio, at a cost of eleven million dollars.</li>
+    <li data-wt-slip="face">A small smile tugged at his lips when Andre sat down.</li>
+    <li data-wt-slip="">“You're late,” he said, and moved his tray to make room.</li>
+  </ol>
+</div>
+<p class="vn-verdict" id="wt-dist-verdict" aria-live="polite"></p>
+<div class="vn-caption">Psychic distance is John Gardner's term for how far the reader stands from the character. Pick a distance and mostly stay there; a jump should mean something. The second part has one jump and one face Kevin can't see from inside.</div>
+</div>

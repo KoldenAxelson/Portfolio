@@ -1,0 +1,16 @@
+{{- /* writing-techniques/cut: live widget; behaviour in static/js/writing-techniques/wt-cut.js.
+       Underlines the words-to-cut table's kinds in your own text, in the
+       editor itself (.wt-ed), plus chains of three or more prepositional
+       phrases. The word lists are in the script; the sample is mine,
+       overloaded on purpose. */ -}}
+<div class="not-prose vn-demo" id="wt-cut" data-vn-src="/js/writing-techniques/wt-cut.js" data-vn-init="WtCut">
+<div class="vn-demo-label">Live · revision search</div>
+<div class="wt-ed">
+  <div class="wt-ed-field"><div class="wt-ed-back" id="wt-cut-back" aria-hidden="true"></div><label class="vn-sr" for="wt-cut-text">Paragraph to search</label><textarea class="wt-ed-input" id="wt-cut-text" rows="5" spellcheck="true">Suddenly I just noticed that the Sergeant was sort of watching me from the door of the mess hall by the line of trays at the back of the room. I sat down and nodded my head. There was something really strange about the way he utilized his clipboard. And then he finally left. "It's probably nothing," Owen whispered quietly. "Maybe he just likes you."</textarea></div>
+  <div class="wt-ed-foot"><span class="wt-ed-count" aria-hidden="true"></span><label class="wt-check" id="wt-cut-talk-wrap" hidden><input type="checkbox" id="wt-cut-talk" checked /> Let hedges stand in dialogue</label></div>
+</div>
+<div class="wt-stats" id="wt-cut-stats" aria-hidden="true"></div>
+<div class="wt-cut-keys" id="wt-cut-keys" role="group" aria-label="Kinds to underline: press one to hide it" hidden></div>
+<p class="vn-verdict" id="wt-cut-verdict" aria-live="polite"></p>
+<div class="vn-caption">Searches for the words in the table above and flags runs of three or more prepositional phrases (the wavy line). Press a kind to hide it. "That" is often needed, so treat every mark as a question. Nothing leaves your browser.</div>
+</div>

@@ -1,0 +1,20 @@
+{{- /* writing-techniques/wound: live widget; behaviour in static/js/writing-techniques/wt-wound.js.
+       Mateo's chip update in three beats: before, during, the morning after.
+       Switch beats off to leave them off the page. The beats are mine, from
+       the Grunt Force outline, where the update is told only through
+       glimpses after it. */ -}}
+<div class="not-prose vn-demo" id="wt-wound" data-vn-src="/js/writing-techniques/wt-wound.js" data-vn-init="WtWound">
+<div class="vn-demo-label">Live · the knife or the wound</div>
+<div class="wt-checks" id="wt-wound-pick" role="group" aria-label="Beats on the page" hidden>
+  <label class="wt-check"><input type="checkbox" data-wt-beat="before" checked /> Before</label>
+  <label class="wt-check"><input type="checkbox" data-wt-beat="event" checked /> The update</label>
+  <label class="wt-check"><input type="checkbox" data-wt-beat="after" checked /> The morning after</label>
+</div>
+<div class="wt-wound-page" id="wt-wound-page">
+  <p data-wt-beat-text="before">The message said the update would take nine minutes and he could sleep through it. Mateo read it twice, then tapped Approve, because everybody did.</p>
+  <p data-wt-beat-text="event">The chip warmed behind his ear. He felt the edges of things go soft, the way a room does when someone turns the music down, and then he felt nothing in particular, and then it was done.</p>
+  <p data-wt-beat-text="after">At breakfast he did his bit about the eggs, the same bit, word for word, and we laughed the same laugh. He watched us while we did it, the way you watch a clock you think has stopped.</p>
+</div>
+<p class="vn-verdict" id="wt-wound-verdict" aria-live="polite"></p>
+<div class="vn-caption">All three beats start on. Try the morning after alone.</div>
+</div>

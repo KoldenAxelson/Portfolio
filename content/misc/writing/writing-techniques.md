@@ -14,12 +14,16 @@
 #                 in place of a story count (writing/book-card.html).
 # youtube       : the first source video. On a writing page it ships the
 #                 video-notes widget assets (layouts/writing/single.html).
-# Widget: shortcodes/writing-techniques/rhythm.html, styled by
-# css/pages/writing-techniques/writing-techniques.css, behaviour lazy-loaded
-# from static/js/writing-techniques/wt-rhythm.js.
+# Widgets: one shortcode each in shortcodes/writing-techniques/ (landings,
+# rhythm, echoes, cut, eyes, voices, beats, outcome, pace, wound, distance,
+# skip, drill), styled by css/pages/writing-techniques/writing-techniques.css,
+# behaviour lazy-loaded from static/js/writing-techniques/wt-<name>.js. The
+# text tools (landings, rhythm, echoes, cut) share the in-editor highlighting
+# in wt-editor.js, which each of them loads on first use. Every
+# sample line in them is mine, set in the Grunt Force world.
 # ─────────────────────────────────────────────────────────────────────────────
 title: "Writing Techniques"
-description: "Craft notes I keep beside the draft of Grunt Force, from 22 Bookfox videos: sentence shapes and words to cut, description, dialogue, building and pacing scenes, voice and point of view, time skips, the middle, theme, game structures and revision, with a rhythm meter for your own paragraphs."
+description: "Craft notes I keep beside the draft of Grunt Force, from 22 Bookfox videos: sentence shapes and words to cut, description, dialogue, building and pacing scenes, voice and point of view, time skips, the middle, theme, game structures and revision, with a live demo to try most of them on."
 lead: "Craft notes I keep beside the draft"
 cover: "writing-techniques"
 shelf: "Writing utilities"
@@ -35,7 +39,8 @@ one set of notes and ordered from the smallest unit up, sentence to scene to
 the whole book, then revision. Where a technique has a published example, I
 name the book; where it fits the novel, there's a line on how. The idea under
 all of it is that every unit, down to a single sentence, is a small story that
-decides where the reader leans in.
+decides where the reader leans in. Most sections end in a small demo,
+built on lines from the novel, so the idea gets tried before it gets filed.
 
 ## Sentences
 
@@ -50,6 +55,8 @@ first one, let one word lift the sentence above information (Janet Fitch calls
 it the power word, and it shouldn't come from a thesaurus), give longer ones a
 small arc that pays off or twists at the end, and put the most important
 information last.
+
+{{< writing-techniques/landings >}}
 
 ### Make them wait
 
@@ -100,6 +107,8 @@ next. When an accidental repeat turns up in revision, try making it stronger
 before reaching for a synonym; D. H. Lawrence's revisions of *The Rainbow*
 doubled down on the repeated words.
 
+{{< writing-techniques/echoes >}}
+
 *Grunt Force try:* Every shift earns a point. Every point earns a perk. Every
 perk buys a quiet night. Every quiet night costs a year.
 
@@ -132,7 +141,9 @@ where people do hedge.
 
 Two more habits: strings of three or four prepositional phrases, which he
 counts worse than adverbs, and adjectives that repeat their noun (forested
-woods, open fields).
+woods, open fields). Here's the table as a search over your own paragraph.
+
+{{< writing-techniques/cut >}}
 
 ## Description
 
@@ -160,6 +171,8 @@ the book isn't sparser than the first.
 Andre sees guards and cameras, a believer sees the flowers, and nobody explains
 the details that should horrify.
 
+{{< writing-techniques/eyes >}}
+
 ## Dialogue
 
 Get the mechanics right first: a new paragraph for each speaker, tags that
@@ -168,12 +181,16 @@ own; his test is a page of one line from each character with no tags, and a
 reader who can still tell who said what. Mix in indirect and summarized
 dialogue (keep 70 to 90 percent direct) to speed up dull talk, and let the
 important things go unsaid; "Hills Like White Elephants" never names what the
-couple is arguing about.
+couple is arguing about. So here's his test, on three of my narrators.
+
+{{< writing-techniques/voices >}}
 
 Watch the beats. An action for every line clogs a scene, and none at all
 leaves voices floating. When two characters share a pronoun, put an action
 right before the line instead of a tag. And when someone has to deliver
 information, have them do something while they talk.
+
+{{< writing-techniques/beats >}}
 
 ## Scenes
 
@@ -186,6 +203,8 @@ fun even in dark material, move the plot, move the character, touch the theme
 if it fits, and end on a high point rather than where things wind down.
 Success should bring "yes, but" and failure "no, and", where the "and" is how
 the character reacts.
+
+{{< writing-techniques/outcome >}}
 
 ### Nancy Lamb's checks
 
@@ -208,6 +227,8 @@ sentences read fast and short, choppy ones slow, unless they're full of action;
 two or three dialogue-heavy chapters in a row drag; short chapters feel quick,
 so vary them on purpose.
 
+{{< writing-techniques/pace >}}
+
 ### What to leave out
 
 "Show the wound, not the knife." The aftermath of an event often matters more
@@ -219,6 +240,8 @@ to watch the drive to Scranton.
 
 *For Grunt Force:* this is the book's whole method. The atrocity happens
 between chapters and the next morning is what's on the page.
+
+{{< writing-techniques/wound >}}
 
 ## Characters and voice
 
@@ -244,6 +267,8 @@ words that put a pane of glass between reader and character. Sally Rooney's
 *Normal People* alternates one viewpoint per chapter and never slips, the
 discipline a mosaic needs.
 
+{{< writing-techniques/distance >}}
+
 ### Introductions
 
 Bring a character on mid-action, give them a line worth quoting, hint at their
@@ -265,6 +290,8 @@ arrive; get a wound, then it's healed), summary, or no mention at all, which
 he calls the most dangerous. Size the break to the gap: a scene break for a
 day, a chapter for weeks, a part for years. *Station Eleven* skips a huge stretch
 with a list of what no longer exists.
+
+{{< writing-techniques/skip >}}
 
 ### The middle
 
@@ -324,7 +351,9 @@ the words to cut and the sentence shapes above.
 
 Pick one technique per writing session, from any level. Write it once in the
 shape and once plain, keep whichever is better, and put the shortest sentence
-of the day through the meter.
+of the day through the meter. Or let the page pick.
+
+{{< writing-techniques/drill >}}
 
 ## Sources {#sources}
 

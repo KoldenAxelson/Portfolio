@@ -1,0 +1,17 @@
+{{- /* writing-techniques/drill: live widget; behaviour in static/js/writing-techniques/wt-drill.js.
+       Deals one technique from this page, with a prompt and a link back to
+       its section, and two boxes: the sentence in the shape and plain. The
+       prompts are mine. */ -}}
+<div class="not-prose vn-demo" id="wt-drill" data-vn-src="/js/writing-techniques/wt-drill.js" data-vn-init="WtDrill">
+<div class="vn-demo-label">Live · today's drill</div>
+<div class="wt-drill-card" id="wt-drill-card" aria-live="polite">
+  <p class="wt-drill-name"><a href="#make-them-wait" id="wt-drill-link">Make them wait</a></p>
+  <p class="wt-drill-task" id="wt-drill-task">Hold a sentence's subject back behind three or four phrases, then let it land.</p>
+</div>
+<div class="vn-controls" id="wt-drill-deal-wrap" hidden><button class="vn-btn" type="button" id="wt-drill-deal">Deal another</button></div>
+<div class="wt-drill-boxes" id="wt-drill-boxes" hidden>
+  <label class="wt-drill-box"><span class="wt-lab">In the shape</span><textarea class="vn-input" id="wt-drill-shape" rows="4"></textarea><span class="wt-drill-stat" id="wt-drill-shape-stat"></span></label>
+  <label class="wt-drill-box"><span class="wt-lab">Plain</span><textarea class="vn-input" id="wt-drill-plain" rows="4"></textarea><span class="wt-drill-stat" id="wt-drill-plain-stat"></span></label>
+</div>
+<div class="vn-caption">One technique a session. Write it both ways and keep the better one. What you type stays in this tab and is gone when you close it.</div>
+</div>

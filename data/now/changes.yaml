@@ -12,6 +12,10 @@
 #   text : one line, first person, what changed
 #   url  : where to see it (site path)
 - date: 2026-10-30
+  kind: update
+  text: "Writing Techniques now has a dozen live demos: find your echoes and weak words, sort untagged dialogue by voice, stretch a book's pacing until it snaps, and more."
+  url: "/misc/writing/writing-techniques/"
+- date: 2026-10-30
   kind: new
   text: "My Commander deck, Kami of the Crescent Moon: the full list, the mana curve, the combos it wins with, and a card viewer that opens any card in a window you can drag around."
   url: "/misc/kami-deck/"
