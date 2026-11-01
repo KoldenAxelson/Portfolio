@@ -63,6 +63,8 @@
 
 {{- /* Commander deck pages: stylesheet (the card lines are <details>, no script). */ -}}
 {{- if or (.HasShortcode "mtg-deck/overview") (.HasShortcode "mtg-deck/list") (.HasShortcode "mtg-deck/combos") }}{{ partial "mtg-deck/assets.html" . }}{{ end }}
+{{- /* Yu-Gi-Oh! deck pages: stylesheet only. */ -}}
+{{- if or (.HasShortcode "ygo-deck/overview") (.HasShortcode "ygo-deck/list") }}{{ partial "ygo-deck/assets.html" . }}{{ end }}
 
 {{- /* Brine mining pitch: stylesheet and the payback slider. */ -}}
 {{- if .HasShortcode "brine-mining/glance" }}{{ partial "brine-mining/assets.html" . }}{{ end }}

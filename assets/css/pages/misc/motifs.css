@@ -328,6 +328,22 @@
 @keyframes mf-nv-type { 0% { opacity: 0; } 1%, 58% { opacity: 1; } 59%, 100% { opacity: 0; } }
 @keyframes mf-nv-blip { 0% { opacity: 1; transform: scale(.3); } 4% { opacity: 1; transform: scale(1.25); } 58% { opacity: .55; transform: scale(1); } 59%, 100% { opacity: 0; transform: scale(.3); } }
 
+/* ---- Playing Card Decks: each deck fans out a hand around its mascot ----- */
+/* Keyframes are in partials/misc/live/decks.html (each deck owns 1/n of the
+   loop). The resting pose is the first deck fanned out, for reduced motion. */
+.mf-dk .dk-deck { position: absolute; inset: 0; display: block; }
+.mf-dk .dk-deck:not(:first-of-type) .dk-card, .mf-dk .dk-deck:not(:first-of-type) .dk-cap { opacity: 0; }
+.mf-dk .dk-card { position: absolute; left: 50%; top: 17%; width: 19%; height: auto; margin-left: -9.5%;
+  border-radius: 4.5% / 3.2%; box-shadow: 0 4px 14px rgb(0 0 0 / .35); transform-origin: 50% 150%;
+  transform: translate(var(--x), var(--y)) rotate(var(--r));
+  animation: mf-dk-card var(--loop) cubic-bezier(.2, .8, .2, 1) infinite; animation-delay: inherit; }
+.mf-dk .dk-cover { z-index: 2; transform-origin: 50% 50%; transform: translateY(-9%) scale(1.06);
+  animation: mf-dk-lift var(--loop) cubic-bezier(.2, .8, .2, 1) infinite; animation-delay: inherit; }
+.mf-dk .dk-cap { position: absolute; left: 0; right: 0; bottom: 6%; display: flex; flex-direction: column; align-items: center; gap: .15rem; text-align: center;
+  animation: mf-dk-cap var(--loop) ease-out infinite; animation-delay: inherit; }
+.mf-dk .dk-title { font: 600 .95rem/1.15 var(--font-serif); color: rgb(var(--c-fg)); }
+.mf-dk .dk-meta { font: .55rem var(--font-mono); letter-spacing: .14em; text-transform: uppercase; color: rgb(var(--c-muted)); }
+
 /* Every animation in this file, off for reduced motion. Last, so it wins. */
 @media (prefers-reduced-motion: reduce) {
   .mf *, .mf *::before, .mf *::after { animation: none !important; transition: none !important; }
@@ -336,6 +352,7 @@
   .mf-gk .tier, .mf-wy .term, .mf-wy .even, .mf-py .loss-end,
   .mf-ik .ov, .mf-ik .core { opacity: 1; }
   .mf-il .il-toast:first-child { opacity: 1; }
+  .mf-dk .dk-deck:not(:first-of-type) { display: none; }
   .mf-nv .nv-under, .mf-nv .nv-blip { opacity: 1; }
   .mf-rz .rz-dealt { opacity: 0; }
   .mf-rz .rz-dealt:nth-of-type(-n+4) { opacity: 1; transform: translate(var(--x), 0) rotate(var(--tilt)); }

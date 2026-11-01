@@ -3,8 +3,16 @@ title: "Kami of the Crescent Moon"
 description: "My Commander deck, a mono-blue Kami of the Crescent Moon list: every card, the mana curve, the loops it wins with and the cards I'm thinking about adding."
 blurb: "My Commander deck. Everyone draws more; I counter what they cast, then go infinite."
 icon: "moon"
-group: "tools"
 container: "wide"
+# Shelf card on /misc/decks/ (partials/decks/deck-card.html): the commander's
+# scan comes from data/mtg-deck/<deck>.json, game and format label the card.
+deck: "kami"
+game: "Magic: The Gathering"
+format: "Commander"
+# The hand the /misc card fans out around the commander (partials/misc/live/decks.html).
+showcase: ["howling-mine", "mana-drain", "laboratory-maniac", "omniscience"]
+weight: 1
+aliases: ["/misc/kami-deck/"]
 prose: true
 ---
 

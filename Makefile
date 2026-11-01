@@ -296,8 +296,9 @@ cover: ## Make an article's cover and 1200x630 share card from its art (SLUG=)
 images-spent: ## This month's image spend and the last few jobs
 	@$(PYTHON) scripts/images/generate.py spent
 
-deck: ## Rebuild data/mtg-deck/<name>.json from each decklist in scripts/mtg/decks/ (card data and scans from Scryfall)
+deck: ## Rebuild data/mtg-deck/ and data/ygo-deck/ from the decklists in scripts/mtg/decks/ and scripts/ygo/decks/ (Scryfall, YGOPRODeck)
 	@$(PYTHON) scripts/mtg/build-deck.py
+	@$(PYTHON) scripts/ygo/build-deck.py
 
 backup: ## Copy private/ and static/vault/ to the external drive, if it's plugged in (scripts/vault/backup.sh)
 	@bash scripts/vault/backup.sh "$(BACKUP_DIR)"

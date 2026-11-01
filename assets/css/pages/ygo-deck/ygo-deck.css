@@ -1,0 +1,45 @@
+/* Yu-Gi-Oh! deck pages (shortcodes ygo-deck/overview and ygo-deck/list).
+   Pile colours follow the card frames: orange monsters, teal spells,
+   magenta traps. */
+.yd { --yd-monster: 28 70% 48%; --yd-spell: 172 55% 38%; --yd-trap: 322 50% 48%; }
+
+.yd-overview { display: grid; gap: 1.5rem; align-items: start; margin: 0 0 2rem; }
+@media (min-width: 40rem) { .yd-overview { grid-template-columns: 13rem minmax(0, 1fr); } }
+.yd-mascot { margin: 0; max-width: 13rem; }
+.yd-mascot img { display: block; width: 100%; height: auto; border-radius: .5rem; box-shadow: 0 6px 22px rgb(0 0 0 / .25); }
+.yd-mascot figcaption { margin-top: .4rem; font: .7rem var(--font-mono); color: rgb(var(--c-muted)); }
+.yd-kicker { margin: 0; font: 600 .72rem var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: rgb(var(--c-muted)); }
+.yd-mascot-name { margin: .15rem 0 0; font: 700 clamp(1.35rem, 3.5vw, 1.75rem)/1.15 var(--font-serif); color: rgb(var(--c-fg)); }
+.yd-mascot-name a { color: inherit; text-decoration: none; }
+.yd-mascot-name a:hover { text-decoration: underline; text-underline-offset: .2em; }
+.yd-type { margin: .35rem 0 0; font: .78rem var(--font-mono); color: rgb(var(--c-muted)); }
+.yd-about > .yd-text { margin: .8rem 0 0; padding: .7rem .9rem; border-left: 3px solid hsl(var(--yd-monster)); border-radius: 0 .5rem .5rem 0; background: hsl(var(--yd-monster) / .08); font-size: .95rem; line-height: 1.55; }
+.yd-stats { display: flex; flex-wrap: wrap; gap: .6rem; margin: 1rem 0 0; }
+.yd-stats div { min-width: 5.5rem; padding: .5rem .75rem; border: 1px solid rgb(var(--c-border)); border-radius: .5rem; }
+.yd-stats dt { font: .7rem var(--font-mono); text-transform: uppercase; letter-spacing: .06em; color: rgb(var(--c-muted)); }
+.yd-stats dd { margin: 0; font: 700 1.35rem var(--font-serif); color: rgb(var(--c-fg)); }
+.yd-stat-monster { border-top: 3px solid hsl(var(--yd-monster)) !important; }
+.yd-stat-spell { border-top: 3px solid hsl(var(--yd-spell)) !important; }
+.yd-stat-trap { border-top: 3px solid hsl(var(--yd-trap)) !important; }
+
+.yd-list { columns: 17rem; column-gap: 1.75rem; margin: 0 0 1rem; }
+.yd-group { --yd-c: var(--yd-monster); break-inside: avoid; margin: 0 0 1.4rem; }
+.yd-spell { --yd-c: var(--yd-spell); }
+.yd-trap { --yd-c: var(--yd-trap); }
+.yd-group-h { display: flex; align-items: center; gap: .5rem; margin: 0 0 .35rem; padding-bottom: .35rem; border-bottom: 1px solid rgb(var(--c-border)); font: 600 .78rem var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: rgb(var(--c-fg)); }
+.yd-dot { width: .7rem; height: .7rem; border-radius: 999px; background: hsl(var(--yd-c)); }
+.yd-group-n { margin-left: auto; padding: .05rem .5rem; border-radius: 999px; background: rgb(var(--c-border) / .6); font-weight: 600; letter-spacing: 0; }
+.yd-group ul { margin: 0; padding: 0; list-style: none; }
+.yd-row summary { display: grid; grid-template-columns: 1.6rem minmax(0, 1fr) auto; align-items: center; gap: .5rem; padding: .3rem .4rem; border-radius: .4rem; list-style: none; cursor: pointer; transition: background-color .15s; }
+.yd-row summary::-webkit-details-marker { display: none; }
+.yd-row summary:hover, .yd-row details[open] summary { background: hsl(var(--yd-c) / .12); }
+.yd-row summary:focus-visible { outline: 2px solid rgb(var(--c-accent)); outline-offset: 1px; }
+.yd-qty { font: .78rem var(--font-mono); font-variant-numeric: tabular-nums; color: rgb(var(--c-muted)); text-align: right; }
+.yd-name { overflow: hidden; font-size: .92rem; color: rgb(var(--c-fg)); text-overflow: ellipsis; white-space: nowrap; }
+.yd-row details[open] .yd-name { white-space: normal; }
+.yd-level { font: .72rem var(--font-mono); color: hsl(var(--yd-c)); }
+.yd-card { margin: .2rem 0 .6rem 2.1rem; padding: .6rem .75rem; border-left: 2px solid hsl(var(--yd-c) / .6); font-size: .85rem; line-height: 1.5; color: rgb(var(--c-fg)); }
+.yd-card .yd-type { margin: 0 0 .4rem; font-size: .72rem; }
+.yd-card .yd-text { margin: 0; white-space: pre-line; }
+.yd-link { display: inline-block; margin-top: .5rem; font: .72rem var(--font-mono); color: rgb(var(--c-accent)); }
+@media (prefers-reduced-motion: reduce) { .yd-row summary { transition: none; } }

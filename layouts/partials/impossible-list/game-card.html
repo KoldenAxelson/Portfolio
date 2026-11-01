@@ -19,11 +19,15 @@
 {{- $imgs := slice -}}
 {{- with .shot }}{{ $imgs = partial "func/media-images.html" (dict "dir" "games" "slug" (replaceRE `\.[^.]*$` "" .) "width" 800) }}{{ end -}}
 {{- $kind := "game" -}}
+{{- /* goals (achievements still being chased) reuse the drawer's series
+     checklist: "N of M achieved". */ -}}
+{{- $goals := slice -}}
+{{- range .goals }}{{ $goals = $goals | append (dict "title" .text "done" (eq .done true)) }}{{ end -}}
 {{- if and (not $imgs) .cover -}}
   {{- $imgs = partial "func/media-images.html" (dict "dir" $words.dir "slug" .cover "width" 600) -}}
   {{- $kind = "book" -}}
 {{- end -}}
-<button type="button" data-game-open aria-haspopup="dialog" data-title="{{ .title }}" data-kind="{{ $kind }}" data-rating="{{ .rating }}"{{ if $isCurrent }} data-status="{{ $words.now }}"{{ end }} data-blurb="{{ .blurb }}" data-pitch="{{ .pitch }}" data-images="{{ $imgs | jsonify }}" data-console="{{ .console }}" class="group/cover block w-full rounded-lg pt-1.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
+<button type="button" data-game-open aria-haspopup="dialog" data-title="{{ .title }}" data-kind="{{ $kind }}" data-rating="{{ .rating }}"{{ if $isCurrent }} data-status="{{ $words.now }}"{{ end }} data-blurb="{{ .blurb }}" data-pitch="{{ .pitch }}" data-images="{{ $imgs | jsonify }}" data-console="{{ .console }}"{{ with $goals }} data-series="{{ . | jsonify }}" data-done-label="achieved"{{ end }} class="group/cover block w-full rounded-lg pt-1.5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
   {{ partial "components/shelf-cover.html" (dict "dir" $words.dir "slug" .cover "eager" $.eager "title" .title "isDimmed" (not $isPlayed) "badge" (cond $isCurrent (dict "icon" $words.icon "label" $words.badge) false)) }}
   <span class="mt-2 line-clamp-2 block text-sm leading-snug transition-colors group-hover/cover:text-accent {{ cond (or $isPlayed $isCurrent) "text-fg" "text-muted" }}">{{ .title }}{{ if $isCurrent }}<span class="sr-only"> ({{ lower $words.now }})</span>{{ else if not $isPlayed }}<span class="sr-only"> ({{ $words.notYet }})</span>{{ end }}</span>
   <span class="mt-0.5 block font-mono text-xs text-muted">

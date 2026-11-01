@@ -82,6 +82,7 @@
 {{- $known = $known | append "stack" -}}           {{/* uses + colophon   */}}
 {{- $known = $known | append "groups" "games" "books" "films" "wip" -}}  {{/* impossible-list */}}
 {{- $known = $known | append "photos" "building" "principles" "opento" -}}  {{/* about.html */}}
+{{- $known = $known | append "deck" "game" "format" "showcase" -}}  {{/* decks/deck-card.html + misc/decks.html: a deck page's data, shelf and label */}}
 {{- $known = $known | append "shelf" -}}           {{/* writing/list.html: which shelf a story collection sits on */}}
 {{- $known = $known | append "label" -}}           {{/* writing/book-card.html + single.html: a non-story page (e.g. "Story bible"); `kind` is Hugo's */}}
 {{- $known = $known | append "stack" -}}           {{/* content/misc/supplements/*: which data/supplements/stacks.yaml entry the page shows */}}

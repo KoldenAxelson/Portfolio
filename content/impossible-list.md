@@ -43,7 +43,9 @@ groups:
 # assets/img/games/<shot> plus -1, -2 … extras (the drawer carousel; a game
 # without shots shows its cover there instead). blurb → your review; pitch →
 # why the game is worth playing. With both, the drawer shows the review and a
-# toggle to the pitch. current: true → what I'm playing right now: first on its
+# toggle to the pitch. goals → achievements I'm still chasing in a game I've
+# played, a checklist in the drawer: - { text: "…", done: false }.
+# current: true → what I'm playing right now: first on its
 # shelf, outlined, with a "Playing" badge (books take it too, as "Reading").
 games:
   label: "Games"
@@ -207,6 +209,24 @@ games:
       shot: "skyrim.webp"
       pitch: "An open world where you can walk toward any mountain and find a story on it. Dragons are back, you are the Dragonborn, and the rest is up to you."
       blurb: "This is a comfort game for me. When I want to just 'take a walk' digitally, this feels like walking around my old neighborhood. Over time some new things are added in, and it's fun to discover things I never saw before. I'm not huge into the modding scene — I appreciate it, but I like having the shared experience."
+    - title: "Melvor Idle"
+      year: 2021
+      console: "MOBILE"
+      done: true
+      rating: 3.5
+      cover: "melvor-idle"
+      shot: "melvor-idle.webp"
+      pitch: "RuneScape boiled down to its skill grind: train woodcutting, fishing, combat and twenty-odd other skills from menus while the game keeps playing when you're away. Three expansions stretch it well past the base game."
+      blurb: "As a RuneScape nerd, this game was a blast! I did time-skip the heck out of it though! Patience with idle games wasn't a skill I had then."
+    - title: "Rumble Club"
+      year: 2024
+      console: "MOBILE"
+      done: true
+      rating: 3.5
+      cover: "rumble-club"
+      shot: "rumble-club.webp"
+      pitch: "A free physics brawler for up to 20 players: grab, punch and fling wobbly characters off the arena across game modes that rotate daily. Climb the all-time trophy leaderboard by winning rounds."
+      blurb: "This was a fun game that I got on the ground floor of its release to play. It sorta consumed my life for a while there and I had to drop it to be a good adult."
     - title: "The Legend of Zelda: Oracle of Seasons"
       year: 2001
       console: "GBC"
@@ -231,12 +251,18 @@ games:
       done: false
       cover: "super-mario-sunshine"
       pitch: "Mario on holiday on Isle Delfino with FLUDD, a water pack that hovers, rockets and sprays away graffiti goop. Strange, tight, and full of secret levels."
-    - title: "Old School RuneScape: Max Cape"
+    - title: "Old School RuneScape"
       year: 2013
       console: "PC"
-      done: false
+      done: true
+      rating: 5.0
       cover: "old-school-runescape"
-      pitch: "RuneScape as it was in 2007, kept alive and steered by player votes. The Max Cape goes to players who reach level 99 in every skill: a years-long goal."
+      pitch: "RuneScape as it was in 2007, kept alive and steered by player votes. Train skills, quest across Gielinor and take on bosses, in a world that still feels shared."
+      blurb: "This game shaped who I am in a major part. I learned coding through some unconventional means with this game back when I was 7. It introduced me to my habit of problem solving with technology. On top of that, the memories and hours sunk into this game brings it a special place in my heart."
+      goals:
+        - { text: "Get a Max Cape", done: false }
+        - { text: "Get a TzKal Slayer Helmet", done: false }
+        - { text: "Get a Bloodhound Pet", done: false }
 # Books — one Netflix-style row per shelf, covers clicking into the same
 # drill-down as games. The page orders each row itself: read books by rating
 # (ties: the entry lower in this file wins, so append new books at the bottom of
@@ -351,6 +377,21 @@ books:
             - title: "The Hero of Ages"
               done: false
               pitch: "Ash falls, the mists spread, and every mystery from the first two books comes due. One of the most satisfying trilogy endings in fantasy."
+        - title: "Nineteen Eighty-Four"
+          year: 1949
+          done: false
+          cover: "nineteen-eighty-four"
+          pitch: "Winston Smith rewrites history at the Ministry of Truth for a Party that watches everyone, all the time. Orwell's novel gave us Big Brother, doublethink and thoughtcrime."
+        - title: "Brave New World"
+          year: 1932
+          done: false
+          cover: "brave-new-world"
+          pitch: "A future where people are grown in hatcheries, kept content with a drug called soma and never left alone with their thoughts. The other great dystopia, where control comes through comfort instead of fear."
+        - title: "Fahrenheit 451"
+          year: 1953
+          done: false
+          cover: "fahrenheit-451"
+          pitch: "A fireman whose job is burning books starts secretly reading them. Bradbury's short novel about a society that drifted away from books on its own, long before the censors arrived."
         - title: "Endurance"
           year: 1959
           done: false
@@ -417,6 +458,56 @@ books:
             - title: "The Bone Ship's Wake"
               done: false
               pitch: "The trilogy's ending: the war the first two books warned of arrives, and Joron has become a captain the drunk from book one would not recognise."
+        - title: "No Prey, No Pay"
+          year: 2020
+          done: false
+          cover: "no-prey-no-pay"
+          pitch: "A self-published pirate novel about a hunt for ancient treasure, set around the 1692 earthquake that sank much of Port Royal, the Caribbean's most notorious pirate haven."
+        - title: "Crime and Punishment"
+          year: 1866
+          done: false
+          cover: "crime-and-punishment"
+          pitch: "A broke former student in St. Petersburg kills a pawnbroker to prove he's above ordinary morality, then comes apart under guilt and a patient detective. Dostoevsky's most readable big novel."
+        - title: "Notes from Underground"
+          year: 1864
+          done: false
+          cover: "notes-from-underground"
+          pitch: "A bitter, nameless former clerk rants against reason, progress and himself from his St. Petersburg \"underground\", then tells the humiliating stories behind it. Short, and often called the first existentialist novel."
+        - title: "The Egyptian"
+          year: 1945
+          done: false
+          cover: "egyptian"
+          pitch: "Sinuhe, a physician at the court of the heretic pharaoh Akhenaten, tells the story of his life across Egypt and the ancient Near East. Mika Waltari's historical novel was an international bestseller after the war."
+        - title: "The Gulag Archipelago"
+          year: 1973
+          done: false
+          cover: "gulag-archipelago"
+          pitch: "Solzhenitsyn's history of the Soviet labor camp system, built from his own eight years as a prisoner and the testimony of hundreds of others. Smuggled out and published in the West, it got him expelled from the USSR."
+        - title: "Walden"
+          year: 1854
+          done: false
+          cover: "walden"
+          pitch: "Thoreau spent two years in a cabin he built himself at Walden Pond and wrote about living simply and on purpose. Part nature writing, part case against trading your life for things you don't need."
+        - title: "War and Peace"
+          year: 1869
+          done: false
+          cover: "war-and-peace"
+          pitch: "Five aristocratic Russian families through Napoleon's invasion, from ballrooms to the battlefield at Borodino. Long, and Tolstoy makes nearly every one of its hundreds of characters feel like a real person."
+        - title: "Infinite Jest"
+          year: 1996
+          done: false
+          cover: "infinite-jest"
+          pitch: "A tennis academy, a halfway house and a film so entertaining that anyone who watches it loses the will to do anything else. More than a thousand pages, hundreds of endnotes, and a book about addiction and our appetite for fun."
+        - title: "The Glass Bead Game"
+          year: 1943
+          done: false
+          cover: "glass-bead-game"
+          pitch: "Hesse's last novel follows Joseph Knecht's rise to Magister Ludi, master of a game that plays with all of human knowledge, in a future order of scholars. Hesse won the Nobel Prize three years after it came out."
+        - title: "Leaves of Grass"
+          year: 1855
+          done: false
+          cover: "leaves-of-grass"
+          pitch: "Whitman's one book of poems, which he kept expanding from 1855 until his death. Long, loose lines celebrating ordinary American life, with \"Song of Myself\" at the center."
         - title: "Love and Math"
           year: 2013
           done: false
@@ -437,6 +528,36 @@ books:
           done: false
           cover: "twilight-of-the-idols"
           pitch: "Nietzsche's short, sharp late book, written in about a week: 'how to philosophize with a hammer.' Aphorisms and attacks on Socrates, morality and German culture, and the quickest way into Nietzsche."
+        - title: "The Myth of Sisyphus"
+          year: 1942
+          done: false
+          cover: "myth-of-sisyphus"
+          pitch: "Camus asks whether life is worth living if it has no meaning, and answers with Sisyphus, condemned to push his boulder forever, whom we must imagine happy. A short, clear way into existentialism."
+        - title: "Either/Or"
+          year: 1843
+          done: false
+          cover: "either-or"
+          pitch: "Kierkegaard's first big book, published under pseudonyms: the papers of a pleasure-chasing aesthete set against letters from a judge arguing for a committed, ethical life. He leaves the choice to you."
+        - title: "Sun and Steel"
+          year: 1968
+          done: false
+          cover: "sun-and-steel"
+          pitch: "Yukio Mishima's short essay on how bodybuilding and martial arts changed the way he related to words and to his own body. Strange and intense, published two years before his death."
+        - title: "Gravity and Grace"
+          year: 1947
+          done: false
+          cover: "gravity-and-grace"
+          pitch: "Simone Weil's notebooks, gathered after her death into short passages on suffering, attention and God. Best read a few pages at a time."
+        - title: "Flatline Constructs"
+          year: 2018
+          done: false
+          cover: "flatline-constructs"
+          pitch: "Mark Fisher's 1999 PhD thesis, published in 2018: a dense theory of how fiction like Neuromancer and Crash blurs the line between human and machine. Hard going, from the writer who later wrote Capitalist Realism."
+        - title: "Millions of Little Threads"
+          year: 2023
+          done: false
+          cover: "millions-of-little-threads"
+          pitch: "A lonely young finance worker gets a brain-computer implant, it starts malfunctioning, and the customer support maze only makes things worse. A short, dark and funny novella from Robert Pantano, the voice behind Pursuit of Wonder."
         - title: "Wild at Heart"
           year: 2001
           done: false
@@ -498,6 +619,31 @@ books:
           done: false
           cover: "mans-search-for-meaning"
           pitch: "Viktor Frankl's account of surviving Auschwitz and other camps, and the psychology he built from it: we can't always choose our circumstances, but we can choose our response. Short, harrowing and essential."
+        - title: "Atomic Habits"
+          year: 2018
+          done: false
+          cover: "atomic-habits"
+          pitch: "James Clear on building good habits from tiny changes: make them obvious, attractive, easy and satisfying, and make bad ones the opposite. The most practical habit book around, and a natural follow-up to The Power of Habit."
+        - title: "Can't Hurt Me"
+          year: 2018
+          done: false
+          cover: "cant-hurt-me"
+          pitch: "David Goggins went from an abused, overweight kid to Navy SEAL and ultramarathoner, and lays out the mental tactics he credits for it, like the \"cookie jar\" and the 40% rule."
+        - title: "The Obstacle Is the Way"
+          year: 2014
+          done: false
+          cover: "obstacle-is-the-way"
+          pitch: "Ryan Holiday turns Stoic philosophy into a playbook for treating setbacks as material to work with, with stories from Marcus Aurelius to John D. Rockefeller."
+        - title: "The Subtle Art of Not Giving a F*ck"
+          year: 2016
+          done: false
+          cover: "subtle-art"
+          pitch: "Mark Manson argues that a good life comes from choosing what's worth caring about and accepting the struggle that comes with it, instead of chasing constant positivity."
+        - title: "Mere Christianity"
+          year: 1952
+          done: false
+          cover: "mere-christianity"
+          pitch: "C.S. Lewis's wartime radio talks on what nearly all Christians believe, starting from the moral law everyone seems to know. One of the most widely read introductions to Christianity."
         - title: "Thinking, Fast and Slow"
           year: 2011
           done: false
@@ -513,6 +659,21 @@ books:
           done: false
           cover: "influence"
           pitch: "Cialdini's classic on the principles of persuasion: reciprocity, commitment, social proof, liking, authority and scarcity (the new edition adds unity). Learn them once and you'll spot them in every sales page and negotiation."
+        - title: "Think and Grow Rich"
+          year: 1937
+          done: false
+          cover: "think-and-grow-rich"
+          pitch: "Napoleon Hill's steps to success, which he said came from interviewing rich men like Andrew Carnegie: burning desire, faith, persistence and a \"mastermind\" group. One of the best-selling self-help books ever, though historians doubt many of his interview claims."
+        - title: "Never Split the Difference"
+          year: 2016
+          done: false
+          cover: "never-split-the-difference"
+          pitch: "Former FBI hostage negotiator Chris Voss on negotiating with tactical empathy: mirroring, labeling emotions and getting the other side to say \"that's right.\" Written for salary talks and car deals as much as hostage standoffs."
+        - title: "Getting to Yes"
+          year: 1981
+          done: false
+          cover: "getting-to-yes"
+          pitch: "The Harvard Negotiation Project's method: separate the people from the problem, focus on interests instead of positions and agree on objective criteria. The cooperative counterpart to Never Split the Difference."
         - title: "Deep Work"
           year: 2016
           done: false
@@ -523,11 +684,36 @@ books:
           done: false
           cover: "mindset"
           pitch: "Carol Dweck's research on fixed versus growth mindsets: believing ability is set, or that it can be developed, changes how you handle failure and effort. The idea is famous; the book has the nuance the slogans miss."
+        - title: "Flow"
+          year: 1990
+          done: false
+          cover: "flow"
+          pitch: "Psychologist Mihaly Csikszentmihalyi on the state of total absorption where time disappears, and how to build more of it into work and life. The research behind every \"get in the zone\" tip."
+        - title: "The Slight Edge"
+          year: 2005
+          done: false
+          cover: "slight-edge"
+          pitch: "Jeff Olson's argument that small daily choices, easy to do and just as easy to skip, compound over the years into success or failure."
         - title: "Antifragile"
           year: 2012
           done: false
           cover: "antifragile"
           pitch: "Taleb's big idea: some things don't just survive shocks, they get stronger from them. A sharp lens for systems work. What in your infrastructure, career or business gains from disorder instead of merely tolerating it?"
+        - title: "Mastery"
+          year: 2012
+          done: false
+          cover: "mastery"
+          pitch: "Robert Greene studies masters from Leonardo da Vinci to Darwin and maps the path they shared: a long apprenticeship, then a creative breakthrough."
+        - title: "The Laws of Human Nature"
+          year: 2018
+          done: false
+          cover: "laws-of-human-nature"
+          pitch: "Robert Greene's long field guide to why people act the way they do, from envy and grandiosity to the roles we play, with a historical figure to illustrate each law."
+        - title: "The Art of Seduction"
+          year: 2001
+          done: false
+          cover: "art-of-seduction"
+          pitch: "Robert Greene catalogs seducer types and the stages of seduction, drawn from figures like Cleopatra and Casanova. Useful for spotting manipulation as well as practicing charm."
         - title: "The Almanack of Naval Ravikant"
           year: 2020
           done: false
@@ -548,6 +734,26 @@ books:
             - title: "$100M Money Models"
               done: false
               pitch: "The third $100M book is about what comes after the first sale: sequencing offers so a new customer pays for their own acquisition. Most useful once you already sell something and want each customer to be worth more."
+        - title: "Zero to One"
+          year: 2014
+          done: false
+          cover: "zero-to-one"
+          pitch: "Peter Thiel's Stanford lectures on startups: the companies worth building create something new and end up as monopolies, instead of fighting over an existing market. Short and contrarian."
+        - title: "The Lean Startup"
+          year: 2011
+          done: false
+          cover: "lean-startup"
+          pitch: "Eric Ries's method for building a company as a series of experiments: ship a minimum viable product, measure what customers actually do and change course fast."
+        - title: "Good to Great"
+          year: 2001
+          done: false
+          cover: "good-to-great"
+          pitch: "Jim Collins's team studied companies that went from average to beating the market for fifteen years and looked for what they had in common: humble leaders, the right people first and one simple focus."
+        - title: "Blue Ocean Strategy"
+          year: 2005
+          done: false
+          cover: "blue-ocean-strategy"
+          pitch: "Kim and Mauborgne argue for creating a market no one is competing in, instead of fighting rivals over the same customers. The case studies run from Cirque du Soleil to Yellow Tail wine."
         - title: "The Goal"
           year: 1984
           done: false
@@ -558,11 +764,41 @@ books:
           done: false
           cover: "thinking-in-bets"
           pitch: "Former poker pro Annie Duke on deciding under uncertainty: judge decisions by their process, not their outcome, and think in probabilities. A great fit for postmortems, where 'bad outcome' and 'bad call' get confused."
+        - title: "The Art of War"
+          year: -500
+          done: false
+          cover: "art-of-war"
+          pitch: "Thirteen short chapters on strategy from ancient China: know yourself and your enemy, and win without fighting when you can. Read today by executives as much as generals."
+        - title: "Bushido"
+          year: 1900
+          done: false
+          cover: "bushido"
+          pitch: "Inazo Nitobe wrote this in English to explain the samurai code to Western readers: rectitude, courage, benevolence, politeness, honesty, honor and loyalty. It shaped how the West pictures the samurai."
+        - title: "Tao Te Ching"
+          year: -400
+          done: false
+          cover: "tao-te-ching"
+          pitch: "Eighty-one short verses attributed to Laozi on the Tao, the way things naturally flow, and on leading without forcing. One of the most translated books in the world."
         - title: "Economics in One Lesson"
           year: 1946
           done: false
           cover: "economics-in-one-lesson"
           pitch: "Hazlitt's one lesson: judge a policy by its effects on everyone and over the long run, not just the immediate, visible ones. A short classic on the seen and the unseen that still frames a lot of economic debate."
+        - title: "The Road to Serfdom"
+          year: 1944
+          done: false
+          cover: "road-to-serfdom"
+          pitch: "Friedrich Hayek's warning, written in wartime Britain, that central economic planning leads toward tyranny. A founding text of free-market economics."
+        - title: "Modern Money Mechanics"
+          year: 1961
+          done: false
+          cover: "modern-money-mechanics"
+          pitch: "A booklet the Federal Reserve Bank of Chicago put out to explain how banks create money when they make loans. Short, dry and straight from the source."
+        - title: "The Creature from Jekyll Island"
+          year: 1994
+          done: false
+          cover: "creature-from-jekyll-island"
+          pitch: "G. Edward Griffin's account of the secret 1910 meeting on Jekyll Island where bankers drafted the plan for the Federal Reserve, and his case that the Fed works as a banking cartel. The meeting really happened; economists reject much of his reading of it, so pair it with Modern Money Mechanics."
         - title: "Fooled by Randomness"
           year: 2001
           done: false
@@ -578,6 +814,11 @@ books:
           done: false
           cover: "factfulness"
           pitch: "Hans Rosling shows the world is in better shape than most people think, then names the 10 instincts that distort our view. Data-driven and warm, and it builds the habit of checking assumptions before reacting to scary headlines."
+        - title: "The Mass Psychology of Fascism"
+          year: 1933
+          done: false
+          cover: "mass-psychology-of-fascism"
+          pitch: "Wilhelm Reich, a former student of Freud, tries to explain why ordinary Germans backed fascism against their own interests, pinning it on sexual repression and the authoritarian family. Banned by the Nazis; decades later the US government burned his books over his unrelated orgone claims."
         - title: "Crucial Conversations"
           year: 2002
           done: false
@@ -588,6 +829,30 @@ books:
           done: false
           cover: "e-myth-revisited"
           pitch: "Why most small businesses stall: the founder works in the business instead of on it. Gerber's fix is to build it like a franchise prototype with documented systems. Basically runbooks for everything, which a DevOps brain will love."
+        - title: "The $100 Startup"
+          year: 2012
+          done: false
+          cover: "hundred-dollar-startup"
+          pitch: "Chris Guillebeau collected the stories of people who started businesses for around $100 and grew them into a living. A practical guide to small, one-person businesses."
+        - title: "The 1-Page Marketing Plan"
+          year: 2015
+          done: false
+          cover: "one-page-marketing-plan"
+          pitch: "Allan Dib fits a small business's entire marketing plan onto a nine-square grid: before, during and after someone becomes a customer."
+        - title: "DotCom Secrets"
+          year: 2015
+          done: false
+          cover: "dotcom-secrets"
+          pitch: "ClickFunnels co-founder Russell Brunson's trilogy on selling online: build a sales funnel, become an expert people trust, then fill the funnel with traffic."
+          series:
+            - title: "DotCom Secrets"
+              done: false
+            - title: "Expert Secrets"
+              done: false
+              pitch: "How to turn what you know into a following that will pay for your advice: tell your origin story, build a movement and pitch without sounding like a salesman."
+            - title: "Traffic Secrets"
+              done: false
+              pitch: "Where your dream customers already gather online, and how to get them into your funnel, platform by platform."
         - title: "Ultralearning"
           year: 2019
           done: false
@@ -625,6 +890,11 @@ books:
           done: false
           cover: "simple-path-to-wealth"
           pitch: "JL Collins turned letters to his daughter into a plan: avoid debt, spend less than you earn, buy broad low-cost index funds and leave them alone. The simplest investing book that's still complete."
+        - title: "The Long and the Short of It"
+          year: 2009
+          done: false
+          cover: "long-and-short-of-it"
+          pitch: "Economist John Kay's guide to investing for smart people outside the finance industry: how markets work, what fees cost you and how to manage your own portfolio sensibly."
         - title: "The Most Important Thing"
           year: 2011
           done: false
@@ -635,6 +905,21 @@ books:
           done: false
           cover: "outlive"
           pitch: "Peter Attia's case for preventing chronic disease decades early instead of treating it late: exercise (strength and VO2 max especially), sleep, nutrition and emotional health. A strong push to keep the gym habit."
+        - title: "Medical Nemesis"
+          year: 1975
+          done: false
+          cover: "medical-nemesis"
+          pitch: "Ivan Illich argues that past a certain point, modern medicine causes as much harm as it cures, from side effects to people losing the ability to cope with pain and death on their own terms. Later reissued as Limits to Medicine."
+        - title: "The Anxious Generation"
+          year: 2024
+          done: false
+          cover: "anxious-generation"
+          pitch: "Jonathan Haidt argues that the move from play-based to phone-based childhood in the early 2010s drove a rise in teen anxiety and depression, and proposes four norms to reverse it. Some researchers dispute how strong the evidence is."
+        - title: "Dopamine Nation"
+          year: 2021
+          done: false
+          cover: "dopamine-nation"
+          pitch: "Stanford psychiatrist Anna Lembke on how easy access to endless pleasures, from phones to food, throws the brain's reward system out of balance, and how stepping away resets it."
         - title: "Show Your Work!"
           year: 2014
           done: false
@@ -665,16 +950,70 @@ books:
           done: false
           cover: "traction"
           pitch: "Gino Wickman's Entrepreneurial Operating System (EOS): vision, people, data, issues, process and traction. A complete operating manual for running a small company once it outgrows the founder's head."
+        - title: "The SaaS Playbook"
+          year: 2023
+          done: false
+          cover: "saas-playbook"
+          pitch: "Rob Walling, co-founder of MicroConf and TinySeed, on building a software company without venture capital: picking a niche, pricing, marketing and keeping customers."
+        - title: "Start Small, Stay Small"
+          year: 2010
+          done: false
+          cover: "start-small-stay-small"
+          pitch: "Rob Walling's guide for developers launching a small software product on their own: find the niche first, test demand before coding and market before launch. Some of the tools have aged, the approach hasn't."
+        - title: "Start Marketing the Day You Start Coding"
+          done: false
+          cover: "start-marketing"
+          pitch: "A collection of Rob Walling's essays on running a small software business, from marketing before you build to why free plans don't work."
+        - title: "The Entrepreneur's Guide to Keeping Your Sh*t Together"
+          year: 2018
+          done: false
+          cover: "keeping-your-sht-together"
+          pitch: "Psychologist Sherry Walling on the mental side of running a company: stress, isolation, burnout and relationships. Written with her husband, Rob Walling."
         - title: "I Will Teach You to Be Rich"
           year: 2009
           done: false
           cover: "i-will-teach-you-to-be-rich"
           pitch: "Ramit Sethi's six-week program: automate your finances, spend extravagantly on what you love and cut mercilessly on what you don't. Practical right down to scripts for negotiating fees."
+        - title: "Millionaire Mission"
+          year: 2024
+          done: false
+          cover: "millionaire-mission"
+          pitch: "Brian Preston of The Money Guy Show lays out his nine-step Financial Order of Operations, a ranked answer to what you should do with your next dollar."
+        - title: "Rich AF"
+          year: 2023
+          done: false
+          cover: "rich-af"
+          pitch: "Vivian Tu, a former Wall Street trader known online as Your Rich BFF, covers budgeting, debt, investing and negotiating pay in plain, funny language for people who never learned money at home."
         - title: "Attached"
           year: 2010
           done: false
           cover: "attached"
           pitch: "Adult attachment theory made practical: anxious, avoidant and secure styles, and what happens when they collide in a relationship. A quick read that explains a lot of past dating confusion in hindsight."
+        - title: "Models"
+          year: 2011
+          done: false
+          cover: "models"
+          pitch: "Mark Manson's dating book built on honesty: attraction comes from being invested in your own life and open about what you want, and pickup tricks get in the way."
+        - title: "The Way of the Superior Man"
+          year: 1997
+          done: false
+          cover: "way-of-the-superior-man"
+          pitch: "David Deida's short, blunt chapters on masculine purpose, relationships and sexuality. Polarizing, and widely read in men's groups."
+        - title: "All About Love"
+          year: 2000
+          done: false
+          cover: "all-about-love"
+          pitch: "bell hooks argues that love is something you do, made of care, respect, trust and commitment, and that a culture without a clear definition of it keeps confusing love with desire or control."
+        - title: "Man and His Symbols"
+          year: 1964
+          done: false
+          cover: "man-and-his-symbols"
+          pitch: "The one book Carl Jung wrote for general readers, finished just before he died: dreams, archetypes and the unconscious, with hundreds of illustrations."
+        - title: "Sex, Ecology, Spirituality"
+          year: 1995
+          done: false
+          cover: "sex-ecology-spirituality"
+          pitch: "Ken Wilber's huge attempt to fit science, philosophy and religion into one map, and the book where he first laid out his four quadrants: the inner and outer sides of individuals and of groups."
         - title: "The Charisma Myth"
           year: 2012
           done: false
@@ -690,6 +1029,11 @@ books:
           done: false
           cover: "concise-intro-pure-mathematics"
           pitch: "Martin Liebeck's on-ramp from calculating to proving: sets, real numbers, primes, complex numbers and countability, in short chapters with exercises. If puzzles like Sudoku are fun, this is where math starts feeling like that."
+        - title: "The Nature of Code"
+          year: 2012
+          done: false
+          cover: "nature-of-code"
+          pitch: "Daniel Shiffman teaches you to simulate the natural world in code: forces, particles, flocking, cellular automata, evolution and neural networks. Free to read online, with runnable JavaScript examples."
         - title: "The 4 Disciplines of Execution"
           year: 2012
           done: false
@@ -700,11 +1044,31 @@ books:
           done: false
           cover: "atlas-of-the-heart"
           pitch: "Brené Brown maps 87 emotions and experiences, with precise language for each. The argument: you can't work through what you can't name. A vocabulary upgrade for relationships and hard conversations."
+        - title: "The Book of Shadow Work"
+          year: 2025
+          done: false
+          cover: "book-of-shadow-work"
+          pitch: "Keila Shaheen, author of the viral Shadow Work Journal, expands on Jung's idea of the shadow: finding and accepting the parts of yourself you hide, with interviews from practitioners and her own story."
         - title: "The Four Agreements"
           year: 1997
           done: false
           cover: "four-agreements"
           pitch: "Four rules drawn from Toltec wisdom: be impeccable with your word, don't take anything personally, don't make assumptions, always do your best. A one-evening read that's easy to remember and hard to practice."
+        - title: "How to Stop Worrying and Start Living"
+          year: 1948
+          done: false
+          cover: "stop-worrying"
+          pitch: "Dale Carnegie's companion to How to Win Friends: concrete habits for cutting down worry, like living in \"day-tight compartments\" and facing the worst case head on."
+        - title: "Awaken the Giant Within"
+          year: 1991
+          done: false
+          cover: "awaken-the-giant-within"
+          pitch: "Tony Robbins on taking control of your emotions, habits, money and relationships through the decisions you make and the questions you ask yourself."
+        - title: "The 5 Second Rule"
+          year: 2017
+          done: false
+          cover: "five-second-rule"
+          pitch: "Mel Robbins's one trick: count 5-4-3-2-1 and move before your brain talks you out of it, plus the stories and research she builds around it."
         - title: "How to Get Rich"
           year: 2006
           done: false
@@ -715,16 +1079,56 @@ books:
           done: false
           cover: "millionaire-fastlane"
           pitch: "MJ DeMarco's argument against getting rich slowly through a job and decades of saving: build a business system that scales beyond your hours. Abrasive in places, but it reframes products and leverage well."
+        - title: "Main Street Millionaire"
+          year: 2024
+          done: false
+          cover: "main-street-millionaire"
+          pitch: "Codie Sanchez makes the case for buying boring, profitable small businesses like laundromats and plumbing companies instead of starting from scratch, and walks through finding, financing and running them."
+        - title: "Million Dollar Weekend"
+          year: 2024
+          done: false
+          cover: "million-dollar-weekend"
+          pitch: "Noah Kagan, an early Facebook employee and the founder of AppSumo, on getting past the fear of starting: find a problem, pre-sell a fix and test the business idea in a weekend."
+        - title: "12 Months to $1 Million"
+          year: 2020
+          done: false
+          cover: "twelve-months-to-a-million"
+          pitch: "Ryan Daniel Moran's plan for building an e-commerce brand to a million dollars in sales within a year: pick a product, serve one specific customer and expand from there."
+        - title: "Entrepreneur Revolution"
+          year: 2013
+          done: false
+          cover: "entrepreneur-revolution"
+          pitch: "Daniel Priestley on breaking out of an industrial-age job mindset and building a small business around what you do best."
         - title: "The Power of Now"
           year: 1997
           done: false
           cover: "power-of-now"
           pitch: "Eckhart Tolle's guide to living in the present instead of in your thinking mind. Spiritual rather than scientific, but the core practice, noticing the voice in your head instead of being it, is close kin to modern mindfulness."
+        - title: "Reality Transurfing"
+          year: 2004
+          done: false
+          cover: "reality-transurfing"
+          pitch: "Vadim Zeland, a former Russian physicist, claims reality is a field of possible versions and you slide between them by managing intention and letting go of \"importance\". Esoteric self-help, closer to The Power of Now than to physics."
+        - title: "A New Earth"
+          year: 2005
+          done: false
+          cover: "new-earth"
+          pitch: "Eckhart Tolle's follow-up to The Power of Now, on how the ego drives our suffering and what changes when you start noticing it. Oprah's book club turned it into a phenomenon."
+        - title: "The Secret"
+          year: 2006
+          done: false
+          cover: "the-secret"
+          pitch: "Rhonda Byrne's bestseller on the \"law of attraction\": think about what you want with enough conviction and the universe delivers it. A cultural phenomenon with no scientific backing."
         - title: "As a Man Thinketh"
           year: 1903
           done: false
           cover: "as-a-man-thinketh"
           pitch: "A 1903 essay you can finish in under an hour, arguing that your character and circumstances grow out of your habitual thoughts. Half the modern self-help shelf is a remix of it, so it's worth reading the source."
+        - title: "The Science of Being Well"
+          year: 1910
+          done: false
+          cover: "science-of-being-well"
+          pitch: "Wallace D. Wattles, author of The Science of Getting Rich, applies New Thought ideas to health: right thinking, eating, breathing and sleep. Read it as a period piece, not as medical advice."
         - title: "The Productivity Project"
           year: 2016
           done: false
@@ -760,11 +1164,36 @@ books:
           done: false
           cover: "go-for-no"
           pitch: "A short sales fable with one idea: set goals for how many times you hear no, not yes. It turns rejection into a metric and makes outreach feel like a game instead of a verdict."
+        - title: "The Greatest Salesman in the World"
+          year: 1968
+          done: false
+          cover: "greatest-salesman"
+          pitch: "A short parable about a camel boy in the ancient world who becomes the greatest salesman alive by living out ten scrolls of wisdom. You're meant to read each scroll every day for a month."
+        - title: "The Book on High Ticket Sales"
+          year: 2023
+          done: false
+          cover: "high-ticket-sales"
+          pitch: "Chad Aleo's guide to remote closing, selling expensive offers over the phone, from landing the job to handling objections. A short, practical sales manual."
         - title: "Master Your Emotions"
           year: 2018
           done: false
           cover: "master-your-emotions"
           pitch: "Thibaut Meurisse's practical guide to how emotions form and how to loosen the grip of negative ones. Short and exercise-driven, and this edition is the hands-on workbook."
+        - title: "Emotional Intelligence"
+          year: 1995
+          done: false
+          cover: "emotional-intelligence"
+          pitch: "Daniel Goleman's bestseller that made EQ a household term, arguing that self-awareness, self-control and empathy can matter more than IQ."
+        - title: "Shift"
+          year: 2025
+          done: false
+          cover: "shift"
+          pitch: "Psychologist Ethan Kross on tools for managing your emotions so they don't manage you, from changing your surroundings to the way you talk to yourself. The follow-up to Chatter."
+        - title: "The Six Pillars of Self-Esteem"
+          year: 1994
+          done: false
+          cover: "six-pillars-of-self-esteem"
+          pitch: "Nathaniel Branden treats self-esteem as something you build through six practices, among them living consciously, self-responsibility and personal integrity."
         - title: "The 21 Irrefutable Laws of Leadership"
           year: 1998
           done: false
@@ -780,6 +1209,48 @@ books:
           done: false
           cover: "sovereignty"
           pitch: "Ryan Michler, founder of Order of Man, on men taking ownership of their lives: responsibility, discipline, and leading at home and in their community. Direct and demanding, in the same vein as Wild at Heart."
+        - title: "The Sovereign Individual"
+          year: 1997
+          done: false
+          cover: "sovereign-individual"
+          pitch: "Davidson and Rees-Mogg predicted in 1997 that the internet and digital money would weaken nation-states and let individuals choose where to be taxed and governed. Tech founders love it for how much came true; it's worth arguing with where it didn't."
+        - title: "The Federalist Papers"
+          year: 1788
+          done: false
+          cover: "federalist-papers"
+          pitch: "Eighty-five essays by Alexander Hamilton, James Madison and John Jay arguing for ratifying the US Constitution. Courts still cite them for what the framers intended."
+        - title: "The Conservative Mind"
+          year: 1953
+          done: false
+          cover: "conservative-mind"
+          pitch: "Russell Kirk traces conservative thought from Edmund Burke to T.S. Eliot. The book that gave postwar American conservatism its intellectual history."
+        - title: "A History of the English-Speaking Peoples"
+          year: 1956
+          done: false
+          cover: "english-speaking-peoples"
+          pitch: "Winston Churchill's four-volume history of Britain and its former colonies, from Caesar's invasion to the end of the Victorian era, published a few years after he won the Nobel Prize in Literature."
+          series:
+            - title: "The Birth of Britain"
+              done: false
+            - title: "The New World"
+              done: false
+              pitch: "From the Tudors through the English Civil War to the Glorious Revolution of 1688."
+            - title: "The Age of Revolution"
+              done: false
+              pitch: "From 1688 to the defeat of Napoleon, with the American Revolution along the way."
+            - title: "The Great Democracies"
+              done: false
+              pitch: "From 1815 to 1901: Victorian Britain, the American Civil War and the spread of the empire."
+        - title: "The Death of the West"
+          year: 2002
+          done: false
+          cover: "death-of-the-west"
+          pitch: "Pat Buchanan, former Nixon and Reagan adviser and presidential candidate, argues that falling birth rates, mass immigration and cultural change threaten the survival of Western nations."
+        - title: "Right Wing Revolution"
+          year: 2024
+          done: false
+          cover: "right-wing-revolution"
+          pitch: "Turning Point USA founder Charlie Kirk lays out how he wanted conservatives to push back against what he called woke ideology in schools, business and culture."
         - title: "The Life-Changing Magic of Tidying Up"
           year: 2011
           done: false
@@ -820,6 +1291,12 @@ books:
           done: false
           cover: "letters-on-ethics"
           pitch: "124 letters from Seneca to a friend on time, fear, wealth, friendship and death. Written by one of the richest men in Rome, so the advice on not being owned by your possessions comes with built-in tension. Read one a night."
+        - title: "On the Shortness of Life"
+          year: 49
+          classic: true
+          done: false
+          cover: "shortness-of-life"
+          pitch: "Seneca's essay arguing that life is long enough, and we waste most of it on busyness and on other people's demands. Short, and it reads like it was written about the modern calendar."
         - title: "The Odyssey"
           year: -725
           classic: true
@@ -988,6 +1465,42 @@ books:
           done: false
           cover: "satires"
           pitch: "Juvenal's furious poems against Rome's corruption, the source of 'bread and circuses' and 'who will guard the guards?' Required reading for Grunt Force."
+        - title: "The Didache"
+          year: 100
+          classic: true
+          done: false
+          cover: "didache"
+          pitch: "A short early Christian manual, probably from the late first century, on morals, baptism, fasting and the Eucharist. It was lost for centuries until a copy turned up in 1873."
+        - title: "The Epistles of Ignatius"
+          year: 110
+          classic: true
+          done: false
+          cover: "ignatius-epistles"
+          pitch: "Seven letters Ignatius, bishop of Antioch, wrote while being taken to Rome for execution. Some of the earliest Christian writing on bishops, the Eucharist and church unity."
+        - title: "Against Heresies"
+          year: 180
+          classic: true
+          done: false
+          cover: "against-heresies"
+          pitch: "Irenaeus of Lyon's five-book refutation of the Gnostics, and an early defense of apostolic succession and the four Gospels."
+        - title: "Tertullian: Selected Works"
+          year: 200
+          classic: true
+          done: false
+          cover: "tertullian"
+          pitch: "Tertullian of Carthage, the first major Christian writer in Latin, was sharp and often sarcastic, and the first to use the word Trinity in Latin. His defenses of the faith and writings on Christian life."
+        - title: "The Church History"
+          year: 325
+          classic: true
+          done: false
+          cover: "church-history-eusebius"
+          pitch: "Eusebius of Caesarea's history of Christianity from the apostles to Constantine, and the main source for much of what we know about its first three centuries."
+        - title: "On Genesis Against the Manichees"
+          year: 389
+          classic: true
+          done: false
+          cover: "against-the-manichees"
+          pitch: "Augustine's early commentary on Genesis, written against the Manichaean sect he had belonged to before his conversion."
         - title: "Confessions"
           year: 400
           classic: true
@@ -1012,12 +1525,123 @@ books:
           done: false
           cover: "song-of-roland"
           pitch: "The oldest major work of French literature: Charlemagne's rear guard ambushed in the Pyrenees, and Roland too proud to blow his horn for help until it's too late."
+        - title: "Summa Theologica"
+          year: 1274
+          classic: true
+          done: false
+          cover: "summa-theologica"
+          pitch: "Thomas Aquinas's unfinished masterwork: thousands of questions on God, ethics and human nature, each answered only after laying out the strongest objections. The backbone of Catholic theology."
         - title: "The Canterbury Tales"
           year: 1400
           classic: true
           done: false
           cover: "canterbury-tales"
           pitch: "Chaucer's pilgrims tell stories on the road to Canterbury: knights, millers, a nun and the Wife of Bath. Bawdy, funny and the start of English literature."
+        - title: "Dark Night of the Soul"
+          year: 1585
+          done: false
+          cover: "dark-night-of-the-soul"
+          pitch: "St. John of the Cross, a 16th-century Spanish mystic, on the stretch of faith when God seems absent, and why he believed that darkness purifies the soul. The source of the phrase."
+        - title: "Tyndale's New Testament"
+          year: 1526
+          done: false
+          cover: "tyndale-bible"
+          pitch: "William Tyndale's 1526 New Testament, the first printed in English and translated straight from the Greek. He was executed for heresy in 1536, and much of his wording lives on in the King James Version."
+        - title: "The Bondage of the Will"
+          year: 1525
+          done: false
+          cover: "bondage-of-the-will"
+          pitch: "Martin Luther's reply to Erasmus, arguing that the human will is enslaved to sin and salvation depends entirely on God. Luther counted it among his best work."
+        - title: "Institutes of the Christian Religion"
+          year: 1536
+          done: false
+          cover: "institutes-christian-religion"
+          pitch: "John Calvin's systematic theology, which he kept expanding until 1559, and the foundation of Reformed Protestantism. Book IV covers the church and the sacraments."
+        - title: "Orthodoxy"
+          year: 1908
+          done: false
+          cover: "orthodoxy"
+          pitch: "G.K. Chesterton's account of how he arrived at Christianity while trying to think his way past it. Witty and packed with paradoxes."
+        - title: "I Don't Have Enough Faith to Be an Atheist"
+          year: 2004
+          done: false
+          cover: "enough-faith-atheist"
+          pitch: "Norman Geisler and Frank Turek build a step-by-step case, from the existence of truth and God to the reliability of the New Testament."
+        - title: "The Book That Made Your World"
+          year: 2011
+          done: false
+          cover: "book-that-made-your-world"
+          pitch: "Indian scholar Vishal Mangalwadi argues that the Bible shaped the West's ideas about human dignity, science, universities and freedom."
+        - title: "Doctrine"
+          year: 2010
+          done: false
+          cover: "doctrine-driscoll"
+          pitch: "Mark Driscoll and Gerry Breshears walk through the core Christian doctrines, from the Trinity and creation to the church and the end times."
+        - title: "Scripture Alone"
+          year: 2004
+          done: false
+          cover: "scripture-alone"
+          pitch: "James White's defense of sola scriptura, the Protestant teaching that the Bible is the only infallible authority for Christians."
+        - title: "Roman Catholics and Evangelicals"
+          year: 1995
+          done: false
+          cover: "roman-catholics-and-evangelicals"
+          pitch: "Norman Geisler and Ralph MacKenzie compare Catholic and evangelical theology point by point, setting out where the two agree and where they still differ."
+        - title: "What It Means to Be Protestant"
+          year: 2024
+          done: false
+          cover: "what-it-means-protestant"
+          pitch: "Gavin Ortlund, a pastor and historian, makes the case for Protestantism to people drawn toward Catholicism and Orthodoxy, arguing the Reformation recovered the early church rather than breaking from it."
+        - title: "The Case for Catholicism"
+          year: 2017
+          done: false
+          cover: "case-for-catholicism"
+          pitch: "Trent Horn answers classic and modern Protestant objections to Catholic teaching, from the papacy and Mary to purgatory and justification."
+        - title: "Why We're Catholic"
+          year: 2017
+          done: false
+          cover: "why-were-catholic"
+          pitch: "Trent Horn's plain case for the Catholic faith, from the existence of God and the Resurrection to the Church itself, for skeptics and for Catholics who struggle to explain what they believe."
+        - title: "Hard Sayings"
+          year: 2016
+          done: false
+          cover: "hard-sayings"
+          pitch: "Trent Horn takes a Catholic approach to the Bible's hardest passages, from apparent contradictions to the violence in the Old Testament."
+        - title: "Salvation Is from the Catholic Church"
+          year: 2025
+          done: false
+          cover: "salvation-catholic-church"
+          pitch: "Trent Horn argues that Christ saves through the Church he founded, so faith in Jesus and the Church's sacraments belong together."
+        - title: "Confusion in the Kingdom"
+          year: 2024
+          done: false
+          cover: "confusion-in-the-kingdom"
+          pitch: "Trent Horn looks at the factions of \"progressive\" Catholicism and argues they depart from Catholic teaching on doctrine and morals."
+        - title: "Persuasive Pro-Life"
+          year: 2014
+          done: false
+          cover: "persuasive-pro-life"
+          pitch: "Trent Horn's guide to talking about abortion in everyday conversation: how to make the pro-life case calmly and answer the common counterarguments."
+        - title: "Made This Way"
+          year: 2018
+          done: false
+          cover: "made-this-way"
+          pitch: "Leila Miller and Trent Horn help Catholic parents explain the Church's teaching on marriage, sexuality and other moral questions to their kids."
+        - title: "Can a Catholic Be a Socialist?"
+          year: 2020
+          done: false
+          cover: "catholic-socialist"
+          pitch: "Trent Horn and economist Catherine Pakaluk explain why the Catholic Church has rejected socialism, and what its teaching says instead about property, markets and the poor."
+        - title: "Stop, in the Name of God"
+          year: 2025
+          done: false
+          cover: "stop-in-the-name-of-god"
+          pitch: "Charlie Kirk's last book, finished weeks before his death and published that December, on how keeping a weekly Sabbath changed his life and why he urged others to do the same."
+        - title: "The Adam and Eve Story"
+          year: 1963
+          done: false
+          cover: "adam-and-eve-story"
+          pitch: "Chan Thomas argues that Earth's crust periodically slips and wipes out civilization, and that flood myths remember the last time. The CIA released a copy it had kept classified, which gave it a cult following; geologists don't accept the theory."
 # Films — three Netflix-style rows, Movies, Shows and Anime, drawn and ordered just like
 # the books (impossible-list/cover-card.html): watched ones by rating, then the
 # rest in the order written here, most recommended first. kind (movie or show)
@@ -1334,6 +1958,11 @@ films:
           cover: "et-the-extra-terrestrial"
           pitch: "A boy hides a stranded alien in his house and helps him phone home. The bike flying past the moon became the logo of Spielberg's company, Amblin."
           blurb: "I liked space as a kid, even went to space camp. E.T. just looked kinda gross, and it didn't really give or grow my appreciation for space."
+        - title: "The Sound of Music"
+          year: 1965
+          done: false
+          cover: "sound-of-music"
+          pitch: "A novice nun becomes governess to the seven children of a widowed Austrian naval captain on the eve of the Nazi annexation. Julie Andrews, Best Picture, and songs you already know."
         - title: "Jaws"
           year: 1975
           done: false
@@ -1495,6 +2124,20 @@ films:
           done: false
           cover: "interstellar"
           pitch: "Crops are failing across Earth, so a former pilot leaves his kids behind to search for a new home through a wormhole near Saturn. The physicist Kip Thorne worked on the science, and Hans Zimmer's organ score does the rest."
+        - title: "Knives Out"
+          year: 2019
+          done: false
+          cover: "knives-out"
+          pitch: "Detective Benoit Blanc, Daniel Craig with a thick Southern drawl, investigates the death of a rich mystery novelist whose whole family had a motive. Rian Johnson's modern whodunits, each one a standalone case."
+          series:
+            - title: "Knives Out"
+              done: false
+            - title: "Glass Onion"
+              done: false
+              pitch: "Blanc joins a tech billionaire's murder-mystery weekend on his private Greek island, and the game turns real."
+            - title: "Wake Up Dead Man"
+              done: false
+              pitch: "A disliked monsignor is found dead on Good Friday in a small upstate New York parish, and Blanc works the case with the young priest who looks most guilty, played by Josh O'Connor."
         - title: "The Silence of the Lambs"
           year: 1991
           done: false
@@ -1505,6 +2148,11 @@ films:
           done: false
           cover: "schindlers-list"
           pitch: "A German businessman saves more than a thousand Jews during the Holocaust by employing them in his factories. Spielberg's Best Picture winner, shot almost entirely in black and white."
+        - title: "The Passion of the Christ"
+          year: 2004
+          done: false
+          cover: "passion-of-the-christ"
+          pitch: "Mel Gibson's film of the last twelve hours of Jesus's life, spoken in Aramaic, Hebrew and Latin. Graphic and hard to watch, and for over a decade the highest-grossing R-rated film in the US."
         - title: "Up"
           year: 2009
           done: true
@@ -1594,6 +2242,11 @@ films:
           cover: "groundhog-day"
           pitch: "A grumpy weatherman wakes up to the same day in a small Pennsylvania town over and over again. Bill Murray's best, and the reason the title is now a phrase."
           blurb: "Not only was this a good movie, but it's philosophically relevant and really makes you think outside the movie when the premise hits you."
+        - title: "About Time"
+          year: 2013
+          done: false
+          cover: "about-time"
+          pitch: "A young man learns that the men in his family can travel back through their own lives, and uses it first for love and then for something bigger. Richard Curtis wrote it, with Bill Nighy as his dad."
         - title: "How to Train Your Dragon"
           year: 2010
           done: true
@@ -1756,6 +2409,21 @@ films:
           done: false
           cover: "parasite"
           pitch: "A poor family cons its way into working for a rich one, one job at a time, until it all goes very wrong. The first non-English film to win Best Picture."
+        - title: "A Man for All Seasons"
+          year: 1966
+          done: false
+          cover: "man-for-all-seasons"
+          pitch: "Paul Scofield as Sir Thomas More, who won't approve Henry VIII's divorce and pays for it with his life. It won Best Picture."
+        - title: "The Mission"
+          year: 1986
+          done: false
+          cover: "the-mission"
+          pitch: "Jesuit missionaries in 18th-century South America try to protect a Guaraní community caught between Spain and Portugal. Robert De Niro and Jeremy Irons, with Ennio Morricone's score, and the Palme d'Or."
+        - title: "Lilies of the Field"
+          year: 1963
+          done: false
+          cover: "lilies-of-the-field"
+          pitch: "A traveling handyman stops at a farm in the Arizona desert where a group of East German nuns are sure God sent him to build their chapel. Sidney Poitier became the first Black man to win Best Actor for it."
         - title: "The Prestige"
           year: 2006
           done: false
@@ -1795,6 +2463,21 @@ films:
           done: false
           cover: "whiplash"
           pitch: "A young jazz drummer at a top music school and the abusive teacher who pushes him until he bleeds. J.K. Simmons won an Oscar for the teacher."
+        - title: "The Tree of Life"
+          year: 2011
+          done: false
+          cover: "tree-of-life"
+          pitch: "Terrence Malick sets a 1950s Texas family's story, with Brad Pitt as a strict father, against the birth of the universe. Won the Palme d'Or."
+        - title: "A Hidden Life"
+          year: 2019
+          done: false
+          cover: "hidden-life"
+          pitch: "Terrence Malick's film about Franz Jägerstätter, an Austrian farmer executed for refusing to swear loyalty to Hitler. Long, quiet and beautiful."
+        - title: "Calvary"
+          year: 2014
+          done: false
+          cover: "calvary"
+          pitch: "A good priest in rural Ireland is told in confession that he'll be killed in a week, for the sins of another priest. Brendan Gleeson in a dark comedy-drama."
         - title: "Step Brothers"
           year: 2008
           done: false
@@ -1826,6 +2509,11 @@ films:
           cover: "iron-giant"
           pitch: "A boy in 1957 Maine befriends a giant robot from space while a government agent hunts it down. It flopped in theaters and became a cult classic."
           blurb: "Weirdly enough I credit this movie with my initial interest in space, even though it had very little to do with space."
+        - title: "Something Wicked This Way Comes"
+          year: 1983
+          done: false
+          cover: "something-wicked"
+          pitch: "A sinister carnival led by the mysterious Mr. Dark rolls into a small Illinois town, and two boys discover it grants wishes at a terrible price. Disney's adaptation of Ray Bradbury's novel, with Jonathan Pryce."
         - title: "The Emperor's New Groove"
           year: 2000
           done: true
@@ -1854,6 +2542,11 @@ films:
           done: false
           cover: "wedding-crashers"
           pitch: "Two divorce mediators crash weddings to pick up women, until one of them falls for a senator's daughter."
+        - title: "Keeper"
+          year: 2025
+          done: false
+          cover: "keeper"
+          pitch: "Liz and her boyfriend Malcolm spend their anniversary at his remote cabin, and something there starts coming for her. Osgood Perkins, director of Longlegs, shot it before The Monkey, with Tatiana Maslany in the lead; critics were split."
     - label: "Shows"
       kind: "show"
       items:
@@ -2235,49 +2928,78 @@ films:
         - title: "Spirited Away"
           year: 2001
           kind: "movie"
-          done: false
+          done: true
+          rating: 4.5
           cover: "spirited-away"
           pitch: "A girl wanders into a bathhouse for spirits and has to work there to free her parents, who've been turned into pigs. Hayao Miyazaki's best-known film, and it won the Oscar for Best Animated Feature."
+          blurb: "This is my go to recommendation for anyone who hasn't watched anime before. It's a charming story that shows how much magic this medium can bring."
         - title: "Pokémon"
           year: 1997
-          done: false
+          done: true
+          rating: 3.0
           cover: "pokemon"
           pitch: "Ash Ketchum and Pikachu leave Pallet Town to become Pokémon Masters. The first season, Indigo League, is the one we all watched before school."
-        - title: "Dragon Ball Z"
-          year: 1989
-          done: false
-          cover: "dragon-ball-z"
-          pitch: "Goku and his friends defend Earth from aliens, androids and a pink blob named Majin Buu, in fights that last for episodes. The heart of Toonami."
+          more: true
+          blurb: "This was peak when I was a kid, to this day I have most Pokemon memorized. We had the VHS tapes of season 1 when I was a kid. Though the rest of the series is so formulaic that I can't see myself actually watching all 1000+ episodes."
+        - title: "Dragon Ball"
+          year: 1986
+          done: true
+          rating: 3.0
+          cover: "dragon-ball"
+          pitch: "Goku, a monkey-tailed boy with superhuman strength, sets out to find the seven wish-granting Dragon Balls and grows up through one martial-arts tournament after another. Nearly every shonen since has borrowed from it."
+          blurb: "This was the trend setter for a lot of shonen anime going forward. I watched it on variable 2-5x speed (sometimes 16x) so I can get to the good parts. So I'm guilty for not actually watching the full stuff."
+          series:
+            - title: "Dragon Ball"
+              done: true
+            - title: "Dragon Ball Z"
+              done: true
+              pitch: "Goku and his friends defend Earth from aliens, androids and a pink blob named Majin Buu, in fights that last for episodes. The heart of Toonami."
         - title: "Cowboy Bebop"
           year: 1998
-          done: false
+          done: true
+          rating: 2.5
           cover: "cowboy-bebop"
           pitch: "Broke bounty hunters drift around the solar system in 2071, set to a jazz soundtrack. A good first anime for people who don't watch anime."
+          blurb: "This was charming and the opening song is a bop. I'd call it beautiful, and deep (with a side of wacky). Though I didn't have much take away from it."
         - title: "Death Note"
           year: 2006
-          done: false
+          done: true
+          rating: 3.0
           cover: "death-note"
           pitch: "A top student finds a notebook that kills anyone whose name he writes in it and sets out to rid the world of criminals. A cat-and-mouse game with a genius detective named L."
-        - title: "Fullmetal Alchemist: Brotherhood"
-          year: 2009
-          done: false
-          cover: "fullmetal-alchemist-brotherhood"
-          pitch: "Two brothers try to bring their mother back with alchemy, lose far too much, and set out to get their bodies back. Fans often rank it the best anime ever made."
+          blurb: "This was the show that got me to think that Anime was more than just Pokemon and Cartoons. I like the pseudo-intellectual cat and mouse of it all, the show makes you feel very smart."
+        - title: "Fullmetal Alchemist"
+          year: 2003
+          done: true
+          rating: 4.0
+          cover: "fullmetal-alchemist"
+          pitch: "Two brothers try to bring their mother back with alchemy, lose far too much, and set out to get their bodies back. The first adaptation caught up with the manga and went its own way."
+          blurb: "Both entries into this art were great by my standards. I think the philosophy of this show is deep and impactful. It also plays on my favorite Father & Son motif."
+          series:
+            - title: "Fullmetal Alchemist"
+              done: true
+            - title: "Fullmetal Alchemist: Brotherhood"
+              done: true
+              pitch: "The retelling that follows the manga to its real ending. Fans often rank it the best anime ever made."
         - title: "Attack on Titan"
           year: 2013
-          done: false
+          done: true
+          rating: 3.0
           cover: "attack-on-titan"
           pitch: "Humanity hides behind giant walls from man-eating giants, until one breaks through. The show keeps changing what you think it's about."
+          blurb: "I watched this around the same time as Game of Thrones and appreciated that the world started out feeling real and that no-one was safe. Then it later evolved into a Biblical Allegory if you look hard enough and poses some serious questions that I enjoyed."
         - title: "Naruto"
           year: 2002
-          done: false
+          done: true
+          rating: 4.0
           cover: "naruto"
           pitch: "An outcast ninja kid with a fox demon sealed inside him wants to become his village's leader. Long, with plenty of filler, and the source of the Naruto run."
+          blurb: "This show was at the core of my weeb phase that I watched with my siblings. I even rewatched it all in my adulthood. I used to do the hand-signs for fireball, chidori, and shadow clone."
           series:
             - title: "Naruto"
-              done: false
+              done: true
             - title: "Naruto: Shippuden"
-              done: false
+              done: true
               pitch: "A few years older, Naruto comes home from training as the Akatsuki start hunting the tailed beasts, his included."
         - title: "Neon Genesis Evangelion"
           year: 1995
@@ -2287,9 +3009,11 @@ films:
         - title: "Princess Mononoke"
           year: 1997
           kind: "movie"
-          done: false
+          done: true
+          rating: 3.0
           cover: "princess-mononoke"
           pitch: "A cursed prince gets caught in a war between forest gods and an iron-mining town, and Miyazaki won't make either side the villain."
+          blurb: "I like this one as art piece and it has good morals in it. The only complaint I have is that I wasn't super invested into the main character for some reason."
         - title: "Akira"
           year: 1988
           kind: "movie"
@@ -2298,70 +3022,412 @@ films:
           pitch: "In a rebuilt Neo-Tokyo, a biker gang leader's best friend gains psychic powers the military can't contain. Every frame is hand-drawn, and it's the film that put anime on the map in the West."
         - title: "One Piece"
           year: 1999
-          done: false
+          done: true
+          rating: 5.0
           cover: "one-piece"
           pitch: "Monkey D. Luffy, a pirate with a rubber body, sails the Grand Line looking for the legendary treasure called the One Piece. Over a thousand episodes long, and fans swear the long arcs pay off."
+          more: true
+          blurb: "My favorite anime, and I've been on this ship for YEARS. Is it Stockholm Syndrome or beautiful world building and unforgettable characters? Watch over 1000+ episodes! Feels like a lot until you've caught up, then it feels like it wasn't enough."
         - title: "My Neighbor Totoro"
           year: 1988
           kind: "movie"
-          done: false
+          done: true
+          rating: 3.0
           cover: "my-neighbor-totoro"
           pitch: "Two sisters move to the countryside and meet the forest spirits living nearby, including a giant, fluffy one named Totoro. A gentle film with no villain, and Totoro became Studio Ghibli's logo."
+          blurb: "It's a fun film, and you can't go wrong with Ghibli. Tangentially, I also remember getting scared as a kid by some Totoro creepy pasta and that kinda puts a different spin on this movie than a normal viewer would get."
+        - title: "Kiki's Delivery Service"
+          year: 1989
+          kind: "movie"
+          done: true
+          rating: 4.5
+          cover: "kikis-delivery-service"
+          pitch: "A thirteen-year-old witch moves to a seaside town for her year of training and starts a flying delivery service, until her magic starts to fade. Miyazaki's gentlest film about growing up."
+          blurb: "Low-key, my first cartoon crush. That and the story is so charming and its ability to romanticize the normalcy of every day life kindles something within me."
         - title: "Your Name"
           year: 2016
           kind: "movie"
-          done: false
+          done: true
+          rating: 2.5
           cover: "your-name"
           pitch: "A Tokyo boy and a country girl start waking up in each other's bodies, until the swaps suddenly stop. For a few years it was the highest-grossing anime film ever."
+          blurb: "Beautifully animated and a good love story to watch. I've made a memory with this film."
         - title: "Hunter x Hunter"
           year: 2011
-          done: false
+          done: true
+          rating: 2.5
           cover: "hunter-x-hunter"
           pitch: "A boy sets out to pass the deadly Hunter Exam and find the father who left him. It starts as an adventure show, and the Chimera Ant arc goes somewhere much darker."
+          more: true
+          blurb: "Classic Shonen, though the Nen system is super intricate beyond what they show in the show and that was fun to theory craft with as an adult."
         - title: "Demon Slayer"
           year: 2019
-          done: false
+          done: true
+          rating: 2.5
           cover: "demon-slayer"
           pitch: "A boy joins the Demon Slayer Corps to find a cure for his sister, who has been turned into a demon. The animation, especially episode 19, is what made it a hit."
+          more: true
+          blurb: "Beautifully made, storyline is a bit predictable but otherwise the characters I enjoy. Inosuke is best boy."
         - title: "One-Punch Man"
           year: 2015
-          done: false
+          done: true
+          rating: 3.0
           cover: "one-punch-man"
           pitch: "A hero who can beat anyone with a single punch is bored out of his mind. A superhero parody whose first season has some of the best fight animation around."
+          more: true
+          blurb: "I watched season 1 of this and it's hilarious because it plays on the tropes of other shonen anime and it's parody quality is phenomenal. Had me laughing!"
         - title: "Jujutsu Kaisen"
           year: 2020
-          done: false
+          done: true
+          rating: 2.5
           cover: "jujutsu-kaisen"
           pitch: "A high schooler swallows a cursed finger to save his friends and ends up sharing his body with the King of Curses. Some of the best fight animation of recent years."
+          more: true
+          blurb: "It's Shonen edgy teen action. Which is fun, and I would've enjoyed it more as a teen than I get from it now."
         - title: "Howl's Moving Castle"
           year: 2004
           kind: "movie"
-          done: false
+          done: true
+          rating: 3.5
           cover: "howls-moving-castle"
           pitch: "A young hatmaker is cursed into an old woman and takes a job cleaning the walking castle of a vain wizard named Howl."
+          blurb: "Not only is it well animated but the gusto to bring to life even the small moments to show the impact that has on an unreachable being like Howl is dignifying and honorable. It's a really good message."
         - title: "Code Geass"
           year: 2006
-          done: false
+          done: true
+          rating: 3.5
           cover: "code-geass"
           pitch: "An exiled prince gains the power to command anyone once and leads a rebellion against the empire that conquered Japan. Chess-match plotting with giant robots."
+          blurb: "To me this was the better Death Note. The games played by the main character got to get to a grander scale and the intellectual turn-about was of higher caliber."
         - title: "Steins;Gate"
           year: 2011
-          done: false
+          done: true
+          rating: 3.5
           cover: "steins-gate"
           pitch: "A self-proclaimed mad scientist accidentally builds a microwave that sends texts into the past. The first half is slow, and then it becomes one of the best time-travel stories anywhere."
+          blurb: "This did time travel right and Okabe is an inspirational character. In fact, each character in this show has so much charm. It also had great stakes and constantly had me questioning my perspective on what I thought I knew in the show."
         - title: "Mob Psycho 100"
           year: 2016
-          done: false
+          done: true
+          rating: 2.5
           cover: "mob-psycho-100"
           pitch: "A shy middle schooler with world-ending psychic powers just wants to be normal, and works for a con-artist exorcist. From the creator of One-Punch Man."
+          more: true
+          blurb: "I saw the first season of this and it's really cool for a show and the main duo have a fun dynamic going on between them. It's also inspirational that Mob doesn't just rest on his laurels of psychic powers and wants to work out to get his body in shape."
         - title: "Bleach"
           year: 2004
-          done: false
+          done: true
+          rating: 3.0
           cover: "bleach"
           pitch: "A teenager who can see ghosts becomes a Soul Reaper and fights the monsters called Hollows. Along with Naruto and One Piece, one of the big three of 2000s anime."
+          more: true
+          blurb: "It's a fun show and it's constantly recommended to me. I'm recently on episode 90ish, and this is my 2nd time getting this far. Maybe I'll skip the filler."
         - title: "Frieren: Beyond Journey's End"
           year: 2023
-          done: false
+          done: true
+          rating: 4.0
           cover: "frieren"
           pitch: "An elf mage who outlived her hero party sets out again to understand the humans she barely got to know. A quiet fantasy about time and grief."
+          more: true
+          blurb: "This one is a bit of a recent cultural nexus of memes, but it's also beautifully animated and it's discourse on demons is philosophically poignant."
+        - title: "Vinland Saga"
+          year: 2019
+          done: false
+          cover: "vinland-saga"
+          pitch: "A boy fights for the Viking warband led by the man who killed his father, waiting for his chance at a duel. It starts as a revenge story and becomes one about what it takes to give up violence."
+        - title: "Chainsaw Man"
+          year: 2022
+          done: false
+          cover: "chainsaw-man"
+          pitch: "A broke teenager fused with his chainsaw-devil dog becomes a government devil hunter, mostly for the free meals. Gory, grimy and darkly funny."
+        - title: "JoJo's Bizarre Adventure"
+          year: 2012
+          done: false
+          cover: "jojos-bizarre-adventure"
+          pitch: "Generation after generation of the Joestar family fights vampires and, later, rivals with ghostly fighting spirits called Stands. Flamboyant, loud and the source of endless poses and memes."
+        - title: "My Hero Academia"
+          year: 2016
+          done: false
+          cover: "my-hero-academia"
+          pitch: "In a world where most people are born with superpowers, a powerless boy inherits the power of the greatest hero and enrolls at a school for heroes. The defining superhero shonen of the 2010s."
+        - title: "Puella Magi Madoka Magica"
+          year: 2011
+          done: false
+          cover: "madoka-magica"
+          pitch: "A cute-looking magical girl show where the wish-granting contracts come with a terrible price. Twelve episodes that rewrote the genre."
+        - title: "Your Lie in April"
+          year: 2014
+          done: false
+          cover: "your-lie-in-april"
+          pitch: "A piano prodigy who stopped being able to hear his own playing after his mother died is dragged back to music by a free-spirited violinist. Bring tissues."
+        - title: "Haikyu!!"
+          year: 2014
+          done: false
+          cover: "haikyu"
+          pitch: "A short kid obsessed with volleyball teams up with a gifted, prickly setter on a high school team that used to be great. The sports anime people who don't watch sports anime love."
+        - title: "Mushoku Tensei: Jobless Reincarnation"
+          year: 2021
+          done: false
+          cover: "mushoku-tensei"
+          pitch: "A shut-in who dies in Tokyo is reborn in a world of magic and resolves to live his second life properly. Often credited as the start of the modern isekai wave, with a deeply flawed lead and lavish animation."
+        - title: "Re:Zero"
+          year: 2016
+          done: false
+          cover: "re-zero"
+          pitch: "A teenager pulled into a fantasy world discovers that dying sends him back to an earlier moment, remembering everything that went wrong. Isekai where every death costs something."
+        - title: "Samurai Champloo"
+          year: 2004
+          done: false
+          cover: "samurai-champloo"
+          pitch: "A wild swordsman, a stoic ronin and a girl looking for the samurai who smells of sunflowers wander Edo-period Japan to a hip-hop soundtrack. From Cowboy Bebop's director."
+        - title: "Psycho-Pass"
+          year: 2012
+          done: false
+          cover: "psycho-pass"
+          pitch: "In a future Japan where a citywide system scans everyone's likelihood of committing a crime, a rookie inspector hunts criminals with guns that only fire on the guilty. Cyberpunk with real questions about free will."
+        - title: "Sword Art Online"
+          year: 2012
+          done: false
+          cover: "sword-art-online"
+          pitch: "Ten thousand players are trapped in a virtual reality MMO where dying in the game means dying for real. The show that made trapped-in-a-game a genre."
+        - title: "Trigun"
+          year: 1998
+          done: false
+          cover: "trigun"
+          pitch: "Vash the Stampede has a sixty-billion-double-dollar bounty on his head, yet refuses to kill anyone. A goofy space western that turns serious."
+        - title: "FLCL"
+          year: 2000
+          done: false
+          cover: "flcl"
+          pitch: "A bored kid's suburban life ends when a Vespa-riding alien hits him with a bass guitar and robots start coming out of his head. Six chaotic episodes about growing up, set to the Pillows."
+        - title: "Kaguya-sama: Love Is War"
+          year: 2019
+          done: false
+          cover: "kaguya-sama"
+          pitch: "Two student council geniuses are in love and too proud to confess, so each schemes to make the other say it first. A romantic comedy played like a war."
+        - title: "The Promised Neverland"
+          year: 2019
+          done: false
+          cover: "promised-neverland"
+          pitch: "Orphans at an idyllic home discover what they're really being raised for and plan an escape. The first season is the tight thriller fans rave about."
+        - title: "Dan Da Dan"
+          year: 2024
+          done: false
+          cover: "dandadan"
+          pitch: "A girl who believes in ghosts and a boy who believes in aliens find out both are real, and very hostile. Fast, strange and beautifully animated by Science Saru."
+        - title: "Fruits Basket"
+          year: 2019
+          done: false
+          cover: "fruits-basket"
+          pitch: "An orphaned girl moves in with a family whose members turn into animals of the zodiac when hugged. The 2019 remake adapts the whole manga, heavier parts included."
+        - title: "Clannad"
+          year: 2007
+          done: false
+          cover: "clannad"
+          pitch: "A delinquent high schooler helps a shy girl revive the school's drama club. Its sequel, After Story, is famous for wrecking viewers."
+        - title: "Anohana: The Flower We Saw That Day"
+          year: 2011
+          done: false
+          cover: "anohana"
+          pitch: "Childhood friends who drifted apart reunite when the ghost of the friend who died young appears with a wish. Eleven episodes and a reliable tearjerker."
+        - title: "Welcome to the NHK"
+          year: 2006
+          done: false
+          cover: "welcome-to-the-nhk"
+          pitch: "A college dropout who hasn't left his apartment in years blames a conspiracy, until a mysterious girl decides to cure him. A funny, uncomfortable and honest show about isolation."
+        - title: "Tokyo Ghoul"
+          year: 2014
+          done: false
+          cover: "tokyo-ghoul"
+          pitch: "A college student turns half-ghoul after a deadly date and has to survive in hiding among flesh-eating monsters. Dark urban horror; the first season is the strongest."
+        - title: "KonoSuba"
+          year: 2016
+          done: false
+          cover: "konosuba"
+          pitch: "A shut-in reborn in a fantasy world ends up with the most useless party imaginable, starting with the goddess he dragged along. The definitive isekai parody."
+        - title: "Solo Leveling"
+          year: 2024
+          done: false
+          cover: "solo-leveling"
+          pitch: "The weakest hunter in a world of monster-filled dungeons gets a mysterious system that lets only him level up. Adapted from a huge Korean web novel and webtoon."
+        - title: "Dr. Stone"
+          year: 2019
+          done: false
+          cover: "dr-stone"
+          pitch: "Thousands of years after all humanity was turned to stone, a science-obsessed teenager wakes up and sets out to rebuild civilization from scratch."
+        - title: "Odd Taxi"
+          year: 2021
+          done: false
+          cover: "odd-taxi"
+          pitch: "A walrus taxi driver's passengers in a city of animals all turn out to be tied to a missing girl. A sharply written mystery that pays off every detail."
+        - title: "The Apothecary Diaries"
+          year: 2023
+          done: false
+          cover: "apothecary-diaries"
+          pitch: "A sharp-witted apothecary sold into the imperial palace as a servant quietly solves poisonings and court mysteries. Palace intrigue with a terrific lead."
+        - title: "To Your Eternity"
+          year: 2021
+          done: false
+          cover: "to-your-eternity"
+          pitch: "An immortal being sent to Earth takes the shapes of those it meets and learns to be human through a string of losses. From the author of A Silent Voice."
+        - title: "Blue Lock"
+          year: 2022
+          done: false
+          cover: "blue-lock"
+          pitch: "Japan locks 300 high school strikers in a facility to forge the world's most selfish striker. Soccer as a battle royale."
+        - title: "Black Clover"
+          year: 2017
+          done: false
+          cover: "black-clover"
+          pitch: "Two orphans dream of becoming the Wizard King, one a prodigy and one born without any magic at all. A classic long-running shonen that gets better as it goes."
+        - title: "That Time I Got Reincarnated as a Slime"
+          year: 2018
+          done: false
+          cover: "reincarnated-as-a-slime"
+          pitch: "A salaryman killed in a stabbing is reborn as a slime in a fantasy world and starts building a nation of monsters. Cozy, overpowered isekai."
+        - title: "Overlord"
+          year: 2015
+          done: false
+          cover: "overlord"
+          pitch: "A player stays logged in as his favorite game shuts down and finds himself trapped as its undead overlord, with fanatically loyal servants. Isekai from the villain's side."
+        - title: "Dorohedoro"
+          year: 2020
+          done: false
+          cover: "dorohedoro"
+          pitch: "In a grimy city that sorcerers use for practice, a man with a lizard's head hunts the sorcerer who cursed him. Bloody, funny and unlike anything else."
+        - title: "Ergo Proxy"
+          year: 2006
+          done: false
+          cover: "ergo-proxy"
+          pitch: "In a domed city built on obedience, an inspector investigates androids infected with a virus that makes them self-aware. Slow, dense, philosophical cyberpunk."
+        - title: "The Saga of Tanya the Evil"
+          year: 2017
+          done: false
+          cover: "tanya-the-evil"
+          pitch: "A ruthless salaryman is reborn as a little girl in an alternate-history world war and becomes a terrifying mage officer just to survive."
+        - title: "My Dress-Up Darling"
+          year: 2022
+          done: false
+          cover: "my-dress-up-darling"
+          pitch: "A loner who wants to craft traditional hina dolls gets recruited by his popular classmate to sew her cosplay outfits. A wholesome romcom about craft."
+        - title: "Horimiya"
+          year: 2021
+          done: false
+          cover: "horimiya"
+          pitch: "A popular girl and a gloomy classmate discover each other's hidden sides outside school. A gentle romance that skips the will-they-won't-they."
+        - title: "Tokyo Revengers"
+          year: 2021
+          done: false
+          cover: "tokyo-revengers"
+          pitch: "A dead-end twenty-something suddenly travels back to his middle school years and tries to save his ex-girlfriend by climbing the ranks of a delinquent gang."
+        - title: "Kaiju No. 8"
+          year: 2024
+          done: false
+          cover: "kaiju-no-8"
+          pitch: "A 32-year-old who cleans up dead kaiju for a living, and once dreamed of fighting them, suddenly gains the power to turn into one."
+        - title: "Magi: The Labyrinth of Magic"
+          year: 2012
+          done: false
+          cover: "magi"
+          pitch: "A cheerful boy with a djinn in his flute and a young merchant clear dungeons across an Arabian Nights world. An adventure that grows into politics and war."
+        - title: "Ascendance of a Bookworm"
+          year: 2019
+          done: false
+          cover: "ascendance-of-a-bookworm"
+          pitch: "A book-loving woman is reborn as a sickly girl in a medieval world where books are a luxury, so she sets out to make them herself."
+        - title: "Classroom of the Elite"
+          year: 2017
+          done: false
+          cover: "classroom-of-the-elite"
+          pitch: "At an elite school where classes compete for points that decide their futures, a quiet student in the lowest class plays everyone. Mind games in a school uniform."
+        - title: "Moriarty the Patriot"
+          year: 2020
+          done: false
+          cover: "moriarty-the-patriot"
+          pitch: "Sherlock Holmes's nemesis as the lead: young William James Moriarty plots crimes against the cruelty of Victorian England's class system."
+        - title: "Goblin Slayer"
+          year: 2018
+          done: false
+          cover: "goblin-slayer"
+          pitch: "An adventurer who only hunts goblins, the weakest monsters, because he knows how dangerous they really are. Dark fantasy with a brutal first episode."
+        - title: "Witch Hat Atelier"
+          year: 2026
+          done: false
+          cover: "witch-hat-atelier"
+          pitch: "A girl who dreamed of magic learns that it's drawn, not born, and becomes a witch's apprentice. Adapted from one of the most beautifully drawn fantasy manga."
+        - title: "Mashle: Magic and Muscles"
+          year: 2023
+          done: false
+          cover: "mashle"
+          pitch: "In a world where magic decides everything, a boy with none enrolls at a magic academy and solves every problem with muscle. Harry Potter meets One-Punch Man."
+        - title: "Shangri-La Frontier"
+          year: 2023
+          done: false
+          cover: "shangri-la-frontier"
+          pitch: "A gamer who loves terrible, broken games finally takes on a hugely popular, polished VR game, and plays it like a speedrunner."
+        - title: "Ghost Stories"
+          year: 2000
+          done: false
+          cover: "ghost-stories"
+          pitch: "A short horror anime about kids fighting ghosts, best known for its English dub, whose cast turned it into an anything-goes comedy."
+        - title: "Working!!"
+          year: 2010
+          done: false
+          cover: "working"
+          pitch: "A workplace comedy at a family restaurant in Hokkaido, staffed by a sword-carrying waitress, a waitress who punches men on sight and a boy who loves small things."
+        - title: "How Heavy Are the Dumbbells You Lift?"
+          year: 2019
+          done: false
+          cover: "dumbbells"
+          pitch: "A schoolgirl joins a gym to lose weight and gets swept up in its muscle culture. A comedy that teaches real exercises every episode."
+        - title: "The Faraway Paladin"
+          year: 2021
+          done: false
+          cover: "faraway-paladin"
+          pitch: "A boy raised by three undead guardians in a ruined city learns everything they know, then sets out into the world. Earnest, old-fashioned fantasy."
+        - title: "Cautious Hero"
+          year: 2019
+          done: false
+          cover: "cautious-hero"
+          pitch: "A goddess summons a hero with incredible stats who refuses to take any risks, grinding and over-preparing for everything. A comedy that skewers isekai."
+        - title: "Kurau Phantom Memory"
+          year: 2004
+          done: false
+          cover: "kurau-phantom-memory"
+          pitch: "In 2100, a scientist's daughter fuses with an energy being in a lab accident. Years later, working as an agent for hire, a second being splits from her body as a girl of its own. A Bones sci-fi drama."
+        - title: "To Be Hero X"
+          year: 2025
+          done: false
+          cover: "to-be-hero-x"
+          pitch: "In a world where heroes' powers come from public trust, the top heroes are ranked by it and meet in a tournament every two years. A Chinese-Japanese co-production mixing 2D and 3D."
+        - title: "Campfire Cooking in Another World with My Absurd Skill"
+          year: 2023
+          done: false
+          cover: "campfire-cooking"
+          pitch: "A man summoned to a fantasy world gets a seemingly useless skill: online grocery shopping. It turns out legendary monsters love Japanese supermarket food."
+        - title: "Sabikui Bisco"
+          year: 2022
+          done: false
+          cover: "sabikui-bisco"
+          pitch: "In a post-apocalyptic Japan eaten away by rust wind, a mushroom-shooting archer and a young doctor hunt for a legendary cure."
+        - title: "Kill Blue"
+          year: 2026
+          done: false
+          cover: "kill-blue"
+          pitch: "A veteran assassin is stung by a strange wasp, shrinks into a fourteen-year-old, and has to go back to middle school. From the creator of Kuroko's Basketball."
+        - title: "Though I Am an Inept Villainess"
+          year: 2026
+          done: false
+          cover: "inept-villainess"
+          pitch: "In a kingdom inspired by imperial China, a scorned consort candidate uses forbidden magic to swap bodies with the court's beloved maiden, who turns out to thrive in the villainess's place."
+        - title: "Reborn as a Vending Machine, I Now Wander the Dungeon"
+          year: 2023
+          done: false
+          cover: "vending-machine"
+          pitch: "A man who loved vending machines is reborn as one in a fantasy dungeon. He can't move, so a strong-armed girl carries him around."
+        - title: "The Daily Life of a Middle-Aged Online Shopper in Another World"
+          year: 2025
+          done: false
+          cover: "middle-aged-online-shopper"
+          pitch: "A nearly forty-year-old illustrator wakes up in a monster-filled forest in another world, with access to a huge online shopping site that delivers anything."
 ---

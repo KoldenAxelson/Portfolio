@@ -1,0 +1,39 @@
+{{- /*
+  ygo-deck/overview — the top of a Yu-Gi-Oh! deck page: the deck's mascot
+  card beside its numbers and the monster / spell / trap split.
+
+    {{< ygo-deck/overview deck="stall-burn" mascot="des-koala" >}}
+
+  Data: data/ygo-deck/<deck>.json (scripts/ygo/build-deck.py, `make deck`).
+  `mascot` is a card slug from that file; its image is
+  assets/img/ygo-deck/cards/<slug>.jpg, which the shelf on /misc/decks/ uses
+  as the deck's cover too (`cover:` in the page's front matter).
+*/ -}}
+{{- $name := .Get "deck" -}}
+{{- $d := index site.Data "ygo-deck" $name -}}
+{{- if not $d }}{{ errorf "ygo-deck/overview: no data/ygo-deck/%s.json (page: %s). Run `make deck`." $name .Page.RelPermalink }}{{ end -}}
+{{- $slug := .Get "mascot" -}}
+{{- $m := dict -}}
+{{- range $d.groups }}{{ range .cards }}{{ if eq .slug $slug }}{{ $m = . }}{{ end }}{{ end }}{{ end -}}
+{{- if not $m.name }}{{ errorf "ygo-deck/overview: %q is not a card in data/ygo-deck/%s.json (page: %s)" $slug $name .Page.RelPermalink }}{{ end -}}
+<div class="not-prose yd yd-overview">
+  {{- with resources.Get (printf "ygo-deck/cards/%s.jpg" $slug) }}
+  {{- $img := .Resize "320x webp q82" }}
+  <figure class="yd-mascot">
+    <img src="{{ $img.RelPermalink }}" width="{{ $img.Width }}" height="{{ $img.Height }}" alt="The {{ $m.name }} card" />
+    <figcaption>Image: YGOPRODeck · Konami</figcaption>
+  </figure>
+  {{- end }}
+  <div class="yd-about">
+    <p class="yd-kicker">Mascot</p>
+    <h2 class="yd-mascot-name"><a href="{{ $m.url }}" rel="noopener" target="_blank">{{ $m.name }}</a></h2>
+    <p class="yd-type">{{ $m.type }}{{ with $m.kind }} · {{ . }}{{ end }}{{ with $m.level }} · Level {{ . }}{{ end }}{{ if $m.atk }} · ATK {{ $m.atk }} / DEF {{ $m.def }}{{ end }}</p>
+    <p class="yd-text">{{ $m.text }}</p>
+    <dl class="yd-stats">
+      <div><dt>Cards</dt><dd>{{ $d.total }}</dd></div>
+      {{- range $d.groups }}
+      <div class="yd-stat-{{ .key }}"><dt>{{ .label }}</dt><dd>{{ .count }}</dd></div>
+      {{- end }}
+    </dl>
+  </div>
+</div>

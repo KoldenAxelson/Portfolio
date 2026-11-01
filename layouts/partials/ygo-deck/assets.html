@@ -1,0 +1,5 @@
+{{- /* The Yu-Gi-Oh! deck stylesheet, for a misc page that shows a deck from
+       data/ygo-deck/. Called from layouts/misc/single.html when the page uses
+       any ygo-deck/ shortcode. The lists are plain <details>, so no script. */ -}}
+{{- $css := resources.Get "css/pages/ygo-deck/ygo-deck.css" | minify | fingerprint -}}
+<link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" />

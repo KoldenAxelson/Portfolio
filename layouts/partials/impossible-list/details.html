@@ -21,6 +21,7 @@
   {{- with .blurb }}<p>My review: {{ . }}</p>{{ end }}
   {{- with .pitch }}<p>{{ $words.why }}: {{ . }}</p>{{ end }}
   {{- with .series }}<p>The series: {{ range $i, $part := . }}{{ if $i }}; {{ end }}{{ $part.title }} ({{ cond (eq $part.done true) $words.done $words.notYet }}){{ end }}.</p>{{ end }}
+  {{- with .goals }}<p>Still chasing: {{ range $i, $g := . }}{{ if $i }}; {{ end }}{{ $g.text }} ({{ cond (eq $g.done true) "done" "not yet" }}){{ end }}.</p>{{ end }}
   {{- range .series }}{{ if .pitch }}<p>{{ .title }}: {{ .pitch }}</p>{{ end }}{{ end }}
 </div>
 {{- end -}}

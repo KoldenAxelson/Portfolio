@@ -5,7 +5,7 @@
 {{ end }}
 
 {{ define "main" }}
-{{- $consoleNames := dict "N64" "Nintendo 64" "GCN" "Nintendo GameCube" "GBC" "Game Boy Color" "GBA" "Game Boy Advance" "XBOX" "Xbox 360" "XSX" "Xbox Series X|S" "PC" "PC" -}}
+{{- $consoleNames := dict "N64" "Nintendo 64" "GCN" "Nintendo GameCube" "GBC" "Game Boy Color" "GBA" "Game Boy Advance" "XBOX" "Xbox 360" "XSX" "Xbox Series X|S" "PC" "PC" "MOBILE" "Mobile" -}}
 {{- with .Params.updated }}
 <p class="mb-10 font-mono text-xs text-muted">Last updated {{ partial "components/formatted-date.html" (dict "date" .) }}.</p>
 {{- end }}
@@ -33,7 +33,7 @@
   {{- with .Params.games }}
   <section>
     <h2 class="font-mono text-xs uppercase tracking-widest text-muted">{{ .label }}</h2>
-    {{/* Two shelves, split by console: handhelds (and, one day, phones) on one,
+    {{/* Two shelves, split by console: handhelds and phones on one,
          home consoles and PC on the other; a console code not listed here
          lands on Console/PC. Order within a shelf is func/shelf-order.html. */}}
     {{- $handheld := slice "GB" "GBC" "GBA" "DS" "3DS" "PSP" "VITA" "MOBILE" -}}
@@ -91,7 +91,6 @@
               {{- range $code, $name := $consoleNames }}
               <span data-console-icon-for="{{ $code }}" hidden role="img" aria-label="{{ $name }}" title="{{ $name }}" class="shrink-0 text-accent [&_svg]:h-5 [&_svg]:w-auto">{{ partial "func/console-icon.html" (dict "code" $code) }}</span>
               {{- end }}
-              {{ partial "components/review-pitch-toggle.html" . }}
               <h3 id="game-modal-title" data-game-title class="m-0 text-lg font-medium text-fg"></h3>
             </span>
             <span class="flex items-center">
@@ -101,6 +100,7 @@
           </div>
           <div data-game-series hidden class="mt-3"></div>
           <p data-game-blurb class="mt-3 text-sm leading-relaxed text-muted"></p>
+          {{ partial "components/review-pitch-toggle.html" . }}
         </div>
       </div>
     </div>

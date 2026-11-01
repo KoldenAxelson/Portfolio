@@ -1,0 +1,23 @@
+{{- /*
+  decks/deck-card — one deck on the /misc/decks/ shelves (components/shelf.html):
+  a link to its page, its cover, and its game and format.
+  Called with (dict "item" <page>). The cover is `cover:` when the page sets
+  one: a slug in assets/img/decks/, or a path under assets/img/ such as
+  "ygo-deck/cards/des-koala" for a card the deck builder saved. Else its Magic commander's card scan
+  (assets/img/mtg-deck/cards/, named by `deck:` in data/mtg-deck/<deck>.json).
+*/ -}}
+{{- with .item -}}
+{{- $dir := "decks" -}}
+{{- $slug := .Params.cover -}}
+{{- if strings.Contains (string $slug) "/" }}{{ $dir = path.Dir $slug }}{{ $slug = path.Base $slug }}{{ end -}}
+{{- if not $slug -}}
+  {{- with .Params.deck }}{{ with index site.Data "mtg-deck" . }}{{ $dir = "mtg-deck/cards" }}{{ $slug = .commander.scan }}{{ end }}{{ end -}}
+{{- end -}}
+<a href="{{ .RelPermalink }}" class="group/cover block w-full rounded-lg pt-1.5 text-left no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50">
+  {{ partial "components/shelf-cover.html" (dict "dir" $dir "slug" $slug "title" .Title) }}
+  <span class="mt-2 line-clamp-2 block text-sm leading-snug text-fg transition-colors group-hover/cover:text-accent">{{ .Title }}</span>
+  {{- with .Params.game }}<span class="mt-0.5 block truncate font-mono text-xs text-muted">{{ . }}</span>{{ end }}
+  {{- with .Params.format }}<span class="block font-mono text-xs text-muted">{{ . }}</span>{{ end }}
+</a>
+{{- with .Description }}<p class="sr-only">{{ . }}</p>{{ end }}
+{{- end -}}

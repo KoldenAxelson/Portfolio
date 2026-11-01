@@ -1,0 +1,327 @@
+{
+ "_generated": "by scripts/ygo/build-deck.py from scripts/ygo/decks/stall-burn.txt; edit the list, not this file",
+ "total": 41,
+ "groups": [
+  {
+   "key": "monster",
+   "label": "Monsters",
+   "count": 16,
+   "cards": [
+    {
+     "qty": 1,
+     "name": "Lava Golem",
+     "slug": "lava-golem",
+     "type": "Effect Monster",
+     "kind": "Fiend",
+     "level": 8,
+     "atk": 3000,
+     "def": 2500,
+     "text": "Cannot be Normal Summoned/Set. Must first be Special Summoned (from your hand) to your opponent's field by Tributing 2 monsters they control. You cannot Normal Summon/Set the turn you Special Summon this card. Once per turn, during your Standby Phase: Take 1000 damage.",
+     "url": "https://ygoprodeck.com/card/lava-golem-8"
+    },
+    {
+     "qty": 1,
+     "name": "Blast Sphere",
+     "slug": "blast-sphere",
+     "type": "Effect Monster",
+     "kind": "Machine",
+     "level": 4,
+     "atk": 1400,
+     "def": 1400,
+     "text": "If this face-down Defense Position card was attacked by an opponent's monster, before damage calculation: Equip this card to the attacking monster. Then, during your opponent's next Standby Phase: Destroy the monster this card is equipped to, and if you do, inflict damage to your opponent equal to the ATK the destroyed monster had on the field.",
+     "url": "https://ygoprodeck.com/card/blast-sphere-2260"
+    },
+    {
+     "qty": 1,
+     "name": "Mecha-Dog Marron",
+     "slug": "mecha-dog-marron",
+     "type": "Effect Monster",
+     "kind": "Machine",
+     "level": 4,
+     "atk": 1000,
+     "def": 1000,
+     "text": "When this card is destroyed by battle and sent to the Graveyard, inflict 1000 damage to both players. When this card on the field is destroyed and sent to the Graveyard except by battle, inflict 1000 damage to your opponent.",
+     "url": "https://ygoprodeck.com/card/mecha-dog-marron-7875"
+    },
+    {
+     "qty": 3,
+     "name": "Des Koala",
+     "slug": "des-koala",
+     "type": "Flip Effect Monster",
+     "kind": "Beast",
+     "level": 3,
+     "atk": 1100,
+     "def": 1800,
+     "text": "FLIP: Inflict 400 damage to your opponent for each card in their hand.",
+     "url": "https://ygoprodeck.com/card/des-koala-5852"
+    },
+    {
+     "qty": 1,
+     "name": "Marshmallon",
+     "slug": "marshmallon",
+     "type": "Effect Monster",
+     "kind": "Fairy",
+     "level": 3,
+     "atk": 300,
+     "def": 500,
+     "text": "Cannot be destroyed by battle. After damage calculation, if this card was attacked, and was face-down at the start of the Damage Step: The attacking player takes 1000 damage.",
+     "url": "https://ygoprodeck.com/card/marshmallon-2654"
+    },
+    {
+     "qty": 3,
+     "name": "Stealth Bird",
+     "slug": "stealth-bird",
+     "type": "Effect Monster",
+     "kind": "Winged Beast",
+     "level": 3,
+     "atk": 700,
+     "def": 1700,
+     "text": "Once per turn: You can change this card to face-down Defense Position. When this card is Flip Summoned: Inflict 1000 damage to your opponent.",
+     "url": "https://ygoprodeck.com/card/stealth-bird-311"
+    },
+    {
+     "qty": 1,
+     "name": "Ebon Magician Curran",
+     "slug": "ebon-magician-curran",
+     "type": "Effect Monster",
+     "kind": "Spellcaster",
+     "level": 2,
+     "atk": 1200,
+     "def": 0,
+     "text": "During your Standby Phase, inflict 300 damage to your opponent for each monster they control.",
+     "url": "https://ygoprodeck.com/card/ebon-magician-curran-3930"
+    },
+    {
+     "qty": 3,
+     "name": "Mecha Bunny",
+     "slug": "mecha-bunny",
+     "type": "Effect Monster",
+     "kind": "Machine",
+     "level": 2,
+     "atk": 800,
+     "def": 100,
+     "text": "When this card is flipped face-up, select 1 card on the field and inflict 500 damage to its controller. When this card is destroyed by battle and sent to the Graveyard, you can Special Summon 1 \"Mecha Bunny\" from your Deck in face-down Defense Position.",
+     "url": "https://ygoprodeck.com/card/mecha-bunny-876"
+    },
+    {
+     "qty": 1,
+     "name": "Shiba-Warrior Taro",
+     "slug": "shiba-warrior-taro",
+     "type": "Tuner Monster",
+     "kind": "Beast-Warrior",
+     "level": 2,
+     "atk": 800,
+     "def": 600,
+     "text": "This card cannot be destroyed by battle. When a card on the field is destroyed by battle or by a card effect, return this face-up card to its owner's hand.",
+     "url": "https://ygoprodeck.com/card/shiba-warrior-taro-2342"
+    },
+    {
+     "qty": 1,
+     "name": "Arcana Force 0 - The Fool",
+     "slug": "arcana-force-0-the-fool",
+     "type": "Effect Monster",
+     "kind": "Fairy",
+     "level": 1,
+     "atk": 0,
+     "def": 0,
+     "text": "This card cannot be destroyed by battle. This card cannot be changed to Defense Position, except with a card effect. When this card is Summoned: Toss a coin and gain the appropriate effect. ● Heads: Negate your card effects that target this card, and destroy them. ● Tails: Negate your opponent's card effects that target this card, and destroy them.",
+     "url": "https://ygoprodeck.com/card/arcana-force-0-the-fool-5310"
+    }
+   ]
+  },
+  {
+   "key": "spell",
+   "label": "Spells",
+   "count": 10,
+   "cards": [
+    {
+     "qty": 1,
+     "name": "Chain Strike",
+     "slug": "chain-strike",
+     "type": "Spell Card",
+     "kind": "Quick-Play",
+     "level": null,
+     "atk": null,
+     "def": null,
+     "text": "Activate only as Chain Link 2 or higher; inflict 400 damage to your opponent times the Chain Link number of this card. You cannot activate this card if multiple cards/effects with the same name are in that Chain.",
+     "url": "https://ygoprodeck.com/card/chain-strike-7641"
+    },
+    {
+     "qty": 1,
+     "name": "Level Limit - Area B",
+     "slug": "level-limit-area-b",
+     "type": "Spell Card",
+     "kind": "Continuous",
+     "level": null,
+     "atk": null,
+     "def": null,
+     "text": "Change all face-up Level 4 or higher monsters to Defense Position.",
+     "url": "https://ygoprodeck.com/card/level-limit-area-b-285"
+    },
+    {
+     "qty": 2,
+     "name": "Mask of the Accursed",
+     "slug": "mask-of-the-accursed",
+     "type": "Spell Card",
+     "kind": "Equip",
+     "level": null,
+     "atk": null,
+     "def": null,
+     "text": "The equipped monster cannot attack. Once per turn, during your Standby Phase: Inflict 500 damage to the controller of the equipped monster.",
+     "url": "https://ygoprodeck.com/card/mask-of-the-accursed-4853"
+    },
+    {
+     "qty": 2,
+     "name": "Nightmare's Steelcage",
+     "slug": "nightmare-s-steelcage",
+     "type": "Spell Card",
+     "kind": "Normal",
+     "level": null,
+     "atk": null,
+     "def": null,
+     "text": "This card remains on the field for 2 of your opponent's turns. While this card is face-up on the field, no monsters can attack.",
+     "url": "https://ygoprodeck.com/card/nightmare-s-steelcage-4997"
+    },
+    {
+     "qty": 1,
+     "name": "Swords of Revealing Light",
+     "slug": "swords-of-revealing-light",
+     "type": "Spell Card",
+     "kind": "Normal",
+     "level": null,
+     "atk": null,
+     "def": null,
+     "text": "After this card's activation, it remains on the field, but you must destroy it during the End Phase of your opponent's 3rd turn. When this card is activated: If your opponent controls a face-down monster, flip all monsters they control face-up. While this card is face-up on the field, your opponent's monsters cannot declare an attack.",
+     "url": "https://ygoprodeck.com/card/swords-of-revealing-light-6068"
+    },
+    {
+     "qty": 3,
+     "name": "Wave-Motion Cannon",
+     "slug": "wave-motion-cannon",
+     "type": "Spell Card",
+     "kind": "Continuous",
+     "level": null,
+     "atk": null,
+     "def": null,
+     "text": "During your Main Phase: You can send this face-up card to the GY; inflict 1000 damage to your opponent for each of your Standby Phases that have passed since this card was activated.",
+     "url": "https://ygoprodeck.com/card/wave-motion-cannon-3305"
+    }
+   ]
+  },
+  {
+   "key": "trap",
+   "label": "Traps",
+   "count": 15,
+   "cards": [
+    {
+     "qty": 1,
+     "name": "Ceasefire",
+     "slug": "ceasefire",
+     "type": "Trap Card",
+     "kind": "Normal",
+     "level": null,
+     "atk": null,
+     "def": null,
+     "text": "If a face-down Defense Position monster or an Effect Monster is on the field: Change all face-down Defense Position monsters on the field to face-up Defense Position (Flip monsters' effects are not activated at this time), also inflict 500 damage to your opponent for each Effect Monster on the field.",
+     "url": "https://ygoprodeck.com/card/ceasefire-3082"
+    },
+    {
+     "qty": 2,
+     "name": "Dimension Wall",
+     "slug": "dimension-wall",
+     "type": "Trap Card",
+     "kind": "Normal",
+     "level": null,
+     "atk": null,
+     "def": null,
+     "text": "Activate only when an opponent's monster declares an attack. Instead of you, your opponent takes the Battle Damage you would have taken from this battle.",
+     "url": "https://ygoprodeck.com/card/dimension-wall-5636"
+    },
+    {
+     "qty": 1,
+     "name": "Gravity Bind",
+     "slug": "gravity-bind",
+     "type": "Trap Card",
+     "kind": "Continuous",
+     "level": null,
+     "atk": null,
+     "def": null,
+     "text": "Level 4 or higher monsters cannot attack.",
+     "url": "https://ygoprodeck.com/card/gravity-bind-7185"
+    },
+    {
+     "qty": 3,
+     "name": "Just Desserts",
+     "slug": "just-desserts",
+     "type": "Trap Card",
+     "kind": "Normal",
+     "level": null,
+     "atk": null,
+     "def": null,
+     "text": "Inflict 500 damage to your opponent for each monster they control.",
+     "url": "https://ygoprodeck.com/card/just-desserts-2075"
+    },
+    {
+     "qty": 2,
+     "name": "Magic Cylinder",
+     "slug": "magic-cylinder",
+     "type": "Trap Card",
+     "kind": "Normal",
+     "level": null,
+     "atk": null,
+     "def": null,
+     "text": "When an opponent's monster declares an attack: Target the attacking monster; negate the attack, and if you do, inflict damage to your opponent equal to its ATK.",
+     "url": "https://ygoprodeck.com/card/magic-cylinder-5267"
+    },
+    {
+     "qty": 1,
+     "name": "Mirror Force",
+     "slug": "mirror-force",
+     "type": "Trap Card",
+     "kind": "Normal",
+     "level": null,
+     "atk": null,
+     "def": null,
+     "text": "When an opponent's monster declares an attack: Destroy all your opponent's Attack Position monsters.",
+     "url": "https://ygoprodeck.com/card/mirror-force-3764"
+    },
+    {
+     "qty": 1,
+     "name": "Nightmare Wheel",
+     "slug": "nightmare-wheel",
+     "type": "Trap Card",
+     "kind": "Continuous",
+     "level": null,
+     "atk": null,
+     "def": null,
+     "text": "Activate this card by targeting 1 monster your opponent controls; it cannot attack or change its battle position. When it leaves the field, destroy this card. Once per turn, during your Standby Phase: Inflict 500 damage to your opponent. That monster must be on the field to activate and to resolve this effect.",
+     "url": "https://ygoprodeck.com/card/nightmare-wheel-4661"
+    },
+    {
+     "qty": 2,
+     "name": "Ojama Trio",
+     "slug": "ojama-trio",
+     "type": "Trap Card",
+     "kind": "Normal",
+     "level": null,
+     "atk": null,
+     "def": null,
+     "text": "Special Summon 3 \"Ojama Tokens\" (Beast-Type/LIGHT/Level 2/ATK 0/DEF 1000) to your opponent's field in Defense Position. They cannot be Tributed for a Tribute Summon, and each time 1 is destroyed, its controller takes 300 damage.",
+     "url": "https://ygoprodeck.com/card/ojama-trio-2526"
+    },
+    {
+     "qty": 2,
+     "name": "Secret Barrel",
+     "slug": "secret-barrel",
+     "type": "Trap Card",
+     "kind": "Normal",
+     "level": null,
+     "atk": null,
+     "def": null,
+     "text": "Inflict 200 damage to your opponent for each card in their hand and for each card they control.",
+     "url": "https://ygoprodeck.com/card/secret-barrel-2313"
+    }
+   ]
+  }
+ ]
+}

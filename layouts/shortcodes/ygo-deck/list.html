@@ -1,0 +1,37 @@
+{{- /*
+  ygo-deck/list — the main deck in the three piles a Yu-Gi-Oh! list always
+  uses (monsters, spells, traps), monsters highest level first. Each line is
+  a <details>: tap it for the card's type, stats and text. No script needed.
+
+    {{< ygo-deck/list deck="stall-burn" >}}
+
+  Data: data/ygo-deck/<deck>.json (scripts/ygo/build-deck.py, `make deck`).
+*/ -}}
+{{- $name := .Get "deck" -}}
+{{- $d := index site.Data "ygo-deck" $name -}}
+{{- if not $d }}{{ errorf "ygo-deck/list: no data/ygo-deck/%s.json (page: %s). Run `make deck`." $name .Page.RelPermalink }}{{ end -}}
+<div class="not-prose yd yd-list">
+  {{- range $d.groups }}
+  <section class="yd-group yd-{{ .key }}" aria-labelledby="yd-g-{{ .key }}">
+    <h3 id="yd-g-{{ .key }}" class="yd-group-h"><span class="yd-dot" aria-hidden="true"></span>{{ .label }} <span class="yd-group-n">{{ .count }}</span></h3>
+    <ul>
+      {{- range .cards }}
+      <li class="yd-row">
+        <details>
+          <summary>
+            <span class="yd-qty">{{ .qty }}</span>
+            <span class="yd-name">{{ .name }}</span>
+            {{- with .level }}<span class="yd-level" title="Level {{ . }}">★{{ . }}</span>{{ end }}
+          </summary>
+          <div class="yd-card">
+            <p class="yd-type">{{ .type }}{{ with .kind }} · {{ . }}{{ end }}{{ if .atk }} · ATK {{ .atk }} / DEF {{ .def }}{{ end }}</p>
+            <p class="yd-text">{{ .text }}</p>
+            {{- with .url }}<a class="yd-link" href="{{ . }}" rel="noopener" target="_blank">On YGOPRODeck ↗</a>{{ end }}
+          </div>
+        </details>
+      </li>
+      {{- end }}
+    </ul>
+  </section>
+  {{- end }}
+</div>

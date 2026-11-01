@@ -16,6 +16,18 @@
 #             site's mark unless this names a project.
 - date: 2026-11-01
   kind: update
+  text: "Logged my first phone games on the Impossible List: 100% of Melvor Idle and wins over the top two players in Rumble Club."
+  url: "/impossible-list/"
+- date: 2026-11-01
+  kind: new
+  text: "Gave my card decks a shelf of their own, Playing Card Decks, with my Kami Commander deck and my Des Koala stall burn Yu-Gi-Oh! deck on it."
+  url: "/misc/decks/"
+- date: 2026-11-01
+  kind: update
+  text: "Stocked my reading shelves with about 115 more books, from War and Peace and Mere Christianity to Atomic Habits and The Road to Serfdom."
+  url: "/impossible-list/"
+- date: 2026-11-01
+  kind: update
   text: "Added a Films section to my Impossible List, with Movies, Shows and Anime shelves stocked with the must-watches of my generation for me to work through."
   url: "/impossible-list/"
 - date: 2026-10-31
@@ -49,7 +61,7 @@
 - date: 2026-10-30
   kind: new
   text: "My Commander deck, Kami of the Crescent Moon: the full list, the mana curve, the combos it wins with, and a card viewer that opens any card in a window you can drag around."
-  url: "/misc/kami-deck/"
+  url: "/misc/decks/kami/"
 - date: 2026-10-30
   kind: new
   text: "A page for Gamesect, my video game tracker and game-data API."

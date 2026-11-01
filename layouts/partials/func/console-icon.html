@@ -13,12 +13,13 @@
 {{- $path := printf "static/img/consoles/%s.svg" $file -}}
 {{- if os.FileExists $path -}}
   {{- $s := os.ReadFile $path -}}
-  {{- $s = replace $s `fill="none"` `fill="__keepf__"` -}}
-  {{- $s = replace $s `stroke="none"` `stroke="__keeps__"` -}}
+  {{- /* Park "none" outside any fill="…"/stroke="…" shape, or the recolour below eats it. */ -}}
+  {{- $s = replace $s `fill="none"` `data-keep-fill-none` -}}
+  {{- $s = replace $s `stroke="none"` `data-keep-stroke-none` -}}
   {{- $s = replaceRE `fill="[^"]*"` `fill="currentColor"` $s -}}
   {{- $s = replaceRE `stroke="[^"]*"` `stroke="currentColor"` $s -}}
-  {{- $s = replace $s `fill="__keepf__"` `fill="none"` -}}
-  {{- $s = replace $s `stroke="__keeps__"` `stroke="none"` -}}
+  {{- $s = replace $s `data-keep-fill-none` `fill="none"` -}}
+  {{- $s = replace $s `data-keep-stroke-none` `stroke="none"` -}}
   {{- $s = replaceRE `(fill|stroke):\s*#[0-9A-Fa-f]{3,8}` `$1:currentColor` $s -}}
   {{- $s = replaceRE ` (?:width|height)="[^"]*"` "" $s -}}
   {{- $s | safeHTML -}}

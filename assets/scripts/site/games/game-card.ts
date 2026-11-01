@@ -24,22 +24,16 @@ export interface GameCardEls {
 type TextMode = 'review' | 'pitch';
 
 // The review and pitch ride on the blurb element's dataset so the toggle's click
-// handler (wireTextToggle) can swap them without knowing which book is open. The
-// toggle shows the icon for what's on screen (star = review, book = pitch) and
-// labels itself with what a click switches to.
-const TOGGLE_LABELS: Record<TextMode, string> = {
-  review: 'Showing my review. Switch to the pitch',
-  pitch: 'Showing the pitch. Switch to my review',
-};
+// handler (wireTextToggle) can swap them without knowing which entry is open.
+// The toggle (components/review-pitch-toggle.html) sits under the blurb and its
+// visible label says what a click switches to.
 
 function showText(blurb: HTMLElement, toggle: HTMLElement | null, mode: TextMode): void {
   blurb.textContent = (mode === 'pitch' ? blurb.dataset.pitch : blurb.dataset.review) || '';
   if (!toggle) return;
   toggle.dataset.mode = mode;
-  toggle.setAttribute('aria-label', TOGGLE_LABELS[mode]);
-  toggle.title = TOGGLE_LABELS[mode];
-  for (const icon of Array.from(toggle.querySelectorAll<HTMLElement>('[data-text-icon]'))) {
-    icon.hidden = icon.dataset.textIcon !== mode;
+  for (const label of Array.from(toggle.querySelectorAll<HTMLElement>('[data-text-label]'))) {
+    label.hidden = label.dataset.textLabel !== mode;
   }
 }
 

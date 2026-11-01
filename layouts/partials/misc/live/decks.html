@@ -1,0 +1,89 @@
+{{- /*
+  misc/live/decks — the Playing Card Decks card as a deal: each deck in turn
+  fans out a hand of its signature cards around its mascot, captioned with the
+  deck's name, game and format, then gathers the hand up for the next deck.
+
+  Decks are the pages under content/misc/decks/ (by `weight`). The mascot is
+  the same cover the /misc/decks/ shelf uses (partials/decks/deck-card.html);
+  the rest of the hand is the page's `showcase:` list of card slugs from its
+  deck data (data/mtg-deck/ or data/ygo-deck/, images saved by `make deck`).
+  A new deck with a showcase joins the loop on its own.
+
+  HTML + CSS (assets/css/pages/misc/motifs.css, .mf-dk). The keyframes live in
+  the <style> below because each deck owns 1/n of the loop. With reduced
+  motion the first deck rests fanned out (motifs.css).
+*/ -}}
+{{- $decks := slice -}}
+{{- with site.GetPage "/misc/decks" -}}
+  {{- range (where .RegularPages "Params.hidden" "!=" true).ByWeight -}}
+    {{- $page := . -}}
+    {{- /* The mascot: `cover:` (a slug in decks/ or a path), else the Magic commander. */ -}}
+    {{- $coverPath := "" -}}
+    {{- with .Params.cover -}}
+      {{- if strings.Contains . "/" }}{{ $coverPath = . }}{{ else }}{{ $coverPath = printf "decks/%s" . }}{{ end -}}
+    {{- else -}}
+      {{- with .Params.deck }}{{ with index site.Data "mtg-deck" . }}{{ $coverPath = printf "mtg-deck/cards/%s" .commander.scan }}{{ end }}{{ end -}}
+    {{- end -}}
+    {{- $cardDir := cond (strings.HasPrefix $coverPath "ygo-deck/") "ygo-deck/cards" "mtg-deck/cards" -}}
+    {{- $imgs := slice -}}
+    {{- range .Params.showcase -}}
+      {{- with resources.GetMatch (printf "%s/%s.*" $cardDir .) }}{{ $imgs = $imgs | append . }}{{ else }}{{ warnf "misc/live/decks: %s lists showcase card %q, but %s/ has no image for it. Run `make deck`." $page.RelPermalink . $cardDir }}{{ end -}}
+    {{- end -}}
+    {{- with resources.GetMatch (printf "%s.*" $coverPath) -}}
+      {{- $decks = $decks | append (dict "title" $page.Title "meta" (delimit (slice ($page.Params.game | default "") ($page.Params.format | default "")) " · ") "cover" . "hand" $imgs) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- with $decks }}
+{{- $n := len . -}}
+{{- $slotSeconds := 6.0 -}}{{- /* a float: printf "%.2f" below needs one */ -}}
+{{- $loopSeconds := mul $n $slotSeconds -}}
+{{- $slot := div 100.0 $n -}}
+{{- $at := dict -}}
+{{- range $name, $fraction := dict "in" 0.07 "fan" 0.2 "lift" 0.28 "hold" 0.8 "gather" 0.9 "gone" 0.98 -}}
+  {{- $at = merge $at (dict $name (printf "%.3f%%" (mul $slot $fraction))) -}}
+{{- end -}}
+<span class="mf mf-dk" aria-hidden="true" data-poster="{{ printf "%.4f" (div 0.5 $n) }}" style="--loop: {{ $loopSeconds }}s">
+  <style>
+    @keyframes mf-dk-card {
+      0% { opacity: 0; transform: translateY(18%) rotate(0deg); }
+      {{ $at.in | safeCSS }} { opacity: 1; transform: translateY(0) rotate(0deg); }
+      {{ $at.fan | safeCSS }}, {{ $at.hold | safeCSS }} { opacity: 1; transform: translate(var(--x), var(--y)) rotate(var(--r)); }
+      {{ $at.gather | safeCSS }} { opacity: 1; transform: translateY(0) rotate(0deg); }
+      {{ $at.gone | safeCSS }}, 100% { opacity: 0; transform: translateY(-14%) rotate(0deg); }
+    }
+    @keyframes mf-dk-lift {
+      0% { opacity: 0; transform: translateY(18%); }
+      {{ $at.in | safeCSS }}, {{ $at.fan | safeCSS }} { opacity: 1; transform: translateY(0); }
+      {{ $at.lift | safeCSS }}, {{ $at.hold | safeCSS }} { opacity: 1; transform: translateY(-9%) scale(1.06); }
+      {{ $at.gather | safeCSS }} { opacity: 1; transform: translateY(0) rotate(0deg); }
+      {{ $at.gone | safeCSS }}, 100% { opacity: 0; transform: translateY(-14%) rotate(0deg); }
+    }
+    @keyframes mf-dk-cap {
+      0%, {{ $at.fan | safeCSS }} { opacity: 0; transform: translateY(6px); }
+      {{ $at.lift | safeCSS }}, {{ $at.hold | safeCSS }} { opacity: 1; transform: none; }
+      {{ $at.gather | safeCSS }}, 100% { opacity: 0; transform: none; }
+    }
+  </style>
+  {{- range $i, $d := . }}
+  {{- /* Negative delays, as on the Impossible List card: every deck is already
+         running, waiting in the hidden part of its loop for its own slot. */}}
+  {{- $hand := $d.hand -}}
+  {{- $k := len $hand -}}
+  <span class="dk-deck" style="animation-delay: -{{ printf "%.2f" (sub $loopSeconds (mul $i $slotSeconds)) }}s">
+    {{- range $j, $img := $hand }}
+    {{- /* Spread the hand evenly either side of the mascot: -2, -1, +1, +2 … */}}
+    {{- $pos := sub $j (div $k 2) -}}{{ if ge $j (div $k 2) }}{{ $pos = add $pos 1 }}{{ end -}}
+    {{- $one := $img.Resize "240x webp q74" }}
+    <img class="dk-card" src="{{ $one.RelPermalink }}" width="{{ $one.Width }}" height="{{ $one.Height }}" alt="" loading="lazy" decoding="async" style="--r: {{ mul $pos 11 }}deg; --x: {{ mul $pos 54 }}%; --y: {{ mul (mul $pos $pos) 3 }}%" />
+    {{- end }}
+    {{- $c := $d.cover.Resize "240x webp q78" }}
+    <img class="dk-card dk-cover" src="{{ $c.RelPermalink }}" width="{{ $c.Width }}" height="{{ $c.Height }}" alt="" loading="lazy" decoding="async" style="--r: 0deg; --x: 0%; --y: -9%" />
+    <span class="dk-cap">
+      <span class="dk-title">{{ $d.title }}</span>
+      <span class="dk-meta">{{ $d.meta }}</span>
+    </span>
+  </span>
+  {{- end }}
+</span>
+{{- end }}
