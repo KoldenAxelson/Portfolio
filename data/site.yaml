@@ -25,7 +25,8 @@ author:
   # Intentionally blank — phone is not listed publicly. (Templates guard on
   # `with`, so an empty string renders nothing on the CV or anywhere else.)
   phone: ""
-  # Short bio for the hero section. One or two sentences.
+  # Short bio, typed out under the name in the sidebar (site/sidebar.html).
+  # Not used as a page subtitle: banners stay blank unless a page sets `lead`.
   bio: "I make specialized tools for people with problems, then I scale that solution to a magnitude of users."
   # Longer bio for the homepage hero, JSON-LD, and llms.txt.
   longBio: |

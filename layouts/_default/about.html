@@ -1,6 +1,6 @@
 {{- /*
   /about — the person, not the résumé (the homepage and /cv cover the work).
-  Top to bottom: photo and facts, a short signed note (the page body), how I
+  Top to bottom: photo and facts, a short note (the page body, no heading or sign-off), how I
   work (`principles`), off the clock (what I'm playing and reading, read from
   the Impossible List so it stays current), and the work I'm open to (`openTo`).
   Everything is server-rendered HTML; schema/about.html adds the JSON-LD.
@@ -8,7 +8,7 @@
 {{ define "banner" }}
 {{ partial "site/page-banner.html" (dict
   "title" "About"
-  "subtitle" (.Params.lead | default site.Data.site.author.bio)) }}
+  "subtitle" .Params.lead) }}
 {{ end }}
 
 {{ define "main" }}
@@ -59,12 +59,10 @@
 
 {{- /* The note */}}
 {{- with .Content }}
-<section aria-labelledby="note-heading" class="mt-16">
-  <h2 id="note-heading" class="{{ $heading }}">A note</h2>
+<section aria-label="About {{ $firstName }}" class="mt-16">
   <div class="max-w-prose space-y-4 text-base leading-relaxed text-muted [&_a]:text-fg [&_a]:underline [&_a]:decoration-border hover:[&_a]:!text-accent">
     {{ . }}
   </div>
-  <p class="mt-6 text-lg italic text-fg">— {{ $firstName }}</p>
 </section>
 {{- end }}
 

@@ -34,6 +34,8 @@ import { initHorizon } from './horizon.ts';
 import { initWire } from './wire.ts';
 import { initSwarm } from './swarm.ts';
 import { initClocks } from './clocks.ts';
+import { initHrr } from './hrr.ts';
+import { initConvolve } from './convolve.ts';
 
 // Tells the inline failsafe in ml-demos-assets.html that the reveal is handled.
 document.documentElement.dataset.mliReady = '';
@@ -122,3 +124,7 @@ const swarm = byId('mli-swarm');
 whenVisible(swarm, () => initSwarm(swarm));
 const clocks = byId('mli-clk');
 whenVisible(clocks, () => initClocks(clocks));
+const hrr = byId('mli-hrr');
+whenVisible(hrr, () => initHrr(hrr));
+const convolve = byId('mli-conv');
+whenVisible(convolve, () => initConvolve(convolve));

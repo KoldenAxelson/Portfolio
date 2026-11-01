@@ -1,6 +1,7 @@
 {{- /*
   misc/live/quotes — the Inspirational Quotes card's band on /misc: the /quotes
-  deck itself, with one quote, "Quotes". This is the page's own markup
+  deck itself, with one quote, "Inspirational Quotes", which the engine's own
+  wrap breaks onto two lines at the stage's 720px width. This is the page's own markup
   (layouts/_default/quotes.html) cut down to what the engine reads, so
   scripts/site/quotes/ (initQuotes, run on every page by scripts/site/main.ts)
   mounts it exactly as it mounts /quotes: same lattice, same smoke solver, same
@@ -18,7 +19,7 @@
   card's link), and the stage is a span for the same reason. The goo filter id
   is the page's own; /quotes and /misc are never on screen together.
 
-  Without JS the band shows the word as plain text.
+  Without JS the band shows the two words as plain text, on the same two lines.
 */ -}}
 {{- $fluid := resources.Get "scripts/site/quotes/fluid.ts" | js.Build (dict "minify" true "target" "es2018" "format" "iife") | fingerprint -}}
 <style>
@@ -56,8 +57,8 @@
   <input type="hidden" data-quotes-toggle="{{ . }}" checked>
   {{- end }}
   <input type="hidden" data-quotes-toggle="cursor">
-  <span class="quotes__fallback absolute inset-0 flex items-center justify-center text-4xl font-bold text-accent" style="font-family: Papyrus, 'Papyrus MT', fantasy">Quotes</span>
-  <ul hidden data-quotes-source><li>Quotes</li></ul>
+  <span class="quotes__fallback absolute inset-0 flex items-center justify-center text-3xl font-bold leading-tight text-center text-accent" style="font-family: Papyrus, 'Papyrus MT', fantasy">Inspirational<br>Quotes</span>
+  <ul hidden data-quotes-source><li>Inspirational Quotes</li></ul>
 </span>
 <script>
   /* Scale the 720x416 stage to fit the band (see the note at the top). */

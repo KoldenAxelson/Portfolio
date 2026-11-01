@@ -1,0 +1,45 @@
+{{- /*
+  ml-convolve — circular convolution by hand: every product of a number from a
+  and one from b, grouped by the output it adds into. Pick an output to light
+  up its wrapped diagonal.
+
+    {{< ml/convolve >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml/assets.html (css/pages/ml/demos.css, scripts/pages/ml/).
+  The vectors live in data/ml/hrr.yaml (conv); the template computes every
+  product and sum, so the static state (output 0 lit) reads with JS off.
+*/ -}}
+{{- $a := site.Data.ml.hrr.conv.a -}}
+{{- $b := site.Data.ml.hrr.conv.b -}}
+{{- $n := len $a -}}
+{{- $sums := slice -}}
+{{- $terms := slice -}}
+{{- range $k := seq 0 (sub $n 1) -}}
+  {{- $sum := 0 -}}{{- $parts := slice -}}
+  {{- range $i := seq 0 (sub $n 1) -}}
+    {{- $j := mod (add (sub $k $i) $n) $n -}}
+    {{- $p := mul (index $a $i) (index $b $j) -}}
+    {{- $sum = add $sum $p -}}{{- $parts = $parts | append (cond (lt $p 0) (printf "(−%d)" (sub 0 $p)) (string $p)) -}}
+  {{- end -}}
+  {{- $sums = $sums | append $sum -}}{{- $terms = $terms | append (delimit $parts " + ") -}}
+{{- end -}}
+{{- $fmt := slice -}}{{- range $sums }}{{ $fmt = $fmt | append (replace (string .) "-" "−") }}{{ end -}}
+{{- $fa := slice -}}{{- range $a }}{{ $fa = $fa | append (replace (string .) "-" "−") }}{{ end -}}
+{{- $fb := slice -}}{{- range $b }}{{ $fb = $fb | append (replace (string .) "-" "−") }}{{ end -}}
+<div class="not-prose mli-demo mli-conv" id="mli-conv" data-focus="0">
+<div class="mli-demo-label">Live · binding by hand, three numbers long</div>
+<div class="mli-conv-grid" style="--n:{{ $n }}" role="img" aria-label="Every product of a number from a with a number from b, each tagged with the output it adds into.">
+<span class="mli-conv-corner">a × b</span>
+{{- range $b }}<span class="mli-conv-head">{{ replace (string .) "-" "−" }}</span>{{ end }}
+{{- range $i, $x := $a }}
+<span class="mli-conv-head">{{ replace (string $x) "-" "−" }}</span>
+{{- range $j, $y := $b }}<span class="mli-conv-cell" data-g="{{ mod (add $i $j) $n }}">{{ replace (string (mul $x $y)) "-" "−" }}<i>c{{ mod (add $i $j) $n }}</i></span>{{ end }}
+{{- end }}
+</div>
+<div class="mli-conv-outs" role="group" aria-label="Output">
+{{- range $k, $t := $terms }}<button class="mli-rag-q{{ if eq $k 0 }} is-on{{ end }}" type="button" aria-pressed="{{ eq $k 0 }}" data-g="{{ $k }}">c{{ $k }} = {{ $t }} = {{ index $fmt $k }}</button>{{ end -}}
+</div>
+<p class="mli-conv-result">a = [{{ delimit $fa ", " }}] bound to b = [{{ delimit $fb ", " }}] gives [{{ delimit $fmt ", " }}], which looks like neither.</p>
+<div class="mli-caption">Real arithmetic, shrunk to three numbers so you can check it. Every product of one number from a and one from b adds into exactly one output: output k takes the cells whose two positions add up to k, wrapping past the end, so each output runs along a diagonal that wraps around the grid. The demo below does the same with 512 numbers, using a fast Fourier transform instead of filling in a grid.</div>
+</div>

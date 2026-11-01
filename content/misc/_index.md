@@ -20,7 +20,7 @@ groups:
   - key: "play"
     label: "Play with it"
     icon: "play"
-    order: ["black-hole", "emergence", "npc-voices", "sun", "quotes"]
+    order: ["quotes", "black-hole", "emergence", "npc-voices", "sun"]
   - key: "make"
     label: "Make things"
     icon: "pencil-square"

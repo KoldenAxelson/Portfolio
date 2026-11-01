@@ -16,6 +16,10 @@
 #             site's mark unless this names a project.
 - date: 2026-10-31
   kind: update
+  text: "Re-shelved my books: the Greek, Roman and medieval classics now sit on For Study, and Wild at Heart moved over to For Pleasure."
+  url: "/impossible-list/"
+- date: 2026-10-31
+  kind: update
   text: "NPC Voices is a toy now: pick a voice, age, mood and game style (Animal Crossing, Undertale and friends) and it mumbles or whispers your line, consonants and all, or open Advanced for every slider."
   url: "/misc/npc-voices/"
 - date: 2026-10-31

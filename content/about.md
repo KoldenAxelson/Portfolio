@@ -2,7 +2,7 @@
 title: "About"
 description: "Who Konrad Wright is beyond the résumé: how he works, what he's building and playing right now, and what he's open to."
 layout: "about"
-# The banner line under the H1 is site.yaml's author.bio; set `lead` to override it.
+# Blank by default, like every other page; set `lead` to put a line under the H1.
 # Everything below is rendered as plain HTML by layouts/_default/about.html.
 
 # Profile photos, shown one at a time in this order with a crossfade every few
@@ -40,6 +40,6 @@ openTo:
 
 I'm a software engineer with fifteen-plus years across web, cloud, security, mobile and product. Working in that many fields means I carry ideas from one into another, and it has let me take unusual problems from concept all the way to a running business.
 
-The throughline is simple: I build for the person in front of me. The problems people bring me are rarely unique to them, so a tool that solves one person's problem well usually scales to many more.
+I build for the person in front of me. The problems people bring me are rarely unique to them, so a tool that solves one person's problem well usually scales to many more.
 
-Right now I'm building [Harmony Pulse](/projects/harmony-pulse), an iPhone and Apple Watch app that coaches horse riders from heart-rate data, one strap on the rider and one on the horse.
+Most of my hours right now go to [Harmony Pulse](/projects/harmony-pulse), an iPhone and Apple Watch app that coaches horse riders from two heart-rate straps, one on the rider and one on the horse. It's in testing with my mom and her two horses. Alongside it, [Widda](/projects/widda) is waiting on Google's review and [CodeTurtle](/projects/codeturtle) is getting fixes from its first real run. My [Now page](/now) keeps the current state of all of it, along with what I'm reading, playing and learning.

@@ -1539,3 +1539,96 @@ ribosome:
   definition: >-
     The machine inside every cell that builds proteins; how many a cell keeps
     ready controls how fast it can grow.
+
+# ── Vector symbolic ──────────────────────────────────────────────────
+
+holographic-reduced-representation:
+  term: Holographic Reduced Representation
+  aliases: ['HRR', 'HRRs', 'holographic reduced representations']
+  definition: >-
+    A way to store structured facts, like who did what to whom, in one
+    fixed-length list of numbers, using [[binding|binding]] and
+    [[superposition|superposition]].
+  notes:
+    - >-
+      Tony Plate introduced them in 1991 and gave the full account in a
+      1995 journal paper. "Holographic" because, as in a
+      hologram, every number carries a little of everything stored, so damage
+      blurs the whole rather than erasing a part.
+
+vector-symbolic-architecture:
+  term: Vector-Symbolic Architecture
+  aliases: ['VSA', 'VSAs', 'vector symbolic architectures', 'hyperdimensional computing']
+  definition: >-
+    The family of methods that compute with symbols as long random vectors,
+    [[holographic-reduced-representation|HRRs]] among them.
+  notes:
+    - >-
+      Members differ mainly in the numbers they use (real, complex, binary)
+      and in how they bind. Pentti Kanerva's name for the field,
+      hyperdimensional computing, is the other one you'll see.
+
+binding:
+  term: Binding
+  aliases: ['bind', 'binds', 'bound']
+  definition: >-
+    Combining two vectors into a third that resembles neither, so a role and
+    its filler ("agent" and "dog") become one pair.
+  notes:
+    - >-
+      In an HRR, binding is [[circular-convolution|circular convolution]]. The
+      pair is the same length as its parts, so pairs can be bound again to build
+      nested structure.
+
+superposition:
+  term: Superposition
+  aliases: ['superposed', 'bundling', 'bundle']
+  definition: >-
+    Adding vectors together into one that stays similar to each of them, so a
+    single vector can hold a whole set.
+
+circular-convolution:
+  term: Circular Convolution
+  aliases: ['convolution']
+  definition: >-
+    Mixing two lists of numbers by summing products along wrapped-around
+    diagonals, giving a list of the same length.
+  notes:
+    - >-
+      Done directly, it costs n² multiplications for vectors of length n. With a
+      [[fft|fast Fourier transform]] it costs about n log n, which is why HRRs
+      stay cheap at thousands of numbers.
+
+unbinding:
+  term: Unbinding
+  aliases: ['unbind', 'unbinds', 'circular correlation']
+  definition: >-
+    Undoing a [[binding|binding]] to get a noisy copy of one part back, given
+    the other part as the cue.
+  notes:
+    - >-
+      In an HRR, it's circular correlation, an approximate inverse of
+      [[circular-convolution|circular convolution]]. The copy comes back blurred
+      by everything else in the vector, so a [[cleanup-memory|clean-up memory]]
+      has to recognise it.
+
+cleanup-memory:
+  term: Clean-up Memory
+  aliases: ['clean-up memories', 'cleanup memory']
+  definition: >-
+    A list of the known vectors that turns a noisy answer into the closest real
+    one, usually by [[cosine-similarity|cosine similarity]].
+
+fft:
+  term: Fast Fourier Transform
+  aliases: ['FFT', 'fast Fourier transforms']
+  definition: >-
+    A fast way to rewrite a list of numbers as the waves that add up to it,
+    where [[circular-convolution|convolution]] becomes plain multiplication.
+
+neuro-symbolic:
+  term: Neuro-Symbolic
+  aliases: ['neuro-symbolic AI']
+  definition: >-
+    Combining a learned [[neural-network|neural network]] with explicit symbols
+    and rules, to get learning from data and reasoning you can inspect.

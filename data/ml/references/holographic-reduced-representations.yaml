@@ -1,0 +1,49 @@
+# References for content/articles/holographic-reduced-representations.md,
+# rendered by {{< ml/references >}}. Listed in the order the article reaches
+# them. Numbering is automatic. Looked up 2026-10-31.
+
+- tag: Origin
+  title: Holographic Reduced Representations
+  url: https://doi.org/10.1109/72.377968
+  meta: Tony A. Plate · IEEE Transactions on Neural Networks 6(3) · 1995
+  note: The full journal account, after a first version at IJCAI 1991. Random vectors, binding by circular convolution, correlation as its approximate inverse, the FFT shortcut, clean-up memories, and capacity roughly linear in vector length.
+- tag: Background
+  title: "Holography: background"
+  url: https://www.asc.ohio-state.edu/kagan.1/holography/holo_bkg.htm
+  meta: Ohio State University, Department of Physics
+  note: Why every piece of a hologram still shows the whole image, from a narrower view.
+- tag: Background
+  title: "Hyperdimensional Computing: An Introduction to Computing in Distributed Representation with High-Dimensional Random Vectors"
+  url: https://cs.uwaterloo.ca/~jhoey/teaching/cogsci600/papers/Kanerva09.pdf
+  meta: Pentti Kanerva · Cognitive Computation 1 · 2009
+  note: The friendliest tour of the family, including why random high-dimensional vectors make good symbols and the "What is the dollar of Mexico?" example.
+- tag: Brain model
+  title: A Large-Scale Model of the Functioning Brain
+  url: https://doi.org/10.1126/science.1225266
+  meta: Eliasmith et al. · Science 338 · 2012
+  note: Spaun, a 2.5-million-neuron model that recognises, remembers and draws digits, built on semantic pointers.
+- tag: Brain model
+  title: "Spaun: A Large-Scale Model of the Functioning Brain (poster)"
+  url: http://compneuro.uwaterloo.ca/files/spaun.pdf
+  meta: Bekolay et al. · University of Waterloo
+  note: Shows Spaun's list memory written as positions bound to items and added together.
+- tag: Deep learning
+  title: Learning with Holographic Reduced Representations
+  url: https://proceedings.neurips.cc/paper/2021/hash/d71dd235287466052f1630f31bde7932-Abstract.html
+  meta: Ganesan et al. · NeurIPS 2021
+  note: Why HRRs broke inside networks that learn (numerical instability), and the projection step that fixed it, improving retrieval more than 100-fold.
+- tag: Attention
+  title: Recasting Self-Attention with Holographic Reduced Representations
+  url: https://arxiv.org/abs/2305.19534
+  meta: Alam, Raff, Biderman, Oates and Holt · ICML 2023
+  note: The Hrrformer. Attention rebuilt from binding and superposition, for malware files over 100,000 bytes long; up to 280 times faster to train on Long Range Arena, often with a single layer.
+- tag: Today
+  title: Nuggets
+  url: https://github.com/NeoVertex1/nuggets
+  meta: GitHub · checked October 2026
+  note: A personal AI assistant that keeps its memory as HRR vectors and recalls by unbinding and cosine similarity. An experiment, not a product.
+- tag: Today
+  title: holomem
+  url: https://github.com/polmanas1998-star/holomem
+  meta: GitHub · checked October 2026
+  note: A fixed-size holographic memory (the Fourier variant of HRR) for dated facts, built as the memory layer of an AI assistant. An experiment, not a product.

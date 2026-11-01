@@ -1,0 +1,31 @@
+{{- /*
+  ml-hrr — a sentence stored in one vector: roles bound to words by circular
+  convolution, added together, then asked "who did it?" by unbinding.
+
+    {{< ml/hrr >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml/assets.html (css/pages/ml/demos.css, scripts/pages/ml/hrr.ts).
+  Sentences, roles and slider ranges live in data/ml/hrr.yaml.
+*/ -}}
+{{- $data := index site.Data.ml "hrr" -}}
+{{- $lengthAt := 0 -}}
+{{- range $i, $n := $data.lengths }}{{ if eq $n $data.length }}{{ $lengthAt = $i }}{{ end }}{{ end -}}
+{{- $first := index $data.sentences 0 -}}
+<div class="not-prose mli-demo" id="mli-hrr" data-roles="{{ jsonify $data.roles }}" data-sentences="{{ jsonify $data.sentences }}" data-contrast="{{ jsonify $data.contrast }}" data-lengths="{{ jsonify $data.lengths }}">
+<div class="mli-demo-label">Live · a whole sentence in one vector</div>
+<div class="mli-rag-qs" role="group" aria-label="Sentence to store">
+{{- range $i, $s := $data.sentences }}<button class="mli-rag-q{{ if eq $i 0 }} is-on{{ end }}" type="button" aria-pressed="{{ eq $i 0 }}" data-sentence="{{ $i }}">{{ $s.text }}</button>{{ end -}}
+</div>
+<div class="mli-bits-models mli-hrr-asks" role="group" aria-label="Question"><span class="mli-bits-lab">Ask:</span>
+{{- range $i, $r := $data.roles }}<button class="mli-rag-q{{ if eq $i 0 }} is-on{{ end }}" type="button" aria-pressed="{{ eq $i 0 }}" data-role="{{ $i }}">{{ $r.question }}</button>{{ end -}}
+</div>
+<p class="mli-hrr-answer" id="mli-hrr-answer" aria-live="polite">Stored: <b>{{ $first.text }}</b>. Unbinding "who did it?" from the vector gives a noisy copy of <b>{{ $first.agent }}</b>; the clean-up memory finds it among the words it knows.</p>
+<div class="mli-dec-bars mli-hrr-bars" id="mli-hrr-bars"></div>
+<div class="mli-row"><label for="mli-hrr-n">Vector length: <span class="mli-val" id="mli-hrr-n-v">{{ $data.length }}</span></label><input class="mli-range" id="mli-hrr-n" type="range" min="0" max="{{ sub (len $data.lengths) 1 }}" step="1" value="{{ $lengthAt }}" disabled /></div>
+<div class="mli-row"><label for="mli-hrr-x">Other facts in it: <span class="mli-val" id="mli-hrr-x-v">0</span></label><input class="mli-range" id="mli-hrr-x" type="range" min="0" max="{{ $data.maxExtra }}" step="1" value="0" disabled /></div>
+<div class="mli-row"><label for="mli-hrr-w">Numbers wiped: <span class="mli-val" id="mli-hrr-w-v">0%</span></label><input class="mli-range" id="mli-hrr-w" type="range" min="0" max="{{ $data.maxWiped }}" step="5" value="0" disabled /></div>
+<p class="mli-hrr-contrast" id="mli-hrr-contrast"></p>
+<noscript><p class="mli-caption">JavaScript is off, so the arithmetic can't run. With it on, this stores the sentence in one vector, lets you ask for each role, and shows how the answer holds up as the vector gets shorter, fuller or damaged.</p></noscript>
+<div class="mli-caption">Real arithmetic at toy scale. Every word and role is a vector of random numbers drawn in your browser (mean 0, variance 1 over the length, Plate's recipe); binding is circular convolution, done with a fast Fourier transform, and asking is circular correlation. The bars are each known word's cosine similarity to what came back.</div>
+</div>

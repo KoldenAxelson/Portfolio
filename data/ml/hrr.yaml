@@ -1,0 +1,32 @@
+# The holographic-memory toy in content/articles/holographic-reduced-representations.md
+# (shortcodes/ml/hrr.html, scripts/pages/ml/hrr.ts). Each sentence is stored
+# as role ⊛ filler + role ⊛ filler + role ⊛ filler in one vector; the fillers
+# the clean-up memory knows are every word that fills a role below.
+#
+# roles     : the three slots, in the order the question buttons show them.
+# sentences : what each role holds. `contrast` names the two sentences whose
+#             vectors the demo compares (same words, swapped roles).
+# lengths   : the vector lengths the slider steps through (powers of two, for
+#             the FFT); `length` is the starting one.
+# maxExtra  : the most unrelated facts the slider can pile into the vector.
+# maxWiped  : the most of the vector's numbers the slider can zero, in percent.
+roles:
+  - { key: "agent", question: "Who did it?" }
+  - { key: "action", question: "What happened?" }
+  - { key: "target", question: "To whom?" }
+sentences:
+  - { text: "the dog bites the man", agent: "dog", action: "bites", target: "man" }
+  - { text: "the man bites the dog", agent: "man", action: "bites", target: "dog" }
+  - { text: "the cat chases the mouse", agent: "cat", action: "chases", target: "mouse" }
+contrast: [0, 1]
+lengths: [64, 128, 256, 512, 1024, 2048]
+length: 512
+maxExtra: 60
+maxWiped: 90
+
+# The hand-sized binding figure (shortcodes/ml/convolve.html): two vectors three
+# numbers long. The template fills in every product and sums each wrapped
+# diagonal, so changing these numbers keeps the figure's arithmetic right.
+conv:
+  a: [2, -1, 3]
+  b: [1, 2, -1]
