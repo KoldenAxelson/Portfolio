@@ -13,6 +13,9 @@
   Optional `mark` (dict "icon" "building-library" "label" "Classic"): a small
   icon chip in the top-right corner that tags the kind of item (a classic on
   the Impossible List's book shelves). Unlike a badge it leaves the dimming alone.
+  Optional `more` (dict "label" "More to watch"): there's more of it to get
+  through (a series started, a show I haven't kept up with), as an ellipsis
+  chip in the bottom-right corner, styled like the mark.
 */ -}}
 {{/* q68 rather than the pipeline's 80: at 144px, and 288px for 2x screens,
      the difference doesn't show, and it trims the Impossible List's ~100
@@ -36,6 +39,11 @@
   {{- with .mark }}
   <span title="{{ .label }}" class="absolute right-1.5 top-1.5 z-10 inline-flex h-6 w-6 items-center justify-center rounded-full border border-accent/70 bg-bg/90 text-accent shadow">
     {{- partial "func/svg-icon.html" (dict "name" .icon "class" "h-3.5 w-3.5" "width" "2") }}<span class="sr-only">{{ .label }}</span>
+  </span>
+  {{- end }}
+  {{- with .more }}
+  <span title="{{ .label }}" class="absolute bottom-1.5 right-1.5 z-10 inline-flex h-6 w-6 items-center justify-center rounded-full border border-accent/70 bg-bg/90 text-accent shadow">
+    {{- partial "func/svg-icon.html" (dict "name" "ellipsis-horizontal" "class" "h-4 w-4" "width" "2.5") }}<span class="sr-only">{{ .label }}</span>
   </span>
   {{- end }}
   {{- with $thumb.src }}

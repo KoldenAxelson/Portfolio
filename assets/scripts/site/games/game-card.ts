@@ -108,7 +108,7 @@ export function populateGameCard(data: DOMStringMap, els: GameCardEls): void {
   }
   if (els.series) {
     const entries = parseList<SeriesEntry>(data.series);
-    els.series.innerHTML = entries.length ? buildSeries(entries) : '';
+    els.series.innerHTML = entries.length ? buildSeries(entries, data.doneLabel || 'read') : '';
     els.series.hidden = entries.length === 0;
   }
   for (const el of els.consoleIcons) {
@@ -129,7 +129,7 @@ const parseList = <T>(raw: string | undefined): T[] => {
 };
 
 // A series card pairs each carousel image with one of its books
-// (impossible-list/book-card.html builds the pairing). Landing on an image
+// (impossible-list/cover-card.html builds the pairing). Landing on an image
 // swaps the pitch to that book's, falling back to the entry's own pitch, and
 // marks the book in the series checklist. Only the pitch follows the slide:
 // the review is about the whole entry, so it stays put until the toggle flips

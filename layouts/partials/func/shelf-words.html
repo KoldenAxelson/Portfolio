@@ -1,0 +1,18 @@
+{{- /*
+  shelf-words — the wording and image folder for one kind of /impossible-list/
+  shelf item, so the cards (impossible-list/game-card.html, cover-card.html)
+  and their plain-text twin (impossible-list/details.html) say the same thing.
+
+    {{ $words := partial "func/shelf-words.html" "movie" }}
+
+  Kinds: game, book, movie, show. The kind comes from the front-matter section or
+  films shelf an entry sits under (layouts/_default/impossible-list.html sets it).
+*/ -}}
+{{- $watch := dict "dir" "movies" "icon" "film" "badge" "Watching" "now" "Watching now" "done" "watched" "notYet" "not watched yet" "more" "more to watch" "why" "Why watch it" -}}
+{{- $kinds := dict
+  "game" (dict "dir" "games/covers" "icon" "play" "badge" "Playing" "now" "Playing now" "done" "played" "notYet" "not played yet" "more" "more to play" "why" "Why play it")
+  "book" (dict "dir" "achievements" "icon" "book-open" "badge" "Reading" "now" "Reading now" "done" "read" "notYet" "not read yet" "more" "more to read" "why" "Why read it")
+  "movie" $watch
+  "show" (merge $watch (dict "dir" "shows" "icon" "tv"))
+-}}
+{{- return index $kinds . -}}

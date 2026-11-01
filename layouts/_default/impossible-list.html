@@ -51,18 +51,25 @@
   </section>
   {{- end }}
 
-  {{- with .Params.books }}
+  {{- /* Books and films share one shape: a label and its shelves. The kind tags
+         every entry for impossible-list/cover-card.html; a films shelf names
+         its own (movie or show), and an entry's own kind wins over both. */ -}}
+  {{- range $section := slice (dict "key" "books" "kind" "book") (dict "key" "films" "kind" "movie") }}
+  {{- with index $.Params $section.key }}
   <section>
     <h2 class="font-mono text-xs uppercase tracking-widest text-muted">{{ .label }}</h2>
     {{- range .shelves }}
-    {{ partial "components/shelf.html" (dict "label" .label "items" (partial "func/shelf-order.html" .items) "card" "impossible-list/book-card.html") }}
+    {{- $kind := .kind | default $section.kind }}
+    {{- $items := slice }}{{ range .items }}{{ $items = $items | append (merge (dict "kind" $kind) .) }}{{ end }}
+    {{ partial "components/shelf.html" (dict "label" .label "items" (partial "func/shelf-order.html" $items) "card" "impossible-list/cover-card.html") }}
     {{- end }}
   </section>
   {{- end }}
+  {{- end }}
 </div>
 
-{{- if or .Params.games .Params.books }}
-{{/* Drill-down modal for games + books. Layout/motion live in base.css
+{{- if or .Params.games .Params.books .Params.films }}
+{{/* Drill-down modal for every shelf. Layout/motion live in base.css
      ([data-game-modal] block); scripts/site/games/impossible-modal.ts removes [hidden] and
      toggles [data-open]. Mobile drops from the top, desktop slides in from the
      right. Media is a carousel; rating→stars, status→note, series→progress

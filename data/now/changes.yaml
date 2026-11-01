@@ -14,6 +14,10 @@
 #   project : optional project slug, for the icon beside the entry. A /projects/
 #             url gets its project's icon on its own; anything else shows the
 #             site's mark unless this names a project.
+- date: 2026-11-01
+  kind: update
+  text: "Added a Films section to my Impossible List, with Movies, Shows and Anime shelves stocked with the must-watches of my generation for me to work through."
+  url: "/impossible-list/"
 - date: 2026-10-31
   kind: update
   text: "Re-shelved my books: the Greek, Roman and medieval classics now sit on For Study, and Wild at Heart moved over to For Pleasure."

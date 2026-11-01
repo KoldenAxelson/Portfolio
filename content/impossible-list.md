@@ -1,8 +1,8 @@
 ---
 title: "Impossible List"
-description: "A living list of what Konrad Wright wants to do in life, the skills he wants to earn and the adventures he wants to take, plus the games he plays and the books he reads — designed to keep growing rather than get finished."
+description: "A living list of what Konrad Wright wants to do in life, the skills he wants to earn and the adventures he wants to take, plus the games he plays, the books he reads and the movies and shows he watches — designed to keep growing rather than get finished."
 layout: "impossible-list"
-updated: 2026-10-30
+updated: 2026-11-01
 # Blank by default — uncomment to put a line under the H1 in the banner.
 #lead: "Not a bucket list you complete — one you keep adding to. The idea (borrowed from Joel Runyon) is that the list should always outrun you."
 groups:
@@ -251,7 +251,9 @@ games:
 # pitch → why the book is worth reading. With both, the drawer shows the review
 # and a toggle to the pitch. classic: true → the classic mark on the cover, for
 # the foundational Greek, Roman and medieval books in the sense of
-# /misc/writing/classical-inspiration/ (impossible-list/book-card.html).
+# /misc/writing/classical-inspiration/ (impossible-list/cover-card.html).
+# A series started but not finished gets the more-to-go chip (an ellipsis in
+# the cover's corner) on its own; more: true adds it to any entry.
 # Ancient years are traditional, approximate dates.
 books:
   label: "Books"
@@ -1016,4 +1018,1350 @@ books:
           done: false
           cover: "canterbury-tales"
           pitch: "Chaucer's pilgrims tell stories on the road to Canterbury: knights, millers, a nun and the Wife of Bath. Bawdy, funny and the start of English literature."
+# Films — three Netflix-style rows, Movies, Shows and Anime, drawn and ordered just like
+# the books (impossible-list/cover-card.html): watched ones by rating, then the
+# rest in the order written here, most recommended first. kind (movie or show)
+# picks the wording and the poster folder: assets/img/movies/<cover>.webp or
+# assets/img/shows/<cover>.webp. A shelf sets it for its entries; an entry can
+# override it (the anime films on the Anime shelf). year = release (first air date for a show).
+# series → a film franchise, or a show with a sequel series, in release order:
+# the cover is the first part's poster and <cover>-1, -2 … are the later parts,
+# so each part's pitch follows its poster in the drawer (the first part shows
+# the entry's pitch). rating, status, blurb and current: true ("Watching"
+# badge) work as they do on books. A series started but not finished gets the
+# more-to-go chip on its own; more: true adds it to any entry (a show I've
+# reviewed but haven't kept up with).
+films:
+  label: "Films"
+  shelves:
+    - label: "Movies"
+      kind: "movie"
+      items:
+        - title: "Star Wars"
+          year: 1977
+          done: true
+          rating: 4.0
+          cover: "star-wars"
+          pitch: "The Skywalker saga: nine films across three trilogies, all about one family. The original trilogy is the must-see, and the prequels were our childhood, memes and all."
+          blurb: "This was a nostalgia watch and formative for my childhood, my dog's namesake was Luke Skywalker. I had the lightsabers as a kid playing with my brother. The latter third of this collection was trash, but that doesn't spoil what it once was for me."
+          series:
+            - title: "A New Hope"
+              done: true
+            - title: "The Empire Strikes Back"
+              done: true
+              pitch: "The Empire chases the rebels from the ice planet Hoth to Cloud City, Luke trains with Yoda, and it ends on the most famous twist in movies."
+            - title: "Return of the Jedi"
+              done: true
+              pitch: "Han is rescued from Jabba, the rebels attack a second Death Star, and Luke faces Vader and the Emperor. Ewoks included."
+            - title: "The Phantom Menace"
+              done: true
+              pitch: "Decades before A New Hope, two Jedi find a slave boy named Anakin Skywalker on Tatooine. Podracing, Darth Maul and Duel of the Fates."
+            - title: "Attack of the Clones"
+              done: true
+              pitch: "Ten years later, Anakin guards Senator Padmé Amidala while Obi-Wan uncovers a secret clone army, and the Clone Wars begin."
+            - title: "Revenge of the Sith"
+              done: true
+              pitch: "Anakin falls to the dark side and becomes Darth Vader as the Republic turns into the Empire. The best of the prequels."
+            - title: "The Force Awakens"
+              done: true
+              pitch: "Thirty years after Return of the Jedi, a scavenger named Rey and a runaway stormtrooper named Finn fall in with Han Solo and Chewbacca."
+            - title: "The Last Jedi"
+              done: true
+              pitch: "Rey finds Luke Skywalker hiding on a remote island while the Resistance runs from the First Order. The most argued-about film in the saga."
+            - title: "The Rise of Skywalker"
+              done: true
+              pitch: "Somehow the Emperor is back, and Rey, Finn and Poe race to find him before his fleet launches. The end of the Skywalker saga."
+        - title: "Harry Potter"
+          year: 2001
+          done: true
+          rating: 3.0
+          cover: "harry-potter"
+          pitch: "Eight films following Harry from his first letter to the last stand against Voldemort, with the same young cast growing up on screen over a decade. If you were born in the 90s, each one came out right around the age Harry was in it."
+          blurb: "I technically have watched them all in a movie marathon that I fell asleep for a few movies through, so it needs an actual watch. Growing up Seventh Day Adventist, I wasn't really allowed to watch this, but seeing the first movie a few times, I think it's good."
+          series:
+            - title: "The Sorcerer's Stone"
+              done: true
+            - title: "The Chamber of Secrets"
+              done: false
+              pitch: "Something is petrifying students, and the writing on the wall says the Chamber of Secrets has been opened. Harry's second year, with a basilisk and a flying car."
+            - title: "The Prisoner of Azkaban"
+              done: false
+              pitch: "A convicted murderer escapes Azkaban, apparently to find Harry. Alfonso Cuarón took over as director, and the series gets darker and better looking from here."
+            - title: "The Goblet of Fire"
+              done: false
+              pitch: "Someone enters Harry into the deadly Triwizard Tournament, and the final task ends with Voldemort back in a body."
+            - title: "The Order of the Phoenix"
+              done: false
+              pitch: "The Ministry won't admit Voldemort is back and sends Dolores Umbridge to take over Hogwarts, so Harry starts teaching his friends to fight in secret."
+            - title: "The Half-Blood Prince"
+              done: false
+              pitch: "Dumbledore walks Harry through old memories of Voldemort's past to find the secret of his immortality, while Draco Malfoy works on a mission of his own."
+            - title: "The Deathly Hallows – Part 1"
+              done: false
+              pitch: "No Hogwarts this time. Harry, Ron and Hermione are on the run, hunting Horcruxes across Britain while Voldemort takes over the Ministry."
+            - title: "The Deathly Hallows – Part 2"
+              done: false
+              pitch: "The Battle of Hogwarts and the final duel. It was the highest-grossing film of 2011."
+        - title: "The Lord of the Rings"
+          year: 2001
+          done: true
+          rating: 5.0
+          cover: "lord-of-the-rings"
+          pitch: "Peter Jackson shot all three films back to back in New Zealand, and every fantasy adaptation since gets measured against them. Watch the extended editions if you have the weekend."
+          blurb: "This is peak fantasy for me. It's a masterpiece and you don't need me to tell you that. However, I had my very first beer called Sobering Thought in the Green Dragon Inn. That's the 1% beer they drank on the actual set!"
+          series:
+            - title: "The Fellowship of the Ring"
+              done: true
+            - title: "The Two Towers"
+              done: true
+              pitch: "The Fellowship splits up. Frodo and Sam follow Gollum toward Mordor, while Aragorn's company ends up defending Helm's Deep against an army of Uruk-hai."
+            - title: "The Return of the King"
+              done: true
+              pitch: "The war comes to Minas Tirith while Frodo and Sam make the last climb up Mount Doom. It won all eleven Oscars it was nominated for."
+        - title: "Toy Story"
+          year: 1995
+          done: true
+          rating: 2.0
+          cover: "toy-story"
+          pitch: "The first fully computer-animated feature film. Woody and Buzz grew up alongside us, and Toy Story 3, where Andy leaves for college, wrecked a generation of teenagers."
+          blurb: "The first one was good, the other ones weren't so memorable to me. I remember playing I think an old N64 game based on Toy Story that was fun."
+          series:
+            - title: "Toy Story"
+              done: true
+            - title: "Toy Story 2"
+              done: true
+              pitch: "A toy collector steals Woody, who learns he's a valuable collectible, while Buzz leads a rescue across town."
+            - title: "Toy Story 3"
+              done: true
+              pitch: "Andy is leaving for college, and the toys end up donated to a daycare run by a strawberry-scented bear. Bring tissues."
+            - title: "Toy Story 4"
+              done: false
+              pitch: "Bonnie makes a toy out of a spork named Forky, and a road trip reunites Woody with Bo Peep."
+            - title: "Toy Story 5"
+              done: false
+              pitch: "The toys face a new kind of rival: a tablet called Lilypad that Bonnie can't put down."
+        - title: "Jurassic Park"
+          year: 1993
+          done: true
+          rating: 2.5
+          cover: "jurassic-park"
+          pitch: "A billionaire clones dinosaurs for a theme park, and the power goes out during the preview tour. Spielberg's mix of animatronics and early CGI still looks better than plenty of films made since."
+          blurb: "Honestly, the memories I have from the melody alone made this movie worth it for me. And the MEMES, that \"life.. uh.. finds a way\" have made plenty of memorable moments for me."
+        - title: "Back to the Future"
+          year: 1985
+          done: true
+          rating: 3.0
+          cover: "back-to-the-future"
+          pitch: "Marty McFly takes Doc Brown's DeLorean back to 1955 and accidentally gets between his parents before they fall in love. Almost every setup in the first act pays off by the end."
+          blurb: "Classic trilogy I used to watch with my family every now and again. Shame we don't have widely used hoverboards in the year 2026 irl."
+          series:
+            - title: "Back to the Future"
+              done: true
+            - title: "Back to the Future Part II"
+              done: true
+              pitch: "Doc takes Marty to 2015 to fix his future kids' problems, and a stolen sports almanac rewrites 1985. Hoverboards and self-lacing shoes."
+            - title: "Back to the Future Part III"
+              done: true
+              pitch: "Marty goes back to 1885 to save Doc from being shot in the Old West. A western, with a steam train pushing the DeLorean to 88 mph."
+        - title: "The Lion King"
+          year: 1994
+          done: true
+          rating: 3.0
+          cover: "lion-king"
+          pitch: "Hamlet with lions: a young prince runs away after his uncle kills his father, and has to come home to take back the throne. Elton John's songs and Hans Zimmer's score, from the peak of Disney's 90s run."
+          blurb: "It's great. The musical score is probably the most memorable out of all Disney films. I can play \"In the Jungle\" on the Ocarina."
+        - title: "Titanic"
+          year: 1997
+          done: false
+          cover: "titanic"
+          pitch: "A rich girl and a poor artist fall in love on the Titanic's maiden voyage. Eleven Oscars, and the highest-grossing film ever until James Cameron beat it himself with Avatar."
+        - title: "The Godfather"
+          year: 1972
+          done: false
+          cover: "godfather"
+          pitch: "The Corleone crime family, and the youngest son who never wanted any part of it. The first two are regularly named among the best films ever made."
+          series:
+            - title: "The Godfather"
+              done: false
+            - title: "The Godfather Part II"
+              done: false
+              pitch: "Michael's reign as don, cut together with his father's rise in 1920s New York, with Robert De Niro as the young Vito. The first sequel to win Best Picture."
+            - title: "The Godfather Part III"
+              done: false
+              pitch: "An older Michael tries to make the family legitimate through the Vatican. The weakest of the three, but it closes the story."
+        - title: "The Matrix"
+          year: 1999
+          done: true
+          rating: 2.0
+          cover: "matrix"
+          pitch: "A hacker named Neo learns the world is a simulation run by machines, and that he might be the one to end it. Bullet time and kung fu wrapped around a question about reality people still argue over."
+          blurb: "I think this is one of those movies where the premise carries it more than the substance. The writing wasn't bad, it in fact had great moments with the pills/spoon/dodging. I just wasn't hooked enough to care to watch the sequels."
+          series:
+            - title: "The Matrix"
+              done: true
+            - title: "The Matrix Reloaded"
+              done: false
+              pitch: "Neo, Trinity and Morpheus try to save Zion from a machine army, and Neo meets the Architect who built the Matrix. The freeway chase is the highlight."
+            - title: "The Matrix Revolutions"
+              done: false
+              pitch: "The machines reach Zion, and Neo travels to the machine city to make a deal."
+            - title: "The Matrix Resurrections"
+              done: false
+              pitch: "Twenty years later, Neo is a game designer who doesn't remember being Neo. Lana Wachowski's sequel is half reunion and half joke about sequels."
+        - title: "The Dark Knight Trilogy"
+          year: 2005
+          done: true
+          rating: 3.0
+          cover: "dark-knight-trilogy"
+          pitch: "Christopher Nolan's Batman, played straight as a crime saga. Heath Ledger's Joker won a posthumous Oscar and is still the villain every comic book movie gets compared to."
+          blurb: "Who doesn't love a good Batman film, and Heath Ledger's Joker is by FAR my favorite. Maybe I need to give it a re-watch to score it higher."
+          series:
+            - title: "Batman Begins"
+              done: true
+            - title: "The Dark Knight"
+              done: true
+              pitch: "The Joker arrives in Gotham with no plan and no limits, and pushes Batman, Commissioner Gordon and Harvey Dent to breaking point."
+            - title: "The Dark Knight Rises"
+              done: true
+              pitch: "Eight years later, Bane takes Gotham hostage and a broken Bruce Wayne has to come back as Batman."
+        - title: "Shrek"
+          year: 2001
+          done: true
+          rating: 3.0
+          cover: "shrek"
+          pitch: "An ogre goes on a quest to rescue a princess so he can get his swamp back. It made fun of every Disney fairytale and won the first Oscar for Best Animated Feature."
+          blurb: "Great moments, super meme-able. Has a couple of my favorite songs such as All Star, Hallelujah, Believer, Boots are made for Walking, Living la Vida Loca. Though, Farquaad did nothing wrong and ran a good kingdom by mostly any metric that's relevant. Shrek is a villain painted to be a hero if you divorce your feelings from the plot."
+          series:
+            - title: "Shrek"
+              done: true
+            - title: "Shrek 2"
+              done: true
+              pitch: "Shrek meets Fiona's parents in Far Far Away, along with Puss in Boots and a Fairy Godmother with plans of her own. Plenty of people think it beats the first."
+            - title: "Shrek the Third"
+              done: true
+              pitch: "Shrek has to track down the next heir to the throne, a teenage Arthur, before he's stuck being king."
+            - title: "Shrek Forever After"
+              done: false
+              pitch: "A deal with Rumpelstiltskin drops Shrek into a world where he was never born."
+        - title: "The Avengers"
+          year: 2012
+          done: true
+          rating: 2.5
+          cover: "avengers"
+          pitch: "Marvel spent four years of solo films building up to one team-up. These four Avengers films are the spine of the Infinity Saga, and the solo movies fill in the gaps."
+          blurb: "It's Action Slop. It's fun to see the fun effects. However with a cast this big and the movies making a cinematic universe, it's a little exhausting to keep track of. Mile wide and inch deep."
+          series:
+            - title: "The Avengers"
+              done: true
+            - title: "Age of Ultron"
+              done: true
+              pitch: "Tony Stark builds an AI to protect the world, and it decides humans are the threat."
+            - title: "Infinity War"
+              done: true
+              pitch: "Thanos goes after the six Infinity Stones, and nearly every Marvel hero so far stands in his way. It ends on a snap."
+            - title: "Endgame"
+              done: true
+              pitch: "The survivors of the snap get one shot at undoing it. The payoff for twenty-two films, and for two years the highest-grossing film ever."
+        - title: "Forrest Gump"
+          year: 1994
+          done: true
+          rating: 2.0
+          cover: "forrest-gump"
+          pitch: "A kind, simple man from Alabama stumbles through thirty years of American history, from Vietnam to a ping pong tour of China, while waiting for Jenny. It won Best Picture."
+          blurb: "I thought it was funny, and had a couple of good lines. I did see it young and didn't really get the relevance."
+        - title: "The Shawshank Redemption"
+          year: 1994
+          done: false
+          cover: "shawshank-redemption"
+          pitch: "A banker convicted of killing his wife spends two decades in Shawshank prison, where he finds a friend in Red and a way to keep hoping. It flopped in theaters, then found its audience on video and cable."
+        - title: "Finding Nemo"
+          year: 2003
+          done: true
+          rating: 3.0
+          cover: "finding-nemo"
+          pitch: "A nervous clownfish crosses the ocean to find his son, with a forgetful blue tang named Dory along for the ride."
+          blurb: "I probably saw the first movie over 20 times as it was the only movie we had on a house boat for like a week and we just put it on for background noise for the kids. Great movie, and the sequel was also fun."
+          series:
+            - title: "Finding Nemo"
+              done: true
+            - title: "Finding Dory"
+              done: true
+              pitch: "Dory remembers she has a family and sets off to find them, ending up inside a California marine institute."
+        - title: "Home Alone"
+          year: 1990
+          done: true
+          rating: 2.5
+          cover: "home-alone"
+          pitch: "Kevin McCallister gets left behind when his family flies to Paris for Christmas, and defends the house from two burglars with paint cans and a blowtorch."
+          blurb: "It was an adorable set of movies, and as the middle child who has been forgotten a couple of times, I find it relatable."
+          series:
+            - title: "Home Alone"
+              done: true
+            - title: "Home Alone 2: Lost in New York"
+              done: true
+              pitch: "Kevin gets on the wrong plane, ends up alone in New York and runs into the same two burglars."
+        - title: "Indiana Jones"
+          year: 1981
+          done: true
+          rating: 2.5
+          cover: "indiana-jones"
+          pitch: "Harrison Ford as an archaeologist who keeps getting into fistfights with Nazis over ancient relics. Raiders of the Lost Ark is the adventure movie in its purest form."
+          blurb: "I saw all these movies with my dad, and he really enjoys this stuff. I have a good time as well but if it weren't for my dad, I probably wouldn't go and see these. Blows my mind that Indy wasn't at all relevant in the first movie to the plot."
+          series:
+            - title: "Raiders of the Lost Ark"
+              done: true
+            - title: "Temple of Doom"
+              done: true
+              pitch: "A prequel set in India: Indy, a nightclub singer and a kid named Short Round take on a cult. The darkest of the five, mine cart chase included."
+            - title: "The Last Crusade"
+              done: true
+              pitch: "Indy and his father, played by Sean Connery, race the Nazis to the Holy Grail. The funniest of the films."
+            - title: "Kingdom of the Crystal Skull"
+              done: true
+              pitch: "It's 1957, the villains are Soviets and the relic is a crystal skull with ties to aliens. Fans are still sore about the fridge."
+            - title: "Dial of Destiny"
+              done: true
+              pitch: "An aging Indy goes after Archimedes' dial before a former Nazi scientist can use it. Harrison Ford's last time in the hat."
+        - title: "Pulp Fiction"
+          year: 1994
+          done: false
+          cover: "pulp-fiction"
+          pitch: "Two hitmen, a boxer, a gangster's wife and a mysterious briefcase, told out of order. Tarantino's breakout, full of lines people still quote."
+        - title: "E.T. the Extra-Terrestrial"
+          year: 1982
+          done: true
+          rating: 1.5
+          cover: "et-the-extra-terrestrial"
+          pitch: "A boy hides a stranded alien in his house and helps him phone home. The bike flying past the moon became the logo of Spielberg's company, Amblin."
+          blurb: "I liked space as a kid, even went to space camp. E.T. just looked kinda gross, and it didn't really give or grow my appreciation for space."
+        - title: "Jaws"
+          year: 1975
+          done: false
+          cover: "jaws"
+          pitch: "A great white shark starts eating swimmers at a beach town before the Fourth of July, and three men go out to kill it. The original summer blockbuster."
+        - title: "Pirates of the Caribbean"
+          year: 2003
+          done: true
+          rating: 4.0
+          cover: "pirates-of-the-caribbean"
+          pitch: "A movie based on a theme park ride had no business working, then Johnny Depp showed up as Captain Jack Sparrow. The first one is a great swashbuckler, and the sequels get bigger and stranger."
+          blurb: "DUN DUN DUNNA DUH DUH DUN DUN DUNNA DA DA DUH DUN DA!"
+          series:
+            - title: "The Curse of the Black Pearl"
+              done: true
+            - title: "Dead Man's Chest"
+              done: true
+              pitch: "Jack owes his soul to Davy Jones, and everyone wants the chest that holds Jones's heart."
+            - title: "At World's End"
+              done: true
+              pitch: "The crew sails to the land of the dead to bring Jack back for a last war against the East India Company."
+            - title: "On Stranger Tides"
+              done: true
+              pitch: "Jack and Blackbeard race each other to the Fountain of Youth."
+            - title: "Dead Men Tell No Tales"
+              done: false
+              pitch: "A ghost captain named Salazar escapes the Devil's Triangle to hunt Jack, while Will Turner's son searches for Poseidon's trident."
+        - title: "Avatar"
+          year: 2009
+          done: true
+          rating: 2.0
+          cover: "avatar"
+          pitch: "James Cameron's trip to the moon Pandora, and still the highest-grossing film ever made. The plot is simple, so watch it for the world, on the biggest screen you can find."
+          blurb: "It's isekai for Americans. I think it was a fine movie but I have no desire to watch the sequels."
+          series:
+            - title: "Avatar"
+              done: true
+            - title: "The Way of Water"
+              done: false
+              pitch: "Jake Sully's family flees to Pandora's reef clans when the humans come back. Much of it was shot underwater."
+            - title: "Fire and Ash"
+              done: false
+              pitch: "The Sullys run into the Ash People, a hostile Na'vi clan, as the war over Pandora goes on."
+        - title: "The Incredibles"
+          year: 2004
+          done: true
+          rating: 2.5
+          cover: "incredibles"
+          pitch: "Superheroes have been outlawed, so Mr. Incredible is stuck in an insurance job until a secret mission pulls his whole family back in. Brad Bird's spy movie in a supersuit."
+          blurb: "I had a lot of fun with this as a kid. Idk why but it made super heroes feel a little more accessible to craft up? I started drawing some comic doodles around this time of various heroes."
+          series:
+            - title: "The Incredibles"
+              done: true
+            - title: "Incredibles 2"
+              done: false
+              pitch: "Picking up right where the first ends, Elastigirl goes on a mission while Bob stays home with the kids, and baby Jack-Jack's powers start showing up."
+        - title: "Inception"
+          year: 2010
+          done: true
+          rating: 1.5
+          cover: "inception"
+          pitch: "A team of thieves breaks into people's dreams, and this time they have to plant an idea instead of stealing one. Nolan's heist movie, with a spinning top ending people still argue about."
+          blurb: "I don't have much thoughts on this, it didn't strike me as a particularly good twist, and I hardly remember the actual plot beyond the premise of entering peoples dreams."
+        - title: "Fight Club"
+          year: 1999
+          done: false
+          cover: "fight-club"
+          pitch: "An insomniac office worker meets a soap salesman named Tyler Durden, and the underground fight club they start grows into something much worse. Read nothing about it first."
+        - title: "Spider-Man"
+          year: 2002
+          done: true
+          rating: 3.0
+          cover: "spider-man"
+          pitch: "Sam Raimi's trilogy with Tobey Maguire, the Spider-Man our generation grew up on. The train fight in Spider-Man 2 is still one of the best superhero scenes there is."
+          blurb: "Good super hero, great message. It also helps strengthen my own philosophy that all authority comes with accountability."
+          series:
+            - title: "Spider-Man"
+              done: true
+            - title: "Spider-Man 2"
+              done: true
+              pitch: "Peter Parker is broke, behind in school and losing his powers, and then Doctor Octopus shows up."
+            - title: "Spider-Man 3"
+              done: true
+              pitch: "Venom, Sandman and a black suit that makes Peter strut down the street. The source of a hundred memes."
+        - title: "The Hunger Games"
+          year: 2012
+          done: true
+          rating: 3.0
+          cover: "hunger-games"
+          pitch: "Katniss Everdeen volunteers for a televised fight to the death to save her little sister, and turns the Capitol's show into the start of a revolution. The YA adaptation that actually worked."
+          blurb: "I read all the books and saw all the movies. It was a fun novel experience for me and the fam. It kicked off the young adult genre for me."
+          series:
+            - title: "The Hunger Games"
+              done: true
+            - title: "Catching Fire"
+              done: true
+              pitch: "The Capitol sends Katniss and Peeta back into the arena with past winners, and this time the districts are watching. The best of the films."
+            - title: "Mockingjay – Part 1"
+              done: true
+              pitch: "Katniss becomes the face of the rebellion in District 13's propaganda war against President Snow."
+            - title: "Mockingjay – Part 2"
+              done: true
+              pitch: "The rebels march on the Capitol for the last fight."
+            - title: "The Ballad of Songbirds & Snakes"
+              done: true
+              pitch: "A prequel set decades earlier: a young Coriolanus Snow mentors a girl from District 12 in the tenth Hunger Games."
+        - title: "Monsters, Inc."
+          year: 2001
+          done: true
+          rating: 2.0
+          cover: "monsters-inc"
+          pitch: "Monsters power their city with children's screams, and a little girl named Boo gets loose in the factory. Sulley and Mike are one of Pixar's best double acts."
+          blurb: "It was a cute fun movie. Glad I saw it, but wasn't super impactful on me."
+          series:
+            - title: "Monsters, Inc."
+              done: true
+            - title: "Monsters University"
+              done: false
+              pitch: "A prequel: how Mike and Sulley went from rivals at scaring school to best friends."
+        - title: "Gladiator"
+          year: 2000
+          done: true
+          rating: 2.0
+          cover: "gladiator"
+          pitch: "A Roman general is betrayed by the new emperor, sold into slavery and fights his way back to Rome in the arena. Best Picture, and Best Actor for Russell Crowe."
+          blurb: "I saw it as a kid and thought it was cool, but I need to give it a re-watch."
+          series:
+            - title: "Gladiator"
+              done: true
+            - title: "Gladiator II"
+              done: false
+              pitch: "Years later, Lucius, the boy from the first film, is enslaved and forced into the Colosseum himself."
+        - title: "A Knight's Tale"
+          year: 2001
+          done: true
+          rating: 5.0
+          cover: "knights-tale"
+          pitch: "A peasant squire fakes a noble pedigree to compete in medieval jousting tournaments, all set to a 70s rock soundtrack. Heath Ledger's breakout, with Paul Bettany as a gambling-addicted Geoffrey Chaucer."
+          blurb: "My favorite film. When William comes back to his blind father. That genuinely gets a tear out of me."
+        - title: "Saving Private Ryan"
+          year: 1998
+          done: false
+          cover: "saving-private-ryan"
+          pitch: "After D-Day, a squad is sent behind enemy lines to bring home a paratrooper whose three brothers have all been killed. The Omaha Beach opening changed how war movies are shot."
+        - title: "Mean Girls"
+          year: 2004
+          done: false
+          cover: "mean-girls"
+          pitch: "A teenager who grew up homeschooled in Africa starts at an American high school and falls in with the Plastics. Tina Fey wrote it, and on Wednesdays we wear pink."
+        - title: "Aladdin"
+          year: 1992
+          done: true
+          rating: 2.5
+          cover: "aladdin"
+          pitch: "A street thief, a princess, a magic lamp and Robin Williams as the Genie, doing every voice he can think of."
+          blurb: "The Genie carried this movie, but I didn't much care for Aladdin himself. I remember getting frustrated with his round-aboutness of his wishes."
+        - title: "Interstellar"
+          year: 2014
+          done: false
+          cover: "interstellar"
+          pitch: "Crops are failing across Earth, so a former pilot leaves his kids behind to search for a new home through a wormhole near Saturn. The physicist Kip Thorne worked on the science, and Hans Zimmer's organ score does the rest."
+        - title: "The Silence of the Lambs"
+          year: 1991
+          done: false
+          cover: "silence-of-the-lambs"
+          pitch: "An FBI trainee asks an imprisoned cannibal psychiatrist, Hannibal Lecter, to help her catch a serial killer. One of only three films to win all five of the top Oscars."
+        - title: "Schindler's List"
+          year: 1993
+          done: false
+          cover: "schindlers-list"
+          pitch: "A German businessman saves more than a thousand Jews during the Holocaust by employing them in his factories. Spielberg's Best Picture winner, shot almost entirely in black and white."
+        - title: "Up"
+          year: 2009
+          done: true
+          rating: 2.0
+          cover: "up"
+          pitch: "A widower ties thousands of balloons to his house and floats off to South America, with a young Wilderness Explorer stuck on the porch. The first ten minutes are famous for a reason."
+          blurb: "Good movie but not much of an impact on me."
+        - title: "WALL-E"
+          year: 2008
+          done: true
+          rating: 2.5
+          cover: "wall-e"
+          pitch: "A trash-compacting robot left alone on an abandoned Earth falls for a sleek probe named EVE and follows her into space. Its first act has almost no dialogue."
+          blurb: "Y'know the idiocracy and laziness that seems to be growing might make this movie prophetic."
+        - title: "Ghostbusters"
+          year: 1984
+          done: false
+          cover: "ghostbusters"
+          pitch: "Three scientists lose their university jobs and start a ghost-catching business in New York. Bill Murray, Dan Aykroyd, Harold Ramis and a giant marshmallow man."
+          series:
+            - title: "Ghostbusters"
+              done: false
+            - title: "Ghostbusters II"
+              done: false
+              pitch: "Five years later, the team gets back together when a river of slime turns up under New York."
+            - title: "Ghostbusters: Afterlife"
+              done: false
+              pitch: "Egon Spengler's grandkids find his old gear on a farm in Oklahoma."
+            - title: "Ghostbusters: Frozen Empire"
+              done: false
+              pitch: "Egon's family moves into the old firehouse just as an ancient ghost threatens to freeze New York."
+        - title: "Goodfellas"
+          year: 1990
+          done: false
+          cover: "goodfellas"
+          pitch: "Thirty years in the mob through the eyes of Henry Hill, who always wanted to be a gangster. Scorsese at his fastest and funniest."
+        - title: "The Princess Bride"
+          year: 1987
+          done: true
+          rating: 4.0
+          cover: "princess-bride"
+          pitch: "A grandfather reads his sick grandson a story about a farm boy, a princess, a giant and a Spanish swordsman hunting the six-fingered man who killed his father. Nearly every line is quotable."
+          blurb: "Perfect Valentine's Day film. I love this love story. It's also hysterical!"
+        - title: "Elf"
+          year: 2003
+          done: true
+          rating: 3.5
+          cover: "elf"
+          pitch: "A human raised by elves at the North Pole goes to New York to find his real father. A Christmas movie people actually rewatch every year."
+          blurb: "It's on our yearly Christmas rotation of must watch films. I can recite most of this film. It definitely makes the season start to feel like Christmas."
+        - title: "How the Grinch Stole Christmas"
+          year: 2000
+          done: true
+          rating: 4.5
+          cover: "grinch"
+          pitch: "Jim Carrey, under hours of green makeup, plays the Grinch, who sets out to steal Christmas from the Whos down in Whoville. Ron Howard's live-action take on the Dr. Seuss book."
+          blurb: "I say the lines under my breath as this film plays in the Yule-Tide background. We've watched it every year without fail since we got the DVD. It's tradition!"
+        - title: "Monty Python and the Holy Grail"
+          year: 1975
+          done: true
+          rating: 4.0
+          cover: "holy-grail"
+          pitch: "King Arthur and his knights search for the Holy Grail on a budget so small they couldn't afford horses, so they bang coconuts together instead. Engineers have been quoting it for fifty years."
+          blurb: "This is a movie my Dad and I will quote at each other the moment anything tangentially related comes up that deserves a Monty Python quote."
+        - title: "Top Gun"
+          year: 1986
+          done: false
+          cover: "top-gun"
+          pitch: "Tom Cruise as Maverick, a hotshot Navy pilot at the Top Gun school, with a volleyball scene everyone remembers. The sequel came 36 years later and beat the original."
+          series:
+            - title: "Top Gun"
+              done: false
+            - title: "Top Gun: Maverick"
+              done: false
+              pitch: "Maverick goes back to Top Gun to train pilots for a near-impossible mission, among them the son of his late wingman, Goose. The actors really flew in the jets."
+        - title: "Napoleon Dynamite"
+          year: 2004
+          done: true
+          rating: 3.5
+          cover: "napoleon-dynamite"
+          pitch: "An awkward Idaho teenager helps his new friend Pedro run for class president. Made for about $400,000 and quoted in every high school hallway of the mid-2000s."
+          blurb: "My cousins and I will quote this movie at each other. Seeing that we all went through that 2000's teenage angst together!"
+        - title: "Groundhog Day"
+          year: 1993
+          done: true
+          rating: 3.5
+          cover: "groundhog-day"
+          pitch: "A grumpy weatherman wakes up to the same day in a small Pennsylvania town over and over again. Bill Murray's best, and the reason the title is now a phrase."
+          blurb: "Not only was this a good movie, but it's philosophically relevant and really makes you think outside the movie when the premise hits you."
+        - title: "How to Train Your Dragon"
+          year: 2010
+          done: true
+          rating: 4.0
+          cover: "how-to-train-your-dragon"
+          pitch: "A Viking kid who can't bring himself to kill a dragon befriends one instead. DreamWorks' best trilogy, and John Powell's score is worth the watch on its own."
+          blurb: "Probably my favorite Dreamworks production. There's a few moments in this trilogy that just punch me in the gut."
+          series:
+            - title: "How to Train Your Dragon"
+              done: true
+            - title: "How to Train Your Dragon 2"
+              done: true
+              pitch: "Five years later, Hiccup and Toothless find Hiccup's long-lost mother and a dragon trapper building an army."
+            - title: "The Hidden World"
+              done: true
+              pitch: "Hiccup searches for the hidden homeland of the dragons while a hunter goes after Toothless."
+        - title: "The Truman Show"
+          year: 1998
+          done: true
+          rating: 3.0
+          cover: "truman-show"
+          pitch: "Truman Burbank doesn't know his whole life is a TV show, broadcast live around the clock from a giant dome. Jim Carrey's best dramatic role."
+          blurb: "This was good, good acting and good premise. It does get brought up in some philosophical discussions sometimes. I feel like it could've meant more to me though."
+        - title: "Ferris Bueller's Day Off"
+          year: 1986
+          done: true
+          rating: 2.5
+          cover: "ferris-bueller"
+          pitch: "A high schooler fakes sick and takes his best friend and girlfriend on a day out in Chicago, with the principal on his trail."
+          blurb: "Does Ferris exist though? Feels like he's just a figment of the side-guy's imagination."
+        - title: "Anchorman"
+          year: 2004
+          done: false
+          cover: "anchorman"
+          pitch: "Ron Burgundy, San Diego's top anchorman in the 1970s, feels threatened when a woman joins the newsroom. Will Ferrell at his most quotable."
+          series:
+            - title: "Anchorman: The Legend of Ron Burgundy"
+              done: false
+            - title: "Anchorman 2: The Legend Continues"
+              done: false
+              pitch: "Ron and the news team move to New York to work on one of the first 24-hour news channels."
+        - title: "Superbad"
+          year: 2007
+          done: false
+          cover: "superbad"
+          pitch: "Two best friends try to score alcohol for a party before they split up for college. Seth Rogen and Evan Goldberg started writing it as teenagers, and McLovin is why everyone remembers it."
+        - title: "The Hangover"
+          year: 2009
+          done: true
+          rating: 2.0
+          cover: "hangover"
+          pitch: "Three friends wake up in a trashed Las Vegas suite with no memory of the night, a tiger in the bathroom and the groom missing."
+          blurb: "It got some laughs out of me."
+          series:
+            - title: "The Hangover"
+              done: true
+            - title: "The Hangover Part II"
+              done: false
+              pitch: "The same thing happens again, this time in Bangkok."
+            - title: "The Hangover Part III"
+              done: false
+              pitch: "The Wolfpack goes after Mr. Chow, with no wedding this time."
+        - title: "Good Will Hunting"
+          year: 1997
+          done: false
+          cover: "good-will-hunting"
+          pitch: "A janitor at MIT turns out to be a math genius, and a therapist played by Robin Williams tries to get through to him. Matt Damon and Ben Affleck won the screenplay Oscar for writing it."
+        - title: "The Green Mile"
+          year: 1999
+          done: false
+          cover: "green-mile"
+          pitch: "A death row guard in 1935 meets a gentle giant convicted of murder who seems able to heal people. Tom Hanks, from a Stephen King serial novel."
+        - title: "The Sixth Sense"
+          year: 1999
+          done: true
+          rating: 2.0
+          cover: "sixth-sense"
+          pitch: "A child psychologist tries to help a boy who says he sees dead people. Go in knowing as little as possible."
+          blurb: "\"I see dead people\" is quotable, the twist predictable. The watch, fun."
+        - title: "The Departed"
+          year: 2006
+          done: false
+          cover: "departed"
+          pitch: "A cop goes undercover in the Boston mob while a mobster goes undercover in the police, and each is hunting the other. It finally won Scorsese Best Director."
+        - title: "Se7en"
+          year: 1995
+          done: false
+          cover: "se7en"
+          pitch: "Two detectives hunt a killer whose murders follow the seven deadly sins. David Fincher's bleakest thriller, with an ending everyone knows about."
+        - title: "The Social Network"
+          year: 2010
+          done: false
+          cover: "social-network"
+          pitch: "How Mark Zuckerberg built Facebook in a Harvard dorm room and got sued by nearly everyone around him. Aaron Sorkin's script, with a Trent Reznor score."
+        - title: "Spider-Man: Into the Spider-Verse"
+          year: 2018
+          done: false
+          cover: "spider-verse"
+          pitch: "Brooklyn teenager Miles Morales becomes Spider-Man and meets Spider-People from other dimensions. It looks like a comic book come to life, and studios have been borrowing the style ever since."
+          series:
+            - title: "Into the Spider-Verse"
+              done: false
+            - title: "Across the Spider-Verse"
+              done: false
+              pitch: "Miles follows Gwen Stacy across the multiverse and runs into a society of Spider-People who think his story has to go a certain way."
+        - title: "Mad Max: Fury Road"
+          year: 2015
+          done: false
+          cover: "mad-max-fury-road"
+          pitch: "Two hours of car chase across a desert wasteland, with Charlize Theron's Furiosa as the real lead. It won six Oscars."
+        - title: "Ratatouille"
+          year: 2007
+          done: true
+          rating: 2.0
+          cover: "ratatouille"
+          pitch: "A rat who wants to be a chef teams up with a kitchen boy in a Paris restaurant, steering him by pulling his hair. The food critic's speech near the end is one of Pixar's best scenes."
+          blurb: "Cute, fun, and bad moral lesson. It's got the same Shrek problem of \"I'll risk everyone for the sake of my dream\"."
+        - title: "Austin Powers"
+          year: 1997
+          done: false
+          cover: "austin-powers"
+          pitch: "A swinging 60s spy is unfrozen in the 1990s to stop Dr. Evil. Mike Myers plays both, and the Bond spoofs get sillier with every film."
+          series:
+            - title: "International Man of Mystery"
+              done: false
+            - title: "The Spy Who Shagged Me"
+              done: false
+              pitch: "Dr. Evil travels back to 1969 to steal Austin's mojo, and Mini-Me joins the family."
+            - title: "Goldmember"
+              done: false
+              pitch: "Dr. Evil teams up with a Dutch villain named Goldmember to kidnap Austin's father, played by Michael Caine."
+        - title: "Kung Fu Panda"
+          year: 2008
+          done: true
+          rating: 2.5
+          cover: "kung-fu-panda"
+          pitch: "A clumsy panda from a noodle shop is named the Dragon Warrior over the Furious Five, who trained their whole lives for it. Jack Black's best role, with beautiful fight scenes."
+          blurb: "I liked it, it was fun, Jack Black is super expressive. I think the moral was good too that Po is enough."
+          series:
+            - title: "Kung Fu Panda"
+              done: true
+            - title: "Kung Fu Panda 2"
+              done: false
+              pitch: "Po learns where he came from while stopping a peacock whose new cannon could end kung fu."
+            - title: "Kung Fu Panda 3"
+              done: false
+              pitch: "Po finds his birth father and a hidden panda village as a spirit warrior steals the chi of China's masters."
+            - title: "Kung Fu Panda 4"
+              done: false
+              pitch: "Po has to pick his successor as Dragon Warrior while a shapeshifting sorceress called the Chameleon raises his old enemies."
+        - title: "School of Rock"
+          year: 2003
+          done: true
+          rating: 2.5
+          cover: "school-of-rock"
+          pitch: "A failed rock guitarist poses as a substitute teacher at a prep school and turns his class into a band. Jack Black was made for it."
+          blurb: "A very fun movie with a dubious moral. Please don't lie to get ahead. If it does work in the real world it always comes at a cost and the debt will come knocking."
+        - title: "Parasite"
+          year: 2019
+          done: false
+          cover: "parasite"
+          pitch: "A poor family cons its way into working for a rich one, one job at a time, until it all goes very wrong. The first non-English film to win Best Picture."
+        - title: "The Prestige"
+          year: 2006
+          done: false
+          cover: "prestige"
+          pitch: "Two rival magicians in Victorian London try to ruin each other over one trick. Nolan's puzzle box, with Hugh Jackman, Christian Bale and David Bowie as Nikola Tesla."
+        - title: "Inside Out"
+          year: 2015
+          done: true
+          rating: 2.5
+          cover: "inside-out"
+          pitch: "The emotions inside an eleven-year-old's head, Joy, Sadness, Anger, Fear and Disgust, try to steer her through a move across the country."
+          blurb: "It's a cute play on emotions. Though I don't like the characters."
+          series:
+            - title: "Inside Out"
+              done: true
+            - title: "Inside Out 2"
+              done: false
+              pitch: "Riley turns thirteen, and Anxiety moves into headquarters with a few new emotions."
+        - title: "Coco"
+          year: 2017
+          done: false
+          cover: "coco"
+          pitch: "A boy who dreams of being a musician ends up in the Land of the Dead on Día de los Muertos and has to get home by sunrise. The ending gets everyone."
+        - title: "Catch Me If You Can"
+          year: 2002
+          done: false
+          cover: "catch-me-if-you-can"
+          pitch: "A teenage con man poses as a pilot, a doctor and a lawyer while an FBI agent chases him across the world. Loosely based on Frank Abagnale's memoir."
+        - title: "Mulan"
+          year: 1998
+          done: true
+          rating: 2.5
+          cover: "mulan"
+          pitch: "A young woman disguises herself as a man to take her father's place in the army. Comes with Eddie Murphy as a tiny dragon and 'I'll Make a Man Out of You'."
+        - title: "Whiplash"
+          year: 2014
+          done: false
+          cover: "whiplash"
+          pitch: "A young jazz drummer at a top music school and the abusive teacher who pushes him until he bleeds. J.K. Simmons won an Oscar for the teacher."
+        - title: "Step Brothers"
+          year: 2008
+          done: false
+          cover: "step-brothers"
+          pitch: "Two forty-year-old men who still live with their parents become stepbrothers when those parents marry. Will Ferrell and John C. Reilly as overgrown children."
+        - title: "The Cornetto Trilogy"
+          year: 2004
+          done: false
+          cover: "cornetto-trilogy"
+          pitch: "Edgar Wright, Simon Pegg and Nick Frost made three loosely linked British comedies, each one spoofing a genre and each with a Cornetto ice cream in it."
+          series:
+            - title: "Shaun of the Dead"
+              done: false
+            - title: "Hot Fuzz"
+              done: false
+              pitch: "A London supercop is transferred to a sleepy village with a suspicious number of accidents. A buddy cop spoof."
+            - title: "The World's End"
+              done: false
+              pitch: "Five old friends retry an epic pub crawl in their hometown and find it's been taken over by robots."
+        - title: "Dodgeball"
+          year: 2004
+          done: false
+          cover: "dodgeball"
+          pitch: "The owner of a run-down gym enters a dodgeball tournament to save it from Ben Stiller's corporate fitness chain. If you can dodge a wrench, you can dodge a ball."
+        - title: "The Iron Giant"
+          year: 1999
+          done: true
+          rating: 3.0
+          cover: "iron-giant"
+          pitch: "A boy in 1957 Maine befriends a giant robot from space while a government agent hunts it down. It flopped in theaters and became a cult classic."
+          blurb: "Weirdly enough I credit this movie with my initial interest in space, even though it had very little to do with space."
+        - title: "The Emperor's New Groove"
+          year: 2000
+          done: true
+          rating: 4.0
+          cover: "emperors-new-groove"
+          pitch: "A selfish young emperor is turned into a llama and has to rely on the peasant he wronged to get home. Disney's funniest film, and Kronk is why."
+          blurb: "This is a movie I can watch multiple times. It's funny and bad choices are meant to feel like bad choices. The smug irredeemable Kuzco getting redeemed only after intense humility is biblical."
+        - title: "21 Jump Street"
+          year: 2012
+          done: false
+          cover: "21-jump-street"
+          pitch: "Two failed cops go undercover at a high school, where the nerd is suddenly cool and the jock isn't. Jonah Hill and Channing Tatum make a great pair."
+          series:
+            - title: "21 Jump Street"
+              done: false
+            - title: "22 Jump Street"
+              done: false
+              pitch: "This time they go undercover at college, and the movie spends most of its time making fun of sequels."
+        - title: "Tropic Thunder"
+          year: 2008
+          done: false
+          cover: "tropic-thunder"
+          pitch: "A cast of spoiled actors shooting a Vietnam war movie end up stranded in a real jungle. Tom Cruise's cameo as a foul-mouthed studio boss steals it."
+        - title: "Wedding Crashers"
+          year: 2005
+          done: false
+          cover: "wedding-crashers"
+          pitch: "Two divorce mediators crash weddings to pick up women, until one of them falls for a senator's daughter."
+    - label: "Shows"
+      kind: "show"
+      items:
+        - title: "The Simpsons"
+          year: 1989
+          done: true
+          rating: 2.5
+          cover: "simpsons"
+          pitch: "The longest-running scripted primetime show in America. Seasons three through nine are the ones people quote."
+          more: true
+          blurb: "The Fastfood of TV shows."
+        - title: "Friends"
+          year: 1994
+          done: false
+          cover: "friends"
+          pitch: "Six friends in their twenties in Manhattan, mostly hanging out at a coffee shop. It's been on in the background of every millennial's life."
+        - title: "Breaking Bad"
+          year: 2008
+          done: true
+          rating: 3.0
+          cover: "breaking-bad"
+          pitch: "A high school chemistry teacher with terminal cancer starts cooking meth to provide for his family, and slowly turns into someone they won't recognize. Five seasons with almost no filler."
+          blurb: "It was a fun story to see how power corrupts."
+        - title: "Game of Thrones"
+          year: 2011
+          done: true
+          rating: 3.0
+          cover: "game-of-thrones"
+          pitch: "Noble houses fight over the Iron Throne while something far worse gathers beyond the Wall. The first four seasons are as good as TV gets, and people are still arguing about the ending."
+          blurb: "The world is so rich, and I'm sure the books are even more amazing. I wish the show runners didn't flub the resolutions so hard with the latter seasons."
+        - title: "The Office"
+          year: 2005
+          done: false
+          cover: "office"
+          pitch: "The Scranton branch of a paper company and its manager, Michael Scott, who badly wants everyone to love him. Push past season one."
+        - title: "Seinfeld"
+          year: 1989
+          done: false
+          cover: "seinfeld"
+          pitch: "The show about nothing: Jerry, George, Elaine and Kramer, four selfish New Yorkers obsessing over small things."
+        - title: "SpongeBob SquarePants"
+          year: 1999
+          done: true
+          rating: 3.5
+          cover: "spongebob"
+          pitch: "A sponge who flips Krabby Patties in Bikini Bottom, and his best friend Patrick. The first three seasons are half the internet's reaction images."
+          more: true
+          blurb: "I could quote this show all day. Integral to my childhood."
+        - title: "The Sopranos"
+          year: 1999
+          done: false
+          cover: "sopranos"
+          pitch: "A New Jersey mob boss starts seeing a therapist for his panic attacks. The show that kicked off the prestige TV era."
+        - title: "Stranger Things"
+          year: 2016
+          done: false
+          cover: "stranger-things"
+          pitch: "A boy vanishes in 1983 Indiana, and his friends find a girl with psychic powers who escaped a government lab. Built out of 80s Spielberg and Stephen King, D&D campaign included."
+        - title: "Avatar: The Last Airbender"
+          year: 2005
+          done: true
+          rating: 4.5
+          cover: "last-airbender"
+          pitch: "In a world where some people can bend the elements, the last Airbender wakes up after a hundred years frozen in ice and has to stop the Fire Nation. One of the best stories in animation, kids' show or not."
+          blurb: "This is one of the best coming of age stories of my generation. Korra though is just a Mary Sue and dragged the world building through the mud."
+          series:
+            - title: "Avatar: The Last Airbender"
+              done: true
+            - title: "The Legend of Korra"
+              done: true
+              pitch: "Seventy years later, the next Avatar, a hotheaded Water Tribe girl, learns airbending in a city that's racing into the industrial age."
+        - title: "South Park"
+          year: 1997
+          done: true
+          rating: 3.5
+          cover: "south-park"
+          pitch: "Four foul-mouthed fourth graders in a Colorado mountain town. Episodes are made in about a week, so they can mock whatever is in the news."
+          more: true
+          blurb: "Fast Food but more culturally relevant. It got a bit repetitive with the Trump stuff. Still beats most fast food type shows."
+        - title: "The Wire"
+          year: 2002
+          done: false
+          cover: "wire"
+          pitch: "The Baltimore drug trade, seen from a new corner of the city each season: the street, the police, the docks, city hall, the schools and the newspaper. Slow to start and worth it."
+        - title: "Lost"
+          year: 2004
+          done: false
+          cover: "lost"
+          pitch: "A plane crashes on a strange island, and the survivors find polar bears, a smoke monster and a hatch in the ground. Watch it for the characters, since not every mystery gets an answer."
+        - title: "Family Guy"
+          year: 1999
+          done: true
+          rating: 2.5
+          cover: "family-guy"
+          pitch: "Peter Griffin, his family and a talking dog in Rhode Island, mostly as an excuse for cutaway gags."
+          more: true
+          blurb: "It's Fast Food like the Simpsons and only marginally different. Fun, but meh."
+        - title: "The Fresh Prince of Bel-Air"
+          year: 1990
+          done: false
+          cover: "fresh-prince"
+          pitch: "Will Smith plays a kid from West Philadelphia sent to live with his rich aunt and uncle in Bel-Air. You already know the theme song."
+        - title: "The Walking Dead"
+          year: 2010
+          done: true
+          rating: 2.5
+          cover: "walking-dead"
+          pitch: "A sheriff's deputy wakes from a coma into a zombie apocalypse and ends up leading a group of survivors. For a few years in the early 2010s it was the biggest show on TV."
+          more: true
+          blurb: "I think it was pretty fun while I watched it. I got up to Negan. I just don't feel the need to continue watching it."
+        - title: "How I Met Your Mother"
+          year: 2005
+          done: false
+          cover: "how-i-met-your-mother"
+          pitch: "In 2030, Ted tells his kids the very long story of how he met their mother. Barney Stinson is legendary; the ending splits people."
+        - title: "The Big Bang Theory"
+          year: 2007
+          done: true
+          rating: 2.5
+          cover: "big-bang-theory"
+          pitch: "Four Caltech scientists and Penny, their neighbor across the hall. Twelve seasons, and one of the most-watched sitcoms of its time."
+          blurb: "It's dorky and cute. Sheldon is a meme. I don't have much to say on it."
+        - title: "Futurama"
+          year: 1999
+          done: false
+          cover: "futurama"
+          pitch: "A pizza delivery boy is frozen on New Year's Eve 1999 and wakes up in the year 3000. Matt Groening's other show, written by a room with math degrees."
+        - title: "Rick and Morty"
+          year: 2013
+          done: true
+          rating: 3.0
+          cover: "rick-and-morty"
+          pitch: "A drunk mad scientist drags his anxious grandson on adventures across the multiverse. Dark, gross and smarter than it lets on."
+          more: true
+          blurb: "The early seasons had me at the edge of my seat waiting for the new episodes. I lost interest though."
+        - title: "Parks and Recreation"
+          year: 2009
+          done: true
+          rating: 3.0
+          cover: "parks-and-recreation"
+          pitch: "Leslie Knope runs the parks department of a small Indiana town with endless optimism, next to Ron Swanson, who'd like government to disappear. It gets great in season two."
+          blurb: "This is my first \"The Office\" styled show. It was fun and I had a good time watching it."
+        - title: "Mad Men"
+          year: 2007
+          done: false
+          cover: "mad-men"
+          pitch: "A 1960s Madison Avenue ad man living under a stolen identity, with the decade changing around him."
+        - title: "Black Mirror"
+          year: 2011
+          done: true
+          rating: 3.5
+          cover: "black-mirror"
+          pitch: "A standalone story each episode about technology going wrong in the near future. Start with 'San Junipero' or 'White Christmas'."
+          more: true
+          blurb: "It's hard to give this a rating because each episode is like its own movie and it can sway up and down a point from 4.5 to 2.5. The Bees is just Death Note btw."
+        - title: "That '70s Show"
+          year: 1998
+          done: false
+          cover: "that-70s-show"
+          pitch: "Teenagers hanging out in a Wisconsin basement in the late 1970s while Red Forman threatens to put his foot somewhere unpleasant."
+        - title: "Malcolm in the Middle"
+          year: 2000
+          done: false
+          cover: "malcolm-in-the-middle"
+          pitch: "A gifted kid stuck in a loud, broke family of brothers, with Bryan Cranston as the dad years before Breaking Bad."
+        - title: "Band of Brothers"
+          year: 2001
+          done: false
+          cover: "band-of-brothers"
+          pitch: "Easy Company of the 101st Airborne, from training through D-Day and Bastogne to Hitler's Eagle's Nest. Ten episodes from Spielberg and Tom Hanks, based on the real men."
+        - title: "Rugrats"
+          year: 1991
+          done: true
+          rating: 3.0
+          cover: "rugrats"
+          pitch: "Babies go on big adventures in the backyard while the grown-ups don't notice. Angelica was the villain of our childhoods."
+          blurb: "The Rugrats Movie was peak, though the show still gave me a lot of entertainment and memories as a kid. Reptar is the goat!"
+        - title: "Squid Game"
+          year: 2021
+          done: true
+          rating: 3.0
+          cover: "squid-game"
+          pitch: "Hundreds of people buried in debt compete in deadly versions of children's games for a huge cash prize. Korean, and worth the subtitles."
+          more: true
+          blurb: "I only saw the first season and honestly that's all I'll ever need to see. It was well written and gives me Battle Royale vibes. It's a sort of horror, and I like scary stuff."
+        - title: "Arrested Development"
+          year: 2003
+          done: false
+          cover: "arrested-development"
+          pitch: "A rich family loses everything when the father is arrested, and the one sane son tries to hold them together. The jokes build across episodes, so it rewards a rewatch."
+        - title: "Better Call Saul"
+          year: 2015
+          done: false
+          cover: "better-call-saul"
+          pitch: "Years before he was Breaking Bad's sleazy lawyer, Saul Goodman was Jimmy McGill, a small-time con man trying to go straight. Some fans rank it above Breaking Bad."
+        - title: "Scrubs"
+          year: 2001
+          done: false
+          cover: "scrubs"
+          pitch: "J.D.'s years as a young doctor at Sacred Heart hospital, told through his daydreams. Funny until it suddenly isn't."
+        - title: "It's Always Sunny in Philadelphia"
+          year: 2005
+          done: false
+          cover: "always-sunny"
+          pitch: "Five terrible people run a dive bar in Philadelphia. The longest-running live-action sitcom in American TV history."
+        - title: "Sherlock"
+          year: 2010
+          done: false
+          cover: "sherlock"
+          pitch: "Benedict Cumberbatch and Martin Freeman as Holmes and Watson in modern London. Each season is three feature-length episodes."
+        - title: "Brooklyn Nine-Nine"
+          year: 2013
+          done: false
+          cover: "brooklyn-nine-nine"
+          pitch: "A goofy, brilliant detective and the stone-faced captain of a Brooklyn precinct. The Halloween heist episodes are the high point."
+        - title: "Batman: The Animated Series"
+          year: 1992
+          done: false
+          cover: "batman-animated-series"
+          pitch: "Kevin Conroy as Batman and Mark Hamill as the Joker. The version of Batman a lot of people still call the best."
+        - title: "King of the Hill"
+          year: 1997
+          done: true
+          rating: 2.5
+          cover: "king-of-the-hill"
+          pitch: "Hank Hill sells propane and propane accessories in a small Texas town. Gentle, grounded and funnier than it looks."
+          more: true
+          blurb: "It's a Fast Food show. Not bad."
+        - title: "Chernobyl"
+          year: 2019
+          done: false
+          cover: "chernobyl"
+          pitch: "The 1986 nuclear disaster and the scientists who fought the Soviet system to get the truth out. Five episodes that stay with you."
+        - title: "The Mandalorian"
+          year: 2019
+          done: false
+          cover: "mandalorian"
+          pitch: "A Mandalorian bounty hunter takes a job delivering a small green child and ends up protecting him instead. Star Wars as a space western."
+        - title: "The Last of Us"
+          year: 2023
+          done: false
+          cover: "last-of-us"
+          pitch: "Based on the video game: a smuggler escorts a teenage girl who may be the cure for a fungal pandemic across a ruined America. The third episode is the one everyone talks about."
+        - title: "Adventure Time"
+          year: 2010
+          done: false
+          cover: "adventure-time"
+          pitch: "A boy and his shapeshifting dog in the Land of Ooo. It starts silly and slowly reveals the ruined world underneath."
+        - title: "Community"
+          year: 2009
+          done: false
+          cover: "community"
+          pitch: "A disbarred lawyer forms a study group at a community college, and every few episodes the show turns into a parody of another genre. The paintball episodes are the place to start."
+        - title: "Curb Your Enthusiasm"
+          year: 2000
+          done: false
+          cover: "curb-your-enthusiasm"
+          pitch: "Seinfeld co-creator Larry David plays himself and turns every small social rule into a fight. Mostly improvised."
+        - title: "Succession"
+          year: 2018
+          done: false
+          cover: "succession"
+          pitch: "A media mogul's four children fight over who gets the company. Awful people trading very funny insults."
+        - title: "The Powerpuff Girls"
+          year: 1998
+          done: true
+          rating: 2.0
+          cover: "powerpuff-girls"
+          pitch: "Three kindergarten superheroes made of sugar, spice and Chemical X defend Townsville from Mojo Jojo."
+          more: true
+          blurb: "I didn't care for it so much when it was on, but it was fun to say MOJOJOJO!"
+        - title: "Dexter's Laboratory"
+          year: 1996
+          done: true
+          rating: 2.0
+          cover: "dexters-laboratory"
+          pitch: "A boy genius hides an enormous lab behind his bookcase, and his big sister Dee Dee keeps getting in."
+          more: true
+          blurb: "I didn't really *get* this as a kid. I'd watch it and be entertained, but wasn't integral."
+        - title: "Hey Arnold!"
+          year: 1996
+          done: true
+          rating: 2.0
+          cover: "hey-arnold"
+          pitch: "A kid with a football-shaped head lives in his grandparents' city boarding house. Helga's secret crush on him is Nickelodeon's best running joke."
+          more: true
+          blurb: "This was the older kid cartoon when it was airing. I couldn't relate. Maybe it's good though."
+        - title: "Ed, Edd n Eddy"
+          year: 1999
+          done: true
+          rating: 2.5
+          cover: "ed-edd-n-eddy"
+          pitch: "Three boys run scams on the other kids in their cul-de-sac to buy jawbreakers. They never work."
+          more: true
+          blurb: "I enjoyed the hijinks in this show! Trying to get those jawbreakers. Man was I disappointed when I had my first irl jawbreaker. They're cumbersome and too sweet for me for too long."
+        - title: "Courage the Cowardly Dog"
+          year: 1999
+          done: true
+          rating: 2.0
+          cover: "courage"
+          pitch: "A terrified pink dog protects his elderly owners from the monsters that keep turning up in the middle of Nowhere, Kansas. Creepier than a kids' show should be."
+          more: true
+          blurb: "I didn't like this as a kid, but I was easily frightened as a kid."
+        - title: "Gravity Falls"
+          year: 2012
+          done: true
+          rating: 4.0
+          cover: "gravity-falls"
+          pitch: "Twins spend the summer at their great-uncle's tourist trap in an Oregon town full of mysteries. Two seasons, with every clue planned from the start."
+          blurb: "The lore is DEEP on this and me and my Sister watched this religiously together. Memories, and stellar writing!"
+        - title: "Samurai Jack"
+          year: 2001
+          done: false
+          cover: "samurai-jack"
+          pitch: "A samurai is flung into a future ruled by the demon Aku and searches for a way back to his own time. Genndy Tartakovsky's show is nearly silent and gorgeous, and a fifth season finished the story in 2017."
+        - title: "Teen Titans"
+          year: 2003
+          done: false
+          cover: "teen-titans"
+          pitch: "Robin, Starfire, Raven, Beast Boy and Cyborg protect Jump City. The original anime-styled series with the bigger story arcs, before Teen Titans Go!"
+        - title: "Ted Lasso"
+          year: 2020
+          done: false
+          cover: "ted-lasso"
+          pitch: "An American college football coach is hired to manage an English soccer team, a sport he knows nothing about. Kind without being soft."
+        - title: "30 Rock"
+          year: 2006
+          done: false
+          cover: "30-rock"
+          pitch: "Tina Fey runs a sketch comedy show at NBC, with Alec Baldwin as her boss. More jokes per minute than almost anything else on TV."
+        - title: "Silicon Valley"
+          year: 2014
+          done: false
+          cover: "silicon-valley"
+          pitch: "A shy programmer invents a compression algorithm and tries to turn it into a startup. Engineers watch it like a documentary."
+        - title: "Peaky Blinders"
+          year: 2013
+          done: false
+          cover: "peaky-blinders"
+          pitch: "Tommy Shelby's gang takes over Birmingham after World War I, razor blades sewn into their caps, to a modern rock soundtrack."
+        - title: "Arcane"
+          year: 2021
+          done: true
+          rating: 3.0
+          cover: "arcane"
+          pitch: "Two sisters end up on opposite sides of a war between a rich city and the undercity below it. Set in the League of Legends world, though you don't need to know the game, and it looks like a painting in motion."
+          more: true
+          blurb: "I don't play League of Legends, but the first season of this was good."
+        - title: "BoJack Horseman"
+          year: 2014
+          done: true
+          rating: 3.0
+          cover: "bojack-horseman"
+          pitch: "A washed-up horse who starred in a 90s sitcom tries to matter again in Hollywood. It starts as a cartoon comedy and becomes one of TV's best shows about depression."
+          blurb: "It's well written and very real other than the horseplay of it all. It does capture that living in a dying society feeling that my generation has been feeling. Probably why nostalgia core is so popular."
+        - title: "Schitt's Creek"
+          year: 2015
+          done: false
+          cover: "schitts-creek"
+          pitch: "A rich family goes broke and has to move to a small town they once bought as a joke. A slow start with a big payoff."
+        - title: "Firefly"
+          year: 2002
+          done: false
+          cover: "firefly"
+          pitch: "A crew of smugglers on a small spaceship takes whatever work it can find: a western set in space. Canceled after one season, then wrapped up with the film Serenity."
+        - title: "Severance"
+          year: 2022
+          done: false
+          cover: "severance"
+          pitch: "Office workers have their memories surgically split between work and home, so their work selves never get to leave the building. The best show about a job since The Office."
+        - title: "What We Do in the Shadows"
+          year: 2019
+          done: false
+          cover: "what-we-do-in-the-shadows"
+          pitch: "A mockumentary about four vampire roommates on Staten Island, spun off from the Taika Waititi film."
+    - label: "Anime"
+      kind: "show"
+      items:
+        - title: "Spirited Away"
+          year: 2001
+          kind: "movie"
+          done: false
+          cover: "spirited-away"
+          pitch: "A girl wanders into a bathhouse for spirits and has to work there to free her parents, who've been turned into pigs. Hayao Miyazaki's best-known film, and it won the Oscar for Best Animated Feature."
+        - title: "Pokémon"
+          year: 1997
+          done: false
+          cover: "pokemon"
+          pitch: "Ash Ketchum and Pikachu leave Pallet Town to become Pokémon Masters. The first season, Indigo League, is the one we all watched before school."
+        - title: "Dragon Ball Z"
+          year: 1989
+          done: false
+          cover: "dragon-ball-z"
+          pitch: "Goku and his friends defend Earth from aliens, androids and a pink blob named Majin Buu, in fights that last for episodes. The heart of Toonami."
+        - title: "Cowboy Bebop"
+          year: 1998
+          done: false
+          cover: "cowboy-bebop"
+          pitch: "Broke bounty hunters drift around the solar system in 2071, set to a jazz soundtrack. A good first anime for people who don't watch anime."
+        - title: "Death Note"
+          year: 2006
+          done: false
+          cover: "death-note"
+          pitch: "A top student finds a notebook that kills anyone whose name he writes in it and sets out to rid the world of criminals. A cat-and-mouse game with a genius detective named L."
+        - title: "Fullmetal Alchemist: Brotherhood"
+          year: 2009
+          done: false
+          cover: "fullmetal-alchemist-brotherhood"
+          pitch: "Two brothers try to bring their mother back with alchemy, lose far too much, and set out to get their bodies back. Fans often rank it the best anime ever made."
+        - title: "Attack on Titan"
+          year: 2013
+          done: false
+          cover: "attack-on-titan"
+          pitch: "Humanity hides behind giant walls from man-eating giants, until one breaks through. The show keeps changing what you think it's about."
+        - title: "Naruto"
+          year: 2002
+          done: false
+          cover: "naruto"
+          pitch: "An outcast ninja kid with a fox demon sealed inside him wants to become his village's leader. Long, with plenty of filler, and the source of the Naruto run."
+          series:
+            - title: "Naruto"
+              done: false
+            - title: "Naruto: Shippuden"
+              done: false
+              pitch: "A few years older, Naruto comes home from training as the Akatsuki start hunting the tailed beasts, his included."
+        - title: "Neon Genesis Evangelion"
+          year: 1995
+          done: false
+          cover: "evangelion"
+          pitch: "Teenagers pilot giant robots against mysterious Angels, and the show turns into a study of depression. Watch the film The End of Evangelion after episode 26."
+        - title: "Princess Mononoke"
+          year: 1997
+          kind: "movie"
+          done: false
+          cover: "princess-mononoke"
+          pitch: "A cursed prince gets caught in a war between forest gods and an iron-mining town, and Miyazaki won't make either side the villain."
+        - title: "Akira"
+          year: 1988
+          kind: "movie"
+          done: false
+          cover: "akira"
+          pitch: "In a rebuilt Neo-Tokyo, a biker gang leader's best friend gains psychic powers the military can't contain. Every frame is hand-drawn, and it's the film that put anime on the map in the West."
+        - title: "One Piece"
+          year: 1999
+          done: false
+          cover: "one-piece"
+          pitch: "Monkey D. Luffy, a pirate with a rubber body, sails the Grand Line looking for the legendary treasure called the One Piece. Over a thousand episodes long, and fans swear the long arcs pay off."
+        - title: "My Neighbor Totoro"
+          year: 1988
+          kind: "movie"
+          done: false
+          cover: "my-neighbor-totoro"
+          pitch: "Two sisters move to the countryside and meet the forest spirits living nearby, including a giant, fluffy one named Totoro. A gentle film with no villain, and Totoro became Studio Ghibli's logo."
+        - title: "Your Name"
+          year: 2016
+          kind: "movie"
+          done: false
+          cover: "your-name"
+          pitch: "A Tokyo boy and a country girl start waking up in each other's bodies, until the swaps suddenly stop. For a few years it was the highest-grossing anime film ever."
+        - title: "Hunter x Hunter"
+          year: 2011
+          done: false
+          cover: "hunter-x-hunter"
+          pitch: "A boy sets out to pass the deadly Hunter Exam and find the father who left him. It starts as an adventure show, and the Chimera Ant arc goes somewhere much darker."
+        - title: "Demon Slayer"
+          year: 2019
+          done: false
+          cover: "demon-slayer"
+          pitch: "A boy joins the Demon Slayer Corps to find a cure for his sister, who has been turned into a demon. The animation, especially episode 19, is what made it a hit."
+        - title: "One-Punch Man"
+          year: 2015
+          done: false
+          cover: "one-punch-man"
+          pitch: "A hero who can beat anyone with a single punch is bored out of his mind. A superhero parody whose first season has some of the best fight animation around."
+        - title: "Jujutsu Kaisen"
+          year: 2020
+          done: false
+          cover: "jujutsu-kaisen"
+          pitch: "A high schooler swallows a cursed finger to save his friends and ends up sharing his body with the King of Curses. Some of the best fight animation of recent years."
+        - title: "Howl's Moving Castle"
+          year: 2004
+          kind: "movie"
+          done: false
+          cover: "howls-moving-castle"
+          pitch: "A young hatmaker is cursed into an old woman and takes a job cleaning the walking castle of a vain wizard named Howl."
+        - title: "Code Geass"
+          year: 2006
+          done: false
+          cover: "code-geass"
+          pitch: "An exiled prince gains the power to command anyone once and leads a rebellion against the empire that conquered Japan. Chess-match plotting with giant robots."
+        - title: "Steins;Gate"
+          year: 2011
+          done: false
+          cover: "steins-gate"
+          pitch: "A self-proclaimed mad scientist accidentally builds a microwave that sends texts into the past. The first half is slow, and then it becomes one of the best time-travel stories anywhere."
+        - title: "Mob Psycho 100"
+          year: 2016
+          done: false
+          cover: "mob-psycho-100"
+          pitch: "A shy middle schooler with world-ending psychic powers just wants to be normal, and works for a con-artist exorcist. From the creator of One-Punch Man."
+        - title: "Bleach"
+          year: 2004
+          done: false
+          cover: "bleach"
+          pitch: "A teenager who can see ghosts becomes a Soul Reaper and fights the monsters called Hollows. Along with Naruto and One Piece, one of the big three of 2000s anime."
+        - title: "Frieren: Beyond Journey's End"
+          year: 2023
+          done: false
+          cover: "frieren"
+          pitch: "An elf mage who outlived her hero party sets out again to understand the humans she barely got to know. A quiet fantasy about time and grief."
 ---

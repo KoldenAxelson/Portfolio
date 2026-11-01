@@ -1,23 +1,26 @@
 {{- /*
-  impossible-list/details — a game's or book's details as plain page text,
+  impossible-list/details — a shelf item's details as plain page text,
   visually hidden. The drawer reads the same fields from the button's data-*
   attributes (scripts/site/games/game-card.ts), but attributes aren't page text:
   scrapers, reader modes and screen readers skip them. This block is what they
   get instead, so everything the drawer shows is also in the static HTML.
 
-  Called with one games or books entry from content/impossible-list.md, plus the
-  console's full name for games: (dict "item" . "consoleName" "Nintendo 64").
+  Called with one games, books or films entry from
+  content/impossible-list.md and its kind (func/shelf-words.html), plus the
+  console's full name for games:
+  (dict "item" . "kind" "game" "consoleName" "Nintendo 64").
 */ -}}
+{{- $words := partial "func/shelf-words.html" .kind -}}
 {{- with .item -}}
 <div class="sr-only">
   {{- if .classic }}<p>A classic.</p>{{ end }}
-  {{- if .current }}<p>{{ if $.consoleName }}Playing it now{{ else }}Reading it now{{ end }}.</p>{{ end }}
+  {{- if .current }}<p>{{ $words.now }}.</p>{{ end }}
   {{- with $.consoleName }}<p>Played on {{ . }}.</p>{{ end }}
   {{- with .rating }}<p>Rated {{ . | lang.FormatNumber 1 }} out of 5.</p>{{ end }}
   {{- with .status }}<p>{{ . }}.</p>{{ end }}
   {{- with .blurb }}<p>My review: {{ . }}</p>{{ end }}
-  {{- with .pitch }}<p>{{ if $.consoleName }}Why play it{{ else }}Why read it{{ end }}: {{ . }}</p>{{ end }}
-  {{- with .series }}<p>The series: {{ range $i, $book := . }}{{ if $i }}; {{ end }}{{ $book.title }} ({{ cond $book.done "read" "not read yet" }}){{ end }}.</p>{{ end }}
+  {{- with .pitch }}<p>{{ $words.why }}: {{ . }}</p>{{ end }}
+  {{- with .series }}<p>The series: {{ range $i, $part := . }}{{ if $i }}; {{ end }}{{ $part.title }} ({{ cond (eq $part.done true) $words.done $words.notYet }}){{ end }}.</p>{{ end }}
   {{- range .series }}{{ if .pitch }}<p>{{ .title }}: {{ .pitch }}</p>{{ end }}{{ end }}
 </div>
 {{- end -}}
