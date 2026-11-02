@@ -3132,164 +3132,241 @@ films:
           blurb: "This one is a bit of a recent cultural nexus of memes, but it's also beautifully animated and it's discourse on demons is philosophically poignant."
         - title: "Vinland Saga"
           year: 2019
-          done: false
+          done: true
+          rating: 3.0
           cover: "vinland-saga"
           pitch: "A boy fights for the Viking warband led by the man who killed his father, waiting for his chance at a duel. It starts as a revenge story and becomes one about what it takes to give up violence."
+          more: true
+          blurb: "I think this story hits on something most media likes to stray away from these days. That would be the violent thoughts of men that get subdued and turned religious. The seasons of this show tell a full story but each season might attract different viewers. I like the later seasons, but the early ones were fun."
         - title: "Chainsaw Man"
           year: 2022
-          done: false
+          done: true
+          rating: 2.5
           cover: "chainsaw-man"
           pitch: "A broke teenager fused with his chainsaw-devil dog becomes a government devil hunter, mostly for the free meals. Gory, grimy and darkly funny."
+          more: true
+          blurb: "It's fun, funny, and grotesque. If your stomach can handle it, it's a great comedy."
         - title: "JoJo's Bizarre Adventure"
           year: 2012
-          done: false
+          done: true
+          rating: 2.5
           cover: "jojos-bizarre-adventure"
           pitch: "Generation after generation of the Joestar family fights vampires and, later, rivals with ghostly fighting spirits called Stands. Flamboyant, loud and the source of endless poses and memes."
+          more: true
+          blurb: "Season 1, 2, and 3 were fun. The idea of multi-lineage storylines is something you don't often see. AND THE MEMES. Amazing. Cinema. I just got a bit tired with the \"Stands\"."
         - title: "My Hero Academia"
           year: 2016
-          done: false
+          done: true
+          rating: 3.0
           cover: "my-hero-academia"
           pitch: "In a world where most people are born with superpowers, a powerless boy inherits the power of the greatest hero and enrolls at a school for heroes. The defining superhero shonen of the 2010s."
+          blurb: "Stay AWAY from the Fandom! The show is good, and it's as or more compelling than most super hero flicks. I found it fun!"
         - title: "Puella Magi Madoka Magica"
           year: 2011
-          done: false
+          done: true
+          rating: 3.5
           cover: "madoka-magica"
           pitch: "A cute-looking magical girl show where the wish-granting contracts come with a terrible price. Twelve episodes that rewrote the genre."
+          blurb: "Everything is not what it seems. This has really good writing, and has very humanized characters. Don't let the magical girl-ness of it all dissuade you."
         - title: "Your Lie in April"
           year: 2014
-          done: false
+          done: true
+          rating: 3.5
           cover: "your-lie-in-april"
           pitch: "A piano prodigy who stopped being able to hear his own playing after his mother died is dragged back to music by a free-spirited violinist. Bring tissues."
+          blurb: "If you can stomach the child abuse, it tells a very real story that has a good chance of making you cry. I'm not a virtuoso, but I'm sure this would hit me harder if I was."
         - title: "Haikyu!!"
           year: 2014
-          done: false
+          done: true
+          rating: 3.5
           cover: "haikyu"
           pitch: "A short kid obsessed with volleyball teams up with a gifted, prickly setter on a high school team that used to be great. The sports anime people who don't watch sports anime love."
+          blurb: "This sports anime is motivational. It has such an impact on whether or not I'd go to the gym the following day. It makes me want to get up and move!"
         - title: "Mushoku Tensei: Jobless Reincarnation"
           year: 2021
-          done: false
+          done: true
+          rating: 3.5
           cover: "mushoku-tensei"
           pitch: "A shut-in who dies in Tokyo is reborn in a world of magic and resolves to live his second life properly. Often credited as the start of the modern isekai wave, with a deeply flawed lead and lavish animation."
+          more: true
+          blurb: "While not the progenitor of the Isekai genre, it had an effect on Isekais that came after it. The world building is solid, and while there are some questionable themes in this show, I can't deny that it tells an effective story."
         - title: "Re:Zero"
           year: 2016
-          done: false
+          done: true
+          rating: 3.5
           cover: "re-zero"
           pitch: "A teenager pulled into a fantasy world discovers that dying sends him back to an earlier moment, remembering everything that went wrong. Isekai where every death costs something."
+          more: true
+          blurb: "I feel genuinely bad for the main character, he's a broken individual who's getting by with putting on a brave face and trying with reckless abandon."
         - title: "Samurai Champloo"
           year: 2004
-          done: false
+          done: true
+          rating: 3.0
           cover: "samurai-champloo"
           pitch: "A wild swordsman, a stoic ronin and a girl looking for the samurai who smells of sunflowers wander Edo-period Japan to a hip-hop soundtrack. From Cowboy Bebop's director."
+          blurb: "To me this is a classic. Very fluid animation, and a collection of well written short stories that accompany them to their journey to find the Sunflower Samurai. I watched this a few times back in high school. It was shared among the boys dorm."
         - title: "Psycho-Pass"
           year: 2012
-          done: false
+          done: true
+          rating: 3.5
           cover: "psycho-pass"
           pitch: "In a future Japan where a citywide system scans everyone's likelihood of committing a crime, a rookie inspector hunts criminals with guns that only fire on the guilty. Cyberpunk with real questions about free will."
+          blurb: "This is a show I think about once or twice a year. There's so much packed into it and often I think about its premise, and how we're heading towards something that may resemble this."
         - title: "Sword Art Online"
           year: 2012
-          done: false
+          done: true
+          rating: 2.5
           cover: "sword-art-online"
           pitch: "Ten thousand players are trapped in a virtual reality MMO where dying in the game means dying for real. The show that made trapped-in-a-game a genre."
+          blurb: "The premise carries the show, if you want the best experience for Sword Art Online, watch the abridged version by Something Witty Entertainment. That's a parody my brother and I quote to each other at least once a month."
         - title: "Trigun"
           year: 1998
-          done: false
+          done: true
+          rating: 2.5
           cover: "trigun"
           pitch: "Vash the Stampede has a sixty-billion-double-dollar bounty on his head, yet refuses to kill anyone. A goofy space western that turns serious."
+          blurb: "It's a good watch, it does introduce itself as sort of a casual watch, but this space Western has some themes that need a rewatch to fully digest. Other than that, it's a fun watch."
         - title: "FLCL"
           year: 2000
-          done: false
+          done: true
+          rating: 3.0
           cover: "flcl"
           pitch: "A bored kid's suburban life ends when a Vespa-riding alien hits him with a bass guitar and robots start coming out of his head. Six chaotic episodes about growing up, set to the Pillows."
+          blurb: "6 episodes of \"What the hell did I just watch\". Which, being about a boy going through puberty- super apt! The musical score is also ridiculous which fits so perfectly for this show."
         - title: "Kaguya-sama: Love Is War"
           year: 2019
-          done: false
+          done: true
+          rating: 3.0
           cover: "kaguya-sama"
           pitch: "Two student council geniuses are in love and too proud to confess, so each schemes to make the other say it first. A romantic comedy played like a war."
+          blurb: "If you enjoyed intellectual game anime, and are in the mood for a romance, this does fit the need pretty well. These love games of trying to get the other to confess first is heart warming while being cognitively stimulating."
         - title: "The Promised Neverland"
           year: 2019
-          done: false
+          done: true
+          rating: 2.0
           cover: "promised-neverland"
           pitch: "Orphans at an idyllic home discover what they're really being raised for and plan an escape. The first season is the tight thriller fans rave about."
+          more: true
+          blurb: "The first season was good. It's all about the escape after realizing the horror they're living in. The other seasons diverge from this so I feel no need to continue beyond where I left off. I think a bleak ending suits this show too well anyways."
         - title: "Dan Da Dan"
           year: 2024
-          done: false
+          done: true
+          rating: 2.5
           cover: "dandadan"
           pitch: "A girl who believes in ghosts and a boy who believes in aliens find out both are real, and very hostile. Fast, strange and beautifully animated by Science Saru."
+          more: true
+          blurb: "Aliens. Ghosts. Espers. It's a mash up of just phenomena that lies beyond the veil. It's weird in ways that are hysterical."
         - title: "Fruits Basket"
           year: 2019
-          done: false
+          done: true
+          rating: 2.0
           cover: "fruits-basket"
           pitch: "An orphaned girl moves in with a family whose members turn into animals of the zodiac when hugged. The 2019 remake adapts the whole manga, heavier parts included."
+          blurb: "I watched the original and then returned to the remake for this one. The storyline is good and for people into zodiacs, it's a vibe."
         - title: "Clannad"
           year: 2007
-          done: false
+          done: true
+          rating: 2.5
           cover: "clannad"
           pitch: "A delinquent high schooler helps a shy girl revive the school's drama club. Its sequel, After Story, is famous for wrecking viewers."
+          blurb: "I was assigned to watch this since I'm notoriously bad at crying at movies or even shedding a tear. My high school friend group wanted me to watch this and the afterstory. While a tear jerker, I did not cry, though most would."
         - title: "Anohana: The Flower We Saw That Day"
           year: 2011
-          done: false
+          done: true
+          rating: 2.5
           cover: "anohana"
           pitch: "Childhood friends who drifted apart reunite when the ghost of the friend who died young appears with a wish. Eleven episodes and a reliable tearjerker."
+          blurb: "This one hits home for me. I have more than my fair share of dead friends.. Though it does blow things out of proportion in only ways anime can."
         - title: "Welcome to the NHK"
           year: 2006
-          done: false
+          done: true
+          rating: 2.5
           cover: "welcome-to-the-nhk"
           pitch: "A college dropout who hasn't left his apartment in years blames a conspiracy, until a mysterious girl decides to cure him. A funny, uncomfortable and honest show about isolation."
+          blurb: "It's a weird one but if you find yourself to be in perpetual covid, it does inspire you to take the first step and live your life."
         - title: "Tokyo Ghoul"
           year: 2014
-          done: false
+          done: true
+          rating: 1.5
           cover: "tokyo-ghoul"
           pitch: "A college student turns half-ghoul after a deadly date and has to survive in hiding among flesh-eating monsters. Dark urban horror; the first season is the strongest."
+          more: true
+          blurb: "I saw the first season, and it's edgy teenager slop. The opening song is a banger though."
         - title: "KonoSuba"
           year: 2016
-          done: false
+          done: true
+          rating: 2.0
           cover: "konosuba"
           pitch: "A shut-in reborn in a fantasy world ends up with the most useless party imaginable, starting with the goddess he dragged along. The definitive isekai parody."
+          blurb: "EXPLOSION! Other than being kinda pervy, the main character is fairly accurate to how I feel most people would react to being Isekai'ed."
         - title: "Solo Leveling"
           year: 2024
-          done: false
+          done: true
+          rating: 2.0
           cover: "solo-leveling"
           pitch: "The weakest hunter in a world of monster-filled dungeons gets a mysterious system that lets only him level up. Adapted from a huge Korean web novel and webtoon."
+          blurb: "Power trip fantasy with good animation. That's all it was trying to be."
         - title: "Dr. Stone"
           year: 2019
-          done: false
+          done: true
+          rating: 3.5
           cover: "dr-stone"
           pitch: "Thousands of years after all humanity was turned to stone, a science-obsessed teenager wakes up and sets out to rebuild civilization from scratch."
+          blurb: "This show tries to teach you science facts as you're watching and I appreciate this immensely as someone who clicks on random YouTube videos to learn random things that I'll never practice."
         - title: "Odd Taxi"
           year: 2021
-          done: false
+          done: true
+          rating: 3.5
           cover: "odd-taxi"
           pitch: "A walrus taxi driver's passengers in a city of animals all turn out to be tied to a missing girl. A sharply written mystery that pays off every detail."
+          blurb: "Suspense. This show does it extremely well. You'll want to binge it."
         - title: "The Apothecary Diaries"
           year: 2023
-          done: false
+          done: true
+          rating: 3.0
           cover: "apothecary-diaries"
           pitch: "A sharp-witted apothecary sold into the imperial palace as a servant quietly solves poisonings and court mysteries. Palace intrigue with a terrific lead."
+          blurb: "This show is morbidly adorable, and the inner court to a Chinese emperor is actually a really good setting for drama. Who would've thunk!"
         - title: "To Your Eternity"
           year: 2021
-          done: false
+          done: true
+          rating: 2.5
           cover: "to-your-eternity"
           pitch: "An immortal being sent to Earth takes the shapes of those it meets and learns to be human through a string of losses. From the author of A Silent Voice."
+          more: true
+          blurb: "This show has you empathizing with an alien/foreign mind. The main character isn't human, he's more like an infant. There's something about that perspective shift that's illuminating."
         - title: "Blue Lock"
           year: 2022
-          done: false
+          done: true
+          rating: 2.5
           cover: "blue-lock"
           pitch: "Japan locks 300 high school strikers in a facility to forge the world's most selfish striker. Soccer as a battle royale."
+          more: true
+          blurb: "I endearingly call it \"Edgy Soccer\". It's a good show, pretty motivational for a sports anime. Though if you're not used to anime tropes, it can come off a little cringe."
         - title: "Black Clover"
           year: 2017
-          done: false
+          done: true
+          rating: 4.0
           cover: "black-clover"
           pitch: "Two orphans dream of becoming the Wizard King, one a prodigy and one born without any magic at all. A classic long-running shonen that gets better as it goes."
+          more: true
+          blurb: "Once this show steps on the gas pedals, it doesn't let up. It just gets more and more insane as time goes on. The stakes get higher and the magic gets wilder! It just doesn't give up!"
         - title: "That Time I Got Reincarnated as a Slime"
           year: 2018
-          done: false
+          done: true
+          rating: 3.0
           cover: "reincarnated-as-a-slime"
           pitch: "A salaryman killed in a stabbing is reborn as a slime in a fantasy world and starts building a nation of monsters. Cozy, overpowered isekai."
+          more: true
+          blurb: "This character is overpowered, but still manages to get challenged. It does swing into the political for some series of episodes where it's mostly just talking and deals. I joke with my brother that they're saving the funding for the fight scenes."
         - title: "Overlord"
           year: 2015
-          done: false
+          done: true
+          rating: 3.0
           cover: "overlord"
           pitch: "A player stays logged in as his favorite game shuts down and finds himself trapped as its undead overlord, with fanatically loyal servants. Isekai from the villain's side."
+          more: true
+          blurb: "This is a tragedy masked as a power fantasy. Imagine being overcome with emotion even for a little bit, but having the world force calmness upon you. Are your actions your own, or are you a witness to your life unfolding before you."
         - title: "Dorohedoro"
           year: 2020
           done: false
@@ -3297,137 +3374,202 @@ films:
           pitch: "In a grimy city that sorcerers use for practice, a man with a lizard's head hunts the sorcerer who cursed him. Bloody, funny and unlike anything else."
         - title: "Ergo Proxy"
           year: 2006
-          done: false
+          done: true
+          rating: 2.5
           cover: "ergo-proxy"
           pitch: "In a domed city built on obedience, an inspector investigates androids infected with a virus that makes them self-aware. Slow, dense, philosophical cyberpunk."
+          blurb: "It's a little heavy handed with the Jung philosophy and not everything makes total narrative sense. What is real vs. what is fiction. I can appreciate the distillation of a hard-to-grasp philosophy though."
         - title: "The Saga of Tanya the Evil"
           year: 2017
-          done: false
+          done: true
+          rating: 1.5
           cover: "tanya-the-evil"
           pitch: "A ruthless salaryman is reborn as a little girl in an alternate-history world war and becomes a terrifying mage officer just to survive."
+          more: true
+          blurb: "Middle aged man gets sent back to WWII as a magical girl, and has a vendetta against God. It's fun but I don't connect with the characters much."
         - title: "My Dress-Up Darling"
           year: 2022
-          done: false
+          done: true
+          rating: 2.5
           cover: "my-dress-up-darling"
           pitch: "A loner who wants to craft traditional hina dolls gets recruited by his popular classmate to sew her cosplay outfits. A wholesome romcom about craft."
+          more: true
+          blurb: "It's a bit Ecchi, but for people who are big on individualism this is a great romance to watch."
         - title: "Horimiya"
           year: 2021
-          done: false
+          done: true
+          rating: 3.0
           cover: "horimiya"
           pitch: "A popular girl and a gloomy classmate discover each other's hidden sides outside school. A gentle romance that skips the will-they-won't-they."
+          blurb: "Are you tired of when the romance anime ends after they get together? This one doesn't and it's heart warming! It's also very referencable!"
         - title: "Tokyo Revengers"
           year: 2021
-          done: false
+          done: true
+          rating: 2.5
           cover: "tokyo-revengers"
           pitch: "A dead-end twenty-something suddenly travels back to his middle school years and tries to save his ex-girlfriend by climbing the ranks of a delinquent gang."
+          more: true
+          blurb: "I'm a sucker for a good time travel story. I'm also a sucker for trying with reckless abandon. This does both."
         - title: "Kaiju No. 8"
           year: 2024
-          done: false
+          done: true
+          rating: 2.5
           cover: "kaiju-no-8"
           pitch: "A 32-year-old who cleans up dead kaiju for a living, and once dreamed of fighting them, suddenly gains the power to turn into one."
+          more: true
+          blurb: "I really like playing social deception games with my friends. So when a show has an OP protagonist that has to keep a secret or risk death, it's a very fun storyline for me."
         - title: "Magi: The Labyrinth of Magic"
           year: 2012
-          done: false
+          done: true
+          rating: 2.0
           cover: "magi"
           pitch: "A cheerful boy with a djinn in his flute and a young merchant clear dungeons across an Arabian Nights world. An adventure that grows into politics and war."
+          blurb: "I'm upset that they ditched this to make a 2 season show for a popular side character. It was fun though."
         - title: "Ascendance of a Bookworm"
           year: 2019
-          done: false
+          done: true
+          rating: 3.0
           cover: "ascendance-of-a-bookworm"
           pitch: "A book-loving woman is reborn as a sickly girl in a medieval world where books are a luxury, so she sets out to make them herself."
+          more: true
+          blurb: "The early seasons is like Dr. Stone with an Isekai person bringing their know-how into a new world. The later seasons are more political. Both I find enjoyable."
         - title: "Classroom of the Elite"
           year: 2017
-          done: false
+          done: true
+          rating: 2.5
           cover: "classroom-of-the-elite"
           pitch: "At an elite school where classes compete for points that decide their futures, a quiet student in the lowest class plays everyone. Mind games in a school uniform."
+          more: true
+          blurb: "I'm interested to see how this story plays out. It's like a mix of Political Plays and Battle Royale."
         - title: "Moriarty the Patriot"
           year: 2020
-          done: false
+          done: true
+          rating: 4.0
           cover: "moriarty-the-patriot"
           pitch: "Sherlock Holmes's nemesis as the lead: young William James Moriarty plots crimes against the cruelty of Victorian England's class system."
+          blurb: "This is what Death Note and Code Geass could've been. The plays here are smarter and there's no super natural cop outs. Each victory feels earned."
         - title: "Goblin Slayer"
           year: 2018
-          done: false
+          done: true
+          rating: 2.0
           cover: "goblin-slayer"
           pitch: "An adventurer who only hunts goblins, the weakest monsters, because he knows how dangerous they really are. Dark fantasy with a brutal first episode."
+          blurb: "It's a fairly vanilla anime with an intense first episode, so you also hate the GOBLIIIINZZ. Grim Jack did an abridged of it and my brother and I quote the abridged whenever GOBILINSZS come up."
         - title: "Witch Hat Atelier"
           year: 2026
-          done: false
+          done: true
+          rating: 2.5
           cover: "witch-hat-atelier"
           pitch: "A girl who dreamed of magic learns that it's drawn, not born, and becomes a witch's apprentice. Adapted from one of the most beautifully drawn fantasy manga."
+          more: true
+          blurb: "The magic system in this show is intricate and really fricken cool. That being said, the jury is still out on how the story will turn out."
         - title: "Mashle: Magic and Muscles"
           year: 2023
-          done: false
+          done: true
+          rating: 2.5
           cover: "mashle"
           pitch: "In a world where magic decides everything, a boy with none enrolls at a magic academy and solves every problem with muscle. Harry Potter meets One-Punch Man."
+          more: true
+          blurb: "It's a parody of anime in general, like One Punch man. Imagine if Harry had no magic but was buff as all hell. The comedy is fun!"
         - title: "Shangri-La Frontier"
           year: 2023
-          done: false
+          done: true
+          rating: 4.0
           cover: "shangri-la-frontier"
           pitch: "A gamer who loves terrible, broken games finally takes on a hugely popular, polished VR game, and plays it like a speedrunner."
+          blurb: "I can only speak to the dub, but the gamer lingo in this and the action of the main character ooze of someone who is actually a gamer and knows how we act and talk. This show is extremely fun to watch and I'm the target audience."
         - title: "Ghost Stories"
           year: 2000
-          done: false
+          done: true
+          rating: 2.5
           cover: "ghost-stories"
           pitch: "A short horror anime about kids fighting ghosts, best known for its English dub, whose cast turned it into an anything-goes comedy."
+          blurb: "You know the version I'm talking about. This has my random humor down pretty well and my sides can only handle one episode at a time. That being said, the writing is GOD AWFUL and that's its purpose!"
         - title: "Working!!"
           year: 2010
-          done: false
+          done: true
+          rating: 2.5
           cover: "working"
           pitch: "A workplace comedy at a family restaurant in Hokkaido, staffed by a sword-carrying waitress, a waitress who punches men on sight and a boy who loves small things."
+          blurb: "This anime got me out of a slump of unemployed nihilism. I'm a sucker for a show that can romanticize the mundane."
         - title: "How Heavy Are the Dumbbells You Lift?"
           year: 2019
-          done: false
+          done: true
+          rating: 2.0
           cover: "dumbbells"
           pitch: "A schoolgirl joins a gym to lose weight and gets swept up in its muscle culture. A comedy that teaches real exercises every episode."
+          blurb: "It's a dumb show, but it's trash I enjoy watching and the info in it is real. It has good tips for working out."
         - title: "The Faraway Paladin"
           year: 2021
-          done: false
+          done: true
+          rating: 2.5
           cover: "faraway-paladin"
           pitch: "A boy raised by three undead guardians in a ruined city learns everything they know, then sets out into the world. Earnest, old-fashioned fantasy."
+          more: true
+          blurb: "I need to return to this show, I just haven't in a while. I have an inside joke with my friend Brad who we call Bread about this show."
         - title: "Cautious Hero"
           year: 2019
-          done: false
+          done: true
+          rating: 2.0
           cover: "cautious-hero"
           pitch: "A goddess summons a hero with incredible stats who refuses to take any risks, grinding and over-preparing for everything. A comedy that skewers isekai."
+          blurb: "It's a fun watch, not much of an impact though."
         - title: "Kurau Phantom Memory"
           year: 2004
-          done: false
+          done: true
+          rating: 2.5
           cover: "kurau-phantom-memory"
           pitch: "In 2100, a scientist's daughter fuses with an energy being in a lab accident. Years later, working as an agent for hire, a second being splits from her body as a girl of its own. A Bones sci-fi drama."
+          blurb: "This was the first non-mainstream anime I watched. Someone on Gaia Online recommended it to me. I think it's good but I know I could be biased."
         - title: "To Be Hero X"
           year: 2025
-          done: false
+          done: true
+          rating: 2.5
           cover: "to-be-hero-x"
           pitch: "In a world where heroes' powers come from public trust, the top heroes are ranked by it and meet in a tournament every two years. A Chinese-Japanese co-production mixing 2D and 3D."
+          more: true
+          blurb: "Mixed Media does have me thrown for a loop, it's like 10 shows mixed into one that all converge. Some sections are better than others. It's like Trail Mix."
         - title: "Campfire Cooking in Another World with My Absurd Skill"
           year: 2023
-          done: false
+          done: true
+          rating: 3.0
           cover: "campfire-cooking"
           pitch: "A man summoned to a fantasy world gets a seemingly useless skill: online grocery shopping. It turns out legendary monsters love Japanese supermarket food."
+          more: true
+          blurb: "I only watch this show if I'm starving myself for a multi-day fast. Which makes this show feel like a 4.0 when I'm watching it! The food is so beautifully animated!"
         - title: "Sabikui Bisco"
           year: 2022
-          done: false
+          done: true
+          rating: 2.5
           cover: "sabikui-bisco"
           pitch: "In a post-apocalyptic Japan eaten away by rust wind, a mushroom-shooting archer and a young doctor hunt for a legendary cure."
+          blurb: "This was a wild ride, but I watched it on the floor tv with my friend. Those memories make this show great. It has a lot of WTF moments."
         - title: "Kill Blue"
           year: 2026
-          done: false
+          done: true
+          rating: 2.0
           cover: "kill-blue"
           pitch: "A veteran assassin is stung by a strange wasp, shrinks into a fourteen-year-old, and has to go back to middle school. From the creator of Kuroko's Basketball."
+          blurb: "It's weird but funny. Middle Aged Man gets Fountain of Youth'ed and is tasked with protecting a girl the same age as his daughter. There's a lot of funny and uncomfortable moments."
         - title: "Though I Am an Inept Villainess"
           year: 2026
-          done: false
+          done: true
+          rating: 3.5
           cover: "inept-villainess"
           pitch: "In a kingdom inspired by imperial China, a scorned consort candidate uses forbidden magic to swap bodies with the court's beloved maiden, who turns out to thrive in the villainess's place."
+          blurb: "This shows the importance of mindset in a very clear way. It's a great moral study, and I heavily recommend it!"
         - title: "Reborn as a Vending Machine, I Now Wander the Dungeon"
           year: 2023
-          done: false
+          done: true
+          rating: 2.0
           cover: "vending-machine"
           pitch: "A man who loved vending machines is reborn as one in a fantasy dungeon. He can't move, so a strong-armed girl carries him around."
+          blurb: "It's fast food anime, but if you've been around long enough it plays to parody the tropes often seen in this genre, and executes it better than most."
         - title: "The Daily Life of a Middle-Aged Online Shopper in Another World"
           year: 2025
-          done: false
+          done: true
+          rating: 2.0
           cover: "middle-aged-online-shopper"
           pitch: "A nearly forty-year-old illustrator wakes up in a monster-filled forest in another world, with access to a huge online shopping site that delivers anything."
+          blurb: "Fast food anime, but man... you know you're getting old when you empathize this deeply with an old man that just wants peace."
 ---
