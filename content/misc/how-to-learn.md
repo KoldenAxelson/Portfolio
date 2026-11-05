@@ -17,11 +17,11 @@
 # with behaviour lazy-loaded from static/js/how-to-learn/.
 # ─────────────────────────────────────────────────────────────────────────────
 title: "How to Learn"
-description: "A collection of learning systems worth trying, starting with the genius curriculum: six historical school systems (Vedic recitation, Zhu Xi's reading method, isnād, the scholastic quaestio, ḥavruta and Budapest's unsolved problems) and the five-session study loop built from them."
+description: "A collection of learning systems worth trying: the genius curriculum (six historical school systems, from Vedic recitation to Budapest's unsolved problems, and the five-session study loop built from them), and Eero Alvar's predict, teach, check method, where every step lands as obviously true."
 aliases: ["/misc/genius-curriculum/"]
 # Blank by default — uncomment to put a line under the H1 in the banner.
 #lead: "Systems for learning, collected and tried."
-blurb: "Learning systems worth trying, starting with six historical school systems that mass-produced great thinkers and the study loop built from them."
+blurb: "Learning systems worth trying: six historical school systems that mass-produced great thinkers, and a predict, teach, check loop for learning one obvious step at a time."
 icon: "brain"
 group: "learn"
 prose: true
@@ -248,10 +248,88 @@ Two external checks, because either one alone will miss something:
 - Publish your written attempt somewhere public, with your name on it, dead ends
   and mistakes included.
 
+## Teaching one obvious step at a time
+
+Eero Alvar built an open-source desktop app that teaches you with an AI agent,
+and his video on it is the clearest account I've found of how teaching works.
+I don't use the app. I took the process, because it's the one I try to follow
+when I write an explainer, and he put it into words better than I had.
+
+His goal is the most understanding for each unit of mental effort. Struggling
+with the material is where the learning happens, so the aim is to spend your
+effort on the material itself and as little as possible on everything around
+it. His biggest worry with AI is that it lets
+you skip the struggle and leaves you with an illusion of learning.
+
+### Understanding isn't recall
+
+You can follow a lecture, understand every step, and never think of the idea
+again when a problem needs it. The understanding was real. Recognising when to
+use it is a separate skill. Recall runs on cues, the features of a situation
+that bring an idea to mind, and a new idea starts out tied to the room it was
+taught in.
+
+So he splits learning in two. Teaching puts the understanding in, and practice
+widens the set of cues that can bring it back.
+
+### Every step obviously true
+
+A step is only redundant to someone who already knows it, and only out of reach
+to someone missing what it rests on. So his agent starts by probing, with quick
+multiple-choice questions that find the edge of what you know. Then it plans
+the shortest chain of ideas from that edge to the goal.
+
+Then it walks the chain, and every step has to land as obviously true given the
+one before. That's achievable because each step is a single move. Keep going
+and the goal itself turns into one more obvious step. It's the best line I've
+heard for what I'm after when I write, and it's now a rule in my own writing
+guide.
+
+Each step has the same shape: predict, teach, check. Before anything is
+explained, you guess the next move. The guess shows how you're thinking, and
+reasoning it out yourself is learning in its own right. A wrong guess surfaces
+the confusion before anything gets built on top of it.
+
+{{< how-to-learn/predict >}}
+
+### Thinking out loud
+
+A right or wrong answer says very little on its own, since two people can give
+the same wrong answer for different reasons. So nearly every screen in his app
+has a box for your raw, messy thinking, and that's the main thing the agent
+reads. It's also why he keeps every step short. Short steps mean the agent
+hears from you constantly, so each explanation fits what you actually think.
+
+### Recall that takes effort
+
+In practice, the agent's job is to make you recall the right thing from a set
+of cues. The problems adapt as you go, aiming for recall that succeeds with
+effort: hard enough to make you work, easy enough that you get there. They get
+harder by combining more ideas or by making the cues less familiar. When you're
+stuck you get the smallest nudge that still lets you find the answer yourself.
+
+Linking the two halves is a record of everything you've been taught, kept as
+short statements and the reasoning between them. It draws as a graph that grows
+with each session, and it's what lets the next lesson find your edge quickly.
+
+### The loop without the app
+
+None of this needs his software.
+
+- Before reading an explanation, write down what you think comes next.
+- Work problems with your reasoning out loud or on paper, mess included.
+- Once you've learned something, use it on a problem that looks nothing like
+  the example it came with.
+- When a step doesn't feel obvious, the gap is in the step before it. Go back
+  one.
+
 ## Sources {#sources}
 
-Everything above is a synthesis of one video's argument, not independent
-research. The names and figures are the ones it asserts; I have normalised the
+Everything above is a synthesis of two videos, not independent research. The
+learning-harness section describes Eero Alvar's own system and his reasons for
+it, watched in November 2026; I haven't tested his claims about what works. In
+the genius-curriculum section, the names and figures are the ones that video
+asserts; I have normalised the
 transliterations (the auto-captions mangle Zhu Xi, *hányǒng* and *ḥavruta*) but
 I have not gone back to the primary sources to check the claims, which is
 exactly what Session 3 would have me do.

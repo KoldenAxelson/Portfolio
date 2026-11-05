@@ -37,3 +37,4 @@ layout: "quotes"
 - Don't force fruit in a season meant for roots
 - Before you write a book, ship a short story
 - A villain will claim victimhood of heroic action
+- Anger amid injustice, begets morality among the just

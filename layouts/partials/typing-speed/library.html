@@ -1,0 +1,29 @@
+{{- /*
+  typing-speed/library — returns what the typing test can load as passages,
+  as a dict for the widget's data-ts-library: the articles' URL and, per
+  book, its credits, section titles and URL. The text itself is published as
+  JSON files (one for every article, one per book) that
+  assets/scripts/pages/typing-speed/ fetches only when one is picked.
+
+    {{ $library := partial "typing-speed/library.html" . }}
+
+  Articles are the published ones (site.RegularPages leaves out drafts in
+  review), newest first, as raw Markdown: the script strips the shortcodes
+  and keeps the prose paragraphs. Books come from data/typing-speed/books/,
+  built by scripts/typing-speed/build-books.py.
+*/ -}}
+{{- $articles := slice -}}
+{{- $articleTitles := slice -}}
+{{- range (where site.RegularPages "Section" "articles").ByDate.Reverse -}}
+  {{- $articles = $articles | append (dict "title" .Title "url" .RelPermalink "markdown" .RawContent) -}}
+  {{- $articleTitles = $articleTitles | append .Title -}}
+{{- end -}}
+{{- $articlesJson := resources.FromString "typing-speed/articles.json" ($articles | jsonify) | fingerprint -}}
+{{- $books := slice -}}
+{{- range $slug, $book := index site.Data "typing-speed" "books" -}}
+  {{- $json := resources.FromString (printf "typing-speed/books/%s.json" $slug) ($book | jsonify) | fingerprint -}}
+  {{- $titles := slice -}}
+  {{- range $book.sections }}{{ $titles = $titles | append .title }}{{ end -}}
+  {{- $books = $books | append (dict "slug" $slug "title" $book.title "author" $book.author "translator" $book.translator "source" $book.source "sections" $titles "url" $json.RelPermalink) -}}
+{{- end -}}
+{{- return dict "articles" $articlesJson.RelPermalink "articleTitles" $articleTitles "books" $books -}}

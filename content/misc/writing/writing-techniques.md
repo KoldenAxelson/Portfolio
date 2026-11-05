@@ -23,7 +23,7 @@
 # sample line in them is mine, set in the Grunt Force world.
 # ─────────────────────────────────────────────────────────────────────────────
 title: "Writing Techniques"
-description: "Craft notes I keep beside the draft of Grunt Force, from 22 Bookfox videos: sentence shapes and words to cut, description, dialogue, building and pacing scenes, voice and point of view, time skips, the middle, theme, game structures and revision, with a live demo to try most of them on."
+description: "Craft notes I keep beside the draft of Grunt Force, from 23 Bookfox videos: sentence shapes and words to cut, description, dialogue, building and pacing scenes, voice and point of view, time skips, the middle, braiding storylines, theme, game structures and revision, with a live demo to try most of them on."
 lead: "Craft notes I keep beside the draft"
 cover: "writing-techniques"
 shelf: "Writing utilities"
@@ -33,7 +33,7 @@ youtube: "https://youtu.be/jnaljahKibQ"
 ---
 
 This is where I put what I learn about the craft while I write
-[Grunt Force](/misc/writing/grunt-force/). It's a bucket: so far 22 videos,
+[Grunt Force](/misc/writing/grunt-force/). It's a bucket: so far 23 videos,
 all from John, the fiction editor behind the Bookfox channel, boiled down to
 one set of notes and ordered from the smallest unit up, sentence to scene to
 the whole book, then revision. Where a technique has a published example, I
@@ -301,6 +301,38 @@ that rhyme with earlier ones at a different scale instead of new plotlines;
 and the pleasures the opening promised, kept going. Close each stretch by
 settling one question and opening the next.
 
+### Braiding storylines
+
+Alternate between characters who each carry their own story and you have a
+braid. The payoff is in how the strands connect, and he lists nine ways.
+
+| Connection | How the strands meet | Example |
+|---|---|---|
+| Concealed identity | They turn out to be one person, hidden by a name change, second person or a nickname | N. K. Jemisin, *The Fifth Season* |
+| Double timeline | Strands you assume run side by side are years apart | *Westworld* |
+| Convergence | They attack one problem from different angles and meet in one place, or at the climax | *Stranger Things*, *Big Little Lies* |
+| Causal link | A choice in one strand lands on another | Jennifer Egan, *A Visit from the Goon Squad* |
+| Bloodline | Each strand is the next generation | Yaa Gyasi, *Homegoing* |
+| Hub | One character, book or object runs through every strand | *Station Eleven*, *The Hours* |
+| Shared place | Every strand happens in one place | Hotels, from *The Shining* on |
+| Rival versions | Narrators give competing accounts of the same events | Gillian Flynn, *Gone Girl* |
+| Unconnected connection | No shared character, only handed-on artifacts, a shared birthmark and a mirrored order | David Mitchell, *Cloud Atlas* |
+
+Most of his advice comes as tests. Every strand has to be needed to reach the
+ending, or it gets cut. In a convergence, leave one character out so they
+arrive late and still matter. Make a cause smaller than its effect, and show
+the effect first so the cause fills a gap instead of reading as backstory. A
+bloodline needs something passed down besides blood. A place has to do
+something, and the best ones trap people. A character who lies in writing is
+using the page as a weapon.
+
+*For Grunt Force:* the base already braids the book by place, since it traps
+everyone, and the recurring objects in the mosaic guide are hubs. Chronology
+only moves forward, so a double timeline is out and effect before cause only
+works inside one chapter. What I want to steal is the small cause: a lie told
+to end a conversation that lands on someone three chapters later. And at the
+convergence, I want one main character missing.
+
 ### Theme
 
 A topic is a word and a theme is a sentence. It usually turns up three
@@ -357,7 +389,7 @@ of the day through the meter. Or let the page pick.
 
 ## Sources {#sources}
 
-Twenty-two videos from one channel, watched in October 2026. Everything above
+Twenty-three videos from one channel, watched in October and November 2026. Everything above
 is my synthesis of his arguments, and the examples are the books he reads from;
 I haven't checked his quotes against the novels or his figures (Matt Bell's
 800 cuts, the 70 to 90 percent direct dialogue, the "nine chapters out of ten"),

@@ -14,10 +14,10 @@
 # behaviour lazy-loaded from static/js/motion/.
 # ─────────────────────────────────────────────────────────────────────────────
 title: "Motion"
-description: "Notes on three videos about motion: making explainer videos from JavaScript with Claude, a five-stage folder pipeline borrowed from Disney's 1930s studio, and the animation vocabulary that makes an app feel alive."
+description: "Notes on four videos about motion: making explainer videos from JavaScript with Claude, a five-stage folder pipeline borrowed from Disney's 1930s studio, the animation vocabulary that makes an app feel alive, and eight open-source Claude skills for making video."
 # Blank by default — uncomment to put a line under the H1 in the banner.
 #lead: "Frames, folders and easing curves."
-blurb: "Three videos on motion: video as a function of time, a Disney-style pipeline for code-made videos, and the animation techniques that make apps feel alive."
+blurb: "Four videos on motion: video as a function of time, a Disney-style pipeline, the animation techniques that make apps feel alive, and the skills that check what Claude can't see or hear."
 icon: "film"
 group: "make"
 prose: true
@@ -27,7 +27,7 @@ youtube: "https://youtu.be/rscb1DgJtNg"
 Two things I want to do eventually both turn out to be about motion. I have
 articles that could become videos, which is one way to be seen at all, and I
 build iPhone apps like [Harmony Pulse](/projects/harmony-pulse) that would feel
-better with some life in them. These are my notes on three videos that cover
+better with some life in them. These are my notes on four videos that cover
 both, plus two widgets for the ideas that only make sense when they move.
 
 ## 1 · A video is a function of time
@@ -117,20 +117,53 @@ animation can follow any other. And he reviews every animation by eye, because
 the clipped corner or cut-off frame is exactly what an AI misses. He even had
 Codex drive the Rive editor through computer use to add new animations.
 
+## 4 · Skills that check their own work
+
+AI Labs tried a pile of the video skills people have published for Claude and
+kept eight that each do a different job. Every one is an install command and
+a slash command.
+
+| Repo | What it does |
+|------|--------------|
+| [huashu-motion](https://github.com/alchaincyf/huashu-motion) | Launch films built from a site's own colors, fonts and words, with the music written first and every cut on its beat |
+| [rossark-motion](https://github.com/rossark0/rossark-motion-skill) | Rules for animating drawings, mascots and logos, plus a notes file of what each character can and can't do |
+| [take-one](https://github.com/talsiach/take-one) | One line to a finished short film, planned by a strategist, a creative director and a storyboard artist |
+| reanimate | Copies an animation from a site, video or GIF by recording it frame by frame and rebuilding it until the two match |
+| [argo](https://github.com/shreyaskarnik/argo) | Clicks through your app in a browser and turns the recording into a narrated demo |
+| [explainroo](https://github.com/vincentsch/explainroo) | Explainers with a voice-over, every scene timed to the word it belongs to |
+| [video-director](https://github.com/win4r/video-director) | Director rules, with one checker for the plan and another for the finished video |
+| [earshot](https://github.com/Leonxlnx/earshot) | Turns sound into notes Claude can read, lined up against the frames |
+
+What they share matters more than any one of them. The good ones give Claude a
+sense it lacks: frames to look at, a recording to listen back to, a cue sheet
+for sound, a side-by-side against the original. Several hand the finished cut
+to a reviewer that never saw the build, and send it back if the score is low.
+And their rules are the same few: a hook in the first three seconds, text big
+enough to read on a phone, a pause before the biggest moment. One more lesson
+came free. Explainroo's first cut looked like a template, and it only got good
+once it was rebuilt around a real Claude Code session.
+
 ## The plan
 
 - Turn one article into a short video the folder way: script, timed words,
   storyboard, scene as code, contact sheet, render.
 - Keep a person's check between every stage, starting with the storyboard.
+- Give Claude a way to check what it can't sense (frames for the picture, a
+  cue sheet for the sound), and have a reviewer that never saw the build score
+  the cut.
+- Use real screens over template boxes wherever the product has them.
 - In the apps, name the motion I want (an ease-out on arrival, a snappy spring
   on press) instead of asking for "an animation."
 - Give every animated thing a resting state, and review the result by eye.
 
 ## Sources {#sources}
 
-Three videos, watched in October 2026. Everything above is my synthesis of
-their arguments, and the details (effort timings, the Disney history, the job
-history) are the narrators' own. The captions garble one animation tool's name,
-so I've left it out. Two of the three end by pointing to a paid community or vault.
+Four videos, watched in October and November 2026. Everything above is my
+synthesis of their arguments, and the details (effort timings, the Disney
+history, the job history, what each repo does) are the narrators' own. AI Labs
+says huashu-motion is an open clone of a motion tool Anthropic offers only on
+Team and Enterprise plans; I haven't checked that. I couldn't find reanimate's
+repository from its name alone, so it has no link. The captions garble one animation tool's name,
+so I've left it out. Three of the four end by pointing to a paid community or vault, and one has a sponsor read.
 
 {{< ml/references >}}

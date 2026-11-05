@@ -93,6 +93,9 @@
 {{- /* Sun: stylesheet and renderer bundle. */ -}}
 {{- if .HasShortcode "sun/sim" }}{{ partial "sun/assets.html" . }}{{ end }}
 
+{{- /* Typing Speed: stylesheet and the test script. */ -}}
+{{- if .HasShortcode "typing-speed/test" }}{{ partial "typing-speed/assets.html" . }}{{ end }}
+
 {{- /* Ba-Gil: stylesheet, page bundle and the lexicon it reads. Every ba-gil
        shortcode needs the stylesheet, so any one of them ships the lot. */ -}}
 {{- $baGil := false -}}

@@ -47,11 +47,21 @@
   url: "https://github.com/Acedio/animalese.js"
   meta: "Acedio · GitHub · with a live demo"
   note: "Someone else's take on the same itch: a JavaScript library that approximates villager speech in the browser, with a demo you can type into."
-- tag: Interview
-  title: "20 Years After The Release Of Banjo-Kazooie, We Speak To The Guys Who Made It"
-  url: "https://www.nintendolife.com/news/2018/12/feature_20_years_after_the_release_of_banjo-kazooie_we_speak_to_the_guys_who_made_it"
-  meta: "Kyle Campbell · Nintendo Life · June 2018"
-  note: "Why Banjo grunts. Programmer Chris Sutherland was Banjo's voice; the team went with edited noises over recorded speech because the game was racing to finish, and the \"Guhuh\" was Tim Stamper's idea."
+- tag: News
+  title: "AudioNerdz Delay Lama released"
+  url: "https://www.kvraudio.com/news/audionerdz_delay_lama_released_338"
+  meta: "KVR Audio · May 2002"
+  note: "The free \"virtual singing monk\" plug-in the Delay Lama style is named after."
+- tag: Repo
+  title: "MonkSynth"
+  url: "https://github.com/JonET/monksynth"
+  meta: "JonET · GitHub · MIT"
+  note: "An open-source remake of Delay Lama. The Delay Lama style's voice and echo are a JavaScript port of its engine: 20 ms grains of three decaying formant sines plus breath, one per pitch period, its vowel table, glide, vibrato and stereo delay."
+- tag: Docs
+  title: "Delay Lama"
+  url: "https://www.440audio.com/en/software/v2227-AudioNerdz-Delay-Lama"
+  meta: "AudioNerdz · 440audio listing"
+  note: "What it did: monophonic vocal synthesis with live control over the vowel, and a built-in stereo delay. The style here borrows those three ideas; the sound is synthesized from scratch."
 - tag: Repo
   title: "ut-voice"
   url: "https://github.com/Broknsun/ut-voice"

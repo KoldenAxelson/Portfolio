@@ -25,11 +25,12 @@
 <div class="nv-panel" id="nv-lab-simple" role="group" aria-label="Simple controls">
   {{- range $data.picker.categories }}
   {{- $category := . }}
-  <div class="nv-pick-row" role="group" aria-label="{{ .label }}">
-    <span class="nv-lab-label">{{ .label }}</span>
+  {{- /* No visible row title: the chips say what the row is (Happy, Sad…
+         is plainly mood). The label stays for screen readers. */}}
+  <div class="nv-pick-row" role="group" aria-label="{{ .label }}"{{ with .needs }} data-nv-needs="{{ . | jsonify }}"{{ end }}>
     <span class="nv-chips{{ if .tiles }} nv-chips-tiles{{ end }}{{ if gt (len .options) 3 }} nv-chips-many{{ end }}" style="--nv-n: {{ len .options }}">
       {{- range .options }}
-      <button class="nv-chip" type="button" data-nv-pick="{{ $category.key }}" data-nv-option="{{ .key }}" aria-pressed="{{ cond (eq .key $category.default) "true" "false" }}"{{ with .encore }} data-nv-encore-label="{{ .label }}" data-nv-encore-hint="{{ .hint }}"{{ end }} disabled>
+      <button class="nv-chip" type="button" data-nv-pick="{{ $category.key }}" data-nv-option="{{ .key }}"{{ with .needs }} data-nv-needs="{{ . | jsonify }}"{{ end }} aria-pressed="{{ cond (eq .key $category.default) "true" "false" }}"{{ with .encore }} data-nv-encore-label="{{ .label }}" data-nv-encore-hint="{{ .hint }}"{{ end }} disabled>
         {{- partial "func/svg-icon.html" (dict "name" .icon "class" "nv-chip-icon") -}}
         {{- with .encore }}{{ partial "func/svg-icon.html" (dict "name" .icon "class" "nv-chip-icon nv-chip-icon-encore") }}{{ end -}}
         <span class="nv-chip-text"><span class="nv-chip-label">{{ .label }}</span>{{ if and $category.tiles .hint }}<span class="nv-chip-hint">{{ .hint }}</span>{{ end }}</span></button>
@@ -68,8 +69,8 @@
   <div class="nv-lab-toggles">
     {{- range $data.lab.toggles }}
     {{- $toggle := . }}
-    <div class="nv-lab-toggle" role="group" aria-label="{{ .label }}">
-      <span class="nv-lab-label">{{ .label }}</span>
+    <div class="nv-lab-toggle" role="group" aria-label="{{ .label }}" data-nv-toggle-group="{{ .key }}"{{ with .needs }} data-nv-needs="{{ . | jsonify }}"{{ end }}>
+      <span class="nv-lab-label">{{ .label }}{{ with .needs }} <span class="nv-off-note" hidden></span>{{ end }}</span>
       <span class="nv-lab-seg">
         {{- range .options }}
         <button class="nv-lab-opt" type="button" data-nv-toggle="{{ $toggle.key }}" data-nv-value="{{ .value | jsonify }}" aria-pressed="{{ cond (eq .value $toggle.default) "true" "false" }}" disabled>{{ .label }}</button>
@@ -85,8 +86,8 @@
       <div class="nv-lab-group-body">
         {{- range .sliders }}
         {{- $value := cond (eq .target "voice") (index $start .key) .default }}
-        <label class="nv-lab-row">
-          <span class="nv-lab-row-label">{{ .label }}</span>
+        <label class="nv-lab-row"{{ with .needs }} data-nv-needs="{{ . | jsonify }}"{{ end }}>
+          <span class="nv-lab-row-label">{{ .label }}{{ with .needs }} <span class="nv-off-note" hidden></span>{{ end }}</span>
           <output aria-hidden="true" class="nv-lab-row-value" id="nv-lab-out-{{ .key }}">{{ $value }}{{ with .unit }} {{ . }}{{ end }}</output>
           <input class="nv-lab-range" type="range" min="{{ .min }}" max="{{ .max }}" step="{{ .step }}" value="{{ $value }}" data-nv-key="{{ .key }}" data-nv-target="{{ .target }}" data-nv-unit="{{ .unit }}" disabled />
         </label>

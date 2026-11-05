@@ -9,17 +9,22 @@
 #           (lab.yaml).
 #   scale : multipliers on the value so far, same keys.
 #   flags : how text becomes sound (the lab.yaml toggles):
-#           tone "beep" | "voice"; every (sound on every letter, or only where a
-#           vowel group starts); vowel "letter" | "random"; shape "hit" | "swell";
+#           tone "beep" | "voice"; letters "select" | "vowels" | "all" (which
+#           letters make a sound: a vowel group's first, every vowel, every
+#           letter); vowel "letter" | "random"; shape "hit" | "swell";
 #           human (breath and jitter); tune (punctuation shapes the pitch);
-#           consonants (each syllable opens on its consonant). Off unless a
+#           consonants (each syllable opens on its consonant); sing (the line
+#           as one sung melody, through the singing-monk engine ported from
+#           MonkSynth); echo (MonkSynth's stereo delay). Off unless a
 #           style asks: the devlog tried consonants and dropped them, so
 #           Mythfall is vowels only; Animalese spells out every letter.
 #   icon  : a key in data/icons.yaml, drawn on the chip.
 #   hint  : a second line under the label (shown for categories with `tiles`).
 #   encore: a hidden option a second press on the chip swaps in, with its own
 #           label, icon, hint, speaker name and settings on top of the chip's.
-#           Extra flags: wave "square" (beeps), blip (a beep's own length,
+#           blip.sample / sampleHz: a recorded blip to use instead, and its
+#           own pitch. Extra flags: talk (the singing engine says the line instead
+#           of singing it), wave "square" (beeps), blip (a beep's own length,
 #           attack, release, octave and per-blip wobble), face "comic" (the
 #           dialogue box's font), lowercase (spoken and shown in lowercase).
 # default : the option picked on load.
@@ -35,7 +40,7 @@ base:
   breath: 0.12
   whisper: 0
   wobble: 0
-  flags: { tone: "voice", every: false, vowel: "letter", shape: "swell", human: true, tune: true, consonants: false }
+  flags: { tone: "voice", letters: "select", vowel: "letter", shape: "swell", human: true, tune: true, consonants: false, sing: false, echo: false }
 names:
   young-male: "Boy"
   young-female: "Girl"
@@ -85,18 +90,24 @@ categories:
         label: "Animal Crossing"
         hint: "A quick sound for every letter"
         scale: { letterMs: 0.8, pitchHz: 1.2 }
-        flags: { every: true, consonants: true }
+        flags: { letters: "all", consonants: true }
       - key: "undertale"
         icon: "heart"
         label: "Undertale"
         hint: "One plain beep per letter"
-        flags: { tone: "beep", every: true, human: false, tune: false }
+        flags: { tone: "beep", letters: "all", human: false, tune: false }
         # Press the tile again for its encore. Sans speaks in lowercase Comic
-        # Sans in the game (Undertale Wiki). His blip follows ut-voice's
+        # Sans in the game (Undertale Wiki). His blip is a short low grunt made
+        # for this site with ElevenLabs' sound effects generator (not game
+        # audio): static/audio/npc-voices/sans-blip.wav. sampleHz matches
+        # Sans's pitchHz, so it plays at its own speed and only the tune and
+        # the ±6% wobble move it; another pitch would speed it up or slow it
+        # down, which turned the last take into a buzz. If it
+        # can't load, the synthesized blip stands in, following ut-voice's
         # synthesized "sans" (github.com/Broknsun/ut-voice, MIT): a 50% square
         # at about 105 Hz (112 × its 0.94 drop), 48 ms long with a 4 ms attack
         # and a 12 ms curved release, ±6% pitch per blip, about 58 ms a letter.
-        # No game audio is used. Press again, or pick another style, to leave.
+        # Press again, or pick another style, to leave.
         encore:
           label: "Sans"
           icon: "skull"
@@ -107,21 +118,55 @@ categories:
             wave: "square"
             face: "comic"
             lowercase: true
-            blip: { ms: 48, attackMs: 4, releaseMs: 12, octave: 1, wobble: 0.06 }
-      - key: "banjo"
-        icon: "paw"
-        label: "Banjo-Kazooie"
-        hint: "Grunts in a random order"
-        set: { nudge: 1.5 }
-        flags: { vowel: "random", tune: false }
+            blip: { ms: 48, attackMs: 4, releaseMs: 12, octave: 1, wobble: 0.06, sample: "/audio/npc-voices/sans-blip.wav", sampleHz: 105 }
+      # Not a game: Delay Lama (AudioNerdz, 2002) was a free plug-in, a
+      # monophonic singing monk whose pitch and vowel you played live, with a
+      # built-in stereo delay (KVR Audio, 440audio). The voice and delay are a
+      # port of MonkSynth (JonET, MIT), an open-source remake; see nv-voice.js.
+      # Each syllable is a note on a pentatonic walk that opens from "oo" into
+      # its own vowel. Nothing from the plug-in itself is used; the melody is
+      # this toy's, by ear.
+      - key: "lama"
+        icon: "music-notes"
+        label: "Delay Lama"
+        hint: "A monk sings it, with an echo"
+        scale: { pitchHz: 0.8 }
+        set: { nudge: 0.1, breath: 0.06 }
+        flags: { sing: true, echo: true, tune: false }
+        # Press again and the monk talks instead: the vowel slider drawn
+        # through each word, the way people make the plug-in say things
+        # (nv-voice.js, TALK). Same voice, no echo (its repeats bury the gaps
+        # that pass for consonants); the pitch follows the punctuation tune
+        # instead of a melody.
+        encore:
+          label: "Talking Lama"
+          icon: "speaker-wave"
+          hint: "The monk says it instead"
+          flags: { talk: true, tune: true, echo: false }
+  # Which letters make a sound. `follows`: picking a style moves this row to
+  # the option the style itself uses (All letters for Animal Crossing and
+  # Undertale), which can then be changed; nv-voice.js followPicks.
+  - key: "letters"
+    label: "Letter inclusion"
+    follows: "style"
+    default: "select"
+    options:
+      - { key: "select", icon: "letters-select", label: "Select vowels", flags: { letters: "select" } }
+      - { key: "vowels", icon: "letters-vowels", label: "All vowels", flags: { letters: "vowels" } }
+      - { key: "all", icon: "letters-all", label: "All letters", flags: { letters: "all" } }
+  # needs: like lab.yaml's needs, checked against the flags the picks add up
+  # to; the row is hidden when they aren't met (beeps have no mouth or
+  # breath). An option can carry its own needs too: just that chip greys out. Mumbly is mostly a closed mouth, which the singing
+  # engine has no use for; whisper means nothing to it at all.
   - key: "manner"
     label: "Manner"
+    needs: { tone: "voice" }
     default: "clear"
     options:
       - { key: "clear", icon: "wave-clear", label: "Clear" }
-      - { key: "mumbly", icon: "wave-mumble", label: "Mumbly", set: { mouth: 0.45, breath: 0.22 } }
+      - { key: "mumbly", icon: "wave-mumble", label: "Mumbly", needs: { sing: false }, set: { mouth: 0.45, breath: 0.22 } }
       - { key: "breathy", icon: "wind", label: "Breathy", set: { breath: 0.38 } }
-      - { key: "whisper", icon: "whisper", label: "Whisper", set: { whisper: 1 } }
+      - { key: "whisper", icon: "whisper", label: "Whisper", needs: { sing: false }, set: { whisper: 1 } }
   - key: "pace"
     label: "Pace"
     default: "normal"

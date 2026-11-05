@@ -14,10 +14,10 @@
 # box, with behaviour lazy-loaded from static/js/getting-known/.
 # ─────────────────────────────────────────────────────────────────────────────
 title: "Getting Known"
-description: "Notes on five videos about being known as well as good: building a personal brand and keeping it fun, Keith Ferrazzi's dinner method for networking from zero, Simon Squibb's ten steps of honest selling, and staying visible and protected at work, plus my own ten-step persuasion system."
+description: "Notes on six videos about being known as well as good: building a personal brand and keeping it fun, how written platforms like Substack grow, Keith Ferrazzi's dinner method for networking from zero, Simon Squibb's ten steps of honest selling, and staying visible and protected at work, plus my own ten-step persuasion system."
 # Blank by default — uncomment to put a line under the H1 in the banner.
 #lead: "Being good at the work is step three."
-blurb: "Five videos on being known as well as good: a personal brand you enjoy, networking from zero, selling honestly, and getting ahead at a heads-down job."
+blurb: "Six videos on being known as well as good: a personal brand you enjoy and how writing gets found, networking from zero, selling honestly, and getting ahead at a heads-down job."
 icon: "user-group"
 group: "better"
 prose: true
@@ -29,16 +29,16 @@ be enough. Lately I have a growing suspicion it isn't. The people who get the
 interesting jobs, clients and introductions are often the ones other people
 already know, and I've done very little to be one of them.
 
-These are my notes on five videos, covering four different rooms: online, a
+These are my notes on six videos, covering four different rooms: online, a
 dinner table, a pitch, and the office. They're a synthesis of other people's
-arguments, four of them from people with a program or a book to sell, so I've
+arguments, five of them from people with a program, a book or an app to sell, so I've
 kept what held up and said where I'd push back. One idea runs through all
 of them: people pick who they already know and trust, and being good is what gets
 you considered once they do.
 
 | Room | From | The move |
 |------|------|----------|
-| Online | A brand founder and a speaking coach | Own a few ideas, repeat them, and keep it fun |
+| Online | A brand founder, a speaking coach and a creator-tools company | Own a few ideas, package them for the platform, and keep it fun |
 | The table | Keith Ferrazzi, *Never Eat Alone* | Host instead of attending |
 | The pitch | Simon Squibb | Need, then relationship, then product |
 | The office | A former investment-bank employee | Be seen, and get it in writing |
@@ -65,6 +65,21 @@ one pillar piece and break it down into everything else.
 
 {{< getting-known/waterfall >}}
 
+Written platforms grow the way YouTube does, by recommendation. Read an
+article and the platform shows you more shaped like it, so a new piece gets
+found by looking like something its readers already chose. Eden, a
+creator-tools company, says the title does most of that work and the image a
+little, and then the piece has to say its idea in a way that makes people sit
+up. Replying to bigger accounts gets eyes, but their test for a brand is
+whether anyone would wonder where you went.
+
+Each platform has its own packaging, and you learn it by reading a lot of it.
+Substack images rarely carry words and its titles read calmer than YouTube's,
+so a YouTube title moved across tends to flop. Look for outliers, posts that
+did several times better than their writer's average, on broad topics, since
+you're after the structure and the idea can be yours. Turn a few into
+frameworks with an outline, and write from those until you stop needing them.
+
 The rest is housekeeping. Batch the work (fifteen videos in a day beats one a
 day), look at what's resonating and do more of it, and give each post one
 clear next step for the reader. After that comes a team of editors and
@@ -76,7 +91,9 @@ clinical run of tutorials by putting more of himself in: a guitar in the
 background if you play, a hobby as the analogy, a story from your own life.
 
 Swap the scoreboard, too. Views ride the algorithm up and down, and your mood
-rides with them, so track emails and sales instead.
+rides with them, so track emails and sales instead. Even on Substack, where a
+paid subscription is the obvious money, Eden says the writers who earn well
+sell their own offers: products, coaching, cohorts.
 
 {{< getting-known/scoreboard >}}
 
@@ -197,7 +214,7 @@ the ones I've been skipping. Here's my plan:
 1. Write down the goal for this year and the 25 names, and find the anchor
    tenant.
 2. Pick two platforms. Every article I publish becomes a waterfall instead of a
-   single link, and I count emails, not views.
+   single link, packaged for each platform, and I count emails, not views.
 3. Host one dinner, even if it's a card table and a rotisserie chicken.
 4. Keep the priority list and send the pings.
 5. When I pitch anything, start with need, then the relationship, and split the
@@ -207,10 +224,11 @@ the ones I've been skipping. Here's my plan:
 
 ## Sources {#sources}
 
-Five videos, watched in October 2026. Everything above is my synthesis of
+Six videos, watched in October and November 2026. Everything above is my synthesis of
 their arguments, and the figures (followers, revenue, years, the PwC sale, the
-nine years of monthly contact, the $7 offer and the email numbers) are the
-speakers' own claims. Four of the five pitch a paid program or a book along the way; I've kept their advice and left the pitches. In the prose I've called most
+nine years of monthly contact, the $7 offer, the email numbers and Eden's
+claims about Substack) are the speakers' own. Five of the six pitch a paid
+program, a book or an app along the way; I've kept their advice and left the pitches. In the prose I've called most
 speakers by what they do; whose channel each video is from is on its card below. The persuasion system in section 3 is my own notes, not
 something from these videos.
 

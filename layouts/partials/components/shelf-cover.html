@@ -17,9 +17,10 @@
   through (a series started, a show I haven't kept up with), as an ellipsis
   chip in the bottom-right corner, styled like the mark.
 */ -}}
-{{/* q68 rather than the pipeline's 80: at 144px, and 288px for 2x screens,
-     the difference doesn't show, and it trims the Impossible List's ~100
-     covers by about a fifth. */}}
+{{/* One 288px file per cover (retinaOnly): 1x screens scale it down, which
+     costs nothing visible at this size and halves the files the shelves
+     publish against Cloudflare Pages' file cap. q68 rather than the
+     pipeline's 80: at this size the difference doesn't show. */}}
 {{/* Every cover gets the same 2:3 box. Real covers run from about 1.2 to 1.8
      tall-per-wide, so they are stretched to it; anything further off (a
      box-set strip, a landscape photo) would distort badly, so those are
@@ -28,7 +29,7 @@
 {{- with .slug }}{{ with index (resources.Match (printf "%s/%s.*" $.dir .)) 0 }}
   {{- $heightPerWidth := div (float .Height) .Width -}}
   {{- $isNearTwoByThree := and (ge $heightPerWidth 1.2) (le $heightPerWidth 1.8) -}}
-  {{- $thumb = partial "func/cover.html" (dict "path" (printf "/%s" .Name) "width" 144 "height" 216 "stretch" $isNearTwoByThree "q" 68) -}}
+  {{- $thumb = partial "func/cover.html" (dict "path" (printf "/%s" .Name) "width" 144 "height" 216 "stretch" $isNearTwoByThree "q" 68 "retinaOnly" true) -}}
 {{- end }}{{ end -}}
 <span class="relative block aspect-[2/3] overflow-hidden rounded-lg border transition duration-200 group-hover/cover:-translate-y-1 group-focus-visible/cover:-translate-y-1 motion-reduce:transition-none {{ if .badge }}border-accent bg-border/15 ring-2 ring-accent/60{{ else }}border-border/60 bg-border/15{{ end }}">
   {{- with .badge }}

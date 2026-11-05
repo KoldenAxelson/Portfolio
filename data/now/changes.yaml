@@ -14,6 +14,26 @@
 #   project : optional project slug, for the icon beside the entry. A /projects/
 #             url gets its project's icon on its own; anything else shows the
 #             site's mark unless this names a project.
+- date: 2026-11-05
+  kind: new
+  text: "Added a typing speed test to Play with it: race the clock on random words, or type one of my articles, a classic like Meditations or the Odyssey, or your own text, with live momentum bars and a clock that stops when you pause."
+  url: "/misc/typing-speed/"
+- date: 2026-11-05
+  kind: update
+  text: "NPC Voices can now choose which letters make a sound: just the start of each vowel group, every vowel, or every letter. Press the Delay Lama tile twice and the monk talks instead of singing."
+  url: "/misc/npc-voices/"
+- date: 2026-11-05
+  kind: update
+  text: "Swapped NPC Voices' Banjo-Kazooie style for a Delay Lama one: a singing monk who slides from note to note with an echo behind him."
+  url: "/misc/npc-voices/"
+- date: 2026-11-05
+  kind: new
+  text: "Put a guide to book clubs on my writing shelf: what they are, why join one, how to find or start one, and the tools that help."
+  url: "/misc/writing/book-clubs/"
+- date: 2026-11-05
+  kind: update
+  text: "Added a section to How to Learn on teaching one obvious step at a time, with a small birthday-odds puzzle that makes you guess before it explains."
+  url: "/misc/how-to-learn/"
 - date: 2026-11-01
   kind: update
   text: "Logged my first phone games on the Impossible List: 100% of Melvor Idle and wins over the top two players in Rumble Club."

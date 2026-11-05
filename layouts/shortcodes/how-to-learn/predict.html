@@ -1,0 +1,30 @@
+{{- /* how-to-learn/predict: live widget; behaviour in static/js/how-to-learn/gc-predict.js. With JS off every step and answer shows; the script hides them until a guess is made. */ -}}
+<div class="not-prose vn-demo" id="gc-pr" data-vn-src="/js/how-to-learn/gc-predict.js" data-vn-init="GcPredict">
+<div class="vn-demo-label">Live · predict, then teach, then check</div>
+<p class="gc-pr-q">Twenty-three people are in a room. How likely is it that two of them share a birthday?</p>
+<div class="vn-controls gc-pr-choices" data-gc-pr-group="teach">
+<button class="vn-btn vn-btn-ghost" type="button" data-pick="about 6%">About 6%</button>
+<button class="vn-btn vn-btn-ghost" type="button" data-pick="about 25%">About 25%</button>
+<button class="vn-btn vn-btn-ghost" type="button" data-pick="about 50%" data-right>About 50%</button>
+<button class="vn-btn vn-btn-ghost" type="button" data-pick="about 90%">About 90%</button>
+</div>
+<div class="gc-pr-reveal" data-gc-pr-reveal="teach">
+<p class="gc-pr-tag">One obvious step at a time</p>
+<ol class="gc-pr-steps">
+<li>A match can come from any two people, so count pairs, not people.</li>
+<li>Twenty-three people make 23 × 22 ÷ 2 = 253 pairs.</li>
+<li>Any one pair shares a birthday about 1 time in 365.</li>
+<li>All 253 pairs missing is 364/365 multiplied by itself 253 times, which is about one half.</li>
+<li>Worked out exactly, the chance of a shared birthday is 50.7%.</li>
+</ol>
+<p class="gc-pr-q">Same idea, new cue. A bike lock has 1,000 codes and 40 people each pick one at random. Do two of them probably share a code?</p>
+<div class="vn-controls gc-pr-choices" data-gc-pr-group="check">
+<button class="vn-btn vn-btn-ghost" type="button" data-pick="unlikely, about 4%">Unlikely, about 4%</button>
+<button class="vn-btn vn-btn-ghost" type="button" data-pick="about one in four">About one in four</button>
+<button class="vn-btn vn-btn-ghost" type="button" data-pick="more likely than not" data-right>More likely than not</button>
+</div>
+<p class="gc-pr-answer" data-gc-pr-reveal="check">Forty people make 780 pairs, each matching 1 time in 1,000, so a shared code comes out at about 55%. The 4% guess counts people instead of pairs.</p>
+</div>
+<div class="vn-verdict" id="gc-pr-verdict" aria-live="polite"></div>
+<div class="vn-caption">Both answers are exact arithmetic, not estimates: 50.7% for the birthdays and 54.6% for the lock. The second question hides the same idea behind an unfamiliar cue, which is the point of practice in the harness: recall that has to work outside the example it was taught on.</div>
+</div>

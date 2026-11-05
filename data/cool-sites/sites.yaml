@@ -95,6 +95,11 @@
   domain: "pol.polaimath.com"
   types: [learning]
   desc: "A free, hand-gathered library of books, courses, papers and documentaries across science, history, philosophy and the arts, for learning sideways."
+- name: "The Great Reading List"
+  url: "https://www.hilarylayne.com/p/the-great-reading-list"
+  domain: "hilarylayne.com"
+  types: [learning]
+  desc: "Hilary Layne's graded reading list for building literacy, from chapter books up to advanced classics and a shelf on grammar. Most titles link to free copies, and the list itself is a free PDF. It pairs well with my <a href=\"/misc/writing/book-clubs/\">book clubs</a> guide."
 - name: "Dudely"
   url: "https://dudely.co/"
   domain: "dudely.co"

@@ -1,0 +1,45 @@
+{{- /*
+  misc/live/typing-speed — the Typing Speed card: Aesop's moral to The Wolf
+  and the Lamb typed the way the page shows it (the sentence lit, the line
+  before it dimmed, the current word highlighted, the caret, a typo fixed,
+  the speed ticking up), then the score held a moment before it starts again.
+
+  The SVG below is the still, without JS or with reduced motion: the line
+  half typed. scripts/pages/misc-cards/typing-card.ts runs the loop, finding
+  letters by data-i, word highlights by data-w and the rest by data-* hooks.
+  Letter spacing is $advance, a monospace character's width at font-size 11;
+  the script reads it from data-advance.
+*/ -}}
+{{- $before := "one of my imputations." -}}
+{{- $lines := slice "The tyrant will always find" "a pretext for his tyranny." -}}
+{{- $advance := 6.6 -}}
+{{- $x0 := 70 -}}
+{{- $baselines := slice 98 118 -}}
+{{- $stillTyped := 34 -}}{{/* how far the still is typed: into "pretext". Line two starts at 28, after line one and its space. */}}
+<span class="mf mf-ts" aria-hidden="true" data-live-typing data-advance="{{ $advance }}">
+<svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid meet">
+  <text class="kicker" x="14" y="18">TYPE A CLASSIC</text>
+  <text class="mono ts-wpm" x="306" y="18" text-anchor="end" data-wpm>64 WPM</text>
+  <g>
+    <text class="mono ts-dim" x="{{ $x0 }}" y="76" font-size="11">{{ $before }}</text>
+    {{- $i := 0 }}
+    {{- $w := 0 }}
+    {{- range $l, $line := $lines }}
+    {{- $y := index $baselines $l }}
+    {{- $col := 0 }}
+    {{- range $word := split $line " " }}
+    {{- $x := add $x0 (mul $col $advance) }}
+    <rect class="ts-hl" data-w="{{ $w }}" data-from="{{ $i }}" data-to="{{ add $i (len $word) }}" x="{{ sub $x 1.5 }}" y="{{ sub $y 9.5 }}" width="{{ add (mul (len $word) $advance) 3 }}" height="13" rx="2.5"{{ if and (le $i $stillTyped) (gt (add $i (len $word)) $stillTyped) }} data-on="true"{{ end }} />
+    {{- range $c := split $word "" }}
+    <text class="mono ts-ch{{ if lt $i $stillTyped }} is-typed{{ end }}" data-i="{{ $i }}" x="{{ add $x0 (mul $col $advance) }}" y="{{ $y }}" font-size="11">{{ $c }}</text>
+    {{- $i = add $i 1 }}{{ $col = add $col 1 }}
+    {{- end }}
+    {{- $i = add $i 1 }}{{ $col = add $col 1 }}{{ $w = add $w 1 }}
+    {{- end }}
+    {{- end }}
+    <rect class="ts-caret" data-caret x="{{ sub (add $x0 (mul (sub $stillTyped 28) $advance)) 0.6 }}" y="{{ sub (index $baselines 1) 9.5 }}" width="1.2" height="12" />
+  </g>
+  <text class="kicker" x="14" y="188">AESOP, THE WOLF AND THE LAMB</text>
+</svg>
+</span>
+{{ partial "misc/live-script.html" "pages/misc-cards/typing-card.ts" }}

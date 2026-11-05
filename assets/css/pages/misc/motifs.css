@@ -450,3 +450,15 @@
   .mf-pp .pp-lit, .mf-pp .pp-check { opacity: 1; stroke-dashoffset: 0; }
   .mf-pp .pp-dot, .mf-pp .pp-pulse, .mf-pp .pp-like { display: none; }
 }
+
+/* ---- Typing Speed: a line typed, the score held ------------------------ */
+/* partials/misc/live/typing-speed.html; scripts/pages/misc-cards/typing-card.ts
+   flips the classes. The still (no JS, reduced motion) is the line half typed. */
+.mf-ts .ts-wpm { font-size: 9px; font-weight: 700; letter-spacing: .08em; fill: rgb(var(--c-accent)); }
+.mf-ts .ts-dim { fill: rgb(var(--c-muted)); opacity: .45; }
+.mf-ts .ts-ch { fill: rgb(var(--c-muted)); opacity: .6; }
+.mf-ts .ts-ch.is-typed { fill: rgb(var(--c-fg)); opacity: 1; }
+.mf-ts .ts-ch.is-wrong { fill: #dc2626; opacity: 1; }
+.mf-ts .ts-hl { fill: rgb(var(--c-accent) / .16); opacity: 0; }
+.mf-ts .ts-hl[data-on] { opacity: 1; }
+.mf-ts .ts-caret { fill: rgb(var(--c-accent)); }

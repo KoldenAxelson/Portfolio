@@ -44,6 +44,14 @@
              distorting the aspect ratio (Hugo Resize WxH) — use for a row of
              near-uniform covers that must line up. Ignored unless height is set.
     q      — WebP quality 0–100 (optional, default 80)
+    retinaOnly — when true, emits only the 2× image, with no srcset; width and
+             height still report the 1× size for the <img> box. One file per
+             image instead of two, for small slots like shelf covers where the
+             browser scaling 2× down on a 1× screen costs nothing visible.
+    noUpscale — when true (width-only), never emits a size wider than the
+             source: a source no wider than the slot is shipped as it is, and
+             the 2× is dropped when the source can't fill it. Used for the
+             drawer images, whose sources are often smaller than the slot.
 
   Returns a dict: { src, srcset, width, height }. For the raster path all four
   are populated; for the SVG/AVIF/missing fallback, srcset/width/height are "".
@@ -58,6 +66,8 @@
 {{- $fit := .fit | default false -}}
 {{- $stretch := .stretch | default false -}}
 {{- $q := .q | default 80 -}}
+{{- $isRetinaOnly := .retinaOnly | default false -}}
+{{- $noUpscale := and (.noUpscale | default false) (not $height) -}}
 {{- $out := dict -}}
 {{- with $path -}}
   {{- /* Map front-matter path → assets/ source. Strip leading slash, swap
@@ -68,7 +78,14 @@
   {{- $sub := "" -}}
   {{- with $res -}}{{- $sub = .MediaType.SubType -}}{{- end -}}
   {{- $processable := and $res (not (eq $sub "svg")) -}}
-  {{- if $processable -}}
+  {{- $isSmallSource := and $processable $noUpscale (le $res.Width $width) -}}
+  {{- if $isSmallSource -}}
+    {{- /* Resizing to the source's own width would only re-encode it, and a 2×
+           would be a blow-up with no extra detail. */ -}}
+    {{- $img := $res -}}
+    {{- if ne $sub "webp" }}{{ $img = $res.Resize (printf "%dx webp q%d" $res.Width $q) }}{{ end -}}
+    {{- $out = dict "src" $img.RelPermalink "srcset" "" "width" $img.Width "height" $img.Height -}}
+  {{- else if $processable -}}
     {{- $1x := "" -}}
     {{- $2x := "" -}}
     {{- if $height -}}
@@ -87,11 +104,20 @@
       {{- $1x = $res.Resize (printf "%dx webp q%d" $width $q) -}}
       {{- $2x = $res.Resize (printf "%dx webp q%d" (mul $width 2) $q) -}}
     {{- end -}}
-    {{- $out = dict
-      "src" $1x.RelPermalink
-      "srcset" (printf "%s 1x, %s 2x" $1x.RelPermalink $2x.RelPermalink)
-      "width" $1x.Width
-      "height" $1x.Height -}}
+    {{- /* Only the variant we RelPermalink gets published: Hugo writes a
+           processed image to disk on first .RelPermalink, not on .Resize. */ -}}
+    {{- $isTooSmallFor2x := and $noUpscale (lt $res.Width (mul $width 2)) -}}
+    {{- if $isRetinaOnly -}}
+      {{- $out = dict "src" $2x.RelPermalink "srcset" "" "width" (div $2x.Width 2) "height" (div $2x.Height 2) -}}
+    {{- else if $isTooSmallFor2x -}}
+      {{- $out = dict "src" $1x.RelPermalink "srcset" "" "width" $1x.Width "height" $1x.Height -}}
+    {{- else -}}
+      {{- $out = dict
+        "src" $1x.RelPermalink
+        "srcset" (printf "%s 1x, %s 2x" $1x.RelPermalink $2x.RelPermalink)
+        "width" $1x.Width
+        "height" $1x.Height -}}
+    {{- end -}}
   {{- else -}}
     {{- /* SVG / AVIF / missing source: pass the original path through unchanged
            (base-path aware) so the caller still renders it. No srcset/dims. */ -}}

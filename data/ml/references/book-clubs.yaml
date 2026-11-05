@@ -1,0 +1,103 @@
+# References for content/misc/writing/book-clubs.md, rendered by
+# {{< ml/references >}} under its Sources heading. Add a source by adding an entry.
+
+- tag: Survey
+  title: "Americans still opt for print books over digital or audio versions; few are in book clubs"
+  url: "https://www.pewresearch.org/short-reads/2026/04/09/americans-still-opt-for-print-books-over-digital-or-audio-versions-few-are-in-book-clubs/"
+  meta: "Pew Research Center · April 2026"
+  note: "7% of U.S. adults in a book club in the past year; women 10%, men 5%. Survey of 8,046 adults, October 6 to 16, 2025."
+- tag: Survey
+  title: "Are Book Clubs the New Dating App?"
+  url: "https://www.thriftbooks.com/blog/are-book-clubs-the-new-dating-app-survey-infographic"
+  meta: "ThriftBooks and Talker Research · 2025"
+  note: "Why 2,000 American book club members joined. Commissioned by a bookseller."
+- tag: Study
+  title: "Get into Reading as an intervention for common mental health problems: exploring catalysts for change"
+  url: "https://mh.bmj.com/content/38/1/15"
+  meta: "Christopher Dowrick and colleagues · Medical Humanities"
+  note: "A year of Shared Reading groups for adults with depression, and the limits the authors name: small sample, attrition, no controls."
+- tag: Study
+  title: "Shared reading as an intervention to improve health and well-being in adults: a scoping review"
+  url: "https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2025.1484839/full"
+  meta: "Kajsa Järvholm and colleagues · Frontiers in Psychology · March 2025"
+  note: "Reported gains in wellbeing and fewer depressive symptoms, mostly from small studies without comparison groups."
+- tag: History
+  title: "The evolution of American book clubs: a timeline"
+  url: "https://www.minnpost.com/books/2009/09/evolution-american-book-clubs-timeline/"
+  meta: "MinnPost · September 2009"
+  note: "Anne Hutchinson's group in 1634 and the Society of Young Ladies in 1827."
+- tag: History
+  title: "A brief history of book clubs"
+  url: "https://ncstage.org/uncategorized/a-brief-history-book-clubs"
+  meta: "North Carolina Stage Company"
+  note: "The Book-of-the-Month Club's founding in 1926 and Oprah's Book Club in 1996."
+- tag: Guide
+  title: "Book Club Hub: getting started"
+  url: "https://newcastlelibraries.com.au/experience/what-s-on/book-club-hub/getting-started"
+  meta: "Newcastle Libraries"
+  note: "Six to twelve members, monthly meetings, and inviting a few people who each bring a friend."
+- tag: Guide
+  title: "Starting a book club"
+  url: "https://www.spokanelibrary.org/?p=14885"
+  meta: "Spokane Public Library"
+  note: "Monthly or every six weeks, and sticking to a schedule once it's set."
+- tag: Guide
+  title: "The first meeting"
+  url: "https://www.bookbrowse.com/bookclubs/advice/index.cfm/fuseaction/first_meetings"
+  meta: "BookBrowse"
+  note: "Meetings of an hour or two, and the rule that whoever nominates a book has read it."
+- tag: Guide
+  title: "How to Start a Book Club"
+  url: "https://bookish.netgalley.com/book-club/04/2022/how-to-start-a-book-club/"
+  meta: "NetGalley · April 2022"
+  note: "Why bars make a poor meeting place, and rotating hosts."
+- tag: Guide
+  title: "Starting Up a Book Discussion Group"
+  url: "https://www.santacruzpl.org/files/pdf/readers/bkclb.pdf"
+  meta: "Santa Cruz Public Libraries"
+  note: "Open-ended questions, like \"What was your reading experience?\" in place of \"Did you like the book?\""
+- tag: Guide
+  title: "Lead a Book Club Discussion"
+  url: "https://litlovers.com/run-a-book-club/lead-a-book-club-discussion"
+  meta: "LitLovers"
+  note: "Read with a pencil, mark the passages that strike you, and bring them as evidence."
+- tag: Guide
+  title: "Book Group Discussion Tips and Tricks"
+  url: "https://nlc.nebraska.gov/Ref/Bookclub/bookgroupdiscussiontips.aspx"
+  meta: "Nebraska Library Commission"
+  note: "What to ask when a book has no discussion guide, including asking the picker why they chose it."
+- tag: News
+  title: "Axios Northwest Arkansas newsletter"
+  url: "https://www.axios.com/newsletters/axios-nw-arkansas-c61e766e-c30c-4a66-9635-08b83af937ee"
+  meta: "Axios · 2026"
+  note: "Eventbrite's 33% rise in book club events, driven by niche meetups."
+- tag: Docs
+  title: "Big Library Read"
+  url: "https://company.overdrive.com/?p=34546"
+  meta: "OverDrive"
+  note: "The global ebook club: one title, borrowed by everyone at once through Libby, with no waitlist."
+- tag: Docs
+  title: "Book Club Kits"
+  url: "https://www.halifaxpubliclibraries.ca/adults/book-club-kits/"
+  meta: "Halifax Public Libraries"
+  note: "An example kit collection: more than 220 titles, 8 to 10 copies each."
+- tag: Review
+  title: "6 Best Apps to Manage a Book Club in 2026"
+  url: "https://macmyths.com/6-best-apps-to-manage-a-book-club-in-2026/"
+  meta: "MacMyths · August 2026"
+  note: "What Bookclubs offers for running a club, and which features sit on paid plans."
+- tag: Docs
+  title: "Book Clubs!"
+  url: "https://roadmap.thestorygraph.com/changelog/book-clubs-"
+  meta: "The StoryGraph changelog · April 2024"
+  note: "Clubs with invites and a built-in forum."
+- tag: Article
+  title: "A Deep Dive on New Reader Platforms: Fable and StoryGraph"
+  url: "https://authornews.penguinrandomhouse.com/a-deep-dive-on-new-reader-platforms-fable-and-storygraph/"
+  meta: "Penguin Random House News for Authors · September 2025"
+  note: "Fable's virtual book clubs and spoiler-free chapter rooms."
+- tag: Art
+  title: "Pierre-Auguste Renoir, Two Girls Reading, about 1890"
+  url: "https://commons.wikimedia.org/wiki/File:Pierre-Auguste_Renoir_-_Jeunes_Filles_lisant.jpg"
+  meta: "Los Angeles County Museum of Art · Wikimedia Commons · public domain"
+  note: "The cover: two readers bent over one book."

@@ -37,7 +37,9 @@
    --nv-tune-* colours from here; lit dots match the voiced-letter underline. */
 .nv-tune-well { margin-top: .75rem; padding: .45rem .5rem; min-height: 3.2rem; border: 1px solid rgb(var(--c-border)); border-radius: .6rem; background: rgb(var(--c-bg)); --nv-tune-line: rgb(var(--c-border)); --nv-tune-dot: rgb(var(--c-muted)); --nv-tune-lit: rgb(var(--c-accent)); }
 .nv-tune { display: block; width: 100%; height: auto; }
-.nv-rate { min-height: 1.2em; margin: .35rem 0 0; font: .75rem var(--font-mono); color: rgb(var(--c-muted)); }
+/* Only Advanced's save and copy notes land here; empty, it takes no room. */
+.nv-rate:empty { display: none; }
+.nv-rate { margin: .35rem 0 0; font: .75rem var(--font-mono); color: rgb(var(--c-muted)); }
 
 /* ── controls ─────────────────────────────────────────────────────────── */
 /* Simple view's chips come from data/npc-voices/picker.yaml, Advanced view's
@@ -50,7 +52,7 @@
 .nv-panel[hidden]{display:none;}
 .nv-pick-row{display:grid;gap:.4rem;padding:.7rem 0;border-top:1px solid rgb(var(--c-border) / .7);}
 .nv-pick-row:first-child{border-top:0;padding-top:.2rem;}
-@media (min-width:640px){.nv-pick-row{grid-template-columns:7.5rem 1fr;align-items:center;}.nv-pick-row .nv-lab-label{margin:0;}}
+.nv-pick-row[hidden]{display:none;}
 /* Every row is equal columns that fill it, one per option (--nv-n, set by
    lab.html); rows of four fold to two by two on a phone. */
 .nv-chips{display:grid;grid-template-columns:repeat(var(--nv-n,3),minmax(0,1fr));gap:.45rem;}
@@ -104,3 +106,7 @@
 .nv-lab-row-value{font:.7rem var(--font-mono);color:rgb(var(--c-fg));font-variant-numeric:tabular-nums;}
 .nv-lab-range{grid-column:1 / -1;width:100%;margin:0;accent-color:rgb(var(--c-accent));}
 .nv-lab-yaml{margin:.9rem 0 0;padding:.7rem .8rem;border-radius:.5rem;border:1px solid rgb(var(--c-accent) / .45);background:rgb(var(--c-accent) / .05);font:.74rem/1.6 var(--font-mono);color:rgb(var(--c-fg));white-space:pre-wrap;}
+/* A control the current settings don't use (data-nv-needs, nv-voice.js
+   showNeeds): faded, with a short note beside its label saying what to switch. */
+.nv-chip.is-off,.nv-lab-toggle.is-off .nv-lab-seg,.nv-lab-row.is-off .nv-lab-range,.nv-lab-row.is-off .nv-lab-row-value{opacity:.4;}
+.nv-off-note{font:italic 400 .7rem var(--font-sans);letter-spacing:0;text-transform:none;color:rgb(var(--c-muted));}

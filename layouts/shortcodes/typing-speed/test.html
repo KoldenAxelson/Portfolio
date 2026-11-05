@@ -1,0 +1,127 @@
+{{- /*
+  typing-speed/test — the typing test on /misc/typing-speed/.
+
+    {{< typing-speed/test >}}
+
+  Durations and the word list come from data/typing-speed/test.yaml, handed to
+  the script as data-ts-config; the passages it can load (articles, books)
+  come from partials/typing-speed/library.html as data-ts-library. The script,
+  assets/scripts/pages/typing-speed/main.ts, finds everything by its data-ts-*
+  hook. Without JavaScript the board shows a fixed sample and the controls
+  stay disabled. Assets ship from layouts/misc/single.html via
+  partials/typing-speed/assets.html.
+*/ -}}
+{{- $data := (index site.Data "typing-speed").test -}}
+{{- $library := partial "typing-speed/library.html" . -}}
+{{- $sample := first 40 $data.words -}}
+<div class="ts not-prose" data-ts data-ts-config="{{ dict "durations" $data.durations "default" $data.default "words" $data.words | jsonify }}" data-ts-library="{{ $library | jsonify }}">
+  {{- /* One toolbar: the text source on the left, that source's options on
+         the right. Only the matching data-ts-panel shows; "Your own" has no
+         options in the bar, its paste box sits under it. */}}
+  <div class="ts-bar">
+    <div class="ts-seg" role="group" aria-label="Text">
+      <button class="ts-seg-btn" type="button" data-ts-source="words" aria-pressed="true" disabled>Words</button>
+      <button class="ts-seg-btn" type="button" data-ts-source="articles" aria-pressed="false" disabled>Articles</button>
+      <button class="ts-seg-btn" type="button" data-ts-source="books" aria-pressed="false" disabled>Classics</button>
+      <button class="ts-seg-btn" type="button" data-ts-source="own" aria-pressed="false" disabled>Your own</button>
+    </div>
+
+    {{- /* Length sits behind a clock button; the two text options are icon
+           toggles in the style of Father's Puzzle's controls (a glyph in a
+           ring), lit when on. */}}
+    <div class="ts-bar-panel" data-ts-panel="words">
+      <details class="ts-time" data-ts-time-menu>
+        <summary class="ts-time-btn" aria-label="Test length">
+          {{ partial "func/svg-icon.html" (dict "name" "clock" "class" "ts-time-icon") }}
+          <span data-ts-seconds-label>{{ $data.default }}s</span>
+          <svg class="ts-time-caret" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M5.2 7.7a.75.75 0 0 1 1.06.02L10 11.6l3.74-3.88a.75.75 0 1 1 1.08 1.04l-4.28 4.44a.75.75 0 0 1-1.08 0L5.18 8.76a.75.75 0 0 1 .02-1.06Z"/></svg>
+        </summary>
+        <div class="ts-time-menu" role="group" aria-label="Test length">
+          {{- range $data.durations }}
+          <button class="ts-time-opt" type="button" data-ts-seconds="{{ . }}" aria-pressed="{{ cond (eq . $data.default) "true" "false" }}" disabled>{{ . }} seconds</button>
+          {{- end }}
+        </div>
+      </details>
+      <button class="ts-icon" type="button" data-ts-option="punctuation" aria-pressed="false" title="Punctuation" aria-label="Punctuation" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.7 9.3a2.4 2.4 0 1 1 3.5 2.1c-.7.4-1.2 1-1.2 1.8v.4"/><path d="M12 16.9h.01"/></svg>
+      </button>
+      <button class="ts-icon" type="button" data-ts-option="numbers" aria-pressed="false" title="Numbers" aria-label="Numbers" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M10.6 7.5 9.4 16.5M14.6 7.5l-1.2 9M7.8 10.3h8.6M7.4 13.7h8.6"/></svg>
+      </button>
+    </div>
+
+    <div class="ts-bar-panel" data-ts-panel="articles" hidden>
+      <select class="ts-select is-wide" data-ts-article aria-label="Article" disabled>
+        {{- range $i, $title := $library.articleTitles }}<option value="{{ $i }}">{{ $title }}</option>{{ end }}
+      </select>
+      <select class="ts-select" data-ts-article-part aria-label="How much of it" disabled></select>
+    </div>
+
+    <div class="ts-bar-panel" data-ts-panel="books" hidden>
+      <select class="ts-select is-wide" data-ts-book aria-label="Book" disabled>
+        {{- range $i, $book := $library.books }}<option value="{{ $i }}">{{ $book.title }}, {{ $book.author }}</option>{{ end }}
+      </select>
+      <select class="ts-select" data-ts-book-section aria-label="Section" disabled></select>
+      <select class="ts-select" data-ts-book-part aria-label="How much of it" disabled></select>
+    </div>
+  </div>
+
+  {{- /* Your own text: paste it, drop a .txt on the box, or pick one with
+         the upload ring; the arrow ring starts the test. */}}
+  <div class="ts-own" data-ts-panel="own" hidden>
+    <textarea class="ts-own-text" data-ts-own-text rows="3" maxlength="20000" placeholder="Paste or drop anything you want to type" aria-label="Your text" disabled></textarea>
+    <div class="ts-own-actions">
+      <label class="ts-icon" title="Load a .txt file"><input type="file" accept=".txt,text/plain" data-ts-own-file aria-label="Load a .txt file" disabled />
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16V8.2M9.2 11 12 8.2l2.8 2.8"/></svg>
+      </label>
+      <button class="ts-icon is-go" type="button" data-ts-own-use title="Go" aria-label="Type this text" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M8 12h8M13.2 9.2 16 12l-2.8 2.8"/></svg>
+      </button>
+    </div>
+  </div>
+
+  {{- /* The header over the board: live numbers on the left, momentum on the
+         right (the running speed and the last finished sentence's, on one
+         scale, so you can see whether you're speeding up or flagging). */}}
+  <div class="ts-hud" aria-hidden="true">
+    <div class="ts-stats">
+      <span class="ts-stat is-time"><span class="ts-stat-value" data-ts-time>{{ $data.default }}</span><span class="ts-stat-label" data-ts-time-label>seconds</span></span>
+      <span class="ts-stat"><span class="ts-stat-value" data-ts-wpm>0</span><span class="ts-stat-label">wpm</span></span>
+      <span class="ts-stat"><span class="ts-stat-value" data-ts-accuracy>100</span><span class="ts-stat-label">% acc</span></span>
+      <span class="ts-stat" data-ts-progress-stat hidden><span class="ts-stat-value" data-ts-progress>0</span><span class="ts-stat-label">% done</span></span>
+    </div>
+    <div class="ts-momentum">
+      <div class="ts-meter"><span class="ts-meter-label">Overall</span><span class="ts-meter-track"><span class="ts-meter-fill" data-ts-meter-overall></span></span><span class="ts-meter-value" data-ts-meter-overall-value>0</span></div>
+      <div class="ts-meter"><span class="ts-meter-label" data-ts-meter-sentence-label>This sentence</span><span class="ts-meter-track"><span class="ts-meter-fill" data-ts-meter-sentence></span></span><span class="ts-meter-value" data-ts-meter-sentence-value>0</span></div>
+    </div>
+  </div>
+
+  <div class="ts-board" data-ts-board>
+    <div class="ts-window" data-ts-window>
+      <div class="ts-text" data-ts-text>{{ delimit $sample " " }}</div>
+      <span class="ts-caret" data-ts-caret hidden></span>
+    </div>
+    <textarea class="ts-input" data-ts-input aria-label="Type the text shown" autocapitalize="off" autocomplete="off" autocorrect="off" spellcheck="false" rows="1" disabled></textarea>
+    <p class="ts-hint" data-ts-hint>This test needs JavaScript; the words above are a sample.</p>
+  </div>
+
+  <div class="ts-result" data-ts-result role="status" hidden>
+    <div class="ts-result-main">
+      <span class="ts-result-wpm" data-ts-result-wpm>0</span>
+      <span class="ts-result-unit">wpm</span>
+      <span class="ts-best" data-ts-best hidden></span>
+    </div>
+    <dl class="ts-result-grid">
+      <div><dt>Accuracy</dt><dd data-ts-result-accuracy>0%</dd></div>
+      <div><dt>Raw</dt><dd data-ts-result-raw>0 wpm</dd></div>
+      <div><dt>Characters</dt><dd data-ts-result-chars>0 right · 0 wrong</dd></div>
+      <div><dt>Test</dt><dd data-ts-result-mode></dd></div>
+    </dl>
+    <svg class="ts-chart" data-ts-chart viewBox="0 0 300 80" preserveAspectRatio="none" role="img" aria-label="Words per minute over the test"></svg>
+  </div>
+
+  <div class="ts-actions">
+    <button class="ts-restart" type="button" data-ts-restart aria-label="New test" title="New test" disabled>{{ partial "func/svg-icon.html" (dict "name" "arrow-path" "class" "ts-restart-icon") }}</button>
+  </div>
+
+</div>

@@ -92,6 +92,37 @@
     return sink;
   }
 
+  // Recorded blips (flags.blip.sample, picker.yaml), fetched and decoded once
+  // per URL. If one can't load, the blip is synthesized as before.
+  var samples = {};
+  function loadSample(url) {
+    if (samples[url]) return samples[url].ready;
+    var entry = { data: null, rate: 0, done: false };
+    var sink = getAudio();
+    entry.ready = !sink || !window.fetch ? Promise.resolve() : fetch(url)
+      .then(function (response) {
+        if (!response.ok) throw new Error(response.status);
+        return response.arrayBuffer();
+      })
+      .then(function (bytes) {
+        // The callback form: older Safari's decodeAudioData returns no promise.
+        return new Promise(function (resolve, reject) { sink.ctx.decodeAudioData(bytes, resolve, reject); });
+      })
+      .then(function (decoded) {
+        entry.data = decoded.getChannelData(0);
+        entry.rate = decoded.sampleRate;
+      })
+      .catch(function () {})
+      .then(function () { entry.done = true; });
+    samples[url] = entry;
+    return entry.ready;
+  }
+
+  function sampleFor(flags) {
+    var url = flags.blip && flags.blip.sample;
+    return url && samples[url] && samples[url].data ? samples[url] : null;
+  }
+
   /* ---- Reading the line ------------------------------------------------- */
 
   function isLetter(ch) { return /[a-z]/i.test(ch || ""); }
@@ -108,7 +139,7 @@
 
   function vowelFromLetters(chars, i) {
     var pair = (chars[i] + (chars[i + 1] || "")).toLowerCase();
-    // A consonant (every-letter mode) gets the neutral "uh".
+    // A consonant (All letters) gets the neutral "uh".
     return PAIR_VOWEL[pair] || LETTER_VOWEL[chars[i].toLowerCase()] || "uh";
   }
 
@@ -126,20 +157,33 @@
     return DIGRAPHS[pair] || consonantOfLetter(chars, i - 1);
   }
 
+  // flags.letters (picker.yaml's Letter inclusion): which letters make a
+  // sound. "select" is a vowel group's first letter, "vowels" every vowel,
+  // "all" every letter. Past "select" the sounds are a letter long, so a run
+  // of them can't pile up.
+  function soundsAt(chars, i, flags) {
+    if (flags.letters === "all") return isLetter(chars[i]);
+    if (flags.letters === "vowels") return isVowelAt(chars, i);
+    return startsVowelGroup(chars, i);
+  }
+
+  function isLetterLong(flags) { return flags.letters === "vowels" || flags.letters === "all"; }
+
   // Sounding every letter, a consonant letter is its consonant on a short "uh"
   // (the second letter of a digraph plays the digraph); a vowel stands alone.
+  // Otherwise a vowel opens on the consonant before it, if any.
   function onsetFor(chars, i, flags) {
-    if (!flags.every) return consonantBefore(chars, i);
+    if (flags.letters !== "all") return consonantBefore(chars, i);
     if (isVowelAt(chars, i)) return null;
     var pair = ((chars[i - 1] || "") + chars[i]).toLowerCase();
     return DIGRAPHS[pair] || consonantOfLetter(chars, i);
   }
 
-  // How long a consonant runs. Before a vowel group it runs ahead of the
-  // vowel's letter; sounding every letter it has to fit in the letter's sound.
+  // How long a consonant runs. Before a vowel it runs ahead of the vowel's
+  // letter; with letter-long sounds it has to fit in a letter's time.
   function consonantMs(onset, flags, tuning) {
     var ms = tuning.consonantMs * KIND_LENGTH[CONSONANTS[onset].kind];
-    return flags.every ? Math.min(ms, tuning.letterMs * 1.5 * 0.45) : ms;
+    return isLetterLong(flags) ? Math.min(ms, tuning.letterMs * 1.5 * 0.45) : ms;
   }
 
   // A letter waits letterMs; a comma commaX times that; a sentence end stopX
@@ -222,7 +266,7 @@
     };
     if (flags.human) sound.semis += (Math.random() * 2 - 1) * tuning.nudge;
     sound.onset = flags.consonants && flags.tone !== "beep" ? onsetFor(chars, i, flags) : null;
-    sound.leadMs = sound.onset && !flags.every ? consonantMs(sound.onset, flags, tuning) : 0;
+    sound.leadMs = sound.onset && flags.letters !== "all" ? consonantMs(sound.onset, flags, tuning) : 0;
     return sound;
   }
 
@@ -231,13 +275,33 @@
     var sounds = [];
     var steps = chars.map(function (ch, i) {
       var step = { ch: ch, waitMs: pauseAfter(ch, tuning), sound: null };
-      if (!isLetter(ch) || !(flags.every || startsVowelGroup(chars, i))) return step;
+      if (!soundsAt(chars, i, flags)) return step;
       step.sound = makeSound(chars, i, flags, tuning);
       sounds.push(step.sound);
       return step;
     });
     if (flags.tune) applyTune(chars, sounds, tuning);
+    // Talking (the Delay Lama encore) keeps the punctuation tune instead.
+    if (flags.sing && !flags.talk) singMelody(chars, sounds);
     return { steps: steps, sounds: sounds };
+  }
+
+  // flags.sing (picker.yaml's Delay Lama): the syllables become one melody on
+  // a minor pentatonic scale, walking a step or two at a time and coming home
+  // to the root at the end of each phrase. The scale and the walk are by ear.
+  var CHANT_SCALE = [-5, -2, 0, 3, 5, 7, 10];
+  var CHANT_HOME = 2;
+  var CHANT_STEPS = [-2, -1, -1, 0, 1, 1, 2];
+  function singMelody(chars, sounds) {
+    var degree = CHANT_HOME;
+    phrasesOf(chars).forEach(function (phrase) {
+      var inPhrase = sounds.filter(function (s) { return s.index >= phrase.start && s.index <= phrase.end; });
+      inPhrase.forEach(function (sound, k) {
+        var step = CHANT_STEPS[Math.floor(Math.random() * CHANT_STEPS.length)];
+        degree = k === inPhrase.length - 1 ? CHANT_HOME : Math.max(0, Math.min(CHANT_SCALE.length - 1, degree + step));
+        sound.semis += CHANT_SCALE[degree];
+      });
+    });
   }
 
   /* ---- Making the sounds ------------------------------------------------ */
@@ -349,10 +413,11 @@
 
   function renderVoice(ctx, voice, sound, flags, tuning, clockS) {
     var rate = ctx.sampleRate;
-    // On every letter the sounds must be short enough not to pile up.
-    var vowelMs = flags.every ? tuning.letterMs * 1.5 : tuning.soundMs;
+    // Letter-long sounds must be short enough not to pile up; on every
+    // letter the consonant is inside the sound, otherwise it runs ahead.
+    var vowelMs = isLetterLong(flags) ? tuning.letterMs * 1.5 : tuning.soundMs;
     var leadMs = sound.onset ? consonantMs(sound.onset, flags, tuning) : 0;
-    var totalMs = flags.every ? vowelMs : vowelMs + leadMs;
+    var totalMs = flags.letters === "all" ? vowelMs : vowelMs + leadMs;
     var length = Math.max(1, Math.round(totalMs / 1000 * rate));
     var buffer = ctx.createBuffer(1, length, rate);
     var out = buffer.getChannelData(0);
@@ -475,9 +540,28 @@
   // octave, and a random pitch wobble per blip.
   var PLAIN_BLIP = { ms: BEEP_S * 1000, octave: 2, wobble: 0 };
 
+  // A recorded blip, played faster or slower for the letter's pitch: its own
+  // pitch is blip.sampleHz, so the voice's pitchHz and the tune move it.
+  function renderSampleBlip(ctx, voice, sound, blip, sample) {
+    var wobble = 1 + (Math.random() * 2 - 1) * blip.wobble;
+    var step = voice.pitchHz / blip.sampleHz * wobble * Math.pow(2, sound.semis / 12) * sample.rate / ctx.sampleRate;
+    var length = Math.max(1, Math.floor((sample.data.length - 1) / step));
+    var buffer = ctx.createBuffer(1, length, ctx.sampleRate);
+    var out = buffer.getChannelData(0);
+    for (var i = 0; i < length; i++) {
+      var at = i * step;
+      var k = Math.floor(at);
+      out[i] = sample.data[k] + (sample.data[k + 1] - sample.data[k]) * (at - k);
+    }
+    normalize(out, PEAK * 0.6);
+    return buffer;
+  }
+
   function renderBeep(ctx, voice, sound, flags, tuning) {
     var rate = ctx.sampleRate;
     var blip = flags.blip || PLAIN_BLIP;
+    var sample = sampleFor(flags);
+    if (sample) return renderSampleBlip(ctx, voice, sound, blip, sample);
     var length = Math.round(blip.ms / 1000 * rate);
     var buffer = ctx.createBuffer(1, length, rate);
     var out = buffer.getChannelData(0);
@@ -505,8 +589,268 @@
     }
   }
 
+  /* ---- The singing monk (flags.sing) ------------------------------------ */
+
+  // Ported from MonkSynth's voice engine (github.com/JonET/monksynth, MIT,
+  // dsp/voice.c), a free remake of the 2002 Delay Lama plug-in. It's FOF
+  // synthesis, which MonkSynth credits to Xavier Rodet at IRCAM: the voice is
+  // a run of 20 ms grains, each three decaying sine waves at the vowel's
+  // formants plus a little breath, one grain started per pitch period and
+  // overlapped. The constants are MonkSynth's; turning text into notes is ours.
+  // Its MIT notice ships beside this file: monksynth-license.txt.
+  var MONK = {
+    grainS: 0.02,
+    // Formant centres (Hz) at five points on MonkSynth's vowel axis. Its
+    // comment calls them a, e, i, o, u; the values run oo, oh, ah, eh, ee.
+    formants: [[280, 450, 800, 350, 270], [600, 800, 1150, 2000, 2140], [2240, 2830, 2900, 2800, 2950]],
+    bandwidths: [32.5, 47.5, 62.5],
+    breathPeriodsS: [0.000202, 0.000263],
+    // Pitch and vowel walk to each new target in ten 10 ms steps, the ramp
+    // MonkSynth says the original used.
+    tickS: 0.01,
+    rampTicks: 10,
+    vibratoSemis: 0.2,
+    jitterEveryS: 4586 / 44100,
+    attackS: 0.03,
+    releaseS: 0.25,
+    lastNoteS: 0.7
+  };
+  var MONK_VOWEL = { oo: 0, oh: 0.25, uh: 0.4, ah: 0.5, eh: 0.75, ee: 1 };
+  // Each syllable starts from "oo" and opens into its own vowel, the
+  // "wooo-aaah" people know the plug-in by. This is how long the "oo" leads.
+  var MONK_OPEN_S = 0.09;
+
+  // Catmull-Rom through the five points with the ends repeated, as MonkSynth
+  // builds its table.
+  function monkFormant(f, vowel) {
+    var points = MONK.formants[f];
+    var padded = [points[0]].concat(points, [points[4]]);
+    var x = Math.max(0, Math.min(1, vowel)) * 4;
+    var seg = Math.min(3, Math.floor(x));
+    var t = x - seg;
+    var p0 = padded[seg], p1 = padded[seg + 1], p2 = padded[seg + 2], p3 = padded[seg + 3];
+    return 0.5 * (2 * p1 + (p2 - p0) * t + (2 * p0 - 5 * p1 + 4 * p2 - p3) * t * t + (3 * p1 - p0 - 3 * p2 + p3) * t * t * t);
+  }
+
+  // The grain's window, each formant's decay and the breath, once per rate.
+  function monkShapes(rate) {
+    var n = Math.round(MONK.grainS * rate);
+    var attack = Math.floor(rate * 0.0018);
+    var releaseAt = Math.floor(rate * 0.013);
+    var releaseLen = Math.floor(rate * 0.007);
+    var window = new Float32Array(n);
+    var breath = new Float32Array(n);
+    var decays = MONK.bandwidths.map(function () { return new Float32Array(n); });
+    for (var i = 0; i < n; i++) {
+      // The release starts partway through its cosine, so a grain never quite
+      // closes: MonkSynth keeps that "open" tail on purpose.
+      window[i] = i < attack ? 0.5 - 0.5 * Math.cos(Math.PI * i / attack) : i >= releaseAt ? 0.5 - 0.5 * Math.cos(Math.PI * (releaseLen + i) / releaseLen) : 1;
+      breath[i] = Math.sin(2 * Math.PI * i / (rate * MONK.breathPeriodsS[0])) * Math.exp(-150 * Math.PI * i / rate) +
+        Math.sin(2 * Math.PI * i / (rate * MONK.breathPeriodsS[1])) * Math.exp(-175 * Math.PI * i / rate);
+      for (var f = 0; f < decays.length; f++) decays[f][i] = Math.exp(-Math.PI * MONK.bandwidths[f] * i / rate);
+    }
+    return { n: n, window: window, breath: breath, decays: decays };
+  }
+
+  function addMonkGrain(out, at, shapes, vowel, scale, breathLevel, gain, rate) {
+    var hz = MONK.formants.map(function (points, f) { return monkFormant(f, vowel) * scale; });
+    for (var i = 0; i < shapes.n; i++) {
+      var sample = breathLevel * shapes.breath[i];
+      for (var f = 0; f < hz.length; f++) sample += Math.sin(2 * Math.PI * hz[f] * i / rate) * shapes.decays[f][i];
+      out[at + i] += gain * sample * shapes.window[i];
+    }
+  }
+
+  // Pitch is quantized to 32 steps a semitone before it sets the grain
+  // spacing, a stepped quality MonkSynth keeps on purpose.
+  function monkPeriod(note, rate) {
+    var index = Math.floor((Math.max(0, Math.min(150, note)) - 12) * 32);
+    return Math.max(1, Math.floor(rate / (Math.pow(2, index / 384) * 8.175799)));
+  }
+
+  // Low notes come out quieter, with more grains overlapping, so MonkSynth
+  // lifts them.
+  function monkLoudness(note) { return Math.max(0.1, Math.min(3, (note - 12) * (-1 / 72) + 2)); }
+
+  // flags.talk, the Delay Lama tile's encore: the monk says the line. The
+  // plug-in has a pitch, a vowel slider (oo, oh, ah, eh, ee) and nothing
+  // else, so people make it talk by drawing the slider through each word:
+  // two-part vowels slide ("my" ah to ee, "how" ah to oo), w, y, r and l
+  // are just a vowel to start from, and a new note's dip in volume passes
+  // for a consonant. Same here: a stop (p, t, k…) is a short silence, m and
+  // n a quiet hum, a hiss (s, f…) a near silence, since grains of a vowel
+  // can't hiss. The slides are quicker than singing's, and the pitch follows
+  // the punctuation tune. The letter rules are by ear.
+  var TALK = {
+    rampTicks: 3,
+    dipS: 0.035,
+    glides: { w: "oo", y: "ee", r: "oh", l: "oh" },
+    hums: "mn",
+    stops: "pbtdkgcjqx",
+    humGain: 0.3,
+    hissGain: 0.12,
+    diphthongs: { ai: ["eh", "ee"], ay: ["eh", "ee"], ei: ["eh", "ee"], ey: ["eh", "ee"], ou: ["ah", "oo"], ow: ["ah", "oo"], oi: ["oh", "ee"], oy: ["oh", "ee"], oa: ["oh", "oo"], oe: ["oh", "oo"], ew: ["ee", "oo"], ue: ["ee", "oo"] }
+  };
+
+  // A vowel group's start and end on the slider.
+  function talkVowel(chars, i) {
+    var group = "";
+    for (var k = i; isVowelAt(chars, k); k++) group += chars[k].toLowerCase();
+    var pair = TALK.diphthongs[group.slice(0, 2)];
+    if (pair) return pair;
+    var ch = group.charAt(0);
+    var after = i + group.length;
+    var isWordEnd = !isLetter(chars[after]);
+    // A silent e after one consonant makes a long vowel: "like", "make", "home".
+    var isMagicE = group.length === 1 && isLetter(chars[after]) && (chars[after + 1] || "").toLowerCase() === "e" && !isLetter(chars[after + 2]);
+    if ((ch === "i" || ch === "y") && (isWordEnd || isMagicE)) return ["ah", "ee"];
+    if (ch === "a" && isMagicE) return ["eh", "ee"];
+    if (ch === "o" && (isWordEnd || isMagicE)) return ["oh", "oo"];
+    var vowel = vowelFromLetters(chars, i);
+    return [vowel, vowel];
+  }
+
+  // What the letter before a vowel group does: a vowel to start from, or a
+  // dip in volume before it.
+  function talkOnset(chars, i) {
+    if (!isLetter(chars[i - 1]) || isVowelAt(chars, i - 1)) return {};
+    var ch = chars[i - 1].toLowerCase();
+    if (ch === "h" && (chars[i - 2] || "").toLowerCase() === "w") return { vowel: "oo" };
+    if (TALK.glides[ch]) return { vowel: TALK.glides[ch] };
+    if (TALK.hums.indexOf(ch) >= 0) return { gain: TALK.humGain, vowel: "oo" };
+    if (TALK.stops.indexOf(ch) >= 0) return { gain: 0 };
+    return { gain: TALK.hissGain };
+  }
+
+  function talkTargets(steps, homeNote) {
+    var chars = steps.map(function (step) { return step.ch; });
+    var voiced = steps.filter(function (step) { return step.sound; });
+    var ramp = TALK.rampTicks;
+    var targets = [];
+    voiced.forEach(function (step, k) {
+      var i = step.sound.index;
+      var atS = step.atMs / 1000;
+      var nextIndex = voiced[k + 1] ? voiced[k + 1].sound.index : chars.length;
+      var gapS = voiced[k + 1] ? voiced[k + 1].atMs / 1000 - atS : MONK.lastNoteS;
+      var shape = talkVowel(chars, i);
+      var onset = talkOnset(chars, i);
+      if (onset.gain !== undefined && k > 0) targets.push({ atS: atS - TALK.dipS, gain: onset.gain, vowel: onset.vowel && MONK_VOWEL[onset.vowel], ramp: ramp });
+      targets.push({ atS: atS, note: homeNote + step.sound.semis, vowel: MONK_VOWEL[onset.vowel || shape[0]], gain: 1, ramp: ramp });
+      if (onset.vowel) targets.push({ atS: atS + Math.min(0.05, gapS / 4), vowel: MONK_VOWEL[shape[0]], ramp: ramp });
+      if (shape[1] !== shape[0]) targets.push({ atS: atS + gapS * 0.5, vowel: MONK_VOWEL[shape[1]], ramp: ramp * 2 });
+      // A comma or full stop before the next syllable is a breath.
+      var isPause = chars.slice(i, nextIndex).some(function (ch) { return PAUSE_KINDS[ch]; });
+      if (isPause) targets.push({ atS: atS + Math.min(0.22, gapS * 0.6), gain: 0, ramp: ramp * 2 });
+    });
+    return targets.sort(function (a, b) { return a.atS - b.atS; });
+  }
+
+  // Each syllable is two targets: its note with the mouth at "oo", then its
+  // own vowel a moment later (sooner if the next syllable is close).
+  function chantTargets(voice, steps, flags) {
+    var voiced = steps.filter(function (step) { return step.sound; });
+    // MonkSynth's period table sounds an octave below the note it's given
+    // (monkPeriod's "- 12"), so ask for one octave up to hear pitchHz.
+    var homeNote = 69 + 12 * Math.log2(voice.pitchHz / 440) + 12;
+    if (flags.talk) return talkTargets(steps, homeNote);
+    var targets = [];
+    voiced.forEach(function (step, k) {
+      var atS = step.atMs / 1000;
+      var gapS = voiced[k + 1] ? voiced[k + 1].atMs / 1000 - atS : MONK.lastNoteS;
+      targets.push({ atS: atS, note: homeNote + step.sound.semis, vowel: MONK_VOWEL.oo });
+      targets.push({ atS: atS + Math.min(MONK_OPEN_S, gapS / 2), vowel: MONK_VOWEL[step.sound.vowel] });
+    });
+    return targets;
+  }
+
+  // The whole line as one voice, starting at the first syllable's letter.
+  function renderChant(ctx, voice, steps, flags) {
+    var rate = ctx.sampleRate;
+    var shapes = monkShapes(rate);
+    var targets = chantTargets(voice, steps, flags);
+    var startS = targets[0].atS;
+    var stopS = targets[targets.length - 1].atS + MONK.lastNoteS;
+    var singing = Math.ceil((stopS + MONK.releaseS) * rate);
+    var buffer = ctx.createBuffer(1, singing + shapes.n, rate);
+    var out = buffer.getChannelData(0);
+    var tick = Math.max(1, Math.round(MONK.tickS * rate));
+    var jitterEvery = Math.max(1, Math.round(MONK.jitterEveryS * rate));
+    var scale = voice.tube;
+    var breathLevel = Math.min(1, voice.breath * 4);
+    // gain is talking's dips (a target may leave any of the three alone);
+    // a target's own ramp, in ticks, overrides MonkSynth's.
+    var now = { note: targets[0].note, vowel: targets[0].vowel, gain: 1 };
+    var goal = { note: now.note, vowel: now.vowel, gain: 1 };
+    var stepBy = { note: 0, vowel: 0, gain: 0 };
+    var ticksLeft = { note: 0, vowel: 0, gain: 0 };
+    var keys = ["note", "vowel", "gain"];
+    var next = 0;
+    var sinceGrain = Infinity;
+    var vibratoPhase = 0;
+    var vibratoHz = 4;
+    for (var i = Math.floor(startS * rate); i < singing; i++) {
+      var atS = i / rate;
+      for (; next < targets.length && targets[next].atS <= atS; next++) {
+        var target = targets[next];
+        var ticks = target.ramp || MONK.rampTicks;
+        keys.forEach(function (key) {
+          if (target[key] === undefined) return;
+          goal[key] = target[key];
+          stepBy[key] = (goal[key] - now[key]) / ticks;
+          ticksLeft[key] = ticks;
+        });
+      }
+      if (i % tick === 0) {
+        keys.forEach(function (key) {
+          if (!ticksLeft[key]) return;
+          ticksLeft[key]--;
+          now[key] = ticksLeft[key] ? now[key] + stepBy[key] : goal[key];
+        });
+      }
+      if (i % jitterEvery === 0) vibratoHz = 5 + Math.random() * 2;
+      vibratoPhase += vibratoHz / rate;
+      var note = now.note + MONK.vibratoSemis * Math.sin(2 * Math.PI * vibratoPhase);
+      sinceGrain++;
+      if (sinceGrain < monkPeriod(note, rate)) continue;
+      sinceGrain = 0;
+      addMonkGrain(out, i, shapes, now.vowel, scale, breathLevel, monkLoudness(now.note) * now.gain, rate);
+    }
+    for (var j = 0; j < out.length; j++) {
+      var tS = j / rate;
+      out[j] *= Math.min(1, Math.max(0, (tS - startS) / MONK.attackS)) * Math.min(1, Math.max(0, (stopS + MONK.releaseS - tS) / MONK.releaseS));
+    }
+    normalize(out, PEAK);
+    return buffer;
+  }
+
   function renderSound(ctx, voice, sound, flags, tuning, clockS) {
     return flags.tone === "beep" ? renderBeep(ctx, voice, sound, flags, tuning) : renderVoice(ctx, voice, sound, flags, tuning, clockS);
+  }
+
+  // flags.echo: the stereo delay from MonkSynth's dsp/delay.c (see the monk
+  // section): two lines at different times, one per speaker, each feeding
+  // back into itself. Output is the dry voice plus both taps; `mix` scales
+  // what goes into the lines, feedback included. Its Rabten preset's values.
+  var MONK_DELAY = { leftS: 13653 / 44100, rightS: 17570 / 44100, feedback: 0.5, mix: 0.8 };
+  function makeEcho(ctx, destination) {
+    var input = ctx.createGain();
+    var spread = ctx.createChannelMerger(2);
+    input.connect(destination);
+    [MONK_DELAY.leftS, MONK_DELAY.rightS].forEach(function (seconds, channel) {
+      var line = ctx.createDelay(1);
+      var send = ctx.createGain();
+      var loop = ctx.createGain();
+      line.delayTime.value = seconds;
+      send.gain.value = MONK_DELAY.mix;
+      loop.gain.value = MONK_DELAY.feedback * MONK_DELAY.mix;
+      input.connect(send);
+      send.connect(line);
+      line.connect(loop);
+      loop.connect(line);
+      line.connect(spread, 0, channel);
+    });
+    spread.connect(destination);
+    return { out: input, unplug: function () { input.disconnect(); spread.disconnect(); } };
   }
 
   function startBuffer(sink, buffer, whenS) {
@@ -552,8 +896,8 @@
     var canvas = $("tune");
     var paint = canvas.getContext("2d");
     var run = null;
+    var echo = null;
     var plan = null;
-    var letterMs = 0;
     var spans = [];
 
     // Colours come from the strip's frame (.nv-tune-well in npc-voices.css),
@@ -581,15 +925,11 @@
       paint.globalAlpha = 1;
     }
 
-    // The rate while letters are typing, leaving out the punctuation pauses,
-    // to compare with the video's "about 30 a second" and "about 10".
-    function showRate(note) {
-      var typingSeconds = plan.steps.length * letterMs / 1000;
-      var perSecond = plan.sounds.length / typingSeconds;
-      $("rate").textContent = plan.sounds.length + " sounds, about " + Math.round(perSecond) + " a second while typing" + (note || "");
-    }
-
     function stopRun(shouldSilence) {
+      if (shouldSilence && echo) {
+        echo.unplug();
+        echo = null;
+      }
       if (!run) return;
       cancelAnimationFrame(run.frame);
       if (shouldSilence) run.nodes.forEach(function (node) { try { node.stop(); } catch (error) { /* already ended */ } });
@@ -603,11 +943,10 @@
       playButton.title = isPlaying ? "Stop" : "Play";
     }
 
-    function finish(note) {
+    function finish() {
       spans.forEach(function (span) { span.classList.remove("is-hidden"); });
       drawTune(Infinity);
       showPlaying(false);
-      showRate(note);
     }
 
     function scheduleClock(voice, flags, tuning, thisRun) {
@@ -617,17 +956,23 @@
         return function () { return performance.now() - startedAt; };
       }
       var ctx = sink.ctx;
+      // The last line's echo rings on after it ends; a new line cuts it off.
+      if (echo) echo.unplug();
+      echo = flags.echo ? makeEcho(ctx, sink.out) : null;
+      var target = echo ? { ctx: ctx, out: echo.out } : sink;
       // A sound with a consonant starts that much before its vowel's letter,
       // so the vowel still lands on the letter.
       var startMs = function (step) { return step.atMs - step.sound.leadMs; };
-      var buffers = plan.steps.map(function (step) {
+      // A singer is one continuous voice, so the whole line is one buffer
+      // starting with the first letter; everything else is a sound per syllable.
+      var buffers = flags.sing && plan.sounds.length ? [renderChant(ctx, voice, plan.steps, flags)] : plan.steps.map(function (step) {
         return step.sound ? renderSound(ctx, voice, step.sound, flags, tuning, startMs(step) / 1000) : null;
       });
       var maxLeadMs = plan.sounds.reduce(function (most, sound) { return Math.max(most, sound.leadMs); }, 0);
       // Read after rendering, which takes a few milliseconds on a long line.
       var startS = ctx.currentTime + LEAD_S + maxLeadMs / 1000;
       buffers.forEach(function (buffer, i) {
-        if (buffer) thisRun.nodes.push(startBuffer(sink, buffer, startS + startMs(plan.steps[i]) / 1000));
+        if (buffer) thisRun.nodes.push(startBuffer(target, buffer, startS + (flags.sing ? 0 : startMs(plan.steps[i]) / 1000)));
       });
       // A swelling sound is heard partway up its attack, not at its first sample.
       var onsetMs = flags.tone !== "beep" && flags.shape !== "hit" ? tuning.attackMs / 3 : 0;
@@ -635,8 +980,13 @@
     }
 
     function play(text, voice, flags, tuning) {
+      // A recorded blip still loading: play once it's in (or has failed).
+      var url = flags.blip && flags.blip.sample;
+      if (url && !(samples[url] && samples[url].done)) {
+        loadSample(url).then(function () { play(text, voice, flags, tuning); });
+        return;
+      }
       stopRun(true);
-      letterMs = tuning.letterMs;
       plan = buildPlan(text, flags, tuning);
       var atMs = 0;
       plan.steps.forEach(function (step) {
@@ -681,7 +1031,7 @@
     // are no letters left to type.
     function stop() {
       stopRun(true);
-      finish(" (stopped)");
+      finish();
     }
 
     // onPlay starts a line with whatever settings are current when it's pressed.
@@ -712,6 +1062,16 @@
 
   var VOICE_FIELDS = ["pitchHz", "tube", "mouth", "breath", "whisper", "wobble"];
 
+  // `needs` (lab.yaml, picker.yaml): flag values a control only matters
+  // under. A list of values means any of them will do.
+  function meetsKey(needs, key, flags) {
+    return [].concat(needs[key]).some(function (value) { return flags[key] === value; });
+  }
+
+  function meetsNeeds(needs, flags) {
+    return Object.keys(needs || {}).every(function (key) { return meetsKey(needs, key, flags); });
+  }
+
   // Starts from picker.yaml's base and applies each category's picked option
   // in file order. Voice fields and tuning keys share one namespace there.
   // Starts from picker.yaml's base and applies each category's picked option
@@ -728,10 +1088,12 @@
       Object.keys(option.scale || {}).forEach(function (key) { targetOf(key)[key] *= option.scale[key]; });
       Object.assign(flags, option.flags || {});
     };
+    // A pick greyed out by its row's or its own `needs` adds nothing, so
+    // what you hear matches what the chips show (NvLab's showPickNeeds).
     var name = null;
     picker.categories.forEach(function (category) {
       var option = category.options.find(function (candidate) { return candidate.key === picks[category.key]; });
-      if (!option) return;
+      if (!option || !meetsNeeds(category.needs, flags) || !meetsNeeds(option.needs, flags)) return;
       apply(option);
       if (!option.encore || picks.encore !== option.key) return;
       apply(option.encore);
@@ -743,8 +1105,17 @@
 
   /* ---- Advanced view: saved voices -------------------------------------- */
 
+  // Voices saved before Letter inclusion carry an on/off `every` instead.
+  function upgradeSaved(entry) {
+    var flags = entry.flags || {};
+    if (!("every" in flags) || flags.letters) return entry;
+    flags.letters = flags.every ? "all" : "select";
+    delete flags.every;
+    return entry;
+  }
+
   function loadSaved() {
-    try { var list = JSON.parse(localStorage.getItem(STORE_KEY)); return Array.isArray(list) ? list : []; } catch (error) { return []; }
+    try { var list = JSON.parse(localStorage.getItem(STORE_KEY)); return Array.isArray(list) ? list.map(upgradeSaved) : []; } catch (error) { return []; }
   }
 
   function storeSaved(list) {
@@ -785,6 +1156,8 @@
       var sliders = all("[data-nv-key]");
       var options = all("[data-nv-toggle]");
       var vowelButtons = all("[data-nv-vowel]");
+      var pickRows = all("#nv-lab-simple .nv-pick-row");
+      var advancedRows = all("#nv-lab-advanced [data-nv-needs]");
       var spectrum = $("spectrum");
       var paint = spectrum.getContext("2d");
       var picks = {};
@@ -801,6 +1174,51 @@
       });
 
       function current() { return view === "simple" ? simple : advanced; }
+
+      // A control only some settings use (`needs` in lab.yaml and picker.yaml,
+      // carried as data-nv-needs) greys out while they're off, with a note
+      // saying what to switch.
+
+      function switchNote(needs, flags) {
+        var unmet = Object.keys(needs).filter(function (key) { return !meetsKey(needs, key, flags); });
+        return "needs " + unmet.map(function (key) {
+          var want = JSON.stringify([].concat(needs[key])[0]);
+          var group = root.querySelector('[data-nv-toggle-group="' + key + '"]');
+          var button = options.find(function (option) { return option.getAttribute("data-nv-toggle") === key && option.getAttribute("data-nv-value") === want; });
+          return (group ? group.getAttribute("aria-label") : key) + ": " + (button ? button.textContent : want);
+        }).join(", ");
+      }
+
+      function needsOf(element) {
+        var raw = element.getAttribute("data-nv-needs");
+        return raw ? JSON.parse(raw) : {};
+      }
+
+      // Simple rows: a row with nothing to offer is hidden; otherwise just
+      // the chips that do nothing now grey out. Neither gets a note.
+      function showPickNeeds(flags) {
+        pickRows.forEach(function (row) {
+          var isRowOn = meetsNeeds(needsOf(row), flags);
+          row.querySelectorAll("[data-nv-pick]").forEach(function (chip) {
+            var isOn = isRowOn && meetsNeeds(needsOf(chip), flags);
+            chip.disabled = !isOn;
+            chip.classList.toggle("is-off", isRowOn && !isOn);
+          });
+          row.hidden = !isRowOn;
+        });
+      }
+
+      function showNeeds(rows, flags) {
+        rows.forEach(function (row) {
+          var needs = JSON.parse(row.getAttribute("data-nv-needs"));
+          var isOn = meetsNeeds(needs, flags);
+          var note = row.querySelector(".nv-off-note");
+          row.classList.toggle("is-off", !isOn);
+          row.querySelectorAll("button, input").forEach(function (control) { control.disabled = !isOn; });
+          note.hidden = isOn;
+          if (!isOn) note.textContent = switchNote(needs, flags);
+        });
+      }
 
       function lineText() { return $("text").value.trim() || $("text").defaultValue; }
 
@@ -839,9 +1257,28 @@
 
       function applyPicks() {
         simple = settingsFromPicks(picker, picks, tuningDefaults);
+        // Fetch a recorded blip as soon as its voice is picked, not on Play.
+        if (simple.flags.blip && simple.flags.blip.sample) loadSample(simple.flags.blip.sample);
         chips.forEach(showChip);
+        showPickNeeds(simple.flags);
         if (!isAdvancedOwn) advanced = copySettings(simple);
         if (view === "simple") dressBox(simple);
+      }
+
+      // A row with `follows` (picker.yaml) jumps to whichever of its options
+      // matches what the rows before it add up to, e.g. Letter inclusion to
+      // All letters when Animal Crossing is picked. It can be changed after.
+      function followPicks(changed) {
+        picker.categories.forEach(function (category) {
+          if (category.follows !== changed) return;
+          var without = Object.assign({}, picks);
+          without[category.key] = null;
+          var flags = settingsFromPicks(picker, without, tuningDefaults).flags;
+          var match = category.options.find(function (option) {
+            return Object.keys(option.flags || {}).every(function (key) { return flags[key] === option.flags[key]; });
+          });
+          picks[category.key] = (match || category.options[0]).key;
+        });
       }
 
       // Pressing a picked chip that has an encore flips the encore; picking
@@ -854,6 +1291,7 @@
           if (isAgain && chip.hasAttribute("data-nv-encore-label")) picks.encore = picks.encore === option ? null : option;
           if (!isAgain && picks.encore === picks[category]) picks.encore = null;
           picks[category] = option;
+          followPicks(category);
           applyPicks();
         });
       });
@@ -889,6 +1327,7 @@
           var isOn = JSON.stringify(advanced.flags[option.getAttribute("data-nv-toggle")]) === option.getAttribute("data-nv-value");
           option.setAttribute("aria-pressed", String(isOn));
         });
+        showNeeds(advancedRows, advanced.flags);
         $("name").value = advanced.voice.label;
         dressBox(advanced);
         drawSpectrum();
@@ -1046,6 +1485,9 @@
       applyPicks();
       renderSaved();
       enable(chips.concat(sliders, options, vowelButtons, [$("preset"), $("name"), $("text"), $("save"), $("copy"), $("reset")]));
+      // After enable, which wakes every control, including the greyed ones.
+      showPickNeeds(simple.flags);
+      showNeeds(advancedRows, advanced.flags);
       $("mode").hidden = false;
       // Start the audio on the first touch, so the output is already awake by
       // the time a click lands; a cold start can take a moment on some devices.

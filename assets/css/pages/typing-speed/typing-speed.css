@@ -1,0 +1,141 @@
+/* /misc/typing-speed/ — layouts/shortcodes/typing-speed/test.html, run by
+   assets/scripts/pages/typing-speed/main.ts. The board shows four lines and
+   the script slides the text up a line at a time (--ts-line is that step). */
+
+.ts { --ts-line: 2.4rem; --ts-wrong: 220 38 38; max-width: 52rem; margin: 0 auto; }
+@media (prefers-color-scheme: dark) { .ts { --ts-wrong: 248 113 113; } }
+
+/* ---- Toolbar: source on the left, its options on the right -------------- */
+.ts-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem .75rem; padding: .35rem; border: 1px solid rgb(var(--c-border)); border-radius: .85rem; background: rgb(var(--c-border) / .18); }
+.ts-bar-panel { display: flex; flex: 1 1 auto; justify-content: flex-end; align-items: center; gap: .35rem; min-width: 0; }
+.ts-bar-panel[hidden], .ts-own[hidden] { display: none; }
+
+/* Segmented control: a sunken track, the chosen segment raised out of it. */
+.ts-seg { display: inline-flex; padding: .2rem; border-radius: .6rem; background: rgb(var(--c-bg) / .7); }
+.ts-seg-btn { display: inline-flex; align-items: center; gap: .4rem; padding: .38rem .75rem; border: 0; border-radius: .45rem; background: transparent; color: rgb(var(--c-muted)); font: 500 .8rem var(--font-mono); white-space: nowrap; cursor: pointer; transition: background-color .15s ease, color .15s ease; }
+.ts-seg-btn:hover:not(:disabled) { color: rgb(var(--c-fg)); }
+.ts-seg-btn[aria-pressed="true"] { background: rgb(var(--c-border)); color: rgb(var(--c-fg)); box-shadow: 0 1px 2px rgb(0 0 0 / .25); }
+.ts-seg-btn:disabled { cursor: default; opacity: .6; }
+
+/* Ring buttons, after Father's Puzzle's controls: a glyph in a circle, muted
+   when off, accent when on. */
+.ts-icon { position: relative; display: inline-grid; place-items: center; width: 2.1rem; height: 2.1rem; padding: 0; border: 0; border-radius: 999px; background: transparent; color: rgb(var(--c-muted) / .75); cursor: pointer; transition: color .15s ease, background-color .15s ease; }
+.ts-icon svg { width: 1.4rem; height: 1.4rem; }
+.ts-icon:hover:not(:disabled) { color: rgb(var(--c-fg)); }
+.ts-icon[aria-pressed="true"] { color: rgb(var(--c-accent)); background: rgb(var(--c-accent) / .12); }
+.ts-icon.is-go { color: rgb(var(--c-accent)); }
+.ts-icon:disabled { cursor: default; opacity: .6; }
+.ts-icon input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+/* Test length: a clock button that opens a small menu under it. */
+.ts-time { position: relative; }
+.ts-time-btn { display: inline-flex; align-items: center; gap: .4rem; padding: .38rem .6rem; border-radius: .5rem; background: rgb(var(--c-bg) / .7); color: rgb(var(--c-fg)); font: 500 .8rem var(--font-mono); cursor: pointer; list-style: none; }
+.ts-time-btn::-webkit-details-marker { display: none; }
+.ts-time-btn:hover, .ts-time[open] .ts-time-btn { background: rgb(var(--c-border) / .7); }
+.ts-time-icon { width: 1rem; height: 1rem; color: rgb(var(--c-muted)); }
+.ts-time-caret { width: .85rem; height: .85rem; color: rgb(var(--c-muted)); transition: transform .15s ease; }
+.ts-time[open] .ts-time-caret { transform: rotate(180deg); }
+.ts-time-menu { position: absolute; right: 0; top: calc(100% + .35rem); z-index: 5; display: grid; min-width: 9rem; padding: .25rem; border: 1px solid rgb(var(--c-border)); border-radius: .6rem; background: rgb(var(--c-bg)); box-shadow: 0 8px 24px rgb(0 0 0 / .35); }
+.ts-time-opt { padding: .45rem .65rem; border: 0; border-radius: .4rem; background: transparent; color: rgb(var(--c-muted)); font: .8rem var(--font-mono); text-align: left; cursor: pointer; }
+.ts-time-opt:hover:not(:disabled) { background: rgb(var(--c-border) / .6); color: rgb(var(--c-fg)); }
+.ts-time-opt[aria-pressed="true"] { color: rgb(var(--c-accent)); }
+
+.ts-select { min-width: 0; max-width: 100%; flex: 0 1 10rem; padding: .42rem 1.9rem .42rem .7rem; border: 0; border-radius: .5rem; background: rgb(var(--c-bg) / .7) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%23a1a1aa'%3E%3Cpath d='M5.2 7.7a.75.75 0 0 1 1.06.02L10 11.6l3.74-3.88a.75.75 0 1 1 1.08 1.04l-4.28 4.44a.75.75 0 0 1-1.08 0L5.18 8.76a.75.75 0 0 1 .02-1.06Z'/%3E%3C/svg%3E") no-repeat right .5rem center / .9rem; color: rgb(var(--c-fg)); font: 500 .8rem var(--font-sans); text-overflow: ellipsis; appearance: none; cursor: pointer; }
+.ts-select.is-wide { flex: 0 1 19rem; }
+.ts-select:hover:not(:disabled) { background-color: rgb(var(--c-border) / .6); }
+
+.ts-seg-btn:focus-visible, .ts-icon:focus-visible, .ts-icon:focus-within, .ts-time-btn:focus-visible, .ts-time-opt:focus-visible, .ts-restart:focus-visible, .ts-select:focus-visible, .ts-own-text:focus-visible { outline: 2px solid rgb(var(--c-accent)); outline-offset: 2px; }
+
+/* The paste box with its two rings tucked in the bottom-right corner. */
+.ts-own { position: relative; margin-top: .6rem; }
+.ts-own-text { display: block; width: 100%; box-sizing: border-box; min-height: 6rem; padding: .7rem 6rem .7rem .85rem; border: 1px dashed rgb(var(--c-border)); border-radius: .85rem; background: rgb(var(--c-border) / .12); color: rgb(var(--c-fg)); font: .88rem/1.5 var(--font-sans); resize: vertical; transition: border-color .15s ease, background-color .15s ease; }
+.ts-own-text.is-drop { border-color: rgb(var(--c-accent)); background: rgb(var(--c-accent) / .08); }
+.ts-own-actions { position: absolute; right: .5rem; bottom: .5rem; display: flex; gap: .15rem; }
+
+/* ---- Header over the board: numbers left, momentum right --------------- */
+.ts-hud { display: grid; grid-template-columns: auto minmax(14rem, 24rem); justify-content: space-between; align-items: end; gap: 1rem 2.5rem; margin: 1.75rem .1rem .9rem; }
+.ts-stats { display: flex; align-items: baseline; gap: 1.4rem; }
+.ts-stat { display: flex; align-items: baseline; gap: .3rem; }
+.ts-stat[hidden] { display: none; }
+.ts-stat-value { font: 600 1.15rem/1 var(--font-mono); color: rgb(var(--c-fg)); font-variant-numeric: tabular-nums; }
+.ts-stat.is-time .ts-stat-value { font-size: 2.4rem; font-weight: 700; color: rgb(var(--c-accent)); }
+.ts-stat-label { font: .7rem var(--font-mono); color: rgb(var(--c-muted)); }
+
+.ts-momentum { display: grid; gap: .45rem; padding-bottom: .2rem; }
+.ts-meter { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr) 2.25rem; align-items: center; gap: .65rem; }
+.ts-meter-label { font: 600 .6rem var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: rgb(var(--c-muted)); white-space: nowrap; }
+.ts-meter-track { height: .3rem; border-radius: 999px; background: rgb(var(--c-border)); overflow: hidden; }
+.ts-meter-fill { display: block; width: 0; height: 100%; border-radius: inherit; background: rgb(var(--c-muted) / .75); transition: width .35s ease, background-color .3s ease; }
+.ts-meter-fill[data-ts-meter-overall] { background: rgb(var(--c-accent)); }
+.ts-meter-fill.is-up { background: rgb(var(--c-accent) / .65); }
+.ts-meter-value { font: 600 .78rem var(--font-mono); color: rgb(var(--c-fg)); text-align: right; font-variant-numeric: tabular-nums; }
+
+/* ---- The board ----------------------------------------------------------- */
+/* The textarea lies over the whole board, invisible, so a tap anywhere raises
+   the phone keyboard and every key lands in one place. */
+.ts-board { position: relative; padding: 1.1rem 1.4rem; border: 1px solid rgb(var(--c-border)); border-radius: .9rem; background: rgb(var(--c-border) / .12); cursor: text; transition: border-color .2s ease; }
+.ts-board.is-focused { border-color: rgb(var(--c-accent) / .4); }
+.ts-window { position: relative; height: calc(var(--ts-line) * 4); overflow: hidden; }
+.ts-text { font: 400 1.4rem/var(--ts-line) var(--font-mono); color: rgb(var(--c-fg) / .55); white-space: pre-wrap; overflow-wrap: break-word; transition: transform .12s ease, opacity .2s ease; }
+
+/* Every sentence but the current one is dimmed; the current word gets a
+   soft highlight and fills in a letter at a time. */
+.ts-sentence { opacity: .35; transition: opacity .2s ease; }
+.ts-sentence.is-active { opacity: 1; }
+.ts-word.is-current { background: rgb(var(--c-accent) / .13); border-radius: .3rem; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.ts-ch.is-right { color: rgb(var(--c-fg)); }
+.ts-ch.is-wrong { color: rgb(var(--ts-wrong)); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: .25em; }
+.ts-caret { position: absolute; top: 0; left: 0; width: 2px; background: rgb(var(--c-accent)); border-radius: 1px; transition: transform .08s linear; animation: ts-blink 1s steps(1) infinite; }
+.ts-board.is-typing .ts-caret { animation: none; }
+/* Paused (no key for a second): the clock stops, the text fades back and the
+   caret blinks again until the next key. */
+.ts-board.is-paused .ts-text { opacity: .55; }
+.ts-board.is-paused .ts-caret { animation: ts-blink 1s steps(1) infinite; }
+@keyframes ts-blink { 50% { opacity: 0; } }
+
+.ts-input { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; border: 0; resize: none; opacity: 0; font-size: 16px; color: transparent; background: transparent; caret-color: transparent; cursor: text; }
+/* Sits on the board's bottom edge, so it never covers the words you're on. */
+.ts-hint { position: absolute; left: 50%; top: 100%; transform: translate(-50%, -50%); margin: 0; padding: .4rem .9rem; border: 1px solid rgb(var(--c-border)); border-radius: 999px; background: rgb(var(--c-bg)); font: .76rem var(--font-mono); color: rgb(var(--c-muted)); white-space: nowrap; pointer-events: none; transition: opacity .15s ease; }
+.ts-board.is-focused:not(.is-paused) .ts-hint { opacity: 0; }
+/* Out of focus the words blur back, so the board reads as "click to start". */
+.ts-window { transition: filter .2s ease, opacity .2s ease; }
+.ts-board:not(.is-focused) .ts-window { filter: blur(3px); opacity: .45; }
+.ts-hint[hidden] { display: none; }
+
+/* ---- Results -------------------------------------------------------------- */
+.ts-result { margin-top: 1rem; padding: 1.1rem 1.4rem; border: 1px solid rgb(var(--c-border)); border-radius: .9rem; background: rgb(var(--c-border) / .12); }
+.ts-result[hidden] { display: none; }
+.ts-result-main { display: flex; flex-wrap: wrap; align-items: baseline; gap: .5rem; }
+.ts-result-wpm { font: 700 3rem/1 var(--font-mono); color: rgb(var(--c-accent)); font-variant-numeric: tabular-nums; }
+.ts-result-unit { font: .9rem var(--font-mono); color: rgb(var(--c-muted)); }
+.ts-best { margin-left: auto; padding: .2rem .6rem; border-radius: 999px; border: 1px solid rgb(var(--c-border)); font: .72rem var(--font-mono); color: rgb(var(--c-muted)); }
+.ts-best.is-new { border-color: rgb(var(--c-accent)); color: rgb(var(--c-fg)); background: rgb(var(--c-accent) / .14); }
+.ts-result-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem 1rem; margin: 1rem 0 0; }
+@media (min-width: 640px) { .ts-result-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.ts-result-grid dt { font: 600 .62rem var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: rgb(var(--c-muted)); }
+.ts-result-grid dd { margin: .15rem 0 0; font: .9rem var(--font-mono); color: rgb(var(--c-fg)); }
+.ts-chart { display: block; width: 100%; height: 5rem; margin-top: 1rem; }
+.ts-chart-line { fill: none; stroke: rgb(var(--c-accent)); stroke-width: 2; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
+
+.ts-actions { display: flex; justify-content: center; margin-top: 1rem; }
+.ts-restart { display: grid; place-items: center; width: 2.6rem; height: 2.6rem; padding: 0; border: 1px solid transparent; border-radius: 999px; background: transparent; color: rgb(var(--c-muted)); cursor: pointer; transition: color .15s ease, background-color .15s ease, transform .3s ease; }
+.ts-restart:hover:not(:disabled) { color: rgb(var(--c-fg)); background: rgb(var(--c-border) / .6); transform: rotate(-90deg); }
+.ts-restart:disabled { opacity: .5; cursor: default; }
+.ts-restart-icon { width: 1.25rem; height: 1.25rem; }
+
+@media (max-width: 639px) {
+  .ts { --ts-line: 2rem; }
+  .ts-text { font-size: 1.15rem; }
+  /* nowrap: a wrapping column sizes its line to the content, not the bar. */
+  .ts-bar { flex-flow: column nowrap; align-items: stretch; }
+  .ts-seg { display: flex; }
+  .ts-seg-btn { flex: 1; justify-content: center; min-width: 0; padding-inline: .3rem; font-size: .74rem; }
+  .ts-bar-panel { flex-wrap: wrap; justify-content: flex-start; }
+  .ts-time { margin-right: auto; }
+  .ts-select { flex: 1 1 40%; }
+  .ts-select.is-wide { flex-basis: 100%; }
+  .ts-board { padding: .9rem 1rem; }
+  .ts-hud { grid-template-columns: minmax(0, 1fr); gap: .9rem; margin-top: 1.25rem; }
+  .ts-stat.is-time .ts-stat-value { font-size: 2rem; }
+}
+@media (prefers-reduced-motion: reduce) { .ts-text, .ts-caret, .ts-sentence, .ts-restart, .ts-window, .ts-hint, .ts-icon, .ts-time-caret { transition: none; } .ts-caret { animation: none; } }

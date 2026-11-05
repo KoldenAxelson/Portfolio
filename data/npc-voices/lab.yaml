@@ -9,20 +9,24 @@
 #
 # target: "voice" = one character's settings (the fields of voices.yaml);
 #         "tuning" = how the system reads text and shapes sound, shared by all.
+# needs : toggle values a control only matters under, e.g. { tone: "voice" }
+#         (a list means any of them). Otherwise nv-voice.js greys it out
+#         with a note naming what to switch.
 toggles:
   - key: "tone"
     label: "Sound"
     options: [{ value: "beep", label: "Beep" }, { value: "voice", label: "Voice" }]
     default: "voice"
-  - key: "every"
+  - key: "letters"
     label: "Speak on"
-    options: [{ value: true, label: "Every letter" }, { value: false, label: "Vowel groups" }]
-    default: false
+    options: [{ value: "select", label: "Select vowels" }, { value: "vowels", label: "All vowels" }, { value: "all", label: "All letters" }]
+    default: "select"
   - key: "vowel"
     label: "Vowels"
     options: [{ value: "random", label: "Random" }, { value: "letter", label: "From letters" }]
     default: "letter"
   - key: "shape"
+    needs: { tone: "voice", sing: false }
     label: "Envelope"
     options: [{ value: "hit", label: "Hit" }, { value: "swell", label: "Swell" }]
     default: "swell"
@@ -35,37 +39,47 @@ toggles:
     options: [{ value: false, label: "Off" }, { value: true, label: "On" }]
     default: true
   - key: "consonants"
+    needs: { tone: "voice", sing: false }
     label: "Consonants"
+    options: [{ value: false, label: "Off" }, { value: true, label: "On" }]
+    default: false
+  - key: "sing"
+    needs: { tone: "voice" }
+    label: "Singing"
+    options: [{ value: false, label: "Off" }, { value: true, label: "On" }]
+    default: false
+  - key: "echo"
+    label: "Echo"
     options: [{ value: false, label: "Off" }, { value: true, label: "On" }]
     default: false
 groups:
   - label: "Voice"
     sliders:
       - { key: "pitchHz", target: "voice", label: "Pitch", min: 50, max: 420, step: 1, unit: "Hz" }
-      - { key: "tube", target: "voice", label: "Tube (shorter →)", min: 0.7, max: 1.6, step: 0.01, unit: "×" }
-      - { key: "mouth", target: "voice", label: "Mouth open", min: 0.2, max: 1, step: 0.01, unit: "" }
-      - { key: "breath", target: "voice", label: "Breath", min: 0, max: 0.5, step: 0.01, unit: "" }
-      - { key: "whisper", target: "voice", label: "Whisper", min: 0, max: 1, step: 0.05, unit: "" }
-      - { key: "wobble", target: "voice", label: "Old-age wobble", min: 0, max: 2, step: 0.05, unit: "st" }
+      - { key: "tube", needs: { tone: "voice" }, target: "voice", label: "Tube (shorter →)", min: 0.7, max: 1.6, step: 0.01, unit: "×" }
+      - { key: "mouth", needs: { tone: "voice", sing: false }, target: "voice", label: "Mouth open", min: 0.2, max: 1, step: 0.01, unit: "" }
+      - { key: "breath", needs: { tone: "voice" }, target: "voice", label: "Breath", min: 0, max: 0.5, step: 0.01, unit: "" }
+      - { key: "whisper", needs: { tone: "voice", sing: false }, target: "voice", label: "Whisper", min: 0, max: 1, step: 0.05, unit: "" }
+      - { key: "wobble", needs: { tone: "voice", sing: false }, target: "voice", label: "Old-age wobble", min: 0, max: 2, step: 0.05, unit: "st" }
   - label: "Rhythm"
     sliders:
       - { key: "letterMs", target: "tuning", label: "Per letter", min: 15, max: 90, step: 1, unit: "ms", default: 33 }
       - { key: "commaX", target: "tuning", label: "Comma pause", min: 1, max: 6, step: 0.5, unit: "× letter", default: 3 }
       - { key: "stopX", target: "tuning", label: "Sentence pause", min: 1, max: 4, step: 0.5, unit: "× comma", default: 2 }
-      - { key: "soundMs", target: "tuning", label: "Sound length", min: 60, max: 280, step: 5, unit: "ms", default: 140 }
-      - { key: "consonantMs", target: "tuning", label: "Consonant length", min: 15, max: 90, step: 1, unit: "ms", default: 45 }
+      - { key: "soundMs", needs: { tone: "voice", letters: "select", sing: false }, target: "tuning", label: "Sound length", min: 60, max: 280, step: 5, unit: "ms", default: 140 }
+      - { key: "consonantMs", needs: { tone: "voice", consonants: true, sing: false }, target: "tuning", label: "Consonant length", min: 15, max: 90, step: 1, unit: "ms", default: 45 }
   - label: "Tune"
     sliders:
-      - { key: "drift", target: "tuning", label: "Phrase drift down", min: 0, max: 8, step: 0.5, unit: "st", default: 3 }
-      - { key: "questionLift", target: "tuning", label: "Question lift", min: 0, max: 9, step: 0.5, unit: "st", default: 4 }
-      - { key: "exclaimLift", target: "tuning", label: "Exclamation start", min: 0, max: 7, step: 0.5, unit: "st", default: 3 }
-      - { key: "shoutLift", target: "tuning", label: "CAPITALS shout", min: 0, max: 9, step: 0.5, unit: "st", default: 4 }
-      - { key: "nudge", target: "tuning", label: "Random nudge", min: 0, max: 2, step: 0.1, unit: "st", default: 0.4 }
+      - { key: "drift", needs: { tune: true }, target: "tuning", label: "Phrase drift down", min: 0, max: 8, step: 0.5, unit: "st", default: 3 }
+      - { key: "questionLift", needs: { tune: true }, target: "tuning", label: "Question lift", min: 0, max: 9, step: 0.5, unit: "st", default: 4 }
+      - { key: "exclaimLift", needs: { tune: true }, target: "tuning", label: "Exclamation start", min: 0, max: 7, step: 0.5, unit: "st", default: 3 }
+      - { key: "shoutLift", needs: { tune: true }, target: "tuning", label: "CAPITALS shout", min: 0, max: 9, step: 0.5, unit: "st", default: 4 }
+      - { key: "nudge", needs: { human: true }, target: "tuning", label: "Random nudge", min: 0, max: 2, step: 0.1, unit: "st", default: 0.4 }
   - label: "Texture"
     sliders:
-      - { key: "jitterPct", target: "tuning", label: "Buzz jitter", min: 0, max: 8, step: 0.5, unit: "%", default: 2.5 }
-      - { key: "attackMs", target: "tuning", label: "Swell in", min: 2, max: 80, step: 1, unit: "ms", default: 35 }
-      - { key: "releaseMs", target: "tuning", label: "Let go", min: 10, max: 140, step: 5, unit: "ms", default: 60 }
-      - { key: "bandWidth", target: "tuning", label: "Band width", min: 0.4, max: 3, step: 0.1, unit: "×", default: 1 }
-      - { key: "wobbleHz", target: "tuning", label: "Wobble speed", min: 0.5, max: 6, step: 0.1, unit: "Hz", default: 2 }
-      - { key: "consonantMix", target: "tuning", label: "Consonant strength", min: 0, max: 2, step: 0.05, unit: "×", default: 1 }
+      - { key: "jitterPct", needs: { tone: "voice", human: true, sing: false }, target: "tuning", label: "Buzz jitter", min: 0, max: 8, step: 0.5, unit: "%", default: 2.5 }
+      - { key: "attackMs", needs: { tone: "voice", shape: "swell", sing: false }, target: "tuning", label: "Swell in", min: 2, max: 80, step: 1, unit: "ms", default: 35 }
+      - { key: "releaseMs", needs: { tone: "voice", shape: "swell", sing: false }, target: "tuning", label: "Let go", min: 10, max: 140, step: 5, unit: "ms", default: 60 }
+      - { key: "bandWidth", needs: { tone: "voice", sing: false }, target: "tuning", label: "Band width", min: 0.4, max: 3, step: 0.1, unit: "×", default: 1 }
+      - { key: "wobbleHz", needs: { tone: "voice", sing: false }, target: "tuning", label: "Wobble speed", min: 0.5, max: 6, step: 0.1, unit: "Hz", default: 2 }
+      - { key: "consonantMix", needs: { tone: "voice", consonants: true, sing: false }, target: "tuning", label: "Consonant strength", min: 0, max: 2, step: 0.05, unit: "×", default: 1 }
