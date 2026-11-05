@@ -1,0 +1,30 @@
+# The Top 3 view of /now's site changes (layouts/_default/now.html): the three
+# coolest things Konrad shipped in the last 30 days, as the agent judges them.
+# Kept by the agent, never asked about (AGENTS.md, "Keeping /now current"):
+# when something new beats an entry, it takes that place and the rest move
+# down; an entry drops off on its own 30 days after its date, at the next
+# build, so a quiet month leaves fewer than three. "Cool" means what a
+# visitor or a recruiter would most want to try: hard to build, fun to use,
+# or both. Ties go to the newer one.
+#
+#   rank : 1, 2 or 3 (1 stands tallest on the podium)
+#   date : YYYY-MM-DD it went live; it leaves the podium 30 days later
+#   title: a few words, what it is
+#   why  : one line, why it made the podium
+#   url  : where to see it (site path)
+#   project : optional project slug, for its icon (as in changes.yaml)
+- rank: 1
+  date: 2026-10-23
+  title: "A Sun and a black hole in the browser"
+  why: "A simulated Sun and a ray-traced black hole, both running live on the page for you to play with."
+  url: "/misc/sun/"
+- rank: 2
+  date: 2026-10-30
+  title: "The Posting Pipeline"
+  why: "My articles post themselves to dev.to and LinkedIn, and an animated diagram shows the live queue."
+  url: "/misc/social-pipeline/"
+- rank: 3
+  date: 2026-10-31
+  title: "NPC Voices"
+  why: "Type a line and hear it mumbled in game styles, from Animal Crossing to a monk who sings or talks it."
+  url: "/misc/npc-voices/"

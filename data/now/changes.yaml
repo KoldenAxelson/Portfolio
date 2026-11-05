@@ -16,6 +16,14 @@
 #             site's mark unless this names a project.
 - date: 2026-11-05
   kind: new
+  text: "Every article can be speed read now: one word at a time on a marked pivot letter, with the article scrolling along underneath so you can drop back into it where you stopped."
+  url: "/articles/"
+- date: 2026-11-05
+  kind: update
+  text: "Recent site changes on this page now flip to a Top 3 podium: the three coolest things I made in the last month."
+  url: "/now/"
+- date: 2026-11-05
+  kind: new
   text: "Added a typing speed test to Play with it: race the clock on random words, or type one of my articles, a classic like Meditations or the Odyssey, or your own text, with live momentum bars and a clock that stops when you pause."
   url: "/misc/typing-speed/"
 - date: 2026-11-05

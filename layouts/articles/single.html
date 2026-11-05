@@ -1,6 +1,10 @@
 {{ define "main" }}
 {{- $d := .Params -}}
-<article class="article-body prose prose-lg max-w-none">
+{{- /* data-sr-voice: what the speed reader needs to speak in the Mythfall voice
+       (V key): nv-voice.js's URL, the Simple view's picks and the tuning
+       defaults (partials/npc-voices/data.html). */ -}}
+{{- $nv := partial "npc-voices/data.html" . }}
+<article class="article-body prose prose-lg max-w-none" data-sr-article{{ if partial "func/speed-read.html" . }} data-sr-voice-src="{{ $nv.script }}" data-sr-voice-picker="{{ $nv.picker }}" data-sr-voice-tuning="{{ $nv.tuning }}"{{ end }}>
   <header class="not-prose mb-8">
     {{- if .Params.review }}
     <p class="mb-6 rounded-lg border border-accent/40 bg-accent/5 px-4 py-3 font-mono text-xs text-muted">
@@ -37,4 +41,23 @@
   {{ partial "ml/assets.html" . }}
   {{ .Content }}
 </article>
+{{- /* Speed reader (func/speed-read.html): on desktop an aux button whose
+       popover reads the article one word at a time; on mobile the same reader
+       drops from the navbar (site/topnav.html). Both are woken, and kept hidden
+       until then, by scripts/site/widgets/speed-reader.ts. */ -}}
+{{- if partial "func/speed-read.html" . }}
+{{- with resources.Get "css/site/speed-reader.css" | minify | fingerprint }}
+<link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" />
+{{- end }}
+<details data-aux-fab data-sr-fab data-sr-pending class="fixed bottom-6 right-6 z-30 hidden lg:block print:!hidden">
+  <summary class="aux-fab__btn relative flex h-12 w-12 cursor-pointer list-none items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50" aria-label="Speed read" title="Speed read">
+    {{ partial "func/svg-icon.html" (dict "name" "speed-read" "class" "aux-fab__icon aux-fab__icon--main h-6 w-6" "width" "1.75") }}
+    <svg class="aux-fab__icon aux-fab__icon--close h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18 18 6M6 6l12 12" /></svg>
+  </summary>
+  <div class="aux-fab__menu aux-fab__menu--list sr-pop" role="dialog" aria-label="Speed reader">
+    <p class="aux-fab__title">Speed read</p>
+    {{ partial "components/speed-reader.html" "desktop" }}
+  </div>
+</details>
+{{- end }}
 {{ end }}

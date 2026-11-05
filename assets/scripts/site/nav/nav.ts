@@ -6,6 +6,7 @@ import { populateNoteCard } from '../widgets/skyrim-notes';
 import { wirePanelMode } from './sub-nav';
 import type { PanelHost } from './sub-nav';
 import { DEFAULT_SET, fillPanel } from '../definitions/glossary';
+import { openMobileReader } from '../widgets/speed-reader';
 
 const SHOW_NAV_BELOW_PX = 50;
 const SCROLL_JITTER_PX = 4;
@@ -130,6 +131,25 @@ function wireNavElements(): void {
       } else {
         syncToolsTriggerVisibility();
       }
+    });
+  }
+
+  // The speed reader on articles (speed-reader.ts): the panel's "read" mode.
+  // A second tap while it's showing closes it, like the tools button.
+  const readTrigger = document.querySelector<HTMLElement>('[data-sr-mobile-trigger]');
+  if (readTrigger && mobilePanel) {
+    readTrigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (mobileNav.open && mobilePanel.dataset.mode === 'read') {
+        mobileNav.open = false;
+        return;
+      }
+      mobilePanel.dataset.mode = 'read';
+      const nav = document.querySelector<HTMLElement>('[data-top-nav]');
+      if (nav) nav.style.transform = '';
+      if (!mobileNav.open) mobileNav.open = true;
+      syncToolsTriggerVisibility();
+      openMobileReader();
     });
   }
 

@@ -1,0 +1,46 @@
+/* /now's site changes (layouts/_default/now.html): two views, the latest ten
+   and the month's Top 3 podium, switched by two radio buttons styled as a
+   segmented control. No script, so it works under hx-boost: the checked
+   radio shows its panel, which slides in from its side. */
+
+.nw-radio { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+.nw-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem 1rem; margin-bottom: 1rem; }
+.nw-switch { display: inline-flex; padding: .2rem; border: 1px solid rgb(var(--c-border) / .6); border-radius: 999px; }
+.nw-switch label { padding: .3rem .8rem; border-radius: 999px; font: 500 .72rem var(--font-mono); letter-spacing: .04em; color: rgb(var(--c-muted)); cursor: pointer; transition: background-color .15s ease, color .15s ease; }
+.nw-switch label:hover { color: rgb(var(--c-fg)); }
+#nw-latest:checked ~ .nw-head label[for="nw-latest"],
+#nw-podium:checked ~ .nw-head label[for="nw-podium"] { background: rgb(var(--c-accent) / .15); color: rgb(var(--c-fg)); }
+#nw-latest:focus-visible ~ .nw-head label[for="nw-latest"],
+#nw-podium:focus-visible ~ .nw-head label[for="nw-podium"] { outline: 2px solid rgb(var(--c-accent)); outline-offset: 2px; }
+
+.nw-panel { display: none; }
+#nw-latest:checked ~ .nw-latest { display: block; animation: nw-from-left .3s ease; }
+#nw-podium:checked ~ .nw-podium { display: block; animation: nw-from-right .3s ease; }
+@keyframes nw-from-left { from { opacity: 0; transform: translateX(-1.5rem); } }
+@keyframes nw-from-right { from { opacity: 0; transform: translateX(1.5rem); } }
+
+/* The podium: on a wide screen first place stands in the middle on the
+   tallest step, second on its left, third on its right; on a phone the
+   three stack in order. */
+.nw-stand { display: grid; gap: 1rem; margin: 0; padding: 0; list-style: none; }
+.nw-place { display: flex; flex-direction: column; }
+.nw-card { display: flex; flex: 1; flex-direction: column; gap: .5rem; padding: 1rem; border: 1px solid rgb(var(--c-border) / .6); border-radius: .75rem .75rem 0 0; color: inherit; text-decoration: none; transition: background-color .15s ease; }
+.nw-card:hover { background: rgb(var(--c-border) / .2); }
+.nw-card:focus-visible { outline: 2px solid rgb(var(--c-accent) / .6); outline-offset: 2px; }
+.nw-title { font-weight: 600; color: rgb(var(--c-fg)); }
+.nw-card:hover .nw-title { color: rgb(var(--c-accent)); }
+.nw-why { font-size: .875rem; color: rgb(var(--c-muted)); }
+.nw-date { font: .72rem var(--font-mono); color: rgb(var(--c-muted)); }
+.nw-step { display: grid; place-items: center; height: 2.25rem; border: 1px solid rgb(var(--c-border) / .6); border-top: 0; border-radius: 0 0 .75rem .75rem; background: rgb(var(--c-border) / .25); font: 700 1rem var(--font-mono); color: rgb(var(--c-muted)); }
+.nw-place[data-rank="1"] .nw-card { border-color: rgb(var(--c-accent) / .45); background: rgb(var(--c-accent) / .05); }
+.nw-place[data-rank="1"] .nw-step { border-color: rgb(var(--c-accent) / .45); background: rgb(var(--c-accent) / .15); color: rgb(var(--c-accent)); }
+@media (min-width: 640px) {
+  .nw-stand { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: end; }
+  .nw-place[data-rank="1"] { order: 2; }
+  .nw-place[data-rank="2"] { order: 1; }
+  .nw-place[data-rank="3"] { order: 3; }
+  .nw-place[data-rank="1"] .nw-step { height: 5.5rem; font-size: 1.75rem; }
+  .nw-place[data-rank="2"] .nw-step { height: 3.75rem; font-size: 1.35rem; }
+  .nw-place[data-rank="3"] .nw-step { height: 2.5rem; }
+}
+@media (prefers-reduced-motion: reduce) { .nw-panel { animation: none !important; } .nw-card, .nw-switch label { transition: none; } }

@@ -5,8 +5,15 @@
 
     {{ $nv := partial "npc-voices/data.html" . }}
     <div … data-nv-voices="{{ $nv.voices }}" data-nv-tuning="{{ $nv.tuning }}" data-nv-picker="{{ $nv.picker }}">
+
+  Also used by articles/single.html, whose speed reader speaks in the Simple
+  view's default voice (Mythfall) with the V key. `script` is nv-voice.js's
+  URL.
 */ -}}
 {{- $data := index site.Data "npc-voices" -}}
 {{- $scratch := newScratch -}}
 {{- range $data.lab.groups }}{{ range .sliders }}{{ if eq .target "tuning" }}{{ $scratch.SetInMap "tuning" .key .default }}{{ end }}{{ end }}{{ end -}}
-{{- return dict "voices" ($data.voices | jsonify) "tuning" ($scratch.Get "tuning" | jsonify) "picker" ($data.picker | jsonify) -}}
+{{- /* The script lives in static/ and isn't fingerprinted, so its URL carries a
+       hash of its contents: a browser holding an old copy fetches the new one. */ -}}
+{{- $script := printf "/js/npc-voices/nv-voice.js?v=%s" (readFile "static/js/npc-voices/nv-voice.js" | md5 | truncate 10 "") -}}
+{{- return dict "voices" ($data.voices | jsonify) "tuning" ($scratch.Get "tuning" | jsonify) "picker" ($data.picker | jsonify) "script" $script -}}

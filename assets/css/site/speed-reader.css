@@ -1,0 +1,58 @@
+/* speed-reader — RSVP on articles (components/speed-reader.html, driven by
+   scripts/site/widgets/speed-reader.ts). One word at a time, its pivot letter
+   (the one the eye lands on, after Spritz) held still between two marks so the
+   eye never moves. Shown in the desktop aux button's popover and the mobile
+   navbar panel; the article behind follows along with highlights. */
+
+.sr { display: grid; gap: .75rem; color: rgb(var(--c-fg)); }
+
+/* The stage is the whole word area, and a click on it plays or pauses. */
+.sr-stage { position: relative; display: block; overflow: hidden; width: 100%; padding: 1.4rem .5rem; border: 0; border-radius: .7rem; background: rgb(var(--c-border) / .25); color: inherit; cursor: pointer; }
+.sr-stage:focus-visible { outline: 2px solid rgb(var(--c-accent) / .6); outline-offset: 2px; }
+/* The two marks, top and bottom; the pivot carries the ticks into them. */
+.sr-stage::before, .sr-stage::after { content: ""; position: absolute; left: 12%; right: 12%; height: 0; border-top: 1px solid rgb(var(--c-muted) / .45); }
+.sr-stage::before { top: .6rem; }
+.sr-stage::after { bottom: .6rem; }
+/* The pivot sits about two fifths in, as in Spritz; long words spill out on
+   both sides of it (the left part as a flex row so it overflows leftward). */
+.sr-word { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.6fr); align-items: baseline; font: 500 1.65rem/1.2 var(--font-sans); letter-spacing: .01em; white-space: pre; }
+.sr-left { display: flex; justify-content: flex-end; }
+.sr-word[data-long] { font-size: 1.3rem; }
+.sr-pivot { position: relative; color: rgb(var(--c-accent)); font-weight: 650; }
+.sr-pivot::before, .sr-pivot::after { content: ""; position: absolute; left: 50%; height: .55rem; border-left: 1px solid rgb(var(--c-muted) / .6); }
+.sr-pivot::before { top: -.8rem; }
+.sr-pivot::after { bottom: -.8rem; }
+.sr-right { text-align: left; }
+
+.sr-track { display: block; height: 3px; border-radius: 999px; background: rgb(var(--c-border) / .7); overflow: hidden; }
+.sr-fill { display: block; width: 0; height: 100%; background: rgb(var(--c-accent)); transition: width .2s linear; }
+
+.sr-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem; }
+.sr-keys, .sr-speed { display: inline-flex; align-items: center; gap: .15rem; }
+.sr-btn { display: inline-grid; place-items: center; width: 2.25rem; height: 2.25rem; padding: 0; border: 0; border-radius: 999px; background: transparent; color: rgb(var(--c-muted)); font: 600 1.05rem var(--font-mono); cursor: pointer; transition: color .15s ease, background-color .15s ease; }
+.sr-btn svg { width: 1.2rem; height: 1.2rem; }
+.sr-btn:hover { color: rgb(var(--c-fg)); background: rgb(var(--c-border) / .5); }
+.sr-btn:focus-visible { outline: 2px solid rgb(var(--c-accent) / .6); outline-offset: 1px; }
+.sr-btn-sm { width: 1.9rem; height: 1.9rem; }
+.sr-play { width: 2.6rem; height: 2.6rem; background: rgb(var(--c-accent)); color: rgb(var(--c-bg)); }
+.sr-play:hover { color: rgb(var(--c-bg)); background: rgb(var(--c-accent)); filter: brightness(1.08); }
+.sr-icon-pause, .sr[data-playing="true"] .sr-icon-play { display: none; }
+.sr[data-playing="true"] .sr-icon-pause { display: block; }
+.sr-wpm { min-width: 4.6rem; text-align: center; font: .78rem var(--font-mono); color: rgb(var(--c-muted)); }
+.sr-wpm output { color: rgb(var(--c-fg)); font-weight: 600; }
+.sr-time { font: .72rem var(--font-mono); color: rgb(var(--c-muted)); }
+.sr-end { display: inline-flex; align-items: center; gap: .4rem; }
+/* Lit while the Mythfall voice is on (V key, desktop). */
+.sr-voice { width: 1rem; height: 1rem; color: rgb(var(--c-accent)); }
+.sr-voice[hidden] { display: none; }
+
+/* Desktop: the aux button's popover, wider than its list menus. */
+.sr-pop.aux-fab__menu--list { width: min(27rem, calc(100vw - 3rem)); padding: 10px 12px 12px; }
+
+/* The article behind: the word being read and its sentence. CSS Custom
+   Highlights paint them without touching the article's markup; browsers
+   without the API just don't show them. */
+::highlight(sr-sentence) { background-color: rgb(var(--c-accent) / .12); }
+::highlight(sr-word) { background-color: rgb(var(--c-accent) / .45); color: rgb(var(--c-fg)); }
+
+@media (prefers-reduced-motion: reduce) { .sr-fill, .sr-btn { transition: none; } }

@@ -1,7 +1,8 @@
 {{- /* /now — what I'm on right now, as cards rather than a list of paragraphs.
        Copy is front matter in content/now.md; Playing and Reading come from
        the Impossible List (components/off-the-clock.html). Recent site changes
-       come from data/now/changes.yaml, newest first, cut to $changeLimit. */ -}}
+       come from data/now/changes.yaml, newest first, cut to $changeLimit, with
+       a Top 3 view from data/now/podium.yaml. */ -}}
 {{ define "banner" }}
 {{ partial "site/page-banner.html" (dict
   "title" "What I'm doing now"
@@ -100,28 +101,39 @@
     {{- end }}
   </div>
 
-  {{- /* Ten keeps a busy month from taking over the page; the data file keeps
-         the full history. */ -}}
+  {{- /* Site changes, in two views (assets/css/pages/now/now.css): the latest
+         ten, and the Top 3 podium of the last 30 days from
+         data/now/podium.yaml, which the agent keeps (AGENTS.md). Ten keeps a
+         busy month from taking over the page; the data file keeps the full
+         history. A podium entry leaves 30 days after its date, at the next
+         build; with none left, the switch goes and the list stands alone. */ -}}
   {{- $changeLimit := 10 -}}
   {{- with site.Data.now.changes }}
   {{- $changes := first $changeLimit (sort . "date" "desc") }}
-  <section aria-labelledby="changes-heading">
-    <h2 id="changes-heading" class="{{ $heading }}">Recent site changes</h2>
+  {{- /* A literal: AddDate takes an int, and Hugo's arithmetic gives int64. */}}
+  {{- $cutoff := now.AddDate 0 0 -30 }}
+  {{- $podium := slice }}
+  {{- range site.Data.now.podium }}{{ if (time.AsTime .date).After $cutoff }}{{ $podium = $podium | append . }}{{ end }}{{ end }}
+  {{- $podium = sort $podium "rank" }}
+  {{- with resources.Get "css/pages/now/now.css" | minify | fingerprint }}
+  <link rel="stylesheet" href="{{ .RelPermalink }}" integrity="{{ .Data.Integrity }}" />
+  {{- end }}
+  <section aria-labelledby="changes-heading" class="nw">
+    {{- if $podium }}
+    <input class="nw-radio" type="radio" name="nw-view" id="nw-latest" checked />
+    <input class="nw-radio" type="radio" name="nw-view" id="nw-podium" />
+    {{- end }}
+    <div class="nw-head">
+      <h2 id="changes-heading" class="font-mono text-xs uppercase tracking-widest text-fg">Recent site changes</h2>
+      {{- if $podium }}
+      <div class="nw-switch"><label for="nw-latest">Latest {{ $changeLimit }}</label><label for="nw-podium">Top {{ len $podium }} this month</label></div>
+      {{- end }}
+    </div>
+    <div class="nw-panel nw-latest"{{ if not $podium }} style="display:block"{{ end }}>
     <ol class="divide-y divide-border/50 rounded-xl border border-border/60">
       {{- range $changes }}
-      {{- /* The icon column: the project's own icon when the change is about one
-             (`project: <slug>` in the entry, or a /projects/ link), else the
-             site's mark. Decorative; the title says whose it is on hover. */}}
-      {{- $proj := "" }}
-      {{- with .project }}{{ $proj = site.GetPage (printf "/projects/%s" .) }}
-      {{- else }}{{ if hasPrefix .url "/projects/" }}{{ $proj = site.GetPage (strings.TrimSuffix "/" .url) }}{{ end }}{{ end }}
       <li class="flex items-center gap-3 px-4 py-3 sm:gap-4">
-        {{- if and $proj $proj.Params.cover }}
-        {{- $ic := partial "func/cover.html" (dict "path" $proj.Params.cover "width" 32 "height" 32 "fit" true) }}
-        <img src="{{ $ic.src }}"{{ with $ic.srcset }} srcset="{{ . }}"{{ end }} width="32" height="32" alt="" title="{{ $proj.Title }}" loading="lazy" class="h-8 w-8 shrink-0 rounded-[22%] object-contain" />
-        {{- else }}
-        <img src="{{ "logo-mark.svg" | relURL }}" width="32" height="32" alt="" title="The site" loading="lazy" class="h-8 w-8 shrink-0 object-contain" />
-        {{- end }}
+        {{ partial "inline/now/icon.html" . }}
         <span class="flex min-w-0 flex-1 flex-col gap-1 sm:flex-row sm:items-baseline sm:gap-4">
           <span class="flex shrink-0 items-center gap-2 font-mono text-xs text-muted sm:w-32">
             <time datetime="{{ .date }}">{{ (time.AsTime .date).Format "Jan 2" }}</time>
@@ -132,6 +144,26 @@
       </li>
       {{- end }}
     </ol>
+    </div>
+    {{- with $podium }}
+    <div class="nw-panel nw-podium">
+      <ol class="nw-stand">
+        {{- range . }}
+        <li class="nw-place" data-rank="{{ .rank }}">
+          <a class="nw-card" href="{{ .url | relURL }}">
+            <span class="flex items-center gap-3">
+              {{ partial "inline/now/icon.html" . }}
+              <span class="nw-title">{{ .title }}</span>
+            </span>
+            <span class="nw-why">{{ .why }}</span>
+            <time class="nw-date" datetime="{{ .date }}">{{ (time.AsTime .date).Format "Jan 2" }}</time>
+          </a>
+          <span class="nw-step" aria-label="Place {{ .rank }}">{{ .rank }}</span>
+        </li>
+        {{- end }}
+      </ol>
+    </div>
+    {{- end }}
   </section>
   {{- end }}
 </div>
@@ -139,4 +171,19 @@
 <p class="mt-16 text-sm text-muted">
   This is a /now page{{ with site.Data.site.links.nownownow }}, <a href="{{ . }}" rel="me noopener">listed on nownownow.com</a>{{ end }}. Find others in the directory at <a href="https://nownownow.com" rel="noopener">nownownow.com</a>.
 </p>
+{{ end }}
+
+{{- /* A change's icon, in the list and on the podium: the project's own icon
+       when the entry is about one (`project: <slug>`, or a /projects/ link),
+       else the site's mark. Decorative; the title says whose it is on hover. */ -}}
+{{ define "partials/inline/now/icon.html" }}
+{{- $proj := "" }}
+{{- with .project }}{{ $proj = site.GetPage (printf "/projects/%s" .) }}
+{{- else }}{{ if hasPrefix .url "/projects/" }}{{ $proj = site.GetPage (strings.TrimSuffix "/" .url) }}{{ end }}{{ end }}
+{{- if and $proj $proj.Params.cover }}
+{{- $ic := partial "func/cover.html" (dict "path" $proj.Params.cover "width" 32 "height" 32 "fit" true) }}
+<img src="{{ $ic.src }}"{{ with $ic.srcset }} srcset="{{ . }}"{{ end }} width="32" height="32" alt="" title="{{ $proj.Title }}" loading="lazy" class="h-8 w-8 shrink-0 rounded-[22%] object-contain" />
+{{- else }}
+<img src="{{ "logo-mark.svg" | relURL }}" width="32" height="32" alt="" title="The site" loading="lazy" class="h-8 w-8 shrink-0 object-contain" />
+{{- end }}
 {{ end }}

@@ -1,0 +1,39 @@
+{{- /*
+  components/speed-reader — the speed reader's face: the word on its pivot, a
+  progress line and the controls. Rendered twice on an article, in the desktop
+  aux button's popover (articles/single.html) and in the mobile navbar panel
+  (site/topnav.html); one engine drives whichever is open
+  (scripts/site/widgets/speed-reader.ts, by the data-sr-* hooks). Styles:
+  assets/css/site/speed-reader.css.
+
+    {{ partial "components/speed-reader.html" "desktop" }}
+*/ -}}
+<div class="sr" data-sr="{{ . }}" data-playing="false">
+  <button type="button" class="sr-stage" data-sr-stage aria-label="Play or pause">
+    <span class="sr-word" data-sr-word><span class="sr-left" data-sr-left></span><span class="sr-pivot" data-sr-pivot></span><span class="sr-right" data-sr-right></span></span>
+  </button>
+  <span class="sr-track" aria-hidden="true"><span class="sr-fill" data-sr-fill></span></span>
+  <div class="sr-bar">
+    <span class="sr-keys">
+      <button type="button" class="sr-btn" data-sr-back aria-label="Back a sentence" title="Back a sentence">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 18 11 12l7-6M8 6v12"/></svg>
+      </button>
+      <button type="button" class="sr-btn sr-play" data-sr-play aria-label="Play" title="Play or pause">
+        <svg class="sr-icon-play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7.5 5.6c0-.8.9-1.3 1.6-.9l9.6 5.6c.7.4.7 1.4 0 1.8l-9.6 5.6c-.7.4-1.6-.1-1.6-.9V5.6Z"/></svg>
+        <svg class="sr-icon-pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6.5" y="5" width="4" height="14" rx="1.2"/><rect x="13.5" y="5" width="4" height="14" rx="1.2"/></svg>
+      </button>
+      <button type="button" class="sr-btn" data-sr-next aria-label="Next sentence" title="Next sentence">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l7 6-7 6M16 6v12"/></svg>
+      </button>
+    </span>
+    <span class="sr-speed" role="group" aria-label="Speed">
+      <button type="button" class="sr-btn sr-btn-sm" data-sr-slower aria-label="Slower" title="Slower">−</button>
+      <span class="sr-wpm"><output data-sr-wpm>300</output> wpm</span>
+      <button type="button" class="sr-btn sr-btn-sm" data-sr-faster aria-label="Faster" title="Faster">+</button>
+    </span>
+    <span class="sr-end">
+      <svg class="sr-voice" data-sr-voice-badge hidden viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Mythfall voice on (V)"><title>Mythfall voice on (V)</title><path d="M11 5 6 9H3v6h3l5 4V5ZM15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+      <span class="sr-time" data-sr-time></span>
+    </span>
+  </div>
+</div>

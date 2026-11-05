@@ -1142,6 +1142,44 @@
 
   /* ---- The widget ------------------------------------------------------- */
 
+  // A small door for other pages: the articles' speed reader
+  // (scripts/site/widgets/speed-reader.ts) voices each word it shows, the
+  // V key, in a voice built the Simple view's way. wake() must run inside the
+  // key press, so the browser lets the audio start.
+  window.NvSpeak = {
+    wake: function () { return !!wakeAudio(); },
+    voice: function (picker, picks, tuningDefaults) { return settingsFromPicks(picker, picks, tuningDefaults); },
+    // How far behind the audio clock the speakers are (heardTimeS): a few ms
+    // on built-in speakers, a quarter second or more over Bluetooth. A caller
+    // that knows when a word is due starts its sound this much early.
+    latencyS: function () {
+      var sink = getAudio();
+      return sink ? Math.max(0, sink.ctx.currentTime - heardTimeS(sink.ctx)) : 0;
+    },
+    // Speaks one word inS seconds from now (at once if left out), squeezed
+    // into most of withinMs if its letters would run longer, so a fast
+    // reader's words don't pile up. Returns the sound nodes, so a caller can
+    // stop one it no longer wants.
+    word: function (text, settings, withinMs, inS) {
+      // A context still waking (the key press that woke it is a moment ago)
+      // just holds the sounds until it runs.
+      var sink = getAudio();
+      if (!sink) return [];
+      var plan = buildPlan(text, settings.flags, settings.tuning);
+      var atMs = 0;
+      var times = plan.steps.map(function (step) { var at = atMs; atMs += step.waitMs; return at; });
+      var squeeze = atMs > withinMs * 0.8 ? withinMs * 0.8 / atMs : 1;
+      var startS = sink.ctx.currentTime + Math.max(LEAD_S, inS || 0);
+      var nodes = [];
+      plan.steps.forEach(function (step, i) {
+        if (!step.sound) return;
+        var atS = times[i] * squeeze / 1000;
+        nodes.push(startBuffer(sink, renderSound(sink.ctx, settings.voice, step.sound, settings.flags, settings.tuning, atS), startS + atS));
+      });
+      return nodes;
+    }
+  };
+
   window.NvLab = {
     init: function (root) {
       if (!claim(root)) return;

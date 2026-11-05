@@ -23,6 +23,7 @@ import { initSvgZoom } from './widgets/svg-zoom';
 import { initShelfRows } from './widgets/shelf-row';
 import { initVault } from './widgets/vault';
 import { initGameEmbed } from './games/game-embed';
+import { initSpeedReader } from './widgets/speed-reader';
 
 declare global {
   interface Window {
@@ -72,6 +73,7 @@ function initPage(): void {
   initShelfRows();
   initVault();
   initGameEmbed();
+  initSpeedReader();
 }
 
 function ready(fn: () => void): void {

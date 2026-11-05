@@ -80,6 +80,12 @@ on the page, not in the chat.
    Fixes, refactors, styling, drafts behind the PIN and agent tooling don't. A
    batch of related changes is one entry, not five. Never describe a sealed
    page's contents.
+   Then ask whether it's one of the three coolest things of the last 30 days:
+   `data/now/podium.yaml` is /now's Top 3 podium, and you keep it. If the new
+   thing beats an entry (harder to build, more fun to try, more for a
+   recruiter to see), put it in at its rank and drop whatever falls off the
+   bottom. Entries leave on their own 30 days after their date, so a free
+   place goes to the best thing still in that window.
 2. Did it change what Konrad is doing? A project's status moved (testing,
    submitted, launched, paused), he started or finished a book or game, or what
    he's learning shifted: update the matching field in `content/now.md`

@@ -1,0 +1,8 @@
+{{- /*
+  func/speed-read — true when a page gets the speed reader (RSVP, one word at a
+  time with a marked pivot letter, after Spritz): every article, unless its
+  front matter says `speedRead: false`. One test, read by both halves so they
+  can't disagree: articles/single.html (the desktop aux button and the
+  stylesheet) and site/topnav.html (the mobile navbar button and panel).
+*/ -}}
+{{- return and (eq .Section "articles") (eq .Kind "page") (ne .Params.speedRead false) -}}

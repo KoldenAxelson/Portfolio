@@ -13,10 +13,7 @@
 {{- $speaker := index $data.picker.names (printf "%s-%s" $defaults.age $defaults.voice) -}}
 {{- $line := "Psst. Over here! You didn't hear this from me, but the duke... he's a FROG. Want to know more?" -}}
 {{- $vowels := slice "ah" "eh" "ee" "oh" "oo" "uh" -}}
-{{- /* The script lives in static/ and isn't fingerprinted, so its URL carries a
-       hash of its contents: a browser holding an old copy fetches the new one. */ -}}
-{{- $script := printf "/js/npc-voices/nv-voice.js?v=%s" (readFile "static/js/npc-voices/nv-voice.js" | md5 | truncate 10 "") -}}
-<div class="not-prose vn-demo nv-maker" id="nv-lab" data-vn-src="{{ $script }}" data-vn-init="NvLab" data-nv-voices="{{ $nv.voices }}" data-nv-tuning="{{ $nv.tuning }}" data-nv-picker="{{ $nv.picker }}">
+<div class="not-prose vn-demo nv-maker" id="nv-lab" data-vn-src="{{ $nv.script }}" data-vn-init="NvLab" data-nv-voices="{{ $nv.voices }}" data-nv-tuning="{{ $nv.tuning }}" data-nv-picker="{{ $nv.picker }}">
 <button class="nv-mode" id="nv-lab-mode" type="button" aria-pressed="false" aria-label="Advanced controls" title="Advanced controls" hidden>{{ partial "func/svg-icon.html" (dict "name" "adjustments-horizontal" "class" "nv-mode-icon") }}</button>
 <p class="nv-title">NPC Voice Box</p>
 <textarea class="vn-input nv-lab-text" id="nv-lab-text" rows="2" maxlength="400" spellcheck="false" aria-label="Their line" disabled>{{ $line }}</textarea>
