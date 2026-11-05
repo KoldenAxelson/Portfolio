@@ -1,0 +1,33 @@
+# References for content/articles/model-arithmetic.md, rendered by {{< ml/references >}}.
+# Listed in the order the article reaches them. Numbering is automatic.
+
+- tag: Task vectors
+  title: Editing Models with Task Arithmetic
+  url: https://arxiv.org/abs/2212.04089
+  meta: Ilharco, Ribeiro, Wortsman, Gururangan, Schmidt, Hajishirzi & Farhadi · ICLR 2023
+  note: Task vectors, negation (GPT-2 Large toxicity, Table 2; CLIP forgetting, Table 1), addition across eight image tasks (Section 4.1), and the near-orthogonal task vectors (Section 6).
+- tag: Soups
+  title: "Model soups: averaging weights of multiple fine-tuned models improves accuracy without increasing inference time"
+  url: https://arxiv.org/abs/2203.05482
+  meta: Wortsman, Ilharco, Gadre et al. · ICML 2022
+  note: Uniform and greedy soups; the ViT-G greedy soup at 90.94% ImageNet top-1 against 90.78% for the best single model (Table 1).
+- tag: Limits
+  title: Linear Mode Connectivity and the Lottery Ticket Hypothesis
+  url: https://arxiv.org/abs/1912.05671
+  meta: Frankle, Dziugaite, Roy & Carbin · ICML 2020
+  note: Two copies of the same randomly initialised ImageNet network, trained on different data orders, can't be averaged; once they share some training first, they can. The soups paper cites it for "no better than random accuracy".
+- tag: Limits
+  title: "Git Re-Basin: Merging Models modulo Permutation Symmetries"
+  url: https://arxiv.org/abs/2209.04836
+  meta: Ainsworth, Hayase & Srinivasa · ICLR 2023
+  note: Shuffling hidden units leaves a network's function unchanged; lining the units up first lets some separately trained models be merged.
+- tag: Interference
+  title: "TIES-Merging: Resolving Interference When Merging Models"
+  url: https://arxiv.org/abs/2306.01708
+  meta: Yadav, Tam, Choshen, Raffel & Bansal · NeurIPS 2023
+  note: Merged models lose accuracy to redundant changes and sign disagreements; trim, elect a sign, then merge.
+- tag: Tools
+  title: "Arcee's MergeKit: A Toolkit for Merging Large Language Models"
+  url: https://arxiv.org/abs/2403.13257
+  meta: Goddard et al. · EMNLP 2024 (Industry Track)
+  note: An open-source library for merging language-model weights without extra training.

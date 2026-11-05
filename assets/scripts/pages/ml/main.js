@@ -36,6 +36,29 @@ import { initSwarm } from './swarm.ts';
 import { initClocks } from './clocks.ts';
 import { initHrr } from './hrr.ts';
 import { initConvolve } from './convolve.ts';
+import { initEmbeddingTable } from './embedding-table.ts';
+import { initTokenIds } from './token-ids.ts';
+import { initNearestRows } from './nearest-rows.ts';
+import { initBasisGrid } from './basis-grid.ts';
+import { initDctBlock } from './dct-block.ts';
+import { initWrapClock } from './wrap-clock.ts';
+import { initSignedClock } from './signed-clock.ts';
+import { initLiftingRow } from './lifting-row.ts';
+import { initLiftingImage } from './lifting-image.ts';
+import { initFwhtButterfly } from './fwht-butterfly.ts';
+import { initFftCost } from './fft-cost.ts';
+import { initTaskVectors } from './task-vectors.ts';
+import { initMergeSymmetry } from './merge-symmetry.ts';
+import { initSummedArea } from './summed-area.ts';
+import { initFenwick } from './fenwick.ts';
+import { initRollingChecksum } from './rolling-checksum.ts';
+import { initMerkleCompare } from './merkle-compare.ts';
+import { initHammingCode } from './hamming-code.ts';
+import { initErrorChecks } from './error-checks.ts';
+import { initPoincareTree } from './poincare-tree.ts';
+import { initRoomOnTheCircle } from './room-on-the-circle.ts';
+import { initMutationTest } from './mutation-test.ts';
+import { initMemorySampling } from './memory-sampling.ts';
 
 // Tells the inline failsafe in ml-demos-assets.html that the reveal is handled.
 document.documentElement.dataset.mliReady = '';
@@ -48,6 +71,8 @@ const STANDALONE = [
   { id: 'mli-gi', scripts: ['tiny-digits', 'mli-garbagein'], init: (root) => window.TinyDigits && window.MliGarbageIn?.init(root, window.TinyDigits) },
   { id: 'mli-drift', scripts: ['mli-drift'], init: (root) => window.MliDrift?.init(root) },
   { id: 'mli-tok', scripts: ['mli-tok'], init: (root) => window.MliTok?.init(root) },
+  // Preset sentences with real GPT-2 row numbers from data/ml/token-ids.yaml.
+  { id: 'mli-tid', scripts: [], init: (root) => initTokenIds(root) },
   { id: 'mli-rag', scripts: ['mli-rag'], init: (root) => window.MliRag?.init(root) },
   { id: 'mli-ag', scripts: ['mli-agent'], init: (root) => window.MliAgent?.init(root) },
   { id: 'mli-cite', scripts: ['mli-cite'], init: (root) => window.MliCite?.init(root) },
@@ -128,3 +153,47 @@ const hrr = byId('mli-hrr');
 whenVisible(hrr, () => initHrr(hrr));
 const convolve = byId('mli-conv');
 whenVisible(convolve, () => initConvolve(convolve));
+const embeddingTable = byId('mli-et');
+whenVisible(embeddingTable, () => initEmbeddingTable(embeddingTable));
+const nearestRows = byId('mli-nr');
+whenVisible(nearestRows, () => initNearestRows(nearestRows));
+const basisGrid = byId('mli-bg');
+whenVisible(basisGrid, () => initBasisGrid(basisGrid));
+const dctBlock = byId('mli-dct');
+whenVisible(dctBlock, () => initDctBlock(dctBlock));
+const wrapClock = byId('mli-wc');
+whenVisible(wrapClock, () => initWrapClock(wrapClock));
+const signedClock = byId('mli-sc');
+whenVisible(signedClock, () => initSignedClock(signedClock));
+const liftingRow = byId('mli-lr');
+whenVisible(liftingRow, () => initLiftingRow(liftingRow));
+const liftingImage = byId('mli-li');
+whenVisible(liftingImage, () => initLiftingImage(liftingImage));
+const fwhtButterfly = byId('mli-fw');
+whenVisible(fwhtButterfly, () => initFwhtButterfly(fwhtButterfly));
+const fftCost = byId('mli-fc');
+whenVisible(fftCost, () => initFftCost(fftCost));
+const taskVectors = byId('mli-tv');
+whenVisible(taskVectors, () => initTaskVectors(taskVectors));
+const mergeSymmetry = byId('mli-ms');
+whenVisible(mergeSymmetry, () => initMergeSymmetry(mergeSymmetry));
+const summedArea = byId('mli-sa');
+whenVisible(summedArea, () => initSummedArea(summedArea));
+const fenwick = byId('mli-fk');
+whenVisible(fenwick, () => initFenwick(fenwick));
+const rollingChecksum = byId('mli-rc');
+whenVisible(rollingChecksum, () => initRollingChecksum(rollingChecksum));
+const merkleCompare = byId('mli-mk');
+whenVisible(merkleCompare, () => initMerkleCompare(merkleCompare));
+const hammingCode = byId('mli-hc');
+whenVisible(hammingCode, () => initHammingCode(hammingCode));
+const errorChecks = byId('mli-ec');
+whenVisible(errorChecks, () => initErrorChecks(errorChecks));
+const poincareTree = byId('mli-pt');
+whenVisible(poincareTree, () => initPoincareTree(poincareTree));
+const roomOnTheCircle = byId('mli-rm');
+whenVisible(roomOnTheCircle, () => initRoomOnTheCircle(roomOnTheCircle));
+const mutationTest = byId('mli-mt');
+whenVisible(mutationTest, () => initMutationTest(mutationTest));
+const memorySampling = byId('mli-ms2');
+whenVisible(memorySampling, () => initMemorySampling(memorySampling));

@@ -1,6 +1,6 @@
 # References for content/articles/holographic-reduced-representations.md,
 # rendered by {{< ml/references >}}. Listed in the order the article reaches
-# them. Numbering is automatic. Looked up 2026-10-31.
+# them. Numbering is automatic. Looked up 2026-10-31; rechecked 2026-11-03.
 
 - tag: Origin
   title: Holographic Reduced Representations
@@ -8,15 +8,15 @@
   meta: Tony A. Plate · IEEE Transactions on Neural Networks 6(3) · 1995
   note: The full journal account, after a first version at IJCAI 1991. Random vectors, binding by circular convolution, correlation as its approximate inverse, the FFT shortcut, clean-up memories, and capacity roughly linear in vector length.
 - tag: Background
-  title: "Holography: background"
-  url: https://www.asc.ohio-state.edu/kagan.1/holography/holo_bkg.htm
-  meta: Ohio State University, Department of Physics
-  note: Why every piece of a hologram still shows the whole image, from a narrower view.
-- tag: Background
   title: "Hyperdimensional Computing: An Introduction to Computing in Distributed Representation with High-Dimensional Random Vectors"
   url: https://cs.uwaterloo.ca/~jhoey/teaching/cogsci600/papers/Kanerva09.pdf
   meta: Pentti Kanerva · Cognitive Computation 1 · 2009
   note: The friendliest tour of the family, including why random high-dimensional vectors make good symbols and the "What is the dollar of Mexico?" example.
+- tag: Background
+  title: "Broken Holograms: Two for the Price of One! Urban Legend or Scientific Reality?"
+  url: https://orbi.uliege.be/bitstream/2268/348457/2/Holograms%20broken.pdf
+  meta: Yvon Renotte · University of Liège (ORBi) · 2026
+  note: Why a piece of a typical transmission hologram still shows the whole scene, through a narrower field of view, and why some reflection holograms just break into halves.
 - tag: Brain model
   title: A Large-Scale Model of the Functioning Brain
   url: https://doi.org/10.1126/science.1225266
@@ -27,6 +27,11 @@
   url: http://compneuro.uwaterloo.ca/files/spaun.pdf
   meta: Bekolay et al. · University of Waterloo
   note: Shows Spaun's list memory written as positions bound to items and added together.
+- tag: Background
+  title: "A Survey on Hyperdimensional Computing aka Vector Symbolic Architectures, Part I: Models and Data Transformations"
+  url: https://arxiv.org/abs/2111.06077
+  meta: Kleyko, Rachkovskij, Osipov and Rahimi · ACM Computing Surveys 55(6) · 2022
+  note: The family HRRs belong to, and how its members differ; it notes that HRRs are sometimes called the Semantic Pointer Architecture, the name Spaun is built on.
 - tag: Deep learning
   title: Learning with Holographic Reduced Representations
   url: https://proceedings.neurips.cc/paper/2021/hash/d71dd235287466052f1630f31bde7932-Abstract.html
@@ -40,10 +45,10 @@
 - tag: Today
   title: Nuggets
   url: https://github.com/NeoVertex1/nuggets
-  meta: GitHub · checked October 2026
-  note: A personal AI assistant that keeps its memory as HRR vectors and recalls by unbinding and cosine similarity. An experiment, not a product.
+  meta: GitHub · checked November 2026
+  note: A personal AI assistant, and an MCP memory plugin for coding agents, that keeps facts in complex-valued HRR vectors and recalls them by unbinding and cosine similarity. Open source, not peer-reviewed.
 - tag: Today
   title: holomem
   url: https://github.com/polmanas1998-star/holomem
-  meta: GitHub · checked October 2026
-  note: A fixed-size holographic memory (the Fourier variant of HRR) for dated facts, built as the memory layer of an AI assistant. An experiment, not a product.
+  meta: GitHub · checked November 2026
+  note: A fixed-size holographic memory (the Fourier variant of HRR) for dated facts, built as the memory layer of an AI assistant, with a reproducible capacity benchmark. Open source, not peer-reviewed.

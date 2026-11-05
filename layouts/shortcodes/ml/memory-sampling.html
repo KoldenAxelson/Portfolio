@@ -1,0 +1,64 @@
+{{- /*
+  ml-memory-sampling — a made-up memory trace, sampled from outside the
+  process the way a script polling VmRSS would, against the true peak that
+  VmHWM keeps. Sliders set how often and when the samples are taken.
+
+    {{< ml/memory-sampling >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml/assets.html (css/pages/ml/demos.css, scripts/pages/ml/
+  memory-sampling.ts). The trace lives in data/ml/memory-sampling.yaml; the
+  chart and readout for the first settings are worked out here too, the same
+  way as the script, so the demo reads with JS off.
+*/ -}}
+{{- $d := index site.Data.ml "memory-sampling" -}}
+{{- $x0 := 52.0 }}{{ $x1 := 468.0 }}{{ $y0 := 210.0 }}{{ $y1 := 30.0 }}{{ $ymax := 1000.0 -}}
+{{- $T := float $d.seconds -}}
+{{- $peak := 0 }}{{ range $d.steps }}{{ $peak = math.Max $peak (index . 2) }}{{ end -}}
+{{- $spike := 0.0 }}{{ range $d.steps }}{{ if eq (float (index . 2)) (float $peak) }}{{ $spike = sub (float (index . 1)) (float (index . 0)) }}{{ end }}{{ end -}}
+{{- $line := slice -}}
+{{- range $d.steps -}}
+  {{- $xa := add $x0 (mul (sub $x1 $x0) (div (float (index . 0)) $T)) }}{{ $xb := add $x0 (mul (sub $x1 $x0) (div (float (index . 1)) $T)) -}}
+  {{- $y := sub $y0 (mul (sub $y0 $y1) (div (float (index . 2)) $ymax)) -}}
+  {{- $line = $line | append (printf "%.1f,%.1f %.1f,%.1f" $xa $y $xb $y) -}}
+{{- end -}}
+{{- $samples := slice }}{{ $seen := 0 -}}
+{{- $cs := 100.0 -}}
+{{- $Tc := int (math.Round (mul $T $cs)) }}{{ $ic := int (math.Round (mul (float $d.interval) $cs)) }}{{ $tc := int (math.Round (mul (float $d.offset) $cs)) -}}
+{{- range seq 1000 -}}
+  {{- if lt $tc $Tc -}}
+    {{- $t := div (float $tc) $cs -}}
+    {{- $v := 0 }}{{ range $d.steps }}{{ if and (ge $tc (int (math.Round (mul (float (index . 0)) $cs)))) (lt $tc (int (math.Round (mul (float (index . 1)) $cs)))) }}{{ $v = index . 2 }}{{ end }}{{ end -}}
+    {{- $seen = math.Max $seen $v -}}
+    {{- $samples = $samples | append (dict "x" (add $x0 (mul (sub $x1 $x0) (div $t $T))) "y" (sub $y0 (mul (sub $y0 $y1) (div (float $v) $ymax))) "t" $t "v" $v) -}}
+    {{- $tc = add $tc $ic -}}
+  {{- end -}}
+{{- end -}}
+{{- $peakY := sub $y0 (mul (sub $y0 $y1) (div (float $peak) $ymax)) -}}
+<div class="not-prose mli-demo mli-ms2" id="mli-ms2" data-config="{{ jsonify $d }}" data-x0="{{ $x0 }}" data-x1="{{ $x1 }}" data-y0="{{ $y0 }}" data-y1="{{ $y1 }}" data-ymax="{{ $ymax }}">
+<div class="mli-demo-label">Live · polling memory from outside{{ partial "ml/caution.html" (dict "id" "mli-ms2-note" "text" (printf "Illustrative trace. The program and its memory use over these %g seconds are made up. The sampling and the peak are computed for real from that trace." $T)) }}</div>
+<div id="mli-ms2-controls" hidden>
+<label class="mli-tv-slider"><span class="mli-bits-lab">Check every</span><input type="range" id="mli-ms2-int" min="0.1" max="2" step="0.1" value="{{ $d.interval }}" disabled><output id="mli-ms2-int-out">{{ printf "%.1f" (float $d.interval) }} s</output></label>
+<label class="mli-tv-slider"><span class="mli-bits-lab">First check at</span><input type="range" id="mli-ms2-off" min="0" max="1.9" step="0.05" value="{{ $d.offset }}" disabled><output id="mli-ms2-off-out">{{ printf "%.2f" (float $d.offset) }} s</output></label>
+</div>
+<div class="mli-fc-legend"><span class="mli-rm-item"><span class="mli-ms2-key is-trace"></span>Memory in RAM</span><span class="mli-rm-item"><span class="mli-ms2-key is-sample"></span>A check of VmRSS</span><span class="mli-rm-item"><span class="mli-ms2-key is-peak"></span>VmHWM, the true peak</span></div>
+<svg class="mli-fc-svg" id="mli-ms2-svg" viewBox="0 0 480 248" role="img" aria-labelledby="mli-ms2-title">
+<title id="mli-ms2-title">A program's memory over {{ $T }} seconds, with periodic checks and the true peak of {{ $peak }} MB.</title>
+{{- range $g := slice 0 250 500 750 1000 }}{{ $y := sub $y0 (mul (sub $y0 $y1) (div (float $g) $ymax)) }}
+<line class="mli-fc-grid" x1="{{ $x0 }}" x2="{{ $x1 }}" y1="{{ $y }}" y2="{{ $y }}"/><text class="mli-fc-tick" x="{{ sub $x0 6 }}" y="{{ add $y 4 }}" text-anchor="end">{{ $g }}</text>
+{{- end }}
+{{- range $s := seq 0 2 (int $T) }}<text class="mli-fc-tick" x="{{ add $x0 (mul (sub $x1 $x0) (div (float $s) $T)) }}" y="{{ add $y0 16 }}" text-anchor="middle">{{ $s }} s</text>{{ end }}
+<text class="mli-fc-axis" x="{{ $x0 }}" y="14">Memory, MB</text>
+<line class="mli-ms2-peak" id="mli-ms2-peak" x1="{{ $x0 }}" x2="{{ $x1 }}" y1="{{ $peakY }}" y2="{{ $peakY }}"/>
+<polyline class="mli-ms2-trace" points="{{ delimit $line " " }}"/>
+<g id="mli-ms2-dots">{{ range $samples }}<circle cx="{{ .x }}" cy="{{ .y }}" r="4"/>{{ end }}</g>
+</svg>
+<dl class="mli-fc-read">
+<div><dt>Checks taken</dt><dd id="mli-ms2-n">{{ len $samples }}</dd></div>
+<div><dt>Highest check</dt><dd id="mli-ms2-seen">{{ $seen }} MB</dd></div>
+<div><dt>VmHWM</dt><dd id="mli-ms2-hwm">{{ $peak }} MB</dd></div>
+<div><dt>Missed by</dt><dd id="mli-ms2-miss">{{ sub $peak $seen }} MB</dd></div>
+</dl>
+<noscript><p class="mli-caption">JavaScript is off, so this shows one checking schedule. With it on, you can check more or less often and move the first check.</p></noscript>
+<div class="mli-caption">Each dot reads the invented trace at one moment, the way a script reading VmRSS from /proc/&lt;pid&gt;/status would see how much is in RAM; a spike that falls between two checks is missed. The dashed line is the highest it ever went, which the kernel keeps for you as VmHWM, however briefly it lasted. The tallest spike here lasts {{ printf "%.2f" $spike }} seconds.</div>
+</div>

@@ -1,0 +1,33 @@
+{{- /*
+  ml-dct-block — one 8 x 8 block of an image as 64 pixels and as 64 weights on
+  cosine patterns (JPEG's DCT), with a slider that keeps only the biggest
+  weights and rebuilds the block from them.
+
+    {{< ml/dct-block >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml/assets.html (css/pages/ml/demos.css, scripts/pages/ml/
+  dct-block.ts, which does the transform). Blocks come from
+  data/ml/dct-block.yaml; the first one's pixels render here so the demo
+  reads with JS off.
+*/ -}}
+{{- $d := index site.Data.ml "dct-block" -}}
+{{- $first := index $d.patches 0 -}}
+<div class="not-prose mli-demo mli-dct" id="mli-dct" data-patches="{{ jsonify $d.patches }}" data-keep="{{ $d.keep }}">
+<div class="mli-demo-label">Live · 64 pixels, or 64 weights{{ partial "ml/caution.html" (dict "id" "mli-dct-note" "text" "Illustrative blocks. The three 8 × 8 blocks are made up; the weights, the rebuilt block and the error figure are computed from them with JPEG's real transform.") }}</div>
+<div class="mli-rag-qs" role="group" aria-label="Block to transform">
+{{- range $i, $p := $d.patches }}<button class="mli-rag-q{{ if eq $i 0 }} is-on{{ end }}" type="button" aria-pressed="{{ eq $i 0 }}" data-patch="{{ $i }}" disabled>{{ $p.name }}</button>{{ end -}}
+</div>
+<div class="mli-dct-panels">
+<figure class="mli-dct-panel"><div class="mli-dct-grid" id="mli-dct-pixels" role="img" aria-label="The block's 64 pixels">
+{{- range $first.rows }}{{ range . }}<span style="background: rgb({{ . }} {{ . }} {{ . }})"></span>{{ end }}{{ end -}}
+</div><figcaption>64 pixels</figcaption></figure>
+<figure class="mli-dct-panel" id="mli-dct-weights-panel" hidden><div class="mli-dct-grid is-weights" id="mli-dct-weights" role="img" aria-label="The same block as 64 weights on cosine patterns"></div><figcaption>64 weights <span class="mli-dct-sub">(smooth patterns top left, busy ones bottom right)</span></figcaption></figure>
+<figure class="mli-dct-panel" id="mli-dct-rebuilt-panel" hidden><div class="mli-dct-grid" id="mli-dct-rebuilt" role="img" aria-label="The block rebuilt from the weights kept"></div><figcaption>Rebuilt from the weights kept</figcaption></figure>
+<figure class="mli-dct-panel is-pattern" id="mli-dct-pattern-panel" hidden><div class="mli-dct-grid" id="mli-dct-pattern" role="img" aria-label="The cosine pattern for the weight under the pointer"></div><figcaption id="mli-dct-pattern-cap">The pattern a weight scales</figcaption></figure>
+</div>
+<div class="mli-row" id="mli-dct-controls" hidden><label for="mli-dct-keep">Weights kept: <span class="mli-val" id="mli-dct-keep-v">{{ $d.keep }}</span> of 64</label><input class="mli-range" id="mli-dct-keep" type="range" min="1" max="64" step="1" value="{{ $d.keep }}" /></div>
+<p class="mli-tok-stat" id="mli-dct-stat" aria-live="polite"></p>
+<noscript><p class="mli-caption">JavaScript is off, so only the pixels show. With it on, the same block appears as 64 weights on cosine patterns, and a slider rebuilds it from just the biggest few.</p></noscript>
+<div class="mli-caption">JPEG's real 8 × 8 discrete cosine transform, run in your browser on made-up blocks (each pixel value minus 128). Blue weights are negative and red positive, and stronger colour means a bigger weight; point at one to see its pattern. Keeping only the biggest weights is a simplified stand-in for JPEG's rounding step, which divides each weight by its own step size and rounds, so the small ones become zero.</div>
+</div>

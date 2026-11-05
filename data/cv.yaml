@@ -39,8 +39,8 @@ experience:
     location: "Remote"
     start: "2020"
     end: "2024"
-    startDate: "2020-01-01"
-    endDate: "2024-11-01"
+    startDate: "2020-01-05"
+    endDate: "2024-11-05"
     summary: "Five years building and securing AWS-hosted systems — largely on AWS GovCloud — for federal government and enterprise clients. Owned Fortify/SAST security remediation and CI/CD across successive production contracts. Left when the contract concluded — UNCOMN had no other remote seats open, and relocating to the St. Louis office wasn't in the cards."
     highlights:
       - "Resolved 1,000+ Fortify-flagged (SAST) security vulnerabilities, owning security remediation across five years of federal contracts — on CPA, ran bi-weekly Fortify scans and briefed findings through a legacy-modernization effort."

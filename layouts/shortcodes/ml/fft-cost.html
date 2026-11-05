@@ -1,0 +1,71 @@
+{{- /*
+  ml-fft-cost — how N² and N · log₂ N grow, on a log scale, for N from 2 to
+  about a million, with a slider (and chart hover) to pick a length and read
+  off both counts, the ratio, and an illustrative running time.
+
+    {{< ml/fft-cost >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml/assets.html (css/pages/ml/demos.css, scripts/pages/ml/
+  fft-cost.ts). The whole chart and the N = 1,024 readout are drawn here, so
+  it reads with JS off; the script only moves the marker and the readout.
+*/ -}}
+{{- $x0 := 78.0 -}}{{- $x1 := 456.0 -}}{{- $y0 := 214.0 -}}{{- $y1 := 14.0 -}}
+{{- $kmax := 20 -}}{{- $lmax := 12.5 -}}
+{{- $ln10 := math.Log 10 -}}
+{{- $direct := slice -}}{{- $fast := slice -}}
+{{- range $k := seq 1 $kmax -}}
+  {{- $n := int (math.Pow 2 $k) -}}
+  {{- $x := add $x0 (mul (sub $x1 $x0) (div (float (sub $k 1)) (sub $kmax 1))) -}}
+  {{- $yd := sub $y0 (mul (sub $y0 $y1) (div (div (math.Log (mul $n $n)) $ln10) $lmax)) -}}
+  {{- $yf := sub $y0 (mul (sub $y0 $y1) (div (div (math.Log (mul $n $k)) $ln10) $lmax)) -}}
+  {{- $direct = $direct | append (printf "%.1f,%.1f" $x $yd) -}}
+  {{- $fast = $fast | append (printf "%.1f,%.1f" $x $yf) -}}
+{{- end -}}
+{{- $sel := 10 -}}
+{{- $n := int (math.Pow 2 $sel) }}{{ $d := mul $n $n }}{{ $f := mul $n $sel -}}
+{{- $times := slice -}}
+{{- range $ns := slice $d $f -}}
+  {{- $unit := cond (ge $ns 3600e9) (slice 3600e9 "h") (cond (ge $ns 60e9) (slice 60e9 "min") (cond (ge $ns 1e9) (slice 1e9 "s") (cond (ge $ns 1e6) (slice 1e6 "ms") (cond (ge $ns 1e3) (slice 1e3 "µs") (slice 1.0 "ns"))))) -}}
+  {{- $v := div (float $ns) (index $unit 0) -}}
+  {{- $places := math.Max 0 (sub 2 (int (math.Floor (add (div (math.Log $v) $ln10) 1e-9)))) -}}
+  {{- $shown := lang.FormatNumber (int $places) $v -}}
+  {{- if gt $places 0 }}{{ $shown = replaceRE `\.?0+$` "" $shown }}{{ end -}}
+  {{- $times = $times | append (printf "%s %s" $shown (index $unit 1)) -}}
+{{- end -}}
+{{- $xs := add $x0 (mul (sub $x1 $x0) (div (float (sub $sel 1)) (sub $kmax 1))) -}}
+<div class="not-prose mli-demo mli-fc" id="mli-fc" data-x0="{{ $x0 }}" data-x1="{{ $x1 }}" data-y0="{{ $y0 }}" data-y1="{{ $y1 }}" data-kmax="{{ $kmax }}" data-lmax="{{ $lmax }}">
+<div class="mli-demo-label">Live · direct sums against the FFT's stages{{ partial "ml/caution.html" (dict "id" "mli-fc-note" "text" "Illustrative times. The counts are the plain N² and N · log₂ N from the article; real FFTs differ by a small constant (Cooley and Tukey's is under 2N log₂ N). The times assume one operation per nanosecond, which is made up for scale.") }}</div>
+<div class="mli-fc-legend"><span class="mli-fc-key is-direct"></span>Direct: N²<span class="mli-fc-key is-fast"></span>Fast: N · log₂ N</div>
+<svg class="mli-fc-svg" id="mli-fc-svg" viewBox="0 0 480 252" role="img" aria-labelledby="mli-fc-title">
+<title id="mli-fc-title">Line chart on a log scale. For lengths from 2 to about a million, N squared climbs from 4 to about a trillion, while N times log base 2 of N climbs from 2 to about 21 million.</title>
+{{- range $i, $g := slice (slice 0 "1") (slice 3 "1 thousand") (slice 6 "1 million") (slice 9 "1 billion") (slice 12 "1 trillion") }}
+{{- $y := sub $y0 (mul (sub $y0 $y1) (div (float (index $g 0)) $lmax)) }}
+<line class="mli-fc-grid" x1="{{ $x0 }}" x2="{{ $x1 }}" y1="{{ $y }}" y2="{{ $y }}"/><text class="mli-fc-tick" x="{{ sub $x0 6 }}" y="{{ add $y 4 }}" text-anchor="end">{{ index $g 1 }}</text>
+{{- end }}
+{{- range $t := slice (slice 1 "2") (slice 5 "32") (slice 10 "1,024") (slice 15 "32,768") (slice 20 "1,048,576") }}
+{{- $x := add $x0 (mul (sub $x1 $x0) (div (float (sub (index $t 0) 1)) (sub $kmax 1))) }}
+<text class="mli-fc-tick{{ if eq (index $t 0) 15 }} is-minor{{ end }}" x="{{ $x }}" y="{{ add $y0 16 }}" text-anchor="{{ if eq (index $t 0) 20 }}end{{ else if eq (index $t 0) 1 }}start{{ else }}middle{{ end }}">{{ index $t 1 }}</text>
+{{- end }}
+<text class="mli-fc-axis" x="{{ div (add $x0 $x1) 2 }}" y="248" text-anchor="middle">Length N (log scale)</text>
+<line class="mli-fc-cross" id="mli-fc-cross" x1="{{ $xs }}" x2="{{ $xs }}" y1="{{ $y1 }}" y2="{{ $y0 }}"/>
+<polyline class="mli-fc-line is-direct" points="{{ delimit $direct " " }}"/>
+<polyline class="mli-fc-line is-fast" points="{{ delimit $fast " " }}"/>
+{{- $pd := split (index $direct (sub $sel 1)) "," }}{{ $pf := split (index $fast (sub $sel 1)) "," }}
+<circle class="mli-fc-dot is-direct" id="mli-fc-dot-d" cx="{{ index $pd 0 }}" cy="{{ index $pd 1 }}" r="5"/>
+<circle class="mli-fc-dot is-fast" id="mli-fc-dot-f" cx="{{ index $pf 0 }}" cy="{{ index $pf 1 }}" r="5"/>
+<rect class="mli-fc-hit" id="mli-fc-hit" x="{{ sub $x0 10 }}" y="{{ $y1 }}" width="{{ add (sub $x1 $x0) 20 }}" height="{{ sub $y0 $y1 }}"/>
+</svg>
+<div id="mli-fc-controls" hidden>
+<label class="mli-fc-slider"><span class="mli-bits-lab">Length:</span><input type="range" id="mli-fc-range" min="1" max="{{ $kmax }}" step="1" value="{{ $sel }}" aria-valuetext="{{ lang.FormatNumber 0 $n }}" disabled></label>
+</div>
+<dl class="mli-fc-read" id="mli-fc-read">
+<div><dt>Length N</dt><dd id="mli-fc-n">{{ lang.FormatNumber 0 $n }}</dd></div>
+<div><dt>Direct, N²</dt><dd id="mli-fc-d">{{ lang.FormatNumber 0 $d }}</dd></div>
+<div><dt>Fast, N · log₂ N</dt><dd id="mli-fc-f">{{ lang.FormatNumber 0 $f }}</dd></div>
+<div><dt>Less work by</dt>{{- $ratio := div (float $d) $f }}<dd id="mli-fc-r">{{ if lt $ratio 10 }}{{ replaceRE `\.0$` "" (lang.FormatNumber 1 $ratio) }}{{ else }}{{ lang.FormatNumber 0 (math.Round $ratio) }}{{ end }}×</dd></div>
+<div><dt>At 1 ns each</dt><dd id="mli-fc-t">{{ index $times 0 }} against {{ index $times 1 }}</dd></div>
+</dl>
+<noscript><p class="mli-caption">JavaScript is off, so the readout stays at N = {{ lang.FormatNumber 0 $n }}. With it on, you can slide or hover along the chart to read any length.</p></noscript>
+<div class="mli-caption">Both counts are exact for each power of two from 2 to 1,048,576. The vertical axis is logarithmic, so every gridline is a thousand times the one below it: the gap between the lines is the ratio, and it keeps widening. The butterfly above counts only adds and subtracts, and combining 8 numbers into one takes 7 of them, so it counts 56 at N = 8 where N² gives 64.</div>
+</div>

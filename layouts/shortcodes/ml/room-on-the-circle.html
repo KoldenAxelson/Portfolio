@@ -1,0 +1,68 @@
+{{- /*
+  ml-room-on-the-circle — at each level of a tree, how many nodes there are
+  against how much room a circle at that distance from the root has, in flat
+  and in hyperbolic space. Log scale. Sliders for children per node and the
+  distance between levels.
+
+    {{< ml/room-on-the-circle >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml/assets.html (css/pages/ml/demos.css, scripts/pages/ml/
+  room-on-the-circle.ts). Settings live in data/ml/room-on-the-circle.yaml;
+  the first settings' chart and readout are worked out here, so the demo
+  reads with JS off.
+*/ -}}
+{{- $d := index site.Data.ml "room-on-the-circle" -}}
+{{- $b := float $d.branching }}{{ $L := float $d.edge }}{{ $K := $d.levels -}}
+{{- $e := 2.718281828459045 -}}
+{{- $x0 := 86.0 }}{{ $x1 := 464.0 }}{{ $y0 := 220.0 }}{{ $y1 := 14.0 }}{{ $lmax := 8.0 -}}
+{{- $ln10 := math.Log 10 -}}
+{{- $series := dict "nodes" slice "flat" slice "hyp" slice -}}
+{{- $done := dict "nodes" false "flat" false "hyp" false }}{{ $prev := dict -}}
+{{- $flatOut := 0 }}{{ $hypOut := 0 -}}
+{{- range $k := seq 1 $K -}}
+  {{- $x := add $x0 (mul (sub $x1 $x0) (div (float (sub $k 1)) (sub $K 1))) -}}
+  {{- $nodes := math.Pow $b (float $k) -}}
+  {{- $r := mul $L (float $k) -}}
+  {{- $flat := mul (mul 2 math.Pi) $r -}}
+  {{- $hyp := mul math.Pi (sub (math.Pow $e $r) (math.Pow $e (mul -1 $r))) -}}
+  {{- if and (eq $flatOut 0) (gt $nodes $flat) }}{{ $flatOut = $k }}{{ end -}}
+  {{- if and (eq $hypOut 0) (gt $nodes $hyp) }}{{ $hypOut = $k }}{{ end -}}
+  {{- range $name, $v := dict "nodes" $nodes "flat" $flat "hyp" $hyp -}}
+    {{- $ly := div (math.Log $v) $ln10 -}}
+    {{- if not (index $done $name) -}}
+      {{- $px := $x }}{{ if gt $ly $lmax }}{{ $p := index $prev $name }}{{ $px = add (index $p 0) (mul (sub $x (index $p 0)) (div (sub $lmax (index $p 1)) (sub $ly (index $p 1)))) }}{{ $ly = $lmax }}{{ $done = merge $done (dict $name true) }}{{ end -}}
+      {{- $y := sub $y0 (mul (sub $y0 $y1) (div $ly $lmax)) -}}
+      {{- $series = merge $series (dict $name ((index $series $name) | append (printf "%.1f,%.1f" $px $y))) -}}
+      {{- $prev = merge $prev (dict $name (slice $x $ly)) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+<div class="not-prose mli-demo mli-rm" id="mli-rm" data-config="{{ jsonify $d }}" data-x0="{{ $x0 }}" data-x1="{{ $x1 }}" data-y0="{{ $y0 }}" data-y1="{{ $y1 }}" data-lmax="{{ $lmax }}">
+<div class="mli-demo-label">Live · room on the circle, level by level</div>
+<div id="mli-rm-controls" hidden>
+<div class="mli-rag-qs" role="group" aria-label="Children per node">
+<span class="mli-bits-lab">Children per node:</span>{{ range $v := slice 2 3 4 }}<button class="mli-rag-q{{ if eq (float $v) $b }} is-on{{ end }}" type="button" aria-pressed="{{ eq (float $v) $b }}" data-b="{{ $v }}" disabled>{{ $v }}</button>{{ end }}
+</div>
+<label class="mli-tv-slider"><span class="mli-bits-lab">Distance between levels</span><input type="range" id="mli-rm-edge" min="0.5" max="2.5" step="0.1" value="{{ $L }}" disabled><output id="mli-rm-edge-out">{{ printf "%.1f" $L }}</output></label>
+</div>
+<div class="mli-fc-legend"><span class="mli-rm-item"><span class="mli-rm-key is-nodes"></span>Nodes at that level</span><span class="mli-rm-item"><span class="mli-rm-key is-hyp"></span>Room in hyperbolic space</span><span class="mli-rm-item"><span class="mli-rm-key is-flat"></span>Room in flat space</span></div>
+<svg class="mli-fc-svg" id="mli-rm-svg" viewBox="0 0 480 252" role="img" aria-labelledby="mli-rm-title">
+<title id="mli-rm-title">Log-scale chart over {{ $K }} levels: nodes per level and room on a hyperbolic circle both grow exponentially; room on a flat circle grows only in proportion to the level.</title>
+{{- range $g := slice (slice 0 "1") (slice 2 "100") (slice 4 "10,000") (slice 6 "1 million") (slice 8 "100 million") }}
+{{- $y := sub $y0 (mul (sub $y0 $y1) (div (float (index $g 0)) $lmax)) }}
+<line class="mli-fc-grid" x1="{{ $x0 }}" x2="{{ $x1 }}" y1="{{ $y }}" y2="{{ $y }}"/><text class="mli-fc-tick" x="{{ sub $x0 6 }}" y="{{ add $y 4 }}" text-anchor="end">{{ index $g 1 }}</text>
+{{- end }}
+{{- range $k := slice 1 3 6 9 12 }}
+{{- $x := add $x0 (mul (sub $x1 $x0) (div (float (sub $k 1)) (sub $K 1))) }}
+<text class="mli-fc-tick" x="{{ $x }}" y="{{ add $y0 16 }}" text-anchor="middle">{{ $k }}</text>
+{{- end }}
+<text class="mli-fc-axis" x="{{ div (add $x0 $x1) 2 }}" y="248" text-anchor="middle">Level below the root</text>
+<polyline class="mli-rm-line is-flat" id="mli-rm-flat" points="{{ delimit $series.flat " " }}"/>
+<polyline class="mli-rm-line is-hyp" id="mli-rm-hyp" points="{{ delimit $series.hyp " " }}"/>
+<polyline class="mli-rm-line is-nodes" id="mli-rm-nodes" points="{{ delimit $series.nodes " " }}"/>
+</svg>
+<p class="mli-lr-stage" id="mli-rm-say" aria-live="polite">{{ if $flatOut }}Flat space runs out of room at level {{ $flatOut }}{{ else }}Flat space keeps up for all {{ $K }} levels{{ end }}; {{ if $hypOut }}hyperbolic space runs out at level {{ $hypOut }}{{ else }}hyperbolic space keeps up for all {{ $K }}{{ end }}.</p>
+<noscript><p class="mli-caption">JavaScript is off, so this shows one tree. With it on, you can change the children per node and the distance between levels.</p></noscript>
+<div class="mli-caption">"Room" counts nodes spaced one unit apart on the circle at that level's distance r from the root: 2πr in flat space and 2π sinh r in hyperbolic space (curvature −1), where r is the level times the distance between levels. Lines stop at 100 million, the top of the chart. Hyperbolic room keeps up for good once e to the power of the distance between levels is at least the children per node; flat room never keeps up for long.</div>
+</div>

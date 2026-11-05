@@ -1,0 +1,50 @@
+{{- /*
+  ml-hamming-code — the (7,4) Hamming code from Hamming's 1950 paper. Set 4
+  data bits, see the 3 check bits worked out, flip any bit of the code word,
+  and watch which checks fail and the position they add up to. A switch adds
+  an eighth, overall parity bit, which turns two flips from a wrong fix into
+  a detected error.
+
+    {{< ml/hamming-code >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml/assets.html (css/pages/ml/demos.css, scripts/pages/ml/
+  hamming-code.ts). The starting data lives in data/ml/hamming-code.yaml; the
+  code word is worked out here too, the same way as the script, so the demo
+  reads with JS off.
+*/ -}}
+{{- $d := index site.Data.ml "hamming-code" -}}
+{{- $b := dict "3" (index $d.data 0) "5" (index $d.data 1) "6" (index $d.data 2) "7" (index $d.data 3) -}}
+{{- $checks := dict "1" (slice 1 3 5 7) "2" (slice 2 3 6 7) "4" (slice 4 5 6 7) -}}
+{{- range $c := slice 1 2 4 -}}
+  {{- $sum := 0 }}{{ range index $checks (string $c) }}{{ if ne . $c }}{{ $sum = add $sum (index $b (string .)) }}{{ end }}{{ end -}}
+  {{- $b = merge $b (dict (string $c) (mod $sum 2)) -}}
+{{- end -}}
+<div class="not-prose mli-demo mli-hc" id="mli-hc" data-start="{{ jsonify $d.data }}">
+<div class="mli-demo-label">Live · a code that finds its own mistake</div>
+<div id="mli-hc-controls" hidden>
+<div class="mli-rag-qs" role="group" aria-label="Data bits">
+<span class="mli-bits-lab">Data:</span>
+{{- range $i, $v := $d.data }}<button class="mli-hc-data" type="button" data-bit="{{ $i }}" aria-label="Data bit {{ add $i 1 }} (position {{ index (slice 3 5 6 7) $i }}): {{ $v }}. Press to change it." disabled>{{ $v }}</button>{{ end -}}
+</div>
+<div class="mli-rag-qs" role="group" aria-label="Options">
+<button class="mli-rag-q" type="button" aria-pressed="false" id="mli-hc-extra" disabled>Add an overall parity bit</button>
+<button class="mli-rag-q" type="button" id="mli-hc-clear" disabled>Undo all flips</button>
+</div>
+</div>
+<div class="mli-hc-word" id="mli-hc-word">
+<div class="mli-hc-cell is-extra" data-pos="0" hidden><span class="mli-hc-pos">+</span><span class="mli-hc-bit">0</span><span class="mli-hc-kind">all</span></div>
+{{- range $p := seq 1 7 }}{{ $isCheck := in (slice 1 2 4) $p }}<div class="mli-hc-cell{{ if $isCheck }} is-check{{ else }} is-data{{ end }}" data-pos="{{ $p }}"><span class="mli-hc-pos">{{ $p }}</span><span class="mli-hc-bit">{{ index $b (string $p) }}</span><span class="mli-hc-kind">{{ if $isCheck }}check{{ else }}data{{ end }}</span></div>{{ end -}}
+</div>
+<p class="mli-wc-follow" id="mli-hc-hint" hidden>Click any bit of the code word to flip it, as noise would.</p>
+<ul class="mli-hc-checks" id="mli-hc-checks">
+{{- range $c := slice 1 2 4 }}{{ $ones := 0 }}{{ range index $checks (string $c) }}{{ $ones = add $ones (index $b (string .)) }}{{ end -}}
+<li class="mli-hc-check is-pass" data-check="{{ $c }}"><strong>Check {{ $c }}</strong> covers positions {{ delimit (index $checks (string $c)) ", " " and " }}: {{ $ones }} ones, even, <span class="mli-hc-verdict">passes</span></li>
+{{- end }}
+<li class="mli-hc-check is-pass" data-check="0" hidden><strong>Overall</strong> covers all 8 bits: <span class="mli-hc-verdict">passes</span></li>
+</ul>
+<p class="mli-lr-stage" id="mli-hc-say" aria-live="polite">Data {{ delimit $d.data "" }} becomes the code word {{ range $p := seq 1 7 }}{{ index $b (string $p) }}{{ end }}. Every check passes, so the failed checks add up to 0: no error.</p>
+<div class="mli-et-actions" id="mli-hc-actions" hidden><button class="mli-rag-q" type="button" id="mli-hc-fix" disabled>Flip the bit the checks point at</button></div>
+<noscript><p class="mli-caption">JavaScript is off, so this shows the code word with nothing flipped. With it on, you can change the data, flip any bit, and fix it from the checks.</p></noscript>
+<div class="mli-caption">The arithmetic is real: this is the code from Hamming's 1950 paper, with checks in positions 1, 2 and 4. Each check makes the count of 1s in the positions it covers even. Check bits are drawn with a dashed border, data bits solid, and flipped bits are striped. The extra overall bit makes the count of 1s across all eight even, which lets the code tell one flip, which it can fix, from two, which it can only detect.</div>
+</div>

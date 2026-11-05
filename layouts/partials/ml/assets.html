@@ -12,7 +12,7 @@
   hidden and fade in (scripts/pages/ml/reveal.js). If the bundle never runs, the
   failsafe drops the class so the page can't be left invisible.
 */ -}}
-{{- $demos := slice "ml/digits" "ml/mlops-loop" "ml/garbage-in" "ml/drift" "ml/load" "ml/cost" "ml/tokens" "ml/rag" "ml/agent" "ml/bits" "ml/timeline" "ml/references" "ml/decide" "ml/calibration" "ml/cutoff" "ml/inject" "ml/roofline" "ml/threats" "ml/govflow" "ml/route" "ml/parallel" "ml/checkpoint" "ml/judge" "ml/reward" "ml/temperature" "ml/decode" "ml/breakeven" "ml/descent" "ml/overfit" "ml/chunks" "ml/search" "ml/context" "ml/mandate" "ml/handoff" "ml/horizon" "ml/wire" "ml/swarm" "ml/clocks" "ml/hrr" "ml/convolve" -}}
+{{- $demos := slice "ml/digits" "ml/mlops-loop" "ml/garbage-in" "ml/drift" "ml/load" "ml/cost" "ml/tokens" "ml/rag" "ml/agent" "ml/bits" "ml/timeline" "ml/references" "ml/decide" "ml/calibration" "ml/cutoff" "ml/inject" "ml/roofline" "ml/threats" "ml/govflow" "ml/route" "ml/parallel" "ml/checkpoint" "ml/judge" "ml/reward" "ml/temperature" "ml/decode" "ml/breakeven" "ml/descent" "ml/overfit" "ml/chunks" "ml/search" "ml/context" "ml/mandate" "ml/handoff" "ml/horizon" "ml/wire" "ml/swarm" "ml/clocks" "ml/hrr" "ml/convolve" "ml/embedding-table" "ml/token-ids" "ml/nearest-rows" "ml/basis-grid" "ml/dct-block" "ml/wrap-clock" "ml/signed-clock" "ml/lifting-row" "ml/lifting-image" "ml/fwht-butterfly" "ml/fft-cost" "ml/task-vectors" "ml/merge-symmetry" "ml/summed-area" "ml/fenwick" "ml/rolling-checksum" "ml/merkle-compare" "ml/error-checks" "ml/hamming-code" "ml/room-on-the-circle" "ml/poincare-tree" "ml/mutation-test" "ml/memory-sampling" -}}
 {{- $used := false -}}
 {{- range $demos }}{{ if $.HasShortcode . }}{{ $used = true }}{{ end }}{{ end -}}
 {{- if $used -}}
@@ -27,5 +27,15 @@
     })();
   </script>
   {{- $js := resources.Get "scripts/pages/ml/main.js" | js.Build (dict "minify" true) | fingerprint -}}
-  <script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
+  {{- /* The embedding-table demo's Three.js scene is its own ES module, imported
+       only when the demo scrolls near; its URL rides on this tag for
+       scripts/pages/ml/embedding-table.ts to read. Built here, not in the
+       shortcode: a bundle built inside a shortcode wasn't published after a
+       dev-server rebuild (404 until restart). */ -}}
+  {{- $sceneURL := "" -}}
+  {{- if $.HasShortcode "ml/embedding-table" -}}
+    {{- $scene := resources.Get "scripts/pages/ml/embedding-table-3d.ts" | js.Build (dict "format" "esm" "minify" true "targetPath" "js/ml/embedding-table-3d.js") | fingerprint -}}
+    {{- $sceneURL = $scene.RelPermalink -}}
+  {{- end -}}
+  <script defer src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"{{ with $sceneURL }} data-et-scene="{{ . }}"{{ end }}></script>
 {{- end -}}

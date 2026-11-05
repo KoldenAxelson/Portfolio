@@ -1,0 +1,18 @@
+# A made-up memory trace for {{< ml/memory-sampling >}}: a program's resident
+# memory over 10 seconds, as steps [start second, end second, MB]. The true
+# peak is what Linux's VmHWM would report. The demo samples the trace every
+# "interval" seconds, starting at "offset"; the first values render with JS off.
+# All times are in seconds to the hundredth: checks and step edges are compared
+# in hundredths, so a check exactly on an edge counts for the later step.
+seconds: 10
+steps:
+  - [0.0, 1.0, 80]
+  - [1.0, 2.5, 220]
+  - [2.5, 4.0, 260]
+  - [4.0, 4.3, 610]
+  - [4.3, 6.0, 300]
+  - [6.0, 6.15, 940]
+  - [6.15, 8.5, 320]
+  - [8.5, 10.0, 140]
+interval: 1.0
+offset: 0.5

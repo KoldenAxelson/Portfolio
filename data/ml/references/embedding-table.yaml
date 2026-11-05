@@ -1,0 +1,53 @@
+# References for content/articles/embedding-table.md, rendered by {{< ml/references >}}.
+# Listed in the order the article reaches them. Numbering is automatic.
+
+- tag: GPT-2
+  title: Language Models are Unsupervised Multitask Learners
+  url: https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf
+  meta: Radford, Wu, Child, Luan, Amodei & Sutskever · OpenAI · 2019
+  note: The GPT-2 paper. Section 2.2 covers byte-level BPE and its base vocabulary of 256; Section 2.3 sets the vocabulary at 50,257 and the context at 1,024 tokens; Table 2 lists the four model sizes, 768 to 1,600 numbers wide.
+- tag: GPT-2
+  title: tiktoken
+  url: https://github.com/openai/tiktoken
+  meta: OpenAI · GitHub
+  note: OpenAI's tokenizer library. Its gpt2 encoding gives the token IDs quoted in the article (" cat" is 3797).
+- tag: GPT-2
+  title: gpt-2/src/model.py
+  url: https://github.com/openai/gpt-2/blob/master/src/model.py
+  meta: OpenAI · GitHub
+  note: The token table (wte) and position table (wpe), both looked up with tf.gather and added together; the logits come from multiplying by wte again, which is the weight tying.
+- tag: GPT-2
+  title: openai-community/gpt2
+  url: https://huggingface.co/openai-community/gpt2
+  meta: Hugging Face
+  note: The released GPT-2 small weights. The row values, nearest neighbours and parameter count in the article were computed from this copy.
+- tag: Lookup
+  title: torch.nn.Embedding
+  url: https://docs.pytorch.org/docs/2.15/generated/torch.nn.Embedding.html
+  meta: PyTorch 2.15 docs
+  note: '"A simple lookup table that stores embeddings of a fixed dictionary and size."'
+- tag: History
+  title: A Neural Probabilistic Language Model
+  url: https://www.jmlr.org/papers/volume3/bengio03a/bengio03a.pdf
+  meta: Bengio, Ducharme, Vincent & Jauvin · JMLR 3 · 2003
+  note: One learned vector per word, kept in a single |V| × m matrix and shared across every position in the context.
+- tag: Training
+  title: SolidGoldMagikarp (plus, prompt generation)
+  url: https://www.lesswrong.com/posts/aPeJE8bSo6rAFoLqg/solidgoldmagikarp-plus-prompt-generation
+  meta: Rumbelow & Watkins · LessWrong · February 5, 2023
+  note: Tokens in the GPT-2 and GPT-3 vocabulary that the models can't repeat back, and the guess that they barely took part in training.
+- tag: Order
+  title: Attention Is All You Need
+  url: https://arxiv.org/html/1706.03762v7
+  meta: Vaswani et al. · NIPS 2017
+  note: Section 3.4 shares one weight matrix between the embedding layers and the output; Section 3.5 adds positional encodings because the model has no other way to use word order.
+- tag: Tying
+  title: Using the Output Embedding to Improve Language Models
+  url: https://aclanthology.org/E17-2025/
+  meta: Press & Wolf · EACL 2017
+  note: Recommends tying the input and output embeddings when training language models.
+- tag: GPT-2
+  title: openai/gpt-2 README
+  url: https://github.com/openai/gpt-2
+  meta: OpenAI · GitHub
+  note: Notes that the parameter counts in the original paper and blog posts were wrong, so small was once called 117M.

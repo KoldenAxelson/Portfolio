@@ -1,0 +1,283 @@
+{
+ "_source": "Cosine similarity between rows of GPT-2 small's token table (wte). Built by scripts/ml/build-embedding-table.py; don't edit by hand.",
+ "randomPairs": 20000,
+ "randomAverage": 0.268128,
+ "queries": [
+  {
+   "token": " Monday",
+   "id": 3321,
+   "nearest": [
+    {
+     "token": " Tuesday",
+     "id": 3431,
+     "similarity": 0.889696
+    },
+    {
+     "token": " Thursday",
+     "id": 3635,
+     "similarity": 0.845136
+    },
+    {
+     "token": " Wednesday",
+     "id": 3583,
+     "similarity": 0.843786
+    },
+    {
+     "token": " Friday",
+     "id": 3217,
+     "similarity": 0.820639
+    },
+    {
+     "token": " Sunday",
+     "id": 3502,
+     "similarity": 0.806105
+    },
+    {
+     "token": " Saturday",
+     "id": 3909,
+     "similarity": 0.801117
+    },
+    {
+     "token": "Monday",
+     "id": 23810,
+     "similarity": 0.794462
+    },
+    {
+     "token": "Tuesday",
+     "id": 26133,
+     "similarity": 0.716033
+    }
+   ]
+  },
+  {
+   "token": " seven",
+   "id": 3598,
+   "nearest": [
+    {
+     "token": " six",
+     "id": 2237,
+     "similarity": 0.872052
+    },
+    {
+     "token": " eight",
+     "id": 3624,
+     "similarity": 0.862312
+    },
+    {
+     "token": " five",
+     "id": 1936,
+     "similarity": 0.853234
+    },
+    {
+     "token": " nine",
+     "id": 5193,
+     "similarity": 0.847662
+    },
+    {
+     "token": " four",
+     "id": 1440,
+     "similarity": 0.802265
+    },
+    {
+     "token": " three",
+     "id": 1115,
+     "similarity": 0.778264
+    },
+    {
+     "token": "seven",
+     "id": 26548,
+     "similarity": 0.728517
+    },
+    {
+     "token": "Seven",
+     "id": 31334,
+     "similarity": 0.676715
+    }
+   ]
+  },
+  {
+   "token": " cat",
+   "id": 3797,
+   "nearest": [
+    {
+     "token": " Cat",
+     "id": 5181,
+     "similarity": 0.706558
+    },
+    {
+     "token": " cats",
+     "id": 11875,
+     "similarity": 0.693408
+    },
+    {
+     "token": "Cat",
+     "id": 21979,
+     "similarity": 0.642361
+    },
+    {
+     "token": "cat",
+     "id": 9246,
+     "similarity": 0.603214
+    },
+    {
+     "token": " dog",
+     "id": 3290,
+     "similarity": 0.54979
+    },
+    {
+     "token": " Cats",
+     "id": 28997,
+     "similarity": 0.535374
+    },
+    {
+     "token": " CAT",
+     "id": 38348,
+     "similarity": 0.524634
+    },
+    {
+     "token": " kitten",
+     "id": 42143,
+     "similarity": 0.501223
+    }
+   ]
+  },
+  {
+   "token": " red",
+   "id": 2266,
+   "nearest": [
+    {
+     "token": " Red",
+     "id": 2297,
+     "similarity": 0.692421
+    },
+    {
+     "token": "Red",
+     "id": 7738,
+     "similarity": 0.645333
+    },
+    {
+     "token": " blue",
+     "id": 4171,
+     "similarity": 0.639939
+    },
+    {
+     "token": " yellow",
+     "id": 7872,
+     "similarity": 0.635727
+    },
+    {
+     "token": " green",
+     "id": 4077,
+     "similarity": 0.595044
+    },
+    {
+     "token": " purple",
+     "id": 14032,
+     "similarity": 0.587934
+    },
+    {
+     "token": " RED",
+     "id": 23848,
+     "similarity": 0.577485
+    },
+    {
+     "token": " white",
+     "id": 2330,
+     "similarity": 0.556829
+    }
+   ]
+  },
+  {
+   "token": " Paris",
+   "id": 6342,
+   "nearest": [
+    {
+     "token": "Paris",
+     "id": 40313,
+     "similarity": 0.834252
+    },
+    {
+     "token": " France",
+     "id": 4881,
+     "similarity": 0.634406
+    },
+    {
+     "token": " French",
+     "id": 4141,
+     "similarity": 0.581229
+    },
+    {
+     "token": " London",
+     "id": 3576,
+     "similarity": 0.578809
+    },
+    {
+     "token": "France",
+     "id": 28572,
+     "similarity": 0.571309
+    },
+    {
+     "token": " Copenhagen",
+     "id": 31104,
+     "similarity": 0.570484
+    },
+    {
+     "token": " Brussels",
+     "id": 16445,
+     "similarity": 0.546236
+    },
+    {
+     "token": "French",
+     "id": 24111,
+     "similarity": 0.540008
+    }
+   ]
+  },
+  {
+   "token": " king",
+   "id": 5822,
+   "nearest": [
+    {
+     "token": " kings",
+     "id": 21557,
+     "similarity": 0.732506
+    },
+    {
+     "token": " King",
+     "id": 2677,
+     "similarity": 0.696131
+    },
+    {
+     "token": " queen",
+     "id": 16599,
+     "similarity": 0.657258
+    },
+    {
+     "token": "King",
+     "id": 15708,
+     "similarity": 0.60351
+    },
+    {
+     "token": " prince",
+     "id": 19716,
+     "similarity": 0.590251
+    },
+    {
+     "token": " monarch",
+     "id": 26464,
+     "similarity": 0.580889
+    },
+    {
+     "token": " emperor",
+     "id": 23129,
+     "similarity": 0.556866
+    },
+    {
+     "token": " ruler",
+     "id": 22740,
+     "similarity": 0.55069
+    }
+   ]
+  }
+ ]
+}

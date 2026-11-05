@@ -1,0 +1,10 @@
+# Settings for {{< ml/poincare-tree >}}: a complete tree (every node has
+# "branching" children, "depth" levels below the root) laid out two ways. The
+# Poincaré layout puts each child at hyperbolic distance "edge" from its parent
+# (Sarkar's construction, as Sala et al. 2018 describe it, in two dimensions; a
+# Möbius map stands in for their reflection and gives the same points); the flat one
+# puts level k on a circle of radius k. The first settings render with JS off,
+# laid out in partials/ml/poincare-node.html; poincare-tree.ts does the same.
+branching: 2
+depth: 4
+edge: 1.5

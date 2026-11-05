@@ -1,0 +1,18 @@
+# Grid and preset rectangles for {{< ml/summed-area >}}. The values are made
+# up (8 × 8 single digits). Rectangles are [top row, left column, bottom row,
+# right column], counted from 0 and inclusive; the first one renders with JS
+# off. The template and summed-area.ts both build the table from these rows.
+rows:
+  - [3, 1, 4, 1, 5, 9, 2, 6]
+  - [5, 3, 5, 8, 9, 7, 9, 3]
+  - [2, 3, 8, 4, 6, 2, 6, 4]
+  - [3, 3, 8, 3, 2, 7, 9, 5]
+  - [0, 2, 8, 8, 4, 1, 9, 7]
+  - [1, 6, 9, 3, 9, 9, 3, 7]
+  - [5, 1, 0, 5, 8, 2, 0, 9]
+  - [7, 4, 9, 4, 4, 5, 9, 2]
+rects:
+  - { name: "A 4 × 4 block", box: [2, 1, 5, 4] }
+  - { name: "A tall strip", box: [0, 6, 7, 6] }
+  - { name: "Touching the top", box: [0, 2, 2, 6] }
+  - { name: "The whole grid", box: [0, 0, 7, 7] }

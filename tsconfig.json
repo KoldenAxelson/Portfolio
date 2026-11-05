@@ -1,5 +1,5 @@
 {
-  "//": "Editor type-checking only. The build uses Hugo's esbuild (no tsc step).",
+  "//": "Editor type-checking only. The build uses Hugo's esbuild (no tsc step). paths: the vendored Three.js build has no types, so its @types package (fetched into bin/ by `make typecheck`) stands in for it.",
   "compilerOptions": {
     "target": "ES2018",
     "module": "ESNext",
@@ -12,7 +12,10 @@
     "skipLibCheck": true,
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
-    "noEmit": true
+    "noEmit": true,
+    "paths": {
+      "vendor/three/*": ["./bin/three-types/index.d.ts"]
+    }
   },
   "include": [
     "assets/scripts/site/**/*.ts",

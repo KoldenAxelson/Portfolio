@@ -1,0 +1,13 @@
+# Runs for {{< ml/merge-symmetry >}}: a made-up two-weight model,
+# output = weight 1 × weight 2 × input, trained to output "target" × input.
+# Each run is real gradient descent ("steps" steps of size "rate") from its
+# start, worked out in the template (for JS off) and again in
+# merge-symmetry.ts. The first pair renders with JS off.
+target: 2.0
+steps: 60
+rate: 0.1
+pairs:
+  - name: "Nearby starts"
+    starts: [[1.3, 0.9], [0.8, 1.5]]
+  - name: "Separate starts"
+    starts: [[0.5, 1.0], [-0.9, -0.4]]

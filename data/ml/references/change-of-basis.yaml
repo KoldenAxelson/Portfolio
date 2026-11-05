@@ -1,0 +1,38 @@
+# References for content/articles/change-of-basis.md, rendered by {{< ml/references >}}.
+# Listed in the order the article reaches them. Numbering is automatic.
+
+- tag: Intuition
+  title: Change of basis
+  url: https://www.3blue1brown.com/lessons/change-of-basis
+  meta: 3Blue1Brown · Essence of Linear Algebra, chapter 13 · 2016
+  note: Coordinates depend on the basis you pick, space has no built-in grid, and Jennifer's basis vectors as the columns of the matrix that translates her coordinates into ours (its inverse goes back).
+- tag: Textbook
+  title: Bases as Coordinate Systems
+  url: https://textbooks.math.gatech.edu/ila/bases-as-coord-systems.html
+  meta: Margalit & Rabinoff · Interactive Linear Algebra
+  note: A basis as a coordinate system, and B-coordinates as the unique weights that build a vector from the basis vectors.
+- tag: Textbook
+  title: Basis and Dimension
+  url: https://textbooks.math.gatech.edu/ila/dimension.html
+  meta: Margalit & Rabinoff · Interactive Linear Algebra
+  note: A basis spans the space and is linearly independent; every basis of a space has the same number of vectors, and that number is the dimension.
+- tag: Intuition
+  title: Eigenvectors and eigenvalues
+  url: https://www.3blue1brown.com/lessons/eigenvalues
+  meta: 3Blue1Brown · Essence of Linear Algebra, chapter 14 · 2016
+  note: In an eigenbasis the matrix is diagonal, which makes its 100th power easy to compute; not every transformation has one.
+- tag: JPEG
+  title: ITU-T T.81 (ISO/IEC 10918-1), the JPEG standard
+  url: https://www.w3.org/Graphics/JPEG/itu-t81.pdf
+  meta: ITU · 1992
+  note: Samples grouped into 8 × 8 blocks, each turned by the forward DCT into 64 coefficients, then quantized; the DCT-based modes are lossy.
+- tag: JPEG
+  title: "Lecture 31: Change of basis; image compression"
+  url: https://ocw.mit.edu/courses/18-06-linear-algebra-spring-2010/resources/lecture-31-change-of-basis-image-compression/
+  meta: Gilbert Strang · MIT 18.06 Linear Algebra · OpenCourseWare
+  note: JPEG's 8 × 8 blocks as a change of basis that loses nothing, then thresholding the small coefficients; what makes a good basis (fast, and a few vectors capture the signal).
+- tag: Networks
+  title: A Mathematical Framework for Transformer Circuits
+  url: https://transformer-circuits.pub/2021/framework/index.html
+  meta: Elhage et al. · Anthropic · 2021
+  note: The residual stream has no privileged basis and could be rotated, with every matrix that touches it, without changing the model's behavior; tokens, attention patterns and MLP activations do have one.

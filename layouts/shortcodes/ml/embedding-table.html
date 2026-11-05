@@ -1,0 +1,50 @@
+{{- /*
+  ml-embedding-table — GPT-2's real token table: pick a token, see its row
+  number, and watch that row get copied out and laid down as 768 bars.
+
+    {{< ml/embedding-table >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml/assets.html (css/pages/ml/demos.css, scripts/pages/ml/
+  embedding-table.ts). The Three.js scene is its own bundle, built by that
+  partial (its URL is on the bundle's script tag, data-et-scene);
+  embedding-table.ts imports it only when the demo scrolls near. Rows come from data/ml/embedding-table.json
+  (scripts/ml/build-embedding-table.py); the tower image from the same script.
+  The table below is the demo with JS or WebGL off, so it always ships.
+*/ -}}
+{{- $data := index site.Data.ml "embedding-table" -}}
+{{- $first := index $data.tokens 0 -}}
+<div class="not-prose mli-demo mli-et" id="mli-et" data-tower="{{ "ml/embedding-table/tower.png" | relURL }}" data-rows="{{ $data.rows }}" data-width="{{ $data.width }}" data-step="{{ $data.valueStep }}" data-clip="{{ $data.colourClip }}">
+<div class="mli-demo-label">Live · GPT-2's real embedding table</div>
+<div class="mli-et-picks" role="group" aria-label="Token to look up">
+<span class="mli-bits-lab">“{{ $data.sentence }}”</span>
+{{- range $i, $t := $data.tokens }}{{ if eq $t.group "sentence" }}<button class="mli-rag-q mli-et-pick" type="button" aria-pressed="false" data-pick="{{ $i }}" data-group="{{ $t.group }}" disabled>{{ replace $t.token " " "␣" }}</button>{{ end }}{{ end -}}
+</div>
+<div class="mli-et-picks" role="group" aria-label="More tokens to look up">
+<span class="mli-bits-lab">More rows:</span>
+{{- range $i, $t := $data.tokens }}{{ if ne $t.group "sentence" }}<button class="mli-rag-q mli-et-pick" type="button" aria-pressed="false" data-pick="{{ $i }}" data-group="{{ $t.group }}" disabled>{{ replace $t.token " " "␣" }}</button>{{ end }}{{ end -}}
+</div>
+<div class="mli-et-stage" id="mli-et-stage" hidden>
+<div class="mli-et-tags" aria-hidden="true"></div>
+<div class="mli-et-tip" aria-hidden="true" hidden></div>
+</div>
+<div class="mli-et-actions" id="mli-et-actions" hidden>
+<button class="mli-rag-q" type="button" id="mli-et-play" disabled>Look up the whole sentence</button>
+<button class="mli-rag-q" type="button" id="mli-et-clear" disabled>Clear</button>
+<span class="mli-et-hint">Drag to turn it. Hover the front row to read one number.</span>
+</div>
+<p class="mli-et-read" id="mli-et-read" aria-live="polite">Each token is a row number: “{{ $first.token }}” is row {{ lang.FormatNumber 0 $first.id }}. The table below has the real rows.</p>
+<details class="mli-et-table" id="mli-et-table" open>
+<summary>The rows as a table</summary>
+<table>
+<thead><tr><th scope="col">Token</th><th scope="col">Row</th><th scope="col">First {{ len $first.head }} of its {{ $data.width }} numbers</th></tr></thead>
+<tbody>
+{{- range $i, $t := $data.tokens }}
+<tr data-token="{{ $t.token }}" data-id="{{ $t.id }}" data-values="{{ $t.values }}"><td><code>{{ replace $t.token " " "␣" }}</code></td><td>{{ lang.FormatNumber 0 $t.id }}</td><td>{{ range $j, $v := $t.head }}{{ if $j }}, {{ end }}{{ replace (printf "%.3f" $v) "-" "−" }}{{ end }}, …</td></tr>
+{{- end }}
+</tbody>
+</table>
+</details>
+<noscript><p class="mli-caption">JavaScript is off, so the table above is the demo. With it on, picking a token pulls its row out of a 3D model of the whole table.</p></noscript>
+<div class="mli-caption">Real numbers: every row is GPT-2 small's, from its released weights, and the row numbers come from OpenAI's tokenizer (␣ marks a leading space). The tower is the wrong shape on purpose: the real table is {{ lang.FormatNumber 0 $data.rows }} rows by {{ $data.width }} numbers, about {{ int (math.Round (div $data.rows $data.width)) }} times taller than it is wide, so it's squashed to fit, and its face shows an even sample of {{ $data.towerRows }} rows and {{ $data.towerColumns }} columns. Blue is below zero, red is above, and each bar's height is its number.</div>
+</div>

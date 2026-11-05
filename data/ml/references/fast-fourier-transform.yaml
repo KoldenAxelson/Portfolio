@@ -1,0 +1,48 @@
+# References for content/articles/fast-fourier-transform.md, rendered by {{< ml/references >}}.
+# Listed in the order the article reaches them. Numbering is automatic.
+
+- tag: MP3
+  title: The Use of FFT and MDCT in MP3 Audio Compression
+  url: https://www.math.utah.edu/~gustafso/s2012/2270/web-projects/Guckert-audio-compression-svd-mdct-MP3.pdf
+  meta: John (Jake) Guckert · University of Utah, Math 2270 · 2012
+  note: How an MP3 encoder runs a 1,024-point FFT before its psychoacoustic model. A student write-up of ISO/IEC 11172-3, which is paywalled.
+- tag: History
+  title: Gauss and the History of the Fast Fourier Transform
+  url: https://doi.org/10.1007/BF00348431
+  meta: Heideman, Johnson & Burrus · Archive for History of Exact Sciences 34(3), 265–277 · 1985
+  note: Traces the FFT back to an unpublished Gauss treatise from about 1805, printed only in his collected works, and calls the FFT the most widely used way to compute Fourier transforms. An earlier version ran in IEEE ASSP Magazine, October 1984.
+- tag: FFT
+  title: An Algorithm for the Machine Calculation of Complex Fourier Series
+  url: https://www.ece.ucdavis.edu/~bbaas/281/papers/CooleyTukey.1965.pdf
+  meta: James W. Cooley & John W. Tukey · Mathematics of Computation 19(90), 297–301 · 1965
+  note: The paper that made the FFT famous. The direct sum "would require N² operations"; theirs needs "less than 2N log₂ N". The abstract opens with Yates's method for factorial experiments.
+- tag: Yates
+  title: The Design and Analysis of Factorial Experiments
+  url: https://repository.rothamsted.ac.uk/id/eprint/31748
+  meta: Frank Yates · Imperial Bureau of Soil Science, Technical Communication No. 35 · 1937
+  note: The booklet Knuth cites as the source of Yates's add-and-subtract method.
+- tag: Walsh
+  title: "The Art of Computer Programming, Vol. 2: Seminumerical Algorithms (§4.6.4)"
+  url: https://www-cs-faculty.stanford.edu/~knuth/taocp.html
+  meta: Donald E. Knuth · Addison-Wesley · 3rd ed. 1997
+  note: Walks through Yates's 1937 add-and-subtract method on eight numbers and notes it's often called the Walsh transform.
+- tag: Docs
+  title: numpy.fft.fft
+  url: https://numpy.org/doc/stable/reference/generated/numpy.fft.fft.html
+  meta: NumPy documentation
+  note: Most efficient when the length is a power of 2; asking for a longer transform pads the input with zeros.
+- tag: Primes
+  title: Discrete Fourier transforms when the number of data samples is prime
+  url: https://en.wikipedia.org/wiki/Rader%27s_FFT_algorithm
+  meta: Charles M. Rader · Proceedings of the IEEE 56 · 1968 (linked via Wikipedia)
+  note: Turns a prime-length transform into a convolution, so an FFT can still do it.
+- tag: Intro
+  title: Fast Walsh–Hadamard transform
+  url: https://en.wikipedia.org/wiki/Fast_Walsh%E2%80%93Hadamard_transform
+  meta: Wikipedia
+  note: The divide-and-conquer version with only additions and subtractions, plus a short Python implementation.
+- tag: Intro
+  title: Cooley–Tukey FFT algorithm
+  url: https://en.wikipedia.org/wiki/Cooley%E2%80%93Tukey_FFT_algorithm
+  meta: Wikipedia
+  note: The even/odd split, the twiddle factors and the butterfly diagram, with the history.

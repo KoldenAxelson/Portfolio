@@ -1,0 +1,56 @@
+{{- /*
+  ml-error-checks — the word HELLO as 40 bits, guarded three ways: one parity
+  bit, a sum of the bytes, and an 8-bit CRC. Corrupt it with a preset or by
+  clicking bits, and see which checks notice.
+
+    {{< ml/error-checks >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml/assets.html (css/pages/ml/demos.css, scripts/pages/ml/
+  error-checks.ts). Data lives in data/ml/error-checks.yaml. The first
+  preset's results are worked out here too (CRC-8 via partials/ml/crc8.html),
+  so the demo reads with JS off.
+*/ -}}
+{{- $d := index site.Data.ml "error-checks" -}}
+{{- $msg := $d.message }}{{ $first := index $d.presets 0 -}}
+{{- $bad := slice -}}
+{{- range $i, $byte := $msg -}}
+  {{- $v := $byte -}}
+  {{- with $first.flip }}{{ range . }}{{ if eq (div . 8) $i }}{{ $p := int (math.Pow 2 (sub 7 (mod . 8))) }}{{ if eq (mod (div $v $p) 2) 1 }}{{ $v = sub $v $p }}{{ else }}{{ $v = add $v $p }}{{ end }}{{ end }}{{ end }}{{ end -}}
+  {{- with $first.swap }}{{ if eq $i (index . 0) }}{{ $v = index $msg (index . 1) }}{{ else if eq $i (index . 1) }}{{ $v = index $msg (index . 0) }}{{ end }}{{ end -}}
+  {{- $bad = $bad | append $v -}}
+{{- end -}}
+{{- $ones := dict -}}
+{{- range $name, $bs := dict "a" $msg "b" $bad -}}
+  {{- $n := 0 }}{{ range $bs }}{{ $x := . }}{{ range seq 8 }}{{ $n = add $n (mod $x 2) }}{{ $x = div $x 2 }}{{ end }}{{ end -}}
+  {{- $ones = merge $ones (dict $name $n) -}}
+{{- end -}}
+{{- $sumA := 0 }}{{ range $msg }}{{ $sumA = add $sumA . }}{{ end }}{{ $sumA = mod $sumA 256 -}}
+{{- $sumB := 0 }}{{ range $bad }}{{ $sumB = add $sumB . }}{{ end }}{{ $sumB = mod $sumB 256 -}}
+{{- $crcA := partial "ml/crc8.html" $msg }}{{ $crcB := partial "ml/crc8.html" $bad -}}
+{{- $rows := slice (dict "id" "parity" "name" "Parity bit" "a" (mod $ones.a 2) "b" (mod $ones.b 2)) (dict "id" "sum" "name" "Sum of the bytes (mod 256)" "a" $sumA "b" $sumB) (dict "id" "crc" "name" "CRC-8" "a" $crcA "b" $crcB) -}}
+<div class="not-prose mli-demo mli-ec" id="mli-ec" data-config="{{ jsonify $d }}">
+<div class="mli-demo-label">Live · which checks notice{{ partial "ml/caution.html" (dict "id" "mli-ec-note" "text" "Illustrative sizes. The message is five bytes and the CRC is 8 bits (polynomial 0x07); Ethernet uses a 32-bit CRC over whole frames. The parity, sum and CRC here are worked out for real.") }}</div>
+<div id="mli-ec-controls" hidden>
+<div class="mli-rag-qs" role="group" aria-label="Corruption">
+<span class="mli-bits-lab">Corrupt it:</span>
+{{- range $i, $p := $d.presets }}<button class="mli-rag-q{{ if eq $i 0 }} is-on{{ end }}" type="button" aria-pressed="{{ eq $i 0 }}" data-preset="{{ $i }}" disabled>{{ $p.name }}</button>{{ end -}}
+<button class="mli-rag-q" type="button" id="mli-ec-clear" disabled>Undo it all</button>
+</div>
+<p class="mli-wc-follow">Or click any bit to flip it.</p>
+</div>
+<div class="mli-ec-bytes" id="mli-ec-bytes">
+{{- range $i, $v := $bad }}{{ $o := index $msg $i -}}
+<div class="mli-ec-byte"><span class="mli-ec-char">{{ if and (ge $v 32) (lt $v 127) }}{{ printf "%c" $v }}{{ else }}?{{ end }}</span><span class="mli-ec-bits">{{ range $k := seq 7 -1 0 }}{{ $p := int (math.Pow 2 $k) }}{{ $bit := mod (div $v $p) 2 }}{{ $was := mod (div $o $p) 2 }}<span class="mli-ec-bit{{ if ne $bit $was }} is-flipped{{ end }}" data-index="{{ add (mul $i 8) (sub 7 $k) }}">{{ $bit }}</span>{{ end }}</span><span class="mli-ec-val">{{ $v }}</span></div>
+{{- end -}}
+</div>
+<table class="mli-ec-table">
+<thead><tr><th scope="col">Check</th><th scope="col">Sent</th><th scope="col">Received</th><th scope="col">Verdict</th></tr></thead>
+<tbody>
+{{- range $rows }}{{ $caught := ne .a .b }}<tr id="mli-ec-{{ .id }}" class="{{ if $caught }}is-caught{{ else }}is-missed{{ end }}"><th scope="row">{{ .name }}</th><td class="mli-ec-a">{{ .a }}</td><td class="mli-ec-b">{{ .b }}</td><td class="mli-ec-v">{{ if $caught }}caught{{ else }}missed{{ end }}</td></tr>{{ end -}}
+</tbody>
+</table>
+<p class="mli-wc-follow" id="mli-ec-say" aria-live="polite">{{ $first.name }}: the received word reads “{{ range $bad }}{{ if and (ge . 32) (lt . 127) }}{{ printf "%c" . }}{{ else }}?{{ end }}{{ end }}”. {{ $missed := slice }}{{ range $rows }}{{ if eq .a .b }}{{ $missed = $missed | append .name }}{{ end }}{{ end }}{{ with $missed }}Missed by: {{ delimit . ", " }}.{{ else }}Every check caught it.{{ end }}</p>
+<noscript><p class="mli-caption">JavaScript is off, so this shows the first corruption. With it on, you can try the others or flip any bits yourself.</p></noscript>
+<div class="mli-caption">The message is the word HELLO, five bytes of 8 bits, and bits that changed are striped. Each check is worked out once on what was sent and again on what arrived; if the two differ, the check caught the damage. The sum keeps only its last 8 bits, so HELLO's 372 shows as 116. A check that missed would let the damaged word through as if it were fine.</div>
+</div>

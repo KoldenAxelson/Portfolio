@@ -1,0 +1,6 @@
+# Data for {{< ml/signed-clock >}} (layouts/shortcodes/ml/signed-clock.html) on
+# content/articles/wrap-around-math.md. The hand starts on the largest signed
+# number, one step below the halfway point.
+bits: 4
+labels: signed
+bitsChoices: [3, 4, 8]

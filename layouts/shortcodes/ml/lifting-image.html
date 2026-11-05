@@ -1,0 +1,23 @@
+{{- /*
+  ml-lifting-image — a small made-up picture run through lossless JPEG 2000's
+  5/3 lifting steps one level at a time, with a bits-per-pixel estimate and a
+  check that every pixel comes back.
+
+    {{< ml/lifting-image >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml/assets.html (css/pages/ml/demos.css, scripts/pages/ml/
+  lifting-image.ts, which draws the picture and uses lifting.ts).
+*/ -}}
+<div class="not-prose mli-demo mli-li" id="mli-li">
+<div class="mli-demo-label">Live · a picture, a level at a time{{ partial "ml/caution.html" (dict "id" "mli-li-note" "text" "Illustrative picture, and an estimate. The 32 × 32 picture is made up. The transform and the undo check are real; the bits figure is a simple estimate (how often each number appears), not the size of a real JPEG 2000 file, which also has headers and a cleverer coder.") }}</div>
+<div class="mli-li-panels" id="mli-li-panels" hidden>
+<figure><canvas id="mli-li-picture" width="32" height="32" aria-label="The made-up picture: sky, sun, a roof and the ground"></canvas><figcaption>The picture</figcaption></figure>
+<figure><canvas id="mli-li-transform" width="32" height="32" aria-label="The same numbers after the lifting steps"></canvas><figcaption>After lifting: smooth part top left, details elsewhere (mid-grey is zero)</figcaption></figure>
+</div>
+<div class="mli-row" id="mli-li-controls" hidden><label for="mli-li-levels">Levels: <span class="mli-val" id="mli-li-levels-v">1</span></label><input class="mli-range" id="mli-li-levels" type="range" min="0" max="3" step="1" value="1" disabled /></div>
+<p class="mli-tok-stat" id="mli-li-stat" aria-live="polite"></p>
+<p class="mli-lr-check" id="mli-li-check" aria-live="polite"></p>
+<noscript><p class="mli-caption">JavaScript is off, so the picture can't be drawn. With it on, a small picture is lifted a level at a time, and the page checks that undoing gives back every pixel.</p></noscript>
+<div class="mli-caption">Each level runs the predict and update steps down every column, then along every row, as JPEG 2000 does, and the next level repeats that on the smooth top-left quarter. Details are drawn four times stronger than they are, clipped at black and white, so you can see them.</div>
+</div>

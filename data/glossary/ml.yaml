@@ -189,8 +189,9 @@ benchmark:
   term: Benchmark
   aliases: ['benchmarks']
   definition: >-
-    A public, fixed [[test-set|test set]] that everyone scores their models on,
-    so results can be compared.
+    A fixed test, run the same way every time, so results can be compared:
+    for models, usually a public [[test-set|test set]]; for software, a
+    workload that gets timed or measured.
 
 f1-score:
   term: F1 Score
@@ -952,6 +953,87 @@ byte-pair-encoding:
     A way to learn how to split text into [[token|tokens]] from data, by merging
     the most common pairs of characters over and over.
 
+tokenizer:
+  term: Tokenizer
+  aliases: ['tokenizers']
+  definition: >-
+    The program that splits text into [[token|tokens]] and swaps each one for
+    its [[token-id|token ID]] before a model sees it.
+
+vocabulary:
+  term: Vocabulary
+  aliases: ['vocab']
+  definition: >-
+    The fixed list of every [[token|token]] a model can read or write, one
+    entry per row of its [[embedding-table|embedding table]].
+  notes:
+    - GPT-2's vocabulary has 50,257 tokens.
+
+token-id:
+  term: Token ID
+  aliases: ['token IDs']
+  definition: >-
+    A [[token|token]]'s number in the [[vocabulary|vocabulary]], which is also
+    its row number in the [[embedding-table|embedding table]].
+  notes:
+    - >-
+      In GPT-2, " cat" (with its leading space) is 3797 and "cat" without the
+      space is 9246: two different rows.
+
+embedding-table:
+  term: Embedding Table
+  aliases: ['embedding tables', 'embedding matrix', 'token embedding table']
+  definition: >-
+    A table of learned numbers with one row per [[token|token]] in the
+    [[vocabulary|vocabulary]]; reading a token means copying its row.
+  notes:
+    - >-
+      Each row is that token's [[embedding|embedding]]. GPT-2's smallest model
+      has 50,257 rows of 768 numbers each, about 38.6 million
+      [[weights|weights]] in all.
+
+one-hot:
+  term: One-Hot Vector
+  aliases: ['one-hot', 'one-hot vectors']
+  definition: >-
+    A list of zeros with a single 1, at the position of the item it stands
+    for.
+  notes:
+    - >-
+      Multiplying a one-hot vector by an [[embedding-table|embedding table]]
+      gives back exactly one row, which is why a lookup can skip the
+      multiplication.
+
+positional-embedding:
+  term: Positional Embedding
+  aliases: ['positional embeddings', 'position embedding', 'position embeddings']
+  definition: >-
+    A learned list of numbers for each position in the input, added to each
+    [[token|token]]'s row so the model knows where in the text it sits.
+  notes:
+    - >-
+      Without them, a [[transformer|Transformer]] has no other way to use word
+      order. GPT-2 keeps a second table with 1,024 rows, one per position.
+
+logits:
+  term: Logits
+  aliases: ['logit']
+  definition: >-
+    The raw scores a language model gives every [[token|token]] in its
+    [[vocabulary|vocabulary]] for being the next one, before they're turned
+    into probabilities.
+
+weight-tying:
+  term: Weight Tying
+  aliases: ['tied embeddings']
+  definition: >-
+    Using the same [[embedding-table|embedding table]] at both ends of a model:
+    to read tokens in, and to score [[logits|candidates]] for the next one.
+  notes:
+    - >-
+      GPT-2 does it, and so did the original [[transformer|Transformer]]. It
+      saves a second table the size of the first.
+
 rag:
   term: Retrieval-Augmented Generation (RAG)
   definition: >-
@@ -965,8 +1047,13 @@ rag:
 embedding:
   term: Embedding
   definition: >-
-    A list of numbers that stands for the meaning of a piece of text, so similar
-    texts land close together.
+    A list of numbers that stands for a thing, such as a word, a piece of text
+    or a node in a graph, so that related things land close together.
+  notes:
+    - >-
+      A single [[token|token]]'s embedding is its row in the model's
+      [[embedding-table|embedding table]]. Search systems usually embed a whole
+      passage at once instead.
 
 vector-database:
   term: Vector Database
@@ -984,8 +1071,9 @@ chunking:
 cosine-similarity:
   term: Cosine Similarity
   definition: >-
-    A score for how closely two [[embedding|embeddings]] point in the same
-    direction: the closer to 1, the more alike their meaning.
+    A score for how closely two lists of numbers, such as two
+    [[embedding|embeddings]], point the same way: 1 for the same direction,
+    near 0 for unrelated ones.
 
 bm25:
   term: BM25
@@ -1625,6 +1713,11 @@ fft:
   definition: >-
     A fast way to rewrite a list of numbers as the waves that add up to it,
     where [[circular-convolution|convolution]] becomes plain multiplication.
+  notes:
+    - >-
+      It gets the same answer as the direct sum, give or take rounding, in
+      about N · log₂ N steps instead of N², by reusing shared pieces rather
+      than skipping any.
 
 neuro-symbolic:
   term: Neuro-Symbolic
@@ -1632,3 +1725,506 @@ neuro-symbolic:
   definition: >-
     Combining a learned [[neural-network|neural network]] with explicit symbols
     and rules, to get learning from data and reasoning you can inspect.
+
+# ── Linear algebra ───────────────────────────────────────────────────
+
+vector:
+  term: Vector
+  aliases: ['vectors']
+  definition: >-
+    An arrow with a length and a direction, written down as a list of numbers
+    once you've picked a [[basis|basis]].
+
+basis-vector:
+  term: Basis Vector
+  aliases: ['basis vectors']
+  definition: >-
+    One of the reference arrows a [[basis|basis]] is made of; every other
+    [[vector|vector]] is described as some amount of each.
+
+coordinates:
+  term: Coordinates
+  aliases: ['coordinate']
+  definition: >-
+    The amounts of each [[basis-vector|basis vector]] it takes to build a
+    [[vector|vector]]: "three east, four north" is (3, 4).
+  notes:
+    - >-
+      Change the basis and the coordinates change, even though the vector
+      itself doesn't move.
+
+linear-combination:
+  term: Linear Combination
+  aliases: ['linear combinations']
+  definition: >-
+    A sum of [[vector|vectors]], each multiplied by a number first: 3 × east
+    + 4 × north.
+
+standard-basis:
+  term: Standard Basis
+  definition: >-
+    The default [[basis|basis]]: arrows of length 1 along each axis, like
+    east and north on a map.
+
+basis:
+  term: Basis
+  aliases: ['bases']
+  definition: >-
+    A set of reference arrows that can reach every point in a space, with no
+    arrow redundant, so every point has exactly one set of
+    [[coordinates|coordinates]].
+  notes:
+    - >-
+      Formally: the arrows span the space and are
+      [[linear-independence|linearly independent]]. A space has infinitely many
+      bases, and they all have the same number of arrows, its
+      [[dimension|dimension]].
+
+linear-independence:
+  term: Linear Independence
+  aliases: ['linearly independent']
+  definition: >-
+    When no [[vector|vector]] in a set can be built from the others, so none
+    of them is redundant.
+
+dimension:
+  term: Dimension
+  aliases: ['dimensions']
+  definition: >-
+    The number of arrows in any [[basis|basis]] of a space: how many numbers
+    it takes to say where a point is.
+
+change-of-basis:
+  term: Change of Basis
+  definition: >-
+    Describing the same [[vector|vectors]] with a different
+    [[basis|basis]]: new [[coordinates|coordinates]], same points, same number
+    of numbers.
+
+diagonal-matrix:
+  term: Diagonal Matrix
+  aliases: ['diagonal']
+  definition: >-
+    A [[matrix|matrix]] that is zero everywhere off the line from top left
+    to bottom right, so it just scales each [[basis-vector|basis vector]] by
+    its own number.
+
+matrix:
+  term: Matrix
+  aliases: ['matrices']
+  definition: >-
+    A grid of numbers. Multiplying a [[vector|vector]] by one gives a new
+    vector, so a matrix can describe a transformation or a conversion between
+    two [[basis|bases]].
+
+inverse-matrix:
+  term: Inverse Matrix
+  aliases: ['inverse']
+  definition: >-
+    The [[matrix|matrix]] that undoes another one: multiply by both and you're
+    back where you started.
+  notes:
+    - Only exists for a square matrix that doesn't squash any direction flat.
+
+change-of-basis-matrix:
+  term: Change-of-Basis Matrix
+  definition: >-
+    The [[matrix|matrix]] whose columns are the new
+    [[basis-vector|basis vectors]] written in the old
+    [[coordinates|coordinates]]; it turns new coordinates into old ones.
+  notes:
+    - Its [[inverse-matrix|inverse]] goes the other way, old into new.
+
+linear-transformation:
+  term: Linear Transformation
+  aliases: ['linear transformations']
+  definition: >-
+    A way of moving every point in a space that keeps grid lines straight,
+    parallel and evenly spaced, with the origin fixed. Once you pick a
+    [[basis|basis]], every one can be written as a [[matrix|matrix]].
+
+eigenvector:
+  term: Eigenvector
+  aliases: ['eigenvectors']
+  definition: >-
+    A direction that a [[linear-transformation|linear transformation]] keeps
+    on its own line, only stretching, shrinking or flipping it.
+  notes:
+    - >-
+      In a [[basis|basis]] made of eigenvectors (when one exists), the
+      transformation's matrix is diagonal, which makes it far easier to work
+      with.
+
+discrete-cosine-transform:
+  term: Discrete Cosine Transform (DCT)
+  aliases: ['DCT']
+  definition: >-
+    Rewriting a block of numbers, like pixel values, as weights on a fixed set
+    of cosine wave patterns, from smooth to busy.
+  notes:
+    - >-
+      JPEG uses it on 8 × 8 blocks: 64 pixels in, 64 weights out. It's a
+      [[change-of-basis|change of basis]]; the savings come from rounding the
+      weights afterwards, which turns most of them into zeros that store
+      cheaply.
+
+residual-stream:
+  term: Residual Stream
+  definition: >-
+    The running list of numbers a [[transformer|transformer]] keeps for each
+    token, which every layer reads from and adds to.
+
+privileged-basis:
+  term: Privileged Basis
+  definition: >-
+    When something about a network's design makes its individual coordinates
+    meaningful, so features tend to line up with the axes.
+  notes:
+    - >-
+      By design, the [[residual-stream|residual stream]] doesn't have one: rotate it, and
+      rotate every matrix that touches it to match, and the model behaves the
+      same.
+
+# ── Integers and bits ────────────────────────────────────────────────
+
+bit:
+  term: Bit
+  aliases: ['bits']
+  definition: >-
+    One binary digit, a 0 or a 1: the smallest piece of information a computer
+    stores.
+
+integer:
+  term: Integer
+  aliases: ['integers']
+  definition: >-
+    A whole number; in a computer, one stored in a fixed number of
+    [[bit|bits]], usually 8, 16, 32 or 64.
+
+unsigned-integer:
+  term: Unsigned Integer
+  aliases: ['unsigned integers', 'unsigned']
+  definition: >-
+    An [[integer|integer]] that is never negative: 32 bits hold 0 to
+    4,294,967,295.
+
+signed-integer:
+  term: Signed Integer
+  aliases: ['signed integers', 'signed']
+  definition: >-
+    An [[integer|integer]] that can be negative, almost always stored as
+    [[twos-complement|two's complement]]: 32 bits hold −2,147,483,648 to
+    2,147,483,647.
+
+modular-arithmetic:
+  term: Modular Arithmetic
+  aliases: ['clock arithmetic']
+  definition: >-
+    Arithmetic on a clock, where numbers wrap back to zero once they reach a
+    fixed size, the modulus.
+  notes:
+    - 9 + 5 on a 12-hour clock is 2.
+    - >-
+      [[unsigned-integer|Unsigned]] 32-bit arithmetic is modular arithmetic
+      with a modulus of 2³² = 4,294,967,296.
+
+twos-complement:
+  term: Two's Complement
+  definition: >-
+    The usual way to store negative [[integer|integers]]: the top half of the
+    wrap-around range is read as negative, so the same adding circuit works
+    for both.
+  notes:
+    - One step back from 0 is the largest pattern, all 1s, and it means −1.
+
+overflow:
+  term: Overflow
+  aliases: ['overflows', 'overflowed']
+  definition: >-
+    When a result is too big (or too small) for the [[integer|integer]]
+    holding it.
+  notes:
+    - >-
+      In wrap-around arithmetic the extra is simply dropped, which is a bug
+      whenever nobody expected it.
+
+xor:
+  term: XOR
+  definition: >-
+    Exclusive or: comparing two numbers [[bit|bit]] by bit and writing 1
+    where they differ.
+  notes:
+    - Doing it twice with the same number undoes it.
+
+modular-inverse:
+  term: Modular Inverse
+  aliases: ['modular inverses']
+  definition: >-
+    On a wrap-around clock, the number that undoes multiplying by another: the
+    pair multiply to 1.
+  notes:
+    - >-
+      On the 32-bit clock only odd numbers have one. The inverse of 3 is
+      2,863,311,531, because 3 × 2,863,311,531 wraps around to 1.
+
+bit-shift:
+  term: Bit Shift
+  aliases: ['shift', 'shifts', 'shifted']
+  definition: >-
+    Sliding every [[bit|bit]] of a number left or right by some places; bits
+    pushed off the end are lost.
+  notes:
+    - A one-place shift left is the same as multiplying by 2.
+
+hash-function:
+  term: Hash Function
+  aliases: ['hash functions', 'hash']
+  definition: >-
+    A function that turns data into a fixed-size number; a good one scrambles
+    it so that similar inputs get very different outputs.
+
+compiler:
+  term: Compiler
+  aliases: ['compilers']
+  definition: >-
+    A program that translates code a person wrote into the instructions a
+    processor runs.
+
+register:
+  term: Register
+  aliases: ['registers']
+  definition: >-
+    A small, fast storage slot inside the processor that holds one number
+    while it's being worked on.
+
+# ── Compression ──────────────────────────────────────────────────────
+
+lossless-compression:
+  term: Lossless Compression
+  aliases: ['lossless']
+  definition: >-
+    Making a file smaller in a way that gives back every [[bit|bit]] of the
+    original when it's decoded.
+  notes:
+    - >-
+      Lossy compression, like ordinary JPEG, throws away detail the eye is
+      unlikely to miss, so the decoded file is close to the original but not
+      the same.
+
+entropy-coding:
+  term: Entropy Coding
+  aliases: ['entropy coder']
+  definition: >-
+    Writing each value with a code whose length depends on how common it is,
+    so frequent values take few [[bit|bits]] and rare ones take more.
+
+wavelet-transform:
+  term: Wavelet Transform
+  aliases: ['wavelet transforms']
+  definition: >-
+    Splitting a signal into a half-size smooth version plus the details needed
+    to rebuild it, then splitting the smooth part again, level after level.
+
+lifting-step:
+  term: Lifting Step
+  aliases: ['lifting steps', 'lifting']
+  definition: >-
+    Adding to one half of a set of numbers something worked out from the other
+    half, which stays untouched, so subtracting the same thing undoes it.
+  notes:
+    - >-
+      Because the untouched half is still there, the step can be undone
+      exactly even when what was added got rounded. That's what makes lossless
+      [[wavelet-transform|wavelet transforms]] possible.
+
+discrete-fourier-transform:
+  term: Discrete Fourier Transform
+  aliases: ['DFT', 'Fourier transform']
+  definition: >-
+    Rewriting a list of N samples as N amounts of different frequencies, each
+    one a weighted sum of every sample.
+
+walsh-hadamard-transform:
+  term: Walsh–Hadamard Transform
+  aliases: ['Walsh transform', 'Hadamard transform']
+  definition: >-
+    A transform whose weights are only +1 and −1, so every output is a sum of
+    all the inputs with some signs flipped.
+
+butterfly:
+  term: Butterfly
+  aliases: ['butterflies']
+  definition: >-
+    The two-number step an [[fft|FFT]] is built from: from a and b, make a + b
+    and a − b, after turning b by a [[twiddle-factor|twiddle factor]].
+  notes:
+    - >-
+      Named for its drawing: two inputs, two outputs and two lines crossing
+      between them. With no turn it's the size-2
+      [[walsh-hadamard-transform|Walsh–Hadamard transform]].
+
+twiddle-factor:
+  term: Twiddle Factor
+  aliases: ['twiddle factors']
+  definition: >-
+    A fixed rotation that a [[fft|fast Fourier transform]] applies to one
+    input of a [[butterfly]] before adding and subtracting.
+
+task-vector:
+  term: Task Vector
+  aliases: ['task vectors']
+  definition: >-
+    A fine-tuned model's [[weights|weights]] minus the weights it started
+    from: how far each number moved to learn one task.
+  notes:
+    - >-
+      Adding it to a model teaches the task, and subtracting it removes it,
+      as long as the models share the same starting weights.
+
+model-soup:
+  term: Model Soup
+  aliases: ['model soups', 'soup', 'soups']
+  definition: >-
+    One model made by averaging the [[weights|weights]] of several models
+    fine-tuned from the same starting point.
+
+hidden-unit:
+  term: Hidden Unit
+  aliases: ['hidden units']
+  definition: >-
+    One of the internal values a [[neural-network|neural network]] computes
+    between its input and its output.
+
+perplexity:
+  term: Perplexity
+  definition: >-
+    How surprised a language model is by real text on average, where lower
+    means it predicts the text better.
+
+prefix-sum:
+  term: Prefix Sum
+  aliases: ['prefix sums', 'running total', 'running totals']
+  definition: >-
+    A list where each entry is the total of every value up to and including
+    that position in another list.
+
+texture-mapping:
+  term: Texture Mapping
+  aliases: ['texture-mapped']
+  definition: >-
+    Painting a flat image onto the surface of a 3D shape as it is drawn.
+
+summed-area-table:
+  term: Summed-Area Table
+  aliases: ['summed-area tables', 'integral image']
+  definition: >-
+    A grid where each cell holds the total of every value above it and to its
+    left, itself included, so any rectangle's total takes four lookups.
+
+fenwick-tree:
+  term: Fenwick Tree
+  aliases: ['Fenwick trees', 'binary indexed tree']
+  definition: >-
+    An array of totals over power-of-two blocks, so reading a running total
+    or changing one value touches only a few blocks, about 20 for a million.
+
+checksum:
+  term: Checksum
+  aliases: ['checksums']
+  definition: >-
+    A short number worked out from a block of data, used to check whether two
+    blocks are probably the same without comparing them byte by byte.
+
+rolling-checksum:
+  term: Rolling Checksum
+  aliases: ['rolling checksums', 'rolling hash']
+  definition: >-
+    A [[checksum]] of a sliding window that can be updated in a few steps as
+    the window moves one position, instead of being recomputed from scratch.
+
+merkle-tree:
+  term: Merkle Tree
+  aliases: ['Merkle trees', 'hash tree', 'hash trees']
+  definition: >-
+    A tree whose leaves are [[hash-function|hashes]] of items and whose every
+    other node is a hash of its children, so equal roots mean the contents are
+    almost certainly equal.
+
+parity-bit:
+  term: Parity Bit
+  aliases: ['parity bits', 'parity', 'parity check', 'parity checks']
+  definition: >-
+    One extra [[bit]] chosen so the number of 1s is even (or, by agreement,
+    odd), so that any single flipped bit breaks the count.
+
+crc:
+  term: Cyclic Redundancy Check
+  aliases: ['CRC', 'CRCs', 'cyclic redundancy checks']
+  definition: >-
+    A [[checksum]] made from the remainder of dividing the data, read as one
+    long binary number, by a fixed number, which catches every short burst of
+    errors.
+
+hamming-code:
+  term: Hamming Code
+  aliases: ['Hamming codes']
+  definition: >-
+    Overlapping [[parity-bit|parity checks]] arranged so that the ones that
+    fail add up to the position of a single flipped [[bit]].
+
+hamming-distance:
+  term: Hamming Distance
+  aliases: ['Hamming distances']
+  definition: >-
+    The number of positions at which two strings of [[bit|bits]] differ.
+
+hyperbolic-space:
+  term: Hyperbolic Space
+  aliases: ['hyperbolic plane', 'hyperbolic geometry']
+  definition: >-
+    A geometry with constant negative curvature, where the length of a circle
+    grows exponentially with its radius instead of in proportion to it.
+
+poincare-disk:
+  term: Poincaré Disk
+  aliases: ['Poincaré ball']
+  definition: >-
+    A map of the whole [[hyperbolic-space|hyperbolic plane]] inside a circle,
+    with an almost even scale near the centre and stretched without limit
+    towards the edge.
+  notes:
+    - >-
+      The same map in more dimensions sits inside a ball and is called the
+      Poincaré ball; Nickel and Kiela's embeddings live in it.
+
+distortion:
+  term: Distortion
+  definition: >-
+    How far the distances in an [[embedding|embedding]] are from the true
+    distances between the things it stands for.
+
+mean-average-precision:
+  term: Mean Average Precision
+  definition: >-
+    A score from 0 to 1 for how well each item's nearest points in an
+    [[embedding|embedding]] are its true neighbours, where 1 means they always
+    come first.
+
+baseline:
+  term: Baseline
+  aliases: ['baselines']
+  definition: >-
+    The existing method a new one is compared against, to show it does better.
+
+resident-set-size:
+  term: Resident Set Size
+  definition: >-
+    How much of a process's memory is in RAM at a given moment; Linux reports
+    it as VmRSS.
+
+mutation-testing:
+  term: Mutation Testing
+  aliases: ['mutation test', 'mutant', 'mutants']
+  definition: >-
+    Judging a set of tests by making small deliberate changes to the code and
+    checking whether any test fails.

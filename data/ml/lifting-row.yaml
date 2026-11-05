@@ -1,0 +1,12 @@
+# Data for {{< ml/lifting-row >}} (layouts/shortcodes/ml/lifting-row.html), the
+# key visual on content/articles/lossless-compression.md. Made-up rows of 16
+# pixel values (0 = black, 255 = white). The first one is the row the article
+# describes; "near twins" holds pairs that the rounded average-and-difference
+# can't tell apart.
+presets:
+  - name: The article's row
+    row: [52, 55, 61, 66, 70, 61, 64, 73, 74, 80, 90, 88, 86, 84, 85, 86]
+  - name: A sharp edge
+    row: [40, 40, 40, 40, 40, 40, 40, 40, 200, 200, 200, 200, 200, 200, 200, 200]
+  - name: Near twins
+    row: [100, 100, 100, 101, 150, 150, 150, 151, 90, 90, 90, 91, 60, 60, 60, 61]

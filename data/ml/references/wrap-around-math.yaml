@@ -1,0 +1,43 @@
+# References for content/articles/wrap-around-math.md, rendered by {{< ml/references >}}.
+# Listed in the order the article reaches them. Numbering is automatic.
+
+- tag: Standard
+  title: ISO/IEC 9899:201x draft N1570 (the C11 standard)
+  url: https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1570.pdf
+  meta: WG14 · April 2011
+  note: Section 6.2.5, paragraph 9. A computation with unsigned operands "can never overflow"; a result that doesn't fit is reduced modulo one more than the largest value.
+- tag: Hardware
+  title: RISC-V Unprivileged ISA, RV32I Base Integer Instruction Set
+  url: https://docs.riscv.org/reference/isa/v20260120/unpriv/rv32.html
+  meta: RISC-V International · version 20260120
+  note: ADD and SUB ignore overflow and write the low XLEN bits; overflow checks are left to cheap branches in software.
+- tag: Standard
+  title: The Go Programming Language Specification, "Integer overflow"
+  url: https://go.dev/ref/spec#Integer_overflow
+  meta: The Go Authors
+  note: Unsigned +, −, × and << are computed modulo 2ⁿ; signed overflow is legal and "deterministically defined" by the two's complement representation.
+- tag: Bug
+  title: 'YouTube Couldn''t Handle All The 2.14 Billion Views On "Gangnam Style"'
+  url: https://www.tubefilter.com/2014/12/03/gangnam-style-breaks-youtube-view-counter/
+  meta: Tubefilter · Bree Brouwer · December 3, 2014
+  note: On December 2 the video was on pace to pass 2,147,483,647 views (it showed 2,152,320,758 at writing); hovering over the counter flipped the digits slot-machine-style to the negative end of the 32-bit range, an Easter egg.
+- tag: Bug
+  title: "Gangnam Style music video 'broke' YouTube view limit"
+  url: https://www.bbc.co.uk/news/world-asia-30288542
+  meta: BBC News · December 4, 2014
+  note: Google told The Verge its engineers "saw this coming a couple months ago and updated our systems to prepare for it"; the counter now uses a 64-bit integer.
+- tag: Bug
+  title: "Airworthiness Directive 2015-09-07: The Boeing Company Airplanes (787)"
+  url: https://www.govinfo.gov/content/pkg/FR-2015-05-01/html/2015-10066.htm
+  meta: FAA · Federal Register 80 FR 24789 · May 1, 2015
+  note: A software counter in the generator control units "will overflow after 248 days of continuous power", which could cause a loss of all AC electrical power.
+- tag: Use
+  title: Division by Invariant Integers using Multiplication
+  url: https://gmplib.org/~tege/divcnst-pldi94.pdf
+  meta: Granlund & Montgomery · PLDI 1994
+  note: Division cost several times as much as multiplication; section 9 covers exact division by multiplying by the divisor's inverse, and the algorithms were built into GCC.
+- tag: Use
+  title: MurmurHash3.cpp (fmix32)
+  url: https://github.com/aappleby/smhasher/blob/master/src/MurmurHash3.cpp
+  meta: Austin Appleby · SMHasher
+  note: The 32-bit finalizer is XOR with right-shifted copies and multiplication by the odd constants 0x85ebca6b and 0xc2b2ae35.

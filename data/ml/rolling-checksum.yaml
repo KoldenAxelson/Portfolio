@@ -1,0 +1,18 @@
+# Text for {{< ml/rolling-checksum >}}. "old" is the copy on the far machine,
+# split into blocks of "block" characters (the last one may be shorter).
+# Each edit is a new copy to send. All made up. The first edit renders with JS
+# off, matched by plain text comparison in the template; rolling-checksum.ts
+# finds the same matches with rsync's weak checksum, then a byte check.
+block: 6
+old: "the cat sat on the mat. the dog sat on the log. the end"
+edits:
+  - name: "Insert a word"
+    new: "the black cat sat on the mat. the dog sat on the log. the end"
+  - name: "Change a letter"
+    new: "the cat sat on the hat. the dog sat on the log. the end"
+  - name: "Delete a word"
+    new: "the cat sat on the mat. the dog sat on log. the end"
+  - name: "No change"
+    new: "the cat sat on the mat. the dog sat on the log. the end"
+  - name: "A false alarm"
+    new: "the cat sat on the ker. the dog sat on the log. the end"

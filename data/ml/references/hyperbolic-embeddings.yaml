@@ -1,0 +1,23 @@
+# References for content/articles/hyperbolic-embeddings.md, rendered by {{< ml/references >}}.
+# Listed in the order the article reaches them. Numbering is automatic.
+
+- tag: Tradeoffs
+  title: Representation Tradeoffs for Hyperbolic Embeddings
+  url: https://arxiv.org/abs/1804.03329
+  meta: "Frederic Sala, Christopher De Sa, Albert Gu & Christopher Ré · ICML 2018"
+  note: A direct construction that embeds trees with arbitrarily low distortion (WordNet, mean average precision 0.989 in 2 dimensions), Bourgain's lower bound for flat space, and the precision cost of about d bits for distances of d.
+- tag: Poincaré
+  title: Poincaré Embeddings for Learning Hierarchical Representations
+  url: https://arxiv.org/abs/1705.08039
+  meta: "Maximilian Nickel & Douwe Kiela · NIPS 2017"
+  note: Embeddings trained in the Poincaré ball; WordNet nouns (82,115 nouns, 743,241 hypernymy links), with the reconstruction results in Table 1.
+- tag: Hilbert
+  title: "Hilbert's theorem (differential geometry)"
+  url: https://en.wikipedia.org/wiki/Hilbert%27s_theorem_(differential_geometry)
+  meta: Wikipedia
+  note: No complete smooth surface with constant negative curvature fits in ordinary three-dimensional space (Hilbert, 1901), which is why the hyperbolic plane is drawn as a map.
+- tag: Cones
+  title: Hyperbolic Entailment Cones for Learning Hierarchical Embeddings
+  url: https://arxiv.org/abs/1804.01882
+  meta: "Octavian-Eugen Ganea, Gary Bécigneul & Thomas Hofmann · ICML 2018"
+  note: Gives each item a cone at its point in the Poincaré ball and reads "is a kind of" as "sits inside the cone", a one-way relation that a plain distance can't express. Tested on the same WordNet graph as Nickel and Kiela.

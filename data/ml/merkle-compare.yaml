@@ -1,0 +1,14 @@
+# Files for {{< ml/merkle-compare >}}: 16 made-up files (keep it 16: the
+# drawing has five rows, 1, 2, 4, 8 and 16 boxes), the same on both
+# machines except the ones a scenario edits on machine B (the edit appends
+# " (edited)"). Files are numbered from 1. Hashes are SHA-256, worked out in
+# the template (for JS off) and again in merkle-compare.ts. The first scenario
+# renders with JS off.
+files: ["notes", "budget", "photo", "draft", "todo", "recipe", "map", "song", "invoice", "letter", "plan", "poem", "list", "report", "sketch", "log"]
+scenarios:
+  - name: "One file changed"
+    changed: [6]
+  - name: "Two files changed"
+    changed: [3, 12]
+  - name: "Nothing changed"
+    changed: []

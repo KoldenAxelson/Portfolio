@@ -1,0 +1,4 @@
+# Starting data for {{< ml/hamming-code >}}: 4 data bits (positions 3, 5, 6
+# and 7 of the code word). The template and hamming-code.ts both work out the
+# check bits from these. Matches the article's example, 1011.
+data: [1, 0, 1, 1]

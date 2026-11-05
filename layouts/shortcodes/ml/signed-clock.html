@@ -1,0 +1,38 @@
+{{- /*
+  ml-signed-clock — one wrap-around clock read two ways: unsigned (0 to the
+  top) and two's complement (top half negative). +1 and −1 step the hand.
+
+    {{< ml/signed-clock >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml/assets.html (css/pages/ml/demos.css, scripts/pages/ml/
+  signed-clock.ts, which draws the SVG with clock-face.ts). The opening state
+  is data/ml/signed-clock.yaml; the readout below is that state, worked out
+  here so it reads with JS off.
+*/ -}}
+{{- $d := index site.Data.ml "signed-clock" -}}
+{{- $n := int (math.Pow 2 $d.bits) -}}
+{{- $start := sub (div $n 2) 1 -}}
+{{- $pattern := printf "%b" $start -}}
+{{- range seq (sub $d.bits (len $pattern)) }}{{ $pattern = printf "0%s" $pattern }}{{ end -}}
+<div class="not-prose mli-demo mli-wc mli-sc" id="mli-sc" data-bits="{{ $d.bits }}" data-labels="{{ $d.labels }}">
+<div class="mli-demo-label">Live · the same clock, read two ways</div>
+<div id="mli-sc-controls" hidden>
+<div class="mli-rag-qs" role="group" aria-label="Labels">
+<span class="mli-bits-lab">Read as:</span>
+<button class="mli-rag-q{{ if ne $d.labels "signed" }} is-on{{ end }}" type="button" aria-pressed="{{ ne $d.labels "signed" }}" data-labels="unsigned" disabled>Unsigned</button><button class="mli-rag-q{{ if eq $d.labels "signed" }} is-on{{ end }}" type="button" aria-pressed="{{ eq $d.labels "signed" }}" data-labels="signed" disabled>Two’s complement</button>
+</div>
+<div class="mli-rag-qs" role="group" aria-label="Clock size">
+<span class="mli-bits-lab">Bits:</span>
+{{- range $d.bitsChoices }}<button class="mli-rag-q mli-et-pick{{ if eq . $d.bits }} is-on{{ end }}" type="button" aria-pressed="{{ eq . $d.bits }}" data-bits="{{ . }}" disabled>{{ . }}</button>{{ end -}}
+<span class="mli-sc-steps"><button class="mli-rag-q mli-et-pick" type="button" data-step="-1" aria-label="Step back one" disabled>−1</button><button class="mli-rag-q mli-et-pick" type="button" data-step="1" aria-label="Step forward one" disabled>+1</button></span>
+</div>
+</div>
+<svg class="mli-wc-plot" id="mli-sc-plot" viewBox="0 0 360 360" role="img" aria-label="A clock face with a hand pointing at one position. In two’s complement the top half of the clock, shaded, is read as negative numbers."></svg>
+<div class="mli-wc-read" aria-live="polite">
+<p id="mli-sc-pattern">Bits <b>{{ $pattern }}</b>: unsigned <b>{{ $start }}</b>, two’s complement <b>{{ $start }}</b>.</p>
+<p class="mli-wc-follow" id="mli-sc-note">One step forward, the bits become <b>{{ printf "%b" (div $n 2) }}</b>: unsigned <b>{{ div $n 2 }}</b>, two’s complement <b>−{{ div $n 2 }}</b>.</p>
+</div>
+<noscript><p class="mli-caption">JavaScript is off, so the clock can't be drawn. With it on, you can step the hand around and switch between the two readings.</p></noscript>
+<div class="mli-caption">Two’s complement worked out on 3-, 4- and 8-bit clocks; a 32-bit number behaves the same way with 4,294,967,296 positions. The shaded half is the part two’s complement reads as negative. Switching the reading changes the labels and nothing else: the bits under the hand stay put.</div>
+</div>

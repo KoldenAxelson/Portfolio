@@ -1,0 +1,54 @@
+{{- /*
+  ml-fenwick — 16 made-up counts and their Fenwick tree, drawn as bars: each
+  bar holds the total of a power-of-two block ending at its position. Pick a
+  position to read its running total (the bars added) or to add 1 there (the
+  bars changed), against the cost with plain running totals.
+
+    {{< ml/fenwick >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml/assets.html (css/pages/ml/demos.css, scripts/pages/ml/
+  fenwick.ts). Values live in data/ml/fenwick.yaml; the tree and the first
+  read are worked out here too, the same way as the script, so the demo
+  reads with JS off.
+*/ -}}
+{{- $d := index site.Data.ml "fenwick" -}}
+{{- $n := len $d.values -}}
+{{- $low := dict }}{{ $tree := dict -}}
+{{- range $i := seq 1 $n -}}
+  {{- $lb := 1 -}}
+  {{- range $p := slice 2 4 8 16 32 64 }}{{ if eq (mod $i $p) 0 }}{{ $lb = $p }}{{ end }}{{ end -}}
+  {{- $sum := 0 -}}
+  {{- range $j := seq (add (sub $i $lb) 1) $i }}{{ $sum = add $sum (index $d.values (sub $j 1)) }}{{ end -}}
+  {{- $low = merge $low (dict (string $i) $lb) }}{{ $tree = merge $tree (dict (string $i) $sum) -}}
+{{- end -}}
+{{- $k := $d.start }}{{ $visit := slice }}{{ $total := 0 -}}
+{{- range seq 8 -}}{{ if gt $k 0 }}{{ $visit = $visit | append $k }}{{ $total = add $total (index $tree (string $k)) }}{{ $k = sub $k (index $low (string $k)) }}{{ end }}{{ end -}}
+{{- $levels := slice 16 8 4 2 1 -}}
+<div class="not-prose mli-demo mli-fk" id="mli-fk" data-values="{{ jsonify $d.values }}" data-start="{{ $d.start }}">
+<div class="mli-demo-label">Live · running totals that can change</div>
+<div id="mli-fk-controls" hidden>
+<div class="mli-rag-qs" role="group" aria-label="What to do at a position">
+<span class="mli-bits-lab">Clicking a position:</span>
+<button class="mli-rag-q is-on" type="button" aria-pressed="true" data-mode="read" disabled>Reads its running total</button><button class="mli-rag-q" type="button" aria-pressed="false" data-mode="add" disabled>Adds 1 to it</button><button class="mli-rag-q" type="button" id="mli-fk-reset" disabled>Reset the counts</button>
+</div>
+<div class="mli-rag-qs" role="group" aria-label="Move along"><button class="mli-rag-q" type="button" id="mli-fk-prev" disabled>← Previous position</button><button class="mli-rag-q" type="button" id="mli-fk-next" disabled>Next position →</button></div>
+</div>
+<div class="mli-fk-board" id="mli-fk-board" style="--mli-fk-n: {{ $n }}">
+{{- range $lv := $levels }}
+<div class="mli-fk-level" role="group" aria-label="Blocks of {{ $lv }}">
+{{- range $i := seq 1 $n }}{{ if eq (index $low (string $i)) $lv }}<span class="mli-fk-bar{{ if in $visit $i }} is-hit{{ end }}" data-node="{{ $i }}" style="grid-column: {{ add (sub $i $lv) 1 }} / span {{ $lv }}" title="Positions {{ add (sub $i $lv) 1 }} to {{ $i }}">{{ index $tree (string $i) }}</span>{{ end }}{{ end -}}
+</div>
+{{- end }}
+<div class="mli-fk-level is-values">
+{{- range $i, $v := $d.values }}<button class="mli-fk-val{{ if le (add $i 1) $d.start }} is-span{{ end }}{{ if eq (add $i 1) $d.start }} is-picked{{ end }}" type="button" data-pos="{{ add $i 1 }}" aria-label="Position {{ add $i 1 }}, count {{ $v }}" disabled><span class="mli-fk-pos">{{ add $i 1 }}</span>{{ $v }}</button>{{ end -}}
+</div>
+</div>
+<p class="mli-lr-stage" id="mli-fk-say" aria-live="polite">Running total up to position {{ $d.start }} ({{ printf "%b" $d.start }} in binary): {{ delimit (apply $visit "printf" "bar %d" ".") " + " }} = <strong>{{ $total }}</strong>. That's {{ len $visit }} {{ if eq (len $visit) 1 }}bar{{ else }}bars{{ end }} added, one per 1 in the binary.</p>
+<dl class="mli-tv-read mli-fk-read">
+<div><dt>Plain running totals</dt><dd id="mli-fk-plain">1 lookup</dd></div>
+<div><dt>Fenwick tree</dt><dd id="mli-fk-tree">{{ len $visit }} {{ if eq (len $visit) 1 }}lookup{{ else }}lookups{{ end }}</dd></div>
+</dl>
+<noscript><p class="mli-caption">JavaScript is off, so this shows one running total read from the tree. With it on, you can pick any position, and switch to adding 1 there to see which bars change.</p></noscript>
+<div class="mli-caption">Invented counts, numbered 1 to 16, sit in the bottom row. Each bar above stores the total of the positions it spans, ending where it's stored, with a length equal to the biggest power of two dividing that position. A read adds bars jumping left, and an add changes the bars covering it, jumping right: highlighted bars are read, striped ones changed, shaded counts show what's covered. With 16 counts, a read adds at most 4 bars and an add changes at most 5.</div>
+</div>

@@ -1,0 +1,33 @@
+# References for content/articles/region-totals.md, rendered by {{< ml/references >}}.
+# Listed in the order the article reaches them. Numbering is automatic.
+
+- tag: Graphics
+  title: Summed-Area Tables for Texture Mapping
+  url: https://doi.org/10.1145/800031.808600
+  meta: Franklin C. Crow · SIGGRAPH '84, Computer Graphics 18(3), 207–212 · 1984
+  note: Introduces the table "representing the integral over the texture function", with costs independent of texture density, and notes it needs more bits per entry than the texture.
+- tag: Vision
+  title: Rapid Object Detection using a Boosted Cascade of Simple Features
+  url: https://www.cs.ubc.ca/~lowe/425/violaJones01.pdf
+  meta: Paul Viola & Michael Jones · CVPR 2001
+  note: 'Names it the "integral image" (Section 2.1): any rectangle in four array references, two-rectangle features in six, and 15 frames per second on 384 × 288 images on a 700 MHz Pentium III.'
+- tag: Vision
+  title: Robust Real-Time Face Detection
+  url: https://doi.org/10.1023/B:VISI.0000013087.49260.fb
+  meta: "Paul Viola & Michael J. Jones · International Journal of Computer Vision 57(2), 137–154 · 2004"
+  note: The journal version. It counts the rectangle features in a 24 × 24 window as 160,000, where the 2001 paper said over 180,000.
+- tag: Updates
+  title: A New Data Structure for Cumulative Frequency Tables
+  url: https://doi.org/10.1002/spe.4380240306
+  meta: "Peter M. Fenwick · Software: Practice and Experience 24(3), 327–336 · 1994"
+  note: 'The "binary indexed tree" for adaptive arithmetic coding: for 256 entries, eight references to update a count and five to read a running total; access times "either constant or proportional to the logarithm of the table size".'
+- tag: Updates
+  title: A Fast On-Line Code (Быстрый последовательный код)
+  url: https://boris.ryabko.net/dan1989.pdf
+  meta: "Boris Ya. Ryabko · Doklady Akademii Nauk SSSR 306, 548–552 · 1989 (in Russian; English in Soviet Mathematics Doklady 39(3), 533–537)"
+  note: Keeps the sums of pairs, fours and eights of symbol counts, so any running total takes at most ⌈log₂ n⌉ − 1 additions and an update touches one block of each size. An earlier take on the idea behind Fenwick's tree.
+- tag: Intro
+  title: Summed-area table
+  url: https://en.wikipedia.org/wiki/Summed-area_table
+  meta: Wikipedia
+  note: The four-corner formula with a diagram, and extensions to more dimensions.

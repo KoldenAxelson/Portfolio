@@ -1,0 +1,46 @@
+{{- /*
+  ml-wrap-clock — a small wrap-around clock and one move (add, multiply or XOR
+  by k). Arrows show where every position goes; the demo says whether the move
+  can be undone and, if not, which two positions collide.
+
+    {{< ml/wrap-clock >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml/assets.html (css/pages/ml/demos.css, scripts/pages/ml/
+  wrap-clock.ts, which draws the SVG with clock-face.ts). The opening state
+  lives in data/ml/wrap-clock.yaml; wrap-clock.ts reads the bit sizes from the
+  buttons below. The no-JS verdict covers an odd multiply only, so the build
+  stops if the yaml opens on anything else.
+*/ -}}
+{{- $d := index site.Data.ml "wrap-clock" -}}
+{{- $n := int (math.Pow 2 $d.bits) -}}
+{{- /* The no-JS readout: for a multiply, search for the undo the way wrap-clock.ts does. */ -}}
+{{- $inverse := 0 -}}
+{{- if eq $d.move "multiply" }}{{ range seq 1 (sub $n 1) }}{{ if and (eq $inverse 0) (eq (mod (mul $d.k .) $n) 1) }}{{ $inverse = . }}{{ end }}{{ end }}{{ end -}}
+{{- if eq $inverse 0 }}{{ errorf "ml/wrap-clock: data/ml/wrap-clock.yaml must open on an odd multiply (got %s %d) for the no-JS verdict" $d.move $d.k }}{{ end -}}
+<div class="not-prose mli-demo mli-wc" id="mli-wc" data-bits="{{ $d.bits }}" data-move="{{ $d.move }}" data-k="{{ $d.k }}">
+<div class="mli-demo-label">Live · a clock that wraps around</div>
+<div id="mli-wc-controls" hidden>
+<div class="mli-rag-qs" role="group" aria-label="Clock size">
+<span class="mli-bits-lab">Bits:</span>
+{{- range $d.bitsChoices }}<button class="mli-rag-q mli-et-pick{{ if eq . $d.bits }} is-on{{ end }}" type="button" aria-pressed="{{ eq . $d.bits }}" data-bits="{{ . }}" disabled>{{ . }} <span class="mli-wc-sub">({{ int (math.Pow 2 .) }})</span></button>{{ end -}}
+</div>
+<div class="mli-rag-qs" role="group" aria-label="Move">
+<span class="mli-bits-lab">Move:</span>
+{{- range slice (slice "add" "Add") (slice "multiply" "Multiply") (slice "xor" "XOR") }}<button class="mli-rag-q{{ if eq (index . 0) $d.move }} is-on{{ end }}" type="button" aria-pressed="{{ eq (index . 0) $d.move }}" data-move="{{ index . 0 }}" disabled>{{ index . 1 }}</button>{{ end -}}
+</div>
+<div class="mli-row"><label for="mli-wc-k">By: <span class="mli-val" id="mli-wc-k-v">{{ $d.k }}</span></label><input class="mli-range" id="mli-wc-k" type="range" min="0" max="{{ sub $n 1 }}" step="1" value="{{ $d.k }}" disabled /></div>
+</div>
+<svg class="mli-wc-plot" id="mli-wc-plot" viewBox="0 0 360 360" tabindex="0" role="img" aria-label="A clock face with an arrow from every position to where the move sends it. Use the arrow keys to follow a different position."></svg>
+<div class="mli-wc-read" aria-live="polite">
+<p id="mli-wc-summary">{{ if eq $d.move "multiply" }}Multiply by {{ $d.k }}{{ else if eq $d.move "add" }}Add {{ $d.k }}{{ else }}XOR with {{ $d.k }}{{ end }}, on a clock with {{ $n }} positions ({{ $d.bits }} bits).</p>
+<p id="mli-wc-verdict">{{ with $inverse }}{{ $product := mul $d.k . }}Every position lands on a different one, so it can be undone: multiply by {{ . }}, because {{ $d.k }} × {{ . }} = {{ $product }}{{ if ne $product 1 }}, which wraps around to 1{{ end }}.{{ end }}</p>
+<p class="mli-wc-follow" id="mli-wc-follow"></p>
+</div>
+<div class="mli-et-actions" id="mli-wc-actions" hidden>
+<button class="mli-rag-q" type="button" id="mli-wc-undo" aria-pressed="false">Show the undo</button>
+<span class="mli-et-hint">Click a position (or use the arrow keys) to follow it. Try multiplying by an even number.</span>
+</div>
+<noscript><p class="mli-caption">JavaScript is off, so the clock can't be drawn. With it on, you pick a clock size and a move and see where every position goes, and whether the move can be undone.</p></noscript>
+<div class="mli-caption">Real arithmetic on small clocks: 8 to 64 positions instead of the 4,294,967,296 a 32-bit number has, which behave the same way. Solid dots are reached by one arrow, red dots by more (the ×2 beside one says how many) and hollow dots by none; a position that stays put has no arrow. Dashed arrows are the undo, pointing back.</div>
+</div>

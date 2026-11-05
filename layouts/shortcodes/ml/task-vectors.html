@@ -1,0 +1,95 @@
+{{- /*
+  ml-task-vectors — a made-up two-weight model and two made-up tasks, each a
+  bowl-shaped loss drawn as contour rings. Fine-tuning from the base (real
+  gradient descent) gives each task's arrow, its task vector; sliders scale
+  and add the arrows, and the readout says how much of each task's
+  fine-tuning gain the merged model keeps.
+
+    {{< ml/task-vectors >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml/assets.html (css/pages/ml/demos.css, scripts/pages/ml/
+  task-vectors.ts). Scenarios live in data/ml/task-vectors.yaml. The first
+  scenario is fine-tuned here too, with the same steps as the script, and
+  drawn at λ = 1 for both arrows, so the demo reads with JS off.
+*/ -}}
+{{- $d := index site.Data.ml "task-vectors" -}}
+{{- $sc := index $d.scenarios 0 -}}
+{{- $scale := 56.0 }}{{ $ox := 172.0 }}{{ $oy := 210.0 -}}
+{{- $tasks := slice -}}
+{{- range $sc.tasks -}}
+  {{- $r := math.ToRadians (float .angle) }}{{ $c := math.Cos $r }}{{ $s := math.Sin $r -}}
+  {{- $ia := div 1.0 (mul .sharp .sharp) }}{{ $ib := div 1.0 (mul .flat .flat) -}}
+  {{- $h00 := add (mul $ia (mul $c $c)) (mul $ib (mul $s $s)) -}}
+  {{- $h11 := add (mul $ia (mul $s $s)) (mul $ib (mul $c $c)) -}}
+  {{- $h01 := mul (sub $ia $ib) (mul $c $s) -}}
+  {{- $cx := float (index .center 0) }}{{ $cy := float (index .center 1) -}}
+  {{- $tx := 0.0 }}{{ $ty := 0.0 -}}
+  {{- range seq $d.steps -}}
+    {{- $dx := sub $tx $cx }}{{ $dy := sub $ty $cy -}}
+    {{- $gx := add (mul $h00 $dx) (mul $h01 $dy) }}{{ $gy := add (mul $h01 $dx) (mul $h11 $dy) -}}
+    {{- $tx = sub $tx (mul $d.rate $gx) }}{{ $ty = sub $ty (mul $d.rate $gy) -}}
+  {{- end -}}
+  {{- $tasks = $tasks | append (dict "cx" $cx "cy" $cy "h00" $h00 "h01" $h01 "h11" $h11 "tx" $tx "ty" $ty "sharp" .sharp "flat" .flat "angle" .angle) -}}
+{{- end -}}
+{{- $a := index $tasks 0 }}{{ $b := index $tasks 1 -}}
+{{- $mx := add $a.tx $b.tx }}{{ $my := add $a.ty $b.ty -}}
+{{- $names := slice "A" "B" }}{{ $kinds := slice "is-a" "is-b" -}}
+<div class="not-prose mli-demo mli-tv" id="mli-tv" data-config="{{ jsonify $d }}" data-scale="{{ $scale }}" data-ox="{{ $ox }}" data-oy="{{ $oy }}">
+<div class="mli-demo-label">Live · adding and subtracting task vectors{{ partial "ml/caution.html" (dict "id" "mli-tv-note" "text" "Illustrative model. Two weights and two made-up bowl-shaped tasks stand in for billions of weights and real data. The fine-tuning steps, the arrows and every readout are real arithmetic on that toy.") }}</div>
+<div id="mli-tv-controls" hidden>
+<div class="mli-rag-qs" role="group" aria-label="Tasks">
+<span class="mli-bits-lab">Tasks:</span>
+{{- range $i, $s := $d.scenarios }}<button class="mli-rag-q{{ if eq $i 0 }} is-on{{ end }}" type="button" aria-pressed="{{ eq $i 0 }}" data-scenario="{{ $i }}" disabled>{{ $s.name }}</button>{{ end -}}
+</div>
+</div>
+<svg class="mli-tv-svg" id="mli-tv-svg" viewBox="0 0 400 300" role="img" aria-labelledby="mli-tv-title">
+<title id="mli-tv-title">Weight space of a two-weight model. Contour rings for task A and task B, the base model where the axes cross, an arrow to each fine-tuned model, and the merged model where the two arrows add up.</title>
+<defs><clipPath id="mli-tv-clip"><rect x="0" y="0" width="400" height="300" rx="8"/></clipPath>
+<marker id="mli-tv-head-a" viewBox="0 0 10 10" refX="8" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path class="mli-tv-headpath is-a" d="M0 0L10 5L0 10z"/></marker>
+<marker id="mli-tv-head-b" viewBox="0 0 10 10" refX="8" refY="5" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" orient="auto-start-reverse"><path class="mli-tv-headpath is-b" d="M0 0L10 5L0 10z"/></marker></defs>
+<g clip-path="url(#mli-tv-clip)">
+<line class="mli-tv-axis" x1="0" x2="400" y1="{{ $oy }}" y2="{{ $oy }}"/><line class="mli-tv-axis" x1="{{ $ox }}" x2="{{ $ox }}" y1="0" y2="300"/>
+{{- range $i, $t := $tasks }}
+<g class="mli-tv-bowl {{ index $kinds $i }}" id="mli-tv-bowl-{{ $i }}" transform="translate({{ add $ox (mul $scale $t.cx) }} {{ sub $oy (mul $scale $t.cy) }}) rotate({{ mul -1 $t.angle }})">
+{{- range $k := slice 0.6 1.2 1.8 2.4 }}<ellipse rx="{{ mul $k (mul $scale $t.sharp) }}" ry="{{ mul $k (mul $scale $t.flat) }}"/>{{ end -}}
+</g>
+{{- end }}
+</g>
+<text class="mli-tv-axlab" x="394" y="{{ add $oy 15 }}" text-anchor="end">weight 1</text><text class="mli-tv-axlab" x="{{ add $ox 6 }}" y="14">weight 2</text>
+{{- range $i, $t := $tasks }}
+<line class="mli-tv-arrow is-ft {{ index $kinds $i }}" id="mli-tv-ft-{{ $i }}" x1="{{ $ox }}" y1="{{ $oy }}" x2="{{ add $ox (mul $scale $t.tx) }}" y2="{{ sub $oy (mul $scale $t.ty) }}"/>
+<circle class="mli-tv-ftdot {{ index $kinds $i }}" id="mli-tv-ftdot-{{ $i }}" cx="{{ add $ox (mul $scale $t.tx) }}" cy="{{ sub $oy (mul $scale $t.ty) }}" r="4"/>
+{{- $lx := add $ox (mul $scale $t.tx) }}<text class="mli-tv-lab" id="mli-tv-ftlab-{{ $i }}" x="{{ cond (gt $lx 290.0) (sub $lx 7) (add $lx 7) }}" y="{{ sub $oy (mul $scale $t.ty) 9 }}" text-anchor="{{ cond (gt $lx 290.0) "end" "start" }}">Fine-tuned on {{ index $names $i }}</text>
+{{- end }}
+<line class="mli-tv-arrow is-a" id="mli-tv-sum-0" x1="{{ $ox }}" y1="{{ $oy }}" x2="{{ add $ox (mul $scale $a.tx) }}" y2="{{ sub $oy (mul $scale $a.ty) }}" marker-end="url(#mli-tv-head-a)"/>
+<line class="mli-tv-arrow is-b" id="mli-tv-sum-1" x1="{{ add $ox (mul $scale $a.tx) }}" y1="{{ sub $oy (mul $scale $a.ty) }}" x2="{{ add $ox (mul $scale $mx) }}" y2="{{ sub $oy (mul $scale $my) }}" marker-end="url(#mli-tv-head-b)"/>
+<circle class="mli-tv-base" cx="{{ $ox }}" cy="{{ $oy }}" r="5"/><text class="mli-tv-lab" x="{{ sub $ox 8 }}" y="{{ add $oy 16 }}" text-anchor="end">Base</text>
+<rect class="mli-tv-merged" id="mli-tv-merged" x="{{ sub (add $ox (mul $scale $mx)) 6 }}" y="{{ sub (sub $oy (mul $scale $my)) 6 }}" width="12" height="12" transform="rotate(45 {{ add $ox (mul $scale $mx) }} {{ sub $oy (mul $scale $my) }})"/>
+<text class="mli-tv-lab is-strong" id="mli-tv-mlab" x="{{ add (add $ox (mul $scale $mx)) 10 }}" y="{{ sub (sub $oy (mul $scale $my)) 10 }}">Merged</text>
+</svg>
+<div class="mli-tv-legend" aria-hidden="true"><span class="mli-tv-item"><span class="mli-tv-key is-a"></span>Task A: its rings and its arrow</span><span class="mli-tv-item"><span class="mli-tv-key is-b"></span>Task B: its rings and its arrow</span><span class="mli-tv-item"><span class="mli-tv-diamond"></span>Merged model</span></div>
+<div id="mli-tv-sliders" hidden>
+<label class="mli-tv-slider"><span class="mli-bits-lab">λ for A</span><input type="range" id="mli-tv-la" min="-1" max="1.5" step="0.1" value="1" disabled><output id="mli-tv-la-out">1.0</output></label>
+<label class="mli-tv-slider"><span class="mli-bits-lab">λ for B</span><input type="range" id="mli-tv-lb" min="-1" max="1.5" step="0.1" value="1" disabled><output id="mli-tv-lb-out">1.0</output></label>
+</div>
+{{- $kept := slice -}}
+{{- range $i, $t := $tasks -}}
+  {{- $loss := slice -}}
+  {{- range $p := slice (slice 0.0 0.0) (slice $t.tx $t.ty) (slice $mx $my) -}}
+    {{- $dx := sub (index $p 0) $t.cx }}{{ $dy := sub (index $p 1) $t.cy -}}
+    {{- $loss = $loss | append (mul 0.5 (add (add (mul $t.h00 (mul $dx $dx)) (mul 2 (mul $t.h01 (mul $dx $dy)))) (mul $t.h11 (mul $dy $dy)))) -}}
+  {{- end -}}
+  {{- $kept = $kept | append (div (sub (index $loss 0) (index $loss 2)) (sub (index $loss 0) (index $loss 1))) -}}
+{{- end -}}
+{{- $cos := div (add (mul $a.tx $b.tx) (mul $a.ty $b.ty)) (mul (math.Sqrt (add (mul $a.tx $a.tx) (mul $a.ty $a.ty))) (math.Sqrt (add (mul $b.tx $b.tx) (mul $b.ty $b.ty)))) -}}
+<dl class="mli-tv-read" id="mli-tv-read">
+{{- range $i, $k := $kept }}
+<div class="{{ index $kinds $i }}"><dt>Task {{ index $names $i }}: gain from fine-tuning kept</dt><dd id="mli-tv-kept-{{ $i }}">{{ math.Round (mul 100 $k) }}%</dd><span class="mli-tv-bar" aria-hidden="true"><span id="mli-tv-bar-{{ $i }}" style="width: {{ math.Max 0 (math.Min 100 (mul 100 $k)) }}%"></span></span></div>
+{{- end }}
+<div><dt>Angle between τ<sub>A</sub> and τ<sub>B</sub></dt><dd id="mli-tv-angle">{{ math.Round (math.ToDegrees (math.Acos $cos)) }}°</dd></div>
+</dl>
+<p class="mli-wc-follow" id="mli-tv-say" aria-live="polite">Both arrows added at full strength: base + τ<sub>A</sub> + τ<sub>B</sub>.</p>
+<noscript><p class="mli-caption">JavaScript is off, so this shows the first pair of tasks with both arrows added once. With it on, you can scale or flip each arrow and switch to a pair of tasks that clash.</p></noscript>
+<div class="mli-caption">Each ring joins weights that do one task equally well; the centre does it best. The arrows are task vectors: where {{ $d.steps }} small fine-tuning steps from the base ended up, minus the base, and a negative λ subtracts one. "Gain kept" is the share of a task's fine-tuning improvement that survives the merge; below zero, the merge does worse than the base. "Tasks that clash" shows the sign disagreement TIES-Merging resolves.</div>
+</div>

@@ -1,0 +1,9 @@
+# Data for {{< ml/basis-grid >}} (layouts/shortcodes/ml/basis-grid.html), the
+# key visual on content/articles/change-of-basis.md. These match the article's
+# worked example: along the river = (2, 1), up the bank = (-1, 2), and the
+# bakery at (3, 4) east/north, which is 2 along + 1 up (the shortcode works
+# that out).
+# Each point is [east, north]. Not {x, y}: YAML reads a bare y key as true.
+along: [2, 1]
+up: [-1, 2]
+bakery: [3, 4]

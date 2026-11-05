@@ -1,0 +1,48 @@
+# References for content/articles/error-detection.md, rendered by {{< ml/references >}}.
+# Listed in the order the article reaches them. Numbering is automatic.
+
+- tag: Memory
+  title: "DRAM Errors in the Wild: A Large-Scale Field Study"
+  url: https://www.cs.toronto.edu/~bianca/papers/sigmetrics09.pdf
+  meta: "Bianca Schroeder, Eduardo Pinheiro & Wolf-Dietrich Weber · SIGMETRICS/Performance 2009"
+  note: Memory errors across Google's fleet. About a third of machines saw at least one correctable error a year (Section 3.1). SECDED was the typical server code, but four of the six platforms studied used a form of chipkill (Sections 2 and 3.2).
+- tag: Hamming
+  title: Error Detecting and Error Correcting Codes
+  url: https://zoo.cs.yale.edu/classes/cs323/doc/Hamming.pdf
+  meta: "R. W. Hamming · Bell System Technical Journal 29(2), 147–160 · 1950"
+  note: Parity checks, the relay computers that halted over nights and weekends (Section 1), the single-error-correcting code with checks in positions 1, 2 and 4 (Section 3), and minimum distance (Section 5).
+- tag: Checksums
+  title: "ZLIB Compressed Data Format Specification version 3.3 (RFC 1950)"
+  url: https://www.rfc-editor.org/rfc/rfc1950
+  meta: "P. Deutsch & J-L. Gailly · IETF · 1996"
+  note: Section 2.2 defines Adler-32, two sums per byte where the second adds up the running totals of the first, so byte order changes the result.
+- tag: CRC
+  title: Cyclic Codes for Error Detection
+  url: https://doi.org/10.1109/JRPROC.1961.287814
+  meta: "W. W. Peterson & D. T. Brown · Proceedings of the IRE 49(1), 228–235 · 1961"
+  note: Cyclic codes described with polynomials, the properties of Hamming and Fire codes, and what cyclic codes can detect.
+- tag: Bursts
+  title: Burst error-correcting code
+  url: https://en.wikipedia.org/wiki/Burst_error-correcting_code
+  meta: Wikipedia
+  note: Why errors arrive in runs of neighbouring bits, such as a scratch on a disc or lightning near a radio link.
+- tag: Intro
+  title: Cyclic redundancy check
+  url: https://en.wikipedia.org/wiki/Cyclic_redundancy_check
+  meta: Wikipedia
+  note: How CRCs are computed, the polynomials used by Ethernet and others, and the rule that an n-bit CRC detects any single burst of up to n bits.
+- tag: Intro
+  title: Ethernet frame
+  url: https://en.wikipedia.org/wiki/Ethernet_frame
+  meta: Wikipedia
+  note: The frame layout, ending in a 32-bit CRC frame check sequence.
+- tag: Retries
+  title: Frame check sequence
+  url: https://en.wikipedia.org/wiki/Frame_check_sequence
+  meta: Wikipedia
+  note: A receiver whose computed check doesn't match the frame's discards the frame; Ethernet itself doesn't resend it.
+- tag: Retries
+  title: "Transmission Control Protocol (TCP) (RFC 9293)"
+  url: https://www.rfc-editor.org/rfc/rfc9293
+  meta: "W. Eddy (ed.) · IETF · 2022"
+  note: Section 2.2. TCP finds lost and damaged segments with sequence numbers and checksums, and corrects them by retransmission.

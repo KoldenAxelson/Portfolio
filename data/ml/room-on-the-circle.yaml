@@ -1,0 +1,7 @@
+# Settings for {{< ml/room-on-the-circle >}}: a tree with "branching"
+# children per node, levels "edge" apart, compared over levels 1 to "levels".
+# The first settings render with JS off; the template and room-on-the-circle.ts
+# work out the same three curves.
+branching: 2
+edge: 1.0
+levels: 12

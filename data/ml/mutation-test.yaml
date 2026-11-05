@@ -1,0 +1,36 @@
+# Data for {{< ml/mutation-test >}}: a leap-year function, small broken
+# versions of it (mutants), and tests. Each version is described by the same
+# parameters, read the same way in the template and in mutation-test.ts:
+#   leap(y) = A(y) <join> B(y), where
+#   A(y) = (y % four <first> 0) and, if century, (y % 100 <hundred> 0)
+#   B(y) = y % fourhundred == 0, if keep400 (otherwise B is left out)
+# <first> and <hundred> are "eq" (==) or "ne" (!=); <join> is "or" or "and".
+# "code" is how the version is shown; keep it in step with the parameters.
+# A test either checks a year's answer ("year" and "expect") or only checks
+# that the answer is true or false ("kind: type"), which no version can fail.
+# Tests with inSuite: true make up the starting suite (also with JS off).
+versions:
+  - name: "The real one"
+    code: "(y % 4 == 0 && y % 100 != 0) || y % 400 == 0"
+    params: { four: 4, first: eq, century: true, hundred: ne, join: or, keep400: true, fourhundred: 400 }
+  - name: "Forgot the century rule"
+    code: "y % 4 == 0 || y % 400 == 0"
+    params: { four: 4, first: eq, century: false, hundred: ne, join: or, keep400: true, fourhundred: 400 }
+  - name: "Flipped != to =="
+    code: "(y % 4 == 0 && y % 100 == 0) || y % 400 == 0"
+    params: { four: 4, first: eq, century: true, hundred: eq, join: or, keep400: true, fourhundred: 400 }
+  - name: "|| became &&"
+    code: "(y % 4 == 0 && y % 100 != 0) && y % 400 == 0"
+    params: { four: 4, first: eq, century: true, hundred: ne, join: and, keep400: true, fourhundred: 400 }
+  - name: "400 became 100"
+    code: "(y % 4 == 0 && y % 100 != 0) || y % 100 == 0"
+    params: { four: 4, first: eq, century: true, hundred: ne, join: or, keep400: true, fourhundred: 100 }
+  - name: "Dropped the 400 rule"
+    code: "y % 4 == 0 && y % 100 != 0"
+    params: { four: 4, first: eq, century: true, hundred: ne, join: or, keep400: false, fourhundred: 400 }
+tests:
+  - { label: "2024 is a leap year", year: 2024, expect: true, inSuite: true }
+  - { label: "2023 isn't", year: 2023, expect: false, inSuite: true }
+  - { label: "It returns true or false", kind: type, inSuite: true }
+  - { label: "1900 isn't", year: 1900, expect: false, inSuite: false }
+  - { label: "2000 is", year: 2000, expect: true, inSuite: false }

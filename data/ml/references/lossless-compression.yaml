@@ -1,0 +1,33 @@
+# References for content/articles/lossless-compression.md, rendered by {{< ml/references >}}.
+# Listed in the order the article reaches them. Numbering is automatic.
+
+- tag: Lifting
+  title: "The Lifting Scheme: A Custom-Design Construction of Biorthogonal Wavelets"
+  url: http://cm-bell-labs.github.io/who/wim/papers/lift1.pdf
+  meta: Wim Sweldens · Applied and Computational Harmonic Analysis 3(2) · 1996
+  note: The paper that introduced the lifting scheme for building wavelets.
+- tag: Lifting
+  title: Factoring Wavelet Transforms into Lifting Steps
+  url: https://sites.math.duke.edu/~ingrid/publications/J_Four_Anal_Appl_4_p247.pdf
+  meta: Daubechies & Sweldens · Journal of Fourier Analysis and Applications 4(3) · 1998
+  note: A tutorial; any wavelet transform with finite filters breaks into lifting steps, and "no matter how P and U are chosen, the scheme is always invertible."
+- tag: Integers
+  title: Wavelet Transforms That Map Integers to Integers
+  url: http://cm-bell-labs.github.io/who/wim/papers/integer.pdf
+  meta: Calderbank, Daubechies, Sweldens & Yeo · Applied and Computational Harmonic Analysis 5(3) · 1998
+  note: The S transform, rounding inside lifting steps that stays invertible, the integer (2,2) transform (JPEG 2000's 5/3 filters, with the predict step rounded slightly differently), and lossless bit rates on ISO test images (Table 2).
+- tag: Test images
+  title: "The LOCO-I Lossless Image Compression Algorithm: Principles and Standardization into JPEG-LS"
+  url: https://doi.org/10.1109/83.855427
+  meta: Weinberger, Seroussi & Sapiro · IEEE Transactions on Image Processing 9(8) · 2000
+  note: Table II lists "woman" among the 8-bit-per-sample images in the ISO test set Calderbank and colleagues used.
+- tag: Standard
+  title: "ITU-T T.800: JPEG 2000 image coding system: Core coding system"
+  url: https://www.itu.int/rec/T-REC-T.800
+  meta: ITU-T · ISO/IEC 15444-1
+  note: Annex F defines the reversible 5-3 wavelet filter as integer lifting steps; Annex G defines the reversible colour transform.
+- tag: Use
+  title: "DICOM PS3.5, 8.2.4: JPEG 2000 Image Compression"
+  url: https://dicom.nema.org/medical/dicom/current/output/chtml/part05/sect_8.2.4.html
+  meta: NEMA · DICOM Standard
+  note: Transfer syntaxes for JPEG 2000 in medical imaging, including "JPEG 2000 (Lossless Only)", described as lossless (bit preserving).

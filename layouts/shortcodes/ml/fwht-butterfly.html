@@ -1,0 +1,74 @@
+{{- /*
+  ml-fwht-butterfly — the 8-point fast Walsh–Hadamard transform as a butterfly
+  diagram: three stages of a + b and a − b, pairs 1, 2, then 4 apart. With JS
+  you step through the stages, switch inputs, and pick any number to see what
+  it was made from, what reuses it, and (for outputs) the direct sum it equals.
+
+    {{< ml/fwht-butterfly >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml/assets.html (css/pages/ml/demos.css, scripts/pages/ml/
+  fwht-butterfly.ts). Inputs live in data/ml/fwht-butterfly.yaml; the first
+  set renders here in full, every stage worked out in this template, so the
+  diagram reads with JS off.
+*/ -}}
+{{- $d := index site.Data.ml "fwht-butterfly" -}}
+{{- range $d.presets }}{{ if ne (len .values) 8 }}{{ errorf "fwht-butterfly: preset %q needs 8 values" .name }}{{ end }}{{ end -}}
+{{- $first := index $d.presets 0 -}}
+{{- $size := len $first.values -}}
+{{- $cols := dict "0" $first.values -}}
+{{- range $k, $s := slice 1 2 4 -}}
+  {{- $cur := index $cols (string $k) -}}
+  {{- $next := slice -}}
+  {{- range $j := seq 0 7 -}}
+    {{- if eq (mod (div $j $s) 2) 0 -}}{{ $next = $next | append (add (index $cur $j) (index $cur (add $j $s))) }}
+    {{- else -}}{{ $next = $next | append (sub (index $cur (sub $j $s)) (index $cur $j)) }}{{- end -}}
+  {{- end -}}
+  {{- $cols = merge $cols (dict (string (add $k 1)) $next) -}}
+{{- end -}}
+{{- $colX := slice 36 177 318 452 -}}
+{{- $w := 56 -}}{{- $hgt := 30 -}}
+{{- $heads := slice "Input" "Stage 1" "Stage 2" "Stage 3" -}}
+{{- $subs := slice "" "pairs 1 apart" "pairs 2 apart" "pairs 4 apart" -}}
+<div class="not-prose mli-demo mli-fw" id="mli-fw" data-presets="{{ jsonify $d.presets }}">
+<div class="mli-demo-label">Live · the 8-number butterfly, a stage at a time</div>
+<div id="mli-fw-controls" hidden>
+<div class="mli-rag-qs" role="group" aria-label="Input">
+<span class="mli-bits-lab">Input:</span>
+{{- range $i, $p := $d.presets }}<button class="mli-rag-q{{ if eq $i 0 }} is-on{{ end }}" type="button" aria-pressed="{{ eq $i 0 }}" data-preset="{{ $i }}" disabled>{{ $p.name }}</button>{{ end -}}
+<button class="mli-rag-q" type="button" aria-pressed="false" data-preset="random" disabled>Random</button>
+</div>
+</div>
+<svg class="mli-fw-svg" id="mli-fw-svg" viewBox="0 0 488 352" role="group" aria-label="Butterfly diagram: 8 inputs on the left, three stages of adding and subtracting, 8 outputs on the right">
+{{- range $c := seq 0 3 }}
+<text class="mli-fw-head" x="{{ index $colX $c }}" y="14" text-anchor="middle">{{ index $heads $c }}</text>
+{{- with index $subs $c }}<text class="mli-fw-sub" x="{{ index $colX $c }}" y="31" text-anchor="middle">{{ . }}</text>{{ end }}
+{{- end }}
+<g class="mli-fw-lines">
+{{- range $c := seq 1 3 }}{{ $s := index (slice 0 1 2 4) $c }}
+{{- range $j := seq 0 7 }}
+{{- $top := eq (mod (div $j $s) 2) 0 -}}
+{{- $a := cond $top $j (sub $j $s) -}}{{- $b := add $a $s -}}
+{{- $y := add 52 (mul $j 40) -}}
+{{- $x1 := add (index $colX (sub $c 1)) (div $w 2) -}}{{- $x2 := sub (index $colX $c) (div $w 2) -}}
+<line class="mli-fw-line is-plus" data-col="{{ $c }}" data-from="{{ $a }}" data-to="{{ $j }}" x1="{{ $x1 }}" y1="{{ add 52 (mul $a 40) }}" x2="{{ $x2 }}" y2="{{ $y }}"/>
+<line class="mli-fw-line {{ if $top }}is-plus{{ else }}is-minus{{ end }}" data-col="{{ $c }}" data-from="{{ $b }}" data-to="{{ $j }}" x1="{{ $x1 }}" y1="{{ add 52 (mul $b 40) }}" x2="{{ $x2 }}" y2="{{ $y }}"/>
+{{- end }}{{ end }}
+</g>
+<g class="mli-fw-nodes">
+{{- range $c := seq 0 3 }}{{ $col := index $cols (string $c) }}
+{{- range $j := seq 0 7 }}
+<g class="mli-fw-node" data-col="{{ $c }}" data-row="{{ $j }}"><rect x="{{ sub (index $colX $c) (div $w 2) }}" y="{{ sub (add 52 (mul $j 40)) (div $hgt 2) }}" width="{{ $w }}" height="{{ $hgt }}" rx="6"/><text x="{{ index $colX $c }}" y="{{ add 57 (mul $j 40) }}" text-anchor="middle">{{ replace (string (index $col $j)) "-" "−" }}</text></g>
+{{- end }}{{ end }}
+</g>
+</svg>
+<div class="mli-fw-legend" aria-hidden="true"><span class="mli-fw-item"><span class="mli-fw-key is-plus"></span>adds in</span><span class="mli-fw-item"><span class="mli-fw-key is-minus"></span>subtracts in (the lower number of each pair)</span></div>
+<p class="mli-lr-stage" id="mli-fw-stage" aria-live="polite">All three stages: 8 inputs become 8 outputs in {{ mul $size 3 }} adds and subtracts. Working each output out directly would take {{ mul $size (sub $size 1) }}.</p>
+<p class="mli-wc-follow" id="mli-fw-detail" aria-live="polite"></p>
+<div class="mli-et-actions" id="mli-fw-actions" hidden>
+<button class="mli-rag-q" type="button" id="mli-fw-back" disabled>Step back</button><button class="mli-rag-q" type="button" id="mli-fw-forward" disabled>Step forward</button>
+<span class="mli-fw-count" id="mli-fw-count"></span>
+</div>
+<noscript><p class="mli-caption">JavaScript is off, so all three stages show at once. With it on, you can step through them, swap the inputs, and pick any number to see what it was made from and which outputs reuse it.</p></noscript>
+<div class="mli-caption">The fast Walsh–Hadamard transform on 8 made-up numbers, worked out for real. Each stage pairs every number with the one 1, 2, then 4 places along: the upper box of each pair gets a + b, the lower one gets a − b. The outputs come out in the standard (Sylvester) order, the one scipy.linalg.hadamard uses. Picking a number outlines everything it was made from and shades everything that reuses it.</div>
+</div>

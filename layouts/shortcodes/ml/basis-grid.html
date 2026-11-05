@@ -1,0 +1,41 @@
+{{- /*
+  ml-basis-grid — one town, two grids: your east/north grid and the fisher's
+  along-the-river grid. Drag the bakery or the fisher's arrows; both sets of
+  coordinates and the change-of-basis matrix update. A button replays the same
+  matrix read as a move instead of a relabelling.
+
+    {{< ml/basis-grid >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml/assets.html (css/pages/ml/demos.css, scripts/pages/ml/
+  basis-grid.ts, which draws the SVG). Defaults live in data/ml/basis-grid.yaml;
+  the readouts below are its default state, so they read with JS off.
+*/ -}}
+{{- $d := index site.Data.ml "basis-grid" -}}
+{{- $a := $d.along -}}{{- $u := $d.up -}}{{- $b := $d.bakery -}}
+{{- $det := float (sub (mul (index $a 0) (index $u 1)) (mul (index $a 1) (index $u 0))) -}}
+{{- $fisher := slice (div (sub (mul (index $b 0) (index $u 1)) (mul (index $b 1) (index $u 0))) $det) (div (sub (mul (index $a 0) (index $b 1)) (mul (index $a 1) (index $b 0))) $det) -}}
+<div class="not-prose mli-demo mli-bg" id="mli-bg" data-along="{{ jsonify $d.along }}" data-up="{{ jsonify $d.up }}" data-bakery="{{ jsonify $d.bakery }}">
+<div class="mli-demo-label">Live · one town, two grids</div>
+<svg class="mli-bg-plot" id="mli-bg-plot" viewBox="0 0 400 400" role="img" aria-label="A town map with two grids drawn over it: a square east and north street grid, and a tilted grid that follows the river. The bakery sits where both grids give it a pair of numbers."></svg>
+<ul class="mli-bg-key" id="mli-bg-key" aria-label="Key" hidden>
+<li class="is-you"><span class="mli-bg-swatch" aria-hidden="true"></span>Your route: east, then north (short dashes)</li>
+<li class="is-fisher"><span class="mli-bg-swatch" aria-hidden="true"></span>The fisher’s route: along the river, then up the bank (long dashes)</li>
+</ul>
+<div class="mli-bg-read" aria-live="polite">
+<p id="mli-bg-you">You: {{ index $d.bakery 0 }} east, {{ index $d.bakery 1 }} north, so ({{ index $d.bakery 0 }}, {{ index $d.bakery 1 }}).</p>
+<p id="mli-bg-fisher">The fisher: {{ index $fisher 0 }} along, {{ index $fisher 1 }} up the bank, so ({{ index $fisher 0 }}, {{ index $fisher 1 }}).</p>
+<p class="mli-bg-note" id="mli-bg-note"></p>
+</div>
+{{- $m := slice (index $d.along 0) (index $d.along 1) (index $d.up 0) (index $d.up 1) (index $fisher 0) (index $fisher 1) (index $d.bakery 0) (index $d.bakery 1) -}}
+{{- $s := slice -}}{{- range $m }}{{ $s = $s | append (replace (string .) "-" "−") }}{{ end -}}
+{{- /* basis-grid.ts (writeReadouts) rebuilds this markup and sentence; change both. */ -}}
+<div class="mli-bg-matrix" id="mli-bg-matrix"><span class="mli-bg-m"><span class="mli-bg-col"><span class="is-fisher">{{ index $s 0 }}</span><span class="is-fisher">{{ index $s 1 }}</span></span><span class="mli-bg-col"><span class="is-fisher">{{ index $s 2 }}</span><span class="is-fisher">{{ index $s 3 }}</span></span></span><span class="mli-bg-op">×</span><span class="mli-bg-m"><span class="mli-bg-col"><span class="is-fisher">{{ index $s 4 }}</span><span class="is-fisher">{{ index $s 5 }}</span></span></span><span class="mli-bg-op">=</span><span class="mli-bg-m"><span class="mli-bg-col"><span class="is-you">{{ index $s 6 }}</span><span class="is-you">{{ index $s 7 }}</span></span></span><span class="mli-bg-eq">The columns are the fisher’s arrows in east/north terms. Times the fisher’s numbers, out come yours.</span></div>
+<div class="mli-et-actions" id="mli-bg-actions" hidden>
+<button class="mli-rag-q" type="button" id="mli-bg-mode" aria-pressed="false" disabled>Read it as a move</button>
+<button class="mli-rag-q" type="button" id="mli-bg-reset" disabled>Reset</button>
+<span class="mli-et-hint">Drag the bakery or the ends of the fisher’s arrows (or focus one and use the arrow keys).</span>
+</div>
+<noscript><p class="mli-caption">JavaScript is off, so the map can't be drawn. With it on, you can drag the bakery and the fisher's arrows and watch both pairs of numbers, and the matrix between them, change.</p></noscript>
+<div class="mli-caption">The numbers are worked out for the grid you set up, rounded to two decimal places. The town is made up, but the arithmetic is the article's: the fisher's numbers are whatever amounts of the two river arrows land on the bakery, and the matrix's columns are those arrows in east/north terms. Put both arrows on one line and the fisher's grid collapses, because they're no longer a basis.</div>
+</div>

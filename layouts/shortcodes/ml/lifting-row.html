@@ -1,0 +1,38 @@
+{{- /*
+  ml-lifting-row — a row of 16 pixels lifted (predict, then update) and undone
+  a step at a time, with a second mode that uses a rounded average and
+  half-difference and can't be undone exactly.
+
+    {{< ml/lifting-row >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml/assets.html (css/pages/ml/demos.css, scripts/pages/ml/
+  lifting-row.ts, which uses lifting.ts). Rows live in data/ml/lifting-row.yaml;
+  the first one renders here so the demo reads with JS off.
+*/ -}}
+{{- $d := index site.Data.ml "lifting-row" -}}
+{{- $first := index $d.presets 0 -}}
+<div class="not-prose mli-demo mli-lr" id="mli-lr" data-presets="{{ jsonify $d.presets }}">
+<div class="mli-demo-label">Live · lifting a row, then undoing it{{ partial "ml/caution.html" (dict "id" "mli-lr-note" "text" "Illustrative rows. The rows are made up; the lifting steps, the rounded method and both undo checks are real arithmetic on them.") }}</div>
+<div id="mli-lr-controls" hidden>
+<div class="mli-rag-qs" role="group" aria-label="Row">
+<span class="mli-bits-lab">Row:</span>
+{{- range $i, $p := $d.presets }}<button class="mli-rag-q{{ if eq $i 0 }} is-on{{ end }}" type="button" aria-pressed="{{ eq $i 0 }}" data-preset="{{ $i }}" disabled>{{ $p.name }}</button>{{ end -}}
+</div>
+<div class="mli-rag-qs" role="group" aria-label="Method">
+<span class="mli-bits-lab">Method:</span>
+<button class="mli-rag-q is-on" type="button" aria-pressed="true" data-mode="lifting" disabled>Lifting steps</button><button class="mli-rag-q" type="button" aria-pressed="false" data-mode="rounded" disabled>Rounded average and difference</button>
+</div>
+</div>
+<div class="mli-lr-cells" id="mli-lr-cells" style="--mli-lr-count: {{ len $first.row }}">
+{{- range $i, $v := $first.row }}<span class="mli-lr-cell" style="--mli-lr-grey: rgb({{ $v }} {{ $v }} {{ $v }})"><span class="mli-lr-num">{{ $v }}</span></span>{{ end -}}
+</div>
+<p class="mli-lr-stage" id="mli-lr-stage" aria-live="polite">Step 0: the row, as {{ len $first.row }} pixel values.</p>
+<p class="mli-wc-follow" id="mli-lr-detail"></p>
+<p class="mli-lr-check" id="mli-lr-check" aria-live="polite"></p>
+<div class="mli-et-actions" id="mli-lr-actions" hidden>
+<button class="mli-rag-q" type="button" id="mli-lr-back" disabled>Step back</button><button class="mli-rag-q" type="button" id="mli-lr-forward" disabled>Step forward</button>
+</div>
+<noscript><p class="mli-caption">JavaScript is off, so only the row shows. With it on, you can step it through the predict and update steps and back again, and compare a method that can't be undone.</p></noscript>
+<div class="mli-caption">The 5/3 lifting steps lossless JPEG 2000 uses, as real whole-number arithmetic on made-up rows mirrored at their ends. Stepping back runs the inverse steps on the numbers in front of you rather than replaying the start, so the final check is a real one. Solid blue borders mark even positions and dashed orange ones odd positions; cells shaded by their value hold pixel-like values, and plain cells hold details.</div>
+</div>

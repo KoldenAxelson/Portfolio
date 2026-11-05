@@ -1,0 +1,30 @@
+{{- /*
+  ml-token-ids — pick a sentence, see GPT-2's real tokenizer split it and each
+  token become its real row number in the embedding table.
+
+    {{< ml/token-ids >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml/assets.html (css/pages/ml/demos.css, scripts/pages/ml/token-ids.ts).
+  Every sentence's tokens and row numbers come from tiktoken's gpt2 encoding and
+  are stored in data/ml/token-ids.yaml, so the page shows real numbers with JS
+  off; the script only switches sentences and lights up repeated tokens.
+*/ -}}
+{{- $data := index site.Data.ml "token-ids" -}}
+<div class="not-prose mli-demo" id="mli-tid">
+<div class="mli-demo-label">Live · text into row numbers</div>
+<div class="mli-rag-qs" role="group" aria-label="Example text">
+{{- range $i, $p := $data.presets }}<button class="mli-rag-q{{ if eq $i 0 }} is-on{{ end }}" type="button" aria-pressed="{{ eq $i 0 }}" data-preset="{{ $i }}" disabled>{{ $p.text }}</button>{{ end -}}
+</div>
+{{- range $i, $p := $data.presets }}
+{{- $seen := slice }}{{ range $p.pieces }}{{ if not (in $seen (index . 0)) }}{{ $seen = $seen | append (index . 0) }}{{ end }}{{ end }}
+{{- $n := len $p.pieces }}{{ $d := len $seen }}
+<div data-sentence="{{ $i }}"{{ if ne $i 0 }} hidden{{ end }}>
+<div class="mli-tid-chips">
+{{- range $p.pieces }}<span class="mli-tid-chip" data-token="{{ index . 0 }}"><span class="mli-tid-tok">{{ replace (index . 0) " " "␣" }}</span><span class="mli-tid-row">{{ index . 1 }}</span></span>{{ end -}}
+</div>
+<div class="mli-tok-stat"><b>{{ $n }} tokens</b>, so {{ $n }} rows to look up{{ if lt $d $n }} ({{ $d }} different rows: repeats reuse theirs){{ end }}.</div>
+</div>
+{{- end }}
+<div class="mli-caption">GPT-2's real tokenizer and row numbers. Each chip is one token (␣ is a leading space) over the row it reads; point at one to light up every copy. " cat", " Cat" and "cat" are three different rows, and so are " Monday" and "Monday".</div>
+</div>

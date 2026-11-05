@@ -1,0 +1,74 @@
+{{- /*
+  ml-merge-symmetry — why averaging needs a shared trained start. A made-up
+  two-weight model (output = w1 × w2 × input) has two equally good valleys,
+  because flipping both signs gives the same model. Two runs from one start
+  land in the same valley and average fine; two runs from separate starts
+  can land in opposite valleys, and their average is useless until one is
+  flipped to match.
+
+    {{< ml/merge-symmetry >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml/assets.html (css/pages/ml/demos.css, scripts/pages/ml/
+  merge-symmetry.ts). Runs live in data/ml/merge-symmetry.yaml; the first
+  pair is trained here too, with the same steps as the script, so the demo
+  reads with JS off.
+*/ -}}
+{{- $d := index site.Data.ml "merge-symmetry" -}}
+{{- $pair := index $d.pairs 0 -}}
+{{- $scale := 60.0 }}{{ $o := 150.0 }}{{ $c := float $d.target -}}
+{{- $runs := slice -}}
+{{- range $pair.starts -}}
+  {{- $w1 := float (index . 0) }}{{ $w2 := float (index . 1) -}}
+  {{- $pts := slice (printf "%.1f,%.1f" (add $o (mul $scale $w1)) (sub $o (mul $scale $w2))) -}}
+  {{- range seq $d.steps -}}
+    {{- $e := sub (mul $w1 $w2) $c -}}
+    {{- $n1 := sub $w1 (mul $d.rate (mul $e $w2)) }}{{ $n2 := sub $w2 (mul $d.rate (mul $e $w1)) -}}
+    {{- $w1 = $n1 }}{{ $w2 = $n2 -}}
+    {{- $pts = $pts | append (printf "%.1f,%.1f" (add $o (mul $scale $w1)) (sub $o (mul $scale $w2))) -}}
+  {{- end -}}
+  {{- $runs = $runs | append (dict "w1" $w1 "w2" $w2 "path" (delimit $pts " ")) -}}
+{{- end -}}
+{{- $a := index $runs 0 }}{{ $b := index $runs 1 -}}
+{{- $m1 := div (add $a.w1 $b.w1) 2 }}{{ $m2 := div (add $a.w2 $b.w2) 2 -}}
+{{- $valley := slice }}{{ $valleyNeg := slice -}}
+{{- range $i := seq 0 40 -}}
+  {{- $x := add (div $c 2.5) (mul (float $i) (div (sub 2.5 (div $c 2.5)) 40)) -}}
+  {{- $valley = $valley | append (printf "%.1f,%.1f" (add $o (mul $scale $x)) (sub $o (mul $scale (div $c $x)))) -}}
+  {{- $valleyNeg = $valleyNeg | append (printf "%.1f,%.1f" (sub $o (mul $scale $x)) (add $o (mul $scale (div $c $x)))) -}}
+{{- end -}}
+{{- $kinds := slice "is-a" "is-b" }}{{ $names := slice "A" "B" -}}
+<div class="not-prose mli-demo mli-ms" id="mli-ms" data-config="{{ jsonify $d }}" data-scale="{{ $scale }}" data-origin="{{ $o }}">
+<div class="mli-demo-label">Live · averaging two models{{ partial "ml/caution.html" (dict "id" "mli-ms-note" "text" "Illustrative model. Its output is weight 1 × weight 2 × input, trained to double its input. Real networks have far more ways to rearrange themselves than one sign flip, but the training runs and the averages here are real arithmetic.") }}</div>
+<div id="mli-ms-controls" hidden>
+<div class="mli-rag-qs" role="group" aria-label="Runs">
+<span class="mli-bits-lab">Runs:</span>
+{{- range $i, $p := $d.pairs }}<button class="mli-rag-q{{ if eq $i 0 }} is-on{{ end }}" type="button" aria-pressed="{{ eq $i 0 }}" data-pair="{{ $i }}" disabled>{{ $p.name }}</button>{{ end -}}
+<button class="mli-rag-q" type="button" aria-pressed="false" id="mli-ms-flip" disabled>Flip B's signs first</button>
+</div>
+</div>
+<svg class="mli-ms-svg" id="mli-ms-svg" viewBox="0 0 300 300" role="img" aria-labelledby="mli-ms-title">
+<title id="mli-ms-title">Weight space of a two-weight model. Two curved valleys where weight 1 times weight 2 equals {{ $d.target }}, one top right and one bottom left. Two training paths, their end points A and B, and their average.</title>
+<line class="mli-tv-axis" x1="0" x2="300" y1="{{ $o }}" y2="{{ $o }}"/><line class="mli-tv-axis" x1="{{ $o }}" x2="{{ $o }}" y1="0" y2="300"/>
+<polyline class="mli-ms-valley" points="{{ delimit $valley " " }}"/><polyline class="mli-ms-valley" points="{{ delimit $valleyNeg " " }}"/>
+<text class="mli-tv-axlab" x="292" y="34" text-anchor="end">good: w₁ × w₂ = {{ $d.target }}</text><text class="mli-tv-axlab" x="8" y="292">also good</text>
+<text class="mli-tv-axlab" x="294" y="{{ sub $o 6 }}" text-anchor="end">weight 1</text><text class="mli-tv-axlab" x="{{ add $o 6 }}" y="14">weight 2</text>
+{{- range $i, $r := $runs }}
+<polyline class="mli-ms-path {{ index $kinds $i }}" id="mli-ms-path-{{ $i }}" points="{{ $r.path }}"/>
+<circle class="mli-tv-ftdot {{ index $kinds $i }}" id="mli-ms-dot-{{ $i }}" cx="{{ add $o (mul $scale $r.w1) }}" cy="{{ sub $o (mul $scale $r.w2) }}" r="4.5"/>
+<text class="mli-tv-lab" id="mli-ms-lab-{{ $i }}" x="{{ add $o (mul $scale $r.w1) 8 }}" y="{{ add (sub $o (mul $scale $r.w2)) 4 }}">{{ index $names $i }}</text>
+{{- end }}
+<circle class="mli-ms-flipdot" id="mli-ms-flipdot" cx="{{ $o }}" cy="{{ $o }}" r="4.5" hidden/>
+<rect class="mli-tv-merged" id="mli-ms-avg" x="{{ sub (add $o (mul $scale $m1)) 6 }}" y="{{ sub (sub $o (mul $scale $m2)) 6 }}" width="12" height="12" transform="rotate(45 {{ add $o (mul $scale $m1) }} {{ sub $o (mul $scale $m2) }})"/>
+<text class="mli-tv-lab is-strong" id="mli-ms-avglab" x="{{ sub (add $o (mul $scale $m1)) 10 }}" y="{{ add (sub $o (mul $scale $m2)) 18 }}" text-anchor="end">Average</text>
+</svg>
+<div class="mli-tv-legend" aria-hidden="true"><span class="mli-tv-item"><span class="mli-tv-key is-a"></span>Run A</span><span class="mli-tv-item"><span class="mli-tv-key is-b"></span>Run B</span><span class="mli-tv-item"><span class="mli-tv-diamond"></span>Average of the two</span><span class="mli-tv-item"><span class="mli-ms-key"></span>Valleys: every point does the job</span></div>
+<dl class="mli-tv-read mli-ms-read">
+<div class="is-a"><dt>Model A, given 1</dt><dd id="mli-ms-out-0">{{ lang.FormatNumber 2 (mul $a.w1 $a.w2) }}</dd></div>
+<div class="is-b"><dt>Model B, given 1</dt><dd id="mli-ms-out-1">{{ lang.FormatNumber 2 (mul $b.w1 $b.w2) }}</dd></div>
+<div><dt>Average, given 1</dt><dd id="mli-ms-out-avg">{{ lang.FormatNumber 2 (mul $m1 $m2) }}</dd></div>
+</dl>
+<p class="mli-wc-follow" id="mli-ms-say" aria-live="polite">Both runs ended in the same valley, so their average is still a good model: it outputs {{ lang.FormatNumber 2 (mul $m1 $m2) }}.</p>
+<noscript><p class="mli-caption">JavaScript is off, so this shows the two runs from nearby starts. With it on, you can switch to two runs from separate starts and flip one to match the other.</p></noscript>
+<div class="mli-caption">Both valleys are perfect: flipping both weights' signs gives the same model, like reordering hidden units. Nearby starts stand in for two fine-tunes of one base, separate starts for two models trained separately; with no data-order noise, this toy can't show the shared-random-start case. The paths are {{ $d.steps }} training steps toward a model that doubles its input, and the readouts show each model's output for an input of 1 (the right answer is {{ $d.target }}).</div>
+</div>

@@ -1,0 +1,17 @@
+# Data for {{< ml/token-ids >}} (layouts/shortcodes/ml/token-ids.html).
+#
+# Real GPT-2 tokens and row numbers, from tiktoken's gpt2 encoding
+# (tiktoken 0.14). Regenerate with
+#   python3 -c "import tiktoken;e=tiktoken.get_encoding('gpt2');print([(e.decode([t]),t) for t in e.encode(TEXT)])"
+# Each piece is [token text, row number].
+presets:
+  - text: "The cat sat on the mat. The Cat sat on the cat."
+    pieces: [["The", 464], [" cat", 3797], [" sat", 3332], [" on", 319], [" the", 262], [" mat", 2603], [".", 13], [" The", 383], [" Cat", 5181], [" sat", 3332], [" on", 319], [" the", 262], [" cat", 3797], [".", 13]]
+  - text: "cat, Cat, CAT and cats"
+    pieces: [["cat", 9246], [",", 11], [" Cat", 5181], [",", 11], [" CAT", 38348], [" and", 290], [" cats", 11875]]
+  - text: "An embedding table is a lookup."
+    pieces: [["An", 2025], [" embed", 11525], ["ding", 12083], [" table", 3084], [" is", 318], [" a", 257], [" lookup", 35847], [".", 13]]
+  - text: "GPT-2 has 50,257 rows."
+    pieces: [["G", 38], ["PT", 11571], ["-", 12], ["2", 17], [" has", 468], [" 50", 2026], [",", 11], ["257", 28676], [" rows", 15274], [".", 13]]
+  - text: "Monday, Tuesday and Wednesday"
+    pieces: [["Monday", 23810], [",", 11], [" Tuesday", 3431], [" and", 290], [" Wednesday", 3583]]

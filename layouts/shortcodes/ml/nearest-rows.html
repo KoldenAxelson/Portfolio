@@ -1,0 +1,27 @@
+{{- /*
+  ml-nearest-rows — pick a token, see the GPT-2 rows closest to its row.
+
+    {{< ml/nearest-rows >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml/assets.html (css/pages/ml/demos.css, scripts/pages/ml/
+  nearest-rows.ts). Every list is rendered here from data/ml/nearest-rows.json
+  (scripts/ml/build-embedding-table.py), so the first one reads with JS off;
+  the script only switches which list shows.
+*/ -}}
+{{- $data := index site.Data.ml "nearest-rows" -}}
+{{- $baseline := mul $data.randomAverage 100 -}}
+<div class="not-prose mli-demo" id="mli-nr" style="--mli-nr-base: {{ $baseline }}%">
+<div class="mli-demo-label">Live · the rows closest to a row, in GPT-2</div>
+<div class="mli-rag-qs" role="group" aria-label="Token to compare">
+{{- range $i, $q := $data.queries }}<button class="mli-rag-q mli-et-pick{{ if eq $i 0 }} is-on{{ end }}" type="button" aria-pressed="{{ eq $i 0 }}" data-query="{{ $i }}" disabled>{{ replace $q.token " " "␣" }}</button>{{ end -}}
+</div>
+{{- range $i, $q := $data.queries }}
+<ol class="mli-dec-bars mli-nr-list" data-query="{{ $i }}" aria-label="The {{ len $q.nearest }} rows closest to “{{ $q.token }}” (row {{ lang.FormatNumber 0 $q.id }})"{{ if $i }} hidden{{ end }}>
+{{- range $q.nearest }}<li class="mli-nn-bar"><b>{{ replace .token " " "␣" }}</b><span class="mli-nn-track"><span class="mli-nn-val" style="width: {{ mul .similarity 100 }}%"></span></span><span class="mli-nr-v">{{ printf "%.2f" .similarity }}</span></li>{{ end -}}
+</ol>
+{{- end }}
+<p class="mli-nr-key"><span class="mli-nr-mark" aria-hidden="true"></span>Two random rows average {{ printf "%.2f" $data.randomAverage }}</p>
+<noscript><p class="mli-caption">JavaScript is off, so only the first list shows. With it on, the buttons switch between tokens.</p></noscript>
+<div class="mli-caption">Real numbers from GPT-2 small's released table. Each score is the cosine similarity of two whole rows (all {{ index (index site.Data.ml "embedding-table") "width" }} numbers), checked against every one of its {{ lang.FormatNumber 0 (index (index site.Data.ml "embedding-table") "rows") }} rows: 1 means they point the same way. The line is the average for {{ lang.FormatNumber 0 $data.randomPairs }} random pairs, because GPT-2's rows all lean the same way, so even unrelated tokens score well above zero.</div>
+</div>

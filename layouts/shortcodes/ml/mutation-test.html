@@ -1,0 +1,58 @@
+{{- /*
+  ml-mutation-test — mutation testing on a leap-year function. Pick which tests
+  are in the suite; each small broken version of the function (a mutant) is
+  run against every test, and a mutant the suite never fails survives.
+
+    {{< ml/mutation-test >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml/assets.html (css/pages/ml/demos.css, scripts/pages/ml/
+  mutation-test.ts). Versions and tests live in data/ml/mutation-test.yaml;
+  the starting suite's grid is worked out here too, with the same rule as
+  the script, so the demo reads with JS off.
+*/ -}}
+{{- $d := index site.Data.ml "mutation-test" -}}
+{{- $answers := dict -}}
+{{- range $vi, $v := $d.versions -}}
+  {{- $p := $v.params -}}
+  {{- range $ti, $t := $d.tests -}}
+    {{- if $t.year -}}
+      {{- $y := $t.year -}}
+      {{- $a := cond (eq $p.first "eq") (eq (mod $y $p.four) 0) (ne (mod $y $p.four) 0) -}}
+      {{- if $p.century }}{{ $a = and $a (cond (eq $p.hundred "eq") (eq (mod $y 100) 0) (ne (mod $y 100) 0)) }}{{ end -}}
+      {{- $out := $a -}}
+      {{- if $p.keep400 }}{{ $bb := eq (mod $y $p.fourhundred) 0 }}{{ $out = cond (eq $p.join "or") (or $a $bb) (and $a $bb) }}{{ end -}}
+      {{- $answers = merge $answers (dict (printf "%d-%d" $vi $ti) $out) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+<div class="not-prose mli-demo mli-mt" id="mli-mt" data-config="{{ jsonify $d }}">
+<div class="mli-demo-label">Live · breaking the code to test the tests</div>
+<p class="mli-mt-intro">A function that says whether a year is a leap year, and five broken versions of it. A good test suite should fail every broken one.</p>
+<div class="mli-mt-tests" id="mli-mt-tests" role="group" aria-label="Tests in the suite">
+{{- range $ti, $t := $d.tests }}<label class="mli-mt-test"><input type="checkbox" data-test="{{ $ti }}"{{ if $t.inSuite }} checked{{ end }} disabled> {{ $t.label }}</label>{{ end -}}
+</div>
+<div class="mli-mt-wrap" tabindex="0" role="region" aria-label="Each version against each test">
+<table class="mli-mt-table" id="mli-mt-table">
+<thead><tr><th scope="col">Version</th>{{ range $ti, $t := $d.tests }}<th scope="col" class="mli-mt-col{{ if not $t.inSuite }} is-off{{ end }}" data-col="{{ $ti }}">{{ $t.label }}<span class="mli-mt-out"{{ if $t.inSuite }} hidden{{ end }}> (left out)</span></th>{{ end }}<th scope="col">Verdict</th></tr></thead>
+<tbody>
+{{- range $vi, $v := $d.versions -}}
+{{- $failed := 0 -}}
+{{- range $ti, $t := $d.tests }}{{ if and $t.inSuite $t.year (ne (index $answers (printf "%d-%d" $vi $ti)) $t.expect) }}{{ $failed = add $failed 1 }}{{ end }}{{ end -}}
+<tr data-row="{{ $vi }}"{{ if eq $vi 0 }} class="is-real"{{ else if eq $failed 0 }} class="is-survivor"{{ end }}><th scope="row"><span class="mli-mt-name">{{ $v.name }}</span><code>{{ $v.code }}</code></th>
+{{- range $ti, $t := $d.tests -}}
+  {{- $pass := true -}}
+  {{- if $t.year }}{{ $pass = eq (index $answers (printf "%d-%d" $vi $ti)) $t.expect }}{{ end -}}
+<td class="mli-mt-cell{{ if not $t.inSuite }} is-off{{ end }}{{ if $pass }} is-pass{{ else }} is-fail{{ end }}" data-col="{{ $ti }}">{{ if $pass }}passes{{ else }}fails{{ end }}</td>
+{{- end -}}
+<td class="mli-mt-verdict">{{ if eq $vi 0 }}{{ if eq $failed 0 }}passes, as it should{{ else }}fails: a test is wrong{{ end }}{{ else }}{{ if gt $failed 0 }}caught{{ else }}survives{{ end }}{{ end }}</td></tr>
+{{- end -}}
+</tbody>
+</table>
+</div>
+{{- $caught := 0 }}{{ $survivors := slice -}}
+{{- range $vi, $v := $d.versions }}{{ if gt $vi 0 }}{{ $f := 0 }}{{ range $ti, $t := $d.tests }}{{ if and $t.inSuite $t.year (ne (index $answers (printf "%d-%d" $vi $ti)) $t.expect) }}{{ $f = 1 }}{{ end }}{{ end }}{{ $caught = add $caught $f }}{{ if eq $f 0 }}{{ $survivors = $survivors | append $v.name }}{{ end }}{{ end }}{{ end -}}
+<p class="mli-lr-stage" id="mli-mt-say" aria-live="polite">This suite catches {{ $caught }} of the {{ sub (len $d.versions) 1 }} broken versions.{{ with $survivors }} Surviving: {{ delimit . "; " }}.{{ else }} Nothing slips through.{{ end }}</p>
+<noscript><p class="mli-caption">JavaScript is off, so this shows the starting suite. With it on, you can add and remove tests and see which broken versions slip through.</p></noscript>
+<div class="mli-caption">Every cell is computed: each version of the function is run on the test and its answer compared with the expected one. Greyed columns, marked "left out", are tests not in the suite. "Survives" means no test in the suite failed that broken version, so the suite would have let the bug through. The test that only checks the answer is true or false passes for every version here: it can't fail.</div>
+</div>

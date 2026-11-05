@@ -1,0 +1,15 @@
+# Message and corruptions for {{< ml/error-checks >}}. The message is byte
+# values (here "HELLO"). A preset either flips bits, numbered 0 to 39 from
+# the first byte's leftmost bit, or swaps two bytes (numbered from 0). The
+# first preset renders with JS off; the template and error-checks.ts work out
+# the same parity, sum and CRC-8.
+message: [72, 69, 76, 76, 79]
+presets:
+  - name: "One bit"
+    flip: [10]
+  - name: "Two bits that cancel"
+    flip: [15, 23]
+  - name: "Swap two letters"
+    swap: [1, 2]
+  - name: "A burst of 8"
+    flip: [12, 13, 14, 15, 16, 17, 18, 19]

@@ -1,0 +1,6 @@
+# Data for {{< ml/wrap-clock >}} (layouts/shortcodes/ml/wrap-clock.html), the
+# key visual on content/articles/wrap-around-math.md: the clock it opens on.
+bits: 4
+move: multiply
+k: 3
+bitsChoices: [3, 4, 5, 6]

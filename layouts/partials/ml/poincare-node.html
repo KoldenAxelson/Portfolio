@@ -1,0 +1,37 @@
+{{- /*
+  ml/poincare-node — lays out one node's subtree in the Poincaré disk, for
+  ml/poincare-tree with JS off. Called with a dict: x, y (this node), px, py
+  and root (its parent, unless root is true), left (levels still to place),
+  b (children per node), r (Euclidean radius of a child seen from its parent
+  moved to the centre, tanh(edge / 2)), path (string label). Returns a slice of
+  dicts: x, y, px, py, path, for every node below this one. Same steps as
+  poincare-tree.ts: move this node to the centre, find the parent's angle there,
+  spread the children over the other angles, move back.
+*/ -}}
+{{- $out := slice -}}
+{{- if gt .left 0 -}}
+  {{- $c := float .x }}{{ $d := float .y -}}
+  {{- $base := 0.0 }}{{ $slots := .b }}{{ $offset := 0 -}}
+  {{- if not .root -}}
+    {{- /* q = (parent − p) / (1 − conj(p) · parent) */ -}}
+    {{- $a := float .px }}{{ $bb := float .py -}}
+    {{- $nr := sub $a $c }}{{ $ni := sub $bb $d -}}
+    {{- $dr := sub 1 (add (mul $c $a) (mul $d $bb)) }}{{ $di := sub 0 (sub (mul $c $bb) (mul $d $a)) -}}
+    {{- $den := add (mul $dr $dr) (mul $di $di) -}}
+    {{- $qr := div (add (mul $nr $dr) (mul $ni $di)) $den }}{{ $qi := div (sub (mul $ni $dr) (mul $nr $di)) $den -}}
+    {{- $base = math.Atan2 $qi $qr }}{{ $slots = add .b 1 }}{{ $offset = 1 -}}
+  {{- end -}}
+  {{- range $k := seq 0 (sub $.b 1) -}}
+    {{- $ang := add $base (div (mul 2 (mul math.Pi (add $k $offset))) $slots) -}}
+    {{- $zr := mul $.r (math.Cos $ang) }}{{ $zi := mul $.r (math.Sin $ang) -}}
+    {{- /* child = (z + p) / (1 + conj(p) · z) */ -}}
+    {{- $nr := add $zr $c }}{{ $ni := add $zi $d -}}
+    {{- $dr := add 1 (add (mul $c $zr) (mul $d $zi)) }}{{ $di := sub (mul $c $zi) (mul $d $zr) -}}
+    {{- $den := add (mul $dr $dr) (mul $di $di) -}}
+    {{- $x := div (add (mul $nr $dr) (mul $ni $di)) $den }}{{ $y := div (sub (mul $ni $dr) (mul $nr $di)) $den -}}
+    {{- $path := printf "%s%d" $.path $k -}}
+    {{- $out = $out | append (dict "x" $x "y" $y "px" $c "py" $d "path" $path) -}}
+    {{- $out = $out | append (partial "ml/poincare-node.html" (dict "x" $x "y" $y "px" $c "py" $d "root" false "left" (sub $.left 1) "b" $.b "r" $.r "path" $path)) -}}
+  {{- end -}}
+{{- end -}}
+{{- return $out -}}

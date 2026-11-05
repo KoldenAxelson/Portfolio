@@ -1,0 +1,17 @@
+# Scenarios for {{< ml/task-vectors >}}: a made-up model with two weights and
+# two made-up tasks, each a bowl-shaped loss. "sharp" and "flat" are the
+# bowl's half-widths along and across its steep direction, which points at
+# "angle" degrees. Fine-tuning is real gradient descent from the base at
+# (0, 0): "steps" steps of size "rate", worked out in the template (for JS
+# off) and again in task-vectors.ts. The first scenario renders with JS off.
+steps: 40
+rate: 0.5
+scenarios:
+  - name: "Tasks that get along"
+    tasks:
+      - { center: [2.4, 0.1], sharp: 0.8, flat: 3.0, angle: 0 }
+      - { center: [0.1, 2.4], sharp: 0.8, flat: 3.0, angle: 90 }
+  - name: "Tasks that clash"
+    tasks:
+      - { center: [2.4, 0.1], sharp: 0.8, flat: 3.0, angle: 0 }
+      - { center: [-1.6, 2.2], sharp: 0.8, flat: 3.0, angle: 0 }

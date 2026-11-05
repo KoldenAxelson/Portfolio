@@ -1,0 +1,83 @@
+{{- /*
+  ml-poincare-tree — the same complete tree laid out twice: flat (level k on a
+  circle of radius k) and in the Poincaré disk (each child a fixed hyperbolic
+  distance from its parent). Sliders change the branching, depth and edge
+  length; the readouts measure how badly each layout distorts tree distances,
+  and how close the deepest nodes come to the disk's edge.
+
+    {{< ml/poincare-tree >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml/assets.html (css/pages/ml/demos.css, scripts/pages/ml/
+  poincare-tree.ts). Settings live in data/ml/poincare-tree.yaml. With JS off,
+  both layouts for the first settings are drawn here (the disk layout by
+  partials/ml/poincare-node.html), without the measurements.
+*/ -}}
+{{- $d := index site.Data.ml "poincare-tree" -}}
+{{- $b := $d.branching }}{{ $depth := $d.depth -}}
+{{- $r := div (sub (math.Pow 2.718281828459045 $d.edge) 1) (add (math.Pow 2.718281828459045 $d.edge) 1) -}}
+{{- $nodes := partial "ml/poincare-node.html" (dict "x" 0.0 "y" 0.0 "px" 0.0 "py" 0.0 "root" true "left" $depth "b" $b "r" $r "path" "") -}}
+{{- $S := 140.0 }}{{ $O := 150.0 -}}
+{{- $leaves := int (math.Pow (float $b) (float $depth)) -}}
+<div class="not-prose mli-demo mli-pt" id="mli-pt" data-config="{{ jsonify $d }}">
+<div class="mli-demo-label">Live · one tree, two kinds of space{{ partial "ml/caution.html" (dict "id" "mli-pt-note" "text" "Illustrative trees. Real hierarchies are uneven and much bigger. The layouts, the distances and the distortion figures are computed for real on these complete trees, with ordinary 64-bit numbers.") }}</div>
+<div id="mli-pt-controls" hidden>
+<div class="mli-rag-qs" role="group" aria-label="Children per node">
+<span class="mli-bits-lab">Children per node:</span><button class="mli-rag-q{{ if eq $b 2 }} is-on{{ end }}" type="button" aria-pressed="{{ eq $b 2 }}" data-b="2" disabled>2</button><button class="mli-rag-q{{ if eq $b 3 }} is-on{{ end }}" type="button" aria-pressed="{{ eq $b 3 }}" data-b="3" disabled>3</button>
+</div>
+<label class="mli-tv-slider"><span class="mli-bits-lab">Levels</span><input type="range" id="mli-pt-depth" min="1" max="6" step="1" value="{{ $depth }}" disabled><output id="mli-pt-depth-out">{{ $depth }}</output></label>
+<label class="mli-tv-slider"><span class="mli-bits-lab">Edge length in the disk</span><input type="range" id="mli-pt-edge" min="0.5" max="4" step="0.1" value="{{ $d.edge }}" disabled><output id="mli-pt-edge-out">{{ printf "%.1f" (float $d.edge) }}</output></label>
+</div>
+<div class="mli-pt-panels">
+<figure class="mli-pt-panel">
+<svg class="mli-pt-svg" id="mli-pt-flat" viewBox="0 0 300 300" role="img" aria-label="The tree drawn flat, each level on a circle around the root">
+<g class="mli-pt-edges">
+{{- $flat := dict "" (slice 0.0 0.0) -}}
+{{- range $n := $nodes -}}
+  {{- $lvl := len $n.path -}}
+  {{- $idx := 0 }}{{ range $i, $ch := split $n.path "" }}{{ $idx = add $idx (mul (int $ch) (int (math.Pow (float $b) (float (sub (sub $depth 1) $i))))) }}{{ end -}}
+  {{- $span := math.Pow (float $b) (float (sub $depth $lvl)) -}}
+  {{- $turn := sub (div (math.Pow (float $b) (float (sub $depth 1))) 2) 0.5 -}}
+  {{- $ang := div (mul 2 (mul math.Pi (sub (sub (add (float $idx) (div $span 2)) 0.5) $turn))) $leaves -}}
+  {{- $rad := div (mul (float $lvl) 1.0) $depth -}}
+  {{- $flat = merge $flat (dict $n.path (slice (mul $rad (math.Cos $ang)) (mul $rad (math.Sin $ang)))) -}}
+{{- end -}}
+{{- range $n := $nodes }}{{ $me := index $flat $n.path }}{{ $up := index $flat (substr $n.path 0 (sub (len $n.path) 1)) -}}
+<line x1="{{ add $O (mul $S (index $up 0)) }}" y1="{{ sub $O (mul $S (index $up 1)) }}" x2="{{ add $O (mul $S (index $me 0)) }}" y2="{{ sub $O (mul $S (index $me 1)) }}"/>
+{{- end }}
+</g>
+<g class="mli-pt-dots"><circle class="is-root" cx="{{ $O }}" cy="{{ $O }}" r="4"/>{{ range $n := $nodes }}{{ $me := index $flat $n.path }}<circle cx="{{ add $O (mul $S (index $me 0)) }}" cy="{{ sub $O (mul $S (index $me 1)) }}" r="{{ if eq (len $n.path) $depth }}2.2{{ else }}3{{ end }}"/>{{ end }}</g>
+</svg>
+<figcaption>Flat: level k on a circle of radius k</figcaption></figure>
+<figure class="mli-pt-panel">
+<svg class="mli-pt-svg" id="mli-pt-disk" viewBox="0 0 300 300" role="img" aria-label="The tree drawn in the Poincaré disk, root at the centre, leaves near the edge">
+<circle class="mli-pt-rim" cx="{{ $O }}" cy="{{ $O }}" r="{{ $S }}"/>
+<g class="mli-pt-edges">
+{{- range $n := $nodes -}}
+  {{- $Px := $n.px }}{{ $Py := $n.py }}{{ $Cx := $n.x }}{{ $Cy := $n.y -}}
+  {{- $det := sub (mul $Px $Cy) (mul $Py $Cx) -}}
+  {{- $x1 := add $O (mul $S $Px) }}{{ $y1 := sub $O (mul $S $Py) }}{{ $x2 := add $O (mul $S $Cx) }}{{ $y2 := sub $O (mul $S $Cy) -}}
+  {{- if lt (math.Abs $det) 0.000000001 -}}
+<path d="M{{ $x1 }} {{ $y1 }}L{{ $x2 }} {{ $y2 }}"/>
+  {{- else -}}
+    {{- $kP := div (add (add (mul $Px $Px) (mul $Py $Py)) 1) 2 }}{{ $kC := div (add (add (mul $Cx $Cx) (mul $Cy $Cy)) 1) 2 -}}
+    {{- $ux := div (sub (mul $kP $Cy) (mul $kC $Py)) $det }}{{ $uy := div (sub (mul $Px $kC) (mul $Cx $kP)) $det -}}
+    {{- $R := math.Sqrt (sub (add (mul $ux $ux) (mul $uy $uy)) 1) -}}
+    {{- $cross := sub (mul (sub $Px $ux) (sub $Cy $uy)) (mul (sub $Py $uy) (sub $Cx $ux)) -}}
+<path d="M{{ $x1 }} {{ $y1 }}A{{ mul $S $R }} {{ mul $S $R }} 0 0 {{ if gt $cross 0 }}0{{ else }}1{{ end }} {{ $x2 }} {{ $y2 }}"/>
+  {{- end -}}
+{{- end }}
+</g>
+<g class="mli-pt-dots"><circle class="is-root" cx="{{ $O }}" cy="{{ $O }}" r="4"/>{{ range $n := $nodes }}<circle cx="{{ add $O (mul $S $n.x) }}" cy="{{ sub $O (mul $S $n.y) }}" r="{{ if eq (len $n.path) $depth }}2.2{{ else }}3{{ end }}"/>{{ end }}</g>
+</svg>
+<figcaption>Poincaré disk: every edge the same hyperbolic length</figcaption></figure>
+</div>
+<dl class="mli-tv-read mli-pt-read" id="mli-pt-read" aria-live="polite" hidden>
+<div><dt>Worst distortion, flat</dt><dd id="mli-pt-flat-d">—</dd></div>
+<div><dt>Worst distortion, disk</dt><dd id="mli-pt-disk-d">—</dd></div>
+<div><dt>Deepest node's gap to the edge</dt><dd id="mli-pt-gap">—</dd></div>
+</dl>
+<p class="mli-wc-follow" id="mli-pt-say" aria-live="polite">{{ add (len $nodes) 1 }} nodes: {{ $b }} children per node, {{ $depth }} level{{ if ne $depth 1 }}s{{ end }} below the root, edges {{ printf "%.1f" (float $d.edge) }} long in the disk.</p>
+<noscript><p class="mli-caption">JavaScript is off, so this shows one tree in both layouts, without the measurements. With it on, you can change the tree and the edge length, and read off each layout's distortion.</p></noscript>
+<div class="mli-caption">Both layouts are computed for this tree. "Worst distortion" takes each pair of nodes' layout distance over their tree distance and divides the largest ratio by the smallest, so 1 is perfect; the flat figure is for this layout, not the best flat one. Very short edges crowd the disk, which can then do worse than flat with 3 children per node. Long edges push the leaves to the rim, where telling them apart takes more digits (the gap is measured on a disk of radius 1).</div>
+</div>

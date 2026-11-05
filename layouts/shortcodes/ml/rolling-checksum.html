@@ -1,0 +1,64 @@
+{{- /*
+  ml-rolling-checksum — rsync on one short made-up sentence. The old copy is
+  cut into blocks; a window slides along the new copy one character at a
+  time, its weak checksum updated by rsync's rolling recurrences, and every
+  window that matches a block becomes "use block k". Everything else is sent
+  as literal characters.
+
+    {{< ml/rolling-checksum >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml/assets.html (css/pages/ml/demos.css, scripts/pages/ml/
+  rolling-checksum.ts). Text lives in data/ml/rolling-checksum.yaml. With JS
+  off, the first edit's instructions are found here by plain text comparison,
+  which gives the same matches as the checksum search.
+*/ -}}
+{{- $d := index site.Data.ml "rolling-checksum" -}}
+{{- $S := $d.block }}{{ $old := $d.old }}{{ $new := (index $d.edits 0).new -}}
+{{- $blocks := slice -}}
+{{- range $i := seq 0 $S (sub (len $old) 1) }}{{ $blocks = $blocks | append (substr $old $i $S) }}{{ end -}}
+{{- $out := slice }}{{ $lit := "" }}{{ $skip := 0 }}{{ $copies := 0 -}}
+{{- range $p := seq 0 (sub (len $new) 1) -}}
+  {{- if gt $skip 0 }}{{ $skip = sub $skip 1 }}{{ else -}}
+    {{- $hit := -1 -}}
+    {{- range $k, $b := $blocks }}{{ if and (lt $hit 0) (eq (substr $new $p (len $b)) $b) (or (eq (len $b) $S) (eq (add $p (len $b)) (len $new))) }}{{ $hit = $k }}{{ end }}{{ end -}}
+    {{- if ge $hit 0 -}}
+      {{- if $lit }}{{ $out = $out | append (dict "lit" $lit) }}{{ $lit = "" }}{{ end -}}
+      {{- $out = $out | append (dict "blk" $hit) }}{{ $copies = add $copies 1 }}{{ $skip = sub (len (index $blocks $hit)) 1 -}}
+    {{- else }}{{ $lit = printf "%s%s" $lit (substr $new $p 1) }}{{ end -}}
+  {{- end -}}
+{{- end -}}
+{{- if $lit }}{{ $out = $out | append (dict "lit" $lit) }}{{ end -}}
+{{- $litChars := 0 }}{{ range $out }}{{ with .lit }}{{ $litChars = add $litChars (len .) }}{{ end }}{{ end -}}
+<div class="not-prose mli-demo mli-rc" id="mli-rc" data-config="{{ jsonify $d }}">
+<div class="mli-demo-label">Live · sliding a checksum along the new copy{{ partial "ml/caution.html" (dict "id" "mli-rc-note" "text" "Illustrative text and sizes. The 1996 rsync used blocks of hundreds of bytes and confirmed each match with a 16-byte MD4 checksum; today's uses blocks of at least 700 bytes and a newer, shortened checksum. Here the blocks are 6 characters and the confirming check compares the characters directly. The weak checksum and its rolling update are rsync's, computed for real.") }}</div>
+<div id="mli-rc-controls" hidden>
+<div class="mli-rag-qs" role="group" aria-label="Edit">
+<span class="mli-bits-lab">New copy:</span>
+{{- range $i, $e := $d.edits }}<button class="mli-rag-q{{ if eq $i 0 }} is-on{{ end }}" type="button" aria-pressed="{{ eq $i 0 }}" data-edit="{{ $i }}" disabled>{{ $e.name }}</button>{{ end -}}
+</div>
+</div>
+<p class="mli-rc-head">Old copy, on the far machine, in blocks of {{ $S }}:</p>
+<div class="mli-rc-blocks" id="mli-rc-blocks">
+{{- range $k, $b := $blocks }}<span class="mli-rc-block" data-block="{{ $k }}"><span class="mli-rc-bnum">block {{ $k }}</span><code>{{ replace $b " " "·" }}</code><span class="mli-rc-bck" data-ck="{{ $k }}"></span></span>{{ end -}}
+</div>
+<p class="mli-rc-head">New copy, here:</p>
+<div class="mli-rc-text" id="mli-rc-text" role="group" aria-label="The new copy, one character per box">
+{{- range $p := seq 0 (sub (len $new) 1) }}<span class="mli-rc-ch">{{ replace (substr $new $p 1) " " "·" }}</span>{{ end -}}
+</div>
+<div class="mli-tv-legend" aria-hidden="true"><span class="mli-tv-item"><span class="mli-rc-key is-blk"></span>covered by a reused block</span><span class="mli-tv-item"><span class="mli-rc-key is-lit"></span>sent as it is</span><span class="mli-tv-item"><span class="mli-rc-key is-win"></span>the window being checked</span></div>
+<div class="mli-rc-window" id="mli-rc-window" hidden>
+<p class="mli-lr-stage" id="mli-rc-say" aria-live="polite"></p>
+<p class="mli-rc-math" id="mli-rc-math"></p>
+</div>
+<div class="mli-et-actions" id="mli-rc-actions" hidden>
+<button class="mli-rag-q" type="button" id="mli-rc-reset" disabled>Start over</button><button class="mli-rag-q" type="button" id="mli-rc-step" disabled>Check the next window</button><button class="mli-rag-q" type="button" id="mli-rc-next" disabled>Slide to the next match</button><button class="mli-rag-q" type="button" id="mli-rc-end" disabled>Run to the end</button>
+</div>
+<p class="mli-rc-head">What gets sent:</p>
+<ol class="mli-rc-out" id="mli-rc-out">
+{{- range $out }}{{ with .lit }}<li class="is-lit">send “{{ replace . " " "·" }}”</li>{{ else }}<li class="is-blk">use block {{ .blk }}</li>{{ end }}{{ end -}}
+</ol>
+<p class="mli-wc-follow" id="mli-rc-total">{{ $litChars }} of {{ len $new }} characters sent as they are; {{ $copies }} block{{ if ne $copies 1 }}s{{ end }} reused.</p>
+<noscript><p class="mli-caption">JavaScript is off, so this shows the finished instructions for the first edit, without the blocks' checksums. With it on, you can slide the window along one character at a time and watch the checksum roll.</p></noscript>
+<div class="mli-caption">The text is invented; the checksums and matches are computed as you watch. A block's weak checksum is (a, b): a sums the character codes, and b counts the first {{ $S }} times, the next {{ sub $S 1 }} times, down to the last once, both wrapping at 65,536. Each slide updates both from the old values, checked against a fresh calculation. Spaces show as dots, and repeated blocks reuse the first match, where today's rsync prefers the block after the last one.</div>
+</div>

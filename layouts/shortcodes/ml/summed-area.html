@@ -1,0 +1,72 @@
+{{- /*
+  ml-summed-area — an 8 × 8 grid of made-up numbers beside its summed-area
+  table. Pick a rectangle (drag on the grid, or a preset) and the table's
+  four corner cells give its total; a stepper shows how many times each grid
+  cell gets counted as the four lookups are added and subtracted.
+
+    {{< ml/summed-area >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml/assets.html (css/pages/ml/demos.css, scripts/pages/ml/
+  summed-area.ts). Data lives in data/ml/summed-area.yaml; the table and the
+  first rectangle's answer are worked out here too, the same way as the
+  script, so the demo reads with JS off.
+*/ -}}
+{{- $d := index site.Data.ml "summed-area" -}}
+{{- $n := len $d.rows -}}
+{{- $sat := dict -}}
+{{- range $r, $row := $d.rows -}}
+  {{- $run := 0 -}}
+  {{- range $c, $v := $row -}}
+    {{- $run = add $run $v -}}
+    {{- $above := cond (gt $r 0) (index $sat (printf "%d-%d" (sub $r 1) $c)) 0 -}}
+    {{- $sat = merge $sat (dict (printf "%d-%d" $r $c) (add $run $above)) -}}
+  {{- end -}}
+{{- end -}}
+{{- $box := (index $d.rects 0).box -}}
+{{- $r0 := index $box 0 }}{{ $c0 := index $box 1 }}{{ $r1 := index $box 2 }}{{ $c1 := index $box 3 -}}
+{{- $D := index $sat (printf "%d-%d" $r1 $c1) -}}
+{{- $B := cond (gt $r0 0) (index $sat (printf "%d-%d" (sub $r0 1) $c1)) 0 -}}
+{{- $C := cond (gt $c0 0) (index $sat (printf "%d-%d" $r1 (sub $c0 1))) 0 -}}
+{{- $A := cond (and (gt $r0 0) (gt $c0 0)) (index $sat (printf "%d-%d" (sub $r0 1) (sub $c0 1))) 0 -}}
+{{- $total := add (sub (sub $D $B) $C) $A -}}
+{{- $direct := 0 -}}
+{{- range $r := seq $r0 $r1 }}{{ range $c := seq $c0 $c1 }}{{ $direct = add $direct (index (index $d.rows $r) $c) }}{{ end }}{{ end -}}
+{{- $cells := mul (add (sub $r1 $r0) 1) (add (sub $c1 $c0) 1) -}}
+<div class="not-prose mli-demo mli-sa" id="mli-sa" data-rows="{{ jsonify $d.rows }}" data-rects="{{ jsonify $d.rects }}">
+<div class="mli-demo-label">Live · any rectangle in four lookups</div>
+<div id="mli-sa-controls" hidden>
+<div class="mli-rag-qs" role="group" aria-label="Rectangle">
+<span class="mli-bits-lab">Rectangle:</span>
+{{- range $i, $p := $d.rects }}<button class="mli-rag-q{{ if eq $i 0 }} is-on{{ end }}" type="button" aria-pressed="{{ eq $i 0 }}" data-rect="{{ $i }}" disabled>{{ $p.name }}</button>{{ end -}}
+</div>
+<p class="mli-wc-follow">Or drag across the grid to pick your own.</p>
+</div>
+<div class="mli-sa-panels">
+<figure class="mli-sa-panel">
+<div class="mli-sa-grid" id="mli-sa-grid" style="--mli-sa-n: {{ $n }}" role="table" aria-label="The grid of numbers">
+{{- range $r, $row := $d.rows }}<div class="mli-sa-row" role="row">{{ range $c, $v := $row }}{{ $in := and (ge $r $r0) (le $r $r1) (ge $c $c0) (le $c $c1) }}<span class="mli-sa-cell{{ if $in }} is-in{{ end }}" role="cell" data-r="{{ $r }}" data-c="{{ $c }}">{{ $v }}</span>{{ end }}</div>{{ end -}}
+</div>
+<figcaption>The numbers</figcaption></figure>
+<figure class="mli-sa-panel">
+<div class="mli-sa-grid is-table" id="mli-sa-table" style="--mli-sa-n: {{ $n }}" role="table" aria-label="The summed-area table">
+{{- range $r := seq 0 (sub $n 1) }}<div class="mli-sa-row" role="row">{{ range $c := seq 0 (sub $n 1) -}}
+{{- $tag := "" -}}
+{{- if and (eq $r $r1) (eq $c $c1) }}{{ $tag = "D" }}{{ end -}}
+{{- if and (eq $r (sub $r0 1)) (eq $c $c1) }}{{ $tag = "B" }}{{ end -}}
+{{- if and (eq $r $r1) (eq $c (sub $c0 1)) }}{{ $tag = "C" }}{{ end -}}
+{{- if and (eq $r (sub $r0 1)) (eq $c (sub $c0 1)) }}{{ $tag = "A" }}{{ end -}}
+<span class="mli-sa-cell{{ with $tag }} is-corner is-{{ lower . }}{{ end }}" role="cell" data-r="{{ $r }}" data-c="{{ $c }}">{{ index $sat (printf "%d-%d" $r $c) }}{{ with $tag }}<b class="mli-sa-tag">{{ . }}</b>{{ end }}</span>{{ end }}</div>{{ end -}}
+</div>
+<figcaption>Its summed-area table: each cell is the total above and to the left, itself included</figcaption></figure>
+</div>
+<p class="mli-sa-sum" id="mli-sa-sum" aria-live="polite">D − B − C + A = {{ $D }} − {{ $B }} − {{ $C }} + {{ $A }} = <strong>{{ $total }}</strong>. Adding the {{ $cells }} cells directly gives {{ $direct }} too, with {{ sub $cells 1 }} additions; the table always needs 3 additions or subtractions, whatever the size.</p>
+<div class="mli-et-actions" id="mli-sa-actions" hidden>
+<button class="mli-rag-q" type="button" id="mli-sa-back" disabled>Step back</button><button class="mli-rag-q" type="button" id="mli-sa-forward" disabled>Step forward</button>
+<span class="mli-fw-count" id="mli-sa-count"></span>
+</div>
+<p class="mli-wc-follow" id="mli-sa-step" aria-live="polite"></p>
+<div class="mli-sa-legend" id="mli-sa-legend" hidden aria-hidden="true"><span class="mli-sa-item"><span class="mli-sa-key is-plus"></span>counted once</span><span class="mli-sa-item"><span class="mli-sa-key is-minus"></span>subtracted once too often (−1)</span><span class="mli-sa-item"><span class="mli-sa-key"></span>not counted (0)</span></div>
+<noscript><p class="mli-caption">JavaScript is off, so this shows one rectangle and its four corners. With it on, you can pick other rectangles, drag your own, and step through how the four lookups add up.</p></noscript>
+<div class="mli-caption">The numbers are invented, and every total is computed from them. D is the table cell at the rectangle's bottom-right corner, B the one just above its top-right corner, C the one just left of its bottom-left corner, and A the one diagonally above and to the left; a corner off the grid counts as 0. The steps show how many times each cell has been counted: only the cells inside the rectangle end at exactly once.</div>
+</div>

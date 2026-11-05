@@ -1,0 +1,58 @@
+# References for content/articles/honest-benchmarks.md, rendered by {{< ml/references >}}.
+# Listed in the order the article reaches them. Numbering is automatic.
+
+- tag: Speed
+  title: "Google Benchmark user guide: Preventing optimization"
+  url: https://github.com/google/benchmark/blob/main/docs/user_guide.md#preventing-optimization
+  meta: Google · benchmark library documentation
+  note: DoNotOptimize and ClobberMemory, which stop the compiler from removing the work being timed, with the caveat that they don't prevent every optimization.
+- tag: Tests
+  title: "Hints on Test Data Selection: Help for the Practicing Programmer"
+  url: https://doi.org/10.1109/C-M.1978.218136
+  meta: "Richard A. DeMillo, Richard J. Lipton & Frederick G. Sayward · IEEE Computer 11(4), 34–41 · 1978"
+  note: One of the late-1970s papers that started mutation testing, building on Lipton's 1971 student paper; it judges a set of tests by whether it notices small deliberate changes to the program.
+- tag: Tests
+  title: An Analysis and Survey of the Development of Mutation Testing
+  url: https://doi.org/10.1109/TSE.2010.62
+  meta: "Yue Jia & Mark Harman · IEEE Transactions on Software Engineering 37(5), 649–678 · 2011"
+  note: A survey of the field; its introduction traces mutation testing to a 1971 student paper by Richard Lipton.
+- tag: Benchmarks
+  title: Introducing SWE-bench Verified
+  url: https://openai.com/index/introducing-swe-bench-verified/
+  meta: OpenAI · August 2024 (updated February 2025)
+  note: Human review of 1,699 SWE-bench samples; 61.1% flagged for tests that may reject valid solutions, and a 500-sample verified subset.
+- tag: Benchmarks
+  title: Why SWE-bench Verified no longer measures frontier coding capabilities
+  url: https://openai.com/index/why-we-no-longer-evaluate-swe-bench-verified/
+  meta: OpenAI · February 2026
+  note: An audit of the Verified problems models often failed; at least 59.4% had test cases that reject functionally correct submissions. OpenAI stopped reporting Verified scores.
+- tag: Baselines
+  title: "Critically Examining the \"Neural Hype\": Weak Baselines and the Additivity of Effectiveness Gains from Neural Ranking Models"
+  url: https://arxiv.org/abs/1904.09171
+  meta: "Wei Yang, Kuang Lu, Peilin Yang & Jimmy Lin · SIGIR 2019"
+  note: A meta-analysis of papers on the TREC Robust04 collection; in 36 papers (33%) the baseline was below the TREC median.
+- tag: Baselines
+  title: "Are We Really Making Much Progress? A Worrying Analysis of Recent Neural Recommendation Approaches"
+  url: https://arxiv.org/abs/1907.06902
+  meta: "Maurizio Ferrari Dacrema, Paolo Cremonesi & Dietmar Jannach · RecSys 2019"
+  note: 18 recent algorithms, 7 reproducible with reasonable effort, 6 of those often beaten by comparably simple methods.
+- tag: Noise
+  title: Producing Wrong Data Without Doing Anything Obviously Wrong!
+  url: https://doi.org/10.1145/1508284.1508275
+  meta: "Todd Mytkowicz, Amer Diwan, Matthias Hauswirth & Peter F. Sweeney · ASPLOS 2009"
+  note: Measurement bias from the UNIX environment size and link order, big enough to change conclusions about gcc's -O3 against -O2.
+- tag: Memory
+  title: "tracemalloc: Trace memory allocations"
+  url: https://docs.python.org/3/library/tracemalloc.html
+  meta: Python documentation
+  note: A debug tool that traces memory blocks allocated by Python.
+- tag: Memory
+  title: "Memory Management (Python/C API)"
+  url: https://docs.python.org/3/c-api/memory.html
+  meta: Python documentation
+  note: Memory an extension takes from the C library allocator "completely escapes the Python memory manager"; PyTraceMalloc_Track lets an extension report such blocks to tracemalloc.
+- tag: Memory
+  title: The /proc Filesystem
+  url: https://docs.kernel.org/filesystems/proc.html
+  meta: Linux kernel documentation
+  note: Table 1-2 defines VmRSS and VmHWM ("high water mark") in /proc/<pid>/status; the smaps discussion defines Pss; a note warns the status RSS figures may not be very precise.

@@ -31,6 +31,7 @@ Read the matching skill in `private/skills/` before starting these tasks:
 | [`private/skills/ImageGenerate.md`](private/skills/ImageGenerate.md) | An article needs its cover and share card, Konrad asks for an image ("/generate"), or a post needs art. Pay per image on fal.ai, within the monthly budget. |
 | [`private/skills/AuditCode.md`](private/skills/AuditCode.md) | Auditing, re-auditing or grading the codebase or a feature. |
 | [`private/skills/AuditArticle.md`](private/skills/AuditArticle.md) | Fact-checking and reviewing an article or chapter before it publishes. Never in the session that wrote it. |
+| [`private/skills/GradeExplainer.md`](private/skills/GradeExplainer.md) | Cold-read grading of an article or chapter for substance and readability, after AuditArticle. In an independent agent; ready at A or better. |
 | [`private/skills/HumanizeWriting.md`](private/skills/HumanizeWriting.md) | Writing or editing any reader-facing prose: page text, data-file copy, FAQ answers, captions. |
 
 ## Working with Konrad

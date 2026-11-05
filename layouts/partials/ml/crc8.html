@@ -1,0 +1,27 @@
+{{- /*
+  ml/crc8 — CRC-8 (polynomial 0x07, start 0, no final XOR) of a list of byte
+  values, for templates that need it with JS off (ml/error-checks). Hugo has
+  no bitwise operators, so XOR is done bit by bit. Returns an int.
+
+    {{ $crc := partial "ml/crc8.html" (slice 72 69 76 76 79) }}
+
+  error-checks.ts computes the same thing; keep the two in step.
+*/ -}}
+{{- $crc := 0 -}}
+{{- range $byte := . -}}
+  {{- /* crc ^= byte */ -}}
+  {{- $x := 0 -}}
+  {{- range $k := seq 0 7 }}{{ $p := int (math.Pow 2 $k) }}{{ if ne (mod (div $crc $p) 2) (mod (div $byte $p) 2) }}{{ $x = add $x $p }}{{ end }}{{ end -}}
+  {{- $crc = $x -}}
+  {{- range seq 8 -}}
+    {{- $high := ge $crc 128 -}}
+    {{- $crc = mod (mul $crc 2) 256 -}}
+    {{- if $high -}}
+      {{- /* crc ^= 0x07: flip the low three bits */ -}}
+      {{- $y := $crc -}}
+      {{- range $k := slice 0 1 2 }}{{ $p := int (math.Pow 2 $k) }}{{ if eq (mod (div $crc $p) 2) 1 }}{{ $y = sub $y $p }}{{ else }}{{ $y = add $y $p }}{{ end }}{{ end -}}
+      {{- $crc = $y -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- return $crc -}}

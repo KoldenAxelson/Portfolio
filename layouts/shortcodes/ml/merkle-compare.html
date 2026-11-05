@@ -1,0 +1,72 @@
+{{- /*
+  ml-merkle-compare — two machines with 16 made-up files each, the same
+  except for a few edits on machine B. Each builds a Merkle tree (SHA-256 of
+  each file, then of each pair of hashes, up to one root). Comparing starts at
+  the root and only goes down where the hashes differ.
+
+    {{< ml/merkle-compare >}}
+
+  Markup only. Styles and behaviour ship once per page from
+  partials/ml/assets.html (css/pages/ml/demos.css, scripts/pages/ml/
+  merkle-compare.ts). Files live in data/ml/merkle-compare.yaml. The first
+  scenario's hashes and comparison are worked out here too, the same way as
+  the script, so the demo reads with JS off. Nodes are numbered heap-style:
+  1 is the root, node i has children 2i and 2i + 1, and 16 to 31 are files.
+*/ -}}
+{{- $d := index site.Data.ml "merkle-compare" -}}
+{{- $n := len $d.files -}}
+{{- $changed := (index $d.scenarios 0).changed -}}
+{{- $ha := dict }}{{ $hb := dict -}}
+{{- range $i, $f := $d.files -}}
+  {{- $text := printf "%s: contents of file %d" $f (add $i 1) -}}
+  {{- $edited := cond (in $changed (add $i 1)) (printf "%s (edited)" $text) $text -}}
+  {{- $ha = merge $ha (dict (string (add $n $i)) (sha256 $text)) }}{{ $hb = merge $hb (dict (string (add $n $i)) (sha256 $edited)) -}}
+{{- end -}}
+{{- range $j := seq (sub $n 1) -1 1 -}}
+  {{- $l := string (mul 2 $j) }}{{ $r := string (add (mul 2 $j) 1) -}}
+  {{- $ha = merge $ha (dict (string $j) (sha256 (printf "%s%s" (index $ha $l) (index $ha $r)))) -}}
+  {{- $hb = merge $hb (dict (string $j) (sha256 (printf "%s%s" (index $hb $l) (index $hb $r)))) -}}
+{{- end -}}
+{{- $compared := 0 }}{{ $found := slice -}}
+{{- range $j := seq 1 (sub (mul 2 $n) 1) -}}
+  {{- $parent := div $j 2 -}}
+  {{- $isCompared := or (eq $j 1) (ne (index $ha (string $parent)) (index $hb (string $parent))) -}}
+  {{- if $isCompared }}{{ $compared = add $compared 1 }}{{ if and (ge $j $n) (ne (index $ha (string $j)) (index $hb (string $j))) }}{{ $found = $found | append (sub $j (sub $n 1)) }}{{ end }}{{ end -}}
+{{- end -}}
+{{- $W := 480.0 }}{{ $levels := slice 1 2 4 8 16 -}}
+<div class="not-prose mli-demo mli-mk" id="mli-mk" data-config="{{ jsonify $d }}">
+<div class="mli-demo-label">Live · comparing two collections by their hashes</div>
+<div id="mli-mk-controls" hidden>
+<div class="mli-rag-qs" role="group" aria-label="Scenario">
+<span class="mli-bits-lab">On machine B:</span>
+{{- range $i, $s := $d.scenarios }}<button class="mli-rag-q{{ if eq $i 0 }} is-on{{ end }}" type="button" aria-pressed="{{ eq $i 0 }}" data-scenario="{{ $i }}" disabled>{{ $s.name }}</button>{{ end -}}
+</div>
+<p class="mli-wc-follow">Or click any file to edit it on machine B, or pick one here: <select class="mli-mk-select" id="mli-mk-file" aria-label="Edit a file on machine B" disabled><option value="">choose a file</option>{{ range $i, $f := $d.files }}<option value="{{ add $i 1 }}">{{ add $i 1 }}. {{ $f }}</option>{{ end }}</select></p>
+</div>
+<svg class="mli-mk-svg" id="mli-mk-svg" viewBox="0 0 480 230" role="group" aria-label="Machine B's Merkle tree, root at the top, 16 files at the bottom">
+{{- range $lv, $count := $levels }}
+{{- $y := add 20 (mul $lv 48) -}}
+{{- range $k := seq 0 (sub $count 1) -}}
+{{- $j := add $count $k -}}
+{{- $x := mul (div $W $count) (add $k 0.5) -}}
+{{- if gt $lv 0 }}<line class="mli-mk-edge" x1="{{ $x }}" y1="{{ sub $y 12 }}" x2="{{ mul (div $W (div $count 2)) (add (div $k 2) 0.5) }}" y2="{{ sub $y 36 }}"/>{{ end -}}
+{{- end -}}
+{{- end }}
+{{- range $lv, $count := $levels }}
+{{- $y := add 20 (mul $lv 48) -}}
+{{- range $k := seq 0 (sub $count 1) -}}
+{{- $j := add $count $k -}}
+{{- $x := mul (div $W $count) (add $k 0.5) -}}
+{{- $diff := ne (index $ha (string $j)) (index $hb (string $j)) -}}
+{{- $cmp := or (eq $j 1) (ne (index $ha (string (div $j 2))) (index $hb (string (div $j 2)))) -}}
+{{- $w := cond (eq $count 16) 26 (cond (eq $count 8) 50 56) -}}
+<g class="mli-mk-node{{ if $diff }} is-diff{{ end }}{{ if $cmp }} is-cmp{{ end }}{{ if eq $count 16 }} is-file{{ end }}" data-node="{{ $j }}"{{ if eq $count 16 }} tabindex="-1"{{ end }}><rect x="{{ sub $x (div $w 2) }}" y="{{ sub $y 12 }}" width="{{ $w }}" height="24" rx="5"/><text x="{{ $x }}" y="{{ add $y 4 }}" text-anchor="middle">{{ if eq $count 16 }}{{ sub $j (sub $n 1) }}{{ else }}{{ substr (index $hb (string $j)) 0 (cond (eq $count 8) 4 6) }}{{ end }}</text></g>
+{{- end -}}
+{{- end }}
+</svg>
+<div class="mli-tv-legend" aria-hidden="true"><span class="mli-tv-item"><span class="mli-mk-key is-cmp"></span>compared: same as machine A</span><span class="mli-tv-item"><span class="mli-mk-key is-diff"></span>compared: different from machine A</span><span class="mli-tv-item"><span class="mli-mk-key"></span>never compared</span></div>
+<p class="mli-lr-stage" id="mli-mk-say" aria-live="polite">{{ $compared }} {{ if eq $compared 1 }}hash{{ else }}hashes{{ end }} compared{{ with $found }}, and {{ if eq (len .) 1 }}file {{ index . 0 }} is{{ else }}files {{ delimit . ", " " and " }} are{{ end }} found{{ else }}: the roots match, so nothing needs to move{{ end }}. Sending every file's hash would take {{ $n }}.</p>
+<p class="mli-wc-follow" id="mli-mk-node">Each box shows the start of machine B's hash for that part of the tree; the bottom row is the {{ $n }} files. Pick one to see both machines' hashes.</p>
+<noscript><p class="mli-caption">JavaScript is off, so this shows one file changed. With it on, you can edit any files on machine B and see the comparison redone.</p></noscript>
+<div class="mli-caption">Each hash is real SHA-256, of an invented file and then of each pair of hashes up to the root. Comparing starts at the root and goes down only where machine A's and machine B's hashes differ. With one changed file among 16 that's 9 comparisons; in a tree like this over a million files it would be at most 41, against a million file hashes.</div>
+</div>

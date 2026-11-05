@@ -16,6 +16,12 @@ TSGO_VERSION     := 7.0.0-dev.20260527.2
 # tsgo is, not committed: `make typecheck` pulls them from the same pinned npm
 # tarball the runtime came from. Bump both together.
 PHASER_VERSION   := 4.2.1
+# Three.js draws the 3D embedding table on /articles/embedding-table/. Its ES
+# module build is vendored + committed at assets/vendor/three/$(THREE_VERSION)/
+# so Hugo's esbuild can tree-shake it into that demo's lazy bundle (the min
+# builds are gone from the npm package since r18x; esbuild minifies instead).
+# Types come from @types/three into ./bin, like Phaser's. Bump both together.
+THREE_VERSION    := 0.187.0
 
 BIN      := bin
 HUGO     := $(BIN)/hugo
@@ -24,6 +30,8 @@ TSGO_DIR := $(BIN)/tsgo-dist
 TSGO     := $(TSGO_DIR)/tsgo
 PHASER_TYPES_DIR := $(BIN)/phaser-types
 PHASER_TYPES     := $(PHASER_TYPES_DIR)/phaser.d.ts
+THREE_TYPES_DIR  := $(BIN)/three-types
+THREE_TYPES      := $(THREE_TYPES_DIR)/index.d.ts
 
 CSS_IN   := assets/css/main.css
 CSS_OUT  := assets/css/app.css
@@ -158,7 +166,16 @@ $(PHASER_TYPES):
 	  | tar -xz -C $(PHASER_TYPES_DIR) --strip-components=2 package/types/phaser.d.ts package/types/matter.d.ts
 	@echo "Phaser types ready in $(PHASER_TYPES_DIR)"
 
-typecheck: $(TSGO) $(PHASER_TYPES) ## Type-check the TypeScript with tsgo (no emit)
+# @types/three, whole package (index.d.ts re-exports src/). tsconfig.json maps
+# the vendored import path vendor/three/* onto it.
+$(THREE_TYPES):
+	@mkdir -p $(THREE_TYPES_DIR)
+	@echo "Downloading Three.js $(THREE_VERSION) type declarations…"
+	@curl -fsSL "https://registry.npmjs.org/@types/three/-/three-$(THREE_VERSION).tgz" \
+	  | tar -xz -C $(THREE_TYPES_DIR) --strip-components=1
+	@echo "Three.js types ready in $(THREE_TYPES_DIR)"
+
+typecheck: $(TSGO) $(PHASER_TYPES) $(THREE_TYPES) ## Type-check the TypeScript with tsgo (no emit)
 	@$(TSGO) --noEmit -p tsconfig.json
 	@echo "Type-check passed."
 

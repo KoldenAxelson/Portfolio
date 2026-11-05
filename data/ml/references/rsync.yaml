@@ -1,0 +1,33 @@
+# References for content/articles/rsync.md, rendered by {{< ml/references >}}.
+# Listed in the order the article reaches them. Numbering is automatic.
+
+- tag: rsync
+  title: The rsync algorithm
+  url: https://www.andrew.cmu.edu/course/15-749/READINGS/required/cas/tridgell96.pdf
+  meta: "Andrew Tridgell & Paul Mackerras · Technical Report TR-CS-96-05, Australian National University · 1996"
+  note: The block fingerprints (a 32-bit rolling checksum and a 128-bit MD4 per block), the recurrences that let the checksum slide, the three-level search, and the Linux kernel test in Section 6.
+- tag: rsync
+  title: Efficient Algorithms for Sorting and Synchronization
+  url: https://www.samba.org/~tridge/phd_thesis.pdf
+  meta: "Andrew Tridgell · Ph.D. thesis, Australian National University · February 1999"
+  note: 'Chapters 3 and 4 on rsync: the rolling update in "3 additions, 2 subtractions, 1 multiplication and a shift" (Section 3.2.5), and a whole-file check (3.4.2) that lets the per-block strong checksum be much shorter than MD4''s 16 bytes (4.1).'
+- tag: Folders
+  title: rsync(1) manual page
+  url: https://download.samba.org/pub/rsync/rsync.1
+  meta: rsync project · current release
+  note: The "quick check" that skips files whose size and modification time already match, and the strong checksums today's rsync can negotiate (--checksum-choice).
+- tag: Merkle trees
+  title: Secrecy, Authentication, and Public Key Systems
+  url: https://www.ralphmerkle.com/papers/Thesis1979.pdf
+  meta: "Ralph C. Merkle · Ph.D. thesis, Stanford University (Technical Report 1979-1) · June 1979"
+  note: 'Chapter V, Section 4, "Tree Authentication" (pp. 40–42): each node is a hash of its two children, so one 100-bit root authenticates every leaf. He filed US patent 4,309,569 on it the same year.'
+- tag: Replicas
+  title: "Dynamo: Amazon's Highly Available Key-value Store"
+  url: https://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf
+  meta: DeCandia et al. · SOSP 2007
+  note: Section 4.7 uses Merkle trees to compare replicas, checking each branch independently and stopping when the roots match.
+- tag: Binary diffs
+  title: Naive Differences of Executable Code
+  url: https://www.daemonology.net/papers/bsdiff.pdf
+  meta: Colin Percival · unpublished paper · 2003
+  note: The bsdiff algorithm, the "pointer problem" in compiled programs, and the FreeBSD security-update test (97 binaries, 36,397,575 bytes, patches of 621,277 bytes).

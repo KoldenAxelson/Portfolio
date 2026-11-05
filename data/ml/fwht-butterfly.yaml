@@ -1,0 +1,13 @@
+# Inputs for {{< ml/fwht-butterfly >}}. Each list must have exactly 8 numbers
+# (the template stops the build otherwise). The first renders with JS off.
+# All made up; the stages are worked out from them in the template and again
+# in fwht-butterfly.ts.
+presets:
+  - name: "1 to 8"
+    values: [1, 2, 3, 4, 5, 6, 7, 8]
+  - name: "One spike"
+    values: [1, 0, 0, 0, 0, 0, 0, 0]
+  - name: "Up, down"
+    values: [1, -1, 1, -1, 1, -1, 1, -1]
+  - name: "Two halves"
+    values: [3, 3, 3, 3, -3, -3, -3, -3]

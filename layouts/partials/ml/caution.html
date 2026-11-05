@@ -1,0 +1,9 @@
+{{- /*
+  ml/caution — a small warning triangle that shows a note on hover or focus.
+  For demos whose numbers are illustrative, so the disclosure sits next to the
+  demo without crowding it. CSS-only (css/pages/ml/demos.css, .mli-caution), so
+  it works with JS off; the note is also the button's accessible description.
+
+    {{ partial "ml/caution.html" (dict "id" "mli-tid-note" "text" "…") }}
+*/ -}}
+<span class="mli-caution"><button class="mli-caution-btn" type="button" aria-label="About these numbers" aria-describedby="{{ .id }}"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3.2 22 20.5H2L12 3.2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 9.5v5.2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="17.6" r="1.1" fill="currentColor"/></svg></button><span class="mli-caution-note" role="tooltip" id="{{ .id }}">{{ .text }}</span></span>

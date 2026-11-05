@@ -141,11 +141,25 @@ function cosine(a: Vector, b: Vector): number {
   return aa && bb ? dot / Math.sqrt(aa * bb) : 0;
 }
 
-// Zeroes a fixed random share of the numbers: the same ones each time for a
-// given share, so dragging the slider back restores the answer.
+// Zeroes exactly the slider's share of the numbers, in a fixed random order
+// for each length. A bigger share wipes the same numbers plus more, so dragging
+// the slider back restores the answer, and "90%" is 90% of the numbers, not a
+// 90% chance for each one.
+const wipeOrders = new Map<number, Uint32Array>();
 function wipe(trace: Vector, share: number): void {
-  const next = seededRandom(hashOf(`wipe:${trace.length}`));
-  for (let i = 0; i < trace.length; i++) if (next() < share) trace[i] = 0;
+  const length = trace.length;
+  let order = wipeOrders.get(length);
+  if (!order) {
+    const next = seededRandom(hashOf(`wipe:${length}`));
+    order = Uint32Array.from({ length }, (_, i) => i);
+    for (let i = length - 1; i > 0; i--) {
+      const j = Math.floor(next() * (i + 1));
+      [order[i], order[j]] = [order[j], order[i]];
+    }
+    wipeOrders.set(length, order);
+  }
+  const count = Math.round(share * length);
+  for (let i = 0; i < count; i++) trace[order[i]] = 0;
 }
 
 function pressOnly(buttons: HTMLButtonElement[], chosen: HTMLButtonElement): void {
