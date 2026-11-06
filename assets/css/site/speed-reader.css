@@ -34,6 +34,8 @@
 .sr-btn:hover { color: rgb(var(--c-fg)); background: rgb(var(--c-border) / .5); }
 .sr-btn:focus-visible { outline: 2px solid rgb(var(--c-accent) / .6); outline-offset: 1px; }
 .sr-btn-sm { width: 1.9rem; height: 1.9rem; }
+/* The magnifier, pressed while it waits for a word to be picked. */
+.sr-btn[aria-pressed="true"] { color: rgb(var(--c-accent)); background: rgb(var(--c-accent) / .15); }
 .sr-play { width: 2.6rem; height: 2.6rem; background: rgb(var(--c-accent)); color: rgb(var(--c-bg)); }
 .sr-play:hover { color: rgb(var(--c-bg)); background: rgb(var(--c-accent)); filter: brightness(1.08); }
 .sr-icon-pause, .sr[data-playing="true"] .sr-icon-play { display: none; }
@@ -54,5 +56,9 @@
    without the API just don't show them. */
 ::highlight(sr-sentence) { background-color: rgb(var(--c-accent) / .12); }
 ::highlight(sr-word) { background-color: rgb(var(--c-accent) / .45); color: rgb(var(--c-fg)); }
+/* Picking a word (the magnifier): a crosshair over the article and the word
+   under the pointer lit, so you can see what a click will choose. */
+::highlight(sr-hover) { background-color: rgb(var(--c-accent) / .3); }
+html[data-sr-picking] [data-sr-article] { cursor: crosshair; }
 
 @media (prefers-reduced-motion: reduce) { .sr-fill, .sr-btn { transition: none; } }

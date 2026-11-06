@@ -12,6 +12,10 @@
 // opens paused on the first word in view, or on the last one read if that's
 // still on screen.
 //
+// The magnifier picks where to start: press it, then click (or tap) a word in
+// the article. While it waits, clicks on the article choose a word instead of
+// following links or closing the reader, and Escape cancels.
+//
 // For fun, V (desktop) voices each word in NPC Voices' Mythfall hum: the
 // Simple view's default voice, from static/js/npc-voices/nv-voice.js
 // (window.NvSpeak), with its data on the article ([data-sr-voice-*], from
@@ -66,6 +70,8 @@ let timer = 0;
 let wpm = readWpm();
 let view: View | null = null;
 let keysBound = false;
+let picking = false;
+let hoverFrame = 0;
 
 // The Mythfall voice (V). Its script loads when the desktop reader first
 // opens, so the key press itself can wake the audio, which browsers require.
@@ -296,14 +302,20 @@ function render(): void {
   follow();
 }
 
+// The CSS Custom Highlight API, where the browser has it.
+function highlightRegistry(): { registry?: Map<string, unknown>; Make?: new (...ranges: Range[]) => unknown } {
+  return {
+    registry: (window.CSS as unknown as { highlights?: Map<string, unknown> }).highlights,
+    Make: (window as unknown as { Highlight?: new (...ranges: Range[]) => unknown }).Highlight,
+  };
+}
+
 function highlight(): void {
-  const registry = (window.CSS as unknown as { highlights?: Map<string, unknown> }).highlights;
-  const Make = (window as unknown as { Highlight?: new (...ranges: Range[]) => unknown }).Highlight;
+  const { registry, Make } = highlightRegistry();
   if (!registry || !Make) return;
   const token = tokens[index];
   if (!token) {
-    registry.delete('sr-word');
-    registry.delete('sr-sentence');
+    clearHighlight();
     return;
   }
   registry.set('sr-sentence', new Make(rangeOf(tokens[sentenceStart(index)], tokens[sentenceEnd(index)])));
@@ -311,9 +323,8 @@ function highlight(): void {
 }
 
 function clearHighlight(): void {
-  const registry = (window.CSS as unknown as { highlights?: Map<string, unknown> }).highlights;
-  registry?.delete('sr-word');
-  registry?.delete('sr-sentence');
+  const { registry } = highlightRegistry();
+  ['sr-word', 'sr-sentence', 'sr-hover'].forEach((name) => registry?.delete(name));
 }
 
 // Where the readable part of the window starts: under the mobile panel when
@@ -334,6 +345,100 @@ function follow(): void {
   if (rect.top >= top + room * BAND.top && rect.bottom <= top + room * BAND.bottom) return;
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   window.scrollTo({ top: window.scrollY + rect.top - (top + room * BAND.aim), behavior: reduce ? 'auto' : 'smooth' });
+}
+
+/* ---- Picking a word (the magnifier) -------------------------------------- */
+
+function setPicking(on: boolean): void {
+  picking = on;
+  document.documentElement.toggleAttribute('data-sr-picking', on);
+  view?.root.querySelector('[data-sr-pick]')?.setAttribute('aria-pressed', String(on));
+  if (on) setPlaying(false);
+  else highlightRegistry().registry?.delete('sr-hover');
+}
+
+// The text position under a point: caretPositionFromPoint where it exists
+// (Firefox, newer Chrome), caretRangeFromPoint otherwise (Safari, older Chrome).
+function pointAt(x: number, y: number): { node: Node; offset: number } | null {
+  const doc = document as unknown as {
+    caretPositionFromPoint?: (x: number, y: number) => { offsetNode: Node; offset: number } | null;
+    caretRangeFromPoint?: (x: number, y: number) => Range | null;
+  };
+  if (doc.caretPositionFromPoint) {
+    const at = doc.caretPositionFromPoint(x, y);
+    return at ? { node: at.offsetNode, offset: at.offset } : null;
+  }
+  const range = doc.caretRangeFromPoint?.(x, y);
+  return range ? { node: range.startContainer, offset: range.startOffset } : null;
+}
+
+// The word at a point, or the next readable one after it (a click in a code
+// block or a gap lands on what follows).
+function tokenAt(x: number, y: number): number {
+  const at = pointAt(x, y);
+  if (!at || !article?.contains(at.node)) return -1;
+  return tokens.findIndex((token) => rangeOf(token).comparePoint(at.node, at.offset) <= 0);
+}
+
+function showHover(x: number, y: number): void {
+  const { registry, Make } = highlightRegistry();
+  if (!registry || !Make) return;
+  const i = tokenAt(x, y);
+  if (i < 0) registry.delete('sr-hover');
+  else registry.set('sr-hover', new Make(rangeOf(tokens[i])));
+}
+
+function pick(i: number): void {
+  setPicking(false);
+  if (i < 0) return;
+  index = i;
+  render();
+  speak(tokens[index]);
+}
+
+// Bound once for the site: they only act while the magnifier is waiting.
+// Capture phase, so the pick wins over the reader's own outside-click closing,
+// the navbar panel's, and the article's links.
+function bindPickingOnce(): void {
+  if (document.documentElement.dataset.srPickBound === '1') return;
+  document.documentElement.dataset.srPickBound = '1';
+  document.addEventListener(
+    'click',
+    (e) => {
+      if (!picking || !view) return;
+      const target = e.target as Element | null;
+      if (target && view.root.contains(target)) return; // the reader's own buttons
+      if (!target || !article?.contains(target)) {
+        setPicking(false);
+        return;
+      }
+      e.preventDefault();
+      e.stopPropagation();
+      pick(tokenAt(e.clientX, e.clientY));
+    },
+    true,
+  );
+  document.addEventListener(
+    'mousemove',
+    (e) => {
+      if (!picking || hoverFrame) return;
+      hoverFrame = requestAnimationFrame(() => {
+        hoverFrame = 0;
+        showHover(e.clientX, e.clientY);
+      });
+    },
+    { passive: true },
+  );
+  document.addEventListener(
+    'keydown',
+    (e) => {
+      if (!picking || e.key !== 'Escape') return;
+      e.preventDefault();
+      e.stopPropagation();
+      setPicking(false);
+    },
+    true,
+  );
 }
 
 /* ---- Playing ------------------------------------------------------------- */
@@ -397,6 +502,7 @@ function stop(): void {
   playing = false;
   window.clearTimeout(timer);
   dropQueued();
+  setPicking(false);
   if (view) view.root.dataset.playing = 'false';
   clearHighlight();
   view = null;
@@ -446,6 +552,7 @@ function wireControls(root: HTMLElement): void {
     });
   };
   on('stage', () => setPlaying(!playing));
+  on('pick', () => setPicking(!picking));
   on('play', () => setPlaying(!playing));
   on('back', back);
   on('next', next);
@@ -502,12 +609,15 @@ export function initSpeedReader(): void {
   if (!roots.length) return;
   roots.forEach(wireControls);
   bindKeysOnce();
+  bindPickingOnce();
   const fab = document.querySelector<HTMLDetailsElement>('[data-sr-fab]');
   if (fab && fab.dataset.srBound !== '1') {
     fab.dataset.srBound = '1';
     fab.addEventListener('toggle', () => {
       if (fab.open && window.matchMedia(DESKTOP).matches) open('desktop');
-      else if (view?.root.dataset.sr === 'desktop') stop();
+      // Closed: stop and clear the highlights whatever state the reader is
+      // in, unless the mobile panel is the one reading.
+      else if (view?.root.dataset.sr !== 'mobile') stop();
     });
   }
   // Closing the mobile panel (its X, a tap outside, Escape) stops the reader
@@ -516,7 +626,7 @@ export function initSpeedReader(): void {
   if (nav && nav.dataset.srBound !== '1') {
     nav.dataset.srBound = '1';
     nav.addEventListener('toggle', () => {
-      if (!nav.open && view?.root.dataset.sr === 'mobile') stop();
+      if (!nav.open && view?.root.dataset.sr !== 'desktop') stop();
     });
   }
   document.querySelectorAll('[data-sr-pending]').forEach((el) => el.removeAttribute('data-sr-pending'));

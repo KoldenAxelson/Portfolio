@@ -15,6 +15,9 @@
   <span class="sr-track" aria-hidden="true"><span class="sr-fill" data-sr-fill></span></span>
   <div class="sr-bar">
     <span class="sr-keys">
+      <button type="button" class="sr-btn" data-sr-pick aria-pressed="false" aria-label="Pick a word to start from" title="Pick a word to start from">
+        {{- partial "func/svg-icon.html" (dict "name" "magnifying-glass" "width" "1.8") -}}
+      </button>
       <button type="button" class="sr-btn" data-sr-back aria-label="Back a sentence" title="Back a sentence">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 18 11 12l7-6M8 6v12"/></svg>
       </button>
