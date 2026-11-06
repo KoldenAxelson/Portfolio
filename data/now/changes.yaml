@@ -14,6 +14,10 @@
 #   project : optional project slug, for the icon beside the entry. A /projects/
 #             url gets its project's icon on its own; anything else shows the
 #             site's mark unless this names a project.
+- date: 2026-11-06
+  kind: update
+  text: "Moved three side projects off AWS and onto Cloudflare Workers: two Discord bots and the gym tracker my friends and I log our sets in, so the server they ran on could finally be shut down."
+  url: "/now/"
 - date: 2026-11-05
   kind: new
   text: "Every article can be speed read now: one word at a time on a marked pivot letter, with the article scrolling along underneath so you can drop back into it where you stopped."

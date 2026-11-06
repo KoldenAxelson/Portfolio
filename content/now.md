@@ -2,7 +2,7 @@
 title: "Now"
 description: "What Konrad Wright is focused on right now: what he's building, playing, reading and learning."
 layout: "now"
-updated: 2026-11-05
+updated: 2026-11-06
 # Only what's happening now. Anything "up next" belongs on the Impossible
 # List, not here.
 #
