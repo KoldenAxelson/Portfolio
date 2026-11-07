@@ -2,7 +2,7 @@
 title: "Impossible List"
 description: "A living list of what Konrad Wright wants to do in life, the skills he wants to earn and the adventures he wants to take, plus the games he plays, the books he reads and the movies and shows he watches — designed to keep growing rather than get finished."
 layout: "impossible-list"
-updated: 2026-11-01
+updated: 2026-11-06
 # Blank by default — uncomment to put a line under the H1 in the banner.
 #lead: "Not a bucket list you complete — one you keep adding to. The idea (borrowed from Joel Runyon) is that the list should always outrun you."
 groups:
@@ -306,6 +306,13 @@ books:
           current: true
           cover: "da-vinci-code"
           pitch: "Short chapters, cliffhanger endings, a murder in the Louvre and a trail of codes through art history. A pure page-turner: take the history with a grain of salt and enjoy the puzzle hunt."
+        - title: "The Law of the Sublime"
+          year: 2026
+          done: false
+          status: "Out Nov 10, 2026"
+          cover: "law-of-the-sublime"
+          pitch: "Robert Greene turns from power and human nature to awe. Alongside stories of near-death encounters, great discoveries and shifts in consciousness, he gives exercises and meditations for finding the Sublime in nature, art, science and history."
+          blurb: "Coming out soon, and I'm looking forward to reading it."
         - title: "The Chronicles of Narnia"
           year: 1950
           done: false
