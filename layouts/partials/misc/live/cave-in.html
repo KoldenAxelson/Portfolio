@@ -1,0 +1,38 @@
+{{- /*
+  misc/live/cave-in — the Cave In card's band on /misc: the page's own rules
+  and Path Finder AI playing on their own (scripts/pages/cave-in/card.ts), with
+  rocks dropping in, the AI's route marching ahead and a CAVE IN! when it
+  traps itself. The SVG is the still, without JS, with reduced motion and
+  until the canvas has a frame: a real mid-game board from the AI, laid out
+  where card.ts draws (board 82% of the band's height, stats to its right).
+  Tile colours repeat TILE_COLORS in scripts/pages/cave-in/render.ts.
+*/ -}}
+{{- $rows := slice ".#...####." ".P..#....." "..#.#.#.S." ".#.#...##." ".#......#." ".....#...." "..#...#..#" "...#.####." ".#.#...#.#" "#..#....##" -}}
+{{- $route := "1,1 1,2 0,2 0,3 0,4 0,5 1,5 2,5 2,4 3,4 4,4 4,3 5,3 5,2 5,1 6,1 7,1 8,1 8,2" -}}
+{{- $colors := dict "." "rgb(56 56 56)" "#" "rgb(128 128 128)" "S" "rgb(139 69 19)" "P" "rgb(255 0 0)" -}}
+{{- $pad := 18 }}{{ $boardX := 25.2 }}{{ $cell := 16.4 }}{{ $inset := 1.64 -}}
+<span data-live-cave-in aria-hidden="true" class="group/ci absolute inset-0 block bg-[#070708]" style="font-family: var(--font-mono)">
+  <svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice" class="absolute inset-0 h-full w-full transition-opacity duration-500 group-[.is-live]/ci:opacity-0">
+    <rect x="{{ $boardX }}" y="{{ $pad }}" width="164" height="164" fill="#000" />
+    {{- range $y, $row := $rows }}
+    {{- range $x, $c := split $row "" }}
+    <rect x="{{ printf "%.2f" (add $boardX (mul $x $cell) $inset) }}" y="{{ printf "%.2f" (add $pad (mul $y $cell) $inset) }}" width="13.12" height="13.12" fill="{{ index $colors $c }}" />
+    {{- end }}
+    {{- end }}
+    {{- $points := slice }}
+    {{- range split $route " " }}{{ $xy := split . "," }}{{ $points = $points | append (printf "%.1f,%.1f" (add $boardX (mul (add (float (index $xy 0)) 0.5) $cell)) (add $pad (mul (add (float (index $xy 1)) 0.5) $cell))) }}{{ end }}
+    <polyline points="{{ delimit $points " " }}" fill="none" stroke="rgb(252 211 77 / .75)" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="4.9 3.6" />
+    <circle cx="{{ printf "%.1f" (add $boardX (mul 1.5 $cell)) }}" cy="{{ printf "%.1f" (add $pad (mul 1.5 $cell) 4.1) }}" r="1.64" fill="#fff" />
+    <g fill="rgb(255 255 255 / .5)" font-size="9" font-weight="600">
+      <text x="218" y="27">PATH FINDER AI</text>
+      <text x="218" y="56">STICKS</text>
+      <text x="218" y="122">MOVES</text>
+    </g>
+    <g fill="rgb(255 255 255 / .92)" font-size="32.8" font-weight="700">
+      <text x="218" y="87">31</text>
+      <text x="218" y="153">180</text>
+    </g>
+  </svg>
+  <canvas class="absolute inset-0 block h-full w-full opacity-0 transition-opacity duration-500 group-[.is-live]/ci:opacity-100"></canvas>
+</span>
+{{ partial "misc/live-script.html" "pages/cave-in/card.ts" }}

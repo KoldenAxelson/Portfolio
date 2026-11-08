@@ -14,6 +14,10 @@
 #   project : optional project slug, for the icon beside the entry. A /projects/
 #             url gets its project's icon on its own; anything else shows the
 #             site's mark unless this names a project.
+- date: 2026-11-07
+  kind: new
+  text: "Brought Cave In, an old Python puzzle game of mine, to the browser: grab sticks while the cave fills with rocks, or watch a pathfinding AI dig through it and draw the route it plans."
+  url: "/misc/cave-in/"
 - date: 2026-11-06
   kind: update
   text: "Moved three side projects off AWS and onto Cloudflare Workers: two Discord bots and the gym tracker my friends and I log our sets in, so the server they ran on could finally be shut down."

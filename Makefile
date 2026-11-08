@@ -44,11 +44,11 @@ CSS_OUT  := assets/css/app.css
 # SpinMasters (Rust) blits a CPU framebuffer onto a 2D canvas — just a .wasm.
 # Verdant (Odin) renders with WebGL2 through Odin's runtime glue, so it ships
 # three things: the .wasm, assets/vendor/odin.js, and assets/img/verdant/sprites/.
-SPINMASTERS_DIR ?= ../Playgrounds/Rust/spinmasters
-VERDANT_DIR     ?= ../Micro/Portfolio/verdant
+SPINMASTERS_DIR ?= ../WrightFunctions/Projects/spinmasters
+VERDANT_DIR     ?= ../WrightFunctions/Projects/verdant
 # SpaceScape (Odin + raylib → emscripten) publishes itself: its own Makefile
 # builds the wasm and copies index.{html,js,wasm,data} into static/games/spacescape/.
-SPACESCAPE_DIR  ?= ../Playgrounds/Odin/SpaceScape
+SPACESCAPE_DIR  ?= ../WrightFunctions/Projects/SpaceScape
 
 # AI chat proxy (Go, stdlib-only — see docs/ops/ai-tunnel.md). The binary is built
 # into its own dir and is gitignored; never commit it.

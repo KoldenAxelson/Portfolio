@@ -1,0 +1,41 @@
+/* /misc/cave-in/: layouts/shortcodes/cave-in/game.html, run by
+   scripts/pages/cave-in/. The board is dark in both themes, as in the original
+   game; everything around it follows the --c-* tokens. */
+
+.ci{display:grid;gap:.75rem;max-width:34rem;margin:0 auto;}
+
+/* ── toolbar ────────────────────────────────────────────────────────────── */
+.ci-bar{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem .75rem;}
+.ci-seg{display:inline-flex;padding:.2rem;border-radius:.6rem;background:rgb(var(--c-border) / .5);}
+.ci-seg-btn{padding:.38rem .75rem;border:0;border-radius:.45rem;background:transparent;color:rgb(var(--c-muted));font:500 .78rem var(--font-mono, ui-monospace, monospace);cursor:pointer;transition:background-color .15s,color .15s;}
+.ci-seg-btn:hover{color:rgb(var(--c-fg));}
+.ci-seg-btn[aria-pressed="true"]{background:rgb(var(--c-bg));color:rgb(var(--c-fg));box-shadow:0 1px 2px rgb(0 0 0 / .2);}
+.ci-field{display:inline-flex;align-items:center;gap:.4rem;font:.72rem var(--font-mono, ui-monospace, monospace);color:rgb(var(--c-muted));}
+.ci-select{font:inherit;padding:.35rem .5rem;border-radius:.45rem;border:1px solid rgb(var(--c-border));background:rgb(var(--c-bg));color:rgb(var(--c-fg));}
+.ci-speed input{width:6.5rem;accent-color:rgb(var(--c-accent));}
+.ci:not([data-mode="watch"]) .ci-speed{display:none;}
+.ci-chip{font:.72rem/1 var(--font-mono, ui-monospace, monospace);padding:.45rem .75rem;border-radius:.45rem;border:1px solid rgb(var(--c-border));background:transparent;color:rgb(var(--c-fg));cursor:pointer;transition:border-color .15s,color .15s;}
+.ci-chip:hover{border-color:rgb(var(--c-accent) / .6);color:rgb(var(--c-accent));}
+.ci-bar .ci-chip{margin-left:auto;}
+
+/* ── board ──────────────────────────────────────────────────────────────── */
+.ci-stats{display:flex;justify-content:space-between;font:.8rem var(--font-mono, ui-monospace, monospace);color:rgb(var(--c-muted));}
+.ci-stats b{color:rgb(var(--c-fg));font-variant-numeric:tabular-nums;}
+.ci-stage{aspect-ratio:1;border-radius:.75rem;overflow:hidden;background:#000;border:1px solid rgb(var(--c-border));outline-offset:3px;}
+.ci-stage:focus-visible{outline:2px solid rgb(var(--c-accent));}
+.ci-canvas{display:block;width:100%;height:100%;}
+.ci-status{min-height:1.25rem;margin:0;text-align:center;font-size:.85rem;color:rgb(var(--c-fg));}
+
+/* ── touch pad: shown on touch screens while you play ───────────────────── */
+.ci-pad{display:none;grid-template-columns:repeat(3,3.25rem);grid-template-areas:". up ." "left use right" ". down .";gap:.35rem;justify-content:center;}
+.ci-pad .ci-chip{height:3.25rem;padding:0;font-size:1rem;touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
+.ci-pad .ci-use{font-size:.75rem;}
+.ci-up{grid-area:up;} .ci-left{grid-area:left;} .ci-use{grid-area:use;} .ci-right{grid-area:right;} .ci-down{grid-area:down;}
+@media (pointer:coarse){ .ci.is-ready[data-mode="play"] .ci-pad{display:grid;} }
+
+/* ── legend: the rules, readable without the script ─────────────────────── */
+.ci-legend{display:grid;gap:.35rem;margin:0;padding:0;list-style:none;font-size:.85rem;color:rgb(var(--c-muted));}
+.ci-legend li:has(.ci-swatch){display:flex;align-items:baseline;gap:.5rem;}
+.ci-swatch{flex:none;width:.7rem;height:.7rem;border-radius:2px;background:var(--ci-swatch);transform:translateY(.05rem);}
+.ci-legend kbd{font:.72rem var(--font-mono, ui-monospace, monospace);padding:.05rem .3rem;border:1px solid rgb(var(--c-border));border-radius:.3rem;color:rgb(var(--c-fg));}
+.ci:not(.is-ready) .ci-bar,.ci:not(.is-ready) .ci-stats,.ci:not(.is-ready) .ci-stage{display:none;}

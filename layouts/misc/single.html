@@ -93,6 +93,9 @@
 {{- /* Sun: stylesheet and renderer bundle. */ -}}
 {{- if .HasShortcode "sun/sim" }}{{ partial "sun/assets.html" . }}{{ end }}
 
+{{- /* Cave In: stylesheet and the game bundle. */ -}}
+{{- if .HasShortcode "cave-in/game" }}{{ partial "cave-in/assets.html" . }}{{ end }}
+
 {{- /* Typing Speed: stylesheet and the test script. */ -}}
 {{- if .HasShortcode "typing-speed/test" }}{{ partial "typing-speed/assets.html" . }}{{ end }}
 

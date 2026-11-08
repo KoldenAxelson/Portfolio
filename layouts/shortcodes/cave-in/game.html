@@ -1,0 +1,53 @@
+{{- /*
+  cave-in/game — the board, its toolbar and the touch controls.
+
+    {{< cave-in/game >}}
+
+  The data-ci-* hooks are read by assets/scripts/pages/cave-in/game.ts.
+  Assets ship from layouts/misc/single.html via partials/cave-in/assets.html.
+*/ -}}
+<div class="ci not-prose" data-cave-in>
+  <div class="ci-bar">
+    <div class="ci-seg" role="group" aria-label="Who plays">
+      <button type="button" class="ci-seg-btn" data-ci-mode="play" aria-pressed="true">Play</button>
+      <button type="button" class="ci-seg-btn" data-ci-mode="watch" aria-pressed="false">Watch the AI</button>
+    </div>
+    <label class="ci-field">
+      <span>Rocks</span>
+      <select class="ci-select" data-ci-rocks>
+        <option value="random">Fall anywhere</option>
+        <option value="safe">Never wall me in</option>
+      </select>
+    </label>
+    <label class="ci-field ci-speed">
+      <span>Speed</span>
+      <input type="range" min="2" max="60" value="10" data-ci-speed aria-label="AI steps per second">
+    </label>
+    <button type="button" class="ci-chip" data-ci-action="restart">Restart</button>
+  </div>
+
+  <div class="ci-stats">
+    <span>Sticks <b data-ci-sticks>0</b></span>
+    <span>Moves <b data-ci-moves>0</b></span>
+  </div>
+  <div class="ci-stage" data-ci-stage tabindex="0" aria-label="Cave In board. WASD or arrow keys move, Space uses what you face, R restarts.">
+    <canvas class="ci-canvas" data-ci-canvas aria-hidden="true"></canvas>
+  </div>
+  <p class="ci-status" data-ci-status aria-live="polite"></p>
+
+  <div class="ci-pad" aria-label="Touch controls">
+    <button type="button" class="ci-chip ci-up" data-ci-move="up" aria-label="Up">▲</button>
+    <button type="button" class="ci-chip ci-left" data-ci-move="left" aria-label="Left">◀</button>
+    <button type="button" class="ci-chip ci-use" data-ci-action="use">Use</button>
+    <button type="button" class="ci-chip ci-right" data-ci-move="right" aria-label="Right">▶</button>
+    <button type="button" class="ci-chip ci-down" data-ci-move="down" aria-label="Down">▼</button>
+  </div>
+
+  <ul class="ci-legend">
+    <li><i class="ci-swatch" style="--ci-swatch:rgb(255 0 0)"></i>You. The dot shows which way you face.</li>
+    <li><i class="ci-swatch" style="--ci-swatch:rgb(139 69 19)"></i>A stick. Pick it up and a rock falls somewhere, and a new stick appears.</li>
+    <li><i class="ci-swatch" style="--ci-swatch:rgb(128 128 128)"></i>A rock. Spend a stick to clear it.</li>
+    <li><kbd>WASD</kbd> or arrows to move, <kbd>Space</kbd> to use what you face, <kbd>R</kbd> to restart.</li>
+  </ul>
+  <noscript><p class="ci-status">The game needs JavaScript; the rules above are the whole of it.</p></noscript>
+</div>
