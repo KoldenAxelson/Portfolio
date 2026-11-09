@@ -15,6 +15,10 @@
 #             url gets its project's icon on its own; anything else shows the
 #             site's mark unless this names a project.
 - date: 2026-11-07
+  kind: update
+  text: "Sorted the unread books, movies and shows on my Impossible List from most to least recommended, and added a few new ones: Outer Wilds, The Silmarillion, Hacksaw Ridge, and my reviews of The Chosen and Over the Garden Wall."
+  url: "/impossible-list/"
+- date: 2026-11-07
   kind: new
   text: "Brought Cave In, an old Python puzzle game of mine, to the browser: grab sticks while the cave fills with rocks, or watch a pathfinding AI dig through it and draw the route it plans."
   url: "/misc/cave-in/"

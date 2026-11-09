@@ -54,6 +54,15 @@
   price: "$65"
   desc: "The same 3.97-inch, 800×480 e-paper size as the reTerminal Sticky, as a dev board with the radio extras: touch and a frontlight, an ESP32-S3, LoRa (SX1262) for long-range, low-power messaging, and NFC. 1,150 mAh battery. Made for e-readers, signage and off-grid IoT projects."
 
+- name: "EEGOREAD A4"
+  kind: "Pocket e-reader"
+  url: "https://www.eegoread.com/products/eegoread-a4"
+  domain: "eegoread.com"
+  types: [hardware]
+  status: out-of-stock
+  price: "$85.99"
+  desc: "A pocket e-reader with a 3.98-inch, 238 ppi E Ink touchscreen, about the size of the reTerminal Sticky but built only for reading: physical page-turn buttons, a front light with warm and cool tones, and a magnetic back so it snaps onto a phone. It reads EPUB and TXT files from a microSD card (16 GB included, up to 1 TB), weighs about 84 g and charges over USB-C from a 2,000 mAh battery. The A4 Lite drops the front light for $65.99. Use my coupon code <code>eegoread10</code> at checkout."
+
 - name: "Pulsetto"
   kind: "Vagus nerve stimulator"
   url: "https://pulsetto.tech/pages/StayCurious"
