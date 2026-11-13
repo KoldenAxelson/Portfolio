@@ -13,6 +13,9 @@
 #           static/js/tech-watch/<preview>.js; partials/tech-watch/assets.html ships
 #           the script for each preview listed here.
 # feature : spans the full grid width.
+# restock : optional, how to check a sold-out product's stock ("shopify" is the
+#           only kind so far). services/workers/stock-watch/ emails Konrad when
+#           it's back; redeploy with `make stock-deploy` after adding or removing one.
 - name: "Dwarfstar"
   kind: "Small-AI research"
   url: "https://dwarfstar.online/"
@@ -61,6 +64,7 @@
   types: [hardware]
   status: out-of-stock
   price: "$85.99"
+  restock: shopify
   desc: "A pocket e-reader with a 3.98-inch, 238 ppi E Ink touchscreen, about the size of the reTerminal Sticky but built only for reading: physical page-turn buttons, a front light with warm and cool tones, and a magnetic back so it snaps onto a phone. It reads EPUB and TXT files from a microSD card (16 GB included, up to 1 TB), weighs about 84 g and charges over USB-C from a 2,000 mAh battery. The A4 Lite drops the front light for $65.99. Use my coupon code <code>eegoread10</code> at checkout."
 
 - name: "Pulsetto"

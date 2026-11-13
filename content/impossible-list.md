@@ -2,7 +2,7 @@
 title: "Impossible List"
 description: "A living list of what Konrad Wright wants to do in life, the skills he wants to earn and the adventures he wants to take, plus the games he plays, the books he reads and the movies and shows he watches — designed to keep growing rather than get finished."
 layout: "impossible-list"
-updated: 2026-11-08
+updated: 2026-11-13
 # Blank by default — uncomment to put a line under the H1 in the banner.
 #lead: "Not a bucket list you complete — one you keep adding to. The idea (borrowed from Joel Runyon) is that the list should always outrun you."
 groups:
@@ -194,10 +194,12 @@ games:
     - title: "The Legend of Zelda: Twilight Princess"
       year: 2006
       console: "GCN"
-      done: false
-      current: true
+      done: true
+      rating: 4.0
       cover: "zelda-twilight-princess"
+      shot: "zelda-twilight-princess.webp"
       pitch: "A darker, older Zelda: Link turns into a wolf in the Twilight Realm with the impish Midna on his back. Big dungeons and one of the series' best companions."
+      blurb: "Twilight Princess has the most expressive sword fighting of any entry in the series. The collect-a-thon, though: I really couldn't be bothered with all the Poe Souls. I did get all the bugs and upgrades. Midna is the best of Navi and the King of Red Lions: important to the story and useful, not to mention beaming with character. I've also collected a small set of hilarious moments from naming Link \"my dude\"."
     - title: "Viva Piñata: Trouble in Paradise"
       year: 2008
       console: "XBOX"
@@ -234,6 +236,14 @@ games:
       shot: "rumble-club.webp"
       pitch: "A free physics brawler for up to 20 players: grab, punch and fling wobbly characters off the arena across game modes that rotate daily. Climb the all-time trophy leaderboard by winning rounds."
       blurb: "This was a fun game that I got on the ground floor of its release to play. It sorta consumed my life for a while there and I had to drop it to be a good adult."
+    - title: "Bloons TD 6"
+      year: 2018
+      console: "MOBILE"
+      done: false
+      current: true
+      cover: "bloons-td-6"
+      shot: "bloons-td-6.webp"
+      pitch: "Monkeys versus balloons: build towers along the track, upgrade them down one of three paths, and pop every bloon before it gets through. Ninja Kiwi's tower defense is easy to pick up for a few rounds and goes very deep, with heroes, co-op and new maps added for years."
     - title: "The Legend of Zelda: Oracle of Seasons"
       year: 2001
       console: "GBC"
@@ -366,6 +376,11 @@ books:
             - title: "The Hero of Ages"
               done: false
               pitch: "Ash falls, the mists spread, and every mystery from the first two books comes due. One of the most satisfying trilogy endings in fantasy."
+        - title: "The Sword of Kaigen"
+          year: 2019
+          done: false
+          cover: "sword-of-kaigen"
+          pitch: "On a remote peninsula of warriors who fight with water and ice, a mother who gave up the sword for marriage and her teenage son who dreams of glory face an invasion the empire never warned them about. M.L. Wang's standalone is a family drama first and a war story second, with a slow start and a huge payoff."
         - title: "Dungeon Crawler Carl"
           year: 2020
           done: false
@@ -426,6 +441,11 @@ books:
           done: false
           cover: "shoe-dog"
           pitch: "Phil Knight's memoir of building Nike, from selling imported running shoes out of his car to a global brand, with near-bankruptcy at every turn. Reads like a novel and is one of the most honest startup stories out there."
+        - title: "Dark Matter"
+          year: 2016
+          done: false
+          cover: "dark-matter"
+          pitch: "A physics professor is knocked out on the walk home and wakes up in a life where he never married his wife or had their son, and became a famous scientist instead. Blake Crouch's fast multiverse thriller about the road not taken; Apple TV+ adapted it in 2024."
         - title: "Percy Jackson & the Olympians"
           year: 2005
           done: false
@@ -3648,4 +3668,12 @@ films:
           cover: "middle-aged-online-shopper"
           pitch: "A nearly forty-year-old illustrator wakes up in a monster-filled forest in another world, with access to a huge online shopping site that delivers anything."
           blurb: "Fast food anime, but man... you know you're getting old when you empathize this deeply with an old man that just wants peace."
+        - title: "Ponyo"
+          year: 2008
+          kind: "movie"
+          done: true
+          rating: 2.0
+          cover: "ponyo"
+          pitch: "A goldfish princess escapes her sorcerer father, turns herself into a little girl and runs off to be with Sōsuke, the five-year-old boy who found her in a jar, flooding the town in the process. Hayao Miyazaki's gentlest film, hand-drawn down to every wave."
+          blurb: "It's an adorable story, and it shows the main character Sōsuke taking responsibility. A solid movie with beautiful animation to show the kids one day. It also depicts children really well: they're not just adults in kid suits, which is where I feel most kids in fiction land."
 ---

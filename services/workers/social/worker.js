@@ -17,49 +17,23 @@
 // scripts/social/deploy.py:
 //
 //   SOCIAL         KV namespace
-//   MAILER         send_email binding, locked to Konrad's verified address
+//   MAILER         send_email binding, locked to Konrad's verified address (shared/mail.js)
 //   DEVTO_API_KEY  secret
 //   RUN_KEY        secret, sent as "Authorization: Bearer <key>" to /run, /status and /test
 //   QUEUE_URL, MAIL_FROM, MAIL_TO, PAGE_BASE   plain vars
 
-import { EmailMessage } from "cloudflare:email";
+import { esc, sendEmail } from "../shared/mail.js";
 
 const TZ = "America/Los_Angeles";
 const UA = "wrightfunctions-social/1.0 (+https://wrightfunctions.com)";
 const GREEN = "#037737";
 const LOCK_TTL_S = 300; // a run holds this long at most; KV's minimum TTL is 60
-const SUBJECT_CHUNK = 45; // bytes per RFC 2047 encoded-word, so each stays under 75 characters
 
 // ---- Small helpers -------------------------------------------------------
 
 function today() {
   // en-CA formats as YYYY-MM-DD.
   return new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
-}
-
-function esc(s) {
-  return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
-}
-
-function b64(str) {
-  const bytes = new TextEncoder().encode(str);
-  let bin = "";
-  for (const b of bytes) bin += String.fromCharCode(b);
-  // 76-character lines, as MIME expects.
-  return btoa(bin).replace(/(.{76})/g, "$1\r\n");
-}
-
-// A subject as encoded-words of at most SUBJECT_CHUNK bytes, cut on
-// character boundaries and folded onto continuation lines.
-function encodedSubject(s) {
-  const words = [];
-  let chunk = "";
-  for (const ch of s) {
-    if (new TextEncoder().encode(chunk + ch).length > SUBJECT_CHUNK) { words.push(chunk); chunk = ""; }
-    chunk += ch;
-  }
-  if (chunk) words.push(chunk);
-  return words.map((w) => `=?UTF-8?B?${b64(w).replace(/\r\n/g, "")}?=`).join("\r\n ");
 }
 
 async function authorized(request, env) {
@@ -153,33 +127,6 @@ ${cards}${extra}
 function emailText(env, posts, notes) {
   const parts = posts.map((p) => `${p.title}\nCopy & open LinkedIn: ${env.PAGE_BASE}/p/${encodeURIComponent(p.id)}\n\n${p.linkedin}\n`);
   return parts.join("\n----\n\n") + (notes.length ? `\n${notes.join("\n")}\n` : "");
-}
-
-async function sendEmail(env, subject, html, text) {
-  const boundary = `wf-${crypto.randomUUID()}`;
-  const raw = [
-    `From: wrightfunctions.com <${env.MAIL_FROM}>`,
-    `To: ${env.MAIL_TO}`,
-    `Subject: ${encodedSubject(subject)}`,
-    `Date: ${new Date().toUTCString()}`,
-    `Message-ID: <${crypto.randomUUID()}@wrightfunctions.com>`,
-    "MIME-Version: 1.0",
-    `Content-Type: multipart/alternative; boundary="${boundary}"`,
-    "",
-    `--${boundary}`,
-    "Content-Type: text/plain; charset=UTF-8",
-    "Content-Transfer-Encoding: base64",
-    "",
-    b64(text),
-    `--${boundary}`,
-    "Content-Type: text/html; charset=UTF-8",
-    "Content-Transfer-Encoding: base64",
-    "",
-    b64(html),
-    `--${boundary}--`,
-    "",
-  ].join("\r\n");
-  await env.MAILER.send(new EmailMessage(env.MAIL_FROM, env.MAIL_TO, raw));
 }
 
 // ---- The daily run -------------------------------------------------------

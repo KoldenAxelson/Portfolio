@@ -63,7 +63,7 @@ AI_PORT      := 6573    # localhost-only proxy port (ASCII "AI" = 65,73). Must
 # `?=` means an AI_MODEL from the environment wins and skips this detection.
 AI_MODEL     ?= $(shell command -v ollama >/dev/null 2>&1 && ollama list 2>/dev/null | awk 'NR==2 {print $$1}')
 
-.PHONY: help setup dev dev-drafts build css css-watch typecheck clean distclean ai-proxy ai-proxy-run ai-proxy-stop spinmasters verdant spacescape games seal backup workbooks workbooks-test examples examples-check transcripts transcripts-check deck image-quote image cover images-spent social-queue social-deploy social-status social-run social-test
+.PHONY: help setup dev dev-drafts build css css-watch typecheck clean distclean ai-proxy ai-proxy-run ai-proxy-stop spinmasters verdant spacescape games seal backup workbooks workbooks-test examples examples-check transcripts transcripts-check deck image-quote image cover images-spent social-queue social-deploy social-status social-run social-test stock-deploy stock-status stock-run stock-test
 
 help: ## Show this help
 	@echo "Portfolio — available commands:"
@@ -300,6 +300,18 @@ social-test: ## Email a sample LinkedIn post from the posting Worker, marking no
 
 social-run: ## Make the posting Worker send today's batch now
 	@$(PYTHON) scripts/social/deploy.py run
+
+stock-deploy: ## Create or update the restock alerts Worker, watching Tech Watch entries with restock: (needs CLOUDFLARE_API_TOKEN in .env)
+	@$(PYTHON) scripts/stock-watch/deploy.py deploy
+
+stock-status: ## Each watched product's stock right now, and whether its email went out
+	@$(PYTHON) scripts/stock-watch/deploy.py status
+
+stock-run: ## Make the restock Worker check now instead of waiting for its cron
+	@$(PYTHON) scripts/stock-watch/deploy.py run
+
+stock-test: ## Email what a restock alert looks like, for the first watched product; records nothing
+	@$(PYTHON) scripts/stock-watch/deploy.py test
 
 image-quote: ## Price an image without spending (SLUG=, PROMPT=; scripts/images/generate.py)
 	@$(PYTHON) scripts/images/generate.py art --slug "$(SLUG)" --prompt "$(PROMPT)"
